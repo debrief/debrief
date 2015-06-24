@@ -27,6 +27,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.ExtendedEditable;
 import MWC.GUI.MovingPlottable;
+import MWC.GUI.NotInBaseLayer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
 import MWC.GUI.Properties.MyDateFormatPropertyEditor;
@@ -37,7 +38,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * Class to plot a time display onto a plot
  */
 public class TimeDisplayPainter implements Plottable, MovingPlottable,
-		ExtendedEditable, Serializable, ExcludeFromRightClickEdit
+		ExtendedEditable, Serializable, ExcludeFromRightClickEdit, NotInBaseLayer
 {
 
 	private static final String DAYS = "Days";

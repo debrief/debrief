@@ -236,6 +236,15 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	// member functions
 	// //////////////////////////////////////////////////////////
 
+	@Override
+	public void add(final Editable thePlottable)
+	{
+		if (thePlottable instanceof NotInBaseLayer)
+			throw new RuntimeException("Can't hold such item: " + thePlottable.getClass() + "!");
+		else
+			super.add(thePlottable);
+	}
+
 	/** whether this type of BaseLayer is able to have shapes added to it
 	 * 
 	 * @return
