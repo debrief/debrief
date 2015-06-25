@@ -264,7 +264,6 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -286,7 +285,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  * fix, tying the two together.
  */
 public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
-		DynamicPlottable, CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
+		CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
 		CreateEditorForParent
 {
 
