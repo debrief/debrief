@@ -384,9 +384,9 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 		DecimalFormat fmt = new DecimalFormat("00");
 		if (YY_MM_DD_HH_MM_SS.equals(_format))
 		{
-			formatInternal(builder, years, fmt);
-			formatInternal(builder, months, fmt);
-			formatInternal(builder, days, fmt);
+			formatInternal(builder, years, fmt, false);
+			formatInternal(builder, months, fmt, false);
+			formatInternal(builder, days, fmt, true);
 		}
 		builder.append(fmt.format(hours));
 		builder.append(":");
@@ -397,7 +397,7 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 	}
 
 	private void formatInternal(StringBuilder builder, long value,
-			DecimalFormat fmt)
+			DecimalFormat fmt, final boolean lastItem)
 	{
 		if (value > 99)
 		{
@@ -408,7 +408,15 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 		{
 			builder.append(fmt.format(value));
 		}
-		builder.append(":");
+		if(!lastItem)
+		{
+			builder.append("/");
+		}
+		else
+		{
+			builder.append(" ");			
+		}
+		
 	}
 
 	@SuppressWarnings("unused")
