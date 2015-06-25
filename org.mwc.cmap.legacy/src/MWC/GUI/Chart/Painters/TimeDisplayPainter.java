@@ -26,7 +26,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.ExtendedEditable;
-import MWC.GUI.MovingPlottable;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.NotInBaseLayer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
@@ -37,7 +37,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 /**
  * Class to plot a time display onto a plot
  */
-public class TimeDisplayPainter implements Plottable, MovingPlottable,
+public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 		ExtendedEditable, Serializable, ExcludeFromRightClickEdit, NotInBaseLayer
 {
 

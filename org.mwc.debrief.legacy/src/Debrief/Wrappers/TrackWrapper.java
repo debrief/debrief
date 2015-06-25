@@ -55,7 +55,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
-import MWC.GUI.MovingPlottable;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
@@ -86,7 +86,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WatchableList, MWC.GUI.Layer, DraggableItem,
 		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack,
-		MovingPlottable
+		DynamicPlottable
 {
 
 	// //////////////////////////////////////

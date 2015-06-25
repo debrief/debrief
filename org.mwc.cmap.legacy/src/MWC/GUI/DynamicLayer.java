@@ -7,7 +7,7 @@ import java.util.Enumeration;
  * @author ian
  *
  */
-public class DynamicLayer extends BaseLayer implements MovingPlottable
+public class DynamicLayer extends BaseLayer implements DynamicPlottable
 {
 
 	private static final long serialVersionUID = 1L;
@@ -36,9 +36,9 @@ public class DynamicLayer extends BaseLayer implements MovingPlottable
 		while (elements.hasMoreElements())
 		{
 			Editable element = elements.nextElement();
-			if (element instanceof MovingPlottable)
+			if (element instanceof DynamicPlottable)
 			{
-				((MovingPlottable)element).paint(dest, time);
+				((DynamicPlottable)element).paint(dest, time);
 			}
 		}
 	}

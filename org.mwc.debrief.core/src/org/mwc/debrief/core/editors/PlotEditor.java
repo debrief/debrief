@@ -156,7 +156,7 @@ import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.MovingPlottable;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -1320,9 +1320,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								dest, tNow);
 
 						// if this has a moveable perspective - paint it over the top
-						if (thisLayer instanceof MovingPlottable && tNow != null)
+						if (thisLayer instanceof DynamicPlottable && tNow != null)
 						{
-							((MovingPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
+							((DynamicPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
 						}						
 
 						// ok, now sort out the highlight

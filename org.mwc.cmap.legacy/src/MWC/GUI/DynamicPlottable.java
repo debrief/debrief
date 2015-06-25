@@ -14,7 +14,12 @@
  */
 package MWC.GUI;
 
-public interface MovingPlottable
+/** interface for time-sensitive objects that need to know the time in order to plot
+ * 
+ * @author ian
+ *
+ */
+public interface DynamicPlottable
 {
 
 	/** paint this object to the specified canvas
