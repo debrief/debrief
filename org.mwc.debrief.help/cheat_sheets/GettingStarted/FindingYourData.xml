@@ -9,7 +9,13 @@
 			you through generating links to your existing data folders. But, if the "Create Project" 
 			form opened at application startup, you
 			provided a project name, and indicated that you would like sample data to be imported,
-			then you can skip the following steps and move on to the next cheat sheet.</description>
+			then you can skip the following steps and move on to the next cheat sheet.
+			<br/>
+			You should also skip this set of tasks if you can see a <b>Sample Data</b> folder in your Navigator,
+			since you must have already created the necessary link(s).
+			<br/>
+			Lastly, you should skip this set of tasks if you run Debrief from a network share.  The 
+			next set of tasks (for <b>shared folder</b>) are the correct set for your situation. </description>
 	</intro>
 	<item
        skip="true"

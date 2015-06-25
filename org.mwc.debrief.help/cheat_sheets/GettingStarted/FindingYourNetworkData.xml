@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Generating links to data stored in a shared folder">
+ xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Copying sample data stored in a shared folder">
 	<intro>
 		<description>Here we are going to copy in an existing set of sample data. We aren&apos;t
 			going to link to the original set, since we don&apos;t want to modify it,
 			or we don&apos;t have modify access.
 			<br/> The steps presume that the Debrief <b>Sample data</b> is in the
-			<b>Debrief\DebriefNG</b> folder that is probably in a <b>Programs</b> network share.</description>
+			<b>Debrief\DebriefNG</b> folder that is probably in a <b>Programs</b> network share.
+			<br/> If you already have a <b>Sample data</b> folder in your Navigator you can skip this set of steps</description>
 	</intro>
 	<item title="Check Navigator is open">
 		<description>In the top left hand corner of Debrief you should find the Navigator window. If
