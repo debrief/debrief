@@ -49,7 +49,7 @@
 					But, if you have a Debrief
 					<b>Navigator</b>
 					window open, and in it you can see one or more folders in it, you
-					can skip this step.
+					can skip this step - and move directly to the <b>Generating links...</b> task.
             </intro>
             <onCompletion>
                You now have a Debrief
@@ -58,34 +58,23 @@
             </onCompletion>
             <param name="path" value="../GettingStarted/GenerateProject.xml"/>
          </task>
-         <taskGroup kind="choice" name="Finding the sample data" skip="false">
-            <intro>
-               There are two ways to load the sample data. We&apos;re probably
-					going to end up modifying the sample data,
-					so you shouldn&apos;t
-					do that if you&apos;re working on a set of sample data that&apos;s
-					shared with other users (since you
-					would be modifying the
-					<b>master</b>
-					copy of the data). Start off by considering if your Debrief
-					installation folder
-					is on your local machine, or on a Network Shared Folder - then select the
-					relevant "Generating links to ..." task from the two provided below.
-            </intro>
-            <task kind="cheatsheet" name="Sample data from a local folder" skip="true">
+      <task kind="cheatsheet" name="Sample data from a local folder" skip="true">
                <intro>
-                  You should have a Debrief project open. You will also need a link
-						to the Debrief
-						<b>sample data</b>
-						.
-						So, open up the projects in your
-						<b>Navigator</b>
+                  You should have a Debrief project open. You will also need a link to the Debrief
+					<b>sample data</b>.
+						So, open up the projects in your <b>Navigator</b>
 						window, and see if there is a folder titled
 						<b>Sample Data</b>
 						,
 						that contains a folder called
 						<b>SATC</b>
-						. If there is one there, you can skip this step.
+						. If there is one there, you can skip this task. But, if you don't have
+						a link to the sample data you will have to create one here.
+						<br/>
+						But, how you do that depends on your Debrief installation.  If you have
+						Debrief installed on your local machine, then you need to do this set of steps.
+						However, if you run Debrief from a shared network drive, please jump forward to
+						<b>"Sample data from a shared folder"</b>.
                </intro>
                <onCompletion>
                   Ok, you&apos;ve found the Debrief
@@ -121,8 +110,7 @@
                </onCompletion>
                <param name="path" value="../GettingStarted/FindingYourNetworkData.xml"/>
             </task>
-         </taskGroup>
-         <task kind="cheatsheet" name="Loading the data" skip="false">
+                     <task kind="cheatsheet" name="Loading the data" skip="false">
             <intro>
                Let&apos;s get some sample data loaded.
             </intro>
