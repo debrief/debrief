@@ -372,7 +372,7 @@
             </command>
 
 			<command commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative"
-                icon="icons/16/clock.png" style="push"
+                icon="icons/16/stopwatch.png" style="push"
                 id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative">
                 <visibleWhen checkEnabled="false">
                     <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
