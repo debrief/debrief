@@ -24,14 +24,14 @@ import java.util.Vector;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.MovingPlottable;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
-public class DynamicShapeLayer extends BaseLayer implements MovingPlottable,
+public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 		WatchableList
 {
 

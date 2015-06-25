@@ -236,6 +236,15 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	// member functions
 	// //////////////////////////////////////////////////////////
 
+	@Override
+	public void add(final Editable thePlottable)
+	{
+		if (thePlottable instanceof NotInBaseLayer)
+			throw new RuntimeException("Can't hold such item: " + thePlottable.getClass() + "!");
+		else
+			super.add(thePlottable);
+	}
+
 	/** whether this type of BaseLayer is able to have shapes added to it
 	 * 
 	 * @return
@@ -262,6 +271,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		
 		// special handling.  If this the chart features layer, we will double-buffer it, so VPF redraws
 		// more quickly
+	  // Time Display requires painting
 		if(theName.equals(Layers.CHART_FEATURES))
 			setBuffered(true);
 	}

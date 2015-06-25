@@ -1040,6 +1040,10 @@ public class RightClickCutCopyAdaptor
 						{
 							// remove the new data from it's parent
 							parentLayer.removeElement(thisE);
+							if (thisE instanceof NeedsToBeInformedOfRemove)
+							{
+								((NeedsToBeInformedOfRemove)thisE).beingRemoved();
+							}
 
 							if (!changedLayers.contains(parentLayer))
 								changedLayers.add(parentLayer);

@@ -31,6 +31,8 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import MWC.GUI.BaseLayer;
+import MWC.GUI.DynamicLayer;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -96,9 +98,23 @@ public class RightClickPasteAdaptor
 						// just check that there isn't a null destination
 						if (destination != null)
 						{
+							// just check that the layers are compliant (that we're not trying to paste a dynamic plottable 
+							// into a non-compliant layer
+							if(tr[0] instanceof DynamicPlottable)
+							{
+								if(destination instanceof DynamicLayer)
+								{
+									// create the menu items
+									paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
+											theLayers);
+								}
+							}
+							else
+							{
 							// create the menu items
 							paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
 									theLayers);
+							}
 						}
 					}
 

@@ -264,13 +264,13 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Properties.MyDateFormatPropertyEditor;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
@@ -285,7 +285,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  * fix, tying the two together.
  */
 public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
-		DynamicPlottable, CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
+		CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
 		CreateEditorForParent
 {
 
@@ -359,7 +359,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * the current format we're using
 	 * 
 	 */
-	private String _theFormat = MyDateFormatPropertyEditor.stringTags[0];
+	private String _theFormat = MyDateFormatPropertyEditor.getTagList()[0];
 
 	/**
 	 * whether to connect this fix to the previous one.
@@ -1020,7 +1020,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		if (format == null)
 			return;
 
-		if (!format.equals(MyDateFormatPropertyEditor.stringTags[0]))
+		if (!format.equals(MyDateFormatPropertyEditor.getTagList()[0]))
 		{
 			// so, reformat the label to this format
 			final java.text.DateFormat df = new java.text.SimpleDateFormat(format);
@@ -1217,45 +1217,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	// which also has
 	// a N/A property - which means leave the label as it is
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final class MyDateFormatPropertyEditor extends
-			MWC.GUI.Properties.DateFormatPropertyEditor
-	{
-		static private final String NULL_VALUE = "N/A";
-
-		static final String[] stringTags =
-		{ NULL_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm.ss",
-				"yy/MM/dd HH:mm", };
-
-		public final String[] getTags()
-		{
-			return stringTags;
-		}
-
-		public void setAsText(final String val)
-		{
-			_myFormat = getMyIndexOf(val);
-		}
-
-		private int getMyIndexOf(final String val)
-		{
-			int res = INVALID_INDEX;
-
-			// cycle through the tags until we get a matching one
-			for (int i = 0; i < getTags().length; i++)
-			{
-				final String thisTag = getTags()[i];
-				if (thisTag.equals(val))
-				{
-					res = i;
-					break;
-				}
-
-			}
-			return res;
-		}
-
-	}
-
+	
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////

@@ -48,7 +48,6 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -56,7 +55,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
-import MWC.GUI.MovingPlottable;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
@@ -85,9 +84,9 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * the FixWrapper
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
-		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
+		WatchableList, MWC.GUI.Layer, DraggableItem,
 		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack,
-		MovingPlottable
+		DynamicPlottable
 {
 
 	// //////////////////////////////////////
@@ -3969,7 +3968,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          end DTG
 	 * @return yes/no
 	 */
-	@Override
 	public final boolean visibleBetween(final HiResDate start, final HiResDate end)
 	{
 		boolean visible = false;

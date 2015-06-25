@@ -64,5 +64,4 @@ public interface ExtendedCanvasType extends ShapeCanvasType
 	public void setXORMode(boolean mode);
 	
 	public boolean getXORMode();
-
 }

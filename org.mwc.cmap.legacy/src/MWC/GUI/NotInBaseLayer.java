@@ -14,12 +14,11 @@
  */
 package MWC.GUI;
 
-public interface MovingPlottable
+/** marker interface for objects that may not be placed in a base layer - but which must
+ * sit in their own specialised layer
+ * @author ian
+ *
+ */
+public interface NotInBaseLayer
 {
-
-	/** paint this object to the specified canvas
-	 * @param dest current destination
-	 * @param time milliseconds
-   */
-  public void paint(CanvasType dest, long time);
 }

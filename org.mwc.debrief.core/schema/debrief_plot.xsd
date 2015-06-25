@@ -182,6 +182,7 @@
 			<xs:element name="track" type="track" />
 			<xs:element name="layer" type="layer" />
 			<xs:element name="dynamicShapeLayer" type="dynamicShapeLayer" />
+			<xs:element name="dynamicLayer" type="dynamicLayer" />
 			<xs:element name="ChartFolio" type="ChartFolio" />
 			<xs:element name="satc_solution" type="satc_solution" />
 		</xs:choice>
@@ -315,6 +316,9 @@
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute type="xs:string" name="LineStyle" use="optional" />
+					<xs:attribute name="Label" use="required" type="xs:string" />
+					<xs:attribute name="LabelLocation" default="Left" type="labelLocationType" />
+					<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
 					<xs:attribute type="xs:string" name="StartDtg" use="optional">
 						<xs:annotation>
 							<xs:documentation>
@@ -579,6 +583,23 @@
 		<xs:attribute name="ScaleStep" type="xs:long" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
+	<xs:complexType name="timeDisplay">
+		<xs:all>
+			<xs:element minOccurs="0" name="Color" type="colourType" /> 
+			<xs:element minOccurs="0" name="BackgroundColor" type="colourType" />
+			<xs:element minOccurs="0" name="NegativeColor" type="colourType" />
+			<xs:element minOccurs="0" name="font" type="font"  />
+		</xs:all>
+		<xs:attribute name="Prefix" type="xs:string" />
+		<xs:attribute name="Suffix" type="xs:string" />
+		<xs:attribute name="FormatTime" type="xs:string" />
+		<xs:attribute name="Location" type="xs:string" />
+		<xs:attribute name="Origin" type="xs:string" />
+		<xs:attribute name="Name" type="xs:string" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+		<xs:attribute name="Absolute" default="true" type="xs:boolean" />
+		<xs:attribute name="FillBackground" default="false" type="xs:boolean" />
+	</xs:complexType>
 	<xs:complexType name="grid">
 		<xs:sequence>
 			<xs:element minOccurs="0" name="font" type="font" />
@@ -704,6 +725,18 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="dynamicLayer">
+		<xs:annotation>
+			<xs:documentation>
+			  A layer that contains a series of time display widgets.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="timeDisplay" type="timeDisplay" />
+		</xs:choice>
+		<xs:attribute name="Name" use="required" type="xs:string" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="shape" abstract="true">
 		<xs:sequence>

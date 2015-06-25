@@ -39,11 +39,14 @@ import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.LocalGridHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.ScaleHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.TimeDisplayPainterHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFCoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
 public class LayerHandler extends MWCXMLReader implements PlottableExporter
 {
+
+	public static final String NAME = "Name";
 
 	private final MWC.GUI.Layers _theLayers;
 
@@ -109,6 +112,14 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 			}
 		});		
 
+		addHandler(new TimeDisplayPainterHandler()
+		{
+			public void addPlottable(final MWC.GUI.Plottable plottable)
+			{
+				addThis(plottable);
+			}
+		});		
+		
 		addHandler(new LocalGridHandler()
 		{
 			public void addPlottable(final MWC.GUI.Plottable plottable)
@@ -131,7 +142,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 			}
 		});
 
-		addAttributeHandler(new HandleAttribute("Name")
+		addAttributeHandler(new HandleAttribute(NAME)
 		{
 			public void setValue(final String name, final String val)
 			{
@@ -238,6 +249,12 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 				{
 				}
 			});
+			_myExporters.put(MWC.GUI.Chart.Painters.TimeDisplayPainter.class, new TimeDisplayPainterHandler()
+			{
+				public void addPlottable(Plottable plottable)
+				{
+				}
+			});
 			_myExporters.put(MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer.class,
 					new VPFCoastlineHandler()
 					{
@@ -301,10 +318,10 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		final org.w3c.dom.Element eLayer = doc.createElement(elementName);
 
-		eLayer.setAttribute("Name", layer.getName());
+		eLayer.setAttribute(NAME, layer.getName());
 		eLayer.setAttribute("Visible", writeThis(layer.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
-
+		
 		// step through the components of the layer
 		final java.util.Enumeration<Editable> enumer = layer.elements();
 		while (enumer.hasMoreElements())

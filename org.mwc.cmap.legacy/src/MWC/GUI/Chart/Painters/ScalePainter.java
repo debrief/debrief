@@ -134,6 +134,7 @@ import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
 import MWC.GUI.Properties.UnitsPropertyEditor;
@@ -142,7 +143,7 @@ import MWC.GenericData.WorldLocation;
 /**
  * Class to plot a scale onto a plot
  */
-public class ScalePainter implements Plottable, Serializable
+public class ScalePainter implements Plottable, Serializable, ExcludeFromRightClickEdit
 {
 
   /////////////////////////////////////////////////////////////
