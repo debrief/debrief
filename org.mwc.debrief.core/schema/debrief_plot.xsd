@@ -599,6 +599,7 @@
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 		<xs:attribute name="Absolute" default="true" type="xs:boolean" />
 		<xs:attribute name="FillBackground" default="false" type="xs:boolean" />
+		<xs:attribute name="SemiTransparent" default="false" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="grid">
 		<xs:sequence>
