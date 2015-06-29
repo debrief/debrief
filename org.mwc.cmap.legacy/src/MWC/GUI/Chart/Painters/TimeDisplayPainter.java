@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.ExtendedEditable;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.NotInBaseLayer;
@@ -75,6 +76,8 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 	private HiResDate _origin;
 	
 	private boolean _fillBackground = false;
+	
+	private boolean _semiTransparent = false;
 	
 	/**
 	 * default location for the time display
@@ -324,7 +327,14 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 				yy = 5;
 			}
 			g.setColor(_myBackgroundColor);
-			g.fillRect(xx, yy, wid + 2 * offset, txtHt + offset);
+			if (g instanceof ExtendedCanvasType && _semiTransparent)
+			{
+				((ExtendedCanvasType)g).semiFillRect(xx, yy, wid + 2 * offset, txtHt + offset);
+			}
+			else
+			{
+				g.fillRect(xx, yy, wid + 2 * offset, txtHt + offset);
+			}
 		}
 		if (!_absolute && isNegative)
 		{
@@ -545,7 +555,9 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 						displayProp("Background", "Background color",
 								"the Background color for the time display", FORMAT),
 						displayProp("FillBackground", "Fill Background",
-										"wether to fill background for the time display", FORMAT),
+								"wether to fill background for the time display", FORMAT),
+						displayProp("SemiTransparent", "Semi transparent",
+								"wether to use semi transparent background for the time display", FORMAT),
 						prop("Name", "the Name for the time display", FORMAT),
 						prop("Font", "the Font for the time display", FORMAT),
 						prop("Prefix", "the Prefix label for the time display", FORMAT),
@@ -668,6 +680,16 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 	public void setFillBackground(boolean fillBackground)
 	{
 		this._fillBackground = fillBackground;
+	}
+	
+	public boolean isSemiTransparent()
+	{
+		return _semiTransparent;
+	}
+
+	public void setSemiTransparent(boolean semiTransparent)
+	{
+		this._semiTransparent = semiTransparent;
 	}
 
 	public boolean isAbsolute()

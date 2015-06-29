@@ -2895,7 +2895,7 @@
 				</TrackSegment>
 			</track>
 			<dynamicLayer Name="Dynamic Features" Visible="true">
-				<timeDisplay Absolute="true" FillBackground="false"
+				<timeDisplay Absolute="true" FillBackground="false" SemiTransparent="false"
 					FormatTime="ddHHmm" Location="3" Name="Time Display (Absolute)"
 					Prefix="" Suffix="" Visible="true">
 					<font Bold="false" Family="Arial" Italic="false" Size="12" />
@@ -2903,7 +2903,7 @@
 					<BackgroundColor CustomBlue="255" CustomGreen="255"
 						CustomRed="255" Value="custom" />
 				</timeDisplay>
-				<timeDisplay Absolute="false" FillBackground="false"
+				<timeDisplay Absolute="false" FillBackground="false" SemiTransparent="false"
 					FormatTime="Millis" Location="0" Name="Time Display (Relative)"
 					Origin="951212 050000" Prefix="" Suffix="" Visible="true">
 					<font Bold="false" Family="Arial" Italic="false" Size="12" />
