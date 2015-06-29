@@ -7,16 +7,14 @@
     <xsl:output method="xml" indent="yes" omit-xml-declaration="no"  doctype-public="-//OASIS//DTD DITA Map//EN" doctype-system="map.dtd"/>
     
     <debrief:order>
-        <debrief:value>intro_composite.xml</debrief:value>
-        <debrief:value>analysis_composite.xml</debrief:value>
-        <debrief:value>s2r_composite.xml</debrief:value>
-        <debrief:value>satc_composite.xml</debrief:value>
+        <debrief:value>s2r_tmacomposite.xml</debrief:value>
+        <debrief:value>satc_tmacomposite.xml</debrief:value>
     </debrief:order>
     
     <xsl:template match="/" name="root">
         <map>
             <title>Debrief Topic Map</title>
-            <xsl:for-each select="collection(iri-to-uri('../cheat_sheets/?select=[a-zA-Z]*_composite.xml;recurse=yes'))">
+            <xsl:for-each select="collection(iri-to-uri('../cheat_sheets/?select=[a-zA-Z]*_tmacomposite.xml;recurse=yes'))">
                 <xsl:sort  select="count(document('')//debrief:order/debrief:value[. = tokenize(document-uri(current()),'/')[last()]]/preceding-sibling::debrief:value)"></xsl:sort>
                 
                 <xsl:result-document href="dita/{tokenize(document-uri(/),'/')[last()]}.dita" doctype-public="-//OASIS//DTD DITA Task//EN" doctype-system="task.dtd">

@@ -103,7 +103,7 @@
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_satc"
             composite="true"
-            contentFile="cheat_sheets/satc/satc_composite.xml"
+            contentFile="cheat_sheets/satc/satc_tmacomposite.xml"
             id="org.mwc.debrief.help.cheatsheet.satc.composite"
             name="A walkthrough of Debrief's Auto-TMA capabilities"/>                       
 </extension>
