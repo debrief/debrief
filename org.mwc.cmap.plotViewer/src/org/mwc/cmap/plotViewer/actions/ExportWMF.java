@@ -15,16 +15,27 @@
 package org.mwc.cmap.plotViewer.actions;
 
 import java.awt.Dimension;
+import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 
-import com.pietjonas.wmfwriter2d.ClipboardCopy;
-
-import MWC.GUI.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.WriteMetafile;
+
+import com.pietjonas.wmfwriter2d.ClipboardCopy;
 
 /**
  * @author ian.mayo
@@ -78,14 +89,49 @@ public class ExportWMF extends CoreEditorAction
 	 */
 	protected void execute()
 	{
+		IRunnableWithProgress runnable = new IRunnableWithProgress()
+		{
+			
+			@Override
+			public void run(final IProgressMonitor monitor)
+					throws InvocationTargetException, InterruptedException
+			{
+				executeInJob(monitor);
+			}
+		};
+		
+		try
+		{
+			ProgressMonitorDialog pmd = new ProgressMonitorDialog(getShell());
+			pmd.run(false, true, runnable);
+		}
+		catch (Exception e)
+		{
+			String message = e.getMessage();
+			if (message == null && e.getCause() != null)
+			{
+				message = e.getCause().getMessage();
+			}
+			MessageDialog.openError(getShell(), "Error", message);
+			CorePlugin.logError(Status.ERROR, "Tool parent missing for Write Metafile", e);
+		}
+	}
+
+	private IStatus executeInJob(IProgressMonitor monitor)
+	{
+		if (monitor.isCanceled()) {
+			return Status.CANCEL_STATUS;
+		}
 		final PlainChart theChart = getChart();
 
 		if (_theParent == null)
 		{
 			CorePlugin.logError(Status.ERROR, "Tool parent missing for Write Metafile", null);
-			return;
+			return Status.CANCEL_STATUS;
 		}
 
+		monitor.beginTask("Export to WMF", 10);
+		monitor.worked(5);
 		final WriteMetafile write = new WriteMetafile(_theParent, theChart, _writeToFile)
 		{
 
@@ -99,8 +145,19 @@ public class ExportWMF extends CoreEditorAction
 			}
 
 		};
+		if (monitor.isCanceled()) {
+			return Status.CANCEL_STATUS;
+		}
 		write.execute();
-
+		if (!write.isWritable())
+		{
+			Shell shell = getShell();
+			MessageDialog.openError(shell, "Error", write.getErrorMessage());
+			return Status.OK_STATUS;
+		}
+		if (monitor.isCanceled()) {
+			return Status.CANCEL_STATUS;
+		}
 		// ok, do we want to write it to the clipboard?
 		if (_writeToClipboard)
 		{
@@ -134,6 +191,19 @@ public class ExportWMF extends CoreEditorAction
 			else
 				System.err.println("Target filename missing");
 		}
+		monitor.done();
+		if (monitor.isCanceled()) {
+			return Status.CANCEL_STATUS;
+		}
+		return Status.OK_STATUS;
+	}
+
+	private Shell getShell()
+	{
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		Shell shell = win.getShell();
+		return shell;
 	}
 
 }

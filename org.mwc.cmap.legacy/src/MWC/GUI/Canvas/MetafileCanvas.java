@@ -126,9 +126,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.Shape;
-import java.awt.geom.PathIterator;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -227,17 +225,7 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 		try
 		{
 			
-    	if(_writeToTmpFile)
-    	{
-    		_outputFileName = java.io.File.createTempFile("debrief_plot_", ".wmf").getCanonicalPath();
-    	}
-    	else
-    	{
-      	_outputFileName = getFileName();
-      	
-        if(_directory != null)
-        	_outputFileName = _directory + File.separator + _outputFileName;
-    	}			
+    	getOutputFileName();
 
     	System.out.println("Writing Metafile to:" + _outputFileName);
     	
@@ -260,6 +248,58 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 			if (DEBUG_OUTPUT)
 				MWC.Utilities.Errors.Trace.trace(e);
 		}
+	}
+
+
+	public boolean isWritable()
+	{
+		FileOutputStream fo = null;
+		
+		try
+		{
+			getOutputFileName();
+			if (_outputFileName != null)
+			{
+					fo = new FileOutputStream(_outputFileName);
+					fo.write(new byte[] { 0 });
+					return true;
+			}
+		}
+		catch (IOException e)
+		{
+			// ignore
+		}
+		finally {
+			if (fo != null)
+			{
+				try
+				{
+					fo.close();
+				}
+				catch (IOException e)
+				{
+					// ignore
+				}
+			}
+
+		}
+		return false;
+	}
+	
+	public String getOutputFileName() throws IOException
+	{
+		if(_writeToTmpFile)
+		{
+			_outputFileName = java.io.File.createTempFile("debrief_plot_", ".wmf").getCanonicalPath();
+		}
+		else
+		{
+			_outputFileName = getFileName();
+			
+		  if(_directory != null)
+		  	_outputFileName = _directory + File.separator + _outputFileName;
+		}
+		return _outputFileName;
 	}
 
 	public void startDraw(final Object theVal)
