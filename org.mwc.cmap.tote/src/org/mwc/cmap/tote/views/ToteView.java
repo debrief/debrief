@@ -34,6 +34,8 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
@@ -542,7 +544,8 @@ public class ToteView extends ViewPart
 		if (_myPartMonitor != null)
 		{
 			// and stop listening for part activity
-			_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+			_myPartMonitor.ditch();
+			_myPartMonitor = null;
 		}
 		// also stop listening for time events
 		if (_controllableTime != null)
@@ -714,13 +717,24 @@ public class ToteView extends ViewPart
 			_tableViewer.setInput(this);
 
 			// lastly listen out for any future changes
-			part.addTrackDataListener(new TrackDataListener()
+			final TrackDataListener tdl = new TrackDataListener()
 			{
 				public void tracksUpdated(final WatchableList primary,
 						final WatchableList[] secondaries)
 				{
 					// ok - now update the content of our table
 					redoTableAfterTrackChanges();
+				}
+			};
+			part.addTrackDataListener(tdl);
+			_tableViewer.getTable().addDisposeListener(new DisposeListener()
+			{
+				
+				@Override
+				public void widgetDisposed(DisposeEvent e)
+				{
+					part.removeTrackDataListener(tdl);
+					_tableViewer.getTable().removeDisposeListener(this);
 				}
 			});
 		}
@@ -732,6 +746,9 @@ public class ToteView extends ViewPart
 	void redoTableAfterTrackChanges()
 	{
 		// suspend updates
+		if (_tableViewer.getTable().isDisposed()) {
+			return;
+		}
 		_tableViewer.getTable().setRedraw(false);
 
 		// and update the table column layout
