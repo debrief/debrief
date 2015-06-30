@@ -332,7 +332,7 @@ public class ToteView extends ViewPart
 		// first put in the labels
 		layout.addColumnData(new ColumnWeightData(5, true));
 		final TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
-		tc0.setText("Calculation");
+		tc0.setText("Attribute");
 
 		if (_trackData != null)
 		{
@@ -396,7 +396,7 @@ public class ToteView extends ViewPart
 
 		layout.addColumnData(new ColumnWeightData(5, 40, true));
 		final TableColumn tc0 = new TableColumn(table, SWT.NONE);
-		tc0.setText("Calculation");
+		tc0.setText("Attribute");
 		tc0.setAlignment(SWT.LEFT);
 		tc0.setResizable(true);
 
