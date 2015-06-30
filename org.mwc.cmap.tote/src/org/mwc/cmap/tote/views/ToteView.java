@@ -784,6 +784,7 @@ public class ToteView extends ViewPart
 			for (int j = 0; j < items.length; j++)
 			{
 				final TableItem thisRow = items[j];
+				thisRow.setForeground(0, thisCol);
 				thisRow.setForeground(1, thisCol);
 				final Color lightCol = ColorHelper
 						.getColor(new java.awt.Color(240, 240, 245));
