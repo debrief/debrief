@@ -40,10 +40,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -553,6 +555,26 @@ public class ToteView extends ViewPart
 	private void hookContextMenu()
 	{
 		final Table theTable = _tableViewer.getTable();
+		theTable.addListener(SWT.MenuDetect, new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				if (theTable.getColumnCount() < 3)
+				{
+					return;
+				}
+				int w = theTable.getColumn(0).getWidth() + theTable.getColumn(1).getWidth();
+				Point pt = Display.getCurrent().map(null, theTable, new Point(e.x, e.y));
+				Rectangle clientArea = theTable.getClientArea();
+				boolean header = clientArea.y <= pt.y && pt.y < (clientArea.y + theTable.getHeaderHeight());
+				if (header && pt.x > w)
+				{
+					final MenuManager mmgr = new MenuManager();
+					fillContextMenu(mmgr, 2);
+					final Menu thisM = mmgr.createContextMenu(_tableViewer.getTable());
+					thisM.setVisible(true);
+				}
+			}
+		});
 		theTable.addMouseListener(new MouseAdapter()
 		{
 			public void mouseUp(final MouseEvent e)
