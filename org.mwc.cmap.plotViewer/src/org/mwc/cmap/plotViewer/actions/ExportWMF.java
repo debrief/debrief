@@ -103,17 +103,25 @@ public class ExportWMF extends CoreEditorAction
 		try
 		{
 			ProgressMonitorDialog pmd = new ProgressMonitorDialog(getShell());
-			pmd.run(false, true, runnable);
+			pmd.run(true, true, runnable);
 		}
 		catch (Exception e)
 		{
 			String message = e.getMessage();
-			if (message == null && e.getCause() != null)
+			Throwable cause = e.getCause();
+			int i = 0;
+			while (cause != null && i++ < 5)
 			{
-				message = e.getCause().getMessage();
+				message = cause.getMessage();
+				cause = cause.getCause();
+			}
+			if (message == null || message.isEmpty())
+			{
+				message = "A problem happens. Please look at the error log for details.";
 			}
 			MessageDialog.openError(getShell(), "Error", message);
-			CorePlugin.logError(Status.ERROR, "Tool parent missing for Write Metafile", e);
+			CorePlugin.logError(Status.ERROR,
+					"Tool parent missing for Write Metafile", e);
 		}
 	}
 
@@ -129,9 +137,7 @@ public class ExportWMF extends CoreEditorAction
 			CorePlugin.logError(Status.ERROR, "Tool parent missing for Write Metafile", null);
 			return Status.CANCEL_STATUS;
 		}
-
-		monitor.beginTask("Export to WMF", 10);
-		monitor.worked(5);
+		monitor.beginTask("Export to WMF", IProgressMonitor.UNKNOWN);
 		final WriteMetafile write = new WriteMetafile(_theParent, theChart, _writeToFile)
 		{
 

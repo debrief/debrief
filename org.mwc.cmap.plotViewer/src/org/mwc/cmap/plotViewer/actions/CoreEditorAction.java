@@ -74,11 +74,27 @@ abstract public class CoreEditorAction extends AbstractHandler implements IEdito
 		if (_myEditor == null)
 		{
 			// nope, better generate it
-			final IWorkbench wb = PlatformUI.getWorkbench();
-			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			final IWorkbenchPage page = win.getActivePage();
-			final IEditorPart editor = page.getActiveEditor();
-			setActiveEditor(null, editor);
+			Runnable runnable = new Runnable()
+			{
+				
+				@Override
+				public void run()
+				{
+					final IWorkbench wb = PlatformUI.getWorkbench();
+					final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+					final IWorkbenchPage page = win.getActivePage();
+					final IEditorPart editor = page.getActiveEditor();
+					setActiveEditor(null, editor);
+				}
+			};
+			if (Display.getCurrent() != null)
+			{
+				runnable.run();
+			}
+			else
+			{
+				Display.getDefault().syncExec(runnable);
+			}
 		}
 
 		// ok, give it a go.
