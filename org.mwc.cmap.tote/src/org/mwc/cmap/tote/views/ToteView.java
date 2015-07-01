@@ -34,16 +34,20 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -332,7 +336,7 @@ public class ToteView extends ViewPart
 		// first put in the labels
 		layout.addColumnData(new ColumnWeightData(5, true));
 		final TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
-		tc0.setText("Calculation");
+		tc0.setText("Attribute");
 
 		if (_trackData != null)
 		{
@@ -396,7 +400,7 @@ public class ToteView extends ViewPart
 
 		layout.addColumnData(new ColumnWeightData(5, 40, true));
 		final TableColumn tc0 = new TableColumn(table, SWT.NONE);
-		tc0.setText("Calculation");
+		tc0.setText("Attribute");
 		tc0.setAlignment(SWT.LEFT);
 		tc0.setResizable(true);
 
@@ -540,7 +544,8 @@ public class ToteView extends ViewPart
 		if (_myPartMonitor != null)
 		{
 			// and stop listening for part activity
-			_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+			_myPartMonitor.ditch();
+			_myPartMonitor = null;
 		}
 		// also stop listening for time events
 		if (_controllableTime != null)
@@ -553,6 +558,26 @@ public class ToteView extends ViewPart
 	private void hookContextMenu()
 	{
 		final Table theTable = _tableViewer.getTable();
+		theTable.addListener(SWT.MenuDetect, new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				if (theTable.getColumnCount() < 3)
+				{
+					return;
+				}
+				int w = theTable.getColumn(0).getWidth() + theTable.getColumn(1).getWidth();
+				Point pt = Display.getCurrent().map(null, theTable, new Point(e.x, e.y));
+				Rectangle clientArea = theTable.getClientArea();
+				boolean header = clientArea.y <= pt.y && pt.y < (clientArea.y + theTable.getHeaderHeight());
+				if (header && pt.x > w)
+				{
+					final MenuManager mmgr = new MenuManager();
+					fillContextMenu(mmgr, 2);
+					final Menu thisM = mmgr.createContextMenu(_tableViewer.getTable());
+					thisM.setVisible(true);
+				}
+			}
+		});
 		theTable.addMouseListener(new MouseAdapter()
 		{
 			public void mouseUp(final MouseEvent e)
@@ -692,13 +717,24 @@ public class ToteView extends ViewPart
 			_tableViewer.setInput(this);
 
 			// lastly listen out for any future changes
-			part.addTrackDataListener(new TrackDataListener()
+			final TrackDataListener tdl = new TrackDataListener()
 			{
 				public void tracksUpdated(final WatchableList primary,
 						final WatchableList[] secondaries)
 				{
 					// ok - now update the content of our table
 					redoTableAfterTrackChanges();
+				}
+			};
+			part.addTrackDataListener(tdl);
+			_tableViewer.getTable().addDisposeListener(new DisposeListener()
+			{
+				
+				@Override
+				public void widgetDisposed(DisposeEvent e)
+				{
+					part.removeTrackDataListener(tdl);
+					_tableViewer.getTable().removeDisposeListener(this);
 				}
 			});
 		}
@@ -710,6 +746,9 @@ public class ToteView extends ViewPart
 	void redoTableAfterTrackChanges()
 	{
 		// suspend updates
+		if (_tableViewer.getTable().isDisposed()) {
+			return;
+		}
 		_tableViewer.getTable().setRedraw(false);
 
 		// and update the table column layout
@@ -758,13 +797,17 @@ public class ToteView extends ViewPart
 		final WatchableList pri = _trackData.getPrimaryTrack();
 		if (pri != null)
 		{
+			final Color blackShade = ColorHelper
+					.getColor(new java.awt.Color(0, 0, 0));				
+			final Color lightCol = ColorHelper
+					.getColor(new java.awt.Color(240, 240, 245));
+			
 			thisCol = ColorHelper.getColor(pri.getColor());
 			for (int j = 0; j < items.length; j++)
 			{
 				final TableItem thisRow = items[j];
+				thisRow.setForeground(0, blackShade);
 				thisRow.setForeground(1, thisCol);
-				final Color lightCol = ColorHelper
-						.getColor(new java.awt.Color(240, 240, 245));
 				thisRow.setBackground(1, lightCol);
 			}
 		}
