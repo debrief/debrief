@@ -797,14 +797,17 @@ public class ToteView extends ViewPart
 		final WatchableList pri = _trackData.getPrimaryTrack();
 		if (pri != null)
 		{
+			final Color blackShade = ColorHelper
+					.getColor(new java.awt.Color(0, 0, 0));				
+			final Color lightCol = ColorHelper
+					.getColor(new java.awt.Color(240, 240, 245));
+			
 			thisCol = ColorHelper.getColor(pri.getColor());
 			for (int j = 0; j < items.length; j++)
 			{
 				final TableItem thisRow = items[j];
-				thisRow.setForeground(0, thisCol);
+				thisRow.setForeground(0, blackShade);
 				thisRow.setForeground(1, thisCol);
-				final Color lightCol = ColorHelper
-						.getColor(new java.awt.Color(240, 240, 245));
 				thisRow.setBackground(1, lightCol);
 			}
 		}
