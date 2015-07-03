@@ -262,6 +262,13 @@
 				object to be defined in file</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="BistaticReceiverSensor" type="BistaticReceiverSensorType">
+		<xs:annotation>
+			<xs:documentation>instance of subject, declared to allow standalone
+				instance of this
+				object to be defined in file</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="SensorFitType">
 		<xs:annotation>
 			<xs:documentation>Collection of sensors</xs:documentation>
@@ -283,6 +290,7 @@
 					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
 					<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
 					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType" minOccurs="0"/>
+					<xs:element name="BistaticReceiverSensor" type="BistaticReceiverSensorType" minOccurs="0"/>
 				</xs:choice>
 			</xs:extension>
 		</xs:complexContent>
@@ -590,6 +598,19 @@
 	<xs:complexType name="ActiveInterceptSensorType">
 		<xs:annotation>
 			<xs:documentation>Active intercept sensor</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited
+				Editable:
+				inherited</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreSensorType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BistaticReceiverSensorType">
+		<xs:annotation>
+			<xs:documentation>Bistatic receiver sensor</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible: inherited
 				Editable:
 				inherited</xs:documentation>
