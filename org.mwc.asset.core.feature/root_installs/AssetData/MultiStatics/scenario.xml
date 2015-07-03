@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="RB_mini_scenario" xmlns="http://www.mwc.org/asset"
+	ShowSymbol="false" ShowActivity="false" ShowName="false"
+	StartTime="2014-12-12T12:00:00">
+	<StepTime Units="seconds" Value="5" />
+	<Participants>
+		<SSN Name="Contact">
+			<Category Type="SUBMARINE" Force="RED"
+				Environment="SUBSURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="0.0" Units="m" />
+						<East Value="100" Units="m" />
+					</relativeLocation>
+					
+				</Location>
+				<Speed Value="6" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="4800" Units="m" />
+				</Move>
+				<Move Name="turn east" Course="090"></Move>
+				<Move Name="turn south" Course="180"></Move>
+				<Move Name="turn west" Course="270"></Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</SSN>
+		<SSN Name="TX">
+			<Category Type="SUBMARINE" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="3000.0" Units="m" />
+						<East Value="-500" Units="m" />
+					</relativeLocation>
+					
+				</Location>
+				<Speed Value="0" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="5000" Units="m" />
+				</Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</SSN>
+		<SSN Name="RX 1">
+			<Category Type="SUBMARINE" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="1000.0" Units="m" />
+						<East Value="-500" Units="m" />
+					</relativeLocation>
+					
+				</Location>
+				<Speed Value="0" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="4500" Units="m" />
+				</Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</SSN>
+		<SSN Name="RX 2">
+			<Category Type="SUBMARINE" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="2000.0" Units="m" />
+						<East Value="-500" Units="m" />
+					</relativeLocation>
+					
+				</Location>
+				<Speed Value="0" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="4500" Units="m" />
+				</Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</SSN>
+		<SSN Name="RX 3">
+			<Category Type="SUBMARINE" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="4000.0" Units="m" />
+						<East Value="-500" Units="m" />
+					</relativeLocation>
+					
+				</Location>
+				<Speed Value="0" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="4500" Units="m" />
+				</Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</SSN>
+		<SSN Name="RX 4">
+			<Category Type="SUBMARINE" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="5000.0" Units="m" />
+						<East Value="-500" Units="m" />
+					</relativeLocation>
+					
+				</Location>
+				<Speed Value="0" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="4500" Units="m" />
+				</Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</SSN>
+	</Participants>
+	<DebriefLayer>
+		<layer LineThickness="0" Name="Chart Features" Visible="true">
+			<grid PlotLabels="true" Units="degs" Visible="true">
+				<font Bold="false" Family="Sans Serif" Italic="false"
+					Size="8" />
+				<Delta Units="nm" Value="10" />
+				<colour Value="DARK_GREY" />
+			</grid>
+			<scale AutoMode="true" DisplayUnits="yd"
+				Location="BottomLeft" Name="World Default" ScaleMax="100000"
+				ScaleStep="50000" Visible="true">
+				<colour Value="GREY" />
+			</scale>
+		</layer>
+	</DebriefLayer>
+</Scenario>

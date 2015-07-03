@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="root_installs/AssetData/MultiStatics/Output"
+	xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+	</ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="elapsed time" Active="true">
+			<Duration Value="45" Units="minutes" />
+		</TimeObserver>
+		<DebriefReplayObserver Name="DebriefPlot"
+			record_detections="false" record_positions="true" Active="true"
+			record_decisions="false" file_name="multi_statics">
+		</DebriefReplayObserver>
+	</ObserverList>
+</ScenarioController>
+
