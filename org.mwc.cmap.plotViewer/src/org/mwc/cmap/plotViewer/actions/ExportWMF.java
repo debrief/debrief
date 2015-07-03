@@ -15,18 +15,12 @@
 package org.mwc.cmap.plotViewer.actions;
 
 import java.awt.Dimension;
-import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 
@@ -84,50 +78,11 @@ public class ExportWMF extends CoreEditorAction
 		_theParent = theParent;
 	}
 
-	/**
-	 * and execute..
-	 */
-	protected void execute()
+	@Override
+	protected IStatus executeInJob(IProgressMonitor monitor)
 	{
-		IRunnableWithProgress runnable = new IRunnableWithProgress()
+		if (monitor.isCanceled())
 		{
-			
-			@Override
-			public void run(final IProgressMonitor monitor)
-					throws InvocationTargetException, InterruptedException
-			{
-				executeInJob(monitor);
-			}
-		};
-		
-		try
-		{
-			ProgressMonitorDialog pmd = new ProgressMonitorDialog(getShell());
-			pmd.run(true, true, runnable);
-		}
-		catch (Exception e)
-		{
-			String message = e.getMessage();
-			Throwable cause = e.getCause();
-			int i = 0;
-			while (cause != null && i++ < 5)
-			{
-				message = cause.getMessage();
-				cause = cause.getCause();
-			}
-			if (message == null || message.isEmpty())
-			{
-				message = "A problem happened. Please look at the error log for details.";
-			}
-			MessageDialog.openError(getShell(), "Error", message);
-			CorePlugin.logError(Status.ERROR,
-					"Tool parent missing for Write Metafile", e);
-		}
-	}
-
-	private IStatus executeInJob(IProgressMonitor monitor)
-	{
-		if (monitor.isCanceled()) {
 			return Status.CANCEL_STATUS;
 		}
 		final PlainChart theChart = getChart();
@@ -151,7 +106,8 @@ public class ExportWMF extends CoreEditorAction
 			}
 
 		};
-		if (monitor.isCanceled()) {
+		if (monitor.isCanceled())
+		{
 			return Status.CANCEL_STATUS;
 		}
 		write.execute();
@@ -161,7 +117,8 @@ public class ExportWMF extends CoreEditorAction
 			MessageDialog.openError(shell, "Error", write.getErrorMessage());
 			return Status.OK_STATUS;
 		}
-		if (monitor.isCanceled()) {
+		if (monitor.isCanceled())
+		{
 			return Status.CANCEL_STATUS;
 		}
 		// ok, do we want to write it to the clipboard?
@@ -198,18 +155,11 @@ public class ExportWMF extends CoreEditorAction
 				System.err.println("Target filename missing");
 		}
 		monitor.done();
-		if (monitor.isCanceled()) {
+		if (monitor.isCanceled())
+		{
 			return Status.CANCEL_STATUS;
 		}
 		return Status.OK_STATUS;
-	}
-
-	private Shell getShell()
-	{
-		final IWorkbench wb = PlatformUI.getWorkbench();
-		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		Shell shell = win.getShell();
-		return shell;
 	}
 
 }

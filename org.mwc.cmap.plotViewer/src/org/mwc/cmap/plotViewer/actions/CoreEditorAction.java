@@ -14,14 +14,21 @@
  */
 package org.mwc.cmap.plotViewer.actions;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -157,10 +164,50 @@ abstract public class CoreEditorAction extends AbstractHandler implements IEdito
 		}
 	}
 
+	protected void execute()
+	{
+		IRunnableWithProgress runnable = new IRunnableWithProgress()
+		{
+			
+			@Override
+			public void run(final IProgressMonitor monitor)
+					throws InvocationTargetException, InterruptedException
+			{
+				executeInJob(monitor);
+			}
+		};
+		
+		try
+		{
+			ProgressMonitorDialog pmd = new ProgressMonitorDialog(getShell());
+			pmd.run(true, true, runnable);
+		}
+		catch (Exception e)
+		{
+			String message = e.getMessage();
+			Throwable cause = e.getCause();
+			int i = 0;
+			while (cause != null && i++ < 5)
+			{
+				message = cause.getMessage();
+				cause = cause.getCause();
+			}
+			if (message == null || message.isEmpty())
+			{
+				message = "A problem happened. Please look at the error log for details.";
+			}
+			MessageDialog.openError(getShell(), "Error", message);
+			CorePlugin.logError(Status.ERROR,
+					"Tool parent missing for Write Metafile", e);
+		}
+	}
 	/**
 	 * perform our operation
 	 */
-	abstract protected void execute();
+	protected IStatus executeInJob(IProgressMonitor monitor)
+	{
+		return Status.OK_STATUS;
+	};
 
 	/*
 	 * (non-Javadoc)
@@ -187,6 +234,14 @@ abstract public class CoreEditorAction extends AbstractHandler implements IEdito
 	{
 		executeInternal();
 		return null;
+	}
+	
+	public Shell getShell()
+	{
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		Shell shell = win.getShell();
+		return shell;
 	}
 
 }
