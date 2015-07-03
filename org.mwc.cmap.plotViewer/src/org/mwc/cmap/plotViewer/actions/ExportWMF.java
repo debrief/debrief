@@ -117,7 +117,7 @@ public class ExportWMF extends CoreEditorAction
 			}
 			if (message == null || message.isEmpty())
 			{
-				message = "A problem happens. Please look at the error log for details.";
+				message = "A problem happened. Please look at the error log for details.";
 			}
 			MessageDialog.openError(getShell(), "Error", message);
 			CorePlugin.logError(Status.ERROR,
