@@ -234,6 +234,7 @@ public class Category implements java.io.Serializable
 			_types.addElement(Type.MPA);
 			_types.addElement(Type.AV_MISSILE);
 			_types.addElement(Type.BUOY_FIELD);
+			_types.addElement(Type.BUOY);
 		}
 	}
 
