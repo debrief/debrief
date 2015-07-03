@@ -39,7 +39,7 @@
 		</SSN>
 		<Buoy Name="TX 1" IsTransmitting="true">
 			<Category Type="BUOY" Force="BLUE"
-				Environment="SUBSURFACE" />
+				Environment="SUBSURFACE" /><SensorFit></SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>

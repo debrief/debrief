@@ -8,7 +8,7 @@
 			<Duration Value="45" Units="minutes" />
 		</TimeObserver>
 		<DebriefReplayObserver Name="DebriefPlot"
-			record_detections="false" record_positions="true" Active="true"
+			record_detections="true" record_positions="true" Active="true"
 			record_decisions="false" file_name="multi_statics">
 		</DebriefReplayObserver>
 	</ObserverList>
