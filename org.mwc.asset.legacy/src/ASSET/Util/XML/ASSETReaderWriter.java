@@ -281,6 +281,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 				_tempPart = part;
 			}
 		});
+		gi.addHandler(new ASSET.Util.XML.Vessels.BuoyHandler()
+		{
+			@Override
+			public void addThis(final ASSET.ParticipantType part, boolean isMonteCarlo)
+			{
+				_tempPart = part;
+			}
+		});
 
 		// import the datafile into this set of layers
 		xr.doImport(new InputSource(is), gi);
