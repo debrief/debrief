@@ -21,9 +21,11 @@ import MWC.GenericData.WorldLocation;
 public class BistaticReceiver extends CoreSensor
 {
 
-	public BistaticReceiver(int id, String defaultName)
+
+	public BistaticReceiver(int id)
 	{
-		super(id, 0, defaultName);
+		super(id, 0, "Bistatic Receiver");
+		// TODO Auto-generated constructor stub
 	}
 
 	/**
