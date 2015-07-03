@@ -936,6 +936,7 @@
 			<xs:element name="FixedWing" type="FixedWingType" minOccurs="0"/>
 			<xs:element name="SSN" type="SSNType" minOccurs="0"/>
 			<xs:element name="BuoyField" type="BuoyFieldType" minOccurs="0"/>
+			<xs:element name="Buoy" type="BuoyType" minOccurs="0"/>
 			<xs:element name="Torpedo" type="TorpedoType" minOccurs="0"/>
 		</xs:choice>
 	</xs:complexType>
@@ -1234,6 +1235,33 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:complexType name="BuoyType">
+		<xs:annotation>
+			<xs:documentation>Representation of a sonar buoy</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited
+				Editable:
+				inherited</xs:documentation>
+
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ParticipantType">
+				<xs:sequence>
+					<xs:element name="SSMovementCharacteristics" type="SSMovementCharacteristicsType">
+						<xs:annotation>
+							<xs:documentation>The movement characteristics of this
+								participant</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="IsTransmitting" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>Whether this is an active or passive buoy
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 	<xs:complexType name="SurfaceType">
 		<xs:annotation>
 			<xs:documentation>Representation of a Surface vessel
@@ -1368,6 +1396,7 @@
 				<xs:enumeration value="MPA"/>
 				<xs:enumeration value="AV_MISSILE"/>
 				<xs:enumeration value="BUOY_FIELD"/>
+				<xs:enumeration value="BUOY"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:attribute>
@@ -1511,6 +1540,7 @@
 					<xs:enumeration value="AV_MISSILE"/>
 					<xs:enumeration value="TORPEDO"/>
 					<xs:enumeration value="BUOY_FIELD"/>
+					<xs:enumeration value="BUOY"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>

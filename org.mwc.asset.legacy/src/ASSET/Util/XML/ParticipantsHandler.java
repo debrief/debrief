@@ -118,6 +118,17 @@ public class ParticipantsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
         insertThisParticipant(part, isMonteCarlo);
       }
     });
+    
+    // reset the WaterfallHandler count (preventing infinite recursion)
+    WaterfallHandler._thisChainDepth = 0;
+
+    addHandler(new ASSET.Util.XML.Vessels.BuoyHandler()
+    {
+      public void addThis(final ASSET.ParticipantType part, boolean isMonteCarlo)
+      {
+        insertThisParticipant(part, isMonteCarlo);
+      }
+    });
   }
 
   void insertThisParticipant(final ASSET.ParticipantType part,
@@ -176,6 +187,10 @@ public class ParticipantsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       else if (next instanceof ASSET.Models.Vessels.Torpedo)
       {
         TorpedoHandler.exportThis(next, participants, doc);
+      }
+      else if (next instanceof ASSET.Models.Vessels.Buoy)
+      {
+        BuoyHandler.exportThis(next, participants, doc);
       }
     }
 
