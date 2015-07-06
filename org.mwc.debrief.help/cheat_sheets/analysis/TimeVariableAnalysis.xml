@@ -3,86 +3,118 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
 	<intro>
-		<description>Debrief is capable of producing analysis products beyond
-			the traditional graphical track plots. After all, it&apos;s got the
-			data hasn&apos;t it? The most obvious derived products are the
-			analysis plots - graphs showing time versus either a recorded data
-			value or a calculation based on a specific set of data-values. Why
-			not learn more...</description>
+		<description>Debrief is capable of producing analysis products far beyond the traditional
+			graphical track plots. All it needs is the data. The most obvious derived products are
+			the analysis plots: graphs showing time versus either a recorded data value or a
+			calculation based on a specific set of data values. In this tutorial, we will look at
+			how to do just that.</description>
 	</intro>
-	<item title="The big-picture">
-		<description>Right, here&apos;s the process we&apos;re going to
-			follow. We need to tell Debrief the time-period we want plotted,
-			which participants to plot data for, what type of data to plot, and
-			(for relative calculations) which is the primary track. Let&apos;s
-			go.</description>
+	<item title="Overview">
+		<description> To be able to analyse the data correctly, we first need to tell Debrief what
+			information we want, such as:
+			<br/>• the time period we want plotted
+			<br/>• which participants to plot data for
+			<br/>• what type of data to plot
+			<br/>• which is the primary track (for relative	calculations)
+			<br/> But, before we can do any of this, we need the data...
+		</description>
 	</item>
-	<item title="Check you have some data" href="/org.eclipse.platform.doc.user/concepts/cnav.htm">
-		<description>In the top left hand corner of Debrief you should find
-			the Navigator window. If it isn&apos;t there, select "Navigator" from
-			Debrief&apos;s Window/Show View menu. Also check you have our sample
-			data-files - it they&apos;re not there, find how to load them from
-			the "Loading sample data" cheat-sheet.</description>
+	<item title="Open Navigator" skip="true">
+		<description>If <b>Navigator</b> isn&apos;t visible, open it.
+		</description>
 	</item>
 	<item title="Open the sample plot-file">
-		<description>Double-click on &apos;sample.dpf&apos; in the Navigator
-			window, and the sample plot will open.</description>
+		<description>Double-click on <b>sample.dpf</b> in the <b>Navigator</b> window to open the sample plot.
+		</description>
 	</item>
 	<item title="Fit to window"
 		href="/org.mwc.debrief.help/html/legacy/moving_around.html#Fit_To_Win">
-		<description>To make sure all of the data is visible, click on the
-			"Fit-to-Window" toolbar button.</description>
+		<description> click on the <b>Fit-to-Window</b> toolbar button to make all of the data visible.</description>
 	</item>
 	<item title="Open the Time Controller"
 		href="/org.mwc.debrief.help/html/legacy/controlling_time.html" skip="true">
-		<description>In the top left hand corner of Debrief you should find
-			the Time Controller. If is isn&apos;t there, select "Time Controller"
-			from Debrief&apos;s Window/Show View menu.</description>
+		<description>
+			As we said in step 1, one of the attributes we need to specify is the time period, and we need the <b>Time Controller</b> to do it. 
+			<br/>If is isn&apos;t open, click on <b>Window</b> > <b>Show View</b> > <b>Time Controller</b>.
+		</description>
 	</item>
-	<item title="Select the time period of interest"
+	<item title="Select the desired time period"
 		href="/org.mwc.debrief.help/html/legacy/controlling_time.html#time_controller">
-		<description>Right, select the period 120800 to 121100 using the
-			time-period selector at the bottom of the Time Controller (<i>NoPrint</i>click help
-			button above for more advice on the time controller<i>NoPrint</i><i>See the <b>Controlling Time</b>
-			part of the Debrief User Guide for more detail on the Time Controller</i>). Remember that
-			holding down the shift-key makes the sliders move in one-hour jumps.</description>
+		<description>
+			Now we need to select the required time period: adjust the start and end markers to select the period <b>120800</b> to <b>121100</b>. 
+			<br/><b>Note:</b> remember that holding down the <b>shift</b> key makes the sliders snap to the hour markers.
+		</description>
 	</item>
 	<item title="Open the Outline View" href="/org.mwc.debrief.help/html/legacy/layer_mgr.html"
 		skip="true">
-		<description>Next we need to indicate what tracks we want to see
-			information for. In the bottom left hand corner of Debrief you should
-			find the Outline View window. If it isn&apos;t there, select "Outline
-			View" from Debrief&apos;s Window/Show View menu.</description>
+		<description>Next we need to indicate what tracks we want to see information for. In the bottom left hand corner of Debrief you should find the <b>Outline View</b> window. If it isn&apos;t visible, click on <b>Window</b> > <b>Show View</b> > <b>Outline View</b>.
+		</description>
 	</item>
 	<item title="Select the tracks of interest" dialog="true">
-		<description>Click on the two tracks (holding down the CTRL key to
-			select multiple items).</description>
+		<description>In the <b>Outline</b> window:
+			<br/><b>1.</b> Click on the &apos;Collingwood&apos; track to select it.
+			<br/><b>2.</b> Then hold down the <b>Ctrl</b> key and click on the &apos;Nelson&apos; track to select it as well. </description>
 	</item>
 	<item title="Open xy-plot"
 		href="/org.mwc.debrief.help/html/legacy/show_time_vars.html" dialog="true">
-		<description>Then right-click on the selected items and click on "View
-			XY Plot". Next select "Range" from the drop-down list of
-			calculations, then "OK". Finally indicate which track is the primary
-			(for plotting data that&apos;s based on the relationship between
-			multiple tracks Debrief needs to know which track is the "subject" of
-			the calculation).</description>
+		<description> Now we will open the xy-plot:
+			<br/><b>1.</b> Right-click on the selected items and, in the
+			drop-down menu, click on <b>View XY Plot</b>.
+			<br/><b>2.</b> The <b>View time-variable plot</b> dialog will open;
+			select <b>Range</b> from the available attributes.
+			<br/><b>3.</b> Click on <b>OK</b> and the <b>Select primary</b> dialog
+			will open.
+			<br/><b>4.</b> Designate either <b>Track:Collingwood</b> or <b>Track:Nelson</b> as the primary
+			track for this plot. For this example, select <b>Collingwood</b>.
+			<br/>As Debrief calculates the data and relationships between multiple tracks, it
+			needs to know which track is the primary subject to be able to do this.
+			<br/><b>5.</b> The <b>Collingwood Range v Time plot</b> graph will appear on the screen. </description>
 	</item>
 	<item title="Navigate around the plot">
-		<description>Well done, there you are. Zoom in on the graph by
-			dragging with the mouse, and view the whole dataset again by clicking
-			on the graph&apos;s Fit to Window button. Feel free to experiment
-			with the other commands as well, or even configure the graph to use
-			your preferred font &amp; titles. Note that you can use the <b>tab</b>
-			key to cycle through the 5 drag modes, or use <b>ctrl> key and 
-			mouse wheel to zoom in and out of the plot.</b></description>
+		<description> To navigate around the plot area:
+			<br/>•  <b>Zoom in</b> - you can zoom in on the graph by
+			dragging the mouse from top-left to bottom-right (or you can
+			right-click and select <b>Zoom in</b> ><b>[Both axis | Domain axis | Range axis]</b>).
+			<br/>•  <b>Zoom out</b> - you can zoom out by dragging the mouse from bottom-right to top-left. (or
+			you can right-click and select <b>Zoom out</b> ><b>[Both axis | Domain axis | Range axis]</b>).
+			<br/>•  Another method of zooming out is to click on the <b>Fit to Window</b> button
+			- you&apos;ve already used this before.
+			<br/><b>Note:</b> there are other ways of using the plot area,
+			such as using the tab key to cycle through the drag modes (the buttons to the left
+			of the <b>Zoom in</b> button on the main toolbar), or, if you have a mouse with a wheel, you
+			can press the <b>Ctrl</b> key and then use the <b>mouse wheel</b> to zoom in and out of the plot
+		</description>
+	</item>
+	<item title="Customise">
+		<description>You can also experiment with the other commands, and even configure and customise the graph to use your preferred font and titles.
+		</description>
+	</item>
+	<item title="Track Other Objects">
+		<description> It isn&apos;t just tracks that can be plotted, as you can also plot other objects,
+			such as tracking the proximity of multiple vessels to a fixed point object (such as a
+			sensor).
+			<br/>To do this:
+			<br/><b>1.</b> Insert a label annotation on the plot by clicking on <b>Drawing</b> >
+			<b>Label</b>. A red marker will be placed on the plot called <b>Blank label</b>.
+			<br/><b>2.</b> Click on the	<b>Properties View</b> tab and rename the label to &apos;Sensor 1&apos;.
+			<br/>We will now move the sensor to a new position.
+			<br/><b>3.</b> Press <b>Alt+3</b> on your keyboard to select the <b>Drag Whole Feature</b> option,
+			the mouse cursor will change to a brown hand.
+			<br/><b>4.</b> Move the mouse over <b>Sensor 1</b> until the
+			hand changes to <b>green</b>. Now you can move the sensor.
+			<br/><b>5.</b> Drag and drop it to wherever you
+			wish on the plot, somewhere close to the 2 tracks perhaps.
+			<br/><b>6.</b> Now, in the <b>Outline view</b>,
+			left-click on <b>Sensor 1</b> if it is not selected.
+			<br/><b>7.</b> Then <b>Ctrl+click</b> on <b>Collingwood</b> and <b>Nelson</b>.
+			<br/><b>8.</b> Right-click and select <b>View xy plot</b>.
+			<br/><b>9.</b> Select <b>Range</b> and click <b>OK</b>.
+			<br/><b>10.</b> Designate <b>Label:Sensor 1</b> as the primary track and click on <b>OK</b>.
+			<br/>You will now see the <b>Sensor 1 Range v Time plot</b> showing how close the vessels came to the sensor and at what
+			times.</description>
 	</item>
 	<item title="Done">
-		<description>That&apos;s almost it for plotting graphs. The only
-			additional thing to add is to point out that it&apos;s not just
-			tracks that can be the plotted. If you need to track proximity of
-			multiple vehicles to a fixed point (such as a sensor), just insert a
-			label annotation at that point and select the label in addition to
-			the tracks - making sure you indicate that the label/sensor is the
-			primary.</description>
+		<description>That concludes the tutorial for conducting analyses using Debrief. If you’re going to use Debrief to generate positional data for missing tracks, why not try the <b>Single Sided Reconstruction</b> tutorial.
+		</description>
 	</item>
 </cheatsheet>

@@ -3,83 +3,71 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
 	<intro>
-		<description>With ever-increasing data rates from multiple recording
-			systems it is easy for an analysis plot to become swamped. Debrief NG
-			provides tools to reduce the volume and type of data displayed. This
-			tutorial will lead you through the management of large volumes of
-			data.</description>
+		<description>In the next part of the tutorial, we will look at primary and secondary tracks,
+			how we set them up, move tracks through time, etc. All this is done through a Debrief
+			view called <b>Track Tote</b>. </description>
 	</intro>
-	<item title="Check you have some data" href="/org.eclipse.platform.doc.user/concepts/cnav.htm">
-		<description>In the top left hand corner of Debrief you should find
-			the Navigator window. If it isn&apos;t there, select
-			&quot;Navigator&quot; from Debrief&apos;s Window/Show View menu. Also
-			check you have our sample data-files - if they&apos;re not there,
-			find how to load them from the &quot;Loading sample data&quot;
-			cheat-sheet.</description>
+	<item title="Open Navigator" href="/org.eclipse.platform.doc.user/concepts/cnav.htm">
+		<description>If <b>Navigator</b> isn&apos;t visible, open it.
+		</description>
 	</item>
 	<item title="Open the sample plot-file">
-		<description>Double-click on &apos;sample.dpf&apos; in the Navigator
-			window, and the sample plot will open.</description>
+		<description> Double-click on <b>sample.dpf</b> in the <b>Navigator</b> window, and the sample plot will
+			open.</description>
 	</item>
 	<item title="Fit to window"
 		href="\org.mwc.debrief.help\html\legacy\moving_around.html#Fit_To_Win">
-		<description>To make sure all of the data is visible, click on the
-			"Fit-to-Window" toolbar button.</description>
+		<description>To make sure all of the data is visible, click on the <b>Fit-to-Window</b> toolbar button.
+		</description>
 	</item>
-	<item title="View the tote"
+	<item title="View the Track Tote"
 		href="\org.mwc.debrief.help\html\legacy\start_up.html#debrief_views">
-		<description>In the centre section of the left hand column in Debrief
-			is the Track Tote. If it&apos;s obscured by other view panels, click
-			on it&apos;s tab to highlight it. If it&apos;s not visible at all,
-			open it by selecting "Track Tote" from the "Window/Show View"
-			drop-down menu.</description>
+		<description> In the centre section of the left hand column in Debrief is the <b>Track Tote</b>. If
+			it isn&apos;t visible, open it by clicking on <b>Window</b> > <b>Show View</b> > <b>Track Tote</b>.
+			<br/>If it is open but hidden beneath other view panels, click on its tab to make it active.</description>
 	</item>
-	<item title="What can I see?"
+	<item title="The Track Tote explained"
 		href="\org.mwc.debrief.help\html\legacy\analysing_data.html#the_tote_area">
-		<description>
-			Once open, you should see a table consisting of two or more columns.
-			The left-hand column lists the calculated data fields, and an
-			optional right-hand column shows the units used for that field. The
-			centre columns show the actual calculated data fields, one for each
-			track on the tote. The left-hand data column (Nelson in our test
-			data) is the primary track - that is, all calculations are shown
-			relative to this track. The calculations themselves are explained in
-			greater detail in the Help manual
-			<i>NoPrint</i>
-			(click on the Help icon above)
-			<i>NoPrint</i>
-			.
+		<description>The <b>Track Tote</b> contains information about selected tracks in the active
+			plot. It displays at least one column for the active track plus the <b>Calculation</b>
+			column, up to a maximum equalling the number of plots in the active area, plus the
+			<b>Units</b> column, which you can hide.
+			<br/>In our <b>sample.dpf</b> example, the left-hand track column contains the
+			<b>primary track</b> data for &apos;Nelson&apos; and the right-hand
+			column contains the <b>secondary track</b> data for &apos;Collingwood&apos;. All
+			calculation data is taken from the corresponding track (the calculations themselves are
+			explained in greater detail in the help manual).
+			<br/><i>NoPrint</i> (click on the Help icon above)<i>NoPrint</i>.
 		</description>
 	</item>
 	<item title="Move track through time"
 		href="\org.mwc.debrief.help\html\legacy\analysing_data.html#stepping_forward_in_time">
-		<description>Ok, now open the Time Controller (in the top-section of
-			the left hand column once again, open it from the Window menu if you
-			can&apos;t see it). If you drag the time-slider in the
-			time-controller you will see the calculated data fields update.</description>
+		<description> Now we will use the time controller to change the time:
+			<br/><b>1.</b> If the <b>Time Controller</b> is not visible, open it.
+			<br/><b>2.</b> Drag the <b>time-slider</b> right and left, and you will
+			see the calculated data fields update (you will also notice the white squares denoting the vessel positions move).
+		</description>
 	</item>
-	<item title="Removing a track"
-		href="\org.mwc.debrief.help\html\legacy\analysing_data.html#removing_tracks">
-		<description>As an experiement with managing the tracks on the tote,
-			right-click on the right-hand tote&apos;s columns (but not the
-			header) and select "Remove this track". Yes, the secondary track will
-			be removed, and with only one track remaining.  </description>
+	<item title="Removing a track from the tote" href="\org.mwc.debrief.help\html\legacy\analysing_data.html#removing_tracks">
+		<description> To remove a track from the tote:
+			<br/><b>1.</b> Right-click the &apos;Collingwood&apos; tote column (not the header) that is furthest to the right.
+			<br/><b>2.</b> Select <b>Remove this track</b>.
+			<br/>The &apos;Collingwood&apos; <b>secondary tack</b> will be
+			removed, leaving the remaining &apos;Nelson&apos; track.</description>
 	</item>
 	<item title="Adding a track to the tote"
 		href="\org.mwc.debrief.help\html\legacy\analysing_data.html#assigning_tracks">
-		<description>Open the Outline View (you must know where to find that
-			by now...). Observe the &apos;1&apos; and &apos;2&apos; buttons on
-			the view&apos;s toolbar, they&apos;re probably currently disabled.
-			They become enabled depending upon whether the currently selected
-			item is suitable for inclusion on the tote. Click once on the track
-			you just removed from the tote, and both buttons will be enabled -
-			allowing you to make the current track primary or secondary. Go on,
-			have a go at assigning it... It&apos;s more than just tracks that can
-			be put on the tote, any data-item that has time and location
-			attributes can be placed on the tote: items such as circles and
-			labels are particularly suited.</description>
+		<description> To add a track to the tote:
+			<br/><b>1.</b> Open the <b>Outline View</b> - note the disabled buttons &apos;1&apos; and
+			&apos;2&apos; on the view toolbar, they will become
+			enabled when a currently selected item is suitable for inclusion on the tote.
+			<br/><b>2.</b> Click once on the track you just removed from the tote and both buttons will be enabled.
+			<br/><b>3.</b> Make the track either primary or secondary, as you please.When you do so, it will appear in the tote again.
+			<br/><b>Note:</b> Apart from tracks, any data item that has time and location attributes can be placed on the tote; circles and labels are particularly suitable.</description>
 	</item>
 	<item title="Done">
-		<description>Well done, you are now a master of the tote. </description>
+		<description>You have completed the tutorial on the <b>Track Tote</b> and now you know about
+			primary, secondary and other tracks. As with all of our tutorials, you can go back and
+			practice until you&apos;re comfortable with it. </description>
 	</item>
 </cheatsheet>
