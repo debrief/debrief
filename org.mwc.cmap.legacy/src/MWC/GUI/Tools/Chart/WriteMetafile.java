@@ -31,8 +31,12 @@ public class WriteMetafile extends PlainTool
 	private PlainChart _theChart;
 
 	static public final String PROP_NAME = "WMF_Directory";
+	
+	private String _errorMessage;
 
 	private boolean _writeToFile = true;
+
+	private boolean _writable;
 
 	// ///////////////////////////////////////////////////////
 	// constructor
@@ -92,6 +96,13 @@ public class WriteMetafile extends PlainTool
 				mf = new MetafileCanvas();
 			}
 
+			_writable = true;
+			if (!mf.isWritable())
+			{
+				_writable = false;
+				_errorMessage = "Cannot write to '" + mf.getOutputFileName() + "'.";
+				return;
+			}
 			// copy the projection
 			mf.setProjection(_theChart.getCanvas().getProjection());
 
@@ -236,5 +247,16 @@ public class WriteMetafile extends PlainTool
 		System.exit(0);
 
 	}
+
+	public boolean isWritable()
+	{
+		return _writable;
+	}
+	
+	public String getErrorMessage()
+	{
+		return _errorMessage;
+	}
+
 
 }
