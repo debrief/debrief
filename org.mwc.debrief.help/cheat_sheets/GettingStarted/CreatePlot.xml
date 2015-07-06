@@ -1,29 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet title="Creating a new plot in Debrief">
-	<intro>
-		<description>This tutorial will lead you through creating a new, blank plot in Debrief.
-		</description>
-	</intro>
-	<item title="Check you have a Project">
-		<description>Before you can create a Plot, you must have a Project into which the Plot is created. If you haven&apos;t created a project, go to the "Generating a project" cheatsheet, then return here.
-		</description>
-	</item>
- <item
-       title="Choose location for plot file">
-    <description>
-       Debrief will store the new plot in one of your existing folders.  If your navigator contains links to both shared training data and personal data folders, it&apos;s probably best to create this plot in your personal data folder.
-    </description>
- </item>
-	<item title="Create new plot">
-		<description>In the Navigator view, right-click on the parent folder for your new plot and select <b>New</b>/<b>Debrief Plot</b> and the Wizard will open.  Once the wizard opens, the first step is to confirm where you would like the plot to be stored (it&apos;s <b>Container</b>). If you&apos;re not happy with the specified location click on <b>Browse</b> button and select the top-level folder of your data directories.  Also provide a filename.
-Using the wizard, follow the series of tabs to indicate what information you&apos;d like shown in the background of the plot, clicking Finish to complete.  Some of the steps will not advance until all of the necessary fields have been filled.
-		</description>
-	</item>
- <item
-       title="Finished">
-    <description>
-       Once the Wizard has closed, the plot you&apos;ve created will open.
-        The new file can be found in the folder you specified.
-    </description>
- </item>
+   <intro>
+      <description>This tutorial will guide you through creating a new, blank &apos;plot&apos; in
+         Debrief. </description>
+   </intro>
+   <item title="Check you have a Project">
+      <description>&apos;Plots&apos; are stored in &apos;Projects&apos;, so before you create a plot,
+         you must have a Project. If you don&apos;t have one, refer to <b>Generating a
+            project for your data</b> and follow the steps there. </description>
+   </item>
+   <item title="Choose location for plot file">
+      <description> Debrief will store the new plot in one of your existing folders. If your
+         navigator contains links to both shared training data and personal data folders, it&apos;s
+         best to create this plot in your personal data folder.</description>
+   </item>
+   <item title="Create new plot">
+      <description>To create a new plot, in the <b>Navigator</b> view:
+         <br/><b>1.</b>Right-click on the parent folder for your new plot and select <b>New/Debrief
+            Plot</b> to open the Wizard.
+         <br/><b>2.</b> Now either confirm the plot save location
+         (theplot&apos;s <b>container</b>) or select a different location by clicking on the <b>Browse</b> button
+         and selecting the parent folder of your data directories.
+         <br/><b>3.</b> Change the
+         filename (as required).
+         <br/><b>4.</b> Click on <b>Next</b>.
+         <br/><b>5.</b> Now, select or
+         deselect whether to use the &apos;Natural Earth&apos; dataset and click on
+         <b>Next</b>.
+         <br/><b>6.</b> Now you can choose whether or not to <b>add</b> a scale to your plot, with the following options:
+         <b>colour</b>, <b>display units</b>, and <b>scale</b> location.
+         <br/>If you choose to include a scale, you must enter the display units and scale location before proceeding to the next step.
+         <br/><b>7.</b> Next you can choose whether to <b>include a coastline</b> or not. This option is not mandatory.
+         <br/><b>8.</b> Clicking on <b>Next</b> takes you to the last step in this process: the <b>Add Grid to Plot</b> dialog box.
+         <br/>Here you can select whether to <b>include</b> a grid, the grid <b>colour</b>, whether to show <b>Plot Labels</b>, and the <b>Delta—grid</b> step size. Once you have selected your options, click on the <b>Finish</b> button. The changes
+         will be applied, and the dialog will close.
+      </description>
+   </item>
+   <item title="Finished">
+      <description>Your new plot (with the filename you used earlier), will then be displayed in your Debrief window. It is also located in the folder you specified in step 2 (above).
+         <br/><b>Note:</b> the wizards make life easier, but all the steps above can be performed from the <b>Chart Features</b> menu in Debrief (<b>Alt,C</b>).
+      </description>
+   </item>
 </cheatsheet>

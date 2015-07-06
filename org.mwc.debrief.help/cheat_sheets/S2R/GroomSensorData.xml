@@ -2,234 +2,196 @@
 <cheatsheet title="Groom sensor data">
 	<intro>
 		<description>
-			This cheat sheet is going to work through creating preparing the ownship
-			sensor data ready for production of TMA tracks.
+			This cheat sheet guides you through creating and preparing the ownship sensor data for producing <b>Target Motion Analysis (TMA)</b> tracks.
 		</description>
 	</intro>
 	<item title="Load datafiles">
-		<description>
-			We&apos;re using new datafiles for this step, so double-click on
-			<b>nonsuch.rep</b>
-			in the Navigator to load ownship track (and select
-			<b>DR</b>
-			mode when asked). Perform a Fit to Window once loaded to have a look
-			at the track. Next, drag in
-			<b>sensor.dsf</b>.  The Sensor Import Wizard will offer you some
-			customisations, but you can ignore them.
-			Now, <b>don&apos;t worry </b>
-			if the sensor data doesn&apos;t appear on the plot - this is by intention.
+		<description> For this tutorial we will be using a new set of datafiles.
+			<br/>In the <b>Navigator</b>:
+			<br/><b>1.</b> Go to the <b>sample_data</b> > <b>S2R</b> folder.
+			<br/><b>2.</b> Double-click on the <b>nonsuch.rep</b> file to display the <b>Track Mode</b> dialog.
+			<br/><b>3.</b> Select <b>Dead Reckoning (DR)...</b> from the dialog and click on
+			<b>OK</b>. The ownship track will load into the plot (<b>Track:NONSUCH</b> in the <b>Outline View</b>).
+			<br/><b>4.</b> Click on the <b>Fit to Window</b> button.
+			<br/><b>5.</b> Now drag in the <b>sensor.dsf</b> file from the <b>Navigator</b> view.
+			<br/><b>6.</b> The <b>Import Sensor Data</b> dialog will display.
+			<br/><b>7.</b> You can go through the tabs by clicking on the <b>Next</b> button this time round you can just click <b>Finish</b> to accept
+			the default options.
+			<br/><b>Note:</b> as the plot area can quickly become cluttered, the data from the <b>sensor.dsf</b> file is not shown on the plot by default.
 		</description>
 	</item>
 	<item title="Make sensor data visible">
-		<description>
-			To keep the plot tidy, sensor data is not shown by default when
-			loaded. Expand
-			<b>Track:NONSUCH</b>
-			in the
-			<b>Outline View</b>
-			, then open
-			<b>Sensors</b>
-			, then select
-			<b>Sensor:Sensor_A (52 items)</b>
-			. Once the Sensor A sensor data is selected, click on the tick icon
-			in the toolbar at top of the Outline View view, to make the sensor
-			data visible - and it will appear on the plot.
+		<description>While this is the default option, we now wish to see the sensor data we&apos;ve
+			just imported.
+			<br/>So, in the <b>Outline</b> view:
+			<br/><b>1.</b> Click on the down-arrow next to <b>Track:NONSUCH</b>
+			<br/><b>2.</b> Click on <b>Sensors (1 items)</b> to expand it.
+			<br/><b>3.</b> Click on <b>Sensor:Sensor_A (52 items)</b> to select it.
+			<br/><b>4.</b> In the <b>Outline</b> view toolbar, click on the tick button (<b>Reveal selected
+			items</b>), and all the sensor data will appear (we call these bearing fans).
 		</description>
 	</item>
 	<item title="Resolve ambiguity">
-		<description>
-			In our data you can see one bearing fan heading off to the WNW, and
-			the other off towards NNE. Intelligence tells us (well, Ian H tells
-			us) that the actual contact is off to the NW. If we open the Time
-			Controller view and drag the time slider back and forth we&apos;ll
-			see the current position highlight moving from top-right to bottom
-			left. Thus, the NW block of sensor data is to the Starboard of the
-			track. <i>NoPrint</i>(Use
-			<b>Click to perform</b>
-			below if you wish, to open the Time Controller)<i>NoPrint</i>.
+		<description> In our data, you can see there are 2 bearing fans: 1 radiating out WNW, and the
+			other NNE. Intelligence and experience tells us that our actual contact is off to the
+			NW.
+			Now we need to understand what is actually happening here. If we open
+			the <b>Time Controller</b> view and drag the time slider back and forth, we&apos;ll see our current
+			position highlight moving from top-right (the start point), to bottom left (the end
+			point). As such, the NW block of sensor data is to the right, or starboard, of the Nonsuch track.
+			<i>NoPrint</i>(Use <b>Click to perform</b> below if you wish, to open the Time Controller)<i>NoPrint</i>.
 		</description>
 		<command required="false"
 			serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.cmap.TimeController.views.TimeController)" />
 	</item>
-	<item title="Drop ambiguous data">
+	<item title="Remove ambiguous data">
 		<description>
-			Now, using the Outline View, expand the
-			<b>SENSOR_A</b>
-			dataset and select all of the child items (select the top one, scroll
-			to the bottom of the list, then select the bottom one whilst holding
-			down the shift-key). Now, right click on one of the entries and
-			select
-			<b>Keep starboard bearings</b>
-			. The port bearings will dissappear.
+			Now that we know which sensor data we do need, we can remove that which we don&apos;t:
+			<br/><b>1.</b> In the <b>Outline</b> view, expand the <b>SENSOR_A</b> dataset
+			<br/><b>2.</b> Select all of the child items by clicking on the top value, scroll to the bottom of the list and then press and
+			hold the <b>Shift</b> key on your keyboard while clicking on the bottom value - this will
+			select all 52 sensor items.
+			<br/><b>3.</b> Right-click on any of the entries and select <b>Keep
+			starboard bearing</b>; the port bearings will disappear from view.
+			<br/>Next, we need to edit the raw sensor data.
 		</description>
 	</item>
 	<item title="Open grid editor">
-		<description>
-			In this tutoral we&apos;re going to be editing the raw sensor data
-			using the Grid Editor. So, select
-			<b>Grid Editor</b>
-			from the
-			<b>Window/Show view menu</b>
-			(or click on the link below).
-		</description>
+		<description> One way of editing the raw sensor data is by using the <b>Grid Editor</b>.
+			<br/><b>1.</b> Click on <b>Window</b> > <b>Show view</b> > <b>Grid Editor</b>.
+			<br/><b>2.</b> The <b>Grid Editor</b> view will appear, but it will be
+			blank until we indicate the data to edit.</description>
 		<command required="false"
 			serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=com.pml.grid.editor)" />
 	</item>
 	<item title="Indicate data to edit">
-		<description>
-			The grid editor listens out for the current selection on the Outline
-			View. So, if the item on the Outline View is suitable for being
-			edited in grid format it will be shown in the grid editor (though
-			this behaviour can be cancelled by clicking on the lock icon in the
-			grid editor toolbar). If you open the
-			<b>Track:NONSUCH</b>
-			item and select the positions you&apos;ll see them appear in the grid
-			editor. Now click on the sensor data for Track:NONSUCH (
-			<b>Sensor:SENSOR_A(52 items)</b>
-			.
+		<description> The grid editor reflects the current selection in the <b>Outline</b> view.
+			However, if the selected items in the <b>Outline</b> view are not suitable for editing in the
+			grid format, nothing will be seen; as we have just seen in this tutorial, after hiding the port
+			bearings and opening the grid editor, the grid is actually empty.
+			<br/>To populate the grid area: click on the Track Segment <b>220350.04 (826 items)</b>, just under the
+			<b>Track:NONSUCH</b> in the <b>Outline</b> view. The grid edit view will now populate.
+			<br/><b>Note:</b> this behaviour can be cancelled by clicking on the lock icon in the grid editor toolbar. If
+			you open the <b>Track:NONSUCH</b> item and select the positions, you&apos;ll see them appear in the
+			grid editor.
+			<br/>Now click on the sensor data for <b>Track:NONSUCH</b> > <b>Sensor:SENSOR_A(52
+			items)</b> — the data from this track will now populate the grid editor.
 		</description>
 	</item>
-	<item title="Get this user interface tidied up">
-		<description>
-			We&apos;ve now got quite a few panels open, so we&apos;re going to tidy them a
-			little. If you&apos;re on a multi-monitor setup the we&apos;re going
-			to put the grid editor onto the other screen. To do this, pick up the
-			grid editor by clicking and dragging its tab-bar title, and drag it
-			over to the other screen. Once it&apos;s on the other screen resize
-			it to view all the columns (resize the panel using the drag-handles
-			at the bottom right).
-		</description>
+	<item title=" Tidy your interface">
+		<description>As mentioned previously, the interface can become easily cluttered. However, if
+			you have a dual monitor and want all the windows and views open, you can
+			drag-and-drop views onto your other screen by clicking and holding the individual view tabs,
+			and then moving them or resizing them as required.</description>
 	</item>
 	<item skip="false" title="View the data">
-		<description>
-			The scrollbar on the right hand side lets you move forwards and
-			backwards through the data (with newest items shown at the top). Most
-			cells in the grid are editable, including the date, and green/red
-			buttons are provided in the toolbar to
-			<b>add</b>
-			/
-			<b>remove</b>
-			rows. You don&apos;t need to do it in this tutorial, but when you
-			click on
-			<b>Add</b>
-			, it will insert a duplicate of the currently selected row
-			immediately beneath it - hopefully reducing the amount of manual
-			entry required.
-		</description>
+		<description>he scrollbar on the right-hand side lets you move forwards and
+			backwards through the data (the newest items are shown at the top). Most cells in the
+			grid are editable, including the date; blue and red buttons are available in the
+			toolbar to add or remove rows.
+			<br/>Clicking on the blue <b>Add</b> button will insert a duplicate
+			of the currently selected row immediately beneath it - a major time-saver compared with
+			manually entering data.</description>
 	</item>
 	<item title="Work on an attribute">
-		<description>
-			Beyond straight-forward text-editing of data, selecting an attribute
-			offers greater editing capabilities. So, start off by clicking on the
-			header cell at the top of the frequency column (so, just click on the
-			word
-			<b>Frequency</b>).
-			As you do, you&apos;ll see a graph appear in the bottom half of the
-			view. The graph is a waterfall display of frequency, with the most
-			recent value at the top. Zoom in on data by dragging a region on the
-			graph using a top-left to bottom-right motion. Zoom out again by
-			dragging bottom-right to top-left. Go on, have a go.
-		</description>
+		<description>In addition to straight-forward text-editing of data, selecting an attribute offers further editing capabilities. For
+			example:
+			<br/><b>1.</b> In the <b>Frequency</b> column, click on the header cell itself (where it says
+			&apos;Frequency&apos;): you&apos;ll see a graph appear in the bottom half of the view. This
+			graph is a cascading display of frequency, with the most recent value at the top.
+			<br/><b>2.</b> <b>Zoom in</b> on data by dragging your mouse on the graph using a top-left to bottom-right
+			motion.
+			<br/><b>3.</b> <b>Zoom out</b> by dragging bottom-right to top-left.</description>
 	</item>
 	<item title="Fix dodgy frequency observation">
-		<description>
-			If you zoom out to look at all the frequency data you&apos;ll see that
-			whilst the frequency data seems fairly constant near the top of the
-			dataset (49.99), there are occasional instances where the data value
-			seems too low (when viewed in the context of a steady ownship track).
-			We&apos;re going to fix an errant data point by dragging it. Firstly,
-			zoom in on the data around the time 05:20. You&apos;ll see that the
-			data-point at 05:19:11 is quite a lot lower than its neighbours. Move
-			it by clicking inside the square data point and dragging the symbol
-			so that it&apos;s in line with it&apos;s neighbours. Note that if the
-			neighbours were in a steady drift you could align by eye where you
-			drop the data point to align with the more tidily.
-		</description>
+		<description> Fix dodgy frequency observation
+			If you zoom out to look at all the frequency data, you&apos;ll see that while this data seems
+			fairly constant near the top of the dataset (along the 49.99 frequency value), there are
+			occasions where the data value seems too low (when viewed in the context of a
+			steady ownship track).
+			<br/>We can fix an errant data point by dragging it
+			into a better position.
+			<br/><b>1.</b> <b>Zoom in</b> on the data around the time <b>05:20</b>. You will see that
+			the data-point at <b>05:19:11</b> is signifocantly lower than its neighbours.
+			<br/><b>2.</b> Move this data
+			point by clicking inside the square data point and dragging the symbol to align with it&apos;s neighbours. Remember, you can zoom in multiple times for greater
+			precision.
+			<br/><b>Note:</b> if the neighbours were in a steady drift, you could align them by sight
+			far more accurately.</description>
 	</item>
 	<item title="Smooth period of data">
-		<description>
-			We&apos;ll now switch to bearing data. Click on the
-			<b>Bearing</b>
-			column to view a graph of bearing data. Fairly near the top of the
-			bearing data you will see three steps in the data, around the period
-			05:10 to 05:20. Zoom in on these three steps. It appears that the
-			last smooth data point before the steps is at 05:10:44, and the first
-			after the steps is at 05:21:30. We&apos;re going to interpolate the
-			data points between these two values, so first we must tell Debrief
-			which are the points we intend keeping. So, in the grid (in the top
-			half of the editor), click on the empty space at the left of row
-			05:10:44 then hold down the
-			<b>Control</b>
-			key and click on row 05:21:30. As you do this, the Interpolate
-			(calculator) button in the grid editor toolbar should become enabled.
-			Click on the interpolate button and the bearings for the selected data
-			points will be smoothed along a curve. You
-			may select
-			<b>Undo</b>
-			from the edit menu to undo an interpolation operation.
-		</description>
+		<description>To smooth a block of data, we need to switch to bearing data:
+			<br/><b>1.</b> Click on the <b>Bearing</b> column, the graph of bearing data
+			will appear.
+			<br/><b>1.</b> Around the <b>05:10</b> to <b>05:20</b> period on the graph, you will see three
+			step-ups in the data, zoom in on these three steps.
+			<br/>It appears that the last smooth data
+			point before the steps is at <b>05:10:44</b>, and the first after the steps is at <b>05:21:30</b>.
+			We&apos;re going to interpolate the data points between these two values.
+			<br/>To do so, we must tell Debrief which points we intend to keep:
+			<br/><b>1.</b> In the grid, the top half of the
+			editor, click on the empty space to the left of row <b>05:10:44</b>.
+			<br/><b>2.</b> Now, hold down the <b>Ctrl</b>
+			key and click on row <b>05:21:30</b>. As soon as you do this, the <b>Interpolate</b> (<b>calculator</b>)
+			button in the grid editor toolbar will be enabled.
+			<br/><b>3.</b> Click on the <b>Interpolate</b> button and
+			the bearings for the selected data points will be smoothed along that curve.
+			<br/><b>Note:</b> you can select <b>Undo</b> from the edit menu or press <b>Ctrl+Z</b> on your keyboard to undo an
+			interpolation operation.</description>
 	</item>
 	<item skip="true" title="Getting clever with interpolation">
-		<description>
-			Note that we only selected a single point at each end of the poor data.
-			There are two other, more advanced ways of doing the interpolation.
-			If we had selected multiple points at the ends of the dodgy data then
-			Debrief would have made the interpolated values fit through a cubic
-			spline that passed through the selected points. Similarly, if we had
-			selected one or more points in the middle of the dodgy data (in
-			addition to point(s) at the ends) then Debrief would have fitted a
-			curve through the end and mid points of the dataset.
-		</description>
+		<description>In the previous step, we only selected a single point at each end of what could be considered poor data.
+			However, there are two other, more advanced ways of doing an interpolation.
+			<br/><b>1.</b> If we had selected multiple points at the ends of the dodgy data, Debrief would have fit the
+			interpolated values to a cubic spline passing through the selected points.
+			<br/><b>2.</b> If we had selected one or more points in the middle of the dodgy data (in addition to
+			point(s) at the ends) then Debrief would have fitted a curve through the end and
+			midpoints of the dataset.
+			<br/>Now that we&apos;ve tidied the sensor data, we can move on.</description>
 	</item>
 	<item
 		href="/org.mwc.debrief.help/html/legacy/sensor_data.html#SensorOffsetsEditor"
 		title="Set array offset">
-		<description>
-			We can move on now that we&apos;ve tidied the sensor data. As
-			you&apos;ll see, the sensor data is ambiguous, as produced by a towed
-			array. Currently Debrief is plotting the sensor cuts against the
-			attack datum of the platform, but we need to apply an offset for this
-			sensor (-451m in this case). So, select
-			<b>Sensor:SENSOR_A</b>
-			in the
-			<b>Outline View</b>
-			, then open the
-			<b>Properties Window</b>
-			(the click to perform button below will also open it). In the
-			Properties Window you&apos;ll see the
-			<b>SensorOffset</b>
-			attribute. This allows you to enter a custom offset or to choose from
-			a set of lengths from a shared datafile (see the Help entry for this
-			item for further details). Anyway, ignore the shared values and enter
-			-451 in this field, click on the Plot, and you&apos;ll see the
-			bearings jump to reflect the change. To see where the current array
-			centre is, switch on
-			<b>Plot Array Centre</b>
-			from the properties for the parent track - you&apos;ll see a cross
-			appear astern of the current submarine location.
-		</description>
+		<description>As you will see, the sensor data is ambiguous; this can happen when the
+			data has been produced by a towed array.
+			<br/>In this current scenario, Debrief is plotting
+			the sensor cuts against the attack datum of the platform, but we need to apply an offset
+			of 451 m in this particular example for this sensor (this is -451m). To do this:
+			<br/><b>1.</b> Select <b>Sensor:SENSOR_A</b> in the <b>Outline</b> view
+			<br/><b>2.</b> Open the <b>Properties</b> view and you will see the
+			<b>SensorOffset</b> attribute. Enter -451 in this field, then press enter. As you do so, the
+			bearings on the plot will adjust to reflect this change.
+			<br/><b>3.</b> To see where the current array centre is, in the <b>Outline</b> view, click on <b>Track:NONSUCH</b>
+			<br/><b>4.</b> In the <b>Properties</b> view under <b>Format</b>, you will see <b>PlotArrayCentre</b>, change it to <b>Yes</b>. A cross will appear
+			astern of the current submarine location.
+			<br/><b>Note:</b> we will use the track and sensor
+			data from this tutorial in the next tutorial, so ensure you save it if you&apos;re going to
+			take a break and move onto something else.</description>
 		<command required="false"
 			serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.PropertySheet)" />
 	</item>
 	<item
 		href="/org.mwc.debrief.help/html/legacy/GroomingTrackData.html#ResamplingData"
 		skip="true" title="Reduce data density">
-		<description>
-			Whilst it isn&apos;t necessary for this exercise, Debrief does allow
-			you to reduce the density of the sensor data. If you right-click on
-			<b>Sensor:SENSOR_A</b>
-			, then navigate down into the
-			<b>SENSOR_A</b>
-			sub-menu you will see a
-			<b>Visible Frequency</b>
-			option. Using one of these options will pass through sensor data and
-			hide sensor observations between the specified frequency. The sensor
-			cuts remain available, and can be made visible again by selecting a
-			smaller visible frequency. Note, instead of this you could have
-			resampled the ownship positions and sensor cuts by right-clicking on
-			the parent track and selecting
-			<b>Resample data at</b>
-			.
-		</description>
+		<description>Though it isn&apos;t necessary for this particular scenario, Debrief does allow you to reduce the
+			density of sensor data:
+			<br/><b>1.</b> In the <b>Outline</b> view, right-click on <b>Sensor:SENSOR_A</b>
+			<br/><b>2.</b> In the drop-down menu, click on <b>SENSOR_A</b> > <b>Visible Frequency</b>, then select the filter required.
+			<br/>Adjusting these options will filter out sensor data and hide sensor observations between
+			the specified frequency. The sensor cuts are not deleted, they are just hidden; they can be made
+			visible again by selecting a smaller, visible frequency.
+			<b>Note: </b>another way of doing this
+			is to right-click the parent track, <b>Track:NONSUCH</b>, select <b>Resample data at</b>, and
+			select the required period.
+			<br/>We&apos;ve now got a track with lovely smooth sensor data.</description>
+	</item>
+	<item
+		title="Save your data">
+		<description>As mentioned earlier, this sensor data and track will be required for the next
+			tutorial; if you don&apos;t intend to jump straight onto it, be sure to save this file:
+			<br/><b>1.</b> Click on <b>File</b> > <b>Save</b>
+			<br/><b>2.</b> You have to save the file with the dpf extension, so select the
+			folder where you will save the fil
+			<br/><b>3.</b> Enter the filename and click <b>OK</b></description>
 	</item>
 </cheatsheet>

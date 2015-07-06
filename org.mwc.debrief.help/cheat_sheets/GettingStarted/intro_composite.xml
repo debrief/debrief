@@ -75,10 +75,9 @@
 				</param>
 			</task>
 		</taskGroup>
-		<taskGroup kind="sequence" name="Viewing some data" skip="false">
+		<taskGroup kind="sequence" name="Viewing data" skip="false">
 			<intro>
-				This series of steps will guide you through creating then populating a
-				new Debrief plot.
+				This series of steps will guide you through creating and populating a new Debrief plot.
 			</intro>
 			<task kind="cheatsheet" name="Creating a new plot" skip="false">
 				<intro>
@@ -135,11 +134,11 @@
 					<b>Using Debrief in analysis</b>
 					cheat sheet is a logical next step.
 					<i>NoPrint</i>
-					<i>
+					&apos;
 						<br />Ok,
 						you&apos;ve finished your first cheat sheet, why not try the
 						"Using Debrief in analysis" on next.
-					</i>
+					&apos;
 				</onCompletion>
 				<param name="path" value="../sensor/AnalysingSensorData.xml">
 				</param>

@@ -1,135 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet title="Generate a target track">
 	<intro>
-		<description>
-			This cheat sheet is going to work through creating a segment of target
-			track from bearing data. The target track is going to represent a
-			period of straight-line motion, and can be interpreted as a Manual
-			TMA Solution. You should have open a tidy track and sensor data as
-			produced in the previous cheat-sheet. Feel free to close the Grid
-			Editor window now that we&apos;re concentrating on the plot.
-		</description>
+		<description>This cheat sheet guides you through creating a target track segment from bearing data to represent a period of straight-line
+			motion; and can be interpreted as a <b>Manual Target Motion Analysis (TMA) Solution</b>.
+			<br/>We will be using the track and sensor
+			data from the previous example, so if you closed it, reopen it now.
+			<br/>In this tutorial,
+			we will be concentrating on the plot, so you can close the <b>Grid Editor</b> window.</description>
 	</intro>
-	<item title="Decide on contact period">
-		<description>
-			The capable analyst will be able to recognise a couple of periods of
-			steady bearing rate that lend themselves to being the basis of TMA
-			solutions. The first one we&apos;re going to use is the first dozen
-			or so sensor cuts. We can see that after a period of about 10
-			unsteady cuts there&apos;s another steady period - we&apos;ll use
-			that for a solution a little later.
-		</description>
+	<item title="Deciding the contact period">
+		<description>A capable analyst will be able to recognise a couple of periods of steady
+			bearing rate that lend themselves to being the basis of TMA solutions.
+			<br/>The first period of cuts we&apos;re going to use here are the first 15 or so sensor cuts. We can see that
+			at the end of this period, there are 2 bearing lines very close together and then a gap,
+			a small group of 3 bearing lines, and then another gap. After this second gap, there is
+			a period of about 10 unsteady cuts, and then another steady period; we&apos;ll be using
+			that for a solution a little later also.</description>
 	</item>
 
 	<item title="Highlight contacts">
-		<description>
-			We&apos;re going to change the color of the contacts to use for our
-			first solution. Double-click somewhere along the bearing line for the
-			last data point in first period of steady bearing data - it will be
-			highlighted in the Outline View. By my (unqualified eye), the last
-			data point is the one at
-			<b>090722 044127</b>.
-			Click on that to select it. Next scroll back up to the start of the
-			sensor data, hold down the &lt;shift&gt; key and click on the first
-			entry. This period of sensor data is now selected. Before creating a
-			TMA segment based on it we&apos;re going to highlight it in a unique
-			color. So, right-click anywhere on it, and select
-			<b>Multiple items/Color/Orange</b>
-			.
-		</description>
+		<description>Let&apos;s change the color of
+			the contacts to make our first solution easier to see and work on:
+			<br/><b>1.</b> Identify the last bearing line you will use for the first period of steady bearing data.
+			<br/><b>2.</b> Double-click somewhere on that bearing line and it will be highlighted in the <b>Outline</b> view (I
+			selected the data point named <b>090722 044319</b>).
+			<br/><b>3.</b> Click on that item in the <b>Outline</b> view
+			to select it.
+			<br/><b>4.</b> Now, scroll back up to the start of the sensor data, hold down the <b>Shift</b>
+			key, and then click on the first entry - this period of sensor data is now selected.
+			<br/><b>5.</b> To change the colour, right-click anywhere on the selected group and select <b>Multiple
+			items</b> > <b>Color</b> > <b>Orange</b>.
+			<br/>The bearing lines in the plot area, and the selected items in
+			the <b>Outline</b> view will turn orange.</description>
 	</item>
 	<item title="Generate the TMA segment">
-		<description>
-			Next, with the set of data still selected (or reselect it if you&apos;ve
-			lost the selection) we&apos;re going to create a solution based upon
-			it. When we generate a TMA segment based on sensor data, Debrief
-			creates a track segment of steady course/speed data points, with one
-			data-point at the time of each sensor cut used to generate the
-			segment. Let&apos;s get on with it.
-		</description>
-	</item>
-	<item title="Follow the generate TMA wizard">
-		<description>
-			Now, right click on the selected sensor data and select
-			<b>Generate TMA solution from selected cuts</b>.
-			Once the TMA wizard opens, it will invite you to enter an initial
-			range and bearing to the contact. Enter 1 nautical mile (nm) for the
-			solution, and leave the bearing unaltered (since it&apos;s using the
-			bearing from our first sensor cut). Then click
-			<b>Next</b>
-			. The wizard will then invite you to enter an initial solution. Based
-			on our understanding of the sensor fan and a complete guess, enter
-			220 for the course and 6 knots for the speed, then press
-			<b>Finish</b>
-			. You will see a red track appear, labelled with
-			<b>TMA_</b>
-			and the time of the first cut used. The solutions have times in their
-			name to make it easier for you to manage them.
-		</description>
+		<description>Now we&apos;re going to create
+			a solution from this selected (orange) data. When we generate a TMA segment based on
+			sensor data, Debrief creates a track segment of steady course/speed data points, with
+			one data-point at the time of each sensor cut used to generate the segment. Debrief has
+			a <b>Generate TMA Wizard</b> to help you with this.
+			<br/>With the set of data still selected in the
+			<b>Outline</b> view (or reselect it if you&apos;ve lost the selection):
+			<br/><b>1.</b> Right-click on the
+			selected sensor data and select <b>Generate TMA solution from selected cuts</b>. The <b>Generate
+			TMA Segment</b> dialog will show, asking you to <b>specify the offset to the track start</b>.
+			<br/><b>2.</b> Enter a range of <b>1 nautical mile (nm)</b> and you can leave the bearing of <b>300.8</b>
+			(it&apos;s using the bearing from our first sensor cut).
+			<br/><b>3.</b> Click <b>Next</b> and you will see the
+			<b>initial solution</b> dialog.
+			<br/><b>4.</b> Based on our understanding and analysis of the sensor fan in
+			the plot area, enter <b>220</b> for the initial estimate of the course and <b>6 knots</b> for the
+			speed estimate.
+			<br/><b>5.</b> Click on <b>Finish</b>.
+			A red track will appear on the plot, labelled with
+			the TMA solution and the time of the first cut used (<b>TMA_220415.22</b> on my plot — all
+			solutions have times in their name to make it easier to manage).</description>
 	</item>
 	<item skip="true" title="Recognise track data">
-		<description>
-			If you expand the new track in the
-			<b>Outline View</b>
-			you&apos;ll see the
-			<b>Positions</b>
-			child item. Notice that the icon for this item shows a straight-line
-			section of data with an associated (but tiny) compass rose). The
-			equivalent object for
-			<b>Track:NONSUCH</b>
-			shows a non straight-line set of positions. Also, note that on the
-			plot, the name of the TMA segment is shown in italics, to denote that
-			it&apos;s not based on actual position recordings.
-		</description>
+		<description>We will now look at the track data for this TMA solution in the <b>Outline</b> view.
+			<br/>First, expand the new track (mine is called <b>Track:TMA_220415.22</b>) in the <b>Outline</b> view and you will see
+			the <b>Positions (17 items)</b> child item.
+			<br/>If you look at the icon for this particular item,
+			you will see that it shows a straight-line section of data with a tiny red compass rose
+			on it. However, if you also look at the equivalent object for <b> <b>Track:NONSUCH</b> </b>, you can see
+			that it shows a non-straight-line set of positions (with 2 turns).
+			<br/>Also, note that on
+			the plot, the name of the <b>Track:NONSUCH</b> TMA segment is shown in italics, to denote that
+			it&apos;s not based on actual position recordings.</description>
 	</item>
 	<item
 		href="/org.mwc.debrief.help/html/legacy/analysing_data.html#assigning_tracks"
 		title="Put the tracks on the tote">
-		<description>
-			To view residuals, we must indicate to Debrief which is the ownship
-			and which is the target. Debrief can hold many more than two tracks,
-			so we must inform it which two tracks we want to compare with each
-			other. So, in the Outline View, first select the
-			<b>Track:NONSUCH</b>
-			item, then click on the
-			<b>1</b>
-			(primary) in the Outline View toolbar. Next, click on the
-			<b>Track_xxxx</b>
-			item and select
-			<b>2</b>
-			(secondary) button in the Outline View toolbar. If you switch to the
-			<b>Track Tote</b>
-			view (shortcut provided below) you&apos;ll now see it contains our
-			primary and secondary tracks - and we&apos;ve successfully indicated
-			who we want to view in the residuals plot.
-		</description>
+		<description>To view residuals, we must tell Debrief which is the ownship and which is the target.
+			Debrief can hold much more than two tracks, but we must tell it which two tracks we
+			want to compare.
+			<br/><b>1.</b> In the <b>Outline</b> view, select  <b>Track:NONSUCH</b>
+			<br/><b>2.</b> In the <b>Outline</b> view toolbar, click on the <b>1 (primary)</b> button.
+			<br/><b>3.</b> Now, click on the <b>Track_xxxx</b> item (mine is <b>Track:TMA_220415.22</b>)
+			<br/><b>4.</b> Click on the <b>2 (secondary)</b> button on the
+			toolbar.
+			<br/><b>5.</b> Now, switch to the <b>Track Tote</b> view (<b>Window</b> > <b>Show View</b> > <b>Track Tote</b> if it is
+			not open) and you&apos;ll see it contains both our primary and our secondary tracks.
+			<br/>Debrief now knows which tracks we wish to compare.</description>
 		<command required="false"
 			serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.cmap.tote.views.ToteView)" />
 	</item>
 	<item
 		href="/org.mwc.debrief.help/html/legacy/formatting_data.html#track_shifting"
-		title="Drag the track segment">
-		<description>
-			You may now manipulate the track segment to minimise the bearing and
-			frequency residuals. Start by clicking on
-			<b>Drag Track Segment</b>
-			on the Debrief toolbar. As you do, the
-			<b>Bearing Residuals</b>
-			view will be brought to the front. You can expand this view by
-			dragging it&apos;s sides, or to make it much larger you can pick it
-			up by clicking and dragging the
-			<b>Bearing Residuals</b>
-			tab above it, and dragging it to another monitor.
-			In this view are the 4 drag operation buttons, that control how you
-			drag the track. The cursor hand will go green when over a valid
-			hot-spot: either end of the track. In the <b>Shear</b> drag mode you can
-			<b>translate</b>
-			a track by clicking on the hotspot at its mid-point. Have a go at
-			selecting
-			<b>Shear</b>
-			mode and dragging the ends of the track - to optimise the bearing
-			errors.
-		</description>
+		title="Manipulate the track segment">
+		<description>We will now manipulate the track segment to minimise bearing and frequency residuals.
+			<br/><b>1.</b> Clic on the <b>Drag Track Segment</b> button on the Debrief toolbar or press <b>ALt+1</b> to display the <b>Bearing
+			Residuals</b> view.
+			<br/><b>Note:</b> you can resize or move views by moving your mouse
+			over the sides of a view and, when the cursor changes to a dragging their sides; alternatively, click on the tab and drag the view to another part of the display, or to another
+			connected monitor.
+			<br/><b>2.</b> In the <b>Bearing Residuals</b> view are the four drag operation buttons that
+			control how you drag the track. The labelled functions are:
+			<br/>     ◦ <b>Translate</b> - you can drag either end of the track: this changes range and bearing from
+			the source, but maintains target course and speed.
+			<br/>     ◦<b>Rotate</b> - you can drag either
+			end or from the middle of the track: doing so maintains the target speed but changes the
+			target course.
+			<br/>     ◦<b>Stretch</b> - you can also drag either end or the middle of the track:
+			stretch allows you to maintain the target course but change the target speed. If the
+			centre-point of the track is dragged, the track moves in and out, adjusting as necessary
+			to adhere to the start/end points on the host platform bearing fan.
+			<br/>     ◦<b>Shear</b> - you can drag either end or the middle of the track: this option allows you to change both target
+			course and speed.
+			<br/><b>Note:</b> only the <b>Translate</b> and <b>Rotate</b> operations are available for all
+			track sections. Only the <b>Stretch</b> and <b>Shear</b> operations are suitable for application to
+			<b>straight-line TMA Segments</b>. To help you, the hand cursor will only turn green over
+			straight-line TMA Segment hot-spots.
+			<br/>Even though you select the above drag options in
+			the <b>Bearing Residuals</b> view, these selections are used in conjunction with the drag
+			buttons from the main toolbar:<b> Drag Track Segment</b>, <b>Drag Component</b>, and <b>Drag Whole
+			Feature</b>, and all drag functions are carried out on tracks within the plot area. This
+			gives you a huge array of options and capabilities.
+			<br/>By default, the cursor hand is
+			brown. When it is this colour, you cannot modify the track from this particular point because it
+			isn&apos;t a hot-spot. If you move the cursor over a point on the track which is a hot-spot
+			and does allow you to manipulate (or move) that point, the cursor will become
+			green. As mentioned above, this will either be at the end, and/or
+			in the middle of a track.
+			<br/><b>2.</b> Now, select <b>Shear mode</b> and <b>Drag Track Segment</b> (<b>Alt+1</b>) and
+			practice dragging the ends of the track to optimise the bearing errors in the <b>Bearing
+			Residuals</b> windowview.
+			<br/><b>Note:</b> remember, here you are trying to reduce the distance between the
+			calculated bearing and the measured bearing.</description>
 		<subitem
 			label="Review bearing residuals.  When you enter drag-track mode, the view Bearing Residuals view is opened for you - so you can track the current residual errors."
 			skip="true">
@@ -142,37 +139,47 @@
 		</subitem>
 	</item>
 	<item title="Generate second TMA segment">
-		<description>
-			Once you&apos;re happy with the first solution it&apos;s time to move
-			on. It would appear from the sensor data that the turn is represented
-			by about 13 cuts before a further straight line section of data.
-			As you look at the fan of sensor data, you can see there&apos;s an early block
-			of bearing lines that a roughly parallel. Then towards the end of the track
-			the bearing lines appear to converge steadily  around a single point.
-			In between these two periods of steady data, the lines jump around a little,
-			representing the period where the subject vessel is changing course 
-			and/or speed.
-			<br/>  
-			Now, let&apos;s work with the plot again. Click on the first sensor cut of the second steady
-			set of bearings - that cut will be highlighted in the
-			<b>Outline View</b>.
-			Now scroll down to the end of the data and shift-click the last
-			sensor cut. We&apos;ve now selected the cuts to be used for the
-			second track segment. Right click on one of the selected items and
-			select
-			<b>Multiple items/Color/Green</b>
-			. The cuts will turn green. Now right-click again on the cuts and
-			click on
-			<b>Generate TMA solution from selected cuts</b>
-			, and complete the wizard once again.
-		</description>
+		<description>Looking at the
+			sensor data, it would appear that the turn is represented by about 13 cuts before a
+			further straight line section of data.
+			<br/>As you look at the fan of sensor data, you can
+			see there&apos;s an early block of bearing lines that are roughly parallel. Then, towards the
+			end of the track, the bearing lines appear to converge steadily around a single point.
+			In between these two periods of steady data, the lines jump around a little, and this
+			represents the period where the target vessel is changing course and/or speed.
+			<br/>Now, let&apos;s work with the plot again…
+			<br/><b>1.</b> Click on the first sensor cut of the second steady set
+			of bearings - that cut will be highlighted in the <b>Outline</b> view (I selected <b>090722
+			050326</b>).
+			<br/><b>2.</b> Now scroll down to the end of the data and <b>Shift-click</b> the last sensor cut.
+			We&apos;ve now selected the cuts to be used for the second track segment.
+			<br/><b>3.</b> Right-click on
+			one of the selected items and select <b>Multiple items</b> > <b>Color</b> > <b>Green</b>. The cuts will turn
+			green.
+			<br/><b>4.</b> Right-click again on the selected cuts and select <b>Generate TMA solution from
+			selected cuts</b>, and complete the wizard once again:
+			<br/>     <b>i.</b> Enter a range of <b>1 nautical mile</b>
+			(<b>nm</b>) and you can leave the bearing of <b>292.3</b> as is (it&apos;s using the bearing from our first
+			sensor cut in this selection).
+			<br/>     <b>ii.</b> Click <b>Next</b> and you will see the <b>initial solution</b>
+			dialog.
+			<br/>     <b>iii.</b> Based on our understanding and analysis of the sensor fan in the plot area,
+			enter <b>220</b> for the initial estimate of the course (but it won&apos;t be, because the earlier
+			spacing in the bearing fan shows us that the vessel has turned) and <b>6 knots</b> for the
+			speed estimate.
+			<br/>     <b>iv.</b> Click on <b>Finish</b> and the second track will be plotted.
+			<br/>As already mentioned,
+			the new track is probably wrong due to the earlier turn, but we can manipulate the
+			track and see what solution we can arrive at. </description>
 	</item>
 	<item title="Refine second solution">
-		<description>
-			Now, find the new solution in the Outline View and set it as the
-			secondary track (it will be easy to spot since it&apos; the track with the "later" value in the name).  As you mark it as secondary, you will see
-			it get listed in the Track Tote. Once the new solution is marked as secondary you are
-			able to start dragging/refining this solution. Give it a go.
-		</description>
+		<description> Now, locate this new solution in the <b>Outline</b> view:
+			<br/><b>1.</b> Click on the track to
+			select it (mine is called <b>Track:TMA_220503.26</b>)
+			<br/><b>2.</b> Then click on the <b>2</b> (<b>secondary</b>) button
+			on the toolbar to designate it as the secondary track. As soon as you mark it as
+			secondary, you will see it listed in the <b>Track Tote</b> view.
+			<br/><b>3.</b> Now, start manipulating
+			and refining this solution.</description>
 	</item>
 </cheatsheet>

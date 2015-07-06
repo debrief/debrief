@@ -2,8 +2,8 @@
 <compositeCheatsheet name="Analysing Data with Debrief NG">
 	<taskGroup kind="set" name="Controlling what you view" skip="false">
 		<intro>
-			This tutorial is going to get you started with some of the analysis
-			functionality within Debrief.
+			This tutorial will get you started with some of the analysis
+			functionality in Debrief.
 		</intro>
 		<onCompletion>
 			So now you know how to go beyond merely formatting data, you&apos;re
@@ -15,11 +15,9 @@
 				Firstly, you&apos;ll be using the Outline View to control how much data is
 				visible on the plot.
 			</intro>
-			<onCompletion>
-				Now you&apos;re a master of manipulating data, a skill essential both
-				to data analysis and the collation of information for transfer to
-				further presentation via Word or PowerPoint
-			</onCompletion>
+			<onCompletion>Hopefully you found the above steps easy to follow. Controlling what you
+				are viewing is an essential component of working effectively with Debrief and an essential skill for both data analysis and collation of information for
+				transfer to presentation software like Word or PowerPoint.</onCompletion>
 			<param name="path" value="../ViewingPlots/FilteringYourData.xml">
 			</param>
 		</task>
