@@ -27,13 +27,13 @@
 		</description>
 	</item>
 	<item title="Hide shape">
-		<description>At the top of the <b>Outline/b> view is a toolbar with functions that can be
+		<description>At the top of the <b>Outline</b> view is a toolbar with functions that can be
 			applied to plot items. In that view, you can see a list of items, including one called
 				<b>Misc (5 items)</b>. Click on the arrow to the left of it to expand the group.
 			<br/>Select any item in that group and click on the empty rectangle button in
 			the <b>Outline</b> view toolbar(next to the <b>+2</b> button). You will see the tick next to the element
 			and the corresponding shape on the plot disappear.
-			<br/>Another way of doing this is to use the drop-down menu in the <b>Outline View</b>: this is accessed via the small arrow at the end of
+			<br/>Another way of doing this is to use the drop-down menu in the <b>Outline</b> view: this is accessed via the small arrow at the end of
 			the <b>Outline</b> view toolbar (to the right of the ticked check-box).
 			<br/>Note: you can show/hide more than one item at a time by holding down the <b>Ctrl</b> key and clicking on
 			multiple items.</description>
