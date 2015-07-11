@@ -42,6 +42,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -71,6 +72,10 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.team.core.history.IFileRevision;
+import org.eclipse.team.internal.core.history.LocalFileRevision;
+import org.eclipse.team.internal.ui.history.FileRevisionEditorInput;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -368,21 +373,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						final IFileEditorInput inp = (IFileEditorInput) getEditorInput();
 						setPartName(inp.getName());
 					}
+					else if (input instanceof FileStoreEditorInput)
+					{
+						final FileStoreEditorInput fsi = (FileStoreEditorInput) input;
+						final String theName = fsi.getName();
+						setPartName(theName);
+					} else if (input instanceof FileRevisionEditorInput)
+					{
+						setPartName( ((FileRevisionEditorInput)input).getName());
+					}
 					else
 					{
-						if (input instanceof FileStoreEditorInput)
-						{
-							final FileStoreEditorInput fsi = (FileStoreEditorInput) input;
-							final String theName = fsi.getName();
-							setPartName(theName);
-						}
-						else
-						{
-							CorePlugin.logError(Status.ERROR,
-									"data source for PlotEditor not of expected type:" + input,
-									null);
-							System.err.println("Not expected file type:" + input);
-						}
+						CorePlugin.logError(Status.ERROR,
+								"data source for PlotEditor not of expected type:" + input,
+								null);
+						System.err.println("Not expected file type:" + input);
 					}
 				}
 			}
@@ -492,7 +497,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * @param input
 	 *          the file to insert
 	 */
-	private void loadThisFile(final IEditorInput input)
+	private void loadThisFile(IEditorInput input)
 	{
 		InputStream is = null;
 		if (!input.exists())
@@ -528,8 +533,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				name = _uri.getPath();
 				final IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
 				is = _ifs.openInputStream(EFS.NONE, null);
+			} 
+			else if (input instanceof FileRevisionEditorInput)
+			{
+				final FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+				IFile file = getFile(frei);
+				if (file != null && file.exists())
+				{
+					name = getAbsoluteName(file);
+					is = frei.getStorage().getContents();
+				}
 			}
-
 			if (is != null)
 				loadThisStream(is, name);
 			else
@@ -552,6 +566,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 									+ input.getName()
 									+ "\nPlease right-click on your navigator project and press Refresh");
 		}
+	}
+
+	private IFile getFile(FileRevisionEditorInput frei)
+	{
+		IFile file = null;
+		IFileRevision revision = frei.getFileRevision();
+		if (revision instanceof LocalFileRevision)
+		{
+			LocalFileRevision localFileRevision = (LocalFileRevision) revision;
+			if (localFileRevision.getFile() != null)
+			{
+				file = localFileRevision.getFile();
+			}
+			else
+			{
+				IFileState state = localFileRevision.getState();
+				IPath path = state.getFullPath();
+				file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			}
+		}
+		return file;
 	}
 
 	public String getAbsoluteName(final IFile iff) throws CoreException
@@ -1426,6 +1461,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				final Path path = new Path(uri.getPath());
 				ext = path.getFileExtension();
 			}
+			else if (input instanceof FileRevisionEditorInput)
+			{
+				final FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+				final URI uri = frei.getURI();
+				final Path path = new Path(uri.getPath());
+				ext = path.getFileExtension();
+			}
 
 			// right, have a look at it.
 			if ( (ext == null) || (!ext.equalsIgnoreCase("xml") && !ext.equalsIgnoreCase("dpf")) )
@@ -1511,6 +1553,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								{
 									source = new FileInputStream(tmpFile);
 									file.setContents(source, true, true, monitor);
+								}
+								finally
+								{
+									FileUtil.safeClose(source);
+								}
+							}
+							else if (input instanceof FileRevisionEditorInput)
+							{
+								CorePlugin.logError(Status.INFO,
+										"Performing FileRevisionEditorInput save", null);
+
+								FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+								final IFile file = getFile(frei);
+
+								InputStream source = null;
+								try
+								{
+									source = new FileInputStream(tmpFile);
+									file.setContents(source, true, true, monitor);
+									FileEditorInput newInput = new FileEditorInput(file);
+									setInputWithNotify(newInput);
 								}
 								finally
 								{
@@ -1832,5 +1895,32 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	public void outlinePageClosed()
 	{
 		_outlinePage = null;
+	}
+	
+	@Override
+	public void reload(final IFile file)
+	{
+		closeEditor(false);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			
+			@Override
+			public void run()
+			{
+				IWorkbenchPage page = getSite().getPage();
+				IEditorDescriptor desc = PlatformUI.getWorkbench().
+				        getEditorRegistry().getDefaultEditor(file.getName());
+				try
+				{
+					page.openEditor(new FileEditorInput(file), desc.getId());
+				}
+				catch (PartInitException e)
+				{
+					DebriefPlugin.logError(IStatus.ERROR,
+							"Failed trying to open file: " + file.getName(), e);
+				}
+			}
+		});
+		
 	}
 }
