@@ -26,7 +26,10 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
@@ -37,6 +40,7 @@ import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
+import org.mwc.debrief.core.IRange;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -431,6 +435,21 @@ public class DragFeature extends CoreDragAction
 			
 		}
 
+		private Double getError()
+		{
+			Double ret = null;
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			if (page != null)
+			{
+				IViewPart view = page.findView(IRange.BEARING_RESIDUAL_VIEW_ID);
+				if (view instanceof IRange)
+				{
+					ret = ((IRange)view).getDotPlotRange();
+				}
+			}
+			return ret;
+		}
+
 		/**
 		 * dragging happening. Either draw (or erase) the previous point
 		 * 
@@ -441,7 +460,27 @@ public class DragFeature extends CoreDragAction
 		 */
 		private void drawHere(final GC graphics, final WorldVector newVector)
 		{
-			org.eclipse.swt.graphics.Color fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 255,255);
+			Double range = getError();
+			org.eclipse.swt.graphics.Color fc;
+			if (range == null)
+			{
+				fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 255,255); // white - default
+			}
+			else
+			{
+				if (range < 0)
+				{
+					range = -range;
+				}
+				if (range >= 5.0)
+				{
+					fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 0, 255, 0); // green
+				}
+				else
+				{
+					fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 215, 0); // yellow
+				}
+			}
 			//graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
 			graphics.setForeground(fc);
 

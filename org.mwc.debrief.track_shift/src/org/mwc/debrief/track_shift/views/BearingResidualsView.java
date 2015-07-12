@@ -23,9 +23,10 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.IRange;
 import org.mwc.debrief.track_shift.Activator;
 
-public class BearingResidualsView extends BaseStackedDotsView
+public class BearingResidualsView extends BaseStackedDotsView implements IRange
 {
 
 	public BearingResidualsView()
@@ -190,5 +191,13 @@ public class BearingResidualsView extends BaseStackedDotsView
 		super.saveState(memento);
 
 		memento.putBoolean(SHOW_COURSE, showCourse.isChecked());
+	}
+	
+	public Double getDotPlotRange() {
+		if (_dotPlot != null && _dotPlot.getRangeAxis() != null)
+		{
+			return _dotPlot.getRangeAxis().getRange().getCentralValue();
+		}
+		return null;
 	}
 }
