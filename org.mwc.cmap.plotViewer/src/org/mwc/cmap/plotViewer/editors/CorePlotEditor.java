@@ -271,6 +271,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 										{
 											closeEditor(false);
 										}
+									} 
+									if (resource.equals(file) && 
+											(delta.getKind() == IResourceDelta.CHANGED && (delta.getFlags() & IResourceDelta.CONTENT) != 0))
+									{
+										reload(file);
 									}
 								}
 							}
@@ -641,7 +646,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_timeListener = null;
 	}
 
-	private void closeEditor(final boolean save)
+	protected void closeEditor(final boolean save)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
@@ -1327,6 +1332,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public IUndoContext getUndoContext()
 	{
 		return undoContext;
+	}
+	
+	public void reload(IFile file)
+	{
+		// not implemented
 	}
 	
 }
