@@ -867,8 +867,8 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
           displayProp("FillBackground", "Fill Background", "whether fill background for this Scale", FORMAT),
           prop("Background", "the background for this Scale", FORMAT),
           prop("Font", "the font for this Scale", FORMAT),
-          displayProp("SemiTransparent", "Semi transparent",
-							"wether to use semi transparent background for the time display", FORMAT),
+       /*   displayProp("SemiTransparent", "Semi transparent",
+							"wether to use semi transparent background for the time display", FORMAT), */
           prop("Visible", "whether this Scale is visible", VISIBILITY),
           displayProp("ScaleMax", "Scale max", "the maximum value of the scale in yards", FORMAT),
           displayProp("ScaleStep", "Scale step", "the step size of the scale in yards", FORMAT),
