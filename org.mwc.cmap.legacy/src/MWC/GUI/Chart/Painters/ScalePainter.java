@@ -135,6 +135,7 @@ import java.io.Serializable;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
 import MWC.GUI.Properties.UnitsPropertyEditor;
@@ -206,9 +207,15 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
   /**
    * the font we use for the D DifarSymbols
    */
-  private static java.awt.Font _myFont = new java.awt.Font("Arial",
+  private java.awt.Font _myFont = new java.awt.Font("Arial",
                                                            java.awt.Font.PLAIN,
                                                            12);
+  
+  private boolean _fillBackground = false;
+  
+  private Color _background = Color.white;
+  
+  private boolean _semiTransparent = false;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -571,8 +578,27 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
     boolean first_point = true;
 
     // setup the drawing object
+    Color oldBackground = g.getBackgroundColor();
+  	g.setBackgroundColor(_background);
+  	
+    if (_fillBackground)
+    {
+    	g.setColor(_background);
+    	int step = g.getStringHeight(_myFont)*2;
+    	int x = TL.x - step;
+    	int y = TL.y - step;
+    	int w = scale_width + step*3;
+    	int h = step*2;
+    	if (g instanceof ExtendedCanvasType && _semiTransparent)
+    	{
+    		((ExtendedCanvasType)g).semiFillRect(x, y, w, h);
+    	}
+    	else
+    	{
+    		g.fillRect(x, y, w, h);
+    	}
+    }
     g.setColor(this.getColor());
-
     // first draw in 10 ticks in the first section of the scale
     final double tmp_tick_step = tick_step / 10.0;
     for (int j = 0; j < 10; j++)
@@ -634,6 +660,8 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 
     }
 
+    g.setBackgroundColor(oldBackground);
+  	
   }
 
   /**
@@ -836,6 +864,11 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
       {
         final PropertyDescriptor[] res = {
           prop("Color", "the Color to draw the Scale", FORMAT),
+          displayProp("FillBackground", "Fill Background", "whether fill background for this Scale", FORMAT),
+          prop("Background", "the background for this Scale", FORMAT),
+          prop("Font", "the font for this Scale", FORMAT),
+          displayProp("SemiTransparent", "Semi transparent",
+							"wether to use semi transparent background for the time display", FORMAT),
           prop("Visible", "whether this Scale is visible", VISIBILITY),
           displayProp("ScaleMax", "Scale max", "the maximum value of the scale in yards", FORMAT),
           displayProp("ScaleStep", "Scale step", "the step size of the scale in yards", FORMAT),
@@ -900,6 +933,46 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 	{
 		final Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());
+	}
+
+	public java.awt.Font getFont()
+	{
+		return _myFont;
+	}
+
+	public void setFont(java.awt.Font myFont)
+	{
+		this._myFont = myFont;
+	}
+
+	public boolean isFillBackground()
+	{
+		return _fillBackground;
+	}
+
+	public void setFillBackground(boolean fillBackground)
+	{
+		this._fillBackground = fillBackground;
+	}
+
+	public Color getBackground()
+	{
+		return _background;
+	}
+
+	public void setBackground(Color background)
+	{
+		this._background = background;
+	}
+
+	public boolean isSemiTransparent()
+	{
+		return _semiTransparent;
+	}
+
+	public void setSemiTransparent(boolean semiTransparent)
+	{
+		this._semiTransparent = semiTransparent;
 	}
 
 }
