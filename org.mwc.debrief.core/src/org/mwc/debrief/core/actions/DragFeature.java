@@ -34,15 +34,19 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
+import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.plotViewer.actions.CoreDragAction;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
-import org.mwc.debrief.core.IRange;
+import org.mwc.debrief.core.actions.drag.CoreDragOperation;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.IDotErrorProvider;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -435,16 +439,16 @@ public class DragFeature extends CoreDragAction
 			
 		}
 
-		private Double getError()
+		private IDotErrorProvider getErrorProvider()
 		{
-			Double ret = null;
+			IDotErrorProvider ret = null;
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			if (page != null)
 			{
-				IViewPart view = page.findView(IRange.BEARING_RESIDUAL_VIEW_ID);
-				if (view instanceof IRange)
+				IViewPart view = page.findView(CorePlugin.STACKED_DOTS);
+				if (view instanceof IDotErrorProvider)
 				{
-					ret = ((IRange)view).getDotPlotRange();
+					ret = (IDotErrorProvider)view;
 				}
 			}
 			return ret;
@@ -460,29 +464,8 @@ public class DragFeature extends CoreDragAction
 		 */
 		private void drawHere(final GC graphics, final WorldVector newVector)
 		{
-			Double range = getError();
-			org.eclipse.swt.graphics.Color fc;
-			if (range == null)
-			{
-				fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 255,255); // white - default
-			}
-			else
-			{
-				if (range < 0)
-				{
-					range = -range;
-				}
-				if (range >= 5.0)
-				{
-					fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 0, 255, 0); // green
-				}
-				else
-				{
-					fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 215, 0); // yellow
-				}
-			}
-			//graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
-			graphics.setForeground(fc);
+			graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
+		//	graphics.setForeground(fc);
 
 			// ok, move the target to the new location...
 			if (newVector != null)
@@ -529,11 +512,36 @@ public class DragFeature extends CoreDragAction
 				};
 				// change the color by hand
 				ca.startDraw(graphics);
-				_hoverTarget.paint(ca);
+				
+				// see if it's a painter that also wants to know the error score
+				
+				// see what is being dragged
+				boolean painted = false;
+				if(_hoverTarget instanceof CoreDragOperation)
+				{
+					IDotErrorProvider errorProvider = getErrorProvider();
+
+					CoreDragOperation cdo = (CoreDragOperation) _hoverTarget;
+					TrackSegment segment = cdo.getSegment();
+					if(segment instanceof CoreTMASegment)
+					{
+						if (errorProvider != null)
+						{
+							CoreTMASegment coreSeg = (CoreTMASegment) segment;
+							coreSeg.paint(ca, errorProvider);
+							painted = true;
+						}
+					}
+				}
+				
+				if(!painted)
+				{
+					_hoverTarget.paint(ca);
+				}
 				ca.endDraw(null);
 			}
 
-			fc.dispose();
+		//	fc.dispose();
 		}
 
 		@Override
