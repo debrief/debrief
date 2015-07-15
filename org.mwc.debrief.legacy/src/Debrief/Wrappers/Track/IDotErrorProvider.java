@@ -12,12 +12,23 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.debrief.core;
+package Debrief.Wrappers.Track;
 
-public interface IRange
+import MWC.GenericData.HiResDate;
+
+public interface IDotErrorProvider
 {
-
-	public static final String BEARING_RESIDUAL_VIEW_ID = "org.mwc.debrief.track_shift.views.StackedDotsView";
 	
-	Double getDotPlotRange();
+	/** what is the residual at this point in time?
+	 * 
+	 * @param dtg
+	 * @return
+	 */
+	Double getDotPlotErrorAt(HiResDate dtg);
+
+	/** whether the user wants the errors to be drawn to scale on the spatial plot
+	 * 
+	 * @return
+	 */
+	boolean scaleErrors();
 }

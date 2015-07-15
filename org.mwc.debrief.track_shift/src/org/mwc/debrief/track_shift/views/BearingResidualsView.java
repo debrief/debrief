@@ -22,11 +22,19 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.core.IRange;
 import org.mwc.debrief.track_shift.Activator;
 
-public class BearingResidualsView extends BaseStackedDotsView implements IRange
+import Debrief.Wrappers.Track.IDotErrorProvider;
+import MWC.GenericData.HiResDate;
+
+public class BearingResidualsView extends BaseStackedDotsView implements
+		IDotErrorProvider
 {
 
 	public BearingResidualsView()
@@ -35,14 +43,35 @@ public class BearingResidualsView extends BaseStackedDotsView implements IRange
 	}
 
 	private static final String SHOW_COURSE = "SHOW_COURSE";
+	private static final String SCALE_ERROR = "SCALE_ERROR";
 	private Action showCourse;
 	private Action flipCourse;
-	//protected Action _5degResize;
+	private Action scaleError;
+
+	// protected Action _5degResize;
 
 	@Override
 	protected void makeActions()
 	{
 		super.makeActions();
+
+		// now the course action
+		scaleError = new Action("Show the error when dragging",
+				IAction.AS_CHECK_BOX)
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+			}
+		};
+		scaleError.setChecked(false);
+		scaleError
+				.setToolTipText("Show symbol scaled to per-cut error when dragging");
+		scaleError.setImageDescriptor(Activator
+				.getImageDescriptor("icons/24/scale.png"));
+
+		// see if there's an existing setting for this.
 
 		// now the course action
 		flipCourse = new Action("Use +/- 180 scale for absolute data",
@@ -86,7 +115,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements IRange
 				final boolean val = _autoResize.isChecked();
 				if (_showDotPlot.isChecked())
 				{
-					if(val)
+					if (val)
 					{
 						_dotPlot.getRangeAxis().setAutoRange(true);
 						_autoResize.setToolTipText("Keep plot sized to show all data");
@@ -104,23 +133,23 @@ public class BearingResidualsView extends BaseStackedDotsView implements IRange
 		_autoResize.setToolTipText("Keep plot sized to show all data");
 		_autoResize.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/24/fit_to_win.png"));
-		
-		
-		
+
 	}
 
 	@Override
-	protected void fillLocalToolBar(final IToolBarManager toolBarManager)
+	protected void fillLocalToolBar(final IToolBarManager manager)
 	{
-		toolBarManager.add(showCourse);
-		toolBarManager.add(flipCourse);
-		super.fillLocalToolBar(toolBarManager);
+		manager.add(showCourse);
+		manager.add(flipCourse);
+		manager.add(scaleError);
+		super.fillLocalToolBar(manager);
 
 	}
 
 	protected void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(flipCourse);
+		manager.add(scaleError);
 		super.fillLocalPullDown(manager);
 	}
 
@@ -172,7 +201,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements IRange
 	}
 
 	@Override
-	public void init(final IViewSite site, final IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento)
+			throws PartInitException
 	{
 		super.init(site, memento);
 
@@ -182,6 +212,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements IRange
 			final Boolean doCourse = memento.getBoolean(SHOW_COURSE);
 			if (doCourse != null)
 				showCourse.setChecked(doCourse.booleanValue());
+
+			final Boolean doScaleError = memento.getBoolean(SCALE_ERROR);
+			if (doScaleError != null)
+				scaleError.setChecked(doScaleError.booleanValue());
 		}
 	}
 
@@ -191,13 +225,47 @@ public class BearingResidualsView extends BaseStackedDotsView implements IRange
 		super.saveState(memento);
 
 		memento.putBoolean(SHOW_COURSE, showCourse.isChecked());
+		memento.putBoolean(SCALE_ERROR, scaleError.isChecked());
 	}
-	
-	public Double getDotPlotRange() {
-		if (_dotPlot != null && _dotPlot.getRangeAxis() != null)
+
+	@Override
+	public Double getDotPlotErrorAt(HiResDate dtg)
+	{
+		double res = 0;
+
+		// get the time
+		RegularTimePeriod myTime = new FixedMillisecond(dtg.getDate().getTime());
+
+		// get the dot plot dataset
+		TimeSeriesCollection dataset = (TimeSeriesCollection) _dotPlot.getDataset();
+
+		if (dataset != null)
 		{
-			return _dotPlot.getRangeAxis().getRange().getCentralValue();
+			if (dataset.getSeriesCount() > 0)
+			{
+				TimeSeries series = dataset.getSeries(0);
+				int count = series.getItemCount();
+				if (count > 0)
+				{
+					for (int i = 0; i < count; i++)
+					{
+						TimeSeriesDataItem thisV = series.getDataItem(i);
+						RegularTimePeriod time = thisV.getPeriod();
+						if (myTime.equals(time))
+						{
+							res = thisV.getValue().doubleValue();
+							break;
+						}
+					}
+				}
+			}
 		}
-		return null;
+		return res;
+	}
+
+	@Override
+	public boolean scaleErrors()
+	{
+		return scaleError.isChecked();
 	}
 }
