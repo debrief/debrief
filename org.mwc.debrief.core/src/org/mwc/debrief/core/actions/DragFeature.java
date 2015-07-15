@@ -45,7 +45,7 @@ import org.mwc.debrief.core.actions.drag.CoreDragOperation;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
-import Debrief.Wrappers.Track.IDotErrorProvider;
+import Debrief.Wrappers.Track.ITimeVariableProvider;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -439,16 +439,16 @@ public class DragFeature extends CoreDragAction
 			
 		}
 
-		private IDotErrorProvider getErrorProvider()
+		private ITimeVariableProvider getErrorProvider()
 		{
-			IDotErrorProvider ret = null;
+			ITimeVariableProvider ret = null;
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			if (page != null)
 			{
 				IViewPart view = page.findView(CorePlugin.STACKED_DOTS);
-				if (view instanceof IDotErrorProvider)
+				if (view instanceof ITimeVariableProvider)
 				{
-					ret = (IDotErrorProvider)view;
+					ret = (ITimeVariableProvider)view;
 				}
 			}
 			return ret;
@@ -465,7 +465,6 @@ public class DragFeature extends CoreDragAction
 		private void drawHere(final GC graphics, final WorldVector newVector)
 		{
 			graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
-		//	graphics.setForeground(fc);
 
 			// ok, move the target to the new location...
 			if (newVector != null)
@@ -519,7 +518,7 @@ public class DragFeature extends CoreDragAction
 				boolean painted = false;
 				if(_hoverTarget instanceof CoreDragOperation)
 				{
-					IDotErrorProvider errorProvider = getErrorProvider();
+					ITimeVariableProvider errorProvider = getErrorProvider();
 
 					CoreDragOperation cdo = (CoreDragOperation) _hoverTarget;
 					TrackSegment segment = cdo.getSegment();

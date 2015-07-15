@@ -30,11 +30,11 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.Activator;
 
-import Debrief.Wrappers.Track.IDotErrorProvider;
+import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GenericData.HiResDate;
 
 public class BearingResidualsView extends BaseStackedDotsView implements
-		IDotErrorProvider
+		ITimeVariableProvider
 {
 
 	public BearingResidualsView()
@@ -229,7 +229,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 	}
 
 	@Override
-	public Double getDotPlotErrorAt(HiResDate dtg)
+	public Double getValueAt(HiResDate dtg)
 	{
 		double res = 0;
 
@@ -264,7 +264,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 	}
 
 	@Override
-	public boolean scaleErrors()
+	public boolean applyStyling()
 	{
 		return scaleError.isChecked();
 	}

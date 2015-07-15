@@ -16,19 +16,26 @@ package Debrief.Wrappers.Track;
 
 import MWC.GenericData.HiResDate;
 
-public interface IDotErrorProvider
+/** interface for class that is able to provide the an additional
+ * value for specified time stams to help with styling, plus an accessor
+ * to find out if that styling should be applied
+ * 
+ * @author ian
+ *
+ */
+public interface ITimeVariableProvider
 {
 	
-	/** what is the residual at this point in time?
+	/** what is the value at the specified time
 	 * 
 	 * @param dtg
 	 * @return
 	 */
-	Double getDotPlotErrorAt(HiResDate dtg);
+	Double getValueAt(HiResDate dtg);
 
 	/** whether the user wants the errors to be drawn to scale on the spatial plot
 	 * 
 	 * @return
 	 */
-	boolean scaleErrors();
+	boolean applyStyling();
 }

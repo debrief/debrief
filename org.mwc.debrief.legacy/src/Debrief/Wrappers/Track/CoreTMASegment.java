@@ -38,7 +38,7 @@ import MWC.TacticalData.Fix;
  * @author ianmayo
  * 
  */
-abstract public class CoreTMASegment extends TrackSegment
+abstract public class CoreTMASegment extends TrackSegment implements CanBePlottedWithTimeVariable
 {
 
 	private static final int MAX_HEIGHT = 8;
@@ -146,7 +146,8 @@ abstract public class CoreTMASegment extends TrackSegment
 		paint(dest, null);
 	}
 
-	public void paint(final CanvasType dest, final IDotErrorProvider errorProvider)
+	@Override
+	public void paint(final CanvasType dest, final ITimeVariableProvider errorProvider)
 	{
 		final Collection<Editable> items = getData();
 
@@ -205,9 +206,9 @@ abstract public class CoreTMASegment extends TrackSegment
 
 			// also draw in a marker for this point
 			final double height;
-			if (errorProvider != null && errorProvider.scaleErrors())
+			if (errorProvider != null && errorProvider.applyStyling())
 			{
-				double thisH = Math.abs(errorProvider.getDotPlotErrorAt(
+				double thisH = Math.abs(errorProvider.getValueAt(
 						thisF.getDateTimeGroup()).doubleValue());
 				height = (int) (Math.min(thisH, MAX_HEIGHT) * 2);
 			}
