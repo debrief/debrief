@@ -59,6 +59,14 @@ public class CoreDragOperation
 		_myName = myName;
 	}
 	
+	/** accessor, to get to the segment we're managing
+	 * 
+	 * @return
+	 */
+	final public TrackSegment getSegment()
+	{
+		return _segment;
+	}
 
 	/** repaint the track segment
 	 * 
