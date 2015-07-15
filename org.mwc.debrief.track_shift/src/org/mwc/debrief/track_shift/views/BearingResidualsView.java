@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -28,6 +29,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.track_shift.Activator;
 
 import Debrief.Wrappers.Track.ITimeVariableProvider;
@@ -231,12 +233,12 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 	@Override
 	public Double getValueAt(HiResDate dtg)
 	{
-		double res = 0;
+		Double res = null;
 
 		// get the time
 		RegularTimePeriod myTime = new FixedMillisecond(dtg.getDate().getTime());
 
-		// get the dot plot dataset
+		// get the set of calculated error values that we have stored in the graph
 		TimeSeriesCollection dataset = (TimeSeriesCollection) _dotPlot.getDataset();
 
 		if (dataset != null)
@@ -254,12 +256,25 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 						if (myTime.equals(time))
 						{
 							res = thisV.getValue().doubleValue();
+							
+							// ok, done - we can drop out :-)
 							break;
 						}
 					}
 				}
 			}
 		}
+
+		if (res == null)
+		{
+			// ok, for reason we haven't found the relevant cut. throw an error
+			DebriefPlugin.logError(Status.ERROR,
+					"Bearing residuals view failed to retrieve residual error at time: "
+							+ dtg, null);
+
+			res = 0d;
+		}
+
 		return res;
 	}
 
