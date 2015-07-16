@@ -574,8 +574,12 @@
 	<xs:complexType name="scale">
 		<xs:all>
 			<xs:element minOccurs="0" name="colour" type="colourType" />
+			<xs:element minOccurs="0" name="Background" type="colourType" />
+			<xs:element minOccurs="0" name="font" type="font" />
 		</xs:all>
 		<xs:attribute name="AutoMode" type="xs:boolean" />
+		<xs:attribute name="FillBackground" type="xs:boolean" default="false"/>
+		<xs:attribute name="SemiTransparent" type="xs:boolean" default="false" />
 		<xs:attribute name="DisplayUnits" type="xs:string" />
 		<xs:attribute name="Location" type="xs:string" />
 		<xs:attribute name="Name" type="xs:string" />
