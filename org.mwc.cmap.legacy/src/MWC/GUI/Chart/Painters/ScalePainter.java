@@ -619,7 +619,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
     for (int i = 0; i <= num_ticks; i++)
     {
     	// sort out the label
-      String str = "" + (int) (i * _scaleStep) + _DisplayUnits.getUnits();
+      String str = "" + (int) (i * _scaleStep)+ " " + _DisplayUnits.getUnits();
       
       // make the label plural if it's > 0
       if((i * _scaleStep) > 1)
