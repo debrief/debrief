@@ -2,33 +2,32 @@
 <cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Loading a simple scenario">
    <intro>
-      <description>
-        Before we can produce target solutions, we need to load some ownship data. We&apos;ll do that using these steps.
+      <description>To produce target solutions, we must load some ownship data. We&apos;ll do that now. 
       </description>
    </intro>
-   <item title="Find SATC subfolder">
-      <description>
-         From earlier steps, you are now familiar with the Navigator. In the Navigator view, open the <b>SATC</b> sub-folder
-      </description>
+   <item title="Find SATC subfolder and Load Ownship Track">
+      <description> In the <b>Navigator</b> view:
+         <br/><b>1.</b> Open the <b>SATC</b> sub-folder and either drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area or right click and select
+         <b>Open With</b> > <b>Debrief Plot Editor</b>.
+         <br/><b>2.</b> Select <b>Over the Ground</b> mode. You will now see the blue
+         ownship track in your window. </description>
    </item>
-   <item title="Load ownship track">
-      <description>
-         From the SATC sub-folder, drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area. (Or, right click it, 
-         and select "Open With > Debrief Plot Editor").  If Debrief does ask you, the track should be loaded in "Over the Ground" mode.
-      </description>
-   </item>
+   
    <item title="Load ownship sensor data">
-      <description>
-         You should now see the Debrief editor, with a blue ownship track.<br/> Next, we will load the ownship sensor (sonar) data,
-          by dragging in the <b>L1_OwnshipSensor.dsf</b> file. 
-         Follow the Wizard steps to name the sensor ("Plain" is fine), give it a color, and indicate that Yes, you wish it to be visible.
-      </description>
+      <description> Next, we will load the ownship sensor data (this is the sonar data):
+         <br/><b>1.</b> Drag and
+         drop the <b>L1_OwnshipSensor.dsf</b> file onto the plot, the <b>Import Sensor Wizard</b> will appear.
+         <br/><b>2.</b> You can leave this <b>sensor contact name</b> as <b>plain</b> and click on <b>Next</b>
+         <br/><b>3.</b> Choose a <b>color</b> for the
+         sensor data, then click <b>Next</b>.
+         <br/><b>4.</b> Select the <b>value</b> check box so that the sensor data will be
+         visible, then click <b>Next</b>.
+         <br/><b>5.</b> In the <b>Rainbow shades</b> dialog, select the check box to show the
+         sensor cuts and click on <b>Finish</b>.
+         <br/>The dialog box will close and the fan of ownship bearing data
+         (sonar data) will be seen radiating north-west and north from the ownship track. If you
+         don&apos;t see this, repeat the above steps making sure you’ve loaded the correct files.
+         <br/>Now we’ve loaded our data, we can create a scenario. </description>
    </item>
-   <item title="Check sensor data is visible">
-      <description>
-         <b>You did follow the wizard steps correctly, didn&apos;t you?</b> <br/>
-         If you haven&apos;t got a bearing fan displayed on the plot, use the <b>Outline View</b> View to navigate to
-          the <b>Plain</b> sensor within the <b>Ownship</b> track, and make it visible.
-      </description>
-   </item>
+   
 </cheatsheet>

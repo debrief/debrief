@@ -98,7 +98,7 @@
 			example:
 			<br/><b>1.</b> In the <b>Frequency</b> column, click on the header cell itself (where it says
 			&apos;Frequency&apos;): you&apos;ll see a graph appear in the bottom half of the view. This
-			graph is a cascading display of frequency, with the most recent value at the top.
+			graph is a &apos;waterfall&apos; display of frequency, with the most recent value at the top.
 			<br/><b>2.</b> <b>Zoom in</b> on data by dragging your mouse on the graph using a top-left to bottom-right
 			motion.
 			<br/><b>3.</b> <b>Zoom out</b> by dragging bottom-right to top-left.</description>

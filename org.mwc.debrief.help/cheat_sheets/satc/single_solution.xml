@@ -2,37 +2,41 @@
 <cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Generate a solution">
    <intro>
-      <description>
-         You have now provided background data to SATC, now you can ask it to generate a solution.
+      <description>Now that we have provided background data to SATC, we can generate a solution.
       </description>
    </intro>
    <item
          title="Calculate the solution">
-      <description>
-      	 Right, we&apos;re going to having an effect on the plot again now, so check you can see the ownship track and the rough area where
-      	 the target should be.<br/>
-         To generate the solution, just click on <b>Calculate Solution</b>. 
-         Within a second or so you will see a new track appear on the plot (though you may need to zoom out a little).
-         <br/>The track will be the same color as you specified for the bearing data in the Bearing Import Wizard.
-         <br/>By default, SATC is in <b>Low</b> precision. This instructs SATC to use fairly relaxed constraints, and come up
-         with an answer within a few seconds.  In this scenario we have quite sparse bearing data, and the ownship
-         maneouvres mean that there aren&apos;t very many candidate solutions.
-         <br/>At the time of writing (April 2014), a solution of 9.0kts on 269 degrees is returned.  If you wish, you 
-         can try using a high precision. (Then you&apos;ll have to click on <b>Calculate Solution</b> to make it fire). <br/>
-         I don&apos;t think you will get a better solution, but you will notice that the <b>Performance</b> graph (at the bottom of
-         the (<b>Maintain Contributions</b> view) growing more slowly as SATC homes
-         in on a particular solution.  You will see that the x-axis (on the bottom) shows more cycles have been
-         run through, and that each one moves more slowly.
-      </description>
+      <description> Now we&apos;re going to generate the solution for this scenario. Before we do this:
+         <br/><b>1.</b> Click on the <b>Fit to Window</b> button to ensure you can see the ownship track and the rough
+         area where the target should be.
+         <br/><b>2.</b> Click on the <b>Calculate Solution</b> button.
+         <br/>By default, the
+         SATC is set to <b>Low</b> precision and uses relaxed constraints. The rather sparse bearing data
+         and ownship maneuvers used in this scenario means that there aren&apos;t very many candidate
+         solutions, and an answer will be generated within a second or so. When it has completed its
+         calculations, a new track will appear on the plot.
+         <br/>As you can see, the track is the
+         color you specified for the bearing data in the <b>Bearing Import Wizard</b>.
+         <br/>My computer
+         returned a solution of <b>9.0 kts</b> on <b>269 degrees</b>. You can alter the precision setting as you
+         require (to medium or high), but you must click on <b>Calculate Solution</b> each time you do.
+         <br/>It is unlikely that you will get a better solution with this set of data, but you will
+         notice that the <b>Performance</b> graph (below the <b>Maintain Contributions</b> view) processes more slowly
+         as SATC homes in on a particular solution. You will see that the x-axis shows more cycles
+         have been computed, and that each one moves more slowly.</description>
    </item>
    <item title="Marking your own homework">
-      <description>
-         The data we&apos;re using here is from a simulation tool.  That means we also have the target track.  
-         So, try dragging in <b>L1_SubjectTrack.rep</b>
-         and comparing the SATC solution with the truth track.  (Select "Over the ground as the import mode, if necessary")
-         <br/>You will see that SATC is quite close to the truth, with a greater error to the 
-         West, near the start. This is because of the low bearing 
-         rate near the start - both tracks appear to be on a roughly parallel course.
-      </description>
+      <description> The data we are using here is from a simulation tool, which means we have the
+         actual target track to compare against:
+         <br/><b>1.</b> Drag the <b>L1_SubjectTrack.rep</b> file into the plot area
+         <br/><b>2.</b> Select <b>Over the ground</b> as the import mode.
+         <br/>The track will now appear on the plot
+         as a solid red line.
+         <br/>Now, compare the SATC solution with the actual target track. You will
+         see that SATC is actually quite close, with a greater error near the start to the East because of the low bearing rate there; however, both tracks appear to be
+         on a roughly parallel course.
+         <br/>We now have an SATC-generated solution which is very close to
+         the actual target track.</description>
    </item>
 </cheatsheet>
