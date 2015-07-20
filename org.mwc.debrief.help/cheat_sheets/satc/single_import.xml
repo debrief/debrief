@@ -8,7 +8,7 @@
    </intro>
    <item
          title="Select scenario">
-      <description>If you&apos;ve followed the instructions in the previous tutorial, then you
+      <description>If you&apos;ve followed the instructions in the previous tutorial correctly, then you
          will have a scenario named <b>Single Leg (2 items)</b> in your <b>Outline</b> View. Click on it to select
          it. </description>
    </item>
@@ -56,7 +56,7 @@
    <item
       title="Import as standalone track">
       <description>
-         The manual track fine-tuning you&apos;ve just carried out is more suited to complex scenarios where the analyst remains unhappy with the SATC solution and culminates in the TMA solutions being merged into a formal track.
+         The manual-track fine-tuning process steps you have just completed are more suited to complex scenarios where, because of dissatisfaction with the system-produced SATC solution, the analyst decides it is better to merge the TMA solutions into a formal track.
          <br/>However, as the raw SATC produced a perfectly acceptable solution, we can discard the manual track and import the original TMA solution:
          <br/><b>1.</b> In the <b>Outline</b> view, right-click on <b>Track:Single Leg TMA</b> and select <b>Delete Single Leg TMA</b>. 
          <br/>Then, to import our original TMA solution:

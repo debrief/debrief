@@ -17,7 +17,7 @@
    <item href="/org.mwc.debrief.help/html/legacy/satc.html#satc_intro"
       title="Create the scenario">
    	<description>
-   		The most significant block of information in generating a solution is the bearing data itself, but we need to identify this as such to Debrief. 
+   		The most significant block of information in generating a solution is the bearing data itself—we need to mark this information as such.
    		<br/>In this scenario, we will use all of the Ownship sensor data:
    		<br/><b>1.</b> Left-click on the drop-down arrow next to <b>Track:Ownship</b>
    		<br/><b>2.</b> Left-click on <b>Sensors</b> to expand it.
@@ -31,14 +31,14 @@
    		Though <b>SATC's Manoeuvre Detection Aid</b> is capable of detecting target zigs, the algorithm can only reliably detect target zigs during an ownship straight leg (the geometry is just too chaotic during an ownship turn), so the actual process involves two steps:
    		<br/><b>1.</b> Detecting ownship legs
    		<br/><b>2.</b> Detecting target zigs during those straight legs.
-   		Despite this, the algorithm does make a rough and ready attempt at determining if there is a target zig somewhere during an ownship turn by forecasting the bearing rate in the second leg. If the post-turn bearing rate does not match that produced in a passive ranging calculation, then a turn is assumed. However, as the algorithm won&apos;t know when the target turn occured during the ownship turn, it interprets the whole ownship turn as the period of the target turn.
+   		Despite this, the algorithm does attempt to determine if there is a target zig somewhere during an ownship turn by forecasting the bearing rate in the second leg. If the post-turn bearing rate does not match that produced in a passive ranging calculation, then a turn is assumed. However, as the algorithm won&apos;t know when the target turn occured during the ownship turn, it interprets the whole ownship turn as the period of the target turn.
    	</description>
    </item>
    <item
       title="Generate the target legs">
    	<description>
-   		As mentioned in the previous step, the process begins with determining the ownship legs. Though this is easily discernable to the human eye, it is less so for a computer, and the main information source for target zig detection is the bearing data.
-   		<br/><b>1.</b> In the <b>Maintain Contributions</b> view, expand the <b>Bearing Measurement - Bearing data</b> section. Near the bottom of the control, you will find the <b>MDA</b> (Manoeuvre Detection Algorithm) section.
+   		As mentioned in the previous step, the process begins with determining the ownship legs. The main information source for target zig detection is the bearing data.
+   		<br/><b>1.</b> In the <b>Maintain Contributions</b> view, expand the <b>Bearing Measurement - Bearing data</b> section. Near the bottom of the controls, you will find the <b>MDA</b> (Manoeuvre Detection Algorithm) section.
    		<br/><b>2.</b> Click on <b>1. Slice O/S legs</b> to slice the ownship legs. 
    		<br/><b>3.</b> Now, take a look at the <b>Ownship &amp; Target Legs</b> graph at the bottom of the screen to judge the effectiveness of the slices.
    		<br/>When SATC slices the legs, it shades each leg in blue, with transparent gaps between the legs. Ownship legs are labelled with text labels at the top of the chart.
@@ -56,7 +56,7 @@
    	<description>
    		Let&apos;s look at what the algorithm produces from these target legs:
    		<br/><b>1.</b> Click on <b>Calculate Solution</b>; after a few seconds, the algorithm produces a target track shown on the plot.
-   		<br/>Looking at the target track, you should see that the very short target leg 3 is quite similar to leg 2. Switching back to the <b>Ownship &amp; Target Legs</b> graph, you can see that legs 2 and 3 are split by the suspected target zig during the ownship turn. We can guess that the target zig early in ownship leg 2 has mistakenly caused the algorithm to predict a target turn during the ownship turn.
+   		<br/>Looking at the target track, you should see that the very short target leg 3 is quite similar to leg 2. Switching back to the <b>Ownship &amp; Target Legs</b> graph, you should see that legs 2 and 3 are split by the suspected target zig during the ownship turn. We can guess that the target zig early in ownship leg 2 has mistakenly caused the algorithm to predict a target turn during the ownship turn.
    		<br/>We must therefore merge target legs 2 and 3: 
    		<br/><b>2.</b> Open <b>Scenario (121200.00)</b> in the <b>Outline</b> view and you will see the <b>bearing data</b> listed, followed by our four target legs (<b>Tgt-x</b>).
    		<br/><b>3.</b> Ctrl-click on legs <b>Tgt-2</b> and <b>Tgt-3</b> to select them
