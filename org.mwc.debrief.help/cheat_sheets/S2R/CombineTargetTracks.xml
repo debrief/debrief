@@ -26,7 +26,7 @@
 			<br/><b>3.</b> Select both tracks (<b>Ctrl+click</b>)
 			<br/><b>4.</b> Right-click on either one and select
 			<b>Generate infill segment</b>.
-			<br/><b>5.</b> You'll see a new segment appear both in the <b>Outline</b> view and
+			<br/><b>5.</b> You&apos;ll see a new segment appear both in the <b>Outline</b> view and
 			in the plot.
 			<br/>Notice that the infill segment is shown as a dotted line. This indicates
 			that this track segment is not based on any real bearing data, it has just been calculated

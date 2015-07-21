@@ -55,7 +55,7 @@
 			<br/><b>3.</b> In the <b>time period markers</b> (under the slider), drag the start and stop markers to different positions. As you do
 			this, you’ll see the shaded portion adjust to the selected period: this represents a
 			custom time period which is also visible on your plot. You can drag this shaded section to
-			move your 'windows' forwards and backwards.
+			move your &apos;windows&apos; forwards and backwards.
 			<br/>If you hold down the <b>Shift</b> key while you
 			move elements on the time plot, they will ‘snap’ to the hour lines. </description>
 	</item>

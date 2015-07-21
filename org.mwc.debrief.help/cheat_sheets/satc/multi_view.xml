@@ -28,7 +28,7 @@
    <item
       title="Intro to Zig Detection">
    	<description>
-   		Though <b>SATC's Manoeuvre Detection Aid</b> is capable of detecting target zigs, the algorithm can only reliably detect target zigs during an ownship straight leg (the geometry is just too chaotic during an ownship turn), so the actual process involves two steps:
+   		Though <b>SATC&apos;s Manoeuvre Detection Aid</b> is capable of detecting target zigs, the algorithm can only reliably detect target zigs during an ownship straight leg (the geometry is just too chaotic during an ownship turn), so the actual process involves two steps:
    		<br/><b>1.</b> Detecting ownship legs
    		<br/><b>2.</b> Detecting target zigs during those straight legs.
    		Despite this, the algorithm does attempt to determine if there is a target zig somewhere during an ownship turn by forecasting the bearing rate in the second leg. If the post-turn bearing rate does not match that produced in a passive ranging calculation, then a turn is assumed. However, as the algorithm won&apos;t know when the target turn occured during the ownship turn, it interprets the whole ownship turn as the period of the target turn.
