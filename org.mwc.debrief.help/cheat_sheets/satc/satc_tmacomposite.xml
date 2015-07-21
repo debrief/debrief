@@ -62,14 +62,6 @@
             </onCompletion>
             <param name="path" value="../GettingStarted/GenerateProject.xml"/>
          </task>
-<<<<<<< HEAD:org.mwc.debrief.help/cheat_sheets/satc/satc_composite.xml
-         <task kind="cheatsheet" name="Finding the sample data" skip="true">
-            <intro> 
-            Now let&apos;s pull in some sample data.
-            </intro>
-               <onCompletion>Great, we&apos;ve now got links to some sample data. 
-               Now we can move onto the tutorial. Go to <b>Loading a simple scenario</b>.
-=======
       <task kind="cheatsheet" name="Sample data from a local folder" skip="true">
                <intro>
                   You should have a Debrief project open. You will also need a link to the Debrief
@@ -92,7 +84,6 @@
                   Ok, you&apos;ve found the Debrief
 						<b>Sample Data</b>.
 						You&apos;re ready for the tutorial now.
->>>>>>> master:org.mwc.debrief.help/cheat_sheets/satc/satc_tmacomposite.xml
                </onCompletion>
                <param name="path" value="../GettingStarted/FindingYourData.xml"/>
             </task>
@@ -117,11 +108,7 @@
                </onCompletion>
                <param name="path" value="../GettingStarted/FindingYourNetworkData.xml"/>
             </task>
-<<<<<<< HEAD:org.mwc.debrief.help/cheat_sheets/satc/satc_composite.xml
          <task kind="cheatsheet" name="Loading the data" skip="false">
-=======
-                     <task kind="cheatsheet" name="Loading the data" skip="false">
->>>>>>> master:org.mwc.debrief.help/cheat_sheets/satc/satc_tmacomposite.xml
             <intro>
                Let&apos;s get some sample data loaded.
             </intro>
