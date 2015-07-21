@@ -586,7 +586,7 @@
                       </imageobject>
                     </inlinemediaobject></para></entry>
 
-                <entry><para xml:id="nuwc_address">Naval Undersea Warfare Center (NUWC)
+                <entry xml:id="nuwc_address"><para>Naval Undersea Warfare Center (NUWC)
                     <address>
                       <personname>Roger Howlett </personname>
                       <otheraddr>Code 2212 Combat Systems</otheraddr>
@@ -1584,7 +1584,7 @@ and so on....</programlisting></para>
 
           <para><note xml:id="track_shifting_note">
               <para>The Track-shifting implementation was originally provided by Mr David Gong at
-                NUWC (see <xref linkend="nuwc_address"/>).</para>
+                <link linkend="nuwc_address">NUWC</link>.</para>
             </note></para>
 
           <para>Debrief NG provides three modes of track shifting - moving individual track
