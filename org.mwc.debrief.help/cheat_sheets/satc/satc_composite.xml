@@ -16,8 +16,6 @@
 			you more room for the multiple Debrief windows that you will use later
 			on.<i>NoPrint</i>
       </intro>
-      <onCompletion>
-      </onCompletion>
       <task kind="cheatsheet" name="Concepts" skip="false">
          <intro>
             <b>Background</b>
@@ -54,47 +52,22 @@
                You now have a Debrief
 					<b>Project</b>
 					, to contain your tutorial data.
+					<br/><br/>
+					There are two ways in which we can load sample data. We will be modifying the
+               sample data, so ensure you&apos;re not working on data that is shared with other users
+               (the master data). The first thing we need to know is whether your Debrief
+               installation folder is on your local machine or on a Network Shared Folder.
+			   <br/> • If it&apos;s on a <b>local machine</b> go to <b>Sample Data if Debrief is on a Local Machine</b>
+               <br/> • If it&apos;s on a <b>Network Shared Folder</b>, go to <b>Sample Data if Debrief is on a Network Shared Folder</b>.
             </onCompletion>
             <param name="path" value="../GettingStarted/GenerateProject.xml"/>
          </task>
-         <taskGroup kind="sequence" name="Finding the sample data" skip="false">
-            <intro> There are two ways in which we can load sample data. We will be modifying the
-               sample data, so ensure you’re not working on data that is shared with other users
-               (the master data). The first thing we need to know is whether your Debrief
-               installation folder is on your local machine or on a Network Shared Folder.
-               <br/> • If it&apos;s on a <b>local machine</b> go to <b>Sample Data if Debrief is on a Local Machine</b>
-               <br/> • If it&apos;s on a <b>Network Shared Folder</b>, go to <b>Sample Data if Debrief is on a Network Shared Folder</b>.
+         <task kind="cheatsheet" name="Finding the sample data" skip="true">
+            <intro> 
+            Now let&apos;s pull in some sample data.
             </intro>
-            <task kind="cheatsheet" name="Sample Data if Debrief is on a Local Machine" skip="true">
-               <intro>Debrief NG stores it&apos;s data in a local folder called a <b>Project</b>. While these
-                  can be created to store new analysis data, it is also possible to select existing
-                  data directories as linked sub-folders.
-                  <br/><b>Note:</b> if the <b>Create Project</b> form opened
-                  when you started the application, you will have already provided a project name.
-                  If you also indicated that you wanted sample data to be imported, then you can
-                  skip the following steps and move on to the next cheat sheet (<b>Multi Leg Solution</b>).
-                  <br/><b>1.</b> Open the <b>Navigator</b> view
-                  <br/><b>2.</b> Check you have a workspace/parent folder where
-                  your links are stored.
-                  <br/>If you don’t have a workspace, refer to the earlier cheat
-                  sheet, <b>Generating a project</b>.
-                  <br/><b>3.</b> If you do have one, right-click on the current
-                  project in <b>Navigator</b>.
-                  <br/><b>4.</b> Click on <b>New</b> > <b>Folder</b>, to activate the <b>New Folder Wizard</b>
-                  We will now link to an existing folder.
-                  <br/><b>5.</b> Click on the <b>Advanced</b> button.
-                  <br/><b>6.</b> In the <b>Advanced Options</b>, click on <b>Link to alternate location (linked
-                  folder)</b>.
-                  <br/><b>7.</b> Click on <b>Browse</b>.
-                  <br/><b>8.</b> Navigate to your folder, select it, and click on <b>Finish</b>.
-                  <br/><b>Note</b>: if you don&apos;t have your own data, use the <b>sample_data</b> folder in the
-                  Debrief installation folder (for a deployed installation), or
-                  <b>org.mwc.cmap.combined.feature/root_installs</b> (for a development version of
-                  Debrief). </intro>
-               <onCompletion>
-                  Ok, you&apos;ve found the Debrief
-						<b>Sample Data</b>.
-						You&apos;re ready for the tutorial now.
+               <onCompletion>Great, we&apos;ve now got links to some sample data. 
+               Now we can move onto the tutorial. Go to <b>Loading a simple scenario</b>.
                </onCompletion>
                <param name="path" value="../GettingStarted/FindingYourData.xml"/>
             </task>
@@ -117,9 +90,18 @@
                   <b>Copy</b>.</intro>
                <onCompletion>Great, that&apos;s your data now copied in. Now we can move onto the tutorial. Go to <b>Loading a simple scenario</b>.
                </onCompletion>
-               <param name="path" value="../GettingStarted/FindingYourData.xml"/>
+               <param name="path" value="../GettingStarted/FindingYourNetworkData.xml"/>
             </task>
-         </taskGroup>
+         <task kind="cheatsheet" name="Loading the data" skip="false">
+            <intro>
+               Let&apos;s get some sample data loaded.
+            </intro>
+            <onCompletion>
+               Ok, now you have ownship track loaded, and you can see the fan of
+					ownship bearing data.
+            </onCompletion>
+            <param name="path" value="single_load.xml"/>
+         </task>
          <task kind="cheatsheet" name="Creating the scenario" skip="false">
             <intro>
                Now that data is present, it&apos;s time to create a scenario based
@@ -130,16 +112,6 @@
 					calculate a solution
             </onCompletion>
             <param name="path" value="single_create.xml"/>
-         </task>
-         <task kind="cheatsheet" name="Loading the data" skip="false">
-            <intro>
-               Let&apos;s get some sample data loaded.
-            </intro>
-            <onCompletion>
-               Ok, now you have ownship track loaded, and you can see the fan of
-					ownship bearing data.
-            </onCompletion>
-            <param name="path" value="single_load.xml"/>
          </task>
          <task kind="cheatsheet" name="Getting a solution" skip="false">
             <intro>
