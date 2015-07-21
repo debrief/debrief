@@ -38,19 +38,22 @@ import MWC.TacticalData.Fix;
  * @author ianmayo
  * 
  */
-abstract public class CoreTMASegment extends TrackSegment
+abstract public class CoreTMASegment extends TrackSegment implements CanBePlottedWithTimeVariable
 {
+
+	private static final int MAX_HEIGHT = 8;
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/** event name for when track is dragged
+
+	/**
+	 * event name for when track is dragged
 	 * 
 	 */
 	public static final String ADJUSTED = "Adjusted";
-	
+
 	/**
 	 * steady course (Degs)
 	 * 
@@ -140,6 +143,12 @@ abstract public class CoreTMASegment extends TrackSegment
 	@Override
 	public void paint(final CanvasType dest)
 	{
+		paint(dest, null);
+	}
+
+	@Override
+	public void paint(final CanvasType dest, final ITimeVariableProvider errorProvider)
+	{
 		final Collection<Editable> items = getData();
 
 		// ok - draw that line!
@@ -154,7 +163,8 @@ abstract public class CoreTMASegment extends TrackSegment
 		WorldLocation firstEnd = null;
 		// WorldLocation lastEnd = null;
 
-		for (final Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = items.iterator(); iterator
+				.hasNext();)
 		{
 			final FixWrapper thisF = (FixWrapper) iterator.next();
 
@@ -195,7 +205,19 @@ abstract public class CoreTMASegment extends TrackSegment
 			lastPoint = new Point(thisPoint);
 
 			// also draw in a marker for this point
-			dest.drawRect(lastPoint.x - 1, lastPoint.y - 1, 3, 3);
+			final double height;
+			if (errorProvider != null && errorProvider.applyStyling())
+			{
+				double thisH = Math.abs(errorProvider.getValueAt(
+						thisF.getDateTimeGroup()).doubleValue());
+				height = (int) (Math.min(thisH, MAX_HEIGHT) * 2);
+			}
+			else
+			{
+				height = 4;
+			}
+			dest.fillOval(lastPoint.x - (int) (height / 2), lastPoint.y
+					- (int) (height / 2), (int) height, (int) height);
 		}
 
 		// ok, plot the 1/2 way message
@@ -216,22 +238,22 @@ abstract public class CoreTMASegment extends TrackSegment
 			Color color = dest.getBackgroundColor();
 			if (dest instanceof ExtendedCanvasType)
 			{
-				// NOTE: this is a workaround, to overcome an occasional 
+				// NOTE: this is a workaround, to overcome an occasional
 				// SWT rendering problem - where the XOR text
 				// wasn't being displayed
-				xorMode = ((ExtendedCanvasType)dest).getXORMode();
-				((ExtendedCanvasType)dest).setXORMode(false);
+				xorMode = ((ExtendedCanvasType) dest).getXORMode();
+				((ExtendedCanvasType) dest).setXORMode(false);
 			}
 			final int ht = dest.getStringHeight(newFont) + 8;
 			final int wid = dest.getStringWidth(newFont, _dragMsg);
 			dest.setColor(Color.WHITE);
-			dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5 , ht);
+			dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5, ht);
 			// and draw the text
 			dest.setColor(java.awt.Color.BLACK);
 			dest.drawText(_dragMsg, pt.x, pt.y + 15);
 			if (dest instanceof ExtendedCanvasType)
 			{
-				((ExtendedCanvasType)dest).setXORMode(xorMode);
+				((ExtendedCanvasType) dest).setXORMode(xorMode);
 				dest.setColor(color);
 			}
 		}
@@ -244,8 +266,7 @@ abstract public class CoreTMASegment extends TrackSegment
 
 	@Override
 	abstract public void rotate(double brg, final WorldLocation origin);
-	
-	
+
 	protected void fireAdjusted()
 	{
 		super.firePropertyChange(ADJUSTED, null, System.currentTimeMillis());
@@ -268,7 +289,8 @@ abstract public class CoreTMASegment extends TrackSegment
 
 		final double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
 		final Collection<Editable> data = getData();
-		for (final Iterator<Editable> iterator = data.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = data.iterator(); iterator
+				.hasNext();)
 		{
 			final FixWrapper fix = (FixWrapper) iterator.next();
 			fix.getFix().setCourse(crseRads);
@@ -290,7 +312,8 @@ abstract public class CoreTMASegment extends TrackSegment
 
 		final double spdYps = speed.getValueIn(WorldSpeed.ft_sec) / 3;
 		final Collection<Editable> data = getData();
-		for (final Iterator<Editable> iterator = data.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = data.iterator(); iterator
+				.hasNext();)
 		{
 			final FixWrapper fix = (FixWrapper) iterator.next();
 			fix.getFix().setSpeed(spdYps);

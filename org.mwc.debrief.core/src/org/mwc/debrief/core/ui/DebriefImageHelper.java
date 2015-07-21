@@ -27,8 +27,10 @@ import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.DynamicLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.Chart.Painters.TimeDisplayPainter;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
@@ -66,7 +68,17 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		else if (editable instanceof PolygonNode)
 			res = DebriefPlugin.getImageDescriptor("icons/16/polygon.png");
 		else if (editable instanceof LabelWrapper)
-			res = DebriefPlugin.getImageDescriptor("icons/16/shape.gif");
+			res = DebriefPlugin.getImageDescriptor("icons/16/shape.png");
+		else if (editable instanceof DynamicLayer)
+			res = DebriefPlugin.getImageDescriptor("icons/16/clock.png");
+		else if (editable instanceof TimeDisplayPainter)
+		{	
+			TimeDisplayPainter tdp = (TimeDisplayPainter) editable;
+			if(tdp.isAbsolute())
+				res = DebriefPlugin.getImageDescriptor("icons/16/clock.png");
+			else
+				res = DebriefPlugin.getImageDescriptor("icons/16/stopwatch.png");
+		}
 		else if (editable instanceof TrackWrapper)
 		{
 			// we're doing fancy testing here, so put it last in the list

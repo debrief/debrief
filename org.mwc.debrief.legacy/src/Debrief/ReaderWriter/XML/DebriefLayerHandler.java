@@ -270,7 +270,7 @@ public class DebriefLayerHandler extends
 		eLayer.setAttribute("Name", layer.getName());
 		eLayer.setAttribute("Visible", writeThis(layer.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
-
+		
 		// step through the components of the layer
 		final java.util.Enumeration<Editable> iter = layer.elements();
 		while (iter.hasMoreElements())

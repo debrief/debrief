@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.324" useFeatures="true" includeLaunchers="true">
+<product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.327" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icons/DebriefNGlogoSmall.png"/>
@@ -40,7 +40,6 @@ openFile</programArgs>
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</linux>

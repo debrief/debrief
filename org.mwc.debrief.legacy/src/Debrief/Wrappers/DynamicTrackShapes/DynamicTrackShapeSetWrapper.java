@@ -23,14 +23,14 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
-import MWC.GUI.MovingPlottable;
+import MWC.GUI.DynamicPlottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WatchableList;
 
 public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
-		MovingPlottable
+		DynamicPlottable
 {
 	/**
 	 * 

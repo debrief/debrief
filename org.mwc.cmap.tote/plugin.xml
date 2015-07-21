@@ -27,6 +27,10 @@
    <extension point="org.mwc.cmap.tote.ToteCalculation">
       <calculation class="Debrief.Tools.Tote.Calculations.relBearingCalc"
             name="Rel Brg"/>
+   </extension>
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.bearingRateCalc"
+            name="Brg Rate"/>
    </extension>   
    <extension point="org.mwc.cmap.tote.ToteCalculation">
       <calculation class="Debrief.Tools.Tote.Calculations.atbCalc"
@@ -43,10 +47,6 @@
    <extension point="org.mwc.cmap.tote.ToteCalculation">
       <calculation class="Debrief.Tools.Tote.Calculations.depthCalc"
             name="Depth"/>
-   </extension>   
-   <extension point="org.mwc.cmap.tote.ToteCalculation">
-      <calculation class="Debrief.Tools.Tote.Calculations.bearingRateCalc"
-            name="Brg Rate"/>
    </extension>   
    <extension point="org.mwc.cmap.tote.ToteCalculation">
       <calculation class="Debrief.Tools.Tote.Calculations.timeSecsCalc"

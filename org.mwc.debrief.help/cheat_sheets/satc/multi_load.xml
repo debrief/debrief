@@ -3,10 +3,14 @@
  xsi:noNamespaceSchemaLocation="../contentFile.xsd"
  title="Loading the data">
    <intro>
-      <description>Load the prepared plot file <b>L2_Scenario.dpf</b> by dragging it from the
-         <b>Navigator</b> view into the plot area.
-         <br/>As soon as the plot opens, you will see a Blue
-         Ownship track, with a dark green bearing fan.</description>
+      <description>
+         We&apos;ve got a Debrief plot file pre-prepared to let you avoid 
+         some of the steps in the single-leg tutorial, called  <b>L2_Scenario.dpf</b>.
+         <br/>
+         For this file we have a good set of ownship data for the ownship track, 
+         but we didn&apos;t get GPS data for the other participant - though the
+         exercise observer did record the platform speed during the trial.
+      </description>
    </intro>
    <item
       title="Find the data file">

@@ -23,24 +23,45 @@ package MWC.Utilities.ReaderWriter.XML.Features;
  * @version 1.0
  */
 
+import java.awt.Color;
+import java.awt.Font;
+
 import org.w3c.dom.Element;
 
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
 
 
 abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExporter
 {
 
-  java.awt.Color _theColor;
+  private static final String DISPLAY_UNITS = "DisplayUnits";
+	private static final String LOCATION = "Location";
+	private static final String SCALE_STEP = "ScaleStep";
+	private static final String SCALE_MAX = "ScaleMax";
+	private static final String AUTO_MODE = "AutoMode";
+	private static final String BACKGROUND = "Background";
+	private static final String SEMI_TRANSPARENT = "SemiTransparent";
+	private static final String VISIBLE = "Visible";
+	private static final String FILL_BACKGROUND = "FillBackground";
+	java.awt.Color _theColor;
   boolean _isVisible;
   long _ScaleMax;
   long _ScaleStep;
   boolean _AutoMode;
   String _LabelLocation;
   String _displayUnits;
+	private java.awt.Font _myFont = new java.awt.Font("Arial",
+			java.awt.Font.PLAIN, 12);
+
+	private boolean _fillBackground = false;
+
+	private Color _background = Color.white;
+
+	private boolean _semiTransparent = false;
 
   MWC.GUI.Properties.DiagonalLocationPropertyEditor _dp =
     new MWC.GUI.Properties.DiagonalLocationPropertyEditor();
@@ -53,42 +74,71 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
     // inform our parent what type of class we are
     super("scale");
 
-    addAttributeHandler(new HandleBooleanAttribute("Visible")
+    addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
     {
       public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
-    addAttributeHandler(new HandleBooleanAttribute("AutoMode")
+    addAttributeHandler(new HandleBooleanAttribute(SEMI_TRANSPARENT)
+    {
+      public void setValue(final String name, final boolean value)
+      {
+        _semiTransparent = value;
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute(FILL_BACKGROUND)
+    {
+      public void setValue(final String name, final boolean value)
+      {
+        _fillBackground = value;
+      }
+    });
+    addHandler(new ColourHandler(BACKGROUND)
+    {
+      public void setColour(final Color value)
+      {
+        _background = value;
+      }
+    });
+    addHandler(new FontHandler()
+    {
+			@Override
+			public void setFont(Font value)
+			{
+				_myFont = value;
+			}
+    });
+    addAttributeHandler(new HandleBooleanAttribute(AUTO_MODE)
     {
       public void setValue(final String name, final boolean value)
       {
         _AutoMode = value;
       }
     });
-    addAttributeHandler(new HandleAttribute("ScaleMax")
+    addAttributeHandler(new HandleAttribute(SCALE_MAX)
     {
       public void setValue(final String name, final String value)
       {
         _ScaleMax = Long.valueOf(value).longValue();
       }
     });
-    addAttributeHandler(new HandleAttribute("ScaleStep")
+    addAttributeHandler(new HandleAttribute(SCALE_STEP)
     {
       public void setValue(final String name, final String value)
       {
         _ScaleStep = Long.valueOf(value).longValue();
       }
     });
-    addAttributeHandler(new HandleAttribute("Location")
+    addAttributeHandler(new HandleAttribute(LOCATION)
     {
       public void setValue(final String name, final String value)
       {
         _LabelLocation = value;
       }
     });
-    addAttributeHandler(new HandleAttribute("DisplayUnits")
+    addAttributeHandler(new HandleAttribute(DISPLAY_UNITS)
     {
       public void setValue(final String name, final String value)
       {
@@ -116,6 +166,16 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
     csp.setAutoMode(_AutoMode);
     csp.setScaleMax(new Long(_ScaleMax));
     csp.setScaleStep(new Long(_ScaleStep));
+    csp.setFillBackground(_fillBackground);
+    csp.setSemiTransparent(_semiTransparent);
+    if (_background != null)
+    {
+    	csp.setBackground(_background);
+    }
+    if (_myFont != null)
+    {
+    	csp.setFont(_myFont);
+    }
     if(_LabelLocation != null)
     {
       _dp.setAsText(_LabelLocation);
@@ -131,6 +191,10 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
     _isVisible = false;
     _LabelLocation = null;
     _displayUnits = null;
+    _myFont = null;
+    _background = null;
+    _fillBackground = false;
+    _semiTransparent = false;
 
   }
 
@@ -144,19 +208,23 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
     final Element scale = doc.createElement("scale");
 
     // do the visibility
-    scale.setAttribute("Visible", writeThis(csp.getVisible()));
+    scale.setAttribute(VISIBLE, writeThis(csp.getVisible()));
     scale.setAttribute("Name", "World Default");
-    scale.setAttribute("ScaleMax", writeThis(csp.getScaleMax().longValue()));
-    scale.setAttribute("ScaleStep", writeThis(csp.getScaleStep().longValue()));
-    scale.setAttribute("AutoMode", writeThis(csp.getAutoMode()));
+    scale.setAttribute(SCALE_MAX, writeThis(csp.getScaleMax().longValue()));
+    scale.setAttribute(SCALE_STEP, writeThis(csp.getScaleStep().longValue()));
+    scale.setAttribute(AUTO_MODE, writeThis(csp.getAutoMode()));
+    scale.setAttribute(FILL_BACKGROUND, writeThis(csp.isFillBackground()));
+    scale.setAttribute(SEMI_TRANSPARENT, writeThis(csp.isSemiTransparent()));
+    FontHandler.exportFont(csp.getFont(), scale, doc);
+    ColourHandler.exportColour(csp.getBackground(), scale, doc, BACKGROUND);
 
     // and the units
-    scale.setAttribute("DisplayUnits", csp.getDisplayUnits());
+    scale.setAttribute(DISPLAY_UNITS, csp.getDisplayUnits());
 
     // and the scale location
     _dp.setValue(csp.getLocation());
     final String tmp = _dp.getAsAbbreviatedText();
-    scale.setAttribute("Location", tmp);
+    scale.setAttribute(LOCATION, tmp);
 
     // do the colour
     ColourHandler.exportColour(csp.getColor(), scale, doc);

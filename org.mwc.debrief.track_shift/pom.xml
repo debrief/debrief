@@ -9,6 +9,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.debrief.track_shift</artifactId>
-  <version>1.0.61</version>
+  <version>1.0.63</version>
   <packaging>eclipse-plugin</packaging>
 </project>

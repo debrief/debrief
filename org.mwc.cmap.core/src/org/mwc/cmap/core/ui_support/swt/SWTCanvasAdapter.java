@@ -154,6 +154,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		ExtendedCanvasType
 {
 
+	/** the alpha depth of semi-transparent objects
+	 * 
+	 */
+	private static final int SEMI_TRANSPARENCY_ALPHA = 125;
+
 	/**
      * 
      */
@@ -646,7 +651,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			// translate the polygon to SWT format
 			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
 
-			_theDest.setAlpha(45);
+			_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
 			_theDest.fillPolygon(poly);
 			_theDest.setAlpha(255);
 			_theDest.drawPolygon(poly);
@@ -805,7 +810,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (_theDest != null)
 			if (!_theDest.isDisposed())
 			{
-				_theDest.setAlpha(45);
+				_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
 				_theDest.fillOval(x, y, width, height);
 				_theDest.setAlpha(255);
 			}
@@ -984,7 +989,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (_theDest != null)
 			if (!_theDest.isDisposed())
 			{
-				_theDest.setAlpha(44);
+				_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
 				_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
 				_theDest.setAlpha(255);
 				_theDest.drawArc(x, y, width, height, startAngle, arcAngle);
@@ -1225,7 +1230,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		if (!_theDest.isDisposed())
 		{
-			_theDest.setAlpha(45);
+			_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
 			_theDest.fillRectangle(x, y, wid, height);
 			_theDest.setAlpha(255);
 
@@ -1472,7 +1477,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	{
 		if (_sg2d != null && shape != null)
 		{		
-			_theDest.setAlpha(45);
+			_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
       _sg2d.fill(shape);
 			_theDest.setAlpha(255);
       _sg2d.draw(shape);

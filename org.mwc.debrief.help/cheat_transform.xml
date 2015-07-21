@@ -6,36 +6,60 @@
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="pdfDestination" value="../org.mwc.cmap.combined.feature/root_installs" />
 
-
 	<target name="cheat2dita" description="produce pdf version of cheat sheets">
+		<antcall target="cheat2ditaInternal">
+		    <param name="outputName" value="-o:dita/map1.ditamap"/>
+			<param name="inputName" value="tutorial_to_dita.xsl"/>
+		</antcall>
+		<antcall target="cheat2ditaInternal">
+		    <param name="outputName" value="-o:dita/map2.ditamap"/>
+			<param name="inputName" value="tma_to_dita.xsl"/>
+		</antcall>
+	</target>
+
+	<target name="cheat2ditaInternal" description="produce pdf version of cheat sheets">
 		
 		<!-- record the Saxon location -->
 		<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
 
 		<!-- and run the XSL transformv -->
 		<java fork="true" jar="${saxonhe-classpath}" dir="cheat_sheets">
-			<arg value="-o:dita/map.ditamap" />
+			<arg value="${outputName}" />
 			<arg value="-it:root" />
-			<arg value="printed_version.xsl" />
+			<arg value="${inputName}" />
 		</java> 
 	</target>
 	
 	<target name="dita2pdf" description="produce pdf version of cheat sheets" depends="cheat2dita">
+		<antcall target="dita2pdfInternal">
+		    <param name="mapName" value="cheat_sheets/dita/map1.ditamap"/>
+			<param name="pdfName" value="DebriefNGTutorial.pdf"/>
+		</antcall>
+		<antcall target="dita2pdfInternal">
+		    <param name="mapName" value="cheat_sheets/dita/map2.ditamap"/>
+			<param name="pdfName" value="DebriefNG_TMA_Tutorial.pdf"/>
+		</antcall>
+		
+		<!-- delete any existing tutorial file -->
+		<delete file="${pdfDestination}/DebriefNGTutorial.pdf" description="delete existing file" />
+		<delete file="${pdfDestination}/DebriefNG_TMA_Tutorial.pdf" description="delete existing file" />
+		
+				<!-- lastly, move the doc to its target -->		
+		<move file="${helpDir}/cheat_sheets/dita/map1.pdf"  tofile="${pdfDestination}/DebriefNGTutorial.pdf" failonerror="true" />
+		<move file="${helpDir}/cheat_sheets/dita/map2.pdf"  tofile="${pdfDestination}/DebriefNG_TMA_Tutorial.pdf" failonerror="true" />
+	</target>
+		
+	<target name="dita2pdfInternal" description="produce pdf version of cheat sheets" depends="cheat2dita">
 		<!-- and now the DITA transform -->
 		<property name="dita.dir" value="${contribDir}/DITA-OT1.8.5" />
 
 		<ant antfile="${dita.dir}${file.separator}build.xml">
 			<!-- please refer to the toolkit's document for supported parameters, and 
 	           specify them base on your needs -->
-			<property name="args.input" location="cheat_sheets/dita/map.ditamap" />
+			<property name="args.input" location="${mapName}" />
 			<property name="output.dir" location="cheat_sheets/dita" />
 			<property name="transtype" value="debrief" />
 		</ant>
 		
-		<!-- delete any existing tutorial file -->
-		<delete file="${pdfDestination}/DebriefTutorial.pdf" description="delete existing file" />
-
-		<!-- lastly, move the doc to its target -->		
-		<move file="${helpDir}/cheat_sheets/dita/map.pdf"  tofile="${pdfDestination}/DebriefTutorial.pdf" failonerror="true" />
 	</target>
 </project>

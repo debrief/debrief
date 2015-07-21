@@ -26,19 +26,27 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
+import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.plotViewer.actions.CoreDragAction;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
+import org.mwc.debrief.core.actions.drag.CoreDragOperation;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.ITimeVariableProvider;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -431,6 +439,21 @@ public class DragFeature extends CoreDragAction
 			
 		}
 
+		private ITimeVariableProvider getErrorProvider()
+		{
+			ITimeVariableProvider ret = null;
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			if (page != null)
+			{
+				IViewPart view = page.findView(CorePlugin.STACKED_DOTS);
+				if (view instanceof ITimeVariableProvider)
+				{
+					ret = (ITimeVariableProvider)view;
+				}
+			}
+			return ret;
+		}
+
 		/**
 		 * dragging happening. Either draw (or erase) the previous point
 		 * 
@@ -441,9 +464,7 @@ public class DragFeature extends CoreDragAction
 		 */
 		private void drawHere(final GC graphics, final WorldVector newVector)
 		{
-			org.eclipse.swt.graphics.Color fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 255,255);
-			//graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
-			graphics.setForeground(fc);
+			graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
 
 			// ok, move the target to the new location...
 			if (newVector != null)
@@ -490,11 +511,36 @@ public class DragFeature extends CoreDragAction
 				};
 				// change the color by hand
 				ca.startDraw(graphics);
-				_hoverTarget.paint(ca);
+				
+				// see if it's a painter that also wants to know the error score
+				
+				// see what is being dragged
+				boolean painted = false;
+				if(_hoverTarget instanceof CoreDragOperation)
+				{
+					ITimeVariableProvider errorProvider = getErrorProvider();
+
+					CoreDragOperation cdo = (CoreDragOperation) _hoverTarget;
+					TrackSegment segment = cdo.getSegment();
+					if(segment instanceof CoreTMASegment)
+					{
+						if (errorProvider != null)
+						{
+							CoreTMASegment coreSeg = (CoreTMASegment) segment;
+							coreSeg.paint(ca, errorProvider);
+							painted = true;
+						}
+					}
+				}
+				
+				if(!painted)
+				{
+					_hoverTarget.paint(ca);
+				}
 				ca.endDraw(null);
 			}
 
-			fc.dispose();
+		//	fc.dispose();
 		}
 
 		@Override

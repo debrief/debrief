@@ -21,12 +21,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
@@ -86,15 +89,22 @@ public class ExportRTF extends CoreEditorAction
 	/**
 	 * and execute..
 	 */
-	protected void execute()
+	@Override
+	protected IStatus executeInJob(IProgressMonitor monitor)
 	{
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
 		final PlainChart theChart = getChart();
 
 		if (_theParent == null)
 		{
 			CorePlugin.logError(Status.ERROR, "Tool parent missing for Write Metafile", null);
-			return;
+			return Status.CANCEL_STATUS;
 		}
+		
+		monitor.beginTask("Export image as WMF embedded in RTF", IProgressMonitor.UNKNOWN);
 
 		final WriteMetafile write = new WriteMetafile(_theParent, theChart, _writeToFile)
 		{
@@ -109,8 +119,21 @@ public class ExportRTF extends CoreEditorAction
 			}
 
 		};
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
 		write.execute();
-
+		if (!write.isWritable())
+		{
+			Shell shell = getShell();
+			MessageDialog.openError(shell, "Error", write.getErrorMessage());
+			return Status.OK_STATUS;
+		}
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
 		// ok, do we want to write it to the clipboard?
 		if (_writeToClipboard)
 		{
@@ -122,15 +145,15 @@ public class ExportRTF extends CoreEditorAction
 				// create the clipboard
 
 				// try to copy the wmf to the clipboard
-				ByteArrayOutputStream os = null;
+				final ByteArrayOutputStream[] os = new ByteArrayOutputStream[1];
 				DataInputStream dis = null;
 				try
 				{
 					// get the dimensions
 					final Dimension dim = MetafileCanvas.getLastScreenSize();
 
-					os = new ByteArrayOutputStream();
-					RTFWriter writer = new RTFWriter(os);
+					os[0] = new ByteArrayOutputStream();
+					RTFWriter writer = new RTFWriter(os[0]);
 					File file = new File(fName);
 			    byte[] data = new byte[(int) file.length()];
 			    dis = new DataInputStream(new FileInputStream(file));
@@ -139,10 +162,27 @@ public class ExportRTF extends CoreEditorAction
 			    writer.writeEmfPicture(data, dim.getWidth(), dim.getHeight());
 			    writer.writeTail();
 					
-			    RTFTransfer rtfTransfer = RTFTransfer.getInstance();
-			    Clipboard clipboard = new Clipboard(Display.getDefault());
-			    Object[] rtfData = new Object[] { os.toString() };
-			    clipboard.setContents(rtfData, new Transfer[] {rtfTransfer});
+			    Runnable runnable = new Runnable()
+					{
+						
+						@Override
+						public void run()
+						{
+							RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+					    Clipboard clipboard = new Clipboard(Display.getDefault());
+					    Object[] rtfData = new Object[] { os[0].toString() };
+					    clipboard.setContents(rtfData, new Transfer[] {rtfTransfer});
+						}
+					};
+					if (Display.getCurrent() != null)
+					{
+						runnable.run();
+					}
+					else
+					{
+						Display.getDefault().syncExec(runnable);
+					}
+			    
 				}
 				catch (final Exception e)
 				{
@@ -150,10 +190,10 @@ public class ExportRTF extends CoreEditorAction
 					PlotViewerPlugin.getDefault().getLog().log(status);
 				}
 				finally {
-					if (os != null) {
+					if (os[0] != null) {
 						try
 						{
-							os.close();
+							os[0].close();
 						} catch (IOException e)
 						{
 							// ignore
@@ -175,6 +215,13 @@ public class ExportRTF extends CoreEditorAction
 				PlotViewerPlugin.getDefault().getLog().log(status);
 			}
 		}
+
+		monitor.done();
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
+		return Status.OK_STATUS;
 	}
 
 

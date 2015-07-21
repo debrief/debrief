@@ -39,9 +39,10 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -71,6 +72,10 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.team.core.history.IFileRevision;
+import org.eclipse.team.internal.core.history.LocalFileRevision;
+import org.eclipse.team.internal.ui.history.FileRevisionEditorInput;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -153,10 +158,10 @@ import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -368,21 +373,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						final IFileEditorInput inp = (IFileEditorInput) getEditorInput();
 						setPartName(inp.getName());
 					}
+					else if (input instanceof FileStoreEditorInput)
+					{
+						final FileStoreEditorInput fsi = (FileStoreEditorInput) input;
+						final String theName = fsi.getName();
+						setPartName(theName);
+					} else if (input instanceof FileRevisionEditorInput)
+					{
+						setPartName( ((FileRevisionEditorInput)input).getName());
+					}
 					else
 					{
-						if (input instanceof FileStoreEditorInput)
-						{
-							final FileStoreEditorInput fsi = (FileStoreEditorInput) input;
-							final String theName = fsi.getName();
-							setPartName(theName);
-						}
-						else
-						{
-							CorePlugin.logError(Status.ERROR,
-									"data source for PlotEditor not of expected type:" + input,
-									null);
-							System.err.println("Not expected file type:" + input);
-						}
+						CorePlugin.logError(Status.ERROR,
+								"data source for PlotEditor not of expected type:" + input,
+								null);
+						System.err.println("Not expected file type:" + input);
 					}
 				}
 			}
@@ -492,7 +497,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * @param input
 	 *          the file to insert
 	 */
-	private void loadThisFile(final IEditorInput input)
+	private void loadThisFile(IEditorInput input)
 	{
 		InputStream is = null;
 		if (!input.exists())
@@ -528,8 +533,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				name = _uri.getPath();
 				final IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
 				is = _ifs.openInputStream(EFS.NONE, null);
+			} 
+			else if (input instanceof FileRevisionEditorInput)
+			{
+				final FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+				IFile file = getFile(frei);
+				if (file != null && file.exists())
+				{
+					name = getAbsoluteName(file);
+					is = frei.getStorage().getContents();
+				}
 			}
-
 			if (is != null)
 				loadThisStream(is, name);
 			else
@@ -552,6 +566,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 									+ input.getName()
 									+ "\nPlease right-click on your navigator project and press Refresh");
 		}
+	}
+
+	private IFile getFile(FileRevisionEditorInput frei)
+	{
+		IFile file = null;
+		IFileRevision revision = frei.getFileRevision();
+		if (revision instanceof LocalFileRevision)
+		{
+			LocalFileRevision localFileRevision = (LocalFileRevision) revision;
+			if (localFileRevision.getFile() != null)
+			{
+				file = localFileRevision.getFile();
+			}
+			else
+			{
+				IFileState state = localFileRevision.getState();
+				IPath path = state.getFullPath();
+				file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			}
+		}
+		return file;
 	}
 
 	public String getAbsoluteName(final IFile iff) throws CoreException
@@ -1320,9 +1355,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								dest, tNow);
 
 						// if this has a moveable perspective - paint it over the top
-						if (thisLayer instanceof MovingPlottable && tNow != null)
+						if (thisLayer instanceof DynamicPlottable && tNow != null)
 						{
-							((MovingPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
+							((DynamicPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
 						}						
 
 						// ok, now sort out the highlight
@@ -1426,6 +1461,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				final Path path = new Path(uri.getPath());
 				ext = path.getFileExtension();
 			}
+			else if (input instanceof FileRevisionEditorInput)
+			{
+				final FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+				final URI uri = frei.getURI();
+				final Path path = new Path(uri.getPath());
+				ext = path.getFileExtension();
+			}
 
 			// right, have a look at it.
 			if ( (ext == null) || (!ext.equalsIgnoreCase("xml") && !ext.equalsIgnoreCase("dpf")) )
@@ -1506,49 +1548,37 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								final IFile file = ((IFileEditorInput) getEditorInput())
 										.getFile();
 
-								// get the current path (since we're going to be moving the temp
-								// one to it
-								final IPath thePath = file.getLocation();
-
-								// create a backup path
-								final IPath bakPath = file.getFullPath()
-										.addFileExtension("bak");
-
-								// delete any existing backup file
-								final File existingBackupFile = new File(file.getLocation()
-										.addFileExtension("bak").toOSString());
-								if (existingBackupFile.exists())
+								InputStream source = null;
+								try
 								{
-									CorePlugin.logError(Status.INFO,
-											"Existing back file still there, having to delete"
-													+ existingBackupFile.getAbsolutePath(), null);
-									existingBackupFile.delete();
+									source = new FileInputStream(tmpFile);
+									file.setContents(source, true, true, monitor);
 								}
-
-								// now rename the existing file as the backup
-								file.move(bakPath, true, monitor);
-
-								// move the temp file to be our real working file
-								final File destFile = thePath.toFile().getAbsoluteFile();
-								if (!tmpFile.renameTo(destFile))
+								finally
 								{
-									FileUtils.moveFile(tmpFile, destFile);
+									FileUtil.safeClose(source);
 								}
+							}
+							else if (input instanceof FileRevisionEditorInput)
+							{
+								CorePlugin.logError(Status.INFO,
+										"Performing FileRevisionEditorInput save", null);
 
-								// finally, delete the backup file
-								if (existingBackupFile.exists())
+								FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+								final IFile file = getFile(frei);
+
+								InputStream source = null;
+								try
 								{
-									CorePlugin.logError(Status.INFO,
-											"Save operation completed successfully, deleting backup file"
-													+ existingBackupFile.getAbsolutePath(), null);
-									existingBackupFile.delete();
+									source = new FileInputStream(tmpFile);
+									file.setContents(source, true, true, monitor);
+									FileEditorInput newInput = new FileEditorInput(file);
+									setInputWithNotify(newInput);
 								}
-
-								// throw in a refresh - since we've done the save outside
-								// Eclipse
-								file.getParent()
-										.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-
+								finally
+								{
+									FileUtil.safeClose(source);
+								}
 							}
 							else if (input instanceof FileStoreEditorInput)
 							{
@@ -1564,33 +1594,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								// create pointers to the existing file, and the backup file
 								final IFileStore existingFile = EFS.getLocalFileSystem()
 										.getStore(_p);
-								final IFileStore backupFile = EFS.getLocalFileSystem()
-										.getStore(_p.addFileExtension("bak"));
-
-								// delete any existing backup file
-								final IFileInfo backupStatus = backupFile.fetchInfo();
-								if (backupStatus.exists())
+								OutputStream out = null;
+								InputStream source = null;
+								try
 								{
-									CorePlugin.logError(Status.INFO,
-											"Existing back file still there, having to delete"
-													+ backupFile.toURI().getRawPath(), null);
-									backupFile.delete(EFS.NONE, monitor);
+									out = existingFile.openOutputStream(EFS.OVERWRITE, monitor);
+									source = new FileInputStream(tmpFile);
+									FileUtil.transferStreams(source, out, existingFile.toString(), monitor);
 								}
-
-								// now rename the existing file as the backup
-								existingFile.move(backupFile, EFS.OVERWRITE, monitor);
-
-								// and rename the temp file as the working file
-								tmpFile.renameTo(existingFile.toLocalFile(EFS.NONE, monitor));
-
-								if (backupStatus.exists())
+								finally 
 								{
-									CorePlugin.logError(Status.INFO,
-											"Save operation successful, deleting backup file"
-													+ backupFile.toURI().getRawPath(), null);
-									backupFile.delete(EFS.NONE, monitor);
+									FileUtil.safeClose(source);
+									FileUtil.safeClose(out);
 								}
-
 							}
 						}
 				}
@@ -1879,5 +1895,32 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	public void outlinePageClosed()
 	{
 		_outlinePage = null;
+	}
+	
+	@Override
+	public void reload(final IFile file)
+	{
+		closeEditor(false);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			
+			@Override
+			public void run()
+			{
+				IWorkbenchPage page = getSite().getPage();
+				IEditorDescriptor desc = PlatformUI.getWorkbench().
+				        getEditorRegistry().getDefaultEditor(file.getName());
+				try
+				{
+					page.openEditor(new FileEditorInput(file), desc.getId());
+				}
+				catch (PartInitException e)
+				{
+					DebriefPlugin.logError(IStatus.ERROR,
+							"Failed trying to open file: " + file.getName(), e);
+				}
+			}
+		});
+		
 	}
 }
