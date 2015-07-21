@@ -48,7 +48,7 @@
    <item
       title="Viewing the bearing measurement contributions">
       <description> The <b>Bearing Measurement Contribution</b> is the set of bearings that represent the
-         unknown target trac’. You can see that the contribution has an estimated <b>error</b> value of
+         unknown target track. You can see that the contribution has an estimated <b>error</b> value of
          <b>+/- 3 degs</b>, so the algorithm will only offer solutions that are within 3 degrees
          of these bearing measurements.
          <br/>To view these measurements:
