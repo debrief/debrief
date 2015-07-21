@@ -1,83 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet title="Configuring background data">
 	<intro>
-		<description>
-			In addition to plotting your recorded vehicle data, Debrief is able
-			to show a number of datasets in backdrop form.
-			<br />
-			In the past we offered the VPF vectored dataset and the
-			 ETOPO-2 gridded bathymetry.  But, the shiny new Natural Earth
-			 has effectively replaced both.
+		<description>In addition to plotting your recorded vehicle data, Debrief is able to show a
+			number of datasets in backdrop form. In the past we offered the Vector Product Format
+			(VPF) vectored dataset and the ETOPO-2 gridded bathymetry, but these have now been
+			superseded by the shiny new &apos;Natural Earth.&apos;
 		</description>
 	</intro>
-	<item		
-		href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"	
-		title="Getting hold of the Natural Earth dataset">
-		<description>
-			Debrief contains a very low resolution Natural Earth dataset, 
-			sufficient to provide coastlines and country boundaries.
-			<br/>
-			You will probably wish to configure the higher resolution data,
-			it will make your analysis plots much more attractive.  
-			<br/>
-			Your workplace may have a network copy of Natural Earth. If you have
-			sufficient storage space on your machine (about 90Mb) you will get
-			better performance by copying the data to your hard drive (IT policy
-			permitting...).
-			<br/>  
-			But if you don&apos;t have access to a copy, you can get it 
-			from the Internet (it&apos;s about 25Mb). Just click on the <b>Download zip</b> button on this site:
-			<b>https://github.com/debrief/NaturalEarth</b>.  Once you have the zip-file, 
-			just unzip it into a safe place on your hard drive.
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Obtaining the Natural Earth dataset">
+		<description>Debrief contains a low resolution &apos;Natural Earth&apos; dataset, sufficient to
+			provide coastlines and country boundaries. <br/>However, you can make your analysis
+			plots much more attractive by configuring higher resolution data. <br/>Your workplace
+			may already have a network copy of &apos;Natural Earth&apos; but, if your IT security policy allows it, you will get better
+			performance by copying the data to your hard drive. <br/>If you don&apos;t have access to a
+			copy, you can download it from <b>https://github.com/debrief/NaturalEarth</b> by
+			clicking on the <b>Download zip</b> button (file size is approximately 25 MB). <br/>Once
+			you have downloaded the file, just unzip it in the normal way and save it to a safe
+			location on your hard drive.
 		</description>
 	</item>
-	<item
-		href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
-		title="Tell Debrief where to find your Natural Earth data">
-		<description>
-			Next we must tell Debrief where your data is. We do this 
-			via the Preferences pane.
-			<br/>
-			So, select <b>Preferences</b> from the <b>Window</b> menu.
-			Then open up the <b>Natural Earth</b> preferences page
-			from the <b>Maritime Analysis</b> listing.
-			Lastly, click on <b>Browse</b>
-			to navigate to your unzipped Natural Earth folder.
-		</description>
-	</item>
-	<item
-		href="/org.mwc.debrief.help/html/legacy/external_datasets.html#getting_vpf"
-		title="How to configure VPF library datasets" skip="true">
-		<description>
-			Most users now find Natural Earth sufficient for background
-			reference data.  If you wish to, you can learn about the legacy
-			VPF and ETOPO in these next steps, but I&apos;d advice just skipping the steps
-			and jumping forward to actual data.
-			<br/>
-			The steps to configure VPF are covered in Debrief&apos;s
-			user manual. <i>NoPrint</i>If you wish to learn this at this stage, use the
-			&apos;Question Mark&apos; help link alongside, else search for
-			VPF
-			in Debrief&apos;s online help at some future stage.<i>NoPrint</i>
-			Here&apos;s a
-			clue though, you go into the
-			<b>Maritime Analysis</b>
-			section of the Preferences. <br/> VPF is distributed as 4 CD-ROMS. If 
-			you don&apos;t hold the CDs you can skip this step.
-		</description>
-	</item>
-	<item href="/org.mwc.debrief.help/html/legacy/etopo_data.html#etopo_install"
-		title="How to configure ETOPO library data" skip="true">
-		<description>
-			<i>NoPrint</i>
-			Use the help link to the side of this text to open the guidance on
-			how to configure the location of the ETOPO data.
-			<i>NoPrint</i>
-			<i>Please read the relevant section of the Debrief user manual for how
-				to specify use the Debrief/Preferences dialog the location of the ETOPO dataset.
-				</i> 
-				<br/>ETOPO is distributed as a ~200Mb data-file.  If 
-			you don&apos;t hold the data-file you can skip this step.
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Configuring Debrief with Natural Earth data">
+		<description>The next step is to configure Debrief with the &apos;Natural Earth&apos; data:
+			<br/><b>1.</b> Click on <b>Window</b> > <b>Preferences</b> (or press <b>Alt,W,P</b>)
+			<br/><b>2.</b> Click on <b>Maritime Analysis</b> and select <b>Natural Earth</b>
+			<br/><b>3.</b> Click on the <b>Browse</b> to navigate to your unzipped &apos;Natural Earth&apos; folder.
+			<br/><b>4.</b> Click on <b>Ok</b>.
 		</description>
 	</item>
 </cheatsheet>
