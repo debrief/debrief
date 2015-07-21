@@ -98,15 +98,6 @@
                </onCompletion>
                <param name="path" value="../GettingStarted/FindingYourData.xml"/>
             </task>
-            <task kind="cheatsheet" name="Data Linked to from Local Machine" skip="true">
-               <intro> Great, that&apos;s your data now linked. Now, just repeat this process to add any
-                  other data directories you want to load data from. You probably just created a link to the sample data on your first attempt, but you may
-                  also wish to create a link to a shared working folder at some point.</intro>
-               <onCompletion>
-                  Now we can move on to the tutorial. Go to <b>Loading a simple scenario</b>.
-               </onCompletion>
-               <param name="path" value="../single_load.xml"/>
-            </task>
             <task kind="cheatsheet" name="Sample Data if Debrief is on a Network Shared Folder" skip="true">
                <intro>We will now copy in an
                   existing set of sample data from the <b>Debrief\DebriefNG</b> Network Shared
@@ -126,7 +117,7 @@
                   <b>Copy</b>.</intro>
                <onCompletion>Great, that&apos;s your data now copied in. Now we can move onto the tutorial. Go to <b>Loading a simple scenario</b>.
                </onCompletion>
-               <param name="path" value="../single_load.xml"/>
+               <param name="path" value="single_load.xml"/>
             </task>
          </taskGroup>
          <task kind="cheatsheet" name="Loading the data" skip="false">
