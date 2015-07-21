@@ -22,7 +22,7 @@
          (the item name is auto-selected from the Date-Time-Group (DTG) of the first item in the
          bearing data).
          <br/>You will also see that the <b>Maintain Contributions</b> view has opened. This view
-         is used to create and manage your scenario data. If you haven’t read about the SATC user
+         is used to create and manage your scenario data. If you haven&apos;t read about the SATC user
          interface via the help page earlier on, please read it now<i>NoPrint</i> by clicking the link below<i>NoPrint</i>. </description>
       <command
             required="false"
@@ -35,7 +35,7 @@
          meaningful:
          <br/><b>1.</b> Select this scenario in the <b>Outline</b> view
          <br/><b>2.</b> In the <b>Properties</b> view (<b>Windows</b> >
-         <b>Show View</b> > <b>Properties</b>, if it isn’t visible) change the <b>Name</b> value to <b>Single Leg</b>.
+         <b>Show View</b> > <b>Properties</b>, if it isn&apos;t visible) change the <b>Name</b> value to <b>Single Leg</b>.
       </description>
    </item>
     <item
@@ -101,7 +101,7 @@
          <br/>An observant analyst will have
          noticed that our two ownship turns have provided a valuable change in bearing rate -
          exactly what a TMA algorithm needs.
-         <br/>So, now that we’ve provided the TMA algorithm with some
+         <br/>So, now that we&apos;ve provided the TMA algorithm with some
          viable data, let&apos;s see it calculate a solution.</description>
    </item>
 </cheatsheet>

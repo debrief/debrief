@@ -21,9 +21,9 @@
          For example, a common keyboard combination/shortcut in any program is <b>Ctrl+S</b> to quickly save your current document. 
          Similarly, the <b>Navigator</b> can be quickly opened via a keyboard combination:
          <br/><b>1.</b> Press <b>Ctrl+3</b> on your keyboard, and the <b>Quick Access</b> popup dialog will show.
-         <br/><b>2.</b> Start typing ‘navigator’ in the dialog box and, before you’ve finished typing the word, you will see <b>Views - Navigator - General</b>; 
+         <br/><b>2.</b> Start typing ‘navigator&apos; in the dialog box and, before you&apos;ve finished typing the word, you will see <b>Views - Navigator - General</b>; 
          click on it and the <b>Navigator</b> dialog will appear in the top left of your window.
-            <br/>The next time you need to do this, press <b>Ctrl+3</b> and you’ll see <b>Previous Choices</b> right under the field where you type - just click on it.
+            <br/>The next time you need to do this, press <b>Ctrl+3</b> and you&apos;ll see <b>Previous Choices</b> right under the field where you type - just click on it.
       </description>
    </item>
    
@@ -71,11 +71,11 @@
       <description>
          Alternatively, wherever you are in Debrief, you can open the quick access panel. Just <b>press and hold</b> the <b>Ctrl key</b>, and then press <b>3</b> and a yellow post-it like menu will appear. As you start typing &apos;Navigator&apos; the list of available commands will reduce until your required view is open. 
          If you prefer to use the mouse, click on <b>Window > Navigation > Quick Access</b>.
-         <br/>When you see &apos;<b>menu > sub-menu item > item</b>&apos; in this document, it means click on the first item, then on the second, and so on. I’m sure you’ve seen this before; it’s a much tidier than writing:
+         <br/>When you see &apos;<b>menu > sub-menu item > item</b>&apos; in this document, it means click on the first item, then on the second, and so on. I&apos;m sure you&apos;ve seen this before; it&apos;s a much tidier than writing:
          <br/><b>1.</b> Click on <b>Window</b>
          <br/><b>2.</b> Then click on <b>Navigation</b>
          <br/><b>3.</b> and so on...
-         <br/>I think you’ll agree that the second method is far more cumbersome. We will still use the second approach for step-by-step procedures, however.
+         <br/>I think you&apos;ll agree that the second method is far more cumbersome. We will still use the second approach for step-by-step procedures, however.
       </description>
    </item>
    <item title="Check you need a project">

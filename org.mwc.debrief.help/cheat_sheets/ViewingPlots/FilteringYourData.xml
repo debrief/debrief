@@ -8,8 +8,8 @@
 		</description>
 	</intro>
 	<item title="Open Navigator">
-		<description>You will need to have the <b>Navigator</b> view open; if it isn’t visible, open it now
-			(refer to the previous cheat sheet if you’re still unsure on how to do this).
+		<description>You will need to have the <b>Navigator</b> view open; if it isn&apos;t visible, open it now
+			(refer to the previous cheat sheet if you&apos;re still unsure on how to do this).
 		</description>
 	</item>
 	<item title="Open a sample file">
@@ -53,10 +53,10 @@
 			time of a variety of tasks.
 			<br/><b>2.</b> In the drop-down menu of the <b>Time Controller</b> (the triangle on the right of the <b>Time Controller</b> toolbar), select <b>Filter to period</b>.
 			<br/><b>3.</b> In the <b>time period markers</b> (under the slider), drag the start and stop markers to different positions. As you do
-			this, you’ll see the shaded portion adjust to the selected period: this represents a
+			this, you&apos;ll see the shaded portion adjust to the selected period: this represents a
 			custom time period which is also visible on your plot. You can drag this shaded section to
 			move your &apos;windows&apos; forwards and backwards.
 			<br/>If you hold down the <b>Shift</b> key while you
-			move elements on the time plot, they will ‘snap’ to the hour lines. </description>
+			move elements on the time plot, they will ‘snap&apos; to the hour lines. </description>
 	</item>
 </cheatsheet>

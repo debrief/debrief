@@ -57,7 +57,7 @@
             </onCompletion>
             <param name="path" value="../GettingStarted/GenerateProject.xml"/>
          </task>
-         <taskGroup kind="choice" name="Finding the sample data" skip="false">
+         <taskGroup kind="sequence" name="Finding the sample data" skip="false">
             <intro> There are two ways in which we can load sample data. We will be modifying the
                sample data, so ensure you’re not working on data that is shared with other users
                (the master data). The first thing we need to know is whether your Debrief
@@ -117,19 +117,9 @@
                   <b>Copy</b>.</intro>
                <onCompletion>Great, that&apos;s your data now copied in. Now we can move onto the tutorial. Go to <b>Loading a simple scenario</b>.
                </onCompletion>
-               <param name="path" value="single_load.xml"/>
+               <param name="path" value="../GettingStarted/FindingYourData.xml"/>
             </task>
          </taskGroup>
-         <task kind="cheatsheet" name="Loading the data" skip="false">
-            <intro>
-               Let&apos;s get some sample data loaded.
-            </intro>
-            <onCompletion>
-               Ok, now you have ownship track loaded, and you can see the fan of
-					ownship bearing data.
-            </onCompletion>
-            <param name="path" value="single_load.xml"/>
-         </task>
          <task kind="cheatsheet" name="Creating the scenario" skip="false">
             <intro>
                Now that data is present, it&apos;s time to create a scenario based
@@ -140,6 +130,16 @@
 					calculate a solution
             </onCompletion>
             <param name="path" value="single_create.xml"/>
+         </task>
+         <task kind="cheatsheet" name="Loading the data" skip="false">
+            <intro>
+               Let&apos;s get some sample data loaded.
+            </intro>
+            <onCompletion>
+               Ok, now you have ownship track loaded, and you can see the fan of
+					ownship bearing data.
+            </onCompletion>
+            <param name="path" value="single_load.xml"/>
          </task>
          <task kind="cheatsheet" name="Getting a solution" skip="false">
             <intro>

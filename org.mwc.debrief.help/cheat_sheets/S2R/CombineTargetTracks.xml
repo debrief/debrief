@@ -7,7 +7,7 @@
 			the same vessel; we will now combine them into a single track.
 			<br/><b>1.</b> Using the <b>Outline</b> view, use press the <b>Ctrl</b> key and click to select both tracks.
 			<br/><b>2.</b> Right-click on one of the
-			selected tracks and select <b>Group tracks into TMA_xyz</b> (it doesn’t matter which one you
+			selected tracks and select <b>Group tracks into TMA_xyz</b> (it doesn&apos;t matter which one you
 			select).
 			<br/><b>3.</b> The tracks will merge into one (the other track will disappear). However,
 			there is still that large &apos;turn gap&apos; remaining. We will use Debrief to infill, or
