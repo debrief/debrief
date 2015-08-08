@@ -185,6 +185,7 @@
 			<xs:element name="dynamicLayer" type="dynamicLayer" />
 			<xs:element name="ChartFolio" type="ChartFolio" />
 			<xs:element name="satc_solution" type="satc_solution" />
+			<xs:element name="composite_track" type="composite_track" />
 		</xs:choice>
 	</xs:complexType>
 
@@ -285,6 +286,51 @@
 			type="xs:boolean" />
 		<xs:attribute name="Symbol" default="SQUARE" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	
+	<xs:complexType name="composite_track">
+		<xs:complexContent>
+			<xs:extension base="track">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="planning_segment" type="PlanningSegment" />
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="closing_segment" type="ClosingSegment" />
+					<xs:element minOccurs="0" name="Origin" type="locationType" />
+				</xs:sequence>
+				<xs:attribute name="SymbolIntervalMillis" type="xs:integer" />
+				<xs:attribute name="LabelIntervalMillis" type="xs:integer" />
+				<xs:attribute name="StartTime" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- worldDistanceType can be removed -->
+	<xs:complexType name="unitsValueType">
+		<xs:attribute name="Units" use="required" type="xs:string" />
+		<xs:attribute name="Value" use="required" type="xs:double" />
+	</xs:complexType>
+	
+	<xs:complexType name="PlanningSegment">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="fix" type="fix" />
+			<xs:element minOccurs="0" name="WorldDistance" type="unitsValueType" />
+			<xs:element minOccurs="0" name="Speed" type="unitsValueType" />
+			<xs:element minOccurs="0" name="colour" type="colourType" />
+			<xs:element minOccurs="0" name="Duration" type="unitsValueType" />
+		</xs:sequence>
+		<xs:attribute name="LineStyle" type="xs:string" />
+		<xs:attribute name="Name" type="xs:string" />
+		<xs:attribute name="calcModel" type="xs:string" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+		<xs:attribute name="course" type="xs:double" />
+		<xs:attribute name="depth" type="xs:double" />
+		
+	</xs:complexType>
+
+	<xs:complexType name="ClosingSegment">
+		<xs:complexContent>
+			<xs:extension base="PlanningSegment">
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="DynamicShapeSet">
 		<xs:sequence>
