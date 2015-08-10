@@ -128,10 +128,13 @@ public class CompositeTrackHandler extends TrackHandler
 		final CompositeTrackWrapper comp = (CompositeTrackWrapper) track;
 		final Element trk = doc.createElement(COMPOSITE_TRACK);
 		parent.appendChild(trk);
-		exportTrackObject(track, trk, doc);
 
 		// we also need to send the DTG & origin
 		LocationHandler.exportLocation(comp.getOrigin(), ORIGIN, trk, doc);
+
+		// now the child track elements
+		exportTrackObject(track, trk, doc);
+		
 		trk.setAttribute(START_TIME, writeThis(comp.getStartDate()));
 
 		// we also wish to store the symbol and label frequencies - they're more
