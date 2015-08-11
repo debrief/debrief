@@ -14,10 +14,17 @@
  */
 package Debrief.ReaderWriter.XML.Tactical;
 
+import java.util.Enumeration;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.ICompositeTrackSegment;
+import Debrief.Wrappers.Track.PlanningSegment;
+import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
@@ -129,11 +136,15 @@ public class CompositeTrackHandler extends TrackHandler
 		final Element trk = doc.createElement(COMPOSITE_TRACK);
 		parent.appendChild(trk);
 
+		// now the child track elements
+		exportTrackObject(track, trk, doc);
+			
 		// we also need to send the DTG & origin
 		LocationHandler.exportLocation(comp.getOrigin(), ORIGIN, trk, doc);
 
-		// now the child track elements
-		exportTrackObject(track, trk, doc);
+		// now the child composite_track elements
+		exportCompositeTrackObject(track, trk, doc);
+			
 		
 		trk.setAttribute(START_TIME, writeThis(comp.getStartDate()));
 
@@ -150,6 +161,35 @@ public class CompositeTrackHandler extends TrackHandler
 
 		trk.setAttribute(SYMBOL_INTERVAL, writeThis(symInt));
 		trk.setAttribute(LABEL_INTERVAL, writeThis(labInt));
+	}
+
+	private static void exportCompositeTrackObject(TrackWrapper track,
+		Element trk, Document doc)
+	{
+		final Enumeration<Editable> allItems = track.elements();
+		while (allItems.hasMoreElements())
+		{
+			final Editable next = allItems.nextElement();
+			if (next instanceof TrackSegment && next instanceof ICompositeTrackSegment)
+			{
+				exportThisCompositeTrackSegment(doc, trk, (TrackSegment) next);
+			}
+		}
+	}
+
+	private static void exportThisCompositeTrackSegment(final org.w3c.dom.Document doc,
+			final Element trk, final TrackSegment segment)
+	{
+		if (segment instanceof PlanningSegment.ClosingSegment)
+		{
+			PlanningSegmentHandler.exportThisClosingSegment(doc, trk,
+					(PlanningSegment) segment);
+		}
+		else if (segment instanceof PlanningSegment)
+		{
+			PlanningSegmentHandler.exportThisSegment(doc, trk,
+					(PlanningSegment) segment);
+		}
 	}
 
 }

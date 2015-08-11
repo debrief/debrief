@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Sat Aug 08 16:18:08 GMT 2015"
-	Name="Debrief Plot" PlotId="1285669575458">
+<plot xmlns="http://www.debrief.info/plot" Created="Tue Aug 11 20:17:16 GMT 2015"
+	Name="Debrief Plot" PlotId="1439324044183">
 	<details
-		Text="Saved with Debrief version dated Sat Aug 08 15:08:54 GMT 2015" />
+		Text="Saved with Debrief version dated Tue Aug 11 20:12:19 GMT 2015" />
 	<session>
 		<layers>
 			<composite_track InterpolatePoints="false"
-				LabelIntervalMillis="3600000" LineStyle="0" LineThickness="3"
+				LabelIntervalMillis="900000" LineStyle="0" LineThickness="3"
 				LinkPositions="true" Name="testTrack" NameAtStart="true"
 				NameLocation="Right" NameVisible="false" PlotArrayCentre="false"
 				PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true"
-				StartTime="150807 220023" Symbol="Submarine" SymbolIntervalMillis="300000"
+				StartTime="150811 201513" Symbol="Submarine" SymbolIntervalMillis="300000"
 				Visible="true">
 				<colour CustomBlue="0" CustomGreen="0" CustomRed="255" Value="custom" />
 				<SymbolColor Value="CYAN" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<Origin>
+					<shortLocation Depth="0.000" Lat="50.8544859" Long="-1.3422500" />
+				</Origin>
 				<planning_segment LineStyle="Solid" Name="leg1"
 					Visible="true" calcModel="Speed/Time" course="45.000">
 					<WorldDistance Units="nm" Value="2.4000000" />
@@ -39,44 +42,36 @@
 						Value="custom" />
 					<Duration Units="minutes" Value="12.000" />
 				</planning_segment>
-				<Origin>
-					<shortLocation Depth="0.000" Lat="22.0400475" Long="-21.6103146" />
-				</Origin>
 			</composite_track>
 		</layers>
 		<projection Border="1.100" PrimaryOriented="false"
 			PrimaryOrigin="false" Type="Flat">
 			<tl>
-				<shortLocation Depth="0.000" Lat="22.2631302" Long="-21.8660806" />
+				<shortLocation Depth="0.000" Lat="51.2022972" Long="-1.9687833" />
 			</tl>
 			<br>
-				<shortLocation Depth="0.000" Lat="21.8170197" Long="-21.3545485" />
+				<shortLocation Depth="0.000" Lat="50.5074972" Long="-0.7157167" />
 			</br>
 		</projection>
 		<gui>
-			<tote>
-				<secondary Name="COLLINGWOOD" />
-			</tote>
+			<tote />
 			<component Type="Stepper">
 				<property Name="GREEN" Value="64" />
-				<property Name="DateFormat" Value="yy/MM/dd HH:mm" />
-				<property Name="ShadeArcs" Value="true" />
-				<property Name="Radius" Value="3500.000" />
+				<property Name="DateFormat" Value="ddHHmm" />
+				<property Name="ShadeArcs" Value="false" />
+				<property Name="Radius" Value="3000.000" />
 				<property Name="Highlighter" Value="Default Highlight" />
 				<property Name="RectHighlight_Size" Value="5" />
-				<property Name="RectHighlight_Color" Value="255,255,255" />
+				<property Name="RectHighlight_Color" Value="128,128,128" />
 				<property Name="BLUE" Value="64" />
 				<property Name="Arc_Finish" Value="180" />
 				<property Name="LinkPositions" Value="true" />
 				<property Name="RED" Value="64" />
-				<property Name="CurrentTime" Value="951212 102144" />
-				<property Name="NumRings" Value="1" />
-				<property Name="Toolbox_Start_Time" Value="951212 050000" />
+				<property Name="NumRings" Value="3" />
 				<property Name="PointSize" Value="5" />
 				<property Name="LargeStep" Value="10.0 minutes" />
 				<property Name="UseTrackColor" Value="false" />
 				<property Name="AutoStepInterval" Value="1.0 seconds" />
-				<property Name="Toolbox_End_Time" Value="951212 114500" />
 				<property Name="Cursor" Value="Normal" />
 				<property Name="TrailLength" Value="15.0 minutes" />
 				<property Name="JustPrimary" Value="false" />
@@ -85,10 +80,10 @@
 				<property Name="SpokeSeparation" Value="45" />
 				<property Name="VectorStretch" Value="1.000" />
 				<property Name="SmallStep" Value="1.0 minutes" />
-				<property Name="Arcs" Value="119" />
+				<property Name="Arcs" Value="-180" />
 			</component>
 			<Background>
-				<colour Value="BLACK" />
+				<colour Value="DARK_GREY" />
 			</Background>
 		</gui>
 	</session>

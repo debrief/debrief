@@ -15,6 +15,13 @@
 			<xs:enumeration value="Middle" />
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="calcModelType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Speed/Time" />
+			<xs:enumeration value="Range/Time" />
+			<xs:enumeration value="Range/Speed" />
+		</xs:restriction>
+	</xs:simpleType>	
 	<xs:simpleType name="colourElement">
 		<xs:restriction base="xs:integer">
 			<xs:minInclusive value="0" />
@@ -292,9 +299,9 @@
 		<xs:complexContent>
 			<xs:extension base="track">
 				<xs:sequence>
+					<xs:element minOccurs="0" name="Origin" type="locationType" />
 					<xs:element minOccurs="0" maxOccurs="unbounded" name="planning_segment" type="PlanningSegment" />
 					<xs:element minOccurs="0" maxOccurs="unbounded" name="closing_segment" type="ClosingSegment" />
-					<xs:element minOccurs="0" name="Origin" type="locationType" />
 				</xs:sequence>
 				<xs:attribute name="SymbolIntervalMillis" type="xs:integer" />
 				<xs:attribute name="LabelIntervalMillis" type="xs:integer" />
@@ -319,7 +326,7 @@
 		</xs:sequence>
 		<xs:attribute name="LineStyle" type="xs:string" />
 		<xs:attribute name="Name" type="xs:string" />
-		<xs:attribute name="calcModel" type="xs:string" />
+		<xs:attribute name="calcModel" type="calcModelType" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 		<xs:attribute name="course" type="xs:double" />
 		<xs:attribute name="depth" type="xs:double" />
