@@ -328,6 +328,7 @@
 		<xs:attribute name="Name" type="xs:string" />
 		<xs:attribute name="calcModel" type="calcModelType" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+		<xs:attribute name="VectorLabelVisible" default="true" type="xs:boolean" />
 		<xs:attribute name="course" type="xs:double" />
 		<xs:attribute name="depth" type="xs:double" />
 		
