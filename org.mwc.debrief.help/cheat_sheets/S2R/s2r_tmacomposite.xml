@@ -6,20 +6,20 @@
 			your data.<i>NoPrint</i> Click on <b>Restore Welcome</b> at
 			the top of this window (or select <b>Welcome</b> from the Help menu), navigate to the <b>Tutorials</b> tab, and start the Debrief walkthrough.<i>NoPrint</i> If you haven&apos;t done this, please do so before attempting this tutorial.
 		</intro>
-		<task kind="cheatsheet" name="Tidying the ownship track" skip="false">
-			<intro>
-				<b>Frequently, before you can start work on producing the red track, you must
-					perform some grooming of the ownship track.</b>
-			</intro>
-			<onCompletion> In that task, you fixed some jumps in the ownship track, and filled in a
-				period of missing data. You won&apos;t need the current plot for the next stage of
-				the tutorial, so you can close it (by clicking in the &apos;x&apos; in its title
-				tab) - and no, you won&apos;t need to save changes. </onCompletion>
-			<param name="path" value="GroomingTracks.xml"> </param>
-		</task>
 		<taskGroup kind="sequence" name="Working with target tracks" skip="false">
 			<intro> Now it&apos;s time to start building the target track </intro>
 			<onCompletion> You&apos;ve now learnt how to create and manage target tracks in Debrief. </onCompletion>
+			<task kind="cheatsheet" name="Tidying the ownship track" skip="false">
+				<intro>
+					<b>Frequently, before you can start work on producing the red track, you must
+						perform some grooming of the ownship track.</b>
+				</intro>
+				<onCompletion> In that task, you fixed some jumps in the ownship track, and filled in a
+					period of missing data. You won&apos;t need the current plot for the next stage of
+					the tutorial, so you can close it (by clicking in the &apos;x&apos; in its title
+					tab) - and no, you won&apos;t need to save changes. </onCompletion>
+				<param name="path" value="GroomingTracks.xml"> </param>
+			</task>
 			<task kind="cheatsheet" name="Load and groom sensor data" skip="false">
 				<intro> Now we&apos;ve learned about how to groom data by drag and dropping segments
 					we&apos;re going to encounter the <b>Grid Editor</b> - a Debrief panel dedicated
