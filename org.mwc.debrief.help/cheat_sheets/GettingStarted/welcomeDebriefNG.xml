@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Welcome to Debrief NG">
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Background Information">
+		<description>Debrief was developed in the mid 90&apos;s by the Maritime Warfare Centre in
+			Portsmouth UK to support the analysis and reporting of maritime tactical exercises, and
+			is a free, open source application that makes it possible for analysis organisations to
+			run open contests for support and development contracts to maintain or extend Debrief.
+		</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Document Conventions">
+		<description>The following conventions are used within the tutorial:<br/>• <b>Bold</b> is used
+			to identify commands, verbal instructions and other essential information, such as user
+			interface (UI) details/buttons/names, and for emphasis.<br/>• “<b>Bold + quotes</b>”
+			are used to identify filenames and other external references.<br/>• “Quotes” are used
+			to highlight comments in examples.
+		</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Navigating within Debrief">
+		<description>When you&apos;re navigating within Debrief you will need to click on menus,
+			sub-menus, and even sub-sub menus. However, though writing it out as “Click on
+				<b>File</b> on the menu bar, then click on <b>Save As</b>, and finally <b>navigate
+				to where you want to save your file</b>,” is descriptive and accurate, it&apos;s
+			pretty laborious and wasteful; so, we shorten it and write it as: <b>File</b> > <b>Save
+				As</b> > <b>file location</b>
+			<b/>That&apos;s far more succinct and easier.
+		</description>
+	</item>
+</cheatsheet>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Welcome to Debrief NG">
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Welcome to DebriefNG (with Charts)">
+		<description><br/><b>1.</b> Click on the <b>Goto Workbench</b> button. The <b>Welcome</b> screen will close and you
+			will see the <b>Create Project</b> dialog box.<br/><b>2.</b> Every Debrief project requires a name, so you
+			can go with the default name of <b>DebriefProject</b>, or enter something more meaningful. I
+			will name mine “<b>Debrief_test_project_01</b>”.<br/><b>3.</b> You can leave the <b>Add Debrief Samples</b> and
+			<b>Always Check at Startup</b> boxes checked.<br/><b>4.</b> Click on the <b>Ok</b> button. The dialog box will
+			close and you will see an empty Debrief interface consisting of various items and
+			objects (we will go over these in a second).<br/><b>5.</b> If you look in the <b>Navigator</b> ‘window’,
+			you will see your new project name folder.
+			<br/>In Debrief, this small window is called a
+			<b>View</b>. There are different types of view, all of which perform different functions; e.g.,
+			if you click on the <b>Time Controller</b> tab (next to <b>Navigator</b>), you&apos;ll see we have a set of
+			video-type controls: very useful for displaying time elements in Debrief.
+			<br/>Underneath these 2 views are 3 other views: <b>Properties</b>, <b>Track Tote</b>, and <b>Chart Overview</b>; again, each
+			of these views performs a different function. We won&apos;t look at these now, but these
+			views and other interface items such as toolbars, menus, and the plot editor (the large
+			empty space to the right of the views) make up a large part of Debrief.
+			<br/>Though empty, the interface may seem a little daunting at first, but we&apos;ll work through all of these
+			items and you’&apos;ll come to realise that it&apos;s actually quite easy to work with.
+		</description>
+	</item>
+</cheatsheet>

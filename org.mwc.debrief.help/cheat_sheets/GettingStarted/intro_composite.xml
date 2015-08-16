@@ -10,6 +10,87 @@
 			make the bottom section of this pane taller by dragging the central
 			&apos;grab&apos; bar vertically upwards<i>NoPrint</i>
 		</intro>
+		<taskGroup kind="sequence" name="Welcome to Debrief NG" skip="true">
+			<intro>Welcome to Getting Started with Debrief. In this tutorial, the first in a series
+				aimed at getting you up to speed with the program, we will look at the following
+				areas:<br/>• Welcome to Debrief <br/>• Document Conventions <br/>• Installing and
+				Opening Debrief <br/>• Working within Debrief <br/>• Menus &amp; Toolbars <br/>• The
+				Plot Editor <br/>• Shortcut Key Combinations <br/>• Chart Features By the end of
+				this brief getting started guide, you will know where everything is in the program,
+				how to work efficiently within the app, and be in the best position possible for the
+				remaining tutorials.
+			</intro>
+			<onCompletion>That concludes this part of the “<b>Getting Started with Debrief</b>”
+				tutorial, go over it again, or refer to it as needed. Next, proceed with the
+					“<b>Working with Debrief</b>” tutorial.
+			</onCompletion>
+			<task kind="cheatsheet" name="Welcome to Debrief NG" skip="true">
+				<intro>First though, a little background information.
+				</intro>
+				<onCompletion>Next we&apos;ll look at installing and opening Debrief.
+				</onCompletion>				
+			<param name="id" value="org.mwc.debrief.help.started.welcome_Debrief">
+			</param>
+			<param name="showIntro" value="true">
+			</param>
+			<param name="path" value="welcomeDebriefNG.xml">
+			</param>
+			</task>
+			<task kind="cheatsheet" name="Installing and Opening Debrief" skip="true">
+				<intro>Before you install Debrief, please check the following:<br/>• If you
+					haven&apos;t installed Debrief before, ensure you have downloaded the latest
+					version from Github (https://github.com/debrief/debrief/releases).<br/>• If you
+					have already installed it, then please uninstall the existing version via
+					<b>Windows</b> > <b>Start menu</b> > <b>Settings/Control Panel</b> >
+					<b>Add/Remove Programs</b>.
+				</intro>
+				<onCompletion>It will take a few seconds to load and, once loaded, you will see the
+					Welcome to Debrief NG page and 5 buttons.</onCompletion>				
+				<param name="id" value="org.mwc.debrief.help.started.installing_Debrief">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="installDebrief.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Welcome to DebriefNG (with Charts)" skip="true">
+				<intro>The <b>Welcome</b> screen is displayed on your first visit to Debrief, but it is
+					always accessible from within Debrief via the <b>Help</b> menu.<br/>When the page loads,
+					you will see the following 5 buttons:<br/><b>• Overview</b> - if this is your first time
+					using Debrief, it&apos;s a good idea to click on this button to get an overview of
+					the features.<br/><b>• What’s New</b> - we&apos;re constantly updating the software, so if you
+					want to see the exciting new features, click on this button.<br/><b>• First Steps</b> - we
+					all have to start somewhere; so, if you’d rather read the first steps than
+					follow this tutorial, then feel free to click here.<br/><b>• Tutorials</b> - if you click on
+					this option, then you&apos;ll see another version of this tutorial. However, it’s
+					always handy to know where to find these.<br/><b>• Workbench</b> - the workbench is the main
+					interface for performing your plot analysis and other tasks: this is the place
+					where you will do all your work.
+					<br/>We won&apos;t go into all the features or what you
+					will find by clicking on the above, as I know you&apos;re raring to go. But, I would
+					recommend you explore and familiarise yourself with those elements when you have
+					the time.
+					<br/>For the next sections, if you&apos;re an experienced computer user then you&apos;ll
+					already know about <b>main menus</b>, <b>context-sensitive menus</b> and <b>toolbars</b>; if this is the
+					case, feel free to skip them. However, I would recommend that you do read the
+					section on <b>Views</b> as they are an important component of Debrief (starting at section 1.6).
+				</intro>
+				<onCompletion>However, as with any new application, it&apos;s a good idea to
+					configure it exactly how you want it for your own purposes. In Debrief, these
+					are called <b>Preferences</b> and, though you don’t know that much about the
+					software as yet, you will understand each of these settings.</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.welcome_withCHARTS_Debrief">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="welcomewithCHARTS.xml">
+				</param>
+			</task>
+		</taskGroup>
+
+
+
+
 		<taskGroup kind="sequence" name="Defining your workspace"
 			skip="false">
 			<intro>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Welcome to Debrief NG">
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Installing and Opening Debrief">
+		<description>Once you’re ready to go with the latest version of the software:
+			<br></br><b>1.</b>Unzip it to your computer/network.
+			<br></br><b>2.</b>Navigate to the <b>DebriefNG</b> folder, then double-click on the <b>DebriefNG.exe</b> file to run the application.
+		</description>
+	</item>
+</cheatsheet>
