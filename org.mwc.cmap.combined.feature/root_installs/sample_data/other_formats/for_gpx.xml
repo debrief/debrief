@@ -231,25 +231,25 @@
 </rectangle>
 </layer>
 <narrative Name="Narratives">
-<narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 050100" Entry="comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 050200" Entry="comment 3" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 052200" Entry="comment 4" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 061200" Entry="comment 4A" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 062200" Entry="comment 4B" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 064200" Entry="comment 4V" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 095300" Entry="comment 5" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 095400" Entry="comment 6" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 095700" Entry="SUSPECTED DETECTION OF RED" Track="TOMATO" Type="Narratives"/>
-<narrative_entry Dtg="951212 100300" Entry="CONFIRMED. OBTAIN SOLUTION" Track="TOMATO" Type="Narratives"/>
-<narrative_entry Dtg="951212 101300" Entry="SUSPECT TARGET ZIG" Track="TOMATO" Type="Narratives"/>
-<narrative_entry Dtg="951212 101400" Entry="PORT DETECTION, 16 HZ" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 102900" Entry="ENTER TRAIL" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 103700" Entry="TARGET ZIG DETECTED" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 111900" Entry="FINEX CALLED, ENTER TRANSITION" Track="TOMATO" Type="Narratives"/>
-<narrative_entry Dtg="951212 112000" Entry="comment 10" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 113700" Entry="comment 11" Track="CARPET" Type="Narratives"/>
-<narrative_entry Dtg="951212 114100" Entry="comment 12" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 050000" Entry="comment 1" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 050100" Entry="comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 050200" Entry="comment 3" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 052200" Entry="comment 4" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 061200" Entry="comment 4A" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 062200" Entry="comment 4B" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 064200" Entry="comment 4V" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 095300" Entry="comment 5" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 095400" Entry="comment 6" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 095700" Entry="SUSPECTED DETECTION OF RED" Track="COLLINGWOOD" Type="Narratives"/>
+<narrative_entry Dtg="951212 100300" Entry="CONFIRMED. OBTAIN SOLUTION" Track="COLLINGWOOD" Type="Narratives"/>
+<narrative_entry Dtg="951212 101300" Entry="SUSPECT TARGET ZIG" Track="COLLINGWOOD" Type="Narratives"/>
+<narrative_entry Dtg="951212 101400" Entry="PORT DETECTION, 16 HZ" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 102900" Entry="ENTER TRAIL" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 103700" Entry="TARGET ZIG DETECTED" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 111900" Entry="FINEX CALLED, ENTER TRANSITION" Track="COLLINGWOOD" Type="Narratives"/>
+<narrative_entry Dtg="951212 112000" Entry="comment 10" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 113700" Entry="comment 11" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 114100" Entry="comment 12" Track="NELSON" Type="Narratives"/>
 </narrative>
 <layer LineThickness="0" Name="Annotations" Visible="false"/>
 <track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="NELSON" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="ScaledSubmarine" Visible="true">
