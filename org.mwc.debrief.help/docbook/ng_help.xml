@@ -1065,12 +1065,12 @@ Naval Undersea Warfare Center (NUWC)
             <title>Sample Replay file contents</title>
 
             <programlisting>
- 951212 050000.000 CARPET @C 12 11 10.63 N 11 41 52.37 W 269.7 2.0 0
- 951212 050100.000 CARPET @C 12 11 10.58 N 11 42 2.98 W 269.7 2.0 0
- ;NARRATIVE: 951212 095700.000 TOMATO SUSPECTED DETECTION OF RED
- 951212 050200.000 CARPET @C 12 11 10.51 N 11 42 14.81 W 269.9 2.0 0
- 951212 050300.000 CARPET @C 12 11 10.51 N 11 42 27.27 W 268.7 2.0 0
- 951212 050400.000 CARPET @C 12 11 10.28 N 11 42 40.33 W 270.6 2.0 0
+ 951212 050000.000 NELSON @C 12 11 10.63 N 11 41 52.37 W 269.7 2.0 0
+ 951212 050100.000 NELSON @C 12 11 10.58 N 11 42 2.98 W 269.7 2.0 0
+ ;NARRATIVE: 951212 095700.000 COLLINGWOOD SUSPECTED DETECTION OF RED
+ 951212 050200.000 NELSON @C 12 11 10.51 N 11 42 14.81 W 269.9 2.0 0
+ 951212 050300.000 NELSON @C 12 11 10.51 N 11 42 27.27 W 268.7 2.0 0
+ 951212 050400.000 NELSON @C 12 11 10.28 N 11 42 40.33 W 270.6 2.0 0
             </programlisting>
           </example>
 
@@ -3451,7 +3451,7 @@ and so on....</programlisting></para>
                 <para>The results from the primary track are listed first, which (as in the
                     <glossterm linkend="g_tote">Tote</glossterm>) do not show results of calculated
                   operations:
-                  <screen>CARPET 12/Dec/95 05:00:00 000 02.00 269.7 n/a n/a n/a n/a 0500 0500</screen></para>
+                  <screen>NELSON 12/Dec/95 05:00:00 000 02.00 269.7 n/a n/a n/a n/a 0500 0500</screen></para>
 
                 <para>Then the secondary tracks are listed:
                   <screen>
