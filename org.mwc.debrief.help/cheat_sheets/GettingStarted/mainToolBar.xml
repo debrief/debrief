@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Main Toolbar">
+	<intro>
+		<description>The main, or <b>Workbench</b>, toolbar contains a combination of a number of mini
+			toolbars (you can see a vertical dotted-line separating them), and grouped buttons (kept
+			apart by a separator—vertical lines between the buttons). You can move the mini toolbars
+			by clicking on the dotted lines and dragging horizontally or vertically; and, if you
+			mouse-over any of the buttons, a button tooltip will appear explaining the main function
+			of that button. The mini toolbars are as follows (from left to right):<br/><b>•</b> <b>Save</b> - this will
+			save the project with the currently saved name.<br/><b>•</b> <b>Create project</b> - clicking here will
+			initiate the <b>Create a project</b> wizard.<br/><b>•</b> <b>Drawing tools</b> - the drawing toolbar contains
+			buttons which allow you to view plot layers or to place objects such as shapes, labels,
+			range rings, tracks, and vectors onto the plot. Refer to the User Guide for further
+			details.<br/><b>•</b> <b>Plot Management tools</b> - this group of 9 buttons is split into 3 parts by
+			separators—solid vertical lines between buttons. These buttons allow you to perform
+			various management functions within the plot editor, including object repositioning,
+			measuring, zooming in and out, etc.<br/>From the left, the first group contains 6 buttons,
+			and only one button of these can be selected at a time. The first 3 buttons of this
+			group—<b>track segment</b>, <b>whole component</b> and <b>whole feature</b>—are used to drag and reposition
+			objects on the plot. The next button is used to <b>measure range bearing</b> between 2 objects.
+			To the right of that, and to the left of the first separator, are the <b>pan</b> and <b>zoom in</b>
+			buttons which allow you reposition and increase plot magnification, respectively.<br/>To the
+			right of the separator, in the second group, is the solitary <b>zoom out</b> button—its
+			function is self-explanatory and this button can be used in conjunction with all the
+			buttons in the first group.<br/>Finally, to the right of the second separator, in the third
+			group, we have the <b>fit to window</b> and <b>redraw</b> plot editor buttons, respectively—again,
+			these are self-explanatory.<br/><b>Note:</b> if you have also loaded the <b>Natural Earth</b> set, this
+			will show in the toolbar area also.<br/>We won&apos;t go over all of these functions, so refer to
+			the user guide when necessary.</description>
+	</intro>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Show/Hide the main toolbar">
+		<description> You can show/hide the main
+			toolbar by clicking on <b>Window</b> > <b>Show/Hide Toolbar</b>.</description>
+	</item>
+</cheatsheet>

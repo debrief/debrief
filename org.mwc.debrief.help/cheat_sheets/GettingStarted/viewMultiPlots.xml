@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Viewing multiple plots">
+	<intro>
+		<description>Debrief allows you to view multiple plots in one window (much in the same way
+			as you can arrange windows in other applications):
+			<br/><b>1.</b> Left-click and hold on the
+			<b>boat2.rep</b> tab to select it.<br/><b>2.</b> Now, depending on where you want to position the <b>boat2.rep</b>
+			editor in relation to the <b>boat1.dpf</b> editor, drag the selected tab towards the edge of
+			the screen (top, bottom, left or right). As you go, you will see the stacked files mouse
+			cursor change to a black arrow and a shaded box will appear showing where the editor
+			will be placed if you release the mouse.<br/><b>3.</b> Release the mouse where you want the
+			<b>boat2.rep</b> file to be positioned. The plot will then show in the new location.<br/><b>4.</b> In the
+			<b>Navigator</b> view, double-click on the “<b>shapes.rep</b>” file to open it.<br/><b>5.</b> Select <b>Over the
+			Ground (OTG)</b>, then click on <b>Ok</b> (a few times—there are a few tracks in this file). The
+			shapes will display.<br/><b>6.</b> Now, click and hold on the <b>shapes.rep</b> tab.<br/><b>7.</b> Drag it to the
+			bottom of the <b>boat2.rep</b> screen until the mouse cursor changes to a black down arrow.
+			<br/><b>8.</b> Release the mouse button and your <b>shapes.rep</b> editor is now sitting nicely below the
+			<b>boat2.rep</b> editor (and both of these are to the right of the <b>boat1.dpf</b> editor).<br/>You can
+			repeat this process with other files to further segment your plot editor area.
+		</description>
+	</intro>
+</cheatsheet>

@@ -15,9 +15,9 @@
    <item
       title="Convert to Composite Track">
       <description>To convert the current solution to a Composite Track:
-         <br/><b>1.</b> Right-click on <b>Single Leg (2 items)</b>
-         <br/><b>2.</b> Select <b>Convert to Composite Track (legs)</b>.
-         <br/>You will see a new
+        <br/><b>1.</b> Right-click on <b>Single Leg (2 items)</b>
+        <br/><b>2.</b> Select <b>Convert to Composite Track (legs)</b>.
+        <br/>You will see a new
          track appear on the plot and you will see a new item in the <b>Outline</b> view marked as a Track
          followed by the same name of this scenario (mine is named <b>Track:Single Leg_0</b>).
       </description>
@@ -25,17 +25,17 @@
    <item
       title="Rename to avoid confusion">
       <description> To prevent potential problems, we will now rename the imported track:
-         <br/><b>1.</b> In the <b>Outline</b> view, click on <b>Track:Single Leg_0</b> to select it.
-         <br/><b>2.</b> In the <b>Properties</b> view, change its name to <b>Single Leg TMA</b>.
-         <br/><b>3.</b> Click away from the <b>Properties</b> view to change the name.
+        <br/><b>1.</b> In the <b>Outline</b> view, click on <b>Track:Single Leg_0</b> to select it.
+        <br/><b>2.</b> In the <b>Properties</b> view, change its name to <b>Single Leg TMA</b>.
+        <br/><b>3.</b> Click away from the <b>Properties</b> view to change the name.
       </description>
    </item>
    <item
       title="Tidy the plot">
       <description>It&apos;s very easy for the plot to become cluttered, so we will now use the <b>Outline</b>
          view to hide the red SUBJECT track:
-         <br/><b>1.</b> Click on <b>Track:Subject</b> to select it.
-         <br/><b>2.</b> Right-click and select <b>Hide Item</b>.
+        <br/><b>1.</b> Click on <b>Track:Subject</b> to select it.
+        <br/><b>2.</b> Right-click and select <b>Hide Item</b>.
          The track will disappear from view so only the <b>OWNSHIP</b> and <b>Single Leg
          TMA</b> tracks remain visible.</description>
    </item>
@@ -43,13 +43,13 @@
       title="Manually tune the TMA solution">
       <description> Now we will adjust this solution in the same way we did for the <b>Single-Sided
          Reconstruction</b>:
-         <br/><b>1.</b> Click on the <b>Drag Track Segment</b> arrow button in the Debrief toolbar and
+        <br/><b>1.</b> Click on the <b>Drag Track Segment</b> arrow button in the Debrief toolbar and
          the <b>Bearing Residuals</b> view will open.
-         <br/><b>2.</b> Mark the <b>OWNSHIP</b> track as the <b>primary track</b>, and
+        <br/><b>2.</b> Mark the <b>OWNSHIP</b> track as the <b>primary track</b>, and
          the <b>Single Leg TMA</b> track as the <b>secondary track</b> (using the mini-toolbar above the <b>Outline</b>
          view).
-         <br/>Now you can drag the <b>Single Leg TMA</b> track and see the error residuals move.
-         <br/><b>Note:</b> the <b>Absolute (degs)</b> values graph is easier to read in this instance if you select the  <b>Use +/-
+        <br/>Now you can drag the <b>Single Leg TMA</b> track and see the error residuals move.
+        <br/><b>Note:</b> the <b>Absolute (degs)</b> values graph is easier to read in this instance if you select the  <b>Use +/-
          180 scale for absolute data</b> button in the <b>Bearing Residuals</b> toolbar, second from the
          left.</description>
    </item>
@@ -57,22 +57,22 @@
       title="Import as standalone track">
       <description>
          The manual-track fine-tuning process steps you have just completed are more suited to complex scenarios where, because of dissatisfaction with the system-produced SATC solution, the analyst decides it is better to merge the TMA solutions into a formal track.
-         <br/>However, as the raw SATC produced a perfectly acceptable solution, we can discard the manual track and import the original TMA solution:
-         <br/><b>1.</b> In the <b>Outline</b> view, right-click on <b>Track:Single Leg TMA</b> and select <b>Delete Single Leg TMA</b>. 
-         <br/>Then, to import our original TMA solution:
-         <br/><b>2.</b> Right-click on <b>Single Leg (2 items)</b> and select <b>Convert to Standalone Track</b>.
-         <br/>You will now see the track has appeared in the <b>Outline</b> view as <b>Track:Single Leg</b>.
+        <br/>However, as the raw SATC produced a perfectly acceptable solution, we can discard the manual track and import the original TMA solution:
+        <br/><b>1.</b> In the <b>Outline</b> view, right-click on <b>Track:Single Leg TMA</b> and select <b>Delete Single Leg TMA</b>. 
+        <br/>Then, to import our original TMA solution:
+        <br/><b>2.</b> Right-click on <b>Single Leg (2 items)</b> and select <b>Convert to Standalone Track</b>.
+        <br/>You will now see the track has appeared in the <b>Outline</b> view as <b>Track:Single Leg</b>.
       </description>
    </item>
    <item
       title="Mark our homework">
       <description>
          Debrief now has our imported TMA Solution (<b>Track:Single Leg_0</b>), and our Truth Track (<b>Track:SUBJECT</b>) loaded; we can now use the application to calculate the distance between these two tracks.
-         <br/><b>1.</b> Select <b>Track:Single Leg_0</b> and <b>Track:Subject</b> in the <b>Outline</b> view (<b>Ctrl+click</b> to multi-select).
-         <br/><b>2.</b> Right click on either track, select <b>View XY Plot</b> and the  <b>View time-variable</b> plot dialog box will open.
-         <br/><b>3.</b> Select <b>Range</b>, click on <b>Ok</b> and the <b>Select Primary</b> dialog will open.
-         <br/><b>4.</b> Select <b>Track:Subject</b> as the primary track, and click on <b>Ok</b>. The <b>Subject Range vs Time Plot</b> graph will appear.
-         <br/>This graph shows an intial error of approximately 130 yds, which reduces to 60 towards the end of the track. This is quite satisfactory considering the target ranges vary from 8000 to 3000 yards from ownship.
+        <br/><b>1.</b> Select <b>Track:Single Leg_0</b> and <b>Track:Subject</b> in the <b>Outline</b> view (<b>Ctrl+click</b> to multi-select).
+        <br/><b>2.</b> Right click on either track, select <b>View XY Plot</b> and the  <b>View time-variable</b> plot dialog box will open.
+        <br/><b>3.</b> Select <b>Range</b>, click on <b>Ok</b> and the <b>Select Primary</b> dialog will open.
+        <br/><b>4.</b> Select <b>Track:Subject</b> as the primary track, and click on <b>Ok</b>. The <b>Subject Range vs Time Plot</b> graph will appear.
+        <br/>This graph shows an intial error of approximately 130 yds, which reduces to 60 towards the end of the track. This is quite satisfactory considering the target ranges vary from 8000 to 3000 yards from ownship.
       </description>
    </item>
    

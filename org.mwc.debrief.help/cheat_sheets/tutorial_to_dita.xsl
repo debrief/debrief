@@ -14,14 +14,14 @@
     <xsl:template match="/" name="root">
         <map>
             <title>Debrief Topic Map</title>
-            <xsl:for-each select="collection(iri-to-uri('../cheat_sheets/?select=[a-zA-Z]*_composite.xml;recurse=yes'))">
-                <xsl:sort  select="count(document('')//debrief:order/debrief:value[. = tokenize(document-uri(current()),'/')[last()]]/preceding-sibling::debrief:value)"></xsl:sort>
+            <xsl:for-each select="collection(iri-to-uri(&apos;../cheat_sheets/?select=[a-zA-Z]*_composite.xml;recurse=yes&apos;))">
+                <xsl:sort  select="count(document(&apos;&apos;)//debrief:order/debrief:value[. = tokenize(document-uri(current()),&apos;/&apos;)[last()]]/preceding-sibling::debrief:value)"></xsl:sort>
                 
-                <xsl:result-document href="dita/{tokenize(document-uri(/),'/')[last()]}.dita" doctype-public="-//OASIS//DTD DITA Task//EN" doctype-system="task.dtd">
+                <xsl:result-document href="dita/{tokenize(document-uri(/),&apos;/&apos;)[last()]}.dita" doctype-public="-//OASIS//DTD DITA Task//EN" doctype-system="task.dtd">
                     <xsl:apply-templates select="/compositeCheatsheet"></xsl:apply-templates>
                 </xsl:result-document>
                 
-                <topicref href="dita/{tokenize(document-uri(/),'/')[last()]}.dita" type="task"></topicref>
+                <topicref href="dita/{tokenize(document-uri(/),&apos;/&apos;)[last()]}.dita" type="task"></topicref>
             </xsl:for-each>
         </map>
     </xsl:template>
@@ -44,7 +44,7 @@
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:for-each select="task">
-                        <xsl:variable name="path" select="param[@name='path']/@value"></xsl:variable>
+                        <xsl:variable name="path" select="param[@name=&apos;path&apos;]/@value"></xsl:variable>
                         <task id="{generate-id(.)}">
                             <title>
                                 <xsl:apply-templates select="document($path)//cheatsheet/@title"></xsl:apply-templates>
@@ -78,7 +78,7 @@
                 </info>
                 <stepxmp>
                     <xsl:choose>
-                        <xsl:when test="@skip = 'true'">optional</xsl:when>
+                        <xsl:when test="@skip = &apos;true&apos;">optional</xsl:when>
                     </xsl:choose> 
                 </stepxmp>
             </step>
@@ -93,9 +93,9 @@
         <xsl:copy></xsl:copy>
     </xsl:template>
     
-    <xsl:template match="i[.= 'NoPrint']"></xsl:template>
+    <xsl:template match="i[.= &apos;NoPrint&apos;]"></xsl:template>
     
-    <xsl:template match="text()[preceding-sibling::i[.='NoPrint'][1]][following-sibling::i[.='NoPrint'][1] ] | *[preceding-sibling::i[.='NoPrint'][1]][following-sibling::i[.='NoPrint'][1] ]"></xsl:template>
+    <xsl:template match="text()[preceding-sibling::i[.=&apos;NoPrint&apos;][1]][following-sibling::i[.=&apos;NoPrint&apos;][1] ] | *[preceding-sibling::i[.=&apos;NoPrint&apos;][1]][following-sibling::i[.=&apos;NoPrint&apos;][1] ]"></xsl:template>
     
     <xsl:template match="br">
         <ph></ph>

@@ -7,27 +7,27 @@
    </intro>
    <item title="Find SATC subfolder and Load Ownship Track">
       <description> In the <b>Navigator</b> view:
-         <br/><b>1.</b> Open the <b>SATC</b> sub-folder and either drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area or right click and select
+        <br/><b>1.</b> Open the <b>SATC</b> sub-folder and either drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area or right click and select
          <b>Open With</b> > <b>Debrief Plot Editor</b>.
-         <br/><b>2.</b> Select <b>Over the Ground</b> mode. You will now see the blue
+        <br/><b>2.</b> Select <b>Over the Ground</b> mode. You will now see the blue
          ownship track in your window. </description>
    </item>
    
    <item title="Load ownship sensor data">
       <description> Next, we will load the ownship sensor data (this is the sonar data):
-         <br/><b>1.</b> Drag and
+        <br/><b>1.</b> Drag and
          drop the <b>L1_OwnshipSensor.dsf</b> file onto the plot, the <b>Import Sensor Wizard</b> will appear.
-         <br/><b>2.</b> You can leave this <b>sensor contact name</b> as <b>plain</b> and click on <b>Next</b>
-         <br/><b>3.</b> Choose a <b>color</b> for the
+        <br/><b>2.</b> You can leave this <b>sensor contact name</b> as <b>plain</b> and click on <b>Next</b>
+        <br/><b>3.</b> Choose a <b>color</b> for the
          sensor data, then click <b>Next</b>.
-         <br/><b>4.</b> Select the <b>value</b> check box so that the sensor data will be
+        <br/><b>4.</b> Select the <b>value</b> check box so that the sensor data will be
          visible, then click <b>Next</b>.
-         <br/><b>5.</b> In the <b>Rainbow shades</b> dialog, select the check box to show the
+        <br/><b>5.</b> In the <b>Rainbow shades</b> dialog, select the check box to show the
          sensor cuts and click on <b>Finish</b>.
-         <br/>The dialog box will close and the fan of ownship bearing data
+        <br/>The dialog box will close and the fan of ownship bearing data
          (sonar data) will be seen radiating north-west and north from the ownship track. If you
          don&apos;t see this, repeat the above steps making sure you&apos;ve loaded the correct files.
-         <br/>Now we&apos;ve loaded our data, we can create a scenario. </description>
+        <br/>Now we&apos;ve loaded our data, we can create a scenario. </description>
    </item>
    
 </cheatsheet>

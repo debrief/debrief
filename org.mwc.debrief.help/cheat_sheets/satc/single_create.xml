@@ -9,11 +9,11 @@
    <item
          title="Browse to the sensor data">
       <description> We will use all of the ownship sensor data to create our scenario:
-         <br/><b>1.</b> Open the <b>Outline</b> view
-         <br/><b>2.</b> Open <b>Track:OWNSHIP</b>.
-         <br/><b>3.</b> The ownship track has a <b>Sensors (1 items)</b> object; open
+        <br/><b>1.</b> Open the <b>Outline</b> view
+        <br/><b>2.</b> Open <b>Track:OWNSHIP</b>.
+        <br/><b>3.</b> The ownship track has a <b>Sensors (1 items)</b> object; open
          this and you will see the single block of sensor data called <b>Sensor:Plain (11 items)</b>.
-         <br/><b>4.</b> Right-click on it and select <b>SemiAuto TMA</b> ><b> Create new scenario from these bearings</b>.
+        <br/><b>4.</b> Right-click on it and select <b>SemiAuto TMA</b> ><b> Create new scenario from these bearings</b>.
       </description>
    </item>
    <item
@@ -21,7 +21,7 @@
       <description> A new item with the name <b>121213.14</b> is created in the <b>Outline</b> view
          (the item name is auto-selected from the Date-Time-Group (DTG) of the first item in the
          bearing data).
-         <br/>You will also see that the <b>Maintain Contributions</b> view has opened. This view
+        <br/>You will also see that the <b>Maintain Contributions</b> view has opened. This view
          is used to create and manage your scenario data. If you haven&apos;t read about the SATC user
          interface via the help page earlier on, please read it now<i>NoPrint</i> by clicking the link below<i>NoPrint</i>. </description>
       <command
@@ -33,8 +33,8 @@
       <description>As nice as it is to try and remember a new set of telephone numbers every time
          you create a new scenario, it makes sense to rename the scenario to something more
          meaningful:
-         <br/><b>1.</b> Select this scenario in the <b>Outline</b> view
-         <br/><b>2.</b> In the <b>Properties</b> view (<b>Windows</b> >
+        <br/><b>1.</b> Select this scenario in the <b>Outline</b> view
+        <br/><b>2.</b> In the <b>Properties</b> view (<b>Windows</b> >
          <b>Show View</b> > <b>Properties</b>, if it isn&apos;t visible) change the <b>Name</b> value to <b>Single Leg</b>.
       </description>
    </item>
@@ -42,7 +42,7 @@
       title="Understand the contributions window">
        <description>
           In the <b>Maintain Contributions</b> view, you can see a single <b>Bearing Measurement - Bearing Data</b> item listed in the <b>Analyst Contributions</b> section.
-          <br/>This is the bearing data that will be used to inform all of the subsequent contributions.
+         <br/>This is the bearing data that will be used to inform all of the subsequent contributions.
        </description>
    </item>
    <item
@@ -51,19 +51,19 @@
          unknown target track. You can see that the contribution has an estimated <b>error</b> value of
          <b>+/- 3 degs</b>, so the algorithm will only offer solutions that are within 3 degrees
          of these bearing measurements.
-         <br/>To view these measurements:
-         <br/><b>1.</b> Select the track <b>Single Leg</b> in
+        <br/>To view these measurements:
+        <br/><b>1.</b> Select the track <b>Single Leg</b> in
          the <b>Outline</b> view.
-         <br/><b>2.</b> In the <b>Properties</b> view, select the <b>ShowLocationConstraints</b> item.
-         <br/><b>3.</b> In the <b>Maintain Contributions</b> view, click on the <b>Calculate Solution</b> button.
-         <br/>A set of "pie-slices" will now appear on the plot showing the allowable 3-degree error on each
+        <br/><b>2.</b> In the <b>Properties</b> view, select the <b>ShowLocationConstraints</b> item.
+        <br/><b>3.</b> In the <b>Maintain Contributions</b> view, click on the <b>Calculate Solution</b> button.
+        <br/>A set of "pie-slices" will now appear on the plot showing the allowable 3-degree error on each
          bearing measurement.
-         <br/><b>4.</b> Still in the <b>Maintain Contributions</b> view, expand the <b>Bearing
+        <br/><b>4.</b> Still in the <b>Maintain Contributions</b> view, expand the <b>Bearing
          Measurement - Bearing Data</b> contribution and you will see that it is possible to change the
          error value on this bearing data by moving the slider. As you move and release the slider
          you will see the pie slices expand and contract (you may need to click on the <b>Auto-Recalc
          of Constraints</b> button in the <b>Preferences</b> area to initiate this).
-         <br/><b>Note:</b> The <b>Auto-Recalc of
+        <br/><b>Note:</b> The <b>Auto-Recalc of
          Constraints</b> is a two-state button that is normally depressed. But, if you have a complex
          scenario that takes some time to update, you may wish to uncheck this button so the screen doesn&apos;t refresh while you are interactively adjusting any contributions.
       </description>
@@ -73,35 +73,35 @@
       <description><br/><b>Note:</b> in this sample data, the imported bearings have a maximum range of 12,000
          yards (yds). In the absence of a range estimate, SATC will restrict them to 30k yds to stop
          your PC doing the &apos;Ferranti Reset&apos;.
-         <br/>Also, before we continue, Debrief must be reset to a
+        <br/>Also, before we continue, Debrief must be reset to a
          predictable state:
-         <br/><b>1.</b> Restore the <b>Analyst Contribution</b> to 3 degrees In the <b>Properties</b>
+        <br/><b>1.</b> Restore the <b>Analyst Contribution</b> to 3 degrees In the <b>Properties</b>
          view, deselect the <b>ShowLocationConstraints</b> (so it shows <b>No</b>).</description>
    </item>
    <item title="Specify a target leg">
       <description> It is possible that your deep analysis skills have led you to believe that all of
          these cuts relate to a single leg of target data where the target maintains course and
          speed through the period of interest - this is useful information to the TMA algorithms.
-         <br/><b>1.</b> In the <b>Outline</b> view, select <b>Track:Ownship</b> > <b>Sensors (1 items)</b>, and then right-click on
+        <br/><b>1.</b> In the <b>Outline</b> view, select <b>Track:Ownship</b> > <b>Sensors (1 items)</b>, and then right-click on
          <b>Sensor:Plain (11 items)</b>
-         <br/><b>2.</b> From the drop-down menu, select <b>Semi Auto TMA</b> > <b>Add to Single Leg</b>
+        <br/><b>2.</b> From the drop-down menu, select <b>Semi Auto TMA</b> > <b>Add to Single Leg</b>
          > <b>New Straight Leg for period covered by [sensor cuts]</b>. When the <b>New contribution</b> dialog
          opens, name this contribution &apos;Leg limits&apos;.
-         <br/><b>3.</b> Click on <b>Ok</b>.
-         <br/><b>4.</b> In the <b>Outline</b> view, you will see <b>Single Leg (1 item)</b> has changed to <b>Single Leg (2 items)</b>.
+        <br/><b>3.</b> Click on <b>Ok</b>.
+        <br/><b>4.</b> In the <b>Outline</b> view, you will see <b>Single Leg (1 item)</b> has changed to <b>Single Leg (2 items)</b>.
       </description>
    </item>
    <item
       title="Understanding the contributions">
       <description>So, now there are two contributions for this scenario:
-         <br/><b>1.</b> a set of bearings
+        <br/><b>1.</b> a set of bearings
          through which a solution must travel
-         <br/><b>2.</b> an indication that the target will have travelled on
+        <br/><b>2.</b> an indication that the target will have travelled on
          a single course and speed throughout the entire engagement.
-         <br/>An observant analyst will have
+        <br/>An observant analyst will have
          noticed that our two ownship turns have provided a valuable change in bearing rate -
          exactly what a TMA algorithm needs.
-         <br/>So, now that we&apos;ve provided the TMA algorithm with some
+        <br/>So, now that we&apos;ve provided the TMA algorithm with some
          viable data, let&apos;s see it calculate a solution.</description>
    </item>
 </cheatsheet>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Working with views">
+	<intro>
+		<description>As mentioned, views are small viewing panes which present information specific
+			to the task you are carrying out in the plot editor in different ways. For example, one
+			view may display tabular information about the properties of an object: its position,
+			its color, etc. (the <b>Properties</b> view); whereas, another will have video controls to show
+			time (the <b>Time Controller</b> view); and yet another will show a graphical overview of the
+			chart in use (the <b>Chart Overview</b> view). Again, views display supporting data or
+			properties about the selected data or tasks. As you will see, they are an important
+			element of Debrief and you will use them extensively. We&apos;ve already looked at opening
+			and closing views, next we&apos;ll look at other view-related tasks.</description>
+	</intro>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Active or Inactive?">
+		<description>In any Windows program, we refer to items such as a window, a video, an image,
+			some text, etc. as an &apos;object&apos;. An object can only have 2 states: it is either selected
+			(<b>active</b>) or it isn&apos;t (<b>inactive</b>). The vast majority of the time, you can only
+			work/perform an action on an active object, i.e., something that has been selected to
+			work on.
+			<br/>In addition, and this applies to most computer programs or applications, there
+			has to be an active object: this is what you&apos;ve selected to work on or with. Naturally,
+			if you want to work on an inactive object, then you must first make it active by
+			selecting it (this applies in most cases, though not all). Debrief shows you which
+			object is the active view with a blue <b>name tab</b> and blue border.
+			<br/><b>1.</b> Click on the <b>Outline</b>
+			view in the bottom left of your window. It&apos;s name tab will turn blue, and you can see a
+			blue border around the view. This is now the active object.
+			<br/><b>2.</b> The Outlne view is still
+			empty, so click on the <b>Navigator</b> view to select it (make it active), and you will now
+			see some attributes in the <b>Properties</b> view.
+			<br/><b>3.</b> In the <b>Properties</b> view, click on the <b>Info</b>
+			attribute in the <b>Property</b> column: this attribute becomes the active property, and this
+			view the active view.
+			<br/><b>4.</b> In the same column, click on the <b>location</b> attribute; this is now
+			the active attribute.
+			<br/>To make an object inactive, click on a different object to select
+			it; the new object is now active.
+			<br/><b>Note:</b> there will be times when you will use the <b>Ctrl</b>
+			and <b>Shift</b> key on your keyboard to select multiple objects; when this occurs, all
+			selected items become active.
+			<br/>Next, it&apos;s quite possible that you will want to reposition
+			views as you work, so we will look at how to move them.</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Moving Views">
+		<description>Moving views is very easy and they can be positioned anywhere around the plot
+			editor by dragging-and-dropping. This is very handy as not only can you move the
+			important features into prominent positions on your monitor when you need them, but you
+			can also move them out of the way, onto another monitor (if you have multiple monitors),
+			or even drop them into an already open view to stack them up (to save screen space). Try
+			it:
+			<br/><b>1.</b> Click on the tab of any open view to make it active (remember, the tab will turn
+			blue).
+			<br/><b>2.</b> Now, click on the tab itself and, keeping the mouse button pressed, drag it
+			across the plot editor area. As you approach the edges of the <b>plot editor</b>, you will see
+			the cursor change to a black direction arrow and a placeholder box will appear to one
+			side of the plot editor; if you wish, you can drop the view into place there.
+			<br/><b>3.</b> However, if you drag it further, onto to another view, the cursor will change to a graphical set
+			of files (or folders); you will also see a shaded border around the view you are over,
+			showing you where it will be placed. If you drop it now, the view will add to that view
+			set (or <b>stack</b>), and become active.
+			<br/><b>4.</b> But, if you didn&apos;t drop it on the view, deciding
+			instead to drop your cursor either onto the name tab of the view you are over or right
+			next to it, you will see a dotted box appear showing you where your view will be placed.
+			As soon as you drop the view, it will dock in that position and become the active view.
+			<br/><b>Note:</b> within the confines of the central editor pane, you can also do the same with the
+			plot editor.</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Resizing Views">
+		<description>In addition to the standard Windows <b>minimize</b> and <b>maximize</b> functionality (the
+			two small icons in the top right-hand corner of each view), you can also resize views by
+			moving your mouse cursor over the view&apos;s border. As soon as the cursor changes to a
+			directional arrow, left-click on the border and then drag it in one of the indicated
+			directions. Once it&apos;s in position, release the mouse button.
+			</description>
+	</item>
+	
+</cheatsheet>

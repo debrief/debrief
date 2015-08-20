@@ -1,25 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cheatsheet title="Welcome to Debrief NG">
-	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
-		title="Welcome to DebriefNG (with Charts)">
-		<description><br/><b>1.</b> Click on the <b>Goto Workbench</b> button. The <b>Welcome</b> screen will close and you
-			will see the <b>Create Project</b> dialog box.<br/><b>2.</b> Every Debrief project requires a name, so you
-			can go with the default name of <b>DebriefProject</b>, or enter something more meaningful. I
-			will name mine “<b>Debrief_test_project_01</b>”.<br/><b>3.</b> You can leave the <b>Add Debrief Samples</b> and
-			<b>Always Check at Startup</b> boxes checked.<br/><b>4.</b> Click on the <b>Ok</b> button. The dialog box will
-			close and you will see an empty Debrief interface consisting of various items and
-			objects (we will go over these in a second).<br/><b>5.</b> If you look in the <b>Navigator</b> ‘window’,
-			you will see your new project name folder.
-			<br/>In Debrief, this small window is called a
-			<b>View</b>. There are different types of view, all of which perform different functions; e.g.,
-			if you click on the <b>Time Controller</b> tab (next to <b>Navigator</b>), you&apos;ll see we have a set of
-			video-type controls: very useful for displaying time elements in Debrief.
-			<br/>Underneath these 2 views are 3 other views: <b>Properties</b>, <b>Track Tote</b>, and <b>Chart Overview</b>; again, each
-			of these views performs a different function. We won&apos;t look at these now, but these
+<?xml-stylesheet type="text/css" href="../contentFile.xsd"?>
+<cheatsheet title="Welcome to DebriefNG (with Charts)">
+	<intro>
+		<description>The <b>Welcome</b> screen is displayed on your first visit to Debrief, but it
+			is always accessible from within Debrief via the <b>Help</b> menu.<br/>When the page
+			loads, you will see the following 5 buttons:<br/><b>• Overview</b> - if this is your
+			first time using Debrief, it&apos;s a good idea to click on this button to get an
+			overview of the features.<br/><b>• What&apos;s New</b> - we&apos;re constantly updating
+			the software, so if you want to see the exciting new features, click on this
+				button.<br/><b>• First Steps</b> - we all have to start somewhere; so, if you&apos;d
+			rather read the first steps than follow this tutorial, then feel free to click
+				here.<br/><b>• Tutorials</b> - if you click on this option, then you&apos;ll see
+			another version of this tutorial. However, it&apos;s always handy to know where to find
+				these.<br/><b>• Workbench</b> - the workbench is the main interface for performing
+			your plot analysis and other tasks: this is the place where you will do all your work.
+			<br/>We won&apos;t go into all the features or what you will find by clicking on the
+			above, as I know you&apos;re raring to go. But, I would recommend you explore and
+			familiarise yourself with those elements when you have the time.<br/>For the next
+			sections, if you&apos;re an experienced computer user then you&apos;ll already know
+			about <b>main menus</b>, <b>context-sensitive menus</b> and <b>toolbars</b>; if this is
+			the case, feel free to skip them. However, I would recommend that you do read the
+			section on <b>Views</b> as they are an important component of Debrief (starting at
+			section 1.6)<br/><b>1.</b> Click on the <b>Goto Workbench</b> button. The
+				<b>Welcome</b> screen will close and you will see the <b>Create Project</b> dialog
+				box.<br/><b>2.</b> Every Debrief project requires a name, so you can go with the
+			default name of <b>DebriefProject</b>, or enter something more meaningful. I will name
+			mine “<b>Debrief_test_project_01</b>”.<br/><b>3.</b> You can leave the <b>Add Debrief
+				Samples</b> and <b>Always Check at Startup</b> boxes checked.<br/><b>4.</b> Click on
+			the <b>Ok</b> button. The dialog box will close and you will see an empty Debrief
+			interface consisting of various items and objects (we will go over these in a
+				second).<br/><b>5.</b> If you look in the <b>Navigator</b> &apos;window&apos;, you
+			will see your new project name folder.<br/>In Debrief, this small window is called a
+				<b>View</b>. There are different types of view, all of which perform different
+			functions; e.g., if you click on the <b>Time Controller</b> tab (next to
+				<b>Navigator</b>), you&apos;ll see we have a set of video-type controls: very useful
+			for displaying time elements in Debrief.<br/>Underneath these 2 views are 3 other
+			views: <b>Properties</b>, <b>Track Tote</b>, and <b>Chart Overview</b>; again, each of
+			these views performs a different function. We won&apos;t look at these now, but these
 			views and other interface items such as toolbars, menus, and the plot editor (the large
-			empty space to the right of the views) make up a large part of Debrief.
-			<br/>Though empty, the interface may seem a little daunting at first, but we&apos;ll work through all of these
-			items and you’&apos;ll come to realise that it&apos;s actually quite easy to work with.
-		</description>
-	</item>
+			empty space to the right of the views) make up a large part of Debrief.<br/>Though
+			empty, the interface may seem a little daunting at first, but we&apos;ll work through
+			all of these items and you&apos;ll come to realise that it&apos;s actually quite easy to
+			work with.<br/>However, as with any new application, it&apos;s a good idea to configure
+			it exactly how you want it for your own purposes. In Debrief, these are called
+				<b>Preferences</b> and, though you don&apos;t know that much about the software as
+			yet, you will understand each of these settings. </description>
+	</intro>
 </cheatsheet>

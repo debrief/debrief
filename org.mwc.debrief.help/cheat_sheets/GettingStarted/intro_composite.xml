@@ -10,23 +10,8 @@
 			make the bottom section of this pane taller by dragging the central
 			&apos;grab&apos; bar vertically upwards<i>NoPrint</i>
 		</intro>
-		<taskGroup kind="sequence" name="Welcome to Debrief NG" skip="true">
-			<intro>Welcome to Getting Started with Debrief. In this tutorial, the first in a series
-				aimed at getting you up to speed with the program, we will look at the following
-				areas:<br/>• Welcome to Debrief <br/>• Document Conventions <br/>• Installing and
-				Opening Debrief <br/>• Working within Debrief <br/>• Menus &amp; Toolbars <br/>• The
-				Plot Editor <br/>• Shortcut Key Combinations <br/>• Chart Features By the end of
-				this brief getting started guide, you will know where everything is in the program,
-				how to work efficiently within the app, and be in the best position possible for the
-				remaining tutorials.
-			</intro>
-			<onCompletion>That concludes this part of the “<b>Getting Started with Debrief</b>”
-				tutorial, go over it again, or refer to it as needed. Next, proceed with the
-					“<b>Working with Debrief</b>” tutorial.
-			</onCompletion>
+		<taskGroup kind="sequence" name="Welcome to Debrief" skip="true">
 			<task kind="cheatsheet" name="Welcome to Debrief NG" skip="true">
-				<intro>First though, a little background information.
-				</intro>
 				<onCompletion>Next we&apos;ll look at installing and opening Debrief.
 				</onCompletion>				
 			<param name="id" value="org.mwc.debrief.help.started.welcome_Debrief">
@@ -37,15 +22,6 @@
 			</param>
 			</task>
 			<task kind="cheatsheet" name="Installing and Opening Debrief" skip="true">
-				<intro>Before you install Debrief, please check the following:<br/>• If you
-					haven&apos;t installed Debrief before, ensure you have downloaded the latest
-					version from Github (https://github.com/debrief/debrief/releases).<br/>• If you
-					have already installed it, then please uninstall the existing version via
-					<b>Windows</b> > <b>Start menu</b> > <b>Settings/Control Panel</b> >
-					<b>Add/Remove Programs</b>.
-				</intro>
-				<onCompletion>It will take a few seconds to load and, once loaded, you will see the
-					Welcome to Debrief NG page and 5 buttons.</onCompletion>				
 				<param name="id" value="org.mwc.debrief.help.started.installing_Debrief">
 				</param>
 				<param name="showIntro" value="true">
@@ -54,31 +30,6 @@
 				</param>
 			</task>
 			<task kind="cheatsheet" name="Welcome to DebriefNG (with Charts)" skip="true">
-				<intro>The <b>Welcome</b> screen is displayed on your first visit to Debrief, but it is
-					always accessible from within Debrief via the <b>Help</b> menu.<br/>When the page loads,
-					you will see the following 5 buttons:<br/><b>• Overview</b> - if this is your first time
-					using Debrief, it&apos;s a good idea to click on this button to get an overview of
-					the features.<br/><b>• What’s New</b> - we&apos;re constantly updating the software, so if you
-					want to see the exciting new features, click on this button.<br/><b>• First Steps</b> - we
-					all have to start somewhere; so, if you’d rather read the first steps than
-					follow this tutorial, then feel free to click here.<br/><b>• Tutorials</b> - if you click on
-					this option, then you&apos;ll see another version of this tutorial. However, it’s
-					always handy to know where to find these.<br/><b>• Workbench</b> - the workbench is the main
-					interface for performing your plot analysis and other tasks: this is the place
-					where you will do all your work.
-					<br/>We won&apos;t go into all the features or what you
-					will find by clicking on the above, as I know you&apos;re raring to go. But, I would
-					recommend you explore and familiarise yourself with those elements when you have
-					the time.
-					<br/>For the next sections, if you&apos;re an experienced computer user then you&apos;ll
-					already know about <b>main menus</b>, <b>context-sensitive menus</b> and <b>toolbars</b>; if this is the
-					case, feel free to skip them. However, I would recommend that you do read the
-					section on <b>Views</b> as they are an important component of Debrief (starting at section 1.6).
-				</intro>
-				<onCompletion>However, as with any new application, it&apos;s a good idea to
-					configure it exactly how you want it for your own purposes. In Debrief, these
-					are called <b>Preferences</b> and, though you don’t know that much about the
-					software as yet, you will understand each of these settings.</onCompletion>
 				<param name="id" value="org.mwc.debrief.help.started.welcome_withCHARTS_Debrief">
 				</param>
 				<param name="showIntro" value="true">
@@ -86,11 +37,197 @@
 				<param name="path" value="welcomewithCHARTS.xml">
 				</param>
 			</task>
+			<task kind="cheatsheet" name="Debrief Preferences" skip="true">
+				<onCompletion>Now we will look at working with Debrief.</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.Debrief_prefs">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="debriefPreferences.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Working Within Debrief" skip="true">
+				<param name="id" value="org.mwc.debrief.help.started.working_in_Debrief">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="working_in_Debrief.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Opening the Navigator view" skip="true">
+				<onCompletion>Now we&apos;ve looked at opening and closing views, let&apos;s have a
+					look at them in a little more detail.</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.open_Navigator_view"> </param>
+				<param name="showIntro" value="true"> </param>
+				<param name="path" value="openNavigatorView.xml"> </param>
+			</task>
+			<task kind="cheatsheet" name="Opening the Navigator view" skip="true">
+				<onCompletion><br/>As you probably realise,
+					many of Debrief&apos;s functions are centered around using the mouse, so we&apos;ll first look at
+					menus and then at toolbars.</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.working_with_views"> </param>
+				<param name="showIntro" value="true"></param>
+				<param name="path" value="workingWithViews.xml"> </param>
+			</task>
 		</taskGroup>
-
-
-
-
+		<taskGroup kind="sequence" name="Menus" skip="true">
+			<intro>Debrief has a number of different menus which provide different functions. These
+				are: the main menu, context-sensitive menus, and view drop-down menus. We&apos;ll look at
+				each of these in turn.</intro>
+			<task kind="cheatsheet" name="Main menu" skip="true">
+				<param name="id" value="org.mwc.debrief.help.started.main_menu">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="debriefMainMenu.xml">
+				</param>
+			</task>
+		</taskGroup>
+		<taskGroup kind="sequence" name="The Plot Editor" skip="true">
+			<intro>The <b>plot editor</b> itself is locked to the centre of the user interface and is
+				where you view and work on your projects. You can have multiple files open in the
+				central area, each of which has its own tab (though I wouldn&apos;t recommend too many as
+				it will become cluttered).
+				<br/>If you do work in a plot editor, then an asterisk (*)
+				will appear in its tab, denoting any unsaved changes.
+				<br/>With the changes we made to
+				the Nelson track in the previous section:
+				<br/><b>1.</b> Click on <b>File</b> > <b>Save</b> and because our
+				original file has been changed, we must save it as a different format (we will come
+				onto the different file types later).
+				<br/><b>2.</b> Click on <b>Ok</b> and the <b>Save As</b> dialog will
+				display.
+				<br/><b>3.</b> Select the project folder you created earlier, and click on <b>Ok</b>. The
+				<b>boat1.rep</b> file will save as <b>boat1.dpf</b>, the active plot tab name will change, and the
+				asterisk will disappear.
+				<br/><b>Note:</b> you could also press <b>Ctrl</b>+<b>S</b> on your keyboard to save
+				the active plot.</intro>
+			<task kind="cheatsheet" name="Navigating within the plot area" skip="true">
+				<param name="id" value="org.mwc.debrief.help.started.navigate_plotArea">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="navigatePlotArea.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Moving plots" skip="true">
+				<onCompletion>Now, we&apos;ll take this one step further and view multiple plots.
+				</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.moving_plots">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="movingPlots.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Viewing multiple plots" skip="true">
+				<param name="id" value="org.mwc.debrief.help.started.view_MultiPlots">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="viewMultiPlots.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Rearranging or removing plots" skip="true">
+				<onCompletion>You should now have <b>boat1.dpf</b> and <b>boat2.rep</b> side by
+					side. We will now look at Debrief&apos;s toolbars. </onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.rearrange_remove_plots">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="rearrangeRemovePlots.xml">
+				</param>
+			</task>
+		</taskGroup>
+		<taskGroup kind="sequence" name="Toolbars" skip="true">
+			<intro>In the same way that Debrief has menu options for the application&apos;s main
+				functions, there are 4 types of toolbar to assist you:
+				<br/><b>•</b> the<b> main toolbar</b> - provides
+				functions specific to the application/workbench.<br/><b>•</b> the <b>view toolbars</b> - these are
+				specific to views and provide functions related to the selected view.<br/><b>•</b> the <b>fast view</b>
+				toolbar - this sits in the bottom-left of the screen and enables fast access to
+				selected views.<br/><b>•</b> the <b>perspectives</b> toolbar - perspectives are not used in Debrief at
+				present, please refer to the user guide for further information. We will look at
+				each of these in turn.
+			</intro>
+			<task kind="cheatsheet" name="Main Toolbar" skip="true">
+				<param name="id" value="org.mwc.debrief.help.started.main_toolBar">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="mainToolBar.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="View Toolbars" skip="true">
+				<param name="id" value="org.mwc.debrief.help.started.view_toolbars">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="viewToolBars.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Fast View Toolbar" skip="true">
+				<param name="id" value="org.mwc.debrief.help.started.fastView_toolbar">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="fastViewToolbar.xml">
+				</param>
+			</task>
+			<task kind="cheatsheet" name="Perspectives Toolbar" skip="true">
+				<onCompletion>Now that we&apos;ve covered views, menus and
+					toolbars, we&apos;ve seen that navigating, moving and manipulating objects with the mouse is
+					standard functionality known to us all. Equally useful, but much less common, is the use
+					of shortcut key combinations.</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.perspectives_toolbar">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="perspectivesToolbar.xml">
+				</param>
+			</task>
+		</taskGroup>
+		<taskGroup kind="sequence" name="Shortcut Key Combinations" skip="true">
+			<intro>If, like me, you prefer to use the keyboard where possible, then you can use
+				what are called keyboard combinations to perform common tasks. Keyboard combinations
+				(or shortcut key combinations) consist of a sequence of keys which together perform
+				a certain action in the program. For example, a common keyboard combination/shortcut
+				in any program is <b>Ctrl</b>+<b>S</b>. This means:<br/><b>1.</b> You press the control key down (<b>Ctrl</b>);
+				<br/><b>2.</b> keep it pressed (+);<br/><b>3.</b> press the <b>S</b> key.<br/>This shortcut key set will save your
+				current document <b>without changing the filename</b>.<br/>If you want to save the document
+				with a new filename, or &apos;<b>Save As</b>&apos;, as it&apos;s commonly known, then the shortcut key
+				combination is <b>Alt</b>, <b>F</b>, <b>A</b>:<br/><b>1.</b> You press the <b>Alt</b> key <b>then release it</b> (,);<br/><b>2.</b> press and
+				release the <b>F</b> key (,);<br/><b>3.</b> press the <b>A</b> key—the <b>Save As</b> dialog will display. You can
+				then save your file with a new name.<br/>Also mentioned earlier was how to use <b>Ctrl</b>+<b>3</b> to
+				access the <b>Navigator</b> view (not that you&apos;ll need it that much if you prefer the
+				mouse, it&apos;s right up there on the <b>fast toolbar</b> now).</intro>
+			<task kind="cheatsheet" name="How to Find Out What the Shortcut Keys Are" skip="true">
+				<onCompletion>Seeing as we&apos;ve just added a
+					grid to our plot, we&apos;ll look at chart features next.</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.find_shortcuts">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="findShortcuts.xml">
+				</param>
+			</task>
+		</taskGroup>
+		<taskGroup kind="sequence" name="Chart Features" skip="true">
+			<intro>You can use a number of chart features to enhance the plot editor and assist with
+				your analysis. When you add a feature to the chart, these will appear in the Outline
+				view under the name <b>Chart Features</b>. We will do this now.</intro>
+			<task kind="cheatsheet" name="Add a Chart Feature" skip="true">
+				<onCompletion>That concludes this part of the “<b>Getting Started with Debrief</b>”
+					tutorial, go over it again, or refer to it as needed. Next, proceed with the
+					“<b>Working with Debrief</b>” tutorial.</onCompletion>
+				<param name="id" value="org.mwc.debrief.help.started.add_chartFeatures">
+				</param>
+				<param name="showIntro" value="true">
+				</param>
+				<param name="path" value="AddchartFeatures.xml">
+				</param>
+			</task>
+		</taskGroup>
 		<taskGroup kind="sequence" name="Defining your workspace"
 			skip="false">
 			<intro>
@@ -113,7 +250,7 @@
 					and load some sample data - then you can skip this part.
 				</intro>
 				<onCompletion>
-					You&apos;ve now created a project into which you can store your Debrief data
+					You&apos;ve now created a project into which you can store your Debrief data.
 				</onCompletion>
 				<param name="id" value="org.mwc.debrief.help.started.generate_project">
 				</param>
@@ -122,105 +259,46 @@
 				<param name="path" value="GenerateProject.xml">
 				</param>
 			</task>
-			<task kind="cheatsheet" name="Finding your data" skip="true">
-				<intro>
-					If you already have one or more folders containing Debrief data,
-					you can add them to your Debrief NG project (or load sample data
-					that was installed within Debrief NG).
-					If you&apos;ve haven&apos;t got any sample data, or if you can
-					already see the
-					<b>Sample Data</b>
-					folder in your
-					<b>Navigator</b>
-					, you can skip this task.
-				</intro>
-				<onCompletion>
-					You can now repeat this process to create links to your other Debrief
-					data directories.
-				</onCompletion>
+			<task kind="cheatsheet" name="Generating links to your existing data" skip="true">
+				<onCompletion>If you followed these steps, you will have created a link to the
+					sample data, however, if you need to load data from other data directories,
+					repeat this process as often as is required, but use a shared working
+					folder.</onCompletion>
 				<param name="id" value="org.mwc.debrief.help.started.existing_data">
 				</param>
 				<param name="path" value="FindingYourData.xml">
 				</param>
 			</task>
-			<task kind="cheatsheet" name="Configuring library data" skip="true">
-				<intro>
-					Debrief can plot information from library datasets to add context
-					to the current view.
-					Because of their typical size, some of these datasets are not distributed with
-					Debrief, but should be obtained separately.
-				</intro>
+			<task kind="cheatsheet" name="Configuring background data" skip="true">
 				<onCompletion>
 				</onCompletion>
 				<param name="path" value="ConfigLegacyData.xml">
 				</param>
 			</task>
 		</taskGroup>
-		<taskGroup kind="sequence" name="Viewing data" skip="false">
+		<taskGroup kind="sequence" name="Viewing Some Data" skip="false">
 			<intro>
 				This series of steps will guide you through creating and populating a new Debrief plot.
 			</intro>
-			<task kind="cheatsheet" name="Creating a new plot" skip="false">
-				<intro>
-					We will now use Debrief&apos;s New Plot wizard to create a plot ready
-					for import of data-files.
-				</intro>
-				<onCompletion>
-					Note that we didn&apos;t have to use the wizard steps, we could have
-					inserted chart features into our Plot by hand using the Chart
-					Features menu.
-				</onCompletion>
+			<task kind="cheatsheet" name="Creating a new plot in Debrief" skip="false">
 				<param name="id" value="org.mwc.debrief.help.started.create_plot">
 				</param>
 				<param name="path" value="CreatePlot.xml">
 				</param>
 			</task>
-			<task kind="cheatsheet" name="Importing some existing data"
-				skip="false">
-				<intro>
-					At last we&apos;re about to view some actual vessel tracks.
-				</intro>
-				<param name="id" value="org.mwc.debrief.help.started.loading_data">
-				</param>
-				<param name="path" value="ImportingData.xml">
-				</param>
+			<task kind="cheatsheet" name="Adding data to a plot" skip="false">
+				<param name="id" value="org.mwc.debrief.help.started.loading_data"> </param>
+				<param name="path" value="ImportingData.xml"> </param>
 			</task>
-			<task kind="cheatsheet" name="Make some changes" skip="false">
-				<intro>
-					Now we&apos;ve got a complex plot open, we&apos;ll experiment with
-					making some changes to it.
-				</intro>
+			<task kind="cheatsheet" name="Editing your data" skip="false">
 				<param name="path" value="EditingYourData.xml">
 				</param>
 			</task>
-			<task kind="cheatsheet" name="Learn more about the UI" skip="false">
-				<intro>
-					Here you&apos;ll learn more about the Debrief user interface
-				</intro>
+			<task kind="cheatsheet" name="View the UI overview in the Help" skip="false">
 				<param name="path" value="ViewHelpForUI.xml">
 				</param>
 			</task>
-			<task kind="cheatsheet" name="Bonus - play with some data" skip="false">
-				<intro>
-					This is a bonus task, where you get to really manipulate some data.
-				</intro>
-				<onCompletion>
-					You&apos;ve now mastered the initial steps of using Debrief.
-					<i>NoPrint</i>
-					<br />Why
-					not go back to the Welcome view (there&apos;s a
-					<b>Restore Welcome</b>
-					link at the top of this view).
-					The
-					<b>Using Debrief in analysis</b>
-					cheat sheet is a logical next step.
-					<i>NoPrint</i>
-					&apos;
-						<br />Ok,
-						you&apos;ve finished your first cheat sheet, why not try the
-						"Using Debrief in analysis" on next.
-					&apos;
-				</onCompletion>
+			<task kind="cheatsheet" name="Analysing Sensor Data" skip="false">
 				<param name="path" value="../sensor/AnalysingSensorData.xml">
 				</param>
 			</task>

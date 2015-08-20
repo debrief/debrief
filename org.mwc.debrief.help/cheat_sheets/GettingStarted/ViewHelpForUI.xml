@@ -5,13 +5,10 @@
 			That&apos;s the end of the guided tour. We hope it&apos;s been very helpful to you.
 		</description>
 	</intro>
-	<item href="/org.mwc.debrief.help/html/legacy/moving_around.html"
-		title="View the help guide">
-		<description>Just so you know, in addition to these cheat sheets, Debrief has an extensive user guide that you can use; but, next we&apos;re going to go over other features in the user interface.
-			<i>NoPrint</i>So, click on the help link alongside or below to open the help manual,
-			read about the Debrief UI, then come back to this cheat sheet.<i>NoPrint</i>
-		</description>
-		<command required="true"
-			serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/moving_around.html)" />
+	<item href="/org.mwc.debrief.help/html/legacy/moving_around.html" title="View the help guide">
+		<description>Just so you know, in addition to these cheat sheets, Debrief has an extensive
+			user guide that you can use; but, next we&apos;re going to go over other features in the
+			user interface.</description>
+		<command required="true" serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/moving_around.html)"/>
 	</item>
 </cheatsheet>

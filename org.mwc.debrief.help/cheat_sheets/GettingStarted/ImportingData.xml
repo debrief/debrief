@@ -1,54 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet title="Adding data to a plot">
 	<intro>
-		<description>Debrief&apos;s <b>New Plot</b> wizard is effective at providing you with a preformatted backdrop to your analysis, but it doesn&apos;t load your data for you.
-			<br/>We will now load some existing tracks to assist you in getting started.
-		</description>
+		<description>Debrief&apos;s <b>New Plot</b> wizard is effective at providing you with a
+			preformatted backdrop to your analysis, but it doesn&apos;t load your data for you. We
+			will now load some existing tracks to assist you in getting started.</description>
 	</intro>
-	<item
-		href="/org.mwc.debrief.help/html/legacy/import_range_data.html#DebrieffileFormat"
+	<item href="/org.mwc.debrief.help/html/legacy/import_range_data.html#DebrieffileFormat"
 		title="Check sample data">
-		<description>
-			To check sample data:
-			<br/><b>1.</b> Open <b>Navigator</b> (using your mouse, or <b>Ctrl+3</b> and typing the search term).
-			<br/><b>2.</b> Expand the folder that contains your existing Debrief files (these will be either REP or DPF).
-			<b>Note:</b> valid Debrief files are flagged with a Debrief icon. Refer to the <b>Debrief File Formats</b> chapter in the <b>Debrief User Guide</b> to learn more about the two file types.
-		</description>
+		<description>To check sample data:<br/><b>1.</b> Open <b>Navigator</b> (using your mouse, or
+			<b>Ctrl</b>+<b>3</b> and typing the search term).<br/><b>2.</b> Expand the folder that contains your
+			existing Debrief files (these will be either REP or DPF).<br/><b>Note:</b> valid
+			Debrief files are flagged with a Debrief icon. Refer to the <b>Debrief File Formats</b> chapter
+			in the <b>Debrief User Guide</b> to learn more about the two file types.</description>
 	</item>
 	<item
 		href="/org.mwc.debrief.help/html/legacy/import_range_data.html#import_modes"
 		title="Drag in a simple track">
-		<description>If you&apos;ve already got a plot open, close it now by clicking on the cross in the
-			small tab-shaped icon above it. Don&apos;t worry about saving the tutorial files.
-			<br/>Drag a <b>rep</b> track from your <b>Navigator</b> onto the blank plot area. The <b>boat1.rep</b> file is a simple
-			starting point. The plot and any associated views will promptly update.
-			<br/>When rep files are dragged in, you may be asked whether you wish to import the data in &apos;Over The Ground&apos;
-			(OTG) or &apos;Dead Reckoning&apos; (DR) mode. For this tutorial, select OTG.
-			<i>NoPrint</i> Use the help link (?) to the side of this text to open the guidance on using OTG and DR data.
-				<i>NoPrint</i>
+		<description>If you&apos;ve already got a plot open, close it now by clicking on the cross
+			in the small tab-shaped icon above it. Don&apos;t worry about saving the tutorial files.
+			Drag a <b>rep</b> track from your <b>Navigator</b> onto the blank plot area. The <b>boat1.re</b>p file is a
+			simple starting point. The plot and any associated views will promptly update. When <b>rep</b>
+			files are dragged in, you may be asked whether you wish to import the data in <b>Over The
+			Ground (OTG)</b> or <b>Dead Reckoning (DR)</b> mode. For this tutorial, select <b>OTG</b>.<br/><i>NoPrint</i> Use the help link (?) to the side of this text to open the
+			guidance on using OTG and DR data. <i>NoPrint</i>
 		</description>
 	</item>
 	<item title="Drag in a complex plot">
-		<description> If you have multiple tracks to analyse, you can drag them onto the track plot
-			you&apos;ve just created. But, for now, close the plot you have open by clicking on the cross
-			icon in its tab and press <b>Don&apos;t Save</b>.
-			<br/>Now, drag <b>sample.dpf</b> into the plot area. You&apos;ll see that this plot
-			contains more complex graphical features.</description>
+		<description>If you have multiple tracks to analyse, you can drag them onto the track
+			plot you&apos;ve just created. But for now, close the plot you have open by clicking on
+			the cross icon in its tab and press <b>Don&apos;t Save</b> when asked.<br/>Now, drag <b>sample.dpf</b>
+			into the plot area. You&apos;ll see that this plot contains more complex graphical
+			features.</description>
 	</item>
 	<item title="Debrief file types">
-		<description>
-			Note, you&apos;ve just encountered two file types, the &apos;Replay&apos; file type (.rep) and the &apos;Debrief&apos; file type (.dpf).
-			<br/>The 2 file types differ in that while the Replay file format is a very simple, column oriented text format ideal for passing around track data and getting your raw track data into Debrief (see the <b>Reference</b> section within the user manual for more details), rep files aren&apos;t suited to storing formatting data or user preferences; this is where the Debrief file type comes in: the textual XML file structure of the dpf files allows it to store a wide range of data.
-			<br/>As such, a typical flow is that data enters Debrief in rep format and an analyst uses this data to create a custom plot, which is then stored in XML format as a dpf file.
-		</description>
-	</item>
-	<item
-		href="/org.mwc.debrief.help/html/legacy/maintainers.html#RightClickIntegration"
-		title="Done">
-		<description> Your track data is now on the plot. <br/><b>Note:</b> tracks can be dragged
-			into Debrief from other areas, such as Windows Explorer.<i>NoPrint</i> Refer to the
-				<b>Maintainers Guide</b> section of the <b>Debrief User Guide</b> to learn how to
-			support right-click track opening with MS Windows.<i>NoPrint</i>
-		</description>
+		<description>Note, you&apos;ve just encountered two file types, the <b>Replay</b> file type (.rep )
+			and the <b>Debrief</b> file type (.dpf).<br/>The two file types differ in that though the rep file
+			format is a very simple, column oriented text format ideal for passing around track data
+			and for getting your raw track data into Debrief (see the Reference section in the user
+			manual for more details), it isn&apos;t suited to storing formatting data or user
+			preferences; in contrast, with its textual XML structure and ability to store a wide
+			range of data, the dpf file format is.<br/>As such, a typical flow is that data enters
+			Debrief in rep format and an analyst uses this data to create a custom plot; this plot
+			is then stored in XML format as a DPF file.<br/>Your track data is now on the plot.
+				<br/><b>Note:</b> tracks can be dragged into Debrief from other areas, such as
+			“<b>Windows Explorer</b>”. <i>NoPrint</i>Refer to the <b>Maintainer&apos;s Guide</b> section of the <b>Debrief User
+				Guide</b> to learn how to support right-click track opening on MS Windows.<i>NoPrint</i></description>
 	</item>
 </cheatsheet>

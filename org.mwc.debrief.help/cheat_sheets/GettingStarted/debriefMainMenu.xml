@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Main menu">
+	<intro>
+		<description>Without a Debrief file open, you will only see a reduced main menu set of 5
+			items: <b>File</b>, <b>Edit</b>, <b>Run</b>, <b>Window</b>, and <b>Help</b>. So, we&apos;ll open a file to see the full set.
+		</description>
+	</intro>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Opening a Debrief file">
+		<description>To manage or open files, we need to go to the <b>Navigator</b> view. If it isn&apos;t
+			open, open it. You can either:
+			<br/><b>•</b> Click on <b>Window</b> > <b>Show View</b> > <b>Navigator</b>.
+			<br/><b>•</b> Press <b>Ctrl + 3</b>
+			> <b>Quick Access</b> > [click on <b>Navigator</b> - <b>General</b>].
+			Now, in the <b>Navigator</b> view:
+			<br/><b>1.</b> Click on the drop-down arrow next to “<b>Debrief_test_project_01</b>” and it will expand.
+			<br/><b>2.</b> Click on the
+			“<b>sample_data</b>” folder and locate the file “<b>boat1.rep</b>”.
+			<br/><b>3.</b> Double-click on “<b>boat1.rep</b>” and
+			the <b>Select track mode</b> dialog will show (remember, we accepted the default in <b>Preferences</b>
+			to always ask us the track mode).
+			<br/><b>4.</b> Select <b>Over the Ground (OTG)</b>.
+			<br/><b>5.</b> Click on <b>Ok</b>. After a
+			second or two, the <b>boat1.rep</b> plot will display in the <b>plot editor</b> part of the UI.
+			<br/>You will also see the full main menu set as well as the main toolbar set.</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="The Main Menus">
+		<description>The 8 main menus items are <b>File</b>, <b>Edit</b>, <b>Run</b>, <b>Chart</b> <b>Feature</b>, <b>Drawing</b>, <b>View</b>,
+			<b>Window</b>, and <b>Help</b>. These are self-explanatory and mostly mirror many of the principal
+			functions common throughout apps/programs today.
+			<br/>Because of this, I won&apos;t run through
+			what each do as the user guide contains that information, but will just add that you can
+			only perform certain functions in Debrief if certain previous conditions have been met.
+			If these conditions haven&apos;t been met, you won&apos;t be able to do them, e.g., the <b>Edit</b> >
+			<b>Paste</b> function will be greyed-out and won&apos;t be available if you haven&apos;t yet copied
+			anything to the clipboard. Similarly, you can&apos;t copy anything if nothing has actually
+			been selected in the interface—I appreciate that you probably already knew this, but it
+			does bear repeating.
+			<br/>Using the menus is very easy, especially with the mouse. However,
+			you can also access the main menu items using the keyboard. We&apos;ll discuss more about
+			this in <b>Shortcut Key Combinations</b> (section 5).
+			<br/>The second type of menu we have are
+			called context-sensitive menus.</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Context-sensitive menus">
+		<description>One mostly unused function when using the mouse with Windows is the
+			right-click mouse button or the right-click keyboard button (this is the one with the
+			graphic on it, normally 2 to the right of your keyboard&apos;s space-bar).
+			<br/>Using either of
+			these functions will cause a pop-up menu to appear—this is called a <b>context-sensitive
+			menu</b>. Try it now.
+			<br/>In the <b>plot editor</b>:
+			<br/><b>1.</b> Right-click on the grey area of the plot. You
+			will see a popup menu with 3 options: <b>Copy Cursor Location</b>, <b>Edit base chart</b>, and <b>Edit
+			Projection</b>.
+			<br/>Admittedly, these aren&apos;t much help to us at the moment, but it&apos;s a quick way
+			of accessing required information or attributes and functions of the chosen object (in
+			this case, it was the grey background area—the sea).
+			<br/><b>2.</b> Now, at the top of the track (the
+			entire line on the plot is the track), you can see a straight yellow section.
+			Right-click anywhere on it and a context-sensitive menu with a large range of options
+			will display.
+			<br/><b>3.</b> The 3rd option down is <b>Reset color</b>; select it and that small part of the
+			yellow track will change color to red.
+			<br/>Of course, there are many other things we can do
+			with these options, but it&apos;s handy to know they are there and it&apos;s far quicker than
+			using the main menu all the time.
+			<br/>You might think this is no big deal but, when you&apos;re
+			using a computer all day, shortcuts like this help enormously. As well as saving you
+			time and energy, these context-sensitive menus also show you what other functionality is
+			available to you and, as well as being a neat training aid, are great for improving your
+			efficiency and capability with the program. The last menu set is the view drop-down
+			menu.
+			  </description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="View Drop-down Menus">
+		<description>All views have a drop-down menu which further narrows-in on the functionality
+			for the particular subset of tasks you are performing. For example, not only can you
+			right-click on every individual element or attribute in a view, but you can also click
+			on objects such as column headings, as well as the small drop-down arrow in the top
+			right-hand corner of each view: each one will provide with you a new set of options
+			specific to that attribute/view.
+			<br/>With our <b>boat1.rep</b> file:
+			<br/><b>1.</b> Identify the <b>Outline</b> view
+			(if it isn&apos;t visible, open it: <b>Window</b> > <b>Show View</b> > <b>Outline</b>).
+			<br/><b>2.</b> Within that view,
+			click on <b>Track:NELSON</b> to expand it. You should see <b>120500.00 (402 items)</b> as the first
+			item in the list (this contains the information about the entire track in our plot
+			editor).
+			<br/><b>3.</b> Right-click on <b>120500.00 (402 items)</b>.
+			<br/><b>4.</b> Mouse-over <b>120500.00</b> and another
+			popup will show.
+			<br/><b>5.</b> Mouse-over <b>Linestyle</b> and select <b>Long dashes</b>. The track now changes to
+			long dashes.
+			<br/>Next, we&apos;ll go one step up:
+			<br/><b>1.</b> Still in the <b>Outline</b> view, right-click
+			on <b>Track:NELSON</b>.
+			<br/><b>2.</b> Mouse-over <b>NELSON</b> and a popup will show.
+			<br/><b>3.</b> Mouse-over <b>Color</b> and
+			select <b>Blue</b>, most of the track will change color to blue.
+			<br/>Now, we&apos;ll go another
+			step up, this time to the view-level:
+			<br/><b>1.</b> Click on the <b>Outline</b> view&apos;s drop down arrow
+			(in the top right corner).
+			<br/><b>2.</b> Select <b>Hide Item</b> and the track will disappear from the plot
+			(it&apos;s still there, just hidden).
+			<br/><b>3.</b> Click on the drop-down arrow again and select
+			<b>Reveal Item</b>, it will show again in the plot editor.
+			<br/><b>Note:</b> you can perform these
+			functions at different levels in the view, e.g., you can also hide/reveal at the track
+			and node levels, but it all depends on what you are actually working on in the plot
+			editor.</description>
+	</item>
+	
+</cheatsheet>

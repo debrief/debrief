@@ -2,43 +2,35 @@
 <cheatsheet title="Creating a new plot in Debrief">
    <intro>
       <description>This tutorial will guide you through creating a new, blank &apos;plot&apos; in
-         Debrief. </description>
+         Debrief.</description>
    </intro>
    <item title="Check you have a Project">
-      <description>&apos;Plots&apos; are stored in &apos;Projects&apos;, so before you create a plot,
-         you must have a Project. If you don&apos;t have one, refer to <b>Generating a
-            project for your data</b> and follow the steps there. </description>
-   </item>
-   <item title="Choose location for plot file">
-      <description> Debrief will store the new plot in one of your existing folders. If your
-         navigator contains links to both shared training data and personal data folders, it&apos;s
-         best to create this plot in your personal data folder.</description>
+      <description><b>Plots</b> are stored in <b>projects</b>, so before you create a <b>plot</b>, you must have a
+         <b>project</b>. If you don&apos;t have one, refer to <b>Generating a project for your data</b> and follow
+         the steps there.</description>
    </item>
    <item title="Create new plot">
-      <description>To create a new plot, in the <b>Navigator</b> view:
-         <br/><b>1.</b>Right-click on the parent folder for your new plot and select <b>New/Debrief
-            Plot</b> to open the Wizard.
-         <br/><b>2.</b> Now either confirm the plot save location
-         (theplot&apos;s <b>container</b>) or select a different location by clicking on the <b>Browse</b> button
-         and selecting the parent folder of your data directories.
-         <br/><b>3.</b> Change the
-         filename (as required).
-         <br/><b>4.</b> Click on <b>Next</b>.
-         <br/><b>5.</b> Now, select or
-         deselect whether to use the &apos;Natural Earth&apos; dataset and click on
-         <b>Next</b>.
-         <br/><b>6.</b> Now you can choose whether or not to <b>add</b> a scale to your plot, with the following options:
-         <b>colour</b>, <b>display units</b>, and <b>scale</b> location.
-         <br/>If you choose to include a scale, you must enter the display units and scale location before proceeding to the next step.
-         <br/><b>7.</b> Next you can choose whether to <b>include a coastline</b> or not. This option is not mandatory.
-         <br/><b>8.</b> Clicking on <b>Next</b> takes you to the last step in this process: the <b>Add Grid to Plot</b> dialog box.
-         <br/>Here you can select whether to <b>include</b> a grid, the grid <b>colour</b>, whether to show <b>Plot Labels</b>, and the <b>Delta—grid</b> step size. Once you have selected your options, click on the <b>Finish</b> button. The changes
-         will be applied, and the dialog will close.
-      </description>
+      <description>To create a new <b>plot</b>, in the <b>Navigator</b> view:<br/><b>1.</b> Right-click on the
+         parent folder for your new plot and select <b>New/Debrief Plot</b>; the Wizard will open.
+           <br/><b>2.</b> Next, either confirm where you would like the plot to be stored—this is
+         called the <b>plot&apos;s container</b>—or select a different location by clicking on the <b>Browse</b>
+         button and select the parent folder of your data directories.<br/><b>3.</b> Change the
+         filename (as required).<br/><b>4.</b> Click on <b>Next</b>.<br/><b>5.</b> Now, select/deselect
+         whether to use the <b>Natural Earth</b> dataset; click on <b>Next</b>.<br/><b>6.</b> Now you can choose
+         whether to <b>Add Scale to Plot</b>, or not; including the following options: <b>color</b>, <b>display
+            units</b>, and <b>scale location</b>.<br/>If you select to include a scale, you must enter the display
+         units and scale location to proceed to the next step.<br/><b>7.</b> Next you can choose
+         whether to <b>include a coastline</b> or not. This option is not mandatory.<br/><b>8.</b>
+         Clicking on <b>Next</b> shows you last step in this process, the <b>Add Grid to Plot</b> dialog box.
+           <br/><b>9.</b> Here you can select whether to <b>include</b> a grid, the grid <b>color</b>, whether to
+         show <b>Plot Labels</b>, and the <b>Delta—grid step size</b>.<br/><b>10.</b> Once you have selected your
+         options, click on the <b>Finish</b> button. The changes will be applied, and the dialog will
+         close.</description>
    </item>
    <item title="Finished">
-      <description>Your new plot (with the filename you used earlier), will then be displayed in your Debrief window. It is also located in the folder you specified in step 2 (above).
-         <br/><b>Note:</b> the wizards make life easier, but all the steps above can be performed from the <b>Chart Features</b> menu in Debrief (<b>Alt,C</b>).
-      </description>
+      <description>Your new plot (with the filename you used earlier), will then be displayed in
+         your Debrief window. It is also located in the folder you specified in step 2 (above).
+            <br/><b>Note:</b> all wizards make things easier for us, but all the steps above can be
+         performed from the <b>Chart Features</b> menu in Debrief (<b>Alt</b>,<b>C</b>).</description>
    </item>
 </cheatsheet>

@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet title="Welcome to Debrief NG">
+	<intro>
+		<description>Welcome to Getting Started with Debrief. In this tutorial, the first in a
+			series aimed at getting you up to speed with the program, we will look at the
+			following areas:<br/>• Welcome to Debrief<br/>• Document Conventions<br/>•
+			Installing and Opening Debrief<br/>• Working within Debrief<br/>• Menus &amp;
+			Toolbars<br/>• The Plot Editor<br/>• Shortcut Key Combinations<br/>• Chart
+			Features
+			<br/>By the end of this brief getting started guide, you will know where
+			everything is in the program, how to work efficiently within the program, and be in the
+			best position possible for the remaining tutorials.
+			<br/>First though, a little background information.
+		</description>
+	</intro>
 	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
 		title="Background Information">
 		<description>Debrief was developed in the mid 90&apos;s by the Maritime Warfare Centre in

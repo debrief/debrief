@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Working Within Debrief">
+			<intro><description> The UI for Debrief (called the <b>workbench</b>) is centred on what is called the
+			<b>plot editor</b>; and again, this in turn is surrounded by a series of small windows, called
+			views. We&apos;ll come onto these shortly, but the <b>plot editor</b> is where your plots will be
+			displayed and where you can work on them.
+			<br/>Within the workbench itself, the base
+			component for working is the project (we already created our base project in the
+			previous section, <b>Welcome to DebriefNG</b>), and everything we see in the UI is related to
+			the selected project.
+			<br/>The first thing we must do is to define the workspace for this
+			project. To do this, we need to ensure the <b>Navigator</b> view is open, and unless you
+			accidentally closed it, it should be; but we&apos;ll quickly go over 2 methods of opening
+			this view as it is one of the more common views in Debrief. The <b>Navigator</b> view to
+			Debrief is akin to Windows Explorer for your operating system, so it&apos;s essential to know
+			how to open it.</description></intro>
+	
+</cheatsheet>
