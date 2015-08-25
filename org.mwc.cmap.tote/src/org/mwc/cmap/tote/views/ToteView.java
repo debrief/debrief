@@ -87,6 +87,10 @@ import MWC.GenericData.WatchableList;
 public class ToteView extends ViewPart
 {
 
+	private static final String N_A = "n/a";
+
+	private static final String UNITS = "Units";
+
 	// private Action _followTimeToggle;
 
 	private Action _removeTrackAction;
@@ -351,7 +355,7 @@ public class ToteView extends ViewPart
 			if (priTrack != null)
 				pri.setText(priTrack.getName());
 			else
-				pri.setText("n/a");
+				pri.setText(N_A);
 
 			// and now the secondary track columns
 			final WatchableList[] secTracks = _trackData.getSecondaryTracks();
@@ -377,7 +381,7 @@ public class ToteView extends ViewPart
 			// and the units column
 			layout.addColumnData(new ColumnWeightData(5, true));
 			final TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-			thisSec.setText("Units");
+			thisSec.setText(UNITS);
 		}
 	}
 
@@ -561,18 +565,13 @@ public class ToteView extends ViewPart
 		theTable.addListener(SWT.MenuDetect, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				if (theTable.getColumnCount() < 3)
-				{
-					return;
-				}
-				int w = theTable.getColumn(0).getWidth() + theTable.getColumn(1).getWidth();
-				Point pt = Display.getCurrent().map(null, theTable, new Point(e.x, e.y));
-				Rectangle clientArea = theTable.getClientArea();
-				boolean header = clientArea.y <= pt.y && pt.y < (clientArea.y + theTable.getHeaderHeight());
-				if (header && pt.x > w)
+				int index = findSelectedColumn(e, theTable);
+				if (index > 0 && 
+						!N_A.equals(theTable.getColumn(index).getText()) &&
+						!UNITS.equals(theTable.getColumn(index).getText()))
 				{
 					final MenuManager mmgr = new MenuManager();
-					fillContextMenu(mmgr, 2);
+					fillContextMenu(mmgr, index);
 					final Menu thisM = mmgr.createContextMenu(_tableViewer.getTable());
 					thisM.setVisible(true);
 				}
@@ -618,6 +617,48 @@ public class ToteView extends ViewPart
 		// Menu menu = menuMgr.createContextMenu(_tableViewer.getControl());
 		// _tableViewer.getControl().setMenu(menu);
 		// getSite().registerContextMenu(menuMgr, _tableViewer);
+	}
+
+	protected int findSelectedColumn(Event e, Table theTable)
+	{
+		if (theTable.getColumnCount() < 2)
+		{
+			return -1;
+		}
+		Point pt = Display.getCurrent().map(null, theTable, new Point(e.x, e.y));
+		Rectangle clientArea = theTable.getClientArea();
+		boolean header = clientArea.y <= pt.y && pt.y < (clientArea.y + theTable.getHeaderHeight());
+		if (!header)
+		{
+			return -1;
+		}
+		if (theTable.getColumnCount() == 2)
+		{
+			int w = theTable.getColumn(0).getWidth();
+			if (pt.x > w)
+			{
+				return 1;
+			}
+		}
+		else if (theTable.getColumnCount() >= 3)
+		{
+			int w1 = theTable.getColumn(0).getWidth();
+			int w2 = w1 + theTable.getColumn(1).getWidth();
+			int w3 = w2 + theTable.getColumn(2).getWidth();
+			if (pt.x > w3) 
+			{
+				return 3;
+			}
+			if (pt.x > w2) 
+			{
+				return 2;
+			}
+			if (pt.x > w1)
+			{
+				return 1;
+			}
+		}
+		return -1;
 	}
 
 	private void contributeToActionBars()
