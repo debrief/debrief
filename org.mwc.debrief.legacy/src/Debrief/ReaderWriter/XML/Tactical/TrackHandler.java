@@ -37,7 +37,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
-import Debrief.Wrappers.Track.PlanningSegment;
+import Debrief.Wrappers.Track.ICompositeTrackSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -194,7 +194,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 				}
 				trk.appendChild(sList);
 			}
-			else if (next instanceof TrackSegment)
+			else if (next instanceof TrackSegment && !(next instanceof ICompositeTrackSegment))
 			{
 				exportThisTrackSegment(doc, trk, (TrackSegment) next);
 			}
@@ -219,16 +219,6 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		{
 			DynamicInfillSegmentHandler.exportThisSegment(doc, trk,
 					(DynamicInfillSegment) segment);
-		}
-		else if (segment instanceof PlanningSegment.ClosingSegment)
-		{
-			PlanningSegmentHandler.exportThisClosingSegment(doc, trk,
-					(PlanningSegment) segment);
-		}
-		else if (segment instanceof PlanningSegment)
-		{
-			PlanningSegmentHandler.exportThisSegment(doc, trk,
-					(PlanningSegment) segment);
 		}
 		else
 

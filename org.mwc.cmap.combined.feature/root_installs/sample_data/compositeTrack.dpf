@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot xmlns="http://www.debrief.info/plot" Created="Fri Aug 14 18:59:12 GMT 2015" Name="Debrief Plot" PlotId="1439324044183">
+<details Text="Saved with Debrief version dated Fri Aug 14 18:57:13 GMT 2015"/>
+<session>
+<layers>
+<composite_track InterpolatePoints="false" LabelIntervalMillis="900000" LineStyle="0" LineThickness="3" LinkPositions="true" Name="testTrack" NameAtStart="true" NameLocation="Right" NameVisible="false" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" StartTime="150811 201513" Symbol="Submarine" SymbolIntervalMillis="300000" Visible="true">
+<colour CustomBlue="0" CustomGreen="0" CustomRed="255" Value="custom"/>
+<SymbolColor Value="CYAN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<Origin>
+<shortLocation Depth="0.000" Lat="50.8544859" Long="-1.3422500"/>
+</Origin>
+<planning_segment LineStyle="Solid" Name="leg1" VectorLabelVisible="false" Visible="true" calcModel="Speed/Time" course="45.000">
+<WorldDistance Units="nm" Value="2.4000000"/>
+<Speed Units="kts" Value="12.000"/>
+<colour CustomBlue="0" CustomGreen="0" CustomRed="255" Value="custom"/>
+<Duration Units="minutes" Value="12.000"/>
+</planning_segment>
+<planning_segment LineStyle="Solid" Name="leg2" VectorLabelVisible="true" Visible="true" calcModel="Speed/Time" course="45.000">
+<WorldDistance Units="nm" Value="2.4000000"/>
+<Speed Units="kts" Value="12.000"/>
+<colour CustomBlue="0" CustomGreen="0" CustomRed="255" Value="custom"/>
+<Duration Units="minutes" Value="12.000"/>
+</planning_segment>
+<planning_segment LineStyle="Solid" Name="leg3" VectorLabelVisible="true" Visible="true" calcModel="Speed/Time" course="45.000">
+<WorldDistance Units="nm" Value="2.4000000"/>
+<Speed Units="kts" Value="12.000"/>
+<colour CustomBlue="0" CustomGreen="0" CustomRed="255" Value="custom"/>
+<Duration Units="minutes" Value="12.000"/>
+</planning_segment>
+</composite_track>
+</layers>
+<projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
+<tl>
+<shortLocation Depth="0.000" Lat="50.9816874" Long="-1.5083390"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="50.8119817" Long="-1.0416272"/>
+</br>
+</projection>
+<gui>
+<tote/>
+<component Type="Stepper">
+<property Name="GREEN" Value="64"/>
+<property Name="DateFormat" Value="ddHHmm"/>
+<property Name="ShadeArcs" Value="false"/>
+<property Name="Radius" Value="3000.000"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="RectHighlight_Size" Value="5"/>
+<property Name="RectHighlight_Color" Value="128,128,128"/>
+<property Name="BLUE" Value="64"/>
+<property Name="Arc_Finish" Value="180"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="RED" Value="64"/>
+<property Name="CurrentTime" Value="150811 201513"/>
+<property Name="NumRings" Value="3"/>
+<property Name="PointSize" Value="5"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="UseTrackColor" Value="false"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="JustPrimary" Value="false"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="Arcs" Value="-180"/>
+</component>
+<Background>
+<colour Value="DARK_GREY"/>
+</Background>
+</gui>
+</session>
+</plot>
