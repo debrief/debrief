@@ -53,5 +53,6 @@ Require-Bundle: org.mwc.cmap.core,
  org.mwc.cmap.gt2Plot;bundle-version="[1.0.0,2.0.0)",
  org.mwc.cmap.plotViewer,
  org.eclipse.team.core,
- org.eclipse.team.ui
+ org.eclipse.team.ui,
+ org.eclipse.ui.intro
 Bundle-ActivationPolicy: lazy
