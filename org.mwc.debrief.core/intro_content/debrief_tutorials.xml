@@ -11,7 +11,7 @@
 			</link>
 			<link style-id="content-link" label="TMA skills with Debrief"
 				url="http://org.eclipse.ui.intro/runAction?pluginId=org.mwc.debrief.core&#38;class=org.mwc.debrief.core.actions.OpenDebriefTutorialAction&#38;file=DebriefNG_TMA_Tutorial.pdf"
-				id="debrief-tma">
+				id="debrief-viewS2R">
 				<text>This set of tutorials covers the skills necessary for single-sided track reconstruction</text>
 			</link>
 			<link style-id="content-link" label="Viewing Debrief's error log"
