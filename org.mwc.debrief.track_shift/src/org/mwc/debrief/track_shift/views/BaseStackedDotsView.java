@@ -25,10 +25,7 @@ import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -181,8 +178,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	protected ISelectionChangedListener _mySelListener;
 
 	protected Vector<DraggableItem> _draggableSelection;
-
-	private UpdateDotsJob updateDotsJob;
 
 	/**
 	 * 
@@ -683,66 +678,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	void updateStackedDots(final boolean updateDoublets)
 	{
-		if (updateDotsJob == null)
+		if (Thread.currentThread() == Display.getDefault().getThread())
 		{
-			scheduleUpdateDotsJob(updateDoublets);
+			// it's ok we're already in a display thread
+			wrappedUpdateStackedDots(updateDoublets);
 		}
 		else
 		{
-			//updateDotsJob.cancel();
-			delay();
-			scheduleUpdateDotsJob(updateDoublets);
-		}
-	}
-
-	private void delay()
-	{
-		if (updateDotsJob == null || !updateDotsJob.isWorking())
-		{
-			return;
-		}
-		final Display display = Display.getCurrent();
-		long waitTimeMillis = 5 * 60 * 1000;
-		final long endTimeMillis = System.currentTimeMillis() + waitTimeMillis;
-		if (display != null)
-		{
-			while (System.currentTimeMillis() < endTimeMillis)
+			// we're not in the display thread - make it so!
+			Display.getDefault().syncExec(new Runnable()
 			{
-				if (updateDotsJob == null || !updateDotsJob.isWorking())
+				public void run()
 				{
-					return;
+					// update the current datasets
+					wrappedUpdateStackedDots(updateDoublets);
 				}
-				if (!display.readAndDispatch())
-					display.sleep();
-			}
-			display.update();
+			});
 		}
-		else
-		{
-			try
-			{
-				while (System.currentTimeMillis() < endTimeMillis)
-				{
-					if (updateDotsJob == null || !updateDotsJob.isWorking())
-					{
-						return;
-					}
-					Thread.sleep(500);
-				}
-			}
-			catch (final InterruptedException e)
-			{
-				// ignored
-			}
-		}
-	}
-
-	private void scheduleUpdateDotsJob(final boolean updateDoublets)
-	{
-		updateDotsJob = new UpdateDotsJob("Update dots", updateDoublets);
-		updateDotsJob.setUser(true);
-		updateDotsJob.setPriority(Job.INTERACTIVE);
-		updateDotsJob.schedule();
 	}
 
 	/**
@@ -1104,52 +1056,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// remember if we're showing the error plot
 		memento.putBoolean(SHOW_LINE_PLOT, _showLinePlot.isChecked());
 		memento.putBoolean(SHOW_DOT_PLOT, _showDotPlot.isChecked());
-
-	}
-
-	private class UpdateDotsJob extends Job
-	{
-
-		private boolean working;
-		private boolean updateDoublets;
-
-		public UpdateDotsJob(String name, boolean updateDoublets)
-		{
-			super(name);
-			this.updateDoublets = updateDoublets;
-			this.working = false;
-		}
-
-		@Override
-		protected IStatus run(final IProgressMonitor monitor)
-		{
-			setWorking(true);
-			Display.getDefault().asyncExec(new Runnable()
-			{
-
-				@Override
-				public void run()
-				{
-					if (!monitor.isCanceled())
-					{
-						wrappedUpdateStackedDots(updateDoublets);
-					}
-					setWorking(false);
-				}
-
-			});
-			return Status.OK_STATUS;
-		}
-
-		public synchronized boolean isWorking()
-		{
-			return working;
-		}
-
-		public synchronized void setWorking(boolean working)
-		{
-			this.working = working;
-		}
 
 	}
 
