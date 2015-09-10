@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.track_shift.views;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -29,7 +28,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.track_shift.Activator;
 
 import Debrief.Wrappers.Track.ITimeVariableProvider;
@@ -231,12 +229,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 	}
 
 	@Override
-	public Double getValueAt(HiResDate dtg)
+	public long getValueAt(HiResDate dtg)
 	{
-		Double res = null;
-
 		// get the time
-		RegularTimePeriod myTime = new FixedMillisecond(dtg.getDate().getTime());
+		RegularTimePeriod myTime = new FixedMillisecond(dtg.getMicros()/1000);
 
 		// get the set of calculated error values that we have stored in the graph
 		TimeSeriesCollection dataset = (TimeSeriesCollection) _dotPlot.getDataset();
@@ -246,36 +242,15 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 			if (dataset.getSeriesCount() > 0)
 			{
 				TimeSeries series = dataset.getSeries(0);
-				int count = series.getItemCount();
-				if (count > 0)
+				int index = series.getIndex(myTime);
+				if (index >= 0)
 				{
-					for (int i = 0; i < count; i++)
-					{
-						TimeSeriesDataItem thisV = series.getDataItem(i);
-						RegularTimePeriod time = thisV.getPeriod();
-						if (myTime.equals(time))
-						{
-							res = thisV.getValue().doubleValue();
-							
-							// ok, done - we can drop out :-)
-							break;
-						}
-					}
+					TimeSeriesDataItem thisV = series.getDataItem(index);
+					return thisV.getValue().longValue();
 				}
 			}
 		}
-
-		if (res == null)
-		{
-			// ok, for reason we haven't found the relevant cut. throw an error
-			DebriefPlugin.logError(Status.ERROR,
-					"Bearing residuals view failed to retrieve residual error at time: "
-							+ dtg, null);
-
-			res = 0d;
-		}
-
-		return res;
+		return 0;
 	}
 
 	@Override

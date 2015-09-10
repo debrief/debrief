@@ -205,12 +205,12 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 			lastPoint = new Point(thisPoint);
 
 			// also draw in a marker for this point
-			final double height;
+			final int height;
 			if (errorProvider != null && errorProvider.applyStyling())
 			{
-				double thisH = Math.abs(errorProvider.getValueAt(
-						thisF.getDateTimeGroup()).doubleValue());
-				height = (int) (Math.min(thisH, MAX_HEIGHT) * 2);
+				long thisH = Math.abs(errorProvider.getValueAt(thisF.getDateTimeGroup()));
+				int h = (int) (Math.min(thisH, MAX_HEIGHT) * 2);
+				height = h == 0 ? 4 : h;
 			}
 			else
 			{

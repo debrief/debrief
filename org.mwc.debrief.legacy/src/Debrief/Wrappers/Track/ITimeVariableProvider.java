@@ -31,7 +31,7 @@ public interface ITimeVariableProvider
 	 * @param dtg
 	 * @return
 	 */
-	Double getValueAt(HiResDate dtg);
+	long getValueAt(HiResDate dtg);
 
 	/** whether the user wants the errors to be drawn to scale on the spatial plot
 	 * 
