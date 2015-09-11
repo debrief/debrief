@@ -2,7 +2,6 @@
 # contains fill-ins for about.properties
 # java.io.Properties file (ISO 8859-1 with "\" escapes)
 # This file does not need to be translated.
-
-0=3.0.328
-1=20150722
-2=2015-07-22
+0=3.0.329
+1=20150911
+2=2015-09-11
