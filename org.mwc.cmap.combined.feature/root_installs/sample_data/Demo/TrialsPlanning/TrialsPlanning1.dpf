@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot xmlns="http://www.debrief.info/plot" Created="Fri Feb 20 10:54:53 GMT 2015" Name="Debrief Plot" PlotId="1369149093378">
+<details Text="Saved with Debrief version dated Fri Feb 20 10:34:34 GMT 2015"/>
+<session>
+<layers>
+<layer LineThickness="0" Name="Chart Features" Visible="true">
+<grid PlotLabels="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="8"/>
+<Delta Units="nm" Value="2.0000000"/>
+<colour Value="GREY"/>
+</grid>
+</layer>
+<composite_track InterpolatePoints="false" LabelIntervalMillis="900000" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SUBJECT_PLANNED_DONE" NameAtStart="true" NameLocation="Right" NameVisible="false" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" StartTime="100112 120000" Symbol="Submarine" SymbolIntervalMillis="300000" Visible="false">
+<colour Value="RED"/>
+<SymbolColor Value="CYAN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<planning_segment LineStyle="Solid" Name="Leg one" Visible="true" calcModel="Range/Speed" course="270.000">
+<WorldDistance Units="nm" Value="3.0000000"/>
+<Speed Units="kts" Value="9.000"/>
+<colour Value="RED"/>
+<Duration Units="minutes" Value="20.000"/>
+</planning_segment>
+<planning_segment LineStyle="Solid" Name="Leg two" Visible="true" calcModel="Range/Speed" course="225.000">
+<WorldDistance Units="nm" Value="6.0000000"/>
+<Speed Units="kts" Value="9.000"/>
+<colour Value="RED"/>
+<Duration Units="minutes" Value="40.000"/>
+</planning_segment>
+<Origin>
+<shortLocation Depth="0.000" Lat="0.0000002" Long="-30.0000119"/>
+</Origin>
+</composite_track>
+<externalDatafile DataType="NELayer" LayerName="Natural Earth" LayerPath="" Visible="true"/>
+<layer LineThickness="0" Name="Markers" Visible="true">
+<textlabel Label="Fixed Sensor" LabelLocation="Top" LabelVisible="true" Scale="Medium" Symbol="Square" SymbolVisible="true" Visible="true">
+<colour Value="PURPLE"/>
+<font Bold="false" Family="Arial" Italic="false" Size="12"/>
+<centre>
+<shortLocation Depth="0.000" Lat="0.0001041" Long="-30.0499586"/>
+</centre>
+</textlabel>
+<textlabel Label="Red Finish" LabelLocation="Bottom" LabelVisible="true" Scale="Medium" Symbol="Square" SymbolVisible="true" Visible="true">
+<colour Value="PURPLE"/>
+<font Bold="false" Family="Arial" Italic="false" Size="12"/>
+<centre>
+<shortLocation Depth="0.000" Lat="-0.0707007" Long="-30.1207200"/>
+</centre>
+</textlabel>
+<textlabel Label="Red Start" LabelLocation="Bottom" LabelVisible="true" Scale="Medium" Symbol="Square" SymbolVisible="true" Visible="true">
+<colour Value="PURPLE"/>
+<font Bold="false" Family="Arial" Italic="false" Size="12"/>
+<centre>
+<shortLocation Depth="0.000" Lat="0.0000002" Long="-30.0001101"/>
+</centre>
+</textlabel>
+</layer>
+</layers>
+<projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
+<tl>
+<shortLocation Depth="0.000" Lat="0.0865931" Long="-30.2234259"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="-0.1610938" Long="-29.9059361"/>
+</br>
+</projection>
+<gui>
+<tote/>
+<component Type="Stepper">
+<property Name="GREEN" Value="64"/>
+<property Name="DateFormat" Value="ddHHmm"/>
+<property Name="ShadeArcs" Value="false"/>
+<property Name="Radius" Value="3000.000"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="RectHighlight_Size" Value="5"/>
+<property Name="RectHighlight_Color" Value="255,255,255"/>
+<property Name="BLUE" Value="64"/>
+<property Name="Arc_Finish" Value="180"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="RED" Value="64"/>
+<property Name="CurrentTime" Value="100112 121314"/>
+<property Name="NumRings" Value="3"/>
+<property Name="PointSize" Value="5"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="UseTrackColor" Value="false"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="JustPrimary" Value="false"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="Arcs" Value="-180"/>
+</component>
+<Background>
+<colour Value="BLACK"/>
+</Background>
+</gui>
+</session>
+</plot>
