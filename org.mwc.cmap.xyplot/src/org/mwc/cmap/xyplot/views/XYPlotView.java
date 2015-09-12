@@ -1611,10 +1611,11 @@ public class XYPlotView extends ViewPart
 			{
 				if (_plotControl != null && !_plotControl.isDisposed())
 				{
-					_plotControl.setSize(0, 0);
-					_plotControl.getParent().layout(true, true);
-					_plotControl.redraw();
-					_plotControl.update();
+					JFreeChart c = _plotControl.getChart();
+					if (c != null) 
+					{
+						c.setNotify(true);
+					}
 				}
 			}
 		};
