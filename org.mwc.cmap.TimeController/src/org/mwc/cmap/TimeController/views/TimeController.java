@@ -886,6 +886,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// check that we have a current time (on initialisation some plots may
 		// not
 		// contain data)
+		if (_myTemporalDataset == null) {
+			stopPlayingTimer();
+			return;
+		}
 		final HiResDate tNow = _myTemporalDataset.getTime();
 		if (tNow != null)
 		{
