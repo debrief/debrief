@@ -3,10 +3,10 @@ jdk: oraclejdk7
 sudo: false
 install: 
 - mvn --version
-addons:
-  apt:
-    packages:
-    - pdftk
+#addons:
+#  apt:
+#    packages:
+#    - pdftk
 before_script:
 - export DISPLAY=:99
 - sh -e /etc/init.d/xvfb start
