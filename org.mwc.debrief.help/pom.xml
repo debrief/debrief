@@ -23,24 +23,25 @@
             <configuration>
                 <target>
                   <ant target="docbook_to_eclipse" antfile="collate_docbook.xml" />
-		  <exec dir="${basedir}" executable="chmod" osfamily="unix">
-                    <arg value="0775"/>
-                    <arg value="dita2pdf.sh"/>
-                  </exec>
-		  <exec dir="${basedir}" executable="chmod" osfamily="unix">
-                    <arg value="0775"/>
-                    <arg value="pdftk_title.sh"/>
-                  </exec>
-                  <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="unix"/>
-		  <exec dir="${basedir}" executable="chmod" osfamily="mac">
-                    <arg value="0775"/>
-                    <arg value="dita2pdf.sh"/>
-                  </exec>
-		  <exec dir="${basedir}" executable="chmod" osfamily="mac">
-                    <arg value="0775"/>
-                    <arg value="pdftk_title.sh"/>
-                  </exec>
-                  <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="mac"/>
+<!-- See https://github.com/debrief/debrief/issues/1343 -->
+<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="unix"> -->
+<!--                     <arg value="0775"/> -->
+<!--                     <arg value="dita2pdf.sh"/> -->
+<!--                   </exec> -->
+<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="unix"> -->
+<!--                     <arg value="0775"/> -->
+<!--                     <arg value="pdftk_title.sh"/> -->
+<!--                   </exec> -->
+<!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="unix"/> -->
+<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="mac"> -->
+<!--                     <arg value="0775"/> -->
+<!--                     <arg value="dita2pdf.sh"/> -->
+<!--                   </exec> -->
+<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="mac"> -->
+<!--                     <arg value="0775"/> -->
+<!--                     <arg value="pdftk_title.sh"/> -->
+<!--                   </exec> -->
+<!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="mac"/> -->
                 </target>
             </configuration>
             <goals>
