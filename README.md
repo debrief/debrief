@@ -30,3 +30,8 @@
 * Mar 2012 - Add attribute to Track object, to display a [direction of travel arrow](http://www.debrief.info/tutorial/formatting_data.html#sym_intervals).
 * Aug 2011 - Introduce Wizard for creation of [new Narrative entries](http://www.debrief.info/tutorial/viewing_narratives.html#more_loading_narr)
 
+## Supported by
+The development of Debrief has been supported by [Oxygen XML](http://www.oxygenxml.com)
+
+
+![Oxygen Logo](http://www.oxygenxml.com/img/resources/oxygen190x62.png)
