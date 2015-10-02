@@ -242,7 +242,7 @@ public class RangeRingShape extends PlainShape implements Editable
 	public RangeRingShape(final WorldLocation theCentre, final int numRings,
 			final WorldDistance ringWidth)
 	{
-		super(0, 1, "Range Ring");
+		super(0, "Range Ring");
 
 		// store the values
 		_theCentre = theCentre;

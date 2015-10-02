@@ -220,7 +220,7 @@ public class EllipseShape extends PlainShape implements Editable
                       final WorldDistance theMaxima,
                       final WorldDistance theMinima)
   {
-    super(0, 1, "Ellipse");
+    super(0, "Ellipse");
 
     // store the values
     _theCentre = theCentre;

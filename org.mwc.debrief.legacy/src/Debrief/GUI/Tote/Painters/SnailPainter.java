@@ -901,7 +901,7 @@ public class SnailPainter extends TotePainter
 						if (dest instanceof Graphics2D)
 						{
 							final Graphics2D g2 = (Graphics2D) dest;
-							g2.setStroke(new BasicStroke(sw.getLineThickness()));
+							g2.setStroke(new BasicStroke(sw.getShape().getLineWidth()));
 						}
 					}
 
