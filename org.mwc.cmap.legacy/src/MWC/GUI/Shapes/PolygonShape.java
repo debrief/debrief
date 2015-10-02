@@ -239,7 +239,7 @@ public class PolygonShape extends PlainShape implements Editable,
 	 */
 	public PolygonShape(final Vector<PolygonNode> vector)
 	{
-		super(0, 1, "Polygon");
+		super(0, "Polygon");
 
 		// and store it
 		_nodes = vector;

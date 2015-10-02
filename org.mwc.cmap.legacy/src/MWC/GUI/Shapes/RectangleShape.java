@@ -195,7 +195,7 @@ public class RectangleShape extends PlainShape implements Editable,
 	// ////////////////////////////////////////////////
 	public RectangleShape(final WorldLocation TL, final WorldLocation BR)
 	{
-		super(0, 1, "Rectangle");
+		super(0, "Rectangle");
 
 		_myArea = new WorldArea(TL, BR);
 		_myArea.normalise();
