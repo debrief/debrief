@@ -961,11 +961,11 @@ public class ImportReplay extends PlainImporterBase
 		String symbology = thisOne.getSymbology();
 		if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
 		{
-			shapeWrapper.setLineStyle(ImportReplay.replayLineStyleFor(symbology
+			shapeWrapper.getShape().setLineStyle(ImportReplay.replayLineStyleFor(symbology
 					.substring(2)));
 			if (symbology.length() > 3)
 			{
-				shapeWrapper.setLineThickness(ImportReplay
+				shapeWrapper.getShape().setLineWidth(ImportReplay
 						.replayLineThicknesFor(symbology.substring(3)));
 			}
 			if (symbology.length() >= 5)
