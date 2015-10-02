@@ -309,8 +309,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 				final MWC.GUI.Editable et = (MWC.GUI.Editable) ps;
 				if (et.hasEditor() == true)
 				{
-					final BeanInfo[] res =
-					{ et.getInfo() };
+					final BeanInfo[] res = { et.getInfo() };
 					return res;
 				}
 			}
@@ -323,8 +322,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			// just add the reset color field first
 			final Class<?> c = ShapeWrapper.class;
-			final MethodDescriptor[] mds =
-			{ method(c, "exportThis", null, "Export Shape") };
+			final MethodDescriptor[] mds = { method(c, "exportThis", null,
+					"Export Shape") };
 			return mds;
 		}
 
@@ -339,15 +338,17 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			try
 			{
-				final PropertyDescriptor[] myRes =
-				{
+				final PropertyDescriptor[] myRes = {
 						displayProp("LabelColor", "Label color", "the text color", FORMAT),
 						prop("Label", "the text showing", FORMAT),
 						prop("Font", "the label font", FORMAT),
-						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
+						displayProp("LabelLocation", "Label location",
+								"the relative location of the label", FORMAT),
 						prop("Visible", "whether this shape is visible", VISIBILITY),
-						displayProp("LabelVisible", "Label visible", "whether the label is visible", VISIBILITY),
-						displayProp("Time_Start", "Time start", "the start date time group", TEMPORAL),
+						displayProp("LabelVisible", "Label visible",
+								"whether the label is visible", VISIBILITY),
+						displayProp("Time_Start", "Time start",
+								"the start date time group", TEMPORAL),
 						displayLongProp("LineStyle", "Line style",
 								"the dot-dash style to use for plotting this shape",
 								LineStylePropertyEditor.class, FORMAT),
@@ -355,7 +356,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 								"the line-thickness to use for this shape",
 								MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
-						displayProp("TimeEnd", "Time end",
+						displayProp(
+								"TimeEnd",
+								"Time end",
 								"the end date time group \n\r(or leave blank for to use Start as Centre time)",
 								TEMPORAL), };
 				myRes[3]
@@ -527,17 +530,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	/**
-	 * the style of line to use for this feature
-	 * 
-	 */
-	private int _lineStyle;
-
-	/**
-	 * the width to draw this line
-	 */
-	private int _lineWidth;
-
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -554,7 +546,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 
 		// set the default font
 		setFont(new Font("Sans Serif", Font.PLAIN, 9));
-		
+
 		// and the color.
 		_theLabel.setColor(theColor);
 
@@ -626,8 +618,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final ComponentConstruct currentNearest, final Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
+			final Layer parentLayer)
 	{
 		if (_theShape instanceof HasDraggableComponents)
 		{
@@ -638,8 +631,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
+	public void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
+			final Layer parentLayer, final Layers theData)
 	{
 		_theShape.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
 				parentLayer, theData);
@@ -705,6 +699,36 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		return _myEditor;
 	}
 
+
+	public final int getLineStyle()
+	{
+		return getShape().getLineStyle();
+	}
+
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 * 
+	 * @return
+	 */
+	public int getLineThickness()
+	{
+		return getShape().getLineWidth();
+	}	
+	
+	public final void setLineStyle(final int style)
+	{
+		getShape().setLineStyle(style);
+	}
+
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 */
+	public void setLineThickness(final int val)
+	{
+		getShape().setLineWidth(val);
+	}
+
+	
 	@Override
 	public final java.util.Collection<Editable> getItemsBetween(
 			final HiResDate start, final HiResDate end)
@@ -787,21 +811,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		return _theLabel.getVisible();
 	}
 
-	public final int getLineStyle()
-	{
-		return _lineStyle;
-	}
-
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 * 
-	 * @return
-	 */
-	public int getLineThickness()
-	{
-		return _lineWidth;
-	}
-
 	@Override
 	public final WorldLocation getLocation()
 	{
@@ -818,15 +827,13 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
 	{
 
-		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[]
-		{};
+		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[] {};
 
 		// special case, have we been asked for an invalid time period?
 		if (DTG == TimePeriod.INVALID_DATE)
 		{
 			// yes, just return ourselves
-			return new Watchable[]
-			{ this };
+			return new Watchable[] { this };
 		}
 		else
 		{
@@ -839,8 +846,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 					if ((getStartDTG().lessThan(DTG)) && (getEndDTG().greaterThan(DTG)))
 					{
 						// yes, it's within our time period
-						res = new MWC.GenericData.Watchable[]
-						{ this };
+						res = new MWC.GenericData.Watchable[] { this };
 					}
 					else
 					{
@@ -859,11 +865,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 
 					// is this within our threshold?
 					if (diff <= getThreshold())
-						res = new MWC.GenericData.Watchable[]
-						{ this };
+						res = new MWC.GenericData.Watchable[] { this };
 					else
-						res = new MWC.GenericData.Watchable[]
-						{};
+						res = new MWC.GenericData.Watchable[] {};
 				}
 			}
 			else
@@ -873,8 +877,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 				if (_theEndDTG == null)
 				{
 					// yup, say we were nearest
-					res = new MWC.GenericData.Watchable[]
-					{ this };
+					res = new MWC.GenericData.Watchable[] { this };
 				}
 			}// this whole object is a watchable
 
@@ -1009,13 +1012,13 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		if (getVisible())
 		{
 			// sort out the line style
-			dest.setLineStyle(_lineStyle);
+			dest.setLineStyle(_theShape.getLineStyle());
 
 			// store the current line width
 			final float lineWid = dest.getLineWidth();
 
 			// and the line width
-			dest.setLineWidth(_lineWidth);
+			dest.setLineWidth(_theShape.getLineWidth());
 
 			// first paint the symbol
 			_theShape.paint(dest);
@@ -1117,19 +1120,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		getSupport().firePropertyChange(ShapeWrapper.LABEL_VIS_CHANGED, null,
 				new Boolean(val));
 
-	}
-
-	public final void setLineStyle(final int style)
-	{
-		_lineStyle = style;
-	}
-
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 */
-	public void setLineThickness(final int val)
-	{
-		_lineWidth = val;
 	}
 
 	/**
