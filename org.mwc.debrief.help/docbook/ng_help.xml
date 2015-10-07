@@ -598,59 +598,39 @@ Naval Undersea Warfare Center (NUWC)
       <para>
         <orderedlist>
           <listitem>
-            <para><link xlink:href="ng_help.xml#pre_install_debrief">Before installing
-                  <application>Debrief</application></link></para>
+            <para>Before installing <application>Debrief</application>(<xref linkend="pre_install_debrief"/>)</para>
           </listitem>
           <listitem>
-            <para><link xlink:href="ng_help.xml#running_installer">Performing
-              installation</link></para>
+            <para>Performing installation(<xref linkend="running_installer"/>)</para>
           </listitem>
           <listitem>
-            <para><link xlink:href="ng_help.xml#setting_location_prefs">Configuring reference
-                data</link></para>
+            <para>Configuring reference data(<xref linkend="setting_location_prefs"/>)</para>
           </listitem>
           <listitem>
-            <para><link xlink:href="ng_help.xml#start_up">Start
-                <application>Debrief</application></link></para>
+            <para>Start <application>Debrief</application>(<xref linkend="start_up"/>)</para>
           </listitem>
           <listitem>
-            <para><link xlink:href="ng_help.xml#import_range_data">Importing track
-              data</link></para>
+            <para>Importing track data(<xref linkend="import_range_data"/>)</para>
           </listitem>
           <listitem>
-            <para><link xlink:href="ng_help.xml#moving_around">Moving around the view</link>.</para>
-            <para>Once you've completed these, you can then move onto <link
-                xlink:href="ng_help.xml#UsingDebrief">Part B - Using
-                  <application>Debrief</application></link>.</para>
+            <para>Moving around the view.</para>
+            <para>Once you've completed these, you can then move onto Part B - Using <application>Debrief</application>(<xref linkend="UsingDebrief"/>).</para>
           </listitem>
         </orderedlist>
       </para>
 
       <sect1 xml:id="pre_install_debrief">
         <title>Before installing Debrief</title>
-        <para>In this section, we will look at <emphasis><link
-              xlink:href="ng_help.xml#obtainingDebrief">Obtaining
-              <application>Debrief</application></link></emphasis>, look at where you can
-              <emphasis><link xlink:href="ng_help.xml#where_to_get_help">get help on
-                <application>Debrief</application></link></emphasis>, and the <emphasis><link
-              xlink:href="ng_help.xml#onCD_Rom"><application>Debrief</application>
-            CD-Rom</link></emphasis>. Once you've completed this, you can proceed with <link
-            xlink:href="ng_help.xml#running_installer"> installing
-              <application>Debrief</application></link>. </para>
-
-        <sect2 xml:id="obtainingDebrief">
+        <para>In this section, we will look at Obtaining <application>Debrief</application>, look at where you can get help on Debrief, and the Debrief CD-Rom. Once you've completed this, you can proceed with installing Debrief.</para>
+        <sect2>
           <title>Obtaining Debrief</title>
-
-          <para>A number of project <indexterm>
-              <primary>Debrief</primary>
-              <secondary>Obtaining Debrief</secondary>
-            </indexterm>support activities (news, feature-requests, bug-reports) for
-              <application>Debrief</application> are conducted online, at 
-            <glossterm linkend="g_github">GitHub</glossterm> (<link xlink:href="https://github.com/debrief/debrief">https://github.com/debrief/debrief</link>) . </para>
-            
-          <para> To obtain the latest version, examine the list of <link xlink:href="https://github.com/debrief/debrief/releases">available downloads</link>,
-            and the relevant zip-file for your operating system.</para>
+          <para>A number of project support activities (news, feature-requests, bug-reports) for Debrief are conducted online, at GitHub (https://github.com/debrief/debrief). </para>
+          <para>To obtain the latest version, examine the list of available downloads
+            [<link xlink:href="https://github.com/debrief/debrief/releases">
+              https://github.com/debrief/debrief/releases</link>], and the relevant zip-file for your
+            operating system.</para>
         </sect2>
+        
 
         <sect2 xml:id="where_to_get_help">
           <title>Where to get help on Debrief</title>
@@ -773,7 +753,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/apptoolbar.png" width="100%"/>
+                  <imagedata fileref="figures/apptoolbar.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -803,7 +783,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/bare_app.png" width="100%"/>
+                  <imagedata fileref="figures/bare_app.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -843,7 +823,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/app_with_plot.png" width="100%" xml:id="sample_plot"/>
+                  <imagedata fileref="figures/app_with_plot.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1090,7 +1070,7 @@ and so on....</programlisting></para>
             REP Import stage by answering the following dialog:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SelectImportMode.png"/>
+                  <imagedata fileref="figures/SelectImportMode.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -1105,7 +1085,7 @@ and so on....</programlisting></para>
             Preferences dialog:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ImportModePreference.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ImportModePreference.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -1126,7 +1106,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons3.png"/>
+                    <imagedata fileref="figures/PaletteButtons3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1248,7 +1228,7 @@ and so on....</programlisting></para>
                         <imagedata align="center" fileref="figures/ZoomIn.png"/>
                       </imageobject>
                     </inlinemediaobject>
-                  </guiicon>Zoom in</term>
+                  </guiicon> Zoom in</term>
 
                 <listitem>
                   <para>You are in the Zoom In mode by default. So, click and drag the mouse across
@@ -1283,7 +1263,7 @@ and so on....</programlisting></para>
                       <imageobject>
                         <imagedata align="center" fileref="figures/ZoomOut.png"/>
                       </imageobject>
-                    </inlinemediaobject></guiicon>Zoom out</term>
+                    </inlinemediaobject></guiicon> Zoom out</term>
 
                 <listitem>
                   <para>If you now click on the Zoom out button, you will "zoom out" of the
@@ -1303,7 +1283,7 @@ and so on....</programlisting></para>
                         <imagedata fileref="figures/FitToWin.png"/>
                       </imageobject>
                     </inlinemediaobject>
-                  </guiicon>Fit to Window</term>
+                  </guiicon> Fit to Window</term>
 
                 <listitem>
                   <para>Whilst the meaning of the icon on this button is not all that clear (it&apos;s
@@ -1326,7 +1306,7 @@ and so on....</programlisting></para>
                         <imagedata fileref="figures/Repaint.png"/>
                       </imageobject>
                     </inlinemediaobject>
-                  </guiicon>Refresh View</term>
+                  </guiicon> Refresh View</term>
 
                 <listitem>
                   <para>This button refreshes the current view. Refreshing is occasionally required
@@ -1350,7 +1330,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/OverviewInUse.png" width="100%"/>
+                    <imagedata fileref="figures/OverviewInUse.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1406,38 +1386,34 @@ and so on....</programlisting></para>
         specifically, these are:</para>
       <itemizedlist>
         <listitem>
-          <para><link xlink:href="ng_help.xml#formatting_data">Manipulating track data</link></para>
+          <para>Manipulating track data(<xref linkend="formatting_data"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#analysing_data">Analysing data</link></para>
+          <para>Analysing data(<xref linkend="analysing_data"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#exporting_data">Exporting data</link></para>
+          <para>Exporting data(<xref linkend="exporting_data"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#symbol_sets">Symbol sets</link></para>
+          <para>Symbol sets(<xref linkend="symbol_sets"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#external_datasets">External datasets</link></para>
+          <para>External datasets(<xref linkend="external_datasets"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#ExercisePlanning">Exercise planning</link></para>
+          <para>Exercise planning(<xref linkend="ExercisePlanning"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#viewing_narratives">Viewing narratives</link></para>
+          <para>Viewing narratives(<xref linkend="viewing_narratives"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#ChartBackdrops">Using chart backdrops</link></para>
+          <para>Using chart backdrops(<xref linkend="ChartBackdrops"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#video_recording">Debrief video recording</link></para>
+          <para>Analysing sensor data(<xref linkend="analyse_sensor_data"/>)</para>
         </listitem>
         <listitem>
-          <para><link xlink:href="ng_help.xml#sensor_data">Analysing sensor data</link></para>
-        </listitem>
-        <listitem>
-          <para><link xlink:href="ng_help.xml#get_start"><link linkend="tma_data">Management of TMA
-                and TUA solutions</link></link></para>
+          <para>Management of TMA and TUA solutions(<xref linkend="tma_data"/>)</para>
         </listitem>
       </itemizedlist>
     </partintro>
@@ -1466,7 +1442,7 @@ and so on....</programlisting></para>
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/PropertiesView.png" width="237"/>
+                <imagedata fileref="figures/PropertiesView.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1567,7 +1543,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/brg_error.png" width="333"/>
+                  <imagedata fileref="figures/brg_error.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1611,7 +1587,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons2.png"/>
+                    <imagedata fileref="figures/PaletteButtons2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1699,7 +1675,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/scale_demo.png"/>
+                    <imagedata fileref="figures/scale_demo.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1813,7 +1789,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/old_coastline.png"/>
+                    <imagedata fileref="figures/old_coastline.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1830,7 +1806,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer9.gif"/>
+                    <imagedata fileref="figures/VPF_Layer9.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1852,7 +1828,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/etopo_data.png"/>
+                    <imagedata fileref="figures/etopo_data.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1872,7 +1848,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/PaletteButtons1.png"/>
+                  <imagedata fileref="figures/PaletteButtons1.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1916,7 +1892,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/LocationEditor.png"/>
+                      <imagedata fileref="figures/LocationEditor.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -1928,7 +1904,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/LocationEditor3.png"/>
+                      <imagedata fileref="figures/LocationEditor3.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -1940,7 +1916,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/LocationEditor2.png"/>
+                      <imagedata fileref="figures/LocationEditor2.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -1994,7 +1970,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/EditPolygon.png" width="263"/>
+                    <imagedata fileref="figures/EditPolygon.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2059,7 +2035,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CalculatedLabel.png"/>
+                      <imagedata fileref="figures/CalculatedLabel.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -2092,12 +2068,12 @@ and so on....</programlisting></para>
             within a plot, organised into layers. New items added to the plot are placed into a
               <emphasis>Misc</emphasis> layer. From here they can be reorganised into suitably
             themed layers via cut/paste (see <xref linkend="cut_copy_paste"/>).<figure xml:id="layer_manager">
-              <title>Outline View view</title>
+              <title>Outline View </title>
 
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/LayerManagerView.png" width="279"/>
+                    <imagedata fileref="figures/LayerManagerView.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2241,7 +2217,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SaveDialog.png" width="263"/>
+                    <imagedata fileref="figures/SaveDialog.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2299,7 +2275,7 @@ and so on....</programlisting></para>
             to line up the two sections.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackWithJump.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/TrackWithJump.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2364,7 +2340,7 @@ and so on....</programlisting></para>
             will provide options to split the track immediately before or after the indicated point.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SplitTrackMenu.png"/>
+                  <imagedata fileref="figures/SplitTrackMenu.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2373,7 +2349,7 @@ and so on....</programlisting></para>
             two segments in the Outline View.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackAfterSplit.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/TrackAfterSplit.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>The track segments are named according to the DTG of their start point. The
@@ -2394,7 +2370,7 @@ and so on....</programlisting></para>
             select which track becomes the &apos;host&apos;. <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/MergeTracks.png"/>
+                  <imagedata fileref="figures/MergeTracks.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2472,7 +2448,7 @@ and so on....</programlisting></para>
             green marker near the South East. <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/JumpOne.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/JumpOne.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2485,7 +2461,7 @@ and so on....</programlisting></para>
           positions, applying a proportion of that large jump to each position, ensuring the green positions remain unchanged. <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/JumpTwo.png" scalefit="1" width="100%"/>
+                <imagedata fileref="figures/JumpTwo.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -2514,7 +2490,7 @@ and so on....</programlisting></para>
             data smoothing operations.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/GridOverview.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/GridOverview.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2575,7 +2551,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ToteLabelled.png" width="274"/>
+                    <imagedata fileref="figures/ToteLabelled.png" width="274" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2831,7 +2807,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TimeController.png" width="234"/>
+                    <imagedata fileref="figures/TimeController.png" width="234" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2869,7 +2845,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TimeController3.png" width="100%"/>
+                    <imagedata fileref="figures/TimeController3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2913,7 +2889,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NormalTrailImage.png"/>
+                    <imagedata fileref="figures/NormalTrailImage.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2929,7 +2905,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SnailTrailImage.png"/>
+                    <imagedata fileref="figures/SnailTrailImage.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3022,7 +2998,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/relative_demo.png"/>
+                      <imagedata fileref="figures/relative_demo.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3050,8 +3026,7 @@ and so on....</programlisting></para>
                 <term>Symbol Highlight</term>
 
                 <listitem>
-                  <para>Shows the symbol (<link xlink:href="ng_help.xml#symbol_sets">Debrief symbol
-                      sets</link>) currently assigned in the properties for each track. From the
+                  <para>Shows the symbol Debrief symbol sets (<xref linkend="symbol_sets"/>)currently assigned in the properties for each track. From the
                     symbol highlight properties you are able to select the size at which the symbols
                     should be plotted.</para>
                 </listitem>
@@ -3288,7 +3263,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/SAM2Export.png" width="300"/>
+                      <imagedata fileref="figures/SAM2Export.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3408,12 +3383,11 @@ and so on....</programlisting></para>
 
         <sect2 xml:id="more_range">
 
-          <para>It&apos;s worth reminding you at this point about the Range Bearing measuring tool <guiicon>
-              <inlinemediaobject>
+          <para>It&apos;s worth reminding you at this point about the Range Bearing measuring tool (<guiicon><inlinemediaobject>
                 <imageobject>
                   <imagedata fileref="figures/RngBrg.png"/>
                 </imageobject>
-              </inlinemediaobject></guiicon> which is frequently useful in analysis. The calculated
+              </inlinemediaobject></guiicon>) which is frequently useful in analysis. The calculated
             range and bearing is displayed at the mid-point of the line and at the foot of the
             DebriefNG screen (where it remains until you make another measurement).</para>
 
@@ -3463,7 +3437,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/time_variable_plot.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/time_variable_plot.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -3475,7 +3449,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/time_variable_plot_switch.png" width="180"/>
+                  <imagedata fileref="figures/time_variable_plot_switch.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -3915,7 +3889,7 @@ and so on....</programlisting></para>
                 <title>Natural Earth in use (110M resolution)</title>              
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NE_110M.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/NE_110M.png" width="" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -3927,7 +3901,7 @@ and so on....</programlisting></para>
                 <title>Natural Earth in use (50M resolution)</title>              
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NE_50M.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/NE_50M.png" width="" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -4144,7 +4118,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_prefs.png" width="100%"/>
+                    <imagedata fileref="figures/VPF_prefs.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4220,7 +4194,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer1.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer1.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4235,7 +4209,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer2.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4251,7 +4225,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer3.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4264,7 +4238,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer4.png" width="270"/>
+                    <imagedata fileref="figures/VPF_Layer4.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4275,7 +4249,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/VPF_Layer5.png" width="270"/>
+                  <imagedata fileref="figures/VPF_Layer5.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4301,7 +4275,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPL_Layer6.gif"/>
+                    <imagedata fileref="figures/VPL_Layer6.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4325,7 +4299,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer7.gif"/>
+                    <imagedata fileref="figures/VPF_Layer7.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4342,7 +4316,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer8.gif"/>
+                    <imagedata fileref="figures/VPF_Layer8.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4371,7 +4345,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer9.gif"/>
+                    <imagedata fileref="figures/VPF_Layer9.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4657,7 +4631,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ETOPO_prefs.png" width="100%"/>
+                    <imagedata fileref="figures/ETOPO_prefs.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4745,7 +4719,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/etopo2src.jpg" width="100%"/>
+                      <imagedata fileref="figures/etopo2src.jpg" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -4924,7 +4898,7 @@ and so on....</programlisting></para>
           Drawing Toolbar, or the <guimenu>Drawing</guimenu> menu.<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment.png" width="40%"/>
+                <imagedata fileref="figures/AddSegment.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
@@ -4933,7 +4907,7 @@ and so on....</programlisting></para>
           dialog. Clearly if you were extending an existing planning track you&apos;d select it.<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment2.png"/>
+                <imagedata fileref="figures/AddSegment2.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
@@ -4941,14 +4915,14 @@ and so on....</programlisting></para>
           new track. First we must give the new track a name:<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment3.png"/>
+                <imagedata fileref="figures/AddSegment3.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
         <para>Next we must specify the starting date/time for the track:<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment4.png"/>
+                <imagedata fileref="figures/AddSegment4.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
@@ -4956,13 +4930,13 @@ and so on....</programlisting></para>
           particular leg of the track:<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment5.png"/>
+                <imagedata fileref="figures/AddSegment5.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>Your track will now appear on the screen, and also in the layer manager.<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment5a.png"/>
+                <imagedata fileref="figures/AddSegment5a.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
@@ -4989,7 +4963,7 @@ and so on....</programlisting></para>
                   leg parameters <screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/AddSegment6.png"/>
+                        <imagedata fileref="figures/AddSegment6.png" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5024,7 +4998,7 @@ and so on....</programlisting></para>
                   your set of legs in tabular form<screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/legsInGridEditor.png" width="80%"/>
+                        <imagedata fileref="figures/legsInGridEditor.png" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5120,7 +5094,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NewNarrativeEntryWizard.png" width="100%"/>
+                    <imagedata fileref="figures/NewNarrativeEntryWizard.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5143,7 +5117,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/Narr_1.png" width="100%"/>
+                    <imagedata fileref="figures/Narr_1.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5200,7 +5174,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter.png" width="338"/>
+                    <imagedata fileref="figures/narr_filter.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5209,7 +5183,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter_src.png" width="338"/>
+                    <imagedata fileref="figures/narr_filter_src.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5241,7 +5215,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LandsEnd.png" width="450"/>
+                  <imagedata fileref="figures/LandsEnd.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5288,7 +5262,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartOptions.png" width="450"/>
+                  <imagedata fileref="figures/ChartOptions.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5310,7 +5284,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartFolio.png"/>
+                  <imagedata fileref="figures/ChartFolio.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5327,7 +5301,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LoadChart.png"/>
+                  <imagedata fileref="figures/LoadChart.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5453,7 +5427,7 @@ Platform C,-551</screen></para>
             the <guilabel>Standard Array Offsets</guilabel> page<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ArrayLengthsPrefs.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ArrayLengthsPrefs.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -5462,7 +5436,7 @@ Platform C,-551</screen></para>
             list of sensor offset distances when you view sensor data in the properties window:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LengthsEditor.png" width="308"/>
+                  <imagedata fileref="figures/LengthsEditor.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -5608,7 +5582,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             <para><screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/LotsOfTracks.png" width="100%"/>
+                    <imagedata fileref="figures/LotsOfTracks.png" align="center"/>
                   </imageobject>
 
                   <caption>Cumbersome sensor data</caption>
@@ -5628,7 +5602,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                 View</guilabel> menu. You&apos;ll see a plot like the one below:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/BulkSensorManager.png" width="100%"/>
+                    <imagedata fileref="figures/BulkSensorManager.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -5660,11 +5634,11 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               then there&apos;ll be a jump over to were that track number is used again against another
               contact on the right hand side.</para>
 
-            <para>Debrief offers a tool automatically split sensor data - the scissors icon at the
-              top of the Bulk Sensor Manager offers &apos;Auto-split sensor segments&apos;. It will pass
-              through all of the sensor tracks in the primary track, and if there is a jump of more
-              than 15 seconds Debrief splits the successive data into a new tracks. The original and
-              new tracks are then renamed with a "_1", "_2" suffix.</para>
+            <para>Debrief offers a tool to automatically split sensor data - the scissors icon at
+              the top of the Bulk Sensor Manager offers &apos;Auto-split sensor segments&apos;. It
+              will pass through all of the sensor tracks in the primary track, and if there is a
+              jump of more than 15 seconds Debrief splits the successive data into a new tracks. The
+              original and new tracks are then renamed with a "_1", "_2" suffix.</para>
             <para>In the above screenshot you can see that the purple dataset actually covers 3
               periods of sensor data, roughly: 0545-0640, 0710-0720 and 0830-1010. If we click on
               the Axe toolbar button (<guiicon>
@@ -5677,7 +5651,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               tracks separated as in the following screenshot.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/BulkSensorManager_PostSplit.png" width="100%"/>
+                    <imagedata fileref="figures/BulkSensorManager_PostSplit.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -5714,7 +5688,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               above sample dataset gives this greatly reduced sensor dataset:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/BulkSensorManager_trim_unrelated.png" width="100%"/>
+                    <imagedata fileref="figures/BulkSensorManager_trim_unrelated.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -5730,7 +5704,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               <guimenuitem>Shade</guimenuitem> operations:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ShadeSensor.png" width="100%"/>
+                    <imagedata fileref="figures/ShadeSensor.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -5738,13 +5712,13 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               according to two operations - as shown below.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ShadeRainbow.png" width="100%"/>
+                    <imagedata fileref="figures/ShadeRainbow.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot><screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ShadeBlueRed.png" width="100%"/>
+                    <imagedata fileref="figures/ShadeBlueRed.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -5765,7 +5739,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               reducing plot clutter.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TrimmedTracks.png" width="100%"/>
+                    <imagedata fileref="figures/TrimmedTracks.png" align="center"/>
                   </imageobject>
 
                   <caption>Trimmed sensor data</caption>
@@ -5787,7 +5761,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             you right-click on them you are offered the &apos;View sensor range plot&apos; menu item:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ViewSensorPlot.png"/>
+                  <imagedata fileref="figures/ViewSensorPlot.png" align="center"/>
                 </imageobject>
 
                 <caption>Popup menu with a track plus multiple sensor selected</caption>
@@ -6134,7 +6108,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               selecting it from the <guilabel>Window/Show View</guilabel> menu. <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_empty.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/multi_empty.png" align="center"/>
                   </imageobject>
 
                   <caption>Initial view of multipath analysis view</caption>
@@ -6158,7 +6132,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               line as close as possible to the red (measured) line.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_working.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/multi_working.png" align="center"/>
                   </imageobject>
 
                   <caption>Multipath analysis view with data loaded</caption>
@@ -6392,7 +6366,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             tracks in both dimensions.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/DragHighlight.png" width="100%"/>
+                  <imagedata fileref="figures/DragHighlight.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -6508,7 +6482,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             interaction with the algorithm is as recorded below<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_sequence.png" width="100%"/>
+                  <imagedata fileref="figures/SATC_sequence.png"/>
                 </imageobject>
                 <caption>SATC Sequence</caption>
               </mediaobject>
@@ -6575,7 +6549,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             do not represent achievable successive courses (due to simple speed/time calculations). <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_Process.png" width="100%"/>
+                  <imagedata fileref="figures/SATC_Process.png" align="center"/>
                 </imageobject>
                 <caption>SATC Process</caption>
               </mediaobject>
@@ -6590,7 +6564,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             low.  <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_solution.png"/>
+                  <imagedata fileref="figures/SATC_solution.png" align="center"/>
                 </imageobject>
                 <caption>Sample solution</caption>
               </mediaobject>
@@ -6604,7 +6578,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             new scenario is created.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/MaintainContributions.png" width="100%"/>
+                  <imagedata fileref="figures/MaintainContributions.png" align="center"/>
                 </imageobject>
                 <caption>Maintain Contributions View</caption>
               </mediaobject>
@@ -6748,7 +6722,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/debrief_home.png" width="100%"/>
+                  <imagedata fileref="figures/debrief_home.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -6977,7 +6951,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/github_home.png" width="100%"/>
+                <imagedata fileref="figures/github_home.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -7012,7 +6986,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/GitHub_NewIssue.png" width="100%"/>
+                    <imagedata fileref="figures/GitHub_NewIssue.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -7240,7 +7214,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ReposLocation.png" width="100%"/>
+                    <imagedata fileref="figures/ReposLocation.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -7611,8 +7585,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             </indexterm>The symbology data field describes the representation required for this
             vessel track, specifying the colour of track to use and symbol-type to represent that
             vehicle. The Symbol style read in is used when tracks are to be shown by using symbol
-            (in 2D or 3D), as described in <link xlink:href="ng_help.xml#symbol_sets">Debrief symbol
-              sets</link>.<table xml:id="debrief_Sym">
+            (in 2D or 3D), as described in Debrief symbol sets. (See <xref linkend="symbol_sets"
+              />).<table xml:id="debrief_Sym">
               <title>Debrief core symbology data fields</title>
               <tgroup cols="4">
                 <colspec colname="c1"/>
@@ -7890,7 +7864,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NewTrackColors.png" width="100%"/>
+                    <imagedata fileref="figures/NewTrackColors.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8227,7 +8201,7 @@ and entry type can be multi-word if surrounded by quotes (").
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/DynamicArcs.png" width="80%"/>
+                    <imagedata fileref="figures/DynamicArcs.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8239,21 +8213,21 @@ and entry type can be multi-word if surrounded by quotes (").
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_1.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_1.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_2.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_3.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8871,7 +8845,7 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/rhumb_line_segments.gif" width="200"/>
+                  <imagedata fileref="figures/rhumb_line_segments.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -8958,7 +8932,7 @@ departure / d.lat = tan (course)</markup>
             the algorithm moves 100m back down between the points at 200 &amp; 300.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/WormInHole.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/WormInHole.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -9146,7 +9120,7 @@ departure / d.lat = tan (course)</markup>
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/JumpRefOne.png" scalefit="1" width="100%"/>
+                <imagedata fileref="figures/JumpRefOne.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -9180,7 +9154,7 @@ departure / d.lat = tan (course)</markup>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/JumpRefTwo.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/JumpRefTwo.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -9259,7 +9233,7 @@ departure / d.lat = tan (course)</markup>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/contour_1.gif"/>
+                    <imagedata fileref="figures/contour_1.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -9344,7 +9318,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_2.gif"/>
+                  <imagedata fileref="figures/contour_2.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -9359,7 +9333,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_3.gif"/>
+                  <imagedata fileref="figures/contour_3.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -9408,7 +9382,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_6.gif"/>
+                  <imagedata fileref="figures/contour_6.gif" align="center"/>
                 </imageobject>
 
                 <caption>Contouring algorithm</caption>
@@ -9758,7 +9732,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing all bounded states</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/NoSuppress.png"/>
+                      <imagedata fileref="figures/NoSuppress.png" align="center"/>
                     </imageobject>                    
                     <caption>A solution showing all bounded states</caption>
                   </mediaobject>
@@ -9767,7 +9741,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing low precision cut suppression</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CutsSuppressed.png"/>
+                      <imagedata fileref="figures/CutsSuppressed.png" align="center"/>
                     </imageobject>                    
                     <caption>A solution showing Low Precision cut suppression</caption>
                   </mediaobject>
@@ -9996,7 +9970,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/tma_bearingbasedMDA.gif"/>
+                  <imagedata fileref="figures/tma_bearingbasedMDA.gif" align="center"/>
                 </imageobject>
               </mediaobject>
               <note>
@@ -10311,7 +10285,7 @@ departure / d.lat = tan (course)</markup>
             <title>Example</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig1_definitions.png"/>
+                <imagedata fileref="figures/tma_fig1_definitions.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -10330,7 +10304,7 @@ departure / d.lat = tan (course)</markup>
               <title>Islands structure</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/tma_fig2_islandstructure.png"/>
+                  <imagedata fileref="figures/tma_fig2_islandstructure.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -10393,7 +10367,7 @@ end </code></screen>
             <title>Bearing lines for new points</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/tma_fig3_bearingline.png"/>
+                <imagedata fileref="figures/tma_fig3_bearingline.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -10408,7 +10382,7 @@ end </code></screen>
             <title>Polygon without bearing line</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig4_polygonwithoutline.png"/>
+                <imagedata fileref="figures/tma_fig4_polygonwithoutline.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -10465,7 +10439,7 @@ end</code></screen>
               <para>
                 <mediaobject>
                   <imageobject>
-                    <imagedata align="left" fileref="figures/tma_crossoveroperator.png"/>
+                    <imagedata align="center" fileref="figures/tma_crossoveroperator.png"/>
                   </imageobject>
                 </mediaobject>
               </para>
@@ -10484,7 +10458,7 @@ end</code></screen>
                 <title>one point crossover example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/tma_fig5_1ptcrossover.png" width="90%"/>
+                    <imagedata fileref="figures/tma_fig5_1ptcrossover.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -10533,7 +10507,7 @@ end</code></screen>
                 <title>Illustration of arithmetic crossover for 2D points</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata width="40%" fileref="figures/tma_fig6_crossover2d.png"/>
+                    <imagedata fileref="figures/tma_fig6_crossover2d.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -10566,7 +10540,7 @@ end</code></screen>
                 <title>Arithmetic crossover example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata width="100%" fileref="figures/tma_fig7_arithmeticcrossoverex.png"/>
+                    <imagedata fileref="figures/tma_fig7_arithmeticcrossoverex.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -10605,9 +10579,6 @@ end</code></screen>
                   <imageobject>
                     <imagedata width="100%" fileref="figures/tma_fig8a_randommutation.png"/>
                   </imageobject>
-                  <imageobject>
-                    <imagedata width="100%" fileref="figures/tma_fig8b_randommutation.png"/>
-                  </imageobject>
                 </mediaobject>
               </figure>
             </section>
@@ -10624,7 +10595,7 @@ end</code></screen>
                 chosen vertex:</para>
               <para><inlinemediaobject>
                   <imageobject>
-                    <imagedata width="30%" fileref="figures/tma_equation2.png"/>
+                    <imagedata fileref="figures/tma_equation2.png" align="center"/>
                   </imageobject>
                 </inlinemediaobject> where</para>
               <itemizedlist spacing="compact">
@@ -10674,7 +10645,7 @@ end</code></screen>
                 <title>Mutation to vertex example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata width="100%" fileref="figures/tma_fig9_mutationtovertex.png"/>
+                    <imagedata fileref="figures/tma_fig9_mutationtovertex.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -10759,7 +10730,7 @@ end</code></screen>
               <title>Point generation</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata width="100%" fileref="figures/tma_fig10_pointgeneration.png"/>
+                  <imagedata fileref="figures/tma_fig10_pointgeneration.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -10790,7 +10761,7 @@ end</code></screen>
             <title>Inconsistent range</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig11_inconsistentrange.png"/>
+                <imagedata fileref="figures/tma_fig11_inconsistentrange.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -10801,7 +10772,7 @@ end</code></screen>
             <title>Consistent legs</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig12_consistentlegs.png"/>
+                <imagedata fileref="figures/tma_fig12_consistentlegs.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -10816,7 +10787,7 @@ end</code></screen>
             <title>Speed plot with smooth speed change</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig13a_speedplot.png"/>
+                <imagedata fileref="figures/tma_fig13a_speedplot.png" width="" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -10832,7 +10803,7 @@ end</code></screen>
             <title>Speed plot with huge peaks</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig13c_speedplot.png"/>
+                <imagedata fileref="figures/tma_fig13c_speedplot.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -11590,8 +11561,7 @@ brg = Bearing to target from ownship (degs)
         <glossdef>
           <para>A series of positions recorded for a particular vehicle (ship, submarine, helo,
             etc). A track has its own characteristics such as colour, label and symbol frequency,
-            and the symbol used to represent it when the symbol highlighter is in use (see <link
-              xlink:href="ng_help.xml#symbol_sets">Debrief symbol sets</link>).</para>
+            and the symbol used to represent it when the symbol highlighter is in use (see <xref linkend="symbol_sets"/>).</para>
         </glossdef>
       </glossentry>
 
