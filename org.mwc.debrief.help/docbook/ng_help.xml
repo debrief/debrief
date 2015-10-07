@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V5//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
+<!-- ********************************************************************** -->
 <book version="5.0" xmlns="http://docbook.org/ns/docbook">
   <info>
     <keywordset>
@@ -223,135 +224,6 @@
         </itemizedlist></para>
     </sect1>
 
-    <sect1 xml:id="whats_new">
-      <title>What&apos;s new?</title>
-
-      <formalpara>
-        <title>Adoption of Eclipse framework</title>
-
-        <para>2006 has seen a change in direction for the delivery of Debrief. Instead of being a
-          standalone application build from scratch (albeit with a couple of third-party
-          components), Debrief NG has been rehosted into an existing framework; <link xlink:href="http://www.eclipse.org" xmlns:xlink="http://www.w3.org/1999/xlink">Eclipse</link>. Adoption of Eclipse has bought the following benefits:<variablelist>
-            <varlistentry>
-              <term>Functionally rich user interface</term>
-
-              <listitem>
-                <para>Eclipse has provided a wealth of trees, tables and slider controls to make
-                  your analysis job easier. You are now able to drag &amp; drop any window anywhere
-                  on the screen.</para>
-              </listitem>
-            </varlistentry>
-
-            <varlistentry>
-              <term>Persistent window layout.</term>
-
-              <listitem>
-                <para>Your modified window layout is remembered when you re-open Debrief NG.</para>
-              </listitem>
-            </varlistentry>
-
-            <varlistentry>
-              <term>Online updating.</term>
-
-              <listitem>
-                <para>If you&apos;re connected to a suitable network (MWC or the Internet) Eclipse is
-                  able to download &amp; install its own updates. Agencies with large numbers of
-                  Eclipse users can provide their own internal update site for Eclipse installations
-                  to download updates from.</para>
-              </listitem>
-            </varlistentry>
-
-            <varlistentry>
-              <term>Extensive guidance.</term>
-
-              <listitem>
-                <para>Since Debrief sits "on top" of Eclipse, the broad spectrum of Eclipse online
-                  &amp; printed guidance is available. You rely less on Debrief-specific guidance to
-                  resolve your problems. Don&apos;t worry, all of the guidance is presented together and
-                  covered by a single search engine.</para>
-              </listitem>
-            </varlistentry>
-
-            <varlistentry>
-              <term>Modular infrastructure.</term>
-
-              <listitem>
-                <para>It is now easier to create Debrief plug-ins, and applications based on
-                  Debrief. Developers no longer have to learn the full depth and breadth of Debrief
-                  prior to adding new features. They just need to learn about the interfaces
-                  presented by Debrief, and how the Eclipse infrastructure works. Eclipse
-                  development is documented online and in many off-the-shelf books, and it has a
-                  strong support community</para>
-              </listitem>
-            </varlistentry>
-          </variablelist></para>
-      </formalpara>
-
-      <formalpara>
-        <title>Editing multiple items</title>
-
-        <para>It is now easy to edit multiple items at once. As you select them on the layer
-          manager, their common properties are shown in the properties window. Then just edit
-          away...</para>
-      </formalpara>
-
-      <formalpara>
-        <title>Polished user interface</title>
-
-        <para>All of the user interface have received a refresh. The Outline View includes
-          contextual icons giving an extra indication of what&apos;s in each layer.<figure xml:id="fig_context_icons">
-            <title>Contextual icons</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/updated_layer_mgr.jpg" width="147"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure>The time-controller has also received some TLC, it is now tidier, more capable,
-          and will act as a firm foundation for more time-related operations in the future.<figure xml:id="fig_improved_time_controller">
-            <title>Improved time controller</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/updated_time_controller.jpg" width="231"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure></para>
-      </formalpara>
-
-      <formalpara>
-        <title>Bookmarks</title>
-
-        <para>You can now bookmark significant events within an exercise. The list of bookmarks
-          across all of your Debrief plots are managed from the Bookmarks dialog, and generated from
-          the drop-down menu of the improved Time Controller.<figure xml:id="fig_adding_bookmark">
-            <title>Adding a bookmark</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/adding_bookmark.jpg" width="300"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure><figure xml:id="fig_managing_bookmarks">
-            <title>Managing bookmarks</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/bookmarks.jpg" width="444"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure></para>
-      </formalpara>
-    </sect1>
-
     <sect1 xml:id="History">
       <title>History</title>
 
@@ -547,24 +419,6 @@
               <row>
                 <entry><para><inlinemediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/planet.gif" width="100"/>
-                      </imageobject>
-                    </inlinemediaobject></para></entry>
-
-                <entry><para>Debrief project manager.
-                    <address>
-<personname>Mr Ian Mayo</personname>
-<street>Deep Blue C Technology Ltd </street>
-<city>Fareham, HANTS</city>
-<postcode>   </postcode>
-<country>United Kingdom</country>
-<email>ian@DeepBlueC.com</email>
-</address></para></entry>
-              </row>
-
-              <row>
-                <entry><para><inlinemediaobject>
-                      <imageobject>
                         <imagedata fileref="figures/csds12.gif" width="100"/>
                       </imageobject>
                     </inlinemediaobject></para></entry>
@@ -721,30 +575,62 @@ Naval Undersea Warfare Center (NUWC)
     <title>Getting started</title>
 
     <partintro xml:id="tutorial_intro">
-      <para>This tutorial will lead you through <application>Debrief</application> right from the
-        installation through to more advanced topics such as creating custom sets of layers for
+      <para>As the title suggests, this part of the tutorial will lead you through
+          <emphasis>Getting Started </emphasis>with <application>Debrief</application> right from
+        the installation through to more advanced topics such as creating custom sets of layers for
         annotation fresh plots.</para>
+      <para>If this is your first time using the User Guide and you haven't installed
+          <application>Debrief</application> yet, then we would recommend reading the chapters and
+        sections in the order that they appear. This way, you know what you need to do before
+        installing <application>Debrief</application>, how to perform the installation, configure
+        the data, etc.</para>
+      <para>Also, don't forget that we have a series of tutorials and videos to help you get up to
+        speed quickly. These don't take long to read or watch, and you can follow along at your own
+        pace. These are probably the quickest way of getting to grips and up to speed with
+          <application>Debrief</application>. </para>
     </partintro>
 
     <chapter xml:id="get_start">
       <title>First steps</title>
+      <para>In this first chapter, we will look at getting you up and running with Debrief. There
+        are some tasks that you need to do before installing Debrief and, to ensure the whole
+        process is as easy as possible, this chapter is grouped into the following sections:</para>
+      <para>
+        <orderedlist>
+          <listitem>
+            <para>Before installing <application>Debrief</application>(<xref linkend="pre_install_debrief"/>)</para>
+          </listitem>
+          <listitem>
+            <para>Performing installation(<xref linkend="running_installer"/>)</para>
+          </listitem>
+          <listitem>
+            <para>Configuring reference data(<xref linkend="setting_location_prefs"/>)</para>
+          </listitem>
+          <listitem>
+            <para>Start <application>Debrief</application>(<xref linkend="start_up"/>)</para>
+          </listitem>
+          <listitem>
+            <para>Importing track data(<xref linkend="import_range_data"/>)</para>
+          </listitem>
+          <listitem>
+            <para>Moving around the view.</para>
+            <para>Once you've completed these, you can then move onto Part B - Using <application>Debrief</application>(<xref linkend="UsingDebrief"/>).</para>
+          </listitem>
+        </orderedlist>
+      </para>
 
       <sect1 xml:id="pre_install_debrief">
         <title>Before installing Debrief</title>
-
-        <sect2 xml:id="obtainingDebrief">
+        <para>In this section, we will look at Obtaining <application>Debrief</application>, look at where you can get help on Debrief, and the Debrief CD-Rom. Once you've completed this, you can proceed with installing Debrief.</para>
+        <sect2>
           <title>Obtaining Debrief</title>
-
-          <para>A number of project <indexterm>
-              <primary>Debrief</primary>
-              <secondary>Obtaining Debrief</secondary>
-            </indexterm>support activities (news, feature-requests, bug-reports) for
-              <application>Debrief</application> are conducted online, at 
-            <glossterm linkend="g_github">GitHub</glossterm> (<link xlink:href="https://github.com/debrief/debrief">https://github.com/debrief/debrief</link>) . </para>
-            
-          <para> To obtain the latest version, examine the list of <link xlink:href="https://github.com/debrief/debrief/releases">available downloads</link>,
-            and the relevant zip-file for your operating system.</para>
+          <para>A number of project support activities (news, feature-requests, bug-reports) for Debrief are conducted online, at GitHub (https://github.com/debrief/debrief). </para>
+          <para>To obtain the latest version, examine the list of available downloads
+            [<link xlink:href="https://github.com/debrief/debrief/releases">
+              https://github.com/debrief/debrief/releases</link>], and the relevant zip-file for your
+            operating system.</para>
         </sect2>
+        
 
         <sect2 xml:id="where_to_get_help">
           <title>Where to get help on Debrief</title>
@@ -764,17 +650,17 @@ Naval Undersea Warfare Center (NUWC)
 
               <listitem>
                 <formalpara>
-                  <title>Cheat sheets</title>
+                  <title>Tutorials</title>
 
                   <para><indexterm>
-                      <primary>Cheat sheets</primary>
-                    </indexterm>A series of jnteractive tutorials (called cheat sheets) is
-                    distributed with Debrief. These sheets guide the user through a series of
-                    complex tasks to achieve an overall goals such as: <emphasis>loading data into
-                      Debrief</emphasis> or <emphasis>analysing narrative data</emphasis>. The cheat
-                    sheets are accessed by selecting <guimenuitem>Debrief Cheat Sheets</guimenuitem>
-                    from the <guimenu>Help</guimenu> menu in Debrief NG. A PDF version of the cheat
-                    sheets (suitable for printing) is in the Debrief installation folder.</para>
+                      <primary>Tutorials</primary>
+                    </indexterm>A series of jnteractive tutorials are distributed with Debrief.
+                    These sheets guide the user through a series of complex tasks to achieve overall
+                    goals such as: <emphasis>loading data into Debrief</emphasis> or
+                      <emphasis>analysing narrative data</emphasis>. The tutorials are accessed by
+                    selecting <guimenuitem>Debrief Tutorials</guimenuitem> from the
+                      <guimenu>Help</guimenu> menu in Debrief NG. A PDF version of the tutorials
+                    (suitable for printing) is in the Debrief installation folder.</para>
                 </formalpara>
               </listitem>
 
@@ -782,9 +668,9 @@ Naval Undersea Warfare Center (NUWC)
                 <formalpara>
                   <title>Welcome Page</title>
 
-                  <para>Debrief NG&apos;s welcome page provides a high level overview of Debrief, and
-                    guides the user to further sources of information, tutorials (cheat sheets), and
-                    samples.</para>
+                  <para>Debrief NG&apos;s welcome page provides a high level overview of Debrief,
+                    and guides the user to further sources of information, tutorials (tutorials),
+                    and samples.</para>
                 </formalpara>
               </listitem>
             </orderedlist></para>
@@ -867,7 +753,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/apptoolbar.png" width="100%"/>
+                  <imagedata fileref="figures/apptoolbar.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -876,19 +762,19 @@ Naval Undersea Warfare Center (NUWC)
           <para>When opened for the very first time Debrief shows its Welcome page. This page (shown
             above) includes a series of links to high-level introductory information. The Overview
             page contains guidance for new-adopters of Debrief, whereas the Tutorials page contains
-            leads users through more specific tasks through the use of <glossterm linkend="g_cheat">cheat-sheets</glossterm> - small pages breaking a task down into a series of tasks.
-            The buttons at the top-left of each page navigate you around the welcome guidance. On
-            the <guilabel>Tutorials</guilabel> page one cheat-sheet in particular will help new Debrief-adopters:<variablelist>
+            leads users through more specific tasks through the use of <glossterm linkend="g_cheat"
+              >tutorials</glossterm> - small pages breaking a task down into a series of tasks. The
+            buttons at the top-left of each page navigate you around the welcome guidance. On the
+              <guilabel>Tutorials</guilabel> page one tutorial in particular will help new Debrief-adopters:<variablelist>
               <varlistentry>
                 <term>A Debrief Walkthrough</term>
-
                 <listitem>
                   <para>Let Debrief itself lead you through your first session</para>
                 </listitem>
               </varlistentry>
             </variablelist></para>
 
-          <para>Starting any of the cheat-sheets will shrink the Welcome guidance to a smaller pane
+          <para>Starting any of the tutorials will shrink the Welcome guidance to a smaller pane
             exposing the rest of Debrief NG as shown in the following diagram.</para>
 
           <figure xml:id="defaultView">
@@ -897,7 +783,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/bare_app.png" width="100%"/>
+                  <imagedata fileref="figures/bare_app.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -937,7 +823,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/app_with_plot.png" width="100%" xml:id="sample_plot"/>
+                  <imagedata fileref="figures/app_with_plot.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1157,7 +1043,8 @@ and so on....</programlisting></para>
         <sect2 xml:id="import_section">
           <title>Importing data</title>
 
-          <para>See the cheat-sheet covering importing existing data into Debrief (<xref linkend="g_track"/>).</para>
+          <para>See the tutorial covering importing existing data into Debrief (<xref
+              linkend="g_track"/>).</para>
 
           <para>When data is imported, <application>Debrief</application> applies default values to
             the time labels for positions. The first point in a <glossterm linkend="g_track">track</glossterm>, together with the first point every day includes the day,
@@ -1183,7 +1070,7 @@ and so on....</programlisting></para>
             REP Import stage by answering the following dialog:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SelectImportMode.png"/>
+                  <imagedata fileref="figures/SelectImportMode.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -1198,7 +1085,7 @@ and so on....</programlisting></para>
             Preferences dialog:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ImportModePreference.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ImportModePreference.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -1219,7 +1106,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons3.png"/>
+                    <imagedata fileref="figures/PaletteButtons3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1341,7 +1228,7 @@ and so on....</programlisting></para>
                         <imagedata align="center" fileref="figures/ZoomIn.png"/>
                       </imageobject>
                     </inlinemediaobject>
-                  </guiicon>Zoom in</term>
+                  </guiicon> Zoom in</term>
 
                 <listitem>
                   <para>You are in the Zoom In mode by default. So, click and drag the mouse across
@@ -1376,7 +1263,7 @@ and so on....</programlisting></para>
                       <imageobject>
                         <imagedata align="center" fileref="figures/ZoomOut.png"/>
                       </imageobject>
-                    </inlinemediaobject></guiicon>Zoom out</term>
+                    </inlinemediaobject></guiicon> Zoom out</term>
 
                 <listitem>
                   <para>If you now click on the Zoom out button, you will "zoom out" of the
@@ -1396,7 +1283,7 @@ and so on....</programlisting></para>
                         <imagedata fileref="figures/FitToWin.png"/>
                       </imageobject>
                     </inlinemediaobject>
-                  </guiicon>Fit to Window</term>
+                  </guiicon> Fit to Window</term>
 
                 <listitem>
                   <para>Whilst the meaning of the icon on this button is not all that clear (it&apos;s
@@ -1419,7 +1306,7 @@ and so on....</programlisting></para>
                         <imagedata fileref="figures/Repaint.png"/>
                       </imageobject>
                     </inlinemediaobject>
-                  </guiicon>Refresh View</term>
+                  </guiicon> Refresh View</term>
 
                 <listitem>
                   <para>This button refreshes the current view. Refreshing is occasionally required
@@ -1443,7 +1330,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/OverviewInUse.png" width="100%"/>
+                    <imagedata fileref="figures/OverviewInUse.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1495,7 +1382,40 @@ and so on....</programlisting></para>
     <partintro xml:id="IntroPart2">
       <para>You&apos;re now ready to start using the more advanced features of
           <application>DebriefNG</application>, the following chapters will guide you through
-        specific areas of <application>Debrief</application>&apos;s analysis capability.</para>
+        specific areas of <application>Debrief</application>&apos;s analysis capability. More
+        specifically, these are:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Manipulating track data(<xref linkend="formatting_data"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Analysing data(<xref linkend="analysing_data"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Exporting data(<xref linkend="exporting_data"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Symbol sets(<xref linkend="symbol_sets"/>)</para>
+        </listitem>
+        <listitem>
+          <para>External datasets(<xref linkend="external_datasets"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Exercise planning(<xref linkend="ExercisePlanning"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Viewing narratives(<xref linkend="viewing_narratives"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Using chart backdrops(<xref linkend="ChartBackdrops"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Analysing sensor data(<xref linkend="analyse_sensor_data"/>)</para>
+        </listitem>
+        <listitem>
+          <para>Management of TMA and TUA solutions(<xref linkend="tma_data"/>)</para>
+        </listitem>
+      </itemizedlist>
     </partintro>
 
     <chapter xml:id="formatting_data">
@@ -1504,10 +1424,9 @@ and so on....</programlisting></para>
       <para>Before you are able to analyse or export plots from your data you need to know how to
         format <indexterm>
           <primary>Formatting</primary>
-
           <secondary>track data</secondary>
         </indexterm> what you see to improve its legibility. Learn more about formatting tracks in
-        the <emphasis>Editing your data</emphasis> cheat-sheet. <note>
+        the <emphasis>Editing your data</emphasis> tutorial. <note>
           <para>Apologies in advance to the British users of <application>Debrief</application> for
             the American-spelling of colour. The software environment within which
               <application>Debrief</application> is developed is American, and in this case
@@ -1523,7 +1442,7 @@ and so on....</programlisting></para>
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/PropertiesView.png" width="237"/>
+                <imagedata fileref="figures/PropertiesView.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1534,9 +1453,9 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Property editor</primary>
-            </indexterm>Track editing is performed on the Properties Window (see <xref linkend="g_property_window"/>), and is initiated by selecting the track either from
-            the plot or the Outline View, as described in the <emphasis>Editing your
-              data</emphasis> cheat-sheet.<note>
+            </indexterm>Track editing is performed on the Properties Window (see <xref
+              linkend="g_property_window"/>), and is initiated by selecting the track either from
+            the plot or the Outline View, as described in the <emphasis>Editing your data</emphasis> tutorial.<note>
               <para>Many of these editing operations can be performed without using the Properties
                 Window, simply by right-clicking on a track either in the Outline View or on the
                 plot</para>
@@ -1624,7 +1543,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/brg_error.png" width="333"/>
+                  <imagedata fileref="figures/brg_error.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1668,7 +1587,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons2.png"/>
+                    <imagedata fileref="figures/PaletteButtons2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1756,7 +1675,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/scale_demo.gif"/>
+                    <imagedata fileref="figures/scale_demo.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1870,7 +1789,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/old_coastline.gif"/>
+                    <imagedata fileref="figures/old_coastline.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1887,7 +1806,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer9.gif"/>
+                    <imagedata fileref="figures/VPF_Layer9.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1909,7 +1828,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/etopo_data.gif"/>
+                    <imagedata fileref="figures/etopo_data.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1929,7 +1848,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/PaletteButtons1.png"/>
+                  <imagedata fileref="figures/PaletteButtons1.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1973,7 +1892,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/LocationEditor.png"/>
+                      <imagedata fileref="figures/LocationEditor.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -1985,7 +1904,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/LocationEditor3.png"/>
+                      <imagedata fileref="figures/LocationEditor3.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -1997,7 +1916,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/LocationEditor2.png"/>
+                      <imagedata fileref="figures/LocationEditor2.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -2051,7 +1970,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/EditPolygon.png" width="263"/>
+                    <imagedata fileref="figures/EditPolygon.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2063,29 +1982,6 @@ and so on....</programlisting></para>
             View (see <xref linkend="properties_view"/>). New nodes are created by right-clicking on
             the Polygon (in the Outline View or on the Plot), and selecting <guimenu>Add
               Node</guimenu>. </para>
-          <para> Instead of being able to directly edit the points in the polygon, an indication of
-            the number of points is provided, together with a button which will take you to the Path
-            editor. The Path editor is shown below: <figure xml:id="path_editor_demo">
-              <title>Path editor</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/PathEditor.png" width="269"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
-
-          <para>When it opens, the Path editor contains a single point (incidentally, this point it
-            is placed a the centre of the current dataset). The four buttons at the top-right of the
-            panel allow you to move the points up and down, create a new point, and delete a
-            point.</para>
-
-          <para>To edit a point, first single-click on it, it will then be shown in the lower panel.
-            You may then click on the Edit or Select Point buttons to either type-in the location of
-            the point or to double-click the new location for the point. Double-click on a point to
-            edit its individual attributes in the Properties View (see <xref linkend="properties_view"/>), or right-click on a point to paste the location
-            currently on the clipboard.</para>
         </sect2>
 
         <sect2 xml:id="easy_shapes">
@@ -2139,20 +2035,12 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CalculatedLabel.png"/>
+                      <imagedata fileref="figures/CalculatedLabel.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
               </figure></para>
           </note>
-        </sect2>
-
-        <sect2 xml:id="buoyfields_intro">
-          <title>Buoyfield</title>
-
-          <para>Debrief provides a <emphasis>builder</emphasis> dialog to assist in the creation of
-            buoyfields. The creation of <glossterm linkend="g_buoyfields">buoyfields</glossterm> is
-            covered later in Handling Buoyfields (see <xref linkend="handling_buoyfields"/>).</para>
         </sect2>
 
         <sect2 xml:id="general_editing">
@@ -2180,12 +2068,12 @@ and so on....</programlisting></para>
             within a plot, organised into layers. New items added to the plot are placed into a
               <emphasis>Misc</emphasis> layer. From here they can be reorganised into suitably
             themed layers via cut/paste (see <xref linkend="cut_copy_paste"/>).<figure xml:id="layer_manager">
-              <title>Outline View view</title>
+              <title>Outline View </title>
 
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/LayerManagerView.png" width="279"/>
+                    <imagedata fileref="figures/LayerManagerView.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2329,7 +2217,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SaveDialog.png" width="263"/>
+                    <imagedata fileref="figures/SaveDialog.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2387,7 +2275,7 @@ and so on....</programlisting></para>
             to line up the two sections.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackWithJump.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/TrackWithJump.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2452,7 +2340,7 @@ and so on....</programlisting></para>
             will provide options to split the track immediately before or after the indicated point.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SplitTrackMenu.png"/>
+                  <imagedata fileref="figures/SplitTrackMenu.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2461,7 +2349,7 @@ and so on....</programlisting></para>
             two segments in the Outline View.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackAfterSplit.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/TrackAfterSplit.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>The track segments are named according to the DTG of their start point. The
@@ -2482,7 +2370,7 @@ and so on....</programlisting></para>
             select which track becomes the &apos;host&apos;. <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/MergeTracks.png"/>
+                  <imagedata fileref="figures/MergeTracks.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2550,18 +2438,17 @@ and so on....</programlisting></para>
           <para>A consequence of submarine dived inertial navigation is that the recorded track
           shows large jumps each time a GPS position fix is introduced, correcting the 
           accumulated drift whilst dived.</para>
-          <para>Debrief is able to automatically remove jumps, transforming less accurate track 
-            periods so that they tidily match high-confidence (but infrequent) GPS fixes. A jump is determined as
-          two consecutive updates where the speed in the second update is 3 or more times larger than 
-          that in the previous update. The following fictional diagram shows a period of drift, with
-          two green markers indicating the start/end of the dived period.  A 
-          GPS fix was obtained at the green marker near the Nort-East.  Then the submarine dived, and the 
-          drift error grew cumulatively.  The next GPS fix was obtained at the time of the green marker
-          near the South West.
-            <screenshot>
+          <para>Debrief is able to automatically remove jumps, transforming less accurate track
+            periods so that they tidily match high-confidence (but infrequent) GPS fixes. A jump is
+            determined as two consecutive updates where the speed in the second update is 3 or more
+            times larger than that in the previous update. The following fictional diagram shows a
+            period of drift, with two green markers indicating the start/end of the dived period. A
+            GPS fix was obtained at the green marker near the North-West. Then the submarine dived,
+            and the drift error grew cumulatively. The next GPS fix was obtained at the time of the
+            green marker near the South East. <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/JumpOne.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/JumpOne.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2574,7 +2461,7 @@ and so on....</programlisting></para>
           positions, applying a proportion of that large jump to each position, ensuring the green positions remain unchanged. <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/JumpTwo.png" scalefit="1" width="100%"/>
+                <imagedata fileref="figures/JumpTwo.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -2603,7 +2490,7 @@ and so on....</programlisting></para>
             data smoothing operations.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/GridOverview.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/GridOverview.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -2633,8 +2520,8 @@ and so on....</programlisting></para>
             select the <emphasis>interpolate</emphasis> calculator icon to smooth the unselected
             rows.</para>
 
-          <para>See the <emphasis>Groom Sensor Data</emphasis> cheat sheet for more guidance on
-            these operations.</para>
+          <para>See the <emphasis>Groom Sensor Data</emphasis> tutorial for more guidance on these
+            operations.</para>
         </sect2>
       </sect1>
     </chapter>
@@ -2664,7 +2551,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ToteLabelled.png" width="274"/>
+                    <imagedata fileref="figures/ToteLabelled.png" width="274" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2694,11 +2581,11 @@ and so on....</programlisting></para>
             the primary. Thus, remember that if you want to see the primary track&apos;s relative bearing
             to the secondary, make sure there&apos;s just the one secondary track selected.</para>
 
-          <para>Not only tracks can be placed on the Tote. Buoyfields and most annotations (labels,
-            circles, etc) can also be set as primary or secondary track. If no time is available for
-            an annotation it is deemed to always be valid, and calculations are shown although the
-            time field is displayed as "n/a". However, if the annotation has start and end times the
-            tote displays "n/a" when outside that period and calculated data when inside it.</para>
+          <para>Not only tracks can be placed on the Tote. Most annotations (labels, circles, etc)
+            can also be set as primary or secondary track. If no time is available for an annotation
+            it is deemed to always be valid, and calculations are shown although the time field is
+            displayed as "n/a". However, if the annotation has start and end times the tote displays
+            "n/a" when outside that period and calculated data when inside it.</para>
 
           <note>
             <para>It may be useful to remember that the Primary Track is usually assigned to the
@@ -2920,7 +2807,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TimeController.png" width="234"/>
+                    <imagedata fileref="figures/TimeController.png" width="234" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2958,7 +2845,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TimeController3.png" width="100%"/>
+                    <imagedata fileref="figures/TimeController3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3002,7 +2889,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NormalTrailImage.png"/>
+                    <imagedata fileref="figures/NormalTrailImage.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3018,7 +2905,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SnailTrailImage.png"/>
+                    <imagedata fileref="figures/SnailTrailImage.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3089,27 +2976,29 @@ and so on....</programlisting></para>
 
           <para>The plotting mode affects the origin and orientation of the plot. In
               <emphasis>Normal</emphasis> mode the plot viewport stays static as the time changes,
-            but if <emphasis>Primary Centred</emphasis> is selected, the viewport moves to track the
-            primary participant. Beyond that, the <emphasis>Primary Oriented</emphasis> mode orients
-            the plot to match the heading of the primary track. This mode is particularly useful for
-            presenting a scenario from the perspective of the primary participant, but the quickly
-            changing orientation can be off-putting.</para>
+            but if <emphasis>Primary Centred/North oriented</emphasis> mode is selected, the
+            viewport moves to track the primary participant. Beyond that, the <emphasis>Primary
+              Centred/North oriented</emphasis> mode orients the plot to match the heading of the
+            primary track. This mode is particularly useful for presenting a scenario from the
+            perspective of the primary participant, but the quickly changing orientation can be
+            off-putting.</para>
 
           <tip>
-            <para>Relative Display Mode is particularly useful for analysing one vessel trailing
-              another. Make the trailing vessel the primary track, and the vessel being trailed the
-              secondary track. As you step forward through the serial you will clearly be able to
-              see the relative bearing of the contact as held by the trailing vessel.</para>
+            <para>Primary Centered/North Oriented mode is particularly useful for analysing one
+              vessel trailing another. If you make the trailing vessel the primary track and the
+              vessel being trailed the secondary track, as you step forward through the serial you
+              will clearly be able to see the relative bearing of the contact as held by the
+              trailing vessel.</para>
 
-            <para>The sample shown below gives a demonstration of the use of this relative mode. You
-              can quickly see that the blue vessel is directly ahead of the red trailing vessel, and
-              your use of the Range Ring Highlighter gives us a quick indication of range. <figure xml:id="relative_display_demo">
-                <title>Sample of relative display mode</title>
-
+            <para>The sample shown below gives a demonstration of the use of this mode. You can
+              quickly see that the blue vessel is directly ahead of the red trailing vessel, and
+              your use of the Range Ring Highlighter gives us a quick indication of range. <figure
+                xml:id="relative_display_demo">
+                <title>Sample of primary centered/North oriented mode</title>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/relative_demo.gif"/>
+                      <imagedata fileref="figures/relative_demo.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3137,9 +3026,9 @@ and so on....</programlisting></para>
                 <term>Symbol Highlight</term>
 
                 <listitem>
-                  <para>Shows the symbol (<xref linkend="intro_to_sym_sets"/>) currently assigned in
-                    the properties for each track. From the symbol highlight properties you are able
-                    to select the size at which the symbols should be plotted.</para>
+                  <para>Shows the symbol Debrief symbol sets (<xref linkend="symbol_sets"/>)currently assigned in the properties for each track. From the
+                    symbol highlight properties you are able to select the size at which the symbols
+                    should be plotted.</para>
                 </listitem>
               </varlistentry>
 
@@ -3374,7 +3263,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/SAM2Export.png" width="300"/>
+                      <imagedata fileref="figures/SAM2Export.png" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3385,18 +3274,18 @@ and so on....</programlisting></para>
             <title>Copy to clipboard</title>
 
             <para><indexterm>
-              <primary>Export</primary>
-              <secondary>Data to Clipboard</secondary>
-            </indexterm>Another operation that relies on the selected time period is exporting calculated
-              data to the clipboard. This operation is available form the <guiicon>
+                <primary>Export</primary>
+                <secondary>Data to Clipboard</secondary>
+              </indexterm>Another operation that relies on the selected time period is exporting
+              calculated data to the clipboard. This operation is available from the <guiicon>
                 <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/Calculator.png"/>
                   </imageobject>
                 </inlinemediaobject>
-              </guiicon><guibutton>Time Controller</guibutton>&apos;s drop-down menu, and it performs a
-              series of calculations for each data-point in the indicated time period. These
-              calculations are then placed on the system clipboard in Comma-Separated-Variable
+              </guiicon><guibutton>Time Controller</guibutton>&apos;s drop-down menu, and it
+              performs a series of calculations for each data-point in the indicated time period.
+              These calculations are then placed on the system clipboard in Comma-Separated-Variable
               format for reuse in other applications, <application>Microsoft Excel</application>,
               for instance.<footnote>
                 <para>A header line is written first, indicating the contents of each column:
@@ -3404,55 +3293,43 @@ and so on....</programlisting></para>
                     <listitem>
                       <para>Track Time(hhmmss)</para>
                     </listitem>
-
                     <listitem>
                       <para>Depth(metres)</para>
                     </listitem>
-
                     <listitem>
                       <para>Speed(Knots)</para>
                     </listitem>
-
                     <listitem>
                       <para>Course(degs)</para>
                     </listitem>
-
                     <listitem>
                       <para>Range(yards)</para>
                     </listitem>
-
                     <listitem>
                       <para>Bearing(degs)</para>
                     </listitem>
-
                     <listitem>
                       <para>Rel Bearing(degs - using <varname>Relative bearing format</varname>
                         specified in the
                         <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>dialog)</para>
                     </listitem>
-
                     <listitem>
                       <para>Brg Rate(deg/min)</para>
                     </listitem>
-
                     <listitem>
                       <para>Color (for this track point)</para>
                     </listitem>
-
                     <listitem>
                       <para>Name</para>
                     </listitem>
-
                     <listitem>
                       <para>PrimaryName</para>
                     </listitem>
                   </itemizedlist></para>
-
                 <para>The results from the primary track are listed first, which (as in the
                     <glossterm linkend="g_tote">Tote</glossterm>) do not show results of calculated
                   operations:
                   <screen>NELSON 12/Dec/95 05:00:00 000 02.00 269.7 n/a n/a n/a n/a 0500 0500</screen></para>
-
                 <para>Then the secondary tracks are listed:
                   <screen>
  BUNKUM 12/Dec/95 05:50:00 000 00.00 000.0 12381 311.0 R49.0 R0.264 F5 0550</screen></para>
@@ -3465,7 +3342,9 @@ and so on....</programlisting></para>
                   colour to sections of track is performed within the Outline View.</para>
               </tip><note>
                 <para>The last two columns output give identifier information: the first of these is
-                  the name of the current item in this <glossterm linkend="g_track">track</glossterm>, and the second is the point in the primary <glossterm linkend="g_track">track</glossterm> nearest to the current time stamp: that-is
+                  the name of the current item in this <glossterm linkend="g_track"
+                    >track</glossterm>, and the second is the point in the primary <glossterm
+                    linkend="g_track">track</glossterm> nearest to the current time stamp: that-is
                   the point in the primary track which has been used for the calculated
                   results.</para>
               </note></para>
@@ -3503,14 +3382,12 @@ and so on....</programlisting></para>
         <title>Measuring range and bearing</title>
 
         <sect2 xml:id="more_range">
-          <title>Range and Bearing</title>
 
-          <para>It&apos;s worth reminding you at this point about the Range Bearing measuring tool <guiicon>
-              <inlinemediaobject>
+          <para>It&apos;s worth reminding you at this point about the Range Bearing measuring tool (<guiicon><inlinemediaobject>
                 <imageobject>
                   <imagedata fileref="figures/RngBrg.png"/>
                 </imageobject>
-              </inlinemediaobject></guiicon> which is frequently useful in analysis. The calculated
+              </inlinemediaobject></guiicon>) which is frequently useful in analysis. The calculated
             range and bearing is displayed at the mid-point of the line and at the foot of the
             DebriefNG screen (where it remains until you make another measurement).</para>
 
@@ -3529,346 +3406,6 @@ and so on....</programlisting></para>
             </indexterm><indexterm>
               <primary>Earth Model</primary>
             </indexterm>algorithms in the current Earth Model, as described later in <xref linkend="rng_brg_calcs"/>.</para>
-        </sect2>
-      </sect1>
-
-      <sect1 xml:id="view_3d">
-        <title>Viewing tracks in 3-dimensions</title>
-
-        <sect2 xml:id="more_3d">
-          <title>3D View</title>
-
-          <para>Lastly for the "viewing of plots", <application>Debrief</application> provides <indexterm>
-              <primary>3D View</primary>
-
-              <secondary>Introduction</secondary>
-            </indexterm>support for viewing track files in 3D. To obtain a 3-d view, the tracks
-            currently loaded must contain Depth information, and the correct libraries (Java3D) must
-            be installed on the machine.</para>
-
-          <note>
-            <para><application>Debrief</application> contains a set of 3-d models for vessels most
-              frequently analysed at the <glossterm linkend="g_MWC">MWC</glossterm>. If you require
-              a model not currently available, contact the Debrief Project Manager (see <xref linkend="contact_details"/>), and it will be added to the queue. If you already hold
-              a copy of the model (as a <filename>.wrl</filename> file in <acronym>VRML</acronym>
-              format), e-mail it in, which will speed up its inclusion. If you select a symbol-type
-              for which there isn&apos;t currently a model, <application>Debrief</application> uses a
-              correctly-oriented cone shape to represent the current location and course.</para>
-          </note>
-
-          <para>Unfortunately there is not any 3-d data in the sample plots we&apos;ve been using so far,
-            but another sample file does. Close the current session, open a new, blank, one, and
-            load the data-file named <filename>sen_tracks.dpf</filename>. This is a datafile
-            produced using <glossterm linkend="g_asset">ASSET</glossterm>, a simulator under
-            development at Deep Blue C.</para>
-
-          <para>Once the tracks are loaded, you will see the view as below: <figure xml:id="tracks_loaded_demo">
-              <title>View with tracks loaded</title>
-
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/3d_tracks.png" width="100%"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
-
-          <para>If you don&apos;t have primary and secondary tracks on the tote, initialise them now (or
-            do it automatically, if you know how). <application>Debrief</application> now knows the
-            time period covered by the tracks. The updated 3D viewer in Debrief now shows
-            3-dimensional models of the exercise participants. The model used is taken from the
-              <guilabel>SymbolType</guilabel> property of each track (although the default type is
-              <guilabel>Submarine</guilabel>). So before opening the 3-d view, change the
-              <guilabel>SymbolType</guilabel> of the <emphasis>Frigate</emphasis> track to
-              <guilabel>Frigate. </guilabel>To do this, right-click on the track and select
-              <guilabel>Frigate</guilabel> from the <guilabel>SymbolType</guilabel> drop-down list.
-            Next press the "View in 3D" button <guiicon>
-              <inlinemediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/view3d.gif"/>
-                </imageobject>
-              </inlinemediaobject></guiicon> to open the 3-d view window.</para>
-        </sect2>
-
-        <sect2 xml:id="more_initial_view">
-          <title>Initial view</title>
-
-          <para>A new window will open, containing a 3D view of the current track data, as shown
-            below (after a little screen-tidying): <figure xml:id="voew_3d_demo">
-              <title>Initial 3D view</title>
-
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/3d_tracks_with_3d.png" width="100%"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
-
-          <tip>
-            <para>Not all objects viewable on the normal 2-d Debrief plot are applicable in
-              3-dimensions, but most are. If one is absent which you think would usefully be shown
-              in 3-d then please approach the Debrief Project Manager (see <xref linkend="contact_details"/>). Additionally it is not always clear whether a 2-d item
-              (such as a labelled annotation) should be visible in 3-d. Such an instance is a
-              labelled annotation added to the 2-d plot to help the readability of a plot in a
-              report (for example a label placed on a sea-mount). This labelled annotation may just
-              clutter the 3-d plot, so Debrief only shows labelled annotations when their symbol is
-              visible; change the symbol of a labelled annotation to not visible, and it will
-              disappear from the 3-d plot.</para>
-          </tip>
-        </sect2>
-
-        <sect2 xml:id="more_on_view">
-          <title>Controlling the view</title>
-
-          <para>The view is controlled with the <indexterm>
-              <primary>3D View</primary>
-
-              <secondary>Default Views</secondary>
-            </indexterm> mouse using the following buttons: <table xml:id="mouse_controls">
-              <title>Mouse controls used in 3-D view</title>
-
-              <tgroup cols="2">
-                <thead>
-                  <row>
-                    <entry>Button</entry>
-
-                    <entry>Operation</entry>
-                  </row>
-                </thead>
-
-                <tbody>
-                  <row>
-                    <entry><mousebutton>Left</mousebutton></entry>
-
-                    <entry>Rotate plot, effectively changing the current heading</entry>
-                  </row>
-
-                  <row>
-                    <entry><mousebutton>Middle</mousebutton> (or <keycombo>
-                        <keysym>Alt-</keysym>
-
-                        <keysym>Left</keysym>
-                      </keycombo>)</entry>
-
-                    <entry>Zoom in and out of the view</entry>
-                  </row>
-
-                  <row>
-                    <entry><mousebutton>Right</mousebutton></entry>
-
-                    <entry>Pan the plot around the view</entry>
-                  </row>
-                </tbody>
-              </tgroup>
-            </table></para>
-
-          <para>In addition to mouse-movement, controls have been added to the view to adjust the
-            current view depth, heading, pan and zoom. Experiment with moving around the plot using
-            these controls as well as the mouse.</para>
-
-          <para>The drop-down list provided in the centre of the window provides a list of preset
-            viewpoints. The <guilabel>Surface Look</guilabel> and <guilabel>Underwater
-              Look</guilabel> viewpoints zoom out to the south of the centre of the plot,
-            positioning the viewer either slightly above, or slightly below the water surface. The
-              <guilabel>Top-Down</guilabel> viewpoint provides a god&apos;s-eye view of the data. Lastly
-            are a series of viewpoints which each provide a "chase-plane" view of a particular
-            participant. Thus it is possible to position yourself immediately above and behind a
-            participant as it moves forward through an exercise serial.</para>
-
-          <para>Now, to return to the original view, select <guilabel>Surface Look</guilabel> from
-            the drop-down list. Next rotate the heading to 270 degrees, take the depth down to -010,
-            and zoom in to view the exercise from the stern of the submarine. <figure xml:id="adjusted_3d_demo">
-              <title>Adjusted 3-d view</title>
-
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/3d_view2.png" width="100%"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
-
-          <para>A set of properties are also provided from the 3d view toolbar to <indexterm>
-              <primary>3D View</primary>
-
-              <secondary>Editable properties</secondary>
-            </indexterm>support the 3-d editing. The following properties are provided:</para>
-
-          <para><informaltable>
-              <tgroup cols="2">
-                <colspec colname="col1" colnum="1" colwidth="*"/>
-
-                <colspec colname="col2" colnum="2" colwidth="*"/>
-
-                <thead>
-                  <row>
-                    <entry colname="col1">Parameter</entry>
-
-                    <entry colname="col2">Description</entry>
-                  </row>
-                </thead>
-
-                <tbody>
-                  <row>
-                    <entry colname="col1">Model Stretch</entry>
-
-                    <entry colname="col2">A scaling factor applied to the models, typically used for
-                      presenting broad overviews of a serial</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Grid Delta</entry>
-
-                    <entry colname="col2">The spacing to use for the grid plotted on the
-                      surface</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Coastline</entry>
-
-                    <entry colname="col2">Whether to plot a coastline on the sea surface (not yet
-                      implemented)</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Bathy Lines</entry>
-
-                    <entry colname="col2">Whether to show a wireframe grid representing the surface
-                      of the ocean/land</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Bathy Surface</entry>
-
-                    <entry colname="col2">Whether to show a shaded surface representation of the
-                      ocean bottom/land surface. Points above water are shaded green.</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Drop Bars</entry>
-
-                    <entry colname="col2">Whether to show drop bars which stretch from a current
-                      vessel position vertically up or down to the sea surface, to assist in the
-                      spatial separation of vessels.</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Foggy Ocean</entry>
-
-                    <entry colname="col2">Whether to shade the ocean surface</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Sea Surface</entry>
-
-                    <entry colname="col2">Whether to plot a grid on the sea surface</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Snail Trail</entry>
-
-                    <entry colname="col2">Whether to plot a snail-trail behind each vessel</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Show Vessel Status</entry>
-
-                    <entry colname="col2">Whether to show a textual status string for each
-                      vessel</entry>
-                  </row>
-
-                  <row>
-                    <entry colname="col1">Snail Trail Length</entry>
-
-                    <entry colname="col2">The length (in time) of snail trail to plot for each
-                      vessel.</entry>
-                  </row>
-                </tbody>
-              </tgroup>
-            </informaltable></para>
-        </sect2>
-
-        <sect2 xml:id="stepping_through_serial">
-          <title>Step through the serial</title>
-
-          <para>Now re-arrange the 3-d plot and the <application>Debrief</application> plot so you
-            have a clear view of both, and move the time-stepper forward a single step. You will see
-            each 3-d vessel representation move. As you move through the track using the button on
-            the Time Stepper, note the highlights on the 3-D track moving. Now push the "Step
-            Automatically" button, to make the plot step forward on its own, leaving us to
-            play.</para>
-
-          <para>Whilst the plot is stepping forward, switch your attention back to the 3-d view.
-            Experiment with using the 3 mouse buttons (or two plus the alt-key) and zoom in on the
-            current point on the red-track. Learning to coordinate these three operations may seem
-            difficult, but you&apos;ll soon pick it up.</para>
-
-          <para>The data-file we&apos;re using isn&apos;t all that interesting in this view, since neither
-            participant reacts in response to a depth-change from the other. But, 3-d views of real
-            exercise results can be particularly insightful, clearly illustrating a weapon losing
-            contact of its target due to changing depth layer, or one target gaining detections of
-            another as it moves into the same layer.</para>
-        </sect2>
-
-        <sect2 xml:id="multi_monitor">
-          <title>Multi-monitor setups</title>
-
-          <para>The current Direct3D libraries from Microsoft only allow Debrief to show 3d plots on
-            the primary monitor. If you only have one monitor, there isn&apos;t a problem. But, if you
-            have a multiple monitor setup, the 3d plot will only appear if you have Debrief running
-            on the primary monitor (that&apos;s the monitor that contains the windows task bar).</para>
-        </sect2>
-
-        <sect2 xml:id="mem_leaks">
-          <title>Memory leaks</title>
-
-          <para>The current version of the 3D libraries used in this viewer contains memory leaks.
-            In general memory leaks are tidied up in each revision of Java-3d, so it is in your
-            interest to try to keep up to date with the newest releases. <footnote>
-              <para>Memory leaks occur when an application allocates memory to store data but fails
-                to return the memory after the operation is complete. This results in the
-                application&apos;s memory allocation growing. This may be overcome by exiting and
-                re-starting Debrief, during which all allocated memory is cleared, sometimes
-                resulting in large memory usage by <application>Debrief</application> after viewing
-                several plots. This may be overcome by closing and restarting
-                  <application>Debrief</application> if a noticeable slow-down is observed. New
-                libraries will be adopted as soon as a fix is available</para>
-            </footnote></para>
-        </sect2>
-
-        <sect2 xml:id="plot_mgt">
-          <title>Plot management</title>
-
-          <para>The objects in the 3-d plot reflect the structure in the Outline View. So, to
-            hide/reveal a set of objects in 3-d just switch their layer off in the Outline View. <tip>
-              <para>The objects in the 3-d view are a "cloned" set of the objects contained in the
-                Outline View at the point at which <guilabel>Show 3d View</guilabel> was selected.
-                Thus is it likely that moving objects between layers once the 3-d plot is open may
-                not be reflected in the 3-d view. If extensive restructuring has been conducted in
-                the Outline View and you wish the 3-d view to reflect this, close and re-open the
-                view.</para>
-            </tip><note>
-              <para>The 3-d view now includes bathymetric data <indexterm>
-                  <primary>3D View</primary>
-
-                  <secondary>Bathymetric Data</secondary>
-                </indexterm>, though this is only shown if the bathy data is already shown in the
-                2-d plot. Obviously the 3-d view runs more smoothly with less data, so hide the 2-d
-                bathymetry to remove it from the 3-d view.</para>
-            </note><tip>
-              <para>The 3-d view contains text labels that automatically orientate themselves
-                towards the viewer. This orientation is computationally expensive (it is not a
-                collection of 3-d objects being mathematically re-oriented, but a 2-d image being
-                rescaled in 3-dimensions). The plot will be significantly slowed down if many text
-                labels are set to visible. A good way of overcoming this problem is to set the
-                parent layer to not-visible, then work through the items on that layer switching the
-                label to not visible. Finally switch the layer back to visible. This method works
-                quickly because time is not spent</para>
-            </tip></para>
         </sect2>
       </sect1>
 
@@ -3900,7 +3437,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/time_variable_plot.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/time_variable_plot.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -3912,7 +3449,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/time_variable_plot_switch.png" width="180"/>
+                  <imagedata fileref="figures/time_variable_plot_switch.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4136,75 +3673,17 @@ and so on....</programlisting></para>
 
           <para>By default the <indexterm>
               <primary>Time Zero</primary>
-
               <secondary>in time-variable plots</secondary>
             </indexterm>time-variable plot shows absolute times (e.g.
               <computeroutput>12:34.00</computeroutput>). Some forms of analysis conducted with
             Debrief rely on the use of relative times, such as a weapon firing where T-Zero is the
-            time of fire, as described in <xref linkend="z_zero_times"/>. To show these relative
-            times on the lower axis of the time-variable plot, select
-              <guilabel>RelativeTimes</guilabel> from the time-variable plot property window. Once
-            this mode is selected, times will be shown relative to the last time-zero value set. By
-            default, the times are shown in a normal <computeroutput>HH:mm:ss</computeroutput>
-            format, but the <guilabel>DateTickUnits</guilabel> drop-down list contains a number of
-            display formats which specifically support presentation of elapsed times.</para>
-        </sect2>
-      </sect1>
-
-      <!--  Track/time toolbox                                           -->
-
-      <sect1 xml:id="track_toolbox">
-        <title xml:id="track_toolbox_title">Track and Time toolbox</title>
-
-        <sect2 xml:id="z_zero_times">
-          <title>T-Zero times</title>
-
-          <para><emphasis>T-Zero times are still to be implemented, but the mode of operation will
-              be very similar to that shown below, June 2006.</emphasis></para>
-
-          <para>The <guibutton>Set time zero</guibutton> command <indexterm>
-              <primary>Toolbox</primary>
-
-              <secondary>Set Time Zero</secondary>
-            </indexterm><indexterm>
-              <primary>Time Zero</primary>
-
-              <secondary>Set time zero on Toolbox</secondary>
-            </indexterm>reformats the labels on the plot to follow the standard presentation for
-            weapon-analysis plots; where absolute times are replaced by times relative to a specific
-            event ( <glossterm linkend="g_tzero">T-Zero</glossterm>)- such as Weapon Splash.</para>
-
-          <para>When the <guibutton>Set time zero</guibutton> command is started, the following
-            sequence of events occur: <orderedlist continuation="restarts" inheritnum="ignore">
-              <listitem>
-                <para>You are invited to enter the frequency in seconds at which symbols are drawn
-                  on the indicated tracks.</para>
-              </listitem>
-
-              <listitem>
-                <para>You are invited to enter the frequency in seconds at which location labels are
-                  displayed for the indicated tracks. In the labels at this indicated frequency the
-                  text is set to the elapsed time in seconds since the time-zero time.</para>
-              </listitem>
-            </orderedlist></para>
-
-          <para>These steps are applied to all of the track points between the Start time (which is
-            used as T-Zero) and the Finish time.</para>
-
-          <note>
-            <para>Note also that when the date format in the <guilabel>Time Stepper</guilabel> is
-              set to <emphasis>T+ SSS</emphasis> the current time of the time stepper is no longer
-              displayed as absolute time, but as elapsed seconds since the time currently displayed
-              in the Start Time on this panel, or elapsed minutes and seconds ( <emphasis>T+
-                MM:SS</emphasis>).</para>
-          </note>
-
-          <note>
-            <para>Following analysis using t-zero data labels, it is possible to return a set of
-              track labels to their default (as automatically assigned when imported from REP).
-              Reset the track labels by selecting <guilabel>Reset DTG Labels</guilabel> from the
-              edit track popup menu or property window.</para>
-          </note>
+            time of fire.. To show these relative times on the lower axis of the time-variable plot,
+            select <guilabel>RelativeTimes</guilabel> from the time-variable plot property window.
+            Once this mode is selected, times will be shown relative to the last time-zero value
+            set. By default, the times are shown in a normal
+              <computeroutput>HH:mm:ss</computeroutput> format, but the
+              <guilabel>DateTickUnits</guilabel> drop-down list contains a number of display formats
+            which specifically support presentation of elapsed times.</para>
         </sect2>
       </sect1>
     </chapter>
@@ -4216,7 +3695,6 @@ and so on....</programlisting></para>
         <title>Exporting images</title>
 
         <sect2 xml:id="more_export_images">
-          <title>Export images</title>
 
           <para>In addition to <indexterm>
             <primary>Export</primary>
@@ -4253,357 +3731,6 @@ and so on....</programlisting></para>
             equivalent capability allows you to export the vector plot inside an RTF wrapper via the
             clipboard for pasteing into any Word Processor (on OSX or Linux). The shortcut for this
             is <guibutton>&lt;shift>&lt;control>&lt;c></guibutton>. </para>
-
-          <para>Also, don&apos;t forget that time-variable graphs produced by the Track-Time toolbox (see
-              <xref linkend="track_toolbox"/>) can be exported to WMF as well, as described in <xref linkend="show_time_vars"/>.</para>
-        </sect2>
-      </sect1>
-
-      <sect1 xml:id="vrml">
-        <title>Virtual reality files</title>
-
-        <sect2 xml:id="more_vrml">
-          <title>History</title>
-
-          <important>
-            <para>Now that <application>Debrief</application> includes its own 3-D viewer, the
-              export to 3-D functionality has been removed. Should you have any significant desire
-              for this functionality to be replaced, please contact the project manager (see <xref linkend="contact_details"/>).</para>
-          </important>
-        </sect2>
-      </sect1>
-    </chapter>
-
-    <chapter xml:id="handling_buoyfields">
-      <title>Handling Buoyfields</title>
-
-      <sect1 xml:id="more_handling_fields">
-        <title>Introduction to buoyfields</title>
-
-        <note>
-          <para>In the first release of Debrief NG, Buoyfields have not been implemented. It remains
-            an intention to provide this facility.</para>
-        </note>
-
-        <sect2 xml:id="more_show_buoyfields">
-          <title>Buoyfields</title>
-
-          <para><application>Debrief</application> provides functionality <indexterm significance="preferred">
-              <primary>Buoy Fields</primary>
-
-              <secondary>Introduction</secondary>
-            </indexterm>to ease the creation of Sonar Buoyfields, that is a pattern of sonar buoys
-            which are laid out in a particular pattern. In addition to the geospatial
-            characteristics of the pattern to be created (such as radius, or row spacing)
-              <application>Debrief</application> also accepts temporal (such as time of the first
-            buoy and buoyfield lifetime) and default formatting characteristics (such as colour and
-            symbol to use). After field creation, the properties used for building the field are
-            largely unavailable, but the buoys can be repositioned or time-stamped directly.</para>
-
-          <para>Although it may not be clearly visible in the following diagrams, all of the
-            buoyfields are located with reference to a kingpin. This kingpin is located relative to
-            a Jig Point (allowing for small, quick adjustments in the location of the field prior to
-            dropping), as specified by a range and bearing.</para>
-
-          <sect3 xml:id="barrier_field_demo">
-            <title>Barrier</title>
-
-            <para>A Barrier is a straight line of buoys <figure xml:id="boy_pattern_Demo">
-                <title>Example of a barrier buoy-pattern</title>
-
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/field_barrier.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-          </sect3>
-
-          <sect3 xml:id="wedge_field">
-            <title>Wedge</title>
-
-            <para>A Wedge is a bent-line barrier of buoys, specified by buoy spacing and two true
-              bearings. The first bearing is from the kingpin to the centre of the wedge and the
-              second bearing is from the centre point to the last buoy. In
-                <application>Debrief</application>, theta-one is termed the Right Hand Orientation
-              (Orientation1) and theta-two is termed the Left Hand Orientation (Orientation2).
-                <application>Debrief</application> allows even or odd numbers of buoys, and will
-              ensure that the sides of the wedge remain symmetric. <figure xml:id="wedge_demo">
-                <title>Example of a Wedge buoy-pattern</title>
-
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/field_wedge.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-          </sect3>
-
-          <sect3 xml:id="general_field">
-            <title>Field</title>
-
-            <para>A Field is a fixed pattern which contains more than two rows of buoys. The pattern
-              is specified by buoy and row spacing, a true bearing, and an indication of whether the
-              successive rows fall to the left, right, or centre of the kingpin. Note that whilst
-              the diagram shows and the Naval specification order includes the Field Direction
-              parameter, this is not required for buoyfield construction and is not taken from the
-              user. Although the Field Direction is contained in the buoyfield creation order, it is
-              included as an indication of expected target direction of travel, and has no graphic
-              meaning. <figure xml:id="field_demo">
-                <title>Example of a Field buoy-pattern</title>
-
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/field_field.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-
-            <para>The Left, Right, or Centre offset value is interpreted in the following way:
-                <simplelist type="vert">
-                <member><emphasis>Left</emphasis>: is interpreted as the "alternate" rows starting
-                  offset a ½ buoy width further in the field orientation</member>
-
-                <member><emphasis>Right</emphasis>: is interpreted as the "alternate" rows being
-                  offset a ½ buoy width backwards along the field orientation</member>
-
-                <member><emphasis>Centre</emphasis>: in interpreted as there being no offset in
-                  successive rows.</member>
-              </simplelist></para>
-          </sect3>
-
-          <sect3 xml:id="circle_field">
-            <title>Circle</title>
-
-            <para>The Circle pattern describes a pattern of buoys arranged in a circle, specified by
-              kingpin, radius, and number of buoys. An orientation parameter is also used, which
-              indicates the bearing of the first buoy from the kingpin (centre), since it may not
-              necessarily be to the North. A flag indicates if the circle is being laid clockwise or
-              not. <figure xml:id="circle_demo">
-                <title>Example of a Circle buoy-pattern</title>
-
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/field_circle.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-          </sect3>
-
-          <sect3 xml:id="arc_field">
-            <title>Arc</title>
-
-            <para>The Arc pattern describes a pattern of buoys arranged in a segment of a circle. In
-              addition to the kingpin and radius, an orientation parameter indicates the direction
-              of the mid-point of the arc from the kingpin, and an arc value indicates the arc of
-              coverage each side of the orientation. A flag indicates if the circle is being laid
-              clockwise or not. <figure xml:id="arc_demo">
-                <title>Example of an Arc buoy-pattern</title>
-
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/field_arc.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-          </sect3>
-        </sect2>
-      </sect1>
-
-      <sect1 xml:id="create_buoys">
-        <title>Creating buoyfields</title>
-
-        <para><emphasis>Note, at the time of writing (June 2006) Debrief NG does not contain the
-            Buoyfields wizard. Debrief 2003 may be used to create a plot-file containing buoyfields,
-            which can then be re-opened in Debrief NG.</emphasis></para>
-
-        <sect2 xml:id="buoy_toolbar">
-          <title>Toolbar</title>
-
-          <para>A single toolbar <indexterm>
-              <primary>Buoy Fields</primary>
-
-              <secondary>Creating Buoy Fields</secondary>
-            </indexterm>button is used to create all <indexterm>
-              <primary>Annotations</primary>
-
-              <secondary>Buoyfields</secondary>
-            </indexterm>types of buoyfield: <guiicon>
-              <inlinemediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/buoy.gif"/>
-                </imageobject>
-              </inlinemediaobject>
-            </guiicon></para>
-
-          <para>After clicking on this button, a dialog pops up which invites you to select one of
-            the buoyfield patterns listed on the previous page: using a drop-down list.</para>
-
-          <para>After selecting one of the patterns a set of editable properties are displayed in
-            the <glossterm linkend="g_property_window">property editor</glossterm> window.</para>
-        </sect2>
-
-        <sect2 xml:id="buoy_field_props">
-          <title>Properties</title>
-
-          <para>A number of the properties edited <indexterm>
-              <primary>Buoy Fields</primary>
-
-              <secondary>Properties</secondary>
-            </indexterm> from this window are common to all buoyfield types:</para>
-
-          <para><variablelist>
-              <varlistentry>
-                <term>BuoyLifeTime</term>
-
-                <listitem>
-                  <para>the time for which the buoys remain active (represented as the time between
-                    the start and finish DTG)</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>Color</term>
-
-                <listitem>
-                  <para>the colour to plot the buoys and the buoyfield label</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>JigPoint</term>
-
-                <listitem>
-                  <para>the location from which this buoyfield is referenced. As in any location,
-                    the jig point can be edited by double-clicking on the plot or using an edit
-                    panel. Note that the depth assigned for the jig point is used as the depth for
-                    all of the buoys. If the jig point is assigned by double-clicking, the depth
-                    value can then be set by clicking on the "Edit" button.</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>KingpinBearing/Range</term>
-
-                <listitem>
-                  <para>the range and bearing of the kingpin for this pattern from the jig
-                    point</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>LabelVisible</term>
-
-                <listitem>
-                  <para>whether to display the labels for buoys in this buoyfield</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>Name</term>
-
-                <listitem>
-                  <para>the name of this buoyfield</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>Number</term>
-
-                <listitem>
-                  <para>the total number of buoys in this field</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>StartDateTimeGroup</term>
-
-                <listitem>
-                  <para>the DTG of the first buoy laid</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>SymbolScale</term>
-
-                <listitem>
-                  <para>the scale of the symbols drawn to represent buoys.</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>SymbolType</term>
-
-                <listitem>
-                  <para>the type of symbol to be used to represent buoys</para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term>TimeDelta</term>
-
-                <listitem>
-                  <para>the time between each buoy dropped (each buoy will have the DTG of the
-                    previous buoy plus this TimeDelta, except the first buoy which takes the value
-                    of StartDateTimeGroup)</para>
-                </listitem>
-              </varlistentry>
-            </variablelist></para>
-
-          <para>Once you have completed editing these parameters, press the
-              <guibutton>Build</guibutton> button, which will create a buoyfield using the defaults
-            indicated. The properties for the buoyfield as a whole will open up in the properties
-            window. From these properties you make any necessary corrections to the name of the
-            buoyfield, or the location of the name relative to the buoys themselves.</para>
-
-          <para>The buoyfield which is produced will look something similar to that shown
-            below.</para>
-        </sect2>
-
-        <sect2 xml:id="demo_buoyfield_illustration">
-          <title>Example buoyfield</title>
-
-          <para><figure xml:id="buoy_pattern_demo">
-              <title>Example of a buoy-pattern</title>
-
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/dropped_buoyfield.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure> The buoys themselves are represented using the Label type described elsewhere
-            in this documentation. As Label objects, the user is able to right-click on any buoy and
-            interactively edit the label colour/location, or double-click on the symbol to open the
-            label up in the editor to access the full set of parameters.</para>
-        </sect2>
-      </sect1>
-
-      <sect1 xml:id="using_buoyfields">
-        <title>Using buoyfields</title>
-
-        <sect2 xml:id="more_using_buoyfields">
-          <title>Tote</title>
-
-          <para>Buoyfields have some similar properties to vessel tracks when placed on the
-              <glossterm linkend="g_tote">Tote</glossterm>.</para>
-
-          <para>Once a buoyfield is made a <guilabel>Primary</guilabel> or
-              <guilabel>Secondary</guilabel> track, a highlight is drawn around the buoy at or
-            immediately after the current time. Additionally, if the buoyfield is designated as a
-            secondary track the Tote continuously displays its range and bearing from the current
-            location on the primary track.</para>
-        </sect2>
-
-        <sect2 xml:id="buoy_analysis">
-          <title>Analysis</title>
-
-          <para>Since buoyfields are essentially handled in the same way as Tracks, the full
-            functionality of the Track &amp; Time Toolbox (accessed from the
-              <guilabel>Tote</guilabel>) is available (see <xref linkend="track_toolbox"/>), so
-            graphic plots can be produced and calculated data copied to the clipboard using Buoy
-            data.</para>
         </sect2>
       </sect1>
     </chapter>
@@ -4612,59 +3739,37 @@ and so on....</programlisting></para>
       <title>Symbol sets</title>
 
       <sect1 xml:id="more_sym_sets">
-        <title>Debrief symbol sets</title>
-
-        <sect2 xml:id="intro_to_sym_sets">
-          <title>Introduction</title>
-
-          <para>A set of symbols is provided within <application>Debrief</application>. The symbols <indexterm>
-              <primary>Symbol Sets</primary>
-            </indexterm> can either be attached to a text label, or used to highlight a current
-            vessel location when stepping through tracks.</para>
-
-          <para>Twenty-two Symbols are provided in 3 sizes. When the 2 smaller sizes are shown, any
-            internal characters (as used in the sonar buoys) are not plotted. <figure xml:id="debrief_symbols">
-              <title>Symbols provided by <application>Debrief</application></title>
-
+        <para>A set of symbols is provided within <application>Debrief</application>. The symbols <indexterm>
+            <primary>Symbol Sets</primary>
+          </indexterm> can either be attached to a text label, or used to highlight a current vessel
+          location when stepping through tracks.</para>
+        <para>Twenty-two Symbols are provided in 3 sizes. When the 2 smaller sizes are shown, any
+          internal characters (as used in the sonar buoys) are not plotted. <figure
+            xml:id="debrief_symbols">
+            <title>Symbols provided by <application>Debrief</application></title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/d3_symbols.gif" scalefit="1" width="100%"/>
+              </imageobject>
+            </mediaobject>
+          </figure></para>
+        <note>
+          <para><indexterm>
+              <primary>Scaled symbols</primary>
+            </indexterm>In summer 2010 a set of scaled symbols were introduced. These are not shown
+            at fixed screen sizes, but as representative sizes of the subject vessel - so they
+            resize as you zoom in on a plot. In summer 2011 the range of vessels represented by
+            scaled symbols was extended, plus it became possible to specify the length and width of
+            the subject platform for a realistically sized vehicle representation.<figure
+              xml:id="scaled_symbols">
+              <title>Scaled vessel symbols in <application>Debrief</application></title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/d3_symbols.gif" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ScaledVessels.png" scalefit="1" width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
-
-          <note>
-            <para><indexterm>
-                <primary>Scaled symbols</primary>
-              </indexterm>In summer 2010 a set of scaled symbols were introduced. These are not
-              shown at fixed screen sizes, but as representative sizes of the subject vessel - so
-              they resize as you zoom in on a plot. In summer 2011 the range of vessels represented
-              by scaled symbols was extended, plus it became possible to specify the length and
-              width of the subject platform for a realistically sized vehicle representation.<figure xml:id="scaled_symbols">
-                <title>Scaled vessel symbols in <application>Debrief</application></title>
-
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/ScaledVessels.png" scalefit="1" width="100%"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-          </note>
-        </sect2>
-
-        <sect2 xml:id="more_buoy_patterns">
-          <title>Use in buoy patterns</title>
-
-          <para>Symbols are assigned to <indexterm>
-              <primary>Symbol Sets</primary>
-
-              <secondary>in Buoy Fields</secondary>
-            </indexterm> buoys in a buoy pattern at the <guilabel>Pattern Builder</guilabel> stage.
-            After selecting the type of pattern to be created the user is able to select which type
-            of symbol is used for the buoys (at this stage only the buoy-related symbols are
-            provided). For patterns which include a kingpin (Field, Barrier, Wedge), a kingpin
-            symbol is plotted for the first buoy.</para>
-        </sect2>
+        </note>
 
         <sect2 xml:id="buoy_labels">
           <title>Use in labels</title>
@@ -4704,7 +3809,6 @@ and so on....</programlisting></para>
       <sect1 xml:id="natural_earth">
         <title>Natural Earth data</title>
         <sect2 xml:id="ne_intro">
-          <title>Introduction</title>
           <para><indexterm>
               <primary>Natural Earth Data</primary>
               <secondary>Introduction</secondary>
@@ -4785,7 +3889,7 @@ and so on....</programlisting></para>
                 <title>Natural Earth in use (110M resolution)</title>              
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NE_110M.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/NE_110M.png" width="" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -4797,7 +3901,7 @@ and so on....</programlisting></para>
                 <title>Natural Earth in use (50M resolution)</title>              
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NE_50M.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/NE_50M.png" width="" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -4853,7 +3957,8 @@ and so on....</programlisting></para>
 
                     <tbody>
                       <row>
-                        <entry nameend="c2" namest="c1">The Vector Product Format ( <glossterm linkend="g_vpf">VPF</glossterm>) is a standard format, structure, and
+                        <entry nameend="c2" namest="c1">The Vector Product Format (<glossterm
+                            linkend="g_vpf">VPF</glossterm>) is a standard format, structure, and
                           organization for large geographic databases that are based on a
                           georelational data model and are intended for direct use. VPF is designed
                           to be compatible with a wide variety of applications and products. VPF
@@ -5013,7 +4118,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_prefs.png" width="100%"/>
+                    <imagedata fileref="figures/VPF_prefs.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5089,7 +4194,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer1.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer1.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5104,7 +4209,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer2.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5120,7 +4225,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer3.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5133,17 +4238,27 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer4.png" width="270"/>
+                    <imagedata fileref="figures/VPF_Layer4.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
             </figure></para>
+          <figure>
+            <title>Coastlines feature</title>
+            <para>Now you are going to configure the plotting of coastlines.</para>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/VPF_Layer5.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure>
 
-          <para>Now you are going to configure the plotting of coastlines. Right-click on the
-              <guilabel>Coastlines</guilabel> entry, and from the <guilabel>Coastlines</guilabel>
-            drop-down list, select <guilabel>Color</guilabel>, and then <guilabel>Light
-              Grey</guilabel>. Note that <guilabel>White</guilabel> is the default colour for all
-            VPF features.</para>
+          <para>Right-click on the <guilabel>Coastlines</guilabel> entry, and from the
+              <guilabel>Coastlines</guilabel> drop-down list, select <guilabel>Color</guilabel>, and
+            then <guilabel>Light Grey</guilabel>. Note that <guilabel>White</guilabel> is the
+            default colour for all VPF features.</para>
 
           <para>Next, right-click on the coastlines entry again, and make the
               <guilabel>coastline</guilabel> Visible.</para>
@@ -5160,7 +4275,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPL_Layer6.gif"/>
+                    <imagedata fileref="figures/VPL_Layer6.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5171,7 +4286,7 @@ and so on....</programlisting></para>
           <para>Select the Pan control from the Plot toolbar: <guiicon>
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/Pan.gif"/>
+                  <imagedata fileref="figures/Pan.png"/>
                 </imageobject>
               </inlinemediaobject>
             </guiicon></para>
@@ -5184,7 +4299,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer7.gif"/>
+                    <imagedata fileref="figures/VPF_Layer7.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5201,7 +4316,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer8.gif"/>
+                    <imagedata fileref="figures/VPF_Layer8.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5230,7 +4345,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer9.gif"/>
+                    <imagedata fileref="figures/VPF_Layer9.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5516,7 +4631,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ETOPO_prefs.png" width="100%"/>
+                    <imagedata fileref="figures/ETOPO_prefs.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5604,7 +4719,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/etopo2src.jpg" width="100%"/>
+                      <imagedata fileref="figures/etopo2src.jpg" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -5783,7 +4898,7 @@ and so on....</programlisting></para>
           Drawing Toolbar, or the <guimenu>Drawing</guimenu> menu.<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment.png" width="40%"/>
+                <imagedata fileref="figures/AddSegment.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
@@ -5792,7 +4907,7 @@ and so on....</programlisting></para>
           dialog. Clearly if you were extending an existing planning track you&apos;d select it.<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment2.png" width="40%"/>
+                <imagedata fileref="figures/AddSegment2.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
@@ -5800,26 +4915,31 @@ and so on....</programlisting></para>
           new track. First we must give the new track a name:<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment3.png" width="40%"/>
+                <imagedata fileref="figures/AddSegment3.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
-        <para>Next we must specific the starting date/time for the track:<screenshot>
+        <para>Next we must specify the starting date/time for the track:<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment4.png" width="40%"/>
+                <imagedata fileref="figures/AddSegment4.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot></para>
-        <para>Once we&apos;ve finished specifying the track, we must give specify a name for this
-          particular track:<screenshot>
+        <para>Once we&apos;ve finished specifying the track, we must specify a name for this
+          particular leg of the track:<screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/AddSegment5.png" width="40%"/>
+                <imagedata fileref="figures/AddSegment5.png" align="center"/>
               </imageobject>
             </mediaobject>
-          </screenshot>Your track will now appear on the screen, and also in the layer
-          manager.</para>
+          </screenshot>Your track will now appear on the screen, and also in the layer manager.<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment5a.png" align="center"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
         <para>Once you&apos;ve created a parent track, next time you can select it from the first dialog
           - after which you just need to specify a leg name,</para>
       </sect1>
@@ -5843,7 +4963,7 @@ and so on....</programlisting></para>
                   leg parameters <screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/AddSegment6.png" width="40%"/>
+                        <imagedata fileref="figures/AddSegment6.png" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5878,7 +4998,7 @@ and so on....</programlisting></para>
                   your set of legs in tabular form<screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/legsInGridEditor.png" width="80%"/>
+                        <imagedata fileref="figures/legsInGridEditor.png" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5916,7 +5036,7 @@ and so on....</programlisting></para>
               <para>Once the plot appears, check that the Auto-Sync toggle button in the graph
                 toolbar is selected <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/synced.gif"/>
+                    <imagedata fileref="figures/synced.png"/>
                   </imageobject>
                 </inlinemediaobject>. </para>
             </listitem>
@@ -5974,7 +5094,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NewNarrativeEntryWizard.png" width="100%"/>
+                    <imagedata fileref="figures/NewNarrativeEntryWizard.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5997,7 +5117,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/Narr_1.png" width="100%"/>
+                    <imagedata fileref="figures/Narr_1.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -6007,7 +5127,7 @@ and so on....</programlisting></para>
                 <term><guiicon>
                     <inlinemediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/wrap.gif"/>
+                        <imagedata fileref="figures/wrap.png"/>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon></term>
@@ -6021,7 +5141,7 @@ and so on....</programlisting></para>
                 <term><guiicon>
                     <inlinemediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/synced.gif"/>
+                        <imagedata fileref="figures/synced.png"/>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon></term>
@@ -6050,16 +5170,24 @@ and so on....</programlisting></para>
           <para>Also, the narrative viewer is able to filter your data for you. Double-click on the
               <guibutton>Source</guibutton> or <guibutton>Type</guibutton> headings and a filter
             dialog will open.<figure xml:id="filtering_narrative">
-              <title>Filtering a narrative</title>
-
+              <title>Filtering a narrative by Type</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter.png" width="338"/>
+                    <imagedata fileref="figures/narr_filter.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure>In the example shown, select which types of data you wish to see in the
+            </figure><figure>
+              <title>Filtering a narrative by Source</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/narr_filter_src.png" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>In the examples shown, select which types of data you wish to see in the
             filtered narrative by either double-clicking on them or selecting one then clicking the
             right arrow. When you&apos;ve selected which data you want to see, click
               <guibutton>OK</guibutton>.</para>
@@ -6087,7 +5215,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LandsEnd.png" width="450"/>
+                  <imagedata fileref="figures/LandsEnd.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -6134,7 +5262,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartOptions.png" width="450"/>
+                  <imagedata fileref="figures/ChartOptions.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -6156,7 +5284,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartFolio.png"/>
+                  <imagedata fileref="figures/ChartFolio.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -6173,7 +5301,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LoadChart.png"/>
+                  <imagedata fileref="figures/LoadChart.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -6186,39 +5314,6 @@ and so on....</programlisting></para>
       </sect1>
     </chapter>
 
-
-    <chapter xml:id="video_recording">
-      <title><application>Debrief</application> video recording</title>
-
-      <sect1 xml:id="more_recording">
-        <title>Recording plots to video</title>
-
-        <sect2 xml:id="more_recording_video">
-          <title>Introduction</title>
-
-          <para>As its name suggests, one of the initially <indexterm>
-              <primary>Video</primary>
-
-              <secondary>Recording to video</secondary>
-            </indexterm> intended uses for <application>Debrief</application> was to conduct
-            post-exercise debriefs.</para>
-
-          <para>Nowadays <application>Debrief</application> gets a lot more use for exercise
-            analysis, and has evolved into an exercise analysis tool, but there are still
-            aspirations to use it in debriefs. Unfortunately, its use in a debrief normally requires
-            an expert operator; who is not always available. Recording a
-              <application>Debrief</application> session to file, however, enables it to be inserted
-            into a <application>PowerPoint</application> presentation for automated replay.</para>
-
-          <para>Debrief 2003 included experimental "Record to video" functionality. This feature was
-            no match for the commercial equivalents. Applications such as HyperCam (<link xlink:href="http://www.hyperionics.com" xmlns:xlink="http://www.w3.org/1999/xlink">http://www.hyperionics.com</link>) allow more intuitive video recording, with much
-            smaller file sizes - all for a very reasonable price. Until better performing video
-            recording functionality becomes available in Java/Eclipse, purchase of off-the-shelf
-            screen-recording video is the recommended route.</para>
-        </sect2>
-      </sect1>
-    </chapter>
-
     <chapter xml:id="sensor_data">
       <title>Analysing sensor data</title>
 
@@ -6228,17 +5323,9 @@ and so on....</programlisting></para>
         <sect2 xml:id="sensor_Data_intro">
           <title>Introduction</title>
 
-          <para>As useful as it would appear it is only in the update to
-              <application>Debrief</application> 2001 that <application>Debrief</application> has
-            been able to properly show <glossterm linkend="g_sensor">sensor</glossterm> data.</para>
-
-          <para>A rudimentary way of showing bearing lines has been present for a number of years,
-            but Debrief has not performed any useful processing on this data.</para>
-
-          <para>The following terms are used: <variablelist>
+          <para>Debrief uses the following terms: <variablelist>
               <varlistentry>
                 <term>Sensor</term>
-
                 <listitem>
                   <para>The <glossterm linkend="g_sensor">sensor</glossterm> which recorded the
                     data. Sensor data is grouped according to its sensor. This characteristic may be
@@ -6246,10 +5333,8 @@ and so on....</programlisting></para>
                     sensor - allowing tracks to be independently switched on and off.</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term>Sensor Contact</term>
-
                 <listitem>
                   <para>This is an individual contact recorded on a sensor, a single bearing line
                     reaching from the sensor location (origin) along the contact bearing to the
@@ -6297,6 +5382,12 @@ and so on....</programlisting></para>
                 from a single sensor a dialog pops up give you chance to override the sensor name
                 and color. If the file contains data from more than one sensor then they just
                 quietly slip in.</para>
+            </note><note>
+              <para>An item of note is that it is only since the 2001 update that
+                  <application>Debrief</application> has been able to properly show <glossterm
+                  linkend="g_sensor">sensor</glossterm> data. A rudimentary way of showing bearing
+                lines has been present for a number of years, but Debrief has not performed any
+                useful processing on this data.</para>
             </note></para>
         </sect2>
 
@@ -6336,7 +5427,7 @@ Platform C,-551</screen></para>
             the <guilabel>Standard Array Offsets</guilabel> page<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ArrayLengthsPrefs.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ArrayLengthsPrefs.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -6345,7 +5436,7 @@ Platform C,-551</screen></para>
             list of sensor offset distances when you view sensor data in the properties window:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LengthsEditor.png" width="308"/>
+                  <imagedata fileref="figures/LengthsEditor.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -6491,7 +5582,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             <para><screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/LotsOfTracks.png" width="100%"/>
+                    <imagedata fileref="figures/LotsOfTracks.png" align="center"/>
                   </imageobject>
 
                   <caption>Cumbersome sensor data</caption>
@@ -6511,7 +5602,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                 View</guilabel> menu. You&apos;ll see a plot like the one below:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/BulkSensorManager.png" width="100%"/>
+                    <imagedata fileref="figures/BulkSensorManager.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -6543,11 +5634,11 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               then there&apos;ll be a jump over to were that track number is used again against another
               contact on the right hand side.</para>
 
-            <para>Debrief offers a tool automatically split sensor data - the scissors icon at the
-              top of the Bulk Sensor Manager offers &apos;Auto-split sensor segments&apos;. It will pass
-              through all of the sensor tracks in the primary track, and if there is a jump of more
-              than 15 seconds Debrief splits the successive data into a new tracks. The original and
-              new tracks are then renamed with a "_1", "_2" suffix.</para>
+            <para>Debrief offers a tool to automatically split sensor data - the scissors icon at
+              the top of the Bulk Sensor Manager offers &apos;Auto-split sensor segments&apos;. It
+              will pass through all of the sensor tracks in the primary track, and if there is a
+              jump of more than 15 seconds Debrief splits the successive data into a new tracks. The
+              original and new tracks are then renamed with a "_1", "_2" suffix.</para>
             <para>In the above screenshot you can see that the purple dataset actually covers 3
               periods of sensor data, roughly: 0545-0640, 0710-0720 and 0830-1010. If we click on
               the Axe toolbar button (<guiicon>
@@ -6560,7 +5651,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               tracks separated as in the following screenshot.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/BulkSensorManager_PostSplit.png" width="100%"/>
+                    <imagedata fileref="figures/BulkSensorManager_PostSplit.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -6597,7 +5688,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               above sample dataset gives this greatly reduced sensor dataset:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/BulkSensorManager_trim_unrelated.png" width="100%"/>
+                    <imagedata fileref="figures/BulkSensorManager_trim_unrelated.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -6613,7 +5704,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               <guimenuitem>Shade</guimenuitem> operations:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ShadeSensor.png" width="100%"/>
+                    <imagedata fileref="figures/ShadeSensor.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -6621,13 +5712,13 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               according to two operations - as shown below.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ShadeRainbow.png" width="100%"/>
+                    <imagedata fileref="figures/ShadeRainbow.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot><screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ShadeBlueRed.png" width="100%"/>
+                    <imagedata fileref="figures/ShadeBlueRed.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot></para>
@@ -6648,7 +5739,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               reducing plot clutter.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TrimmedTracks.png" width="100%"/>
+                    <imagedata fileref="figures/TrimmedTracks.png" align="center"/>
                   </imageobject>
 
                   <caption>Trimmed sensor data</caption>
@@ -6670,7 +5761,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             you right-click on them you are offered the &apos;View sensor range plot&apos; menu item:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ViewSensorPlot.png" width="313"/>
+                  <imagedata fileref="figures/ViewSensorPlot.png" align="center"/>
                 </imageobject>
 
                 <caption>Popup menu with a track plus multiple sensor selected</caption>
@@ -7017,7 +6108,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               selecting it from the <guilabel>Window/Show View</guilabel> menu. <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_empty.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/multi_empty.png" align="center"/>
                   </imageobject>
 
                   <caption>Initial view of multipath analysis view</caption>
@@ -7041,7 +6132,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               line as close as possible to the red (measured) line.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_working.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="figures/multi_working.png" align="center"/>
                   </imageobject>
 
                   <caption>Multipath analysis view with data loaded</caption>
@@ -7194,7 +6285,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             Window.</para>
 
           <para>The workflow for creating and manipulating TMA segments is covered in the
-              <emphasis>Single Sided Reconstruction in Debrief</emphasis> cheat sheet in the Debrief
+              <emphasis>Single Sided Reconstruction in Debrief</emphasis> tutorial in the Debrief
             online help.</para>
         </sect2>
 
@@ -7203,7 +6294,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
           <para>Debrief allows you to generate a segment of track data from a block of sensor data -
             replicating the process conducted on warships. Data to support the operation is
-            collected via a wizard, as described in the above cheat sheet.</para>
+            collected via a wizard, as described in the above tutorial.</para>
         </sect2>
 
         <sect2 xml:id="DraggingTracks">
@@ -7275,7 +6366,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             tracks in both dimensions.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/DragHighlight.png" width="100%"/>
+                  <imagedata fileref="figures/DragHighlight.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -7391,7 +6482,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             interaction with the algorithm is as recorded below<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_sequence.png" width="100%"/>
+                  <imagedata fileref="figures/SATC_sequence.png"/>
                 </imageobject>
                 <caption>SATC Sequence</caption>
               </mediaobject>
@@ -7458,7 +6549,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             do not represent achievable successive courses (due to simple speed/time calculations). <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_Process.png" width="100%"/>
+                  <imagedata fileref="figures/SATC_Process.png" align="center"/>
                 </imageobject>
                 <caption>SATC Process</caption>
               </mediaobject>
@@ -7473,7 +6564,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             low.  <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_solution.png" width="100%"/>
+                  <imagedata fileref="figures/SATC_solution.png" align="center"/>
                 </imageobject>
                 <caption>Sample solution</caption>
               </mediaobject>
@@ -7487,7 +6578,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             new scenario is created.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/MaintainContributions.png" width="100%"/>
+                  <imagedata fileref="figures/MaintainContributions.png" align="center"/>
                 </imageobject>
                 <caption>Maintain Contributions View</caption>
               </mediaobject>
@@ -7604,8 +6695,6 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
   <!-- ********************************************************************** -->
 
-  <!-- ********************************************************************** -->
-
   <part xml:id="maintainers_guide">
     <title>Maintainer&apos;s Guide</title>
 
@@ -7633,7 +6722,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/debrief_home.png" width="100%"/>
+                  <imagedata fileref="figures/debrief_home.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -7862,7 +6951,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/github_home.png" width="100%"/>
+                <imagedata fileref="figures/github_home.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -7897,7 +6986,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/GitHub_NewIssue.png" width="100%"/>
+                    <imagedata fileref="figures/GitHub_NewIssue.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8125,7 +7214,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ReposLocation.png" width="100%"/>
+                    <imagedata fileref="figures/ReposLocation.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8496,8 +7585,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             </indexterm>The symbology data field describes the representation required for this
             vessel track, specifying the colour of track to use and symbol-type to represent that
             vehicle. The Symbol style read in is used when tracks are to be shown by using symbol
-            (in 2D or 3D), as described in <xref linkend="intro_to_sym_sets"/>.<table
-              xml:id="debrief_Sym">
+            (in 2D or 3D), as described in Debrief symbol sets. (See <xref linkend="symbol_sets"
+              />).<table xml:id="debrief_Sym">
               <title>Debrief core symbology data fields</title>
               <tgroup cols="4">
                 <colspec colname="c1"/>
@@ -8775,7 +7864,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/NewTrackColors.png" width="100%"/>
+                    <imagedata fileref="figures/NewTrackColors.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8971,7 +8060,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             degrees as in the standard replay file format, and symbology representations are as in
             the above tables.</para>     
         </sect2>
-          <sect2  xml:id="replay_core_annotations">
+          <sect2 xml:id="replay_core_annotations">
              <title>Core Elements</title>
             <para><indexterm>
               <primary>Annotation Data</primary>
@@ -9077,7 +8166,7 @@ and entry type can be multi-word if surrounded by quotes (").
             </markup>   </screen>
             </para>
           </sect2>
-          <sect2  xml:id="replay_dynamic_annotations">
+          <sect2 xml:id="replay_dynamic_annotations">
               <title>Dynamic Elements</title>
             
             <para>In addition to individual annotation shapes it is possible to define a dynamic annotation.  Do
@@ -9105,14 +8194,14 @@ and entry type can be multi-word if surrounded by quotes (").
             </screen>
             </para>
           </sect2>
-          <sect2  xml:id="replay_dynamic_track_annotations">
+          <sect2 xml:id="replay_dynamic_track_annotations">
             <title>Dynamic Track Annotations</title>
             
             <para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/DynamicArcs.png" width="80%"/>
+                    <imagedata fileref="figures/DynamicArcs.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -9124,21 +8213,21 @@ and entry type can be multi-word if surrounded by quotes (").
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_1.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_1.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_2.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_3.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_3.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -9756,7 +8845,7 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/rhumb_line_segments.gif" width="200"/>
+                  <imagedata fileref="figures/rhumb_line_segments.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -9843,7 +8932,7 @@ departure / d.lat = tan (course)</markup>
             the algorithm moves 100m back down between the points at 200 &amp; 300.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/WormInHole.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/WormInHole.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -10031,7 +9120,7 @@ departure / d.lat = tan (course)</markup>
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/JumpRefOne.png" scalefit="1" width="100%"/>
+                <imagedata fileref="figures/JumpRefOne.png" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -10065,7 +9154,7 @@ departure / d.lat = tan (course)</markup>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/JumpRefTwo.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/JumpRefTwo.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -10144,7 +9233,7 @@ departure / d.lat = tan (course)</markup>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/contour_1.gif"/>
+                    <imagedata fileref="figures/contour_1.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -10229,7 +9318,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_2.gif"/>
+                  <imagedata fileref="figures/contour_2.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -10244,7 +9333,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_3.gif"/>
+                  <imagedata fileref="figures/contour_3.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -10293,7 +9382,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_6.gif"/>
+                  <imagedata fileref="figures/contour_6.gif" align="center"/>
                 </imageobject>
 
                 <caption>Contouring algorithm</caption>
@@ -10643,7 +9732,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing all bounded states</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/NoSuppress.png"/>
+                      <imagedata fileref="figures/NoSuppress.png" align="center"/>
                     </imageobject>                    
                     <caption>A solution showing all bounded states</caption>
                   </mediaobject>
@@ -10652,7 +9741,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing low precision cut suppression</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CutsSuppressed.png"/>
+                      <imagedata fileref="figures/CutsSuppressed.png" align="center"/>
                     </imageobject>                    
                     <caption>A solution showing Low Precision cut suppression</caption>
                   </mediaobject>
@@ -10881,7 +9970,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/tma_bearingbasedMDA.gif"/>
+                  <imagedata fileref="figures/tma_bearingbasedMDA.gif" align="center"/>
                 </imageobject>
               </mediaobject>
               <note>
@@ -11196,7 +10285,7 @@ departure / d.lat = tan (course)</markup>
             <title>Example</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig1_definitions.png"/>
+                <imagedata fileref="figures/tma_fig1_definitions.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -11215,7 +10304,7 @@ departure / d.lat = tan (course)</markup>
               <title>Islands structure</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/tma_fig2_islandstructure.png"/>
+                  <imagedata fileref="figures/tma_fig2_islandstructure.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -11278,7 +10367,7 @@ end </code></screen>
             <title>Bearing lines for new points</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/tma_fig3_bearingline.png"/>
+                <imagedata fileref="figures/tma_fig3_bearingline.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -11293,7 +10382,7 @@ end </code></screen>
             <title>Polygon without bearing line</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig4_polygonwithoutline.png"/>
+                <imagedata fileref="figures/tma_fig4_polygonwithoutline.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -11350,7 +10439,7 @@ end</code></screen>
               <para>
                 <mediaobject>
                   <imageobject>
-                    <imagedata align="left" fileref="figures/tma_crossoveroperator.png"/>
+                    <imagedata align="center" fileref="figures/tma_crossoveroperator.png"/>
                   </imageobject>
                 </mediaobject>
               </para>
@@ -11369,7 +10458,7 @@ end</code></screen>
                 <title>one point crossover example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/tma_fig5_1ptcrossover.png" width="90%"/>
+                    <imagedata fileref="figures/tma_fig5_1ptcrossover.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -11418,7 +10507,7 @@ end</code></screen>
                 <title>Illustration of arithmetic crossover for 2D points</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata width="40%" fileref="figures/tma_fig6_crossover2d.png"/>
+                    <imagedata fileref="figures/tma_fig6_crossover2d.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -11451,7 +10540,7 @@ end</code></screen>
                 <title>Arithmetic crossover example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata width="100%" fileref="figures/tma_fig7_arithmeticcrossoverex.png"/>
+                    <imagedata fileref="figures/tma_fig7_arithmeticcrossoverex.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -11490,9 +10579,6 @@ end</code></screen>
                   <imageobject>
                     <imagedata width="100%" fileref="figures/tma_fig8a_randommutation.png"/>
                   </imageobject>
-                  <imageobject>
-                    <imagedata width="100%" fileref="figures/tma_fig8b_randommutation.png"/>
-                  </imageobject>
                 </mediaobject>
               </figure>
             </section>
@@ -11509,7 +10595,7 @@ end</code></screen>
                 chosen vertex:</para>
               <para><inlinemediaobject>
                   <imageobject>
-                    <imagedata width="30%" fileref="figures/tma_equation2.png"/>
+                    <imagedata fileref="figures/tma_equation2.png" align="center"/>
                   </imageobject>
                 </inlinemediaobject> where</para>
               <itemizedlist spacing="compact">
@@ -11559,7 +10645,7 @@ end</code></screen>
                 <title>Mutation to vertex example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata width="100%" fileref="figures/tma_fig9_mutationtovertex.png"/>
+                    <imagedata fileref="figures/tma_fig9_mutationtovertex.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -11644,7 +10730,7 @@ end</code></screen>
               <title>Point generation</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata width="100%" fileref="figures/tma_fig10_pointgeneration.png"/>
+                  <imagedata fileref="figures/tma_fig10_pointgeneration.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -11675,7 +10761,7 @@ end</code></screen>
             <title>Inconsistent range</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig11_inconsistentrange.png"/>
+                <imagedata fileref="figures/tma_fig11_inconsistentrange.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -11686,7 +10772,7 @@ end</code></screen>
             <title>Consistent legs</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig12_consistentlegs.png"/>
+                <imagedata fileref="figures/tma_fig12_consistentlegs.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -11701,7 +10787,7 @@ end</code></screen>
             <title>Speed plot with smooth speed change</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig13a_speedplot.png"/>
+                <imagedata fileref="figures/tma_fig13a_speedplot.png" width="" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -11717,7 +10803,7 @@ end</code></screen>
             <title>Speed plot with huge peaks</title>
             <mediaobject>
               <imageobject>
-                <imagedata width="100%" fileref="figures/tma_fig13c_speedplot.png"/>
+                <imagedata fileref="figures/tma_fig13c_speedplot.png" align="center"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -12031,13 +11117,13 @@ range = Range to target from ownship (yds)</markup>
       </glossentry>
 
       <glossentry xml:id="g_cheat">
-        <glossterm>Cheat sheets</glossterm>
-
+        <glossterm>Tutorials</glossterm>
         <glossdef>
-          <para>Cheat sheets guide users through tasks. The task is broken down into steps and
+          <para>Tutorials guide users through tasks. The task is broken down into steps and
             presented to the user one step at a time, and the user checks off the steps as he/she
-            completes them. The Cheat Sheets can be accessed from the command in Debrief&apos;s <menuchoice><guibutton>Help</guibutton></menuchoice> menu,
-            or the Tutorials section of the Debrief&apos;s Welcome page. </para>
+            completes them. The Cheat Sheets can be accessed from the command in Debrief&apos;s <menuchoice>
+              <guibutton>Help</guibutton>
+            </menuchoice> menu, or the Tutorials section of the Debrief&apos;s Welcome page. </para>
         </glossdef>
       </glossentry>
 
@@ -12475,7 +11561,7 @@ brg = Bearing to target from ownship (degs)
         <glossdef>
           <para>A series of positions recorded for a particular vehicle (ship, submarine, helo,
             etc). A track has its own characteristics such as colour, label and symbol frequency,
-            and the symbol used to represent it when the symbol highlighter is in use (see <xref linkend="intro_to_sym_sets"/>).</para>
+            and the symbol used to represent it when the symbol highlighter is in use (see <xref linkend="symbol_sets"/>).</para>
         </glossdef>
       </glossentry>
 
