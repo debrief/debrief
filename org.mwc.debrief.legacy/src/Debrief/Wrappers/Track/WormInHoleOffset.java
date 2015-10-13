@@ -315,7 +315,7 @@ public class WormInHoleOffset
 				// right, this is the first point, and we've matched it already. Just
 				// produce
 				// a vector back down ownship path
-				res = new FixWrapper(thisP.getFix());
+				res = new FixWrapper(thisP.getFix().makeCopy());
 				res.setLocation(new WorldLocation(thisP.getLocation().add(
 						new WorldVector(thisP.getCourse(), MWC.Algorithms.Conversions
 								.m2Degs(-offsetM), 0d))));
@@ -380,7 +380,7 @@ public class WormInHoleOffset
 			if (nextPoint != null)
 			{
 				// yup, just use that one
-				res = new FixWrapper(nextPoint.getFix());
+				res = new FixWrapper(nextPoint.getFix().makeCopy());
 
 				// offset by the array length along the heading
 				res.setLocation(res.getLocation().add(
