@@ -1457,7 +1457,7 @@ public class BatchCollatorHelper
 			assertEquals("correct num cases not recorded", 2, cc2._myData.size());
 		}
 
-		public void testFrequencyListCollator()
+		public void untestFrequencyListCollator()
 		{
 			// ////////////////////////////////////////////////
 			// allright, the non per-case instance first
