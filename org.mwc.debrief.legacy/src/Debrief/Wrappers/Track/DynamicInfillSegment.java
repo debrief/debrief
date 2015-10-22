@@ -155,19 +155,25 @@ public class DynamicInfillSegment extends TrackSegment
 	/**
 	 * for XML restore, we only have the name of the previous track. Store it.
 	 */
-	private String _beforeName;
+	private final String _beforeName;
 
 	/**
 	 * for XML restore, we only have the name of the following track. Store it.
 	 */
-	private String _afterName;
+	private final String _afterName;
+
 
 	/**
-	 * ensure important objects are defined
+	 * restore from file, where we only know the names of the legs
 	 * 
+	 * @param beforeName
+	 * @param afterName
 	 */
-	protected DynamicInfillSegment()
+	public DynamicInfillSegment(final String beforeName, final String afterName)
 	{
+		_beforeName = beforeName;
+		_afterName = afterName;
+		
 		_moveListener = new PropertyChangeListener()
 		{
 			@Override
@@ -193,19 +199,6 @@ public class DynamicInfillSegment extends TrackSegment
 	}
 
 	/**
-	 * restore from file, where we only know the names of the legs
-	 * 
-	 * @param beforeName
-	 * @param afterName
-	 */
-	public DynamicInfillSegment(final String beforeName, final String afterName)
-	{
-		this();
-		_beforeName = beforeName;
-		_afterName = afterName;
-	}
-
-	/**
 	 * create an infill track segment between the two supplied tracks
 	 * 
 	 * @param before
@@ -214,7 +207,7 @@ public class DynamicInfillSegment extends TrackSegment
 	public DynamicInfillSegment(final TrackSegment before,
 			final TrackSegment after)
 	{
-		this();
+		this(before.getName(), after.getName());
 
 		// ok, and start listening
 		configure(before, after);
@@ -289,7 +282,7 @@ public class DynamicInfillSegment extends TrackSegment
 	 */
 	public String getAfterName()
 	{
-		return _after.getName();
+		return _afterName;
 	}
 
 	/**
@@ -299,7 +292,7 @@ public class DynamicInfillSegment extends TrackSegment
 	 */
 	public String getBeforeName()
 	{
-		return _before.getName();
+		return _beforeName;
 	}
 
 	@Override
