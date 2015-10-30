@@ -625,6 +625,10 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 			// we've got to recalculate our positions now, really.
 			clearChildOffsets();
+						
+			// ok, fire the property change - to tell folks we've moved
+			firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, wormInHole);
+
 		}
 	}
 
@@ -641,6 +645,9 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		{
 			clearChildOffsets();
 		}
+		
+		// ok, fire the property change
+		firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, sensorOffset);
 	}
 
 	/**
