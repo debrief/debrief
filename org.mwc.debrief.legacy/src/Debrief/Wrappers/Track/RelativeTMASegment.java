@@ -83,7 +83,7 @@ public class RelativeTMASegment extends CoreTMASegment
 						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
-						displayExpertProp("HostTName", "Host name",
+						displayExpertProp("HostName", "Host name",
 								"Name of the track from which range/bearing measured", OFFSET),
 						displayExpertProp("SensorName", "Sensor name",
 								"Name of the sensor from which range/bearing measured", OFFSET),
@@ -225,7 +225,9 @@ public class RelativeTMASegment extends CoreTMASegment
 		// sort out the origin
 		final SensorContactWrapper scw = observations[0];
 		_referenceTrack = scw.getSensor().getHost();
+		_referenceTrackName = _referenceTrack.getName();
 		_referenceSensor = scw.getSensor();
+		_referenceSensorName = _referenceSensor.getName();
 
 		// create the points
 		createPointsFrom(observations);
@@ -1003,8 +1005,11 @@ public class RelativeTMASegment extends CoreTMASegment
 	 */
 	public void setSensorName(final String sensorName)
 	{
-		// better trim what we've recived
-		_referenceSensorName = sensorName.trim();
+		if(sensorName != null)
+		{
+			// 	better trim what we've recived
+			_referenceSensorName = sensorName.trim();
+		}
 	}
 
 	public void setLastSensorContact(final SensorContactWrapper lastSensorContact)
