@@ -283,6 +283,7 @@
 					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
 					<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
 					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType" minOccurs="0"/>
+					<xs:element name="BistaticReceiver" type="BistaticReceiverType" minOccurs="0"/>
 				</xs:choice>
 			</xs:extension>
 		</xs:complexContent>
@@ -612,6 +613,19 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="ActiveInterceptSensorType">
+		<xs:annotation>
+			<xs:documentation>Active intercept sensor</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited
+				Editable:
+				inherited</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreSensorType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BistaticReceiverType">
 		<xs:annotation>
 			<xs:documentation>Active intercept sensor</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible: inherited
@@ -1253,12 +1267,6 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="IsTransmitting" type="xs:boolean" use="required">
-					<xs:annotation>
-						<xs:documentation>Whether this is an active or passive buoy
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
