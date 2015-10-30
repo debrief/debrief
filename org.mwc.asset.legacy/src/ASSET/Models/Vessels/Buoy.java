@@ -17,7 +17,6 @@ package ASSET.Models.Vessels;
 import java.util.Iterator;
 
 import ASSET.Models.SensorType;
-import ASSET.Participants.Category;
 
 
 public class Buoy extends SSN
