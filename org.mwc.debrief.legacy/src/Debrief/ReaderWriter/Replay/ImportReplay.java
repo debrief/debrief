@@ -264,6 +264,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -350,7 +351,8 @@ public class ImportReplay extends PlainImporterBase
 	 * a list of the sensors we've imported
 	 * 
 	 */
-	private Vector<SensorWrapper> _pendingSensors;
+	private HashMap<TrackWrapper, Vector<SensorWrapper>> _pendingSensors = 
+			new HashMap<TrackWrapper, Vector<SensorWrapper>>();
 
 	/**
 	 * the property name we use for importing tracks (DR/ATG)
@@ -627,7 +629,15 @@ public class ImportReplay extends PlainImporterBase
 		// so, we've found a track - see if it holds this sensor
 		final TrackWrapper theTrack = (TrackWrapper) val;
 
-		final Iterator<SensorWrapper> iter = _pendingSensors.iterator();
+		Vector<SensorWrapper> thisTrackSensors = _pendingSensors.get(theTrack);
+		
+		if(thisTrackSensors == null)
+		{
+			thisTrackSensors = new Vector<SensorWrapper>();
+			_pendingSensors.put(theTrack, thisTrackSensors);
+		}
+		
+		final Iterator<SensorWrapper> iter = thisTrackSensors.iterator();
 
 		// step through this track' sensors
 		if (iter != null)
@@ -662,7 +672,7 @@ public class ImportReplay extends PlainImporterBase
 			thisSensor.setHost(theTrack);
 			
 			// ok, now remember it
-			_pendingSensors.add(thisSensor);
+			thisTrackSensors.add(thisSensor);
 		}
 
 		// so, we now have the wrapper. have a look to see if the colour
@@ -961,11 +971,11 @@ public class ImportReplay extends PlainImporterBase
 		String symbology = thisOne.getSymbology();
 		if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
 		{
-			shapeWrapper.setLineStyle(ImportReplay.replayLineStyleFor(symbology
+			shapeWrapper.getShape().setLineStyle(ImportReplay.replayLineStyleFor(symbology
 					.substring(2)));
 			if (symbology.length() > 3)
 			{
-				shapeWrapper.setLineThickness(ImportReplay
+				shapeWrapper.getShape().setLineWidth(ImportReplay
 						.replayLineThicknesFor(symbology.substring(3)));
 			}
 			if (symbology.length() >= 5)
@@ -1216,7 +1226,15 @@ public class ImportReplay extends PlainImporterBase
 	
 	public Vector<SensorWrapper> getPendingSensors()
 	{
-		return _pendingSensors;
+		
+		Vector<SensorWrapper> res = new Vector<SensorWrapper>();
+		Iterator<TrackWrapper> tIter = _pendingSensors.keySet().iterator();
+		while (tIter.hasNext())
+		{
+			TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
+			res.addAll(_pendingSensors.get(trackWrapper));
+		}
+		return res;
 	}
 
 	/** actually store the sensor data in its parent object
@@ -1225,23 +1243,28 @@ public class ImportReplay extends PlainImporterBase
 	public void storePendingSensors()
 	{
 		// ok, actually add the sensors to their parents now
-		Iterator<SensorWrapper> iter = _pendingSensors.iterator();
-		while(iter.hasNext())
+		Iterator<TrackWrapper> tIter = _pendingSensors.keySet().iterator();
+		while (tIter.hasNext())
 		{
-			SensorWrapper thisS = iter.next();
-			
-			// find the track
-			TrackWrapper parent = thisS.getHost();			
-			
-			// now formally add the sensor
-			parent.add(thisS);
-			
+			TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
+			Iterator<SensorWrapper> iter = _pendingSensors.get(trackWrapper).iterator();
+			while(iter.hasNext())
+			{
+				SensorWrapper thisS = iter.next();
+				
+				// find the track
+				TrackWrapper parent = thisS.getHost();			
+				
+				// now formally add the sensor
+				parent.add(thisS);
+			}
 		}
+				
 	}
 
 	public void clearPendingSensorList()
 	{
-		_pendingSensors = new Vector<SensorWrapper>();
+		_pendingSensors.clear();
 	}
 
 	static public String replaySymbolForLineStyle(final int style)

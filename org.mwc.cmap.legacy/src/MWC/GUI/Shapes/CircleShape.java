@@ -217,7 +217,7 @@ public class CircleShape extends PlainShape implements Editable,
 	public CircleShape(final WorldLocation theCentre,
 			final WorldDistance theRadius)
 	{
-		super(0, 1, "Circle");
+		super(0, "Circle");
 
 		// store the values
 		_theCentre = theCentre;

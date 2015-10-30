@@ -257,7 +257,7 @@ public class TextLabel extends PlainShape implements Editable
 	 */
 	public TextLabel(final WorldLocation theLocation, final String theString)
 	{
-		super(0, 1, "Text");
+		super(0, "Text");
 
 		_theString = theString;
 		_theLocation = theLocation;
@@ -272,7 +272,7 @@ public class TextLabel extends PlainShape implements Editable
 	 */
 	public TextLabel(final PlainShape theShape, final String theString)
 	{
-		super(0, 1, "Text");
+		super(0, "Text");
 
 		_theString =  replaceNewLines(theString);
 		_theShape = theShape;

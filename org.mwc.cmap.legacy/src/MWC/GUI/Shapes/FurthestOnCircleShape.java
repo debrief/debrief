@@ -192,7 +192,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	public FurthestOnCircleShape(final WorldLocation theCentre, final int numRings,
 			final WorldSpeed speed, final int interval, final int arcCentre, final int arcWidth)
 	{
-		super(0, 1, "Range Ring");
+		super(0, "Range Ring");
 
 		// store the values
 		_theCentre = theCentre;

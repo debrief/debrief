@@ -42,7 +42,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class PlanningSegment extends TrackSegment implements Cloneable,
-		Editable.DoNoInspectChildren, CreateEditorForParent, TimeStampedDataItem
+		Editable.DoNoInspectChildren, CreateEditorForParent, TimeStampedDataItem, ICompositeTrackSegment
 {
 
 	/**
@@ -51,7 +51,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 * @author ian
 	 * 
 	 */
-	public static class ClosingSegment extends PlanningSegment
+	public static class ClosingSegment extends PlanningSegment implements ICompositeTrackSegment
 	{
 
 		public ClosingSegment(final String name, final double courseDegs,

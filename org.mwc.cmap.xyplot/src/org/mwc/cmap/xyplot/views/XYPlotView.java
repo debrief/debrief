@@ -399,7 +399,7 @@ public class XYPlotView extends ViewPart
 	public void createPartControl(final Composite parent)
 	{
 		_plotControl = new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200,
-				1800, 1800, true, true, true, true, true, true) {
+				1800, 1800, true, false, true, true, true, true) {
 
 					@Override
 					public void mouseUp(MouseEvent event)
@@ -1611,10 +1611,11 @@ public class XYPlotView extends ViewPart
 			{
 				if (_plotControl != null && !_plotControl.isDisposed())
 				{
-					_plotControl.setSize(0, 0);
-					_plotControl.getParent().layout(true, true);
-					_plotControl.redraw();
-					_plotControl.update();
+					JFreeChart c = _plotControl.getChart();
+					if (c != null) 
+					{
+						c.setNotify(true);
+					}
 				}
 			}
 		};

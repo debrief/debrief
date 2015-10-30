@@ -11,13 +11,11 @@
 			<br/>
 			<i>NoPrint</i><b>Tip:</b>
 			If you have multiple monitors, you may wish to drag out this
-			<b>Cheat Sheets</b>
+			<b>Cheat Sheet</b>
 			window to give
 			you more room for the multiple Debrief windows that you will use later
 			on.<i>NoPrint</i>
       </intro>
-      <onCompletion>
-      </onCompletion>
       <task kind="cheatsheet" name="Concepts" skip="false">
          <intro>
             <b>Background</b>
@@ -27,15 +25,14 @@
          </intro>
          <onCompletion>
             Ok, that&apos;s the boring school work out of the way. The rest of
-				this cheat-sheet is all conducted here in Debrief.
+				this cheat sheet is all conducted here in Debrief.
          </onCompletion>
          <param name="path" value="overall_intro.xml"/>
       </task>
       <taskGroup kind="sequence" name="Single Leg Solution" skip="false">
          <intro>
             <b>Introduction</b>
-				Let&apos;s start off with an easy scenario. We&apos;re going to work
-				on an engagement where there is just a single leg of target data.
+            The first tutorial in this set will involve an engagement with just a single leg of target data.
          </intro>
          <onCompletion>
             And that&apos;s the end of the tutorial for single-leg target track
@@ -55,6 +52,13 @@
                You now have a Debrief
 					<b>Project</b>
 					, to contain your tutorial data.
+					<br/><br/>
+					There are two ways in which we can load sample data. We will be modifying the
+               sample data, so ensure you&apos;re not working on data that is shared with other users
+               (the master data). The first thing we need to know is whether your Debrief
+               installation folder is on your local machine or on a Network Shared Folder.
+			   <br/> • If it&apos;s on a <b>local machine</b> go to <b>Sample Data if Debrief is on a Local Machine</b>
+               <br/> • If it&apos;s on a <b>Network Shared Folder</b>, go to <b>Sample Data if Debrief is on a Network Shared Folder</b>.
             </onCompletion>
             <param name="path" value="../GettingStarted/GenerateProject.xml"/>
          </task>
@@ -83,34 +87,28 @@
                </onCompletion>
                <param name="path" value="../GettingStarted/FindingYourData.xml"/>
             </task>
-            <task kind="cheatsheet" name="Sample data from a shared folder" skip="true">
-               <intro>
-                  You should have a Debrief project open. You will also need a link
-						to the Debrief
-						<b>sample data</b>
-						.
-						So, open up the projects in your
-						<b>Navigator</b>
-						window, and see if there is a folder titled
-						<b>Sample Data</b>
-						, that contains a folder called
-						<b>SATC</b>
-						.
-						<br/>
-						<br/>
-						If there is one there, you can skip this step,
-						otherwise click on
-						<b>Start working on this task</b>
-						.
-               </intro>
-               <onCompletion>
-                  Ok, you&apos;ve found the Debrief
-						<b>Sample Data</b>.
-						You&apos;re ready for the tutorial now.
+            <task kind="cheatsheet" name="Sample Data if Debrief is on a Network Shared Folder" skip="true">
+               <intro>We will now copy in an
+                  existing set of sample data from the <b>Debrief\DebriefNG</b> Network Shared
+                  Folder.
+                  <br/><b>1.</b> Open the <b>Navigator View</b>
+                  <br/><b>2.</b> Define a project for your work. This is a
+                  parent folder where your data (or links to data) is stored.
+                  If your <b>Navigator</b> window is empty, refer to the earlier cheat sheet, <b>Generating a project</b>.
+                  <br/>Now we will drag in our data:
+                  <br/><b>3.</b> Open Windows Explorer.
+                  <br/><b>4.</b> Arrange your windows so
+                  you can see both your <b>sample data folder</b> and Debrief.
+                  <br/><b>5.</b> Drag the <b>sample data
+                  folder</b> from Explorer and drop it into Debrief <b>Navigator</b>.
+                  <br/><b>6.</b> A dialog will open asking
+                  you if you wish to <b>Copy files and folders</b> or <b>Link to files and folders</b>, select
+                  <b>Copy</b>.</intro>
+               <onCompletion>Great, that&apos;s your data now copied in. Now we can move onto the tutorial. Go to <b>Loading a simple scenario</b>.
                </onCompletion>
                <param name="path" value="../GettingStarted/FindingYourNetworkData.xml"/>
             </task>
-                     <task kind="cheatsheet" name="Loading the data" skip="false">
+         <task kind="cheatsheet" name="Loading the data" skip="false">
             <intro>
                Let&apos;s get some sample data loaded.
             </intro>
@@ -146,19 +144,14 @@
                Lastly we&apos;re going to import the solution into Debrief as a normal
 					TMA track, for subsequent analysis/exploitation.
             </intro>
-            <onCompletion>
-               <b>That&apos;s it for single leg solutions.</b>
-					Now close the Debrief plot containing the single-leg solution,
-					(no need to save). Next we&apos;ll work on a multi-leg solution.
-            </onCompletion>
+            <onCompletion>That&apos;s the single leg solution complete, so you can now close this Debrief
+               plot. In the next tutorial, we will look at multi-leg solutions.</onCompletion>
             <param name="path" value="single_import.xml"/>
          </task>
       </taskGroup>
       <taskGroup kind="sequence" name="Multi Leg Solution" skip="false">
-         <intro>
-            Now for something a little more advanced. In this tutorial we&apos;re
-				going to work with a scenario with several targets zigs, where a
-				number of contributions are required to get a good quality solution.
+         <intro>In this more advanced multi leg solution, the scenario has several target
+            zigs, and a number of contributions are required to obtain an optimal solution.
          </intro>
          <task kind="cheatsheet" name="Loading the data file" skip="false">
             <intro>
@@ -177,8 +170,8 @@
                We&apos;ve exploited all the bearing data, so now it&apos;s time to provide some third party knowledge.
             </intro>
             <onCompletion>
-               And that&apos;s all for the walkthrough of Debrief&apos;s
-					Semi-Automatic Track Construction. You&apos;re now on your own.
+               And that concludes Debrief&apos;s Semi-Automatic Track Construction and the end of this tutorial. Don&apos;t forget that we have a comprehensive user manual to help you.
+               <br/>Good luck!
             </onCompletion>
             <param name="path" value="multi_legs.xml"/>
          </task>

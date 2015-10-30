@@ -395,7 +395,7 @@
 	  </vpf_library>
 	</vpf_database>
       </layer>
-      <track Name="CARPET" Visible="true" PositionsLinked="true" PositionsVisible="true" NameVisible="true" NameAtStart="true" NameLocation="Right" Symbol="Submarine">
+      <track Name="NELSON" Visible="true" PositionsLinked="true" PositionsVisible="true" NameVisible="true" NameAtStart="true" NameLocation="Right" Symbol="Submarine">
 	<colour Value="RED" />
 	<font Family="Sans Serif" Size="12" Bold="false" Italic="false" />
 	<fix Course="269.700" Speed="2.000" Dtg="951212 050000.000" Visible="true" Label="120500" LabelShowing="false" SymbolShowing="false" LabelLocation="Left">

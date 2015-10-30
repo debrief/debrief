@@ -265,7 +265,7 @@ public class WheelShape extends PlainShape implements Editable
 	public WheelShape(final WorldLocation theCentre, final WorldDistance theInnerRadius,
 			final WorldDistance theOuterRadius)
 	{
-		super(0, 1, "Wheel");
+		super(0, "Wheel");
 
 		// store the values
 		_theCentre = theCentre;

@@ -3,7 +3,7 @@
   <details Text="Saved with Debrief version dated 06 May 05 15:47"/>
   <session>
     <layers>
-      <track InterpolatePoints="false" LineThickness="2" Name="CARPET" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsLinked="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+      <track InterpolatePoints="false" LineThickness="2" Name="NELSON" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsLinked="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
         <colour Value="RED"/>
         <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
         <fix Course="269.700" Dtg="951212 050000" Label="120500" LabelLocation="Left" LabelShowing="false" Speed="2.000" SymbolShowing="false" Visible="true">
@@ -2081,25 +2081,25 @@
         </fix>
       </track>
       <narrative Name="Narratives">
-        <narrative_entry Dtg="951212 050000" Entry="comment 1a" Track="CARPET"/>
-        <narrative_entry Dtg="951212 050100.100" Entry="comment 23comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2" Track="CARPET"/>
-        <narrative_entry Dtg="951212 050200" Entry="comment 3a" Track="CARPET"/>
-        <narrative_entry Dtg="951212 052200" Entry="comment 4a" Track="CARPET"/>
-        <narrative_entry Dtg="951212 061200" Entry="comment 4Aa" Track="CARPET"/>
-        <narrative_entry Dtg="951212 062200" Entry="comment 4Ba" Track="CARPET"/>
-        <narrative_entry Dtg="951212 064200" Entry="comment 4Va" Track="CARPET"/>
-        <narrative_entry Dtg="951212 095300" Entry="comment 5a" Track="CARPET"/>
-        <narrative_entry Dtg="951212 095400" Entry="comment 6a" Track="CARPET"/>
-        <narrative_entry Dtg="951212 095700" Entry="a SUSPECTED DETECTION OF RED" Track="TOMATO"/>
-        <narrative_entry Dtg="951212 100300" Entry="a CONFIRMED. OBTAIN SOLUTION" Track="TOMATO"/>
-        <narrative_entry Dtg="951212 101300" Entry="a SUSPECT TARGET ZIG" Track="TOMATO"/>
-        <narrative_entry Dtg="951212 101400" Entry="a PORT DETECTION, 16 HZ" Track="CARPET"/>
-        <narrative_entry Dtg="951212 102900" Entry="a ENTER TRAIL" Track="CARPET"/>
-        <narrative_entry Dtg="951212 103700" Entry="a TARGET ZIG DETECTED" Track="CARPET"/>
-        <narrative_entry Dtg="951212 111900" Entry="a FINEX CALLED, ENTER TRANSITION" Track="TOMATO"/>
-        <narrative_entry Dtg="951212 112000" Entry="comment 10" Track="CARPET"/>
-        <narrative_entry Dtg="951212 113700" Entry="comment 11" Track="CARPET"/>
-        <narrative_entry Dtg="951212 114100" Entry="comment 12" Track="CARPET"/>
+        <narrative_entry Dtg="951212 050000" Entry="comment 1a" Track="NELSON"/>
+        <narrative_entry Dtg="951212 050100.100" Entry="comment 23comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2" Track="NELSON"/>
+        <narrative_entry Dtg="951212 050200" Entry="comment 3a" Track="NELSON"/>
+        <narrative_entry Dtg="951212 052200" Entry="comment 4a" Track="NELSON"/>
+        <narrative_entry Dtg="951212 061200" Entry="comment 4Aa" Track="NELSON"/>
+        <narrative_entry Dtg="951212 062200" Entry="comment 4Ba" Track="NELSON"/>
+        <narrative_entry Dtg="951212 064200" Entry="comment 4Va" Track="NELSON"/>
+        <narrative_entry Dtg="951212 095300" Entry="comment 5a" Track="NELSON"/>
+        <narrative_entry Dtg="951212 095400" Entry="comment 6a" Track="NELSON"/>
+        <narrative_entry Dtg="951212 095700" Entry="a SUSPECTED DETECTION OF RED" Track="COLLINGWOOD"/>
+        <narrative_entry Dtg="951212 100300" Entry="a CONFIRMED. OBTAIN SOLUTION" Track="COLLINGWOOD"/>
+        <narrative_entry Dtg="951212 101300" Entry="a SUSPECT TARGET ZIG" Track="COLLINGWOOD"/>
+        <narrative_entry Dtg="951212 101400" Entry="a PORT DETECTION, 16 HZ" Track="NELSON"/>
+        <narrative_entry Dtg="951212 102900" Entry="a ENTER TRAIL" Track="NELSON"/>
+        <narrative_entry Dtg="951212 103700" Entry="a TARGET ZIG DETECTED" Track="NELSON"/>
+        <narrative_entry Dtg="951212 111900" Entry="a FINEX CALLED, ENTER TRANSITION" Track="COLLINGWOOD"/>
+        <narrative_entry Dtg="951212 112000" Entry="comment 10" Track="NELSON"/>
+        <narrative_entry Dtg="951212 113700" Entry="comment 11" Track="NELSON"/>
+        <narrative_entry Dtg="951212 114100" Entry="comment 12" Track="NELSON"/>
       </narrative>
     </layers>
     <projection Border="1.100" Relative="false" Type="Flat">
@@ -2112,7 +2112,7 @@
     </projection>
     <gui>
       <tote>
-        <primary Name="CARPET"/>
+        <primary Name="NELSON"/>
       </tote>
       <component Type="Stepper">
         <property Name="LargeStep" Value="10.0 minutes"/>

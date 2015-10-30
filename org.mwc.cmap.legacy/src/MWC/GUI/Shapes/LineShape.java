@@ -187,7 +187,7 @@ public class LineShape extends PlainShape implements Editable,
 
 	public LineShape(final WorldLocation start, final WorldLocation end, final String name)
 	{
-		super(0, 1, name);
+		super(0, name);
 		// store the data
 		_start = start;
 		_end = end;

@@ -199,12 +199,12 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     // line style?
     if(_lineStyle != null)
     {
-    	sw.setLineStyle(_lineStyle.intValue());
+    	sw.getShape().setLineStyle(_lineStyle.intValue());
     }
     // line width?
     if(_lineThickness != null)
     {
-    	sw.setLineThickness(_lineThickness.intValue());
+    	sw.getShape().setLineWidth(_lineThickness.intValue());
     }
     sw.setVisible(_isVisible);
     sw.setLabelVisible(_labelVisible);
@@ -251,13 +251,13 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     TimeRangeHandler.exportThis(sw.getStartDTG(), sw.getEndDTG(), theShape, doc);
     
     // does it have an unusual line style?
-    if(sw.getLineStyle() != CanvasType.SOLID)
+    if(sw.getShape().getLineStyle() != CanvasType.SOLID)
     {
-      theShape.setAttribute(LINE_STYLE, writeThis(sw.getLineStyle()));
+      theShape.setAttribute(LINE_STYLE, writeThis(sw.getShape().getLineStyle()));
     }
     
     // and output the line thickness
-    theShape.setAttribute(LINE_THICKNESS, writeThis(sw.getLineThickness()));
+    theShape.setAttribute(LINE_THICKNESS, writeThis(sw.getShape().getLineWidth()));
 
     // and the font
     final java.awt.Font theFont = sw.getFont();

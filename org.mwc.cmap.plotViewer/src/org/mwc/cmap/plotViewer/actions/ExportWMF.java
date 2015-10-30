@@ -16,15 +16,20 @@ package org.mwc.cmap.plotViewer.actions;
 
 import java.awt.Dimension;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 
-import com.pietjonas.wmfwriter2d.ClipboardCopy;
-
-import MWC.GUI.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.WriteMetafile;
+
+import com.pietjonas.wmfwriter2d.ClipboardCopy;
 
 /**
  * @author ian.mayo
@@ -73,19 +78,21 @@ public class ExportWMF extends CoreEditorAction
 		_theParent = theParent;
 	}
 
-	/**
-	 * and execute..
-	 */
-	protected void execute()
+	@Override
+	protected IStatus executeInJob(IProgressMonitor monitor)
 	{
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
 		final PlainChart theChart = getChart();
 
 		if (_theParent == null)
 		{
 			CorePlugin.logError(Status.ERROR, "Tool parent missing for Write Metafile", null);
-			return;
+			return Status.CANCEL_STATUS;
 		}
-
+		monitor.beginTask("Export to WMF", IProgressMonitor.UNKNOWN);
 		final WriteMetafile write = new WriteMetafile(_theParent, theChart, _writeToFile)
 		{
 
@@ -99,8 +106,21 @@ public class ExportWMF extends CoreEditorAction
 			}
 
 		};
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
 		write.execute();
-
+		if (!write.isWritable())
+		{
+			Shell shell = getShell();
+			MessageDialog.openError(shell, "Error", write.getErrorMessage());
+			return Status.OK_STATUS;
+		}
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
 		// ok, do we want to write it to the clipboard?
 		if (_writeToClipboard)
 		{
@@ -134,6 +154,12 @@ public class ExportWMF extends CoreEditorAction
 			else
 				System.err.println("Target filename missing");
 		}
+		monitor.done();
+		if (monitor.isCanceled())
+		{
+			return Status.CANCEL_STATUS;
+		}
+		return Status.OK_STATUS;
 	}
 
 }

@@ -49,11 +49,13 @@ abstract public class PlanningSegmentHandler extends
 	public static final String CLOSING_SEGMENT = "closing_segment";
 	private static final String PLANNING_SEGMENT = "planning_segment";
 	public static final String VISIBLE = "Visible";
+	public static final String VECTOR_LABEL_VISIBLE = "VectorLabelVisible";
 	public static final String NAME = "Name";
 	public static final String LINE_STYLE = "LineStyle";
 	private static final String CALC_MODEL = "calcModel";
 
 	private boolean _visible;
+	private boolean _vectorLabelVisible = true;
 	private String _name;
 	private int _lineStyle = CanvasType.SOLID;
 	private Duration _duration;
@@ -79,6 +81,14 @@ abstract public class PlanningSegmentHandler extends
 			public void setValue(final String name, final boolean val)
 			{
 				_visible = val;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(VECTOR_LABEL_VISIBLE)
+		{
+			@Override
+			public void setValue(final String name, final boolean val)
+			{
+				_vectorLabelVisible = val;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(LINE_STYLE)
@@ -185,6 +195,7 @@ abstract public class PlanningSegmentHandler extends
 			segment = createSegment();
 		
 		segment.setVisible(_visible);
+		segment.setVectorLabelVisible(_vectorLabelVisible);
 		segment.setName(_name);
 		segment.setLineStyle(_lineStyle);
 		segment.setColor(_color);
@@ -210,6 +221,7 @@ abstract public class PlanningSegmentHandler extends
 
 		// sort out the attributes
 		segE.setAttribute(VISIBLE, writeThis(seg.getVisible()));
+		segE.setAttribute(VECTOR_LABEL_VISIBLE, writeThis(seg.getVectorLabelVisible()));
 		segE.setAttribute(NAME, seg.getName());
 		segE.setAttribute(LINE_STYLE, ls.getAsText());
 

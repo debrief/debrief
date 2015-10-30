@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.debrief.help</artifactId>
-  <version>1.0.130</version>
+  <version>1.0.134</version>
   <packaging>eclipse-plugin</packaging>
   <build>
     <plugins>
@@ -23,24 +23,27 @@
             <configuration>
                 <target>
                   <ant target="docbook_to_eclipse" antfile="collate_docbook.xml" />
-		  <exec dir="${basedir}" executable="chmod" osfamily="unix">
-                    <arg value="0775"/>
-                    <arg value="dita2pdf.sh"/>
-                  </exec>
-		  <exec dir="${basedir}" executable="chmod" osfamily="unix">
-                    <arg value="0775"/>
-                    <arg value="pdftk_title.sh"/>
-                  </exec>
-                  <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="unix"/>
-		  <exec dir="${basedir}" executable="chmod" osfamily="mac">
-                    <arg value="0775"/>
-                    <arg value="dita2pdf.sh"/>
-                  </exec>
-		  <exec dir="${basedir}" executable="chmod" osfamily="mac">
-                    <arg value="0775"/>
-                    <arg value="pdftk_title.sh"/>
-                  </exec>
-                  <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="mac"/>
+<!-- See https://github.com/debrief/debrief/issues/1343 -->
+<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="unix"> -->
+<!--                     <arg value="0775"/> -->
+<!--                     <arg value="dita2pdf.sh"/> -->
+<!--                   </exec> -->
+        <exec dir="${basedir}" executable="chmod" osfamily="unix">
+            <arg value="0775"/>
+            <arg value="pdftk_title.sh"/>
+        </exec>
+        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="unix"/> 
+<!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="unix"/> -->
+<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="mac"> -->
+<!--                     <arg value="0775"/> -->
+<!--                     <arg value="dita2pdf.sh"/> -->
+<!--                   </exec> -->
+        <exec dir="${basedir}" executable="chmod" osfamily="mac">
+            <arg value="0775"/>
+            <arg value="pdftk_title.sh"/>
+        </exec>
+        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="mac"/> 
+<!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="mac"/> -->
                 </target>
             </configuration>
             <goals>

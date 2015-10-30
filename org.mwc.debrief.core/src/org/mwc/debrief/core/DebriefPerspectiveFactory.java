@@ -91,7 +91,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
-		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
 
 		// and the error log
 		layout.addShowViewShortcut("org.eclipse.pde.runtime.LogView");

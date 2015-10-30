@@ -147,6 +147,8 @@ import MWC.GenericData.WorldLocation;
 abstract public class PlainShape implements Serializable, DraggableItem
 {
 
+	private static final int STANDARD_LINE_WIDTH = 2;
+
 	// ////////////////////////////////////////////////
 	// member variables
 	// ////////////////////////////////////////////////
@@ -229,12 +231,12 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * @param theLineWidth
 	 * @param myType
 	 */
-	protected PlainShape(final int theLineStyle, final int theLineWidth, final String myType)
+	protected PlainShape(final int theLineStyle, final String myType)
 	{
 		_lineStyle = theLineStyle;
 		_foreColor = DEFAULT_COLOR; // set the colour to the default one for our
 																// colour editor
-		_lineWidth = theLineWidth;
+		_lineWidth = STANDARD_LINE_WIDTH;
 
 		final StringBuffer sb = new StringBuffer();
 		sb.append("Shape");
