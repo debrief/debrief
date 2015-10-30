@@ -13,6 +13,7 @@ import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Mediums.BroadbandRadNoise;
 import ASSET.Models.Mediums.Optic;
+import ASSET.Models.Movement.SSMovementCharacteristics;
 import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Vessels.Buoy;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
@@ -232,6 +233,7 @@ public class BistaticReceiver extends CoreSensor
     public void testBistatics()
     {
     	final CoreScenario scenario = new CoreScenario();
+    	scenario.setScenarioStepTime(10000);
     	
       // reset the earth model
       WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
@@ -245,6 +247,7 @@ public class BistaticReceiver extends CoreSensor
       theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
 
       ASSET.Models.Vessels.SSN ssn = new ASSET.Models.Vessels.SSN(14);
+      ssn.setCategory(new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
       Status otherStat = new Status(theStat);
       otherStat.setLocation(l2);
       otherStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
@@ -252,6 +255,7 @@ public class BistaticReceiver extends CoreSensor
         ASSET.Models.Vessels.Radiated.RadiatedCharacteristics();
       Optic opticRadNoise = new Optic(2, new WorldDistance(2, WorldDistance.METRES));
       rc.add(EnvironmentType.VISUAL, opticRadNoise);
+      ssn.setMovementChars(SSMovementCharacteristics.getSampleChars());
       ssn.setRadiatedChars(rc);
       ssn.setStatus(otherStat);
 
@@ -261,6 +265,8 @@ public class BistaticReceiver extends CoreSensor
       Buoy tx = new Buoy(2);
       tx.setName("TX");
       Status txStat = new Status(theStat);
+      tx.setCategory(new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.BUOY));
+
       txStat.setLocation(txStat.getLocation().add(new WorldVector(3, 0.004, 0)));
       txStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
       ActiveBroadbandSensor noiseSource = new ActiveBroadbandSensor(33);
@@ -274,6 +280,7 @@ public class BistaticReceiver extends CoreSensor
       
       Buoy rx = new Buoy(3);
       rx.setName("RX");
+      rx.setCategory(new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.BUOY));
       Status rxStat = new Status(theStat);
       rxStat.setLocation(rxStat.getLocation().add(new WorldVector(1, 0.004, 0)));
       rxStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
@@ -286,10 +293,40 @@ public class BistaticReceiver extends CoreSensor
       scenario.addParticipant(rx.getId(), rx);
       
 			DetectionList detections = new DetectionList();
-			receiver.detects(env, detections , rx, scenario, 200);
+			receiver.detects(env, detections , rx, scenario, 20000);
 			
 			assertEquals("got some detections", 2, detections.size());
+
+			showDetections(detections);
+			
+			detections.clear();
+			receiver.detects(env, detections , rx, scenario, 40000);
+			
+			assertEquals("got some detections", 2, detections.size());
+
+			
+			// ok, do some steps
+			for(int i=0;i<10;i++)
+			{
+				detections = receiver.getAllDetections();
+				detections.clear();
+
+				scenario.step();
+				showDetections(detections);
+			}
+			
     }
+
+		private void showDetections(DetectionList detections)
+		{
+			Iterator<DetectionEvent> iter = detections.iterator();
+			while (iter.hasNext())
+			{
+				DetectionEvent de = (DetectionEvent) iter.next();
+				System.out.println(de.getTargetType().getType() + " bearing:" + de.getBearing());
+			}
+			
+		}
   }
 
 	@Override

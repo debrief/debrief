@@ -30,7 +30,6 @@ public class Buoy extends SSN
 	public Buoy(final int id)
   {
     super(id);
-    setCategory(new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.BUOY));
   }
 
   public Buoy(final int id, final ASSET.Participants.Status status, final ASSET.Participants.DemandedStatus demStatus, final String name)
