@@ -14,6 +14,9 @@
 <colour Value="RED"/>
 <SymbolColor Value="CYAN"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<Origin>
+<shortLocation Depth="0.000" Lat="0.0000002" Long="-30.0000119"/>
+</Origin>
 <planning_segment LineStyle="Solid" Name="Leg one" Visible="true" calcModel="Range/Speed" course="270.000">
 <WorldDistance Units="nm" Value="3.0000000"/>
 <Speed Units="kts" Value="9.000"/>
@@ -26,9 +29,6 @@
 <colour Value="RED"/>
 <Duration Units="minutes" Value="40.000"/>
 </planning_segment>
-<Origin>
-<shortLocation Depth="0.000" Lat="0.0000002" Long="-30.0000119"/>
-</Origin>
 </composite_track>
 <externalDatafile DataType="NELayer" LayerName="Natural Earth" LayerPath="" Visible="true"/>
 <layer LineThickness="0" Name="Markers" Visible="true">
