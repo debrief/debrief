@@ -14,7 +14,6 @@
  */
 package ASSET.Util.XML.Vessels;
 
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader.HandleDoubleAttribute;
 
 /**
  * Title:
@@ -27,11 +26,7 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader.HandleDoubleAttribute;
 
 abstract public class BuoyHandler extends ParticipantHandler{
 
-
   static private final String myType = "Buoy";
-  static private final String IS_TRANSMITTING = "IsTransmitting";
-  private boolean _isTransmitting = false;
-  
 
   public BuoyHandler() {
     super(myType);
@@ -47,19 +42,11 @@ abstract public class BuoyHandler extends ParticipantHandler{
         _myMoveChars = chars;
       }
     });
-    addAttributeHandler(new HandleBooleanAttribute(IS_TRANSMITTING)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _isTransmitting = val;
-      }
-    });
-
   }
 
   protected ASSET.ParticipantType getParticipant(final int index)
   {
-    final ASSET.ParticipantType thisVessel = new ASSET.Models.Vessels.Buoy(index, _isTransmitting);
+    final ASSET.ParticipantType thisVessel = new ASSET.Models.Vessels.Buoy(index);
     return thisVessel;
   }
 
