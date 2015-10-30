@@ -11,7 +11,7 @@ import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
-import ASSET.Models.Mediums.BroadbandRadNoise;
+import ASSET.Models.Mediums.NarrowbandRadNoise;
 import ASSET.Models.Mediums.Optic;
 import ASSET.Models.Movement.SSMovementCharacteristics;
 import ASSET.Models.Sensor.CoreSensor;
@@ -103,24 +103,26 @@ public class BistaticReceiver extends CoreSensor
 		DetectionEvent res = null;
 				
 		// is this an active buoy?
-		if(Category.Type.BUOY.equals(target.getCategory().getType()) && target.radiatesThisNoise(EnvironmentType.BROADBAND_ACTIVE))
+		if(Category.Type.BUOY.equals(target.getCategory().getType()) && target.radiatesThisNoise(EnvironmentType.NARROWBAND))
 		{
 			// sort out the locations
 			WorldLocation contactLoc = target.getStatus().getLocation();
 			WorldLocation myLoc = host.getStatus().getLocation();
 			
 		  // use the environment to determine the loss
-	    double legTwoLoss = environment.getLossBetween(EnvironmentType.BROADBAND_PASSIVE, contactLoc, myLoc);
+	    double legTwoLoss = environment.getLossBetween(EnvironmentType.NARROWBAND, contactLoc, myLoc);
 	    
 	    // ok, now the remaining value
 	    RadiatedCharacteristics txChars = target.getRadiatedChars();
-	    BroadbandRadNoise radNoise = (BroadbandRadNoise) txChars.getMedium(EnvironmentType.BROADBAND_ACTIVE);
+	    NarrowbandRadNoise radNoise = (NarrowbandRadNoise) txChars.getMedium(EnvironmentType.NARROWBAND);
 	    double radLevel = radNoise.getBaseNoiseLevel();			    
 	    float remainingNoise = (float) (radLevel - legTwoLoss);
 	    
 	    // is this sufficient?
 	    if(remainingNoise > THRESHOLD)
 	    {
+	    	// TODO: - sort out the doppler freq & signal strength
+	    	
 	    	float bearing = (float) MWC.Algorithms.Conversions.Rads2Degs(contactLoc.subtract(myLoc).getBearing()); 
 	    	res = new DetectionEvent(0, host.getId(), myLoc, this, null, 
 	    			null, bearing, null, remainingNoise, target.getCategory(), null, null, target);
@@ -147,7 +149,7 @@ public class BistaticReceiver extends CoreSensor
 				if(Category.Type.BUOY.equals(thisP.getCategory().getType()))
 				{
 					// is it active?
-					if(thisP.radiatesThisNoise(EnvironmentType.BROADBAND_ACTIVE))
+					if(thisP.radiatesThisNoise(EnvironmentType.NARROWBAND))
 					{
 						// ok, remember it
 						transmitters.add(thisP);
@@ -170,18 +172,20 @@ public class BistaticReceiver extends CoreSensor
 					WorldLocation myLoc = host.getStatus().getLocation();
 					
 				  // use the environment to determine the loss
-			    double legOneLoss = environment.getLossBetween(EnvironmentType.BROADBAND_PASSIVE, txLoc, contactLoc);
-			    double legTwoLoss = environment.getLossBetween(EnvironmentType.BROADBAND_PASSIVE, contactLoc, myLoc);
+			    double legOneLoss = environment.getLossBetween(EnvironmentType.NARROWBAND, txLoc, contactLoc);
+			    double legTwoLoss = environment.getLossBetween(EnvironmentType.NARROWBAND, contactLoc, myLoc);
 			    
 			    // ok, now the remaining value
 			    RadiatedCharacteristics txChars = transmitter.getRadiatedChars();
-			    BroadbandRadNoise radNoise = (BroadbandRadNoise) txChars.getMedium(EnvironmentType.BROADBAND_ACTIVE);
+			    NarrowbandRadNoise radNoise = (NarrowbandRadNoise) txChars.getMedium(EnvironmentType.NARROWBAND);
 			    double radLevel = radNoise.getBaseNoiseLevel();			    
 			    float remainingNoise = (float) (radLevel - legOneLoss - legTwoLoss);
 			    
 			    // is this sufficient?
 			    if(remainingNoise > THRESHOLD)
 			    {
+			    	// TODO: - sort out the doppler freq & signal strength
+			    	
 			    	float bearing = (float) MWC.Algorithms.Conversions.Rads2Degs(contactLoc.subtract(myLoc).getBearing()); 
 			    	res = new DetectionEvent(0, host.getId(), myLoc, this, null, 
 			    			null, bearing, null, remainingNoise, target.getCategory(), null, null, target);
@@ -269,11 +273,11 @@ public class BistaticReceiver extends CoreSensor
 
       txStat.setLocation(txStat.getLocation().add(new WorldVector(3, 0.004, 0)));
       txStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
-      ActiveBroadbandSensor noiseSource = new ActiveBroadbandSensor(33);
-      ASSET.Models.Mediums.BroadbandRadNoise brn = new ASSET.Models.Mediums.BroadbandRadNoise(150);
+      NarrowbandSensor noiseSource = new NarrowbandSensor(55);
+      NarrowbandRadNoise nrn = new NarrowbandRadNoise(150, 150);
       ASSET.Models.Vessels.Radiated.RadiatedCharacteristics txRadChars = new
           ASSET.Models.Vessels.Radiated.RadiatedCharacteristics();
-      txRadChars.add(EnvironmentType.BROADBAND_ACTIVE, brn);
+      txRadChars.add(EnvironmentType.NARROWBAND, nrn);
 			tx.setRadiatedChars(txRadChars);
       tx.getSensorFit().add(noiseSource);
       tx.setStatus(txStat);
