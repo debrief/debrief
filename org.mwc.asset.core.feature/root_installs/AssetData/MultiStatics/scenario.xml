@@ -39,7 +39,9 @@
 		</SSN>
 		<Buoy Name="TX 1" IsTransmitting="true">
 			<Category Type="BUOY" Force="BLUE"
-				Environment="SUBSURFACE" /><SensorFit></SensorFit>
+				Environment="SUBSURFACE" /><SensorFit>
+	<ActiveBroadbandSensor Aperture="180" CanProduceRange="false"
+		SourceLevel="100" Ambiguous="false" Name="Noise source" /></SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
@@ -72,7 +74,8 @@
 		<Buoy Name="RX 1"  IsTransmitting="false">
 			<Category Type="SUBMARINE" Force="BLUE"
 				Environment="SUBSURFACE" />
-			<SensorFit></SensorFit>
+			<SensorFit>
+				<BistaticReceiver /></SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
