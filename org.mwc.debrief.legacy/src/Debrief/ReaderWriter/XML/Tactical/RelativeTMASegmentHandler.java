@@ -34,9 +34,9 @@ import MWC.Utilities.ReaderWriter.XML.Util.WorldVectorHandler;
 abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 {
 	private static final String TMA_SEGMENT = "RelativeTMASegment";
-	public static final String HOST = "HostTrack";
-	public static final String SENSOR = "HostSensor";
-	public static final String OFFSET = "Offset";
+	private static final String HOST = "HostTrack";
+	private static final String SENSOR = "HostSensor";
+	private static final String OFFSET = "Offset";
 
 	protected String _host = null;
 	protected String _sensor = null;
@@ -58,6 +58,7 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 				_host = val;
 			}
 		});
+		
 		addAttributeHandler(new HandleAttribute(SENSOR)
 		{
 			@Override
@@ -69,14 +70,12 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 
 		addHandler(new WorldVectorHandler(OFFSET)
 		{
-
 			@Override
 			public void setWorldVector(final WorldVector res)
 			{
 				_offset = res;
 			}
 		});
-
 	}
 
 	@Override
@@ -94,6 +93,12 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 		res.setBaseFrequency(_baseFrequency);
 		res.setHostName(_host);
 		res.setSensorName(_sensor);
+		
+		// clear the working values
+		_host = null;
+		_sensor = null;
+		_offset = null;
+		
 		return res;
 	}
 
