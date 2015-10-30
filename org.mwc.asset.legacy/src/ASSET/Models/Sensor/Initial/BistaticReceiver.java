@@ -25,7 +25,6 @@ public class BistaticReceiver extends CoreSensor
 	public BistaticReceiver(int id)
 	{
 		super(id, 0, "Bistatic Receiver");
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

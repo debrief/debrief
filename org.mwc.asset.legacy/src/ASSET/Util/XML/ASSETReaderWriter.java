@@ -390,6 +390,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 				thisList.add(sensor);
 			}
 		});
+		gi.addHandler(new ASSET.Util.XML.Sensors.BistaticReceiverHandler()
+		{
+			@Override
+			public void addSensor(SensorType sensor)
+			{
+				thisList.add(sensor);
+			}
+		});
 		gi.addHandler(new ASSET.Util.XML.Sensors.BroadbandHandler()
 		{
 			@Override

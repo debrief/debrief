@@ -125,6 +125,13 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
         addThisSensor(sensor);
       }
     });
+    addHandler(new ASSET.Util.XML.Sensors.BistaticReceiverHandler()
+    {
+      public void addSensor(final SensorType sensor)
+      {
+        addThisSensor(sensor);
+      }
+    });
     addHandler(new OpticLookupSensorHandler()
     {
       public void addSensor(SensorType sensor)
@@ -222,6 +229,10 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
       if (sensor instanceof ASSET.Models.Sensor.Initial.ActiveInterceptSensor)
       {
         ActiveInterceptHandler.exportThis(sensor, sens, doc);
+      }
+      if (sensor instanceof ASSET.Models.Sensor.Initial.BistaticReceiver)
+      {
+        BistaticReceiverHandler.exportThis(sensor, sens, doc);
       }
       if (sensor instanceof OpticLookupSensor)
       {
