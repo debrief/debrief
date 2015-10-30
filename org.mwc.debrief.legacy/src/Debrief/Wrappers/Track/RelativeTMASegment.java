@@ -580,6 +580,17 @@ public class RelativeTMASegment extends CoreTMASegment
 		return res;
 	}
 
+	public SensorWrapper getReferenceSensor()
+	{
+		// do we know it?
+		if (_referenceTrack == null)
+			identifyReferenceTrack();
+
+		// fingers crossed it's sorted.
+		return _referenceSensor;
+	}
+
+	
 	public WatchableList getReferenceTrack()
 	{
 		// do we know it?
