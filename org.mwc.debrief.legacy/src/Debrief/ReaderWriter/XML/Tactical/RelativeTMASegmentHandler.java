@@ -28,7 +28,6 @@ import org.w3c.dom.Element;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layers;
-import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldVectorHandler;
 

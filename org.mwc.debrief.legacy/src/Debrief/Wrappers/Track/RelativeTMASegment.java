@@ -83,7 +83,7 @@ public class RelativeTMASegment extends CoreTMASegment
 						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
-						displayExpertProp("HostName", "Host name",
+						displayExpertProp("HostTName", "Host name",
 								"Name of the track from which range/bearing measured", OFFSET),
 						displayExpertProp("SensorName", "Sensor name",
 								"Name of the sensor from which range/bearing measured", OFFSET),
@@ -504,7 +504,7 @@ public class RelativeTMASegment extends CoreTMASegment
 				// our time stamps match those of the sensor.
 				Watchable[] items = _referenceSensor.getNearestTo(startDTG());
 				SensorContactWrapper scw = (SensorContactWrapper) items[0];
-				res= scw.getOrigin();
+				res= scw.getLocation();
 			}
 			else
 			{
