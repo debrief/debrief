@@ -28,17 +28,18 @@ import org.w3c.dom.Element;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layers;
-import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldVectorHandler;
 
 abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 {
 	private static final String TMA_SEGMENT = "RelativeTMASegment";
-	public static final String HOST = "HostTrack";
-	public static final String OFFSET = "Offset";
+	private static final String HOST = "HostTrack";
+	private static final String SENSOR = "HostSensor";
+	private static final String OFFSET = "Offset";
 
 	protected String _host = null;
+	protected String _sensor = null;
 	protected WorldVector _offset = null;
 	private final Layers _theLayers;
 
@@ -57,32 +58,47 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 				_host = val;
 			}
 		});
+		
+		addAttributeHandler(new HandleAttribute(SENSOR)
+		{
+			@Override
+			public void setValue(final String name, final String val)
+			{
+				_sensor = val;
+			}
+		});
 
 		addHandler(new WorldVectorHandler(OFFSET)
 		{
-
 			@Override
 			public void setWorldVector(final WorldVector res)
 			{
 				_offset = res;
 			}
 		});
-
 	}
 
 	@Override
 	protected TrackSegment createTrack()
 	{
-		if(_offset == null)
+		if (_offset == null)
 		{
 			// duff data file, declare it
-			throw new RuntimeException("Offset data missing for TMA segment on " + _host);
+			throw new RuntimeException("Offset data missing for TMA segment on "
+					+ _host);
 		}
-		
+
 		final RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed,
 				_offset, _theLayers);
 		res.setBaseFrequency(_baseFrequency);
 		res.setHostName(_host);
+		res.setSensorName(_sensor);
+		
+		// clear the working values
+		_host = null;
+		_sensor = null;
+		_offset = null;
+		
 		return res;
 	}
 
@@ -97,15 +113,13 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 		CoreTMASegmentHandler.exportThisTMASegment(doc, seg, segE);
 
 		// sort out the remaining attributes
-		final WatchableList refTrack = seg.getReferenceTrack();
-		if (refTrack != null)
-		{
-			segE.setAttribute(HOST, refTrack.getName());
-		}
+		segE.setAttribute(HOST, seg.getHostName());
+		// also try to store the sensor name
+		segE.setAttribute(SENSOR, seg.getSensorName());
 
 		// and the offset vector
 		final WorldVector theOffset = seg.getOffset();
-		
+
 		// now we must have an offset. Throw a wobbly if we don't
 		WorldVectorHandler.exportVector(OFFSET, theOffset, segE, doc);
 

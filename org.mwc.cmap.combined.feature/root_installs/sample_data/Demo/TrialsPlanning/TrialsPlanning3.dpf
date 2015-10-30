@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Fri Feb 20 10:55:09 GMT 2015" Name="Debrief Plot" PlotId="1369149093378">
-<details Text="Saved with Debrief version dated Fri Feb 20 10:34:34 GMT 2015"/>
+<plot xmlns="http://www.debrief.info/plot" Created="Fri Oct 30 12:41:23 GMT 2015" Name="Debrief Plot" PlotId="1369149093378">
+<details Text="Saved with Debrief version dated Tue Oct 27 08:59:26 GMT 2015"/>
 <session>
 <layers>
 <composite_track InterpolatePoints="false" LabelIntervalMillis="900000" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR_PLANNED" NameAtStart="true" NameLocation="Right" NameVisible="false" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" StartTime="100112 120000" Symbol="Submarine" SymbolIntervalMillis="300000" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<planning_segment LineStyle="Solid" Name="Leg one" Visible="true" calcModel="Range/Speed" course="270.000">
+<Origin>
+<shortLocation Depth="0.000" Lat="-0.0606139" Long="-30.0093867"/>
+</Origin>
+<planning_segment LineStyle="Solid" Name="Leg one" VectorLabelVisible="true" Visible="true" calcModel="Range/Speed" course="270.000">
 <WorldDistance Units="nm" Value="1.0000000"/>
 <Speed Units="kts" Value="12.000"/>
 <colour Value="BLUE"/>
 <Duration Units="minutes" Value="5.000"/>
 </planning_segment>
-<planning_segment LineStyle="Solid" Name="leg two" Visible="true" calcModel="Range/Speed" course="355.000">
+<planning_segment LineStyle="Solid" Name="leg two" VectorLabelVisible="true" Visible="true" calcModel="Range/Speed" course="355.000">
 <WorldDistance Units="nm" Value="2.0000000"/>
 <Speed Units="kts" Value="12.000"/>
 <colour Value="BLUE"/>
 <Duration Units="minutes" Value="10.000"/>
 </planning_segment>
-<planning_segment LineStyle="Solid" Name="leg three" Visible="true" calcModel="Range/Speed" course="330.000">
+<planning_segment LineStyle="Solid" Name="leg three" VectorLabelVisible="true" Visible="true" calcModel="Range/Speed" course="330.000">
 <WorldDistance Units="nm" Value="1.5000000"/>
 <Speed Units="kts" Value="12.000"/>
 <colour Value="BLUE"/>
 <Duration Units="minutes" Value="7.500"/>
 </planning_segment>
-<planning_segment LineStyle="Solid" Name="leg four" Visible="true" calcModel="Speed/Time" course="270.000">
+<planning_segment LineStyle="Solid" Name="leg four" VectorLabelVisible="true" Visible="true" calcModel="Speed/Time" course="270.000">
 <WorldDistance Units="nm" Value="2.4000000"/>
 <Speed Units="kts" Value="12.000"/>
 <colour Value="BLUE"/>
 <Duration Units="minutes" Value="12.000"/>
 </planning_segment>
-<planning_segment LineStyle="Solid" Name="leg five" Visible="true" calcModel="Range/Speed" course="180.000">
+<planning_segment LineStyle="Solid" Name="leg five" VectorLabelVisible="true" Visible="true" calcModel="Range/Speed" course="180.000">
 <WorldDistance Units="nm" Value="5.0000000"/>
 <Speed Units="kts" Value="12.000"/>
 <colour Value="BLUE"/>
 <Duration Units="minutes" Value="25.000"/>
 </planning_segment>
-<Origin>
-<shortLocation Depth="0.000" Lat="-0.0640171" Long="-30.0029075"/>
-</Origin>
 </composite_track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
 <grid PlotLabels="true" Visible="true">
@@ -52,21 +52,21 @@
 <colour Value="RED"/>
 <SymbolColor Value="CYAN"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<planning_segment LineStyle="Solid" Name="Leg one" Visible="true" calcModel="Range/Speed" course="270.000">
+<Origin>
+<shortLocation Depth="0.000" Lat="0.0000002" Long="-30.0000119"/>
+</Origin>
+<planning_segment LineStyle="Solid" Name="Leg one" VectorLabelVisible="true" Visible="true" calcModel="Range/Speed" course="270.000">
 <WorldDistance Units="nm" Value="3.0000000"/>
 <Speed Units="kts" Value="9.000"/>
 <colour Value="RED"/>
 <Duration Units="minutes" Value="20.000"/>
 </planning_segment>
-<planning_segment LineStyle="Solid" Name="Leg two" Visible="true" calcModel="Range/Speed" course="225.000">
+<planning_segment LineStyle="Solid" Name="Leg two" VectorLabelVisible="true" Visible="true" calcModel="Range/Speed" course="225.000">
 <WorldDistance Units="nm" Value="6.0000000"/>
 <Speed Units="kts" Value="9.000"/>
 <colour Value="RED"/>
 <Duration Units="minutes" Value="40.000"/>
 </planning_segment>
-<Origin>
-<shortLocation Depth="0.000" Lat="0.0000002" Long="-30.0000119"/>
-</Origin>
 </composite_track>
 <layer LineThickness="0" Name="Annotations" Visible="true"/>
 <layer LineThickness="0" Name="Markers" Visible="false">
@@ -95,10 +95,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="0.0158141" Long="-30.1252190"/>
+<shortLocation Depth="0.000" Lat="0.0983972" Long="-30.1855744"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="-0.0921300" Long="-30.0045083"/>
+<shortLocation Depth="0.000" Lat="-0.1747129" Long="-29.9441529"/>
 </br>
 </projection>
 <gui>

@@ -3884,10 +3884,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					secondOffset);
 
 			// update the freq's
-			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
-					.getBaseFrequency());
-			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment)
-					.getBaseFrequency());
+			tr1.setBaseFrequency(theTMA.getBaseFrequency());
+			tr2.setBaseFrequency(theTMA.getBaseFrequency());
 
 			// and store them
 			ts1 = tr1;
