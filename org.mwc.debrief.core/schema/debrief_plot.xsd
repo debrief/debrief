@@ -549,7 +549,21 @@
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="HostTrack" use="required" type="xs:string" />
+				<xs:attribute name="HostTrack" use="required" type="xs:string" >
+					<xs:annotation>
+						<xs:documentation>
+							The name of the host track that this segment is relative to
+						</xs:documentation>
+					</xs:annotation>						
+				</xs:attribute>
+				<xs:attribute name="HostSensor" use="optional" type="xs:string" >
+					<xs:annotation>
+						<xs:documentation>
+							The name of the sensor used as an origin (this allows the solution to be referenced from a towed array sensor).
+							If a host sensor isn't available, the relevant point on the host track will be used
+						</xs:documentation>
+					</xs:annotation>						
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
