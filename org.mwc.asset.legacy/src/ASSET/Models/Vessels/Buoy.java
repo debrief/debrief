@@ -14,6 +14,11 @@
  */
 package ASSET.Models.Vessels;
 
+import java.util.Iterator;
+
+import ASSET.Models.SensorType;
+import ASSET.Participants.Category;
+
 
 public class Buoy extends SSN
 {
@@ -22,15 +27,10 @@ public class Buoy extends SSN
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	/** whether this is an active sensor
-	 * 
-	 */
-	private boolean _isTransmitting;
-
-	public Buoy(final int id, final boolean isActive)
+	public Buoy(final int id)
   {
     super(id);
-    _isTransmitting = isActive;
+    setCategory(new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.BUOY));
   }
 
   public Buoy(final int id, final ASSET.Participants.Status status, final ASSET.Participants.DemandedStatus demStatus, final String name)
@@ -43,13 +43,24 @@ public class Buoy extends SSN
     if(getStatus() != null)
       this.getStatus().setFuelLevel(100);
   }
+  
+  
 
 	@Override
 	public boolean radiatesThisNoise(int medium)
 	{
-		if(_isTransmitting)			
-			return super.radiatesThisNoise(medium);
-		else
-			return false;
+		boolean res = false;		
+		Iterator<SensorType> sensors = this.getSensorFit().getSensors().iterator();
+		while (sensors.hasNext())
+		{
+			SensorType thisS = (SensorType) sensors.next();
+			if(thisS.getMedium() == medium)
+			{
+				res = true;
+				break;
+			}
+		}
+		
+		return res;
 	}
 }
