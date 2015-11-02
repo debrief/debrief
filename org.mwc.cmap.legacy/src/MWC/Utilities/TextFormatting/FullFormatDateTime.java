@@ -28,11 +28,18 @@ public class FullFormatDateTime
 
   
   public static final String FULL_FORMAT = "dd/MMM/yy HH:mm:ss";
+  public static final String ISO_FORMAT =  "dd/MM/yyyy hh:mm:ss";
 
 	static public String toString(final long theVal)
   {
 		return toStringLikeThis(theVal, 
 														FULL_FORMAT);
+  }
+
+	static public String toISOString(final long theVal)
+  {
+		return toStringLikeThis(theVal, 
+														ISO_FORMAT);
   }
 
 	static public long fromString(final String theStr) throws ParseException

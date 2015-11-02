@@ -210,8 +210,6 @@ public class BistaticReceiver extends CoreSensor
 					// is this sufficient?
 					if (remainingNoise > THRESHOLD)
 					{
-						// TODO: - sort out the doppler freq & signal strength
-
 						float bearing = (float) MWC.Algorithms.Conversions
 								.Rads2Degs(contactLoc.subtract(myLoc).getBearing());
 						res = new DetectionEvent(time, host.getId(), myLoc, this, null,

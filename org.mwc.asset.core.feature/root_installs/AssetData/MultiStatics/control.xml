@@ -8,9 +8,18 @@
 			<Duration Value="45" Units="minutes" />
 		</TimeObserver>
 		<DebriefReplayObserver Name="DebriefPlot"
-			record_detections="true" record_positions="true" Active="true"
+			record_detections="true" record_positions="true" Active="false"
 			record_decisions="false" file_name="multi_statics">
 		</DebriefReplayObserver>
+		<CSVDetectionObserver Name="RX1 det" Active="true"
+			SubjectName="RX 1" file_name="rx1_det">
+		</CSVDetectionObserver>
+		<CSVStatusObserver Name="RX1_Status" Active="true"
+			file_name="rx1_stat" SubjectName="RX 1">
+		</CSVStatusObserver>
+		<CSVStatusObserver Name="SSN_Status" Active="true"
+			file_name="ssn_stat" SubjectName="Contact">
+		</CSVStatusObserver>
 	</ObserverList>
 </ScenarioController>
 

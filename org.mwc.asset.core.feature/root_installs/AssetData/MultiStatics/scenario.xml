@@ -78,7 +78,7 @@
 				Environment="SUBSURFACE" />
 			<SensorFit>
 				<BistaticReceiver Name="RX2_Receiver" Working="true" /><NarrowbandSensor
-					Name="RX2_NB">
+					Name="RX2_NB" Working="false">
 					<SteadyTime Value="0.0" Units="millis" />
 </NarrowbandSensor></SensorFit>
 			<Status Course="0" Fuel="100">
