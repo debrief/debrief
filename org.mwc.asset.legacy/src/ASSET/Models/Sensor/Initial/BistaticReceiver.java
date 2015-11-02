@@ -193,11 +193,14 @@ public class BistaticReceiver extends CoreSensor
 					WorldLocation contactLoc = target.getStatus().getLocation();
 					WorldLocation myLoc = host.getStatus().getLocation();
 
+
 					// use the environment to determine the loss
+					// note: we're asking for the loss in BB_Passive, since it's the same 20 Log R calculation
+					int theMedium = EnvironmentType.BROADBAND_PASSIVE;					
 					double legOneLoss = environment.getLossBetween(
-							EnvironmentType.NARROWBAND, txLoc, contactLoc);
+							theMedium, txLoc, contactLoc);
 					double legTwoLoss = environment.getLossBetween(
-							EnvironmentType.NARROWBAND, contactLoc, myLoc);
+							theMedium, contactLoc, myLoc);
 
 					// ok, now the remaining value
 					RadiatedCharacteristics txChars = transmitter.getRadiatedChars();

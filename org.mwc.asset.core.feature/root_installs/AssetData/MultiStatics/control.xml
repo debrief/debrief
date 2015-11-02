@@ -12,14 +12,19 @@
 			record_decisions="false" file_name="multi_statics">
 		</DebriefReplayObserver>
 		<CSVDetectionObserver Name="RX1 det" Active="true"
-			SubjectName="RX 1" file_name="rx1_det">
-		</CSVDetectionObserver>
+			SubjectName="RX 1" file_name="rx1_det"/>
+		<CSVDetectionObserver Name="RX2 det" Active="true"
+			SubjectName="RX 2" file_name="rx2_det"/>
+		<CSVDetectionObserver Name="RX3 det" Active="true"
+			SubjectName="RX 3" file_name="rx3_det"/>
 		<CSVStatusObserver Name="RX1_Status" Active="true"
-			file_name="rx1_stat" SubjectName="RX 1">
-		</CSVStatusObserver>
+			file_name="rx1_stat" SubjectName="RX 1"/>
+		<CSVStatusObserver Name="RX2_Status" Active="true"
+			file_name="rx2_stat" SubjectName="RX 2"/>
+		<CSVStatusObserver Name="RX3_Status" Active="true"
+			file_name="rx3_stat" SubjectName="RX 3"/>
 		<CSVStatusObserver Name="SSN_Status" Active="true"
-			file_name="ssn_stat" SubjectName="Contact">
-		</CSVStatusObserver>
+			file_name="ssn_stat" SubjectName="Contact"/>
 	</ObserverList>
 </ScenarioController>
 
