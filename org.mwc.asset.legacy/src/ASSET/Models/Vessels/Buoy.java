@@ -14,9 +14,6 @@
  */
 package ASSET.Models.Vessels;
 
-import java.util.Iterator;
-
-import ASSET.Models.SensorType;
 
 
 public class Buoy extends SSN
@@ -41,24 +38,4 @@ public class Buoy extends SSN
     if(getStatus() != null)
       this.getStatus().setFuelLevel(100);
   }
-  
-  
-
-	@Override
-	public boolean radiatesThisNoise(int medium)
-	{
-		boolean res = false;		
-		Iterator<SensorType> sensors = this.getSensorFit().getSensors().iterator();
-		while (sensors.hasNext())
-		{
-			SensorType thisS = (SensorType) sensors.next();
-			if(thisS.getMedium() == medium)
-			{
-				res = true;
-				break;
-			}
-		}
-		
-		return res;
-	}
 }
