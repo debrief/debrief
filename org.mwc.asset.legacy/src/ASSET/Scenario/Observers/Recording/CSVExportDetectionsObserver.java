@@ -150,10 +150,15 @@ public class CSVExportDetectionsObserver extends RecordStatusToFileObserverType
 
 				final String dateStr = MWC.Utilities.TextFormatting.FullFormatDateTime
 						.toISOString(theTime);
+				WorldLocation loc = de.getSensorLocation();
 
 				// _os.write("Date, Bearing (Degs), Frequency (Hz), Strength");
 
 				buff.append(dateStr);
+				buff.append(", ");
+				buff.append(loc.getLat());
+				buff.append(", ");
+				buff.append(loc.getLong());				
 				buff.append(", ");
 				buff.append(de.getBearing());
 				buff.append(", ");
@@ -230,7 +235,7 @@ public class CSVExportDetectionsObserver extends RecordStatusToFileObserverType
 	protected void writeFileHeaderDetails(final String title, long currentDTG)
 			throws IOException
 	{
-		_os.write("Time, Bearing (Degs), Frequency (Hz), Strength");
+		_os.write("Time,Lat, Long,  Bearing (Degs), Frequency (Hz), Strength");
 
 		// end the line
 		_os.write(System.getProperty("line.separator"));
