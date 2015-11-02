@@ -33,6 +33,7 @@ import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Mediums.NarrowbandRadNoise;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Models.Vessels.Surface;
+import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.SupportTesting;
@@ -194,39 +195,47 @@ public class NarrowbandSensor extends InitialSensor
 			}
 
 			// ok, also generate frequency, if we can!
-			NarrowbandRadNoise nbNoise = (NarrowbandRadNoise) target
-					.getRadiatedChars().getMedium(1);
-			if (nbNoise != null)
+			RadiatedCharacteristics radChars = target.getRadiatedChars();
+			if (radChars != null)
 			{
-				// do we have a detecftion event yet?
-				if(res == null)
+				NarrowbandRadNoise nbNoise = (NarrowbandRadNoise) target
+						.getRadiatedChars().getMedium(1);
+				if (nbNoise != null)
 				{
-					// nope, better create one.
-		      res = new DetectionEvent(time, host.getId(), host.getStatus().getLocation(), this, null, null, null, null,
-		      						null, target.getCategory(), new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)), new Float(target.getStatus().getCourse()), target);
+					// do we have a detecftion event yet?
+					if (res == null)
+					{
+						// nope, better create one.
+						res = new DetectionEvent(time, host.getId(), host.getStatus()
+								.getLocation(), this, null, null, null, null, null,
+								target.getCategory(), new Float(target.getStatus().getSpeed()
+										.getValueIn(WorldSpeed.Kts)), new Float(target.getStatus()
+										.getCourse()), target);
+					}
+					// get the f-nought
+					double f0 = nbNoise.getFrequency();
+
+					final double speedOfSoundKts = 2951;
+
+					// start preparing the data
+					Status hS = host.getStatus();
+					Status tS = target.getStatus();
+
+					double rxSpeedKts = hS.getSpeed().getValueIn(WorldSpeed.Kts);
+					double txSpeedKts = tS.getSpeed().getValueIn(WorldSpeed.Kts);
+
+					double rxCourseDegs = hS.getCourse();
+					double txCourseDegs = tS.getCourse();
+
+					double bearingDegs = Math.toDegrees(target.getStatus().getLocation()
+							.bearingFrom(host.getStatus().getLocation()));
+
+					// what's the observed freq?
+					double freq = FrequencyCalcs.getPredictedFreq(f0, speedOfSoundKts,
+							rxSpeedKts, rxCourseDegs, txSpeedKts, txCourseDegs, bearingDegs);
+
+					res.setFreq((float) freq);
 				}
-				// get the f-nought
-				double f0 = nbNoise.getFrequency();
-
-				final double speedOfSoundKts = 2951;
-
-				// start preparing the data
-				Status hS = host.getStatus();
-				Status tS = target.getStatus();
-				
-				double rxSpeedKts = hS.getSpeed().getValueIn(WorldSpeed.Kts);
-				double txSpeedKts = tS.getSpeed().getValueIn(WorldSpeed.Kts);
-				
-				double rxCourseDegs = hS.getCourse();
-				double txCourseDegs = tS.getCourse();
-				
-				double bearingDegs = Math.toDegrees(target.getStatus().getLocation().bearingFrom(host.getStatus().getLocation()));
-
-				// what's the observed freq?
-				double freq = FrequencyCalcs.getPredictedFreq(f0, speedOfSoundKts, rxSpeedKts, rxCourseDegs, 
-						txSpeedKts, txCourseDegs, bearingDegs);
-				
-				res.setFreq((float) freq);
 			}
 
 		}
@@ -453,8 +462,8 @@ public class NarrowbandSensor extends InitialSensor
 		{
 			try
 			{
-				final java.beans.PropertyDescriptor[] res =
-				{ prop("Name", "the name of this narrowband sensor"),
+				final java.beans.PropertyDescriptor[] res = {
+						prop("Name", "the name of this narrowband sensor"),
 						prop("SteadyTime", "the size of the aperture of this sensor"),
 						prop("Working", "whether this sensor is in use"), };
 				return res;
