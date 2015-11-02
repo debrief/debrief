@@ -40,8 +40,10 @@
 		<Buoy Name="TX 1" IsTransmitting="true">
 			<Category Type="BUOY" Force="BLUE"
 				Environment="SUBSURFACE" /><SensorFit>
-	<ActiveBroadbandSensor Aperture="180" CanProduceRange="false"
-		SourceLevel="100" Ambiguous="false" Name="Noise source" /></SensorFit>
+	<NarrowbandSensor>
+		<SteadyTime Value="0.0" Units="millis" />
+	</NarrowbandSensor>
+</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
@@ -75,11 +77,43 @@
 			<Category Type="SUBMARINE" Force="BLUE"
 				Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver /></SensorFit>
+				<BistaticReceiver Name="RX2_Receiver" Working="true" /></SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
 						<North Value="1000.0" Units="m" />
+						<East Value="-500" Units="m" />
+					</relativeLocation>					
+				</Location>
+				<Speed Value="0" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="4500" Units="m" />
+				</Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</Buoy>
+	
+		<Buoy Name="RX 2"  IsTransmitting="false">
+			<Category Type="SUBMARINE" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit>
+				<BistaticReceiver Name="RX2_Receiver" Working="true" /></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="2000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>
 					
@@ -103,7 +137,38 @@
 				<TurningCircle Value="1000.0" Units="m" />
 			</SSMovementCharacteristics>
 		</Buoy>
-	
+		<Buoy Name="RX 3"  IsTransmitting="false">
+			<Category Type="SUBMARINE" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit>
+				<BistaticReceiver Name="RX3_Receiver" Working="true" /></SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="4000.0" Units="m" />
+						<East Value="-500" Units="m" />
+					</relativeLocation>
+					
+				</Location>
+				<Speed Value="0" Units="kts"></Speed>
+			</Status>
+			<Sequence Name="Turns">
+				<Move Name="Travel North" Course="0.0">
+					<Vector Value="4500" Units="m" />
+				</Move>
+			</Sequence>
+			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<TurningCircle Value="1000.0" Units="m" />
+			</SSMovementCharacteristics>
+		</Buoy>
 	</Participants>
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
