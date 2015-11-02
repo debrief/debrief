@@ -74,10 +74,13 @@
 			</SSMovementCharacteristics>
 		</Buoy>
 		<Buoy Name="RX 1"  IsTransmitting="false">
-			<Category Type="SUBMARINE" Force="BLUE"
+			<Category Type="BUOY" Force="BLUE"
 				Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver Name="RX2_Receiver" Working="true" /></SensorFit>
+				<BistaticReceiver Name="RX2_Receiver" Working="true" /><NarrowbandSensor
+					Name="RX2_NB">
+					<SteadyTime Value="0.0" Units="millis" />
+</NarrowbandSensor></SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
@@ -106,7 +109,7 @@
 		</Buoy>
 	
 		<Buoy Name="RX 2"  IsTransmitting="false">
-			<Category Type="SUBMARINE" Force="BLUE"
+			<Category Type="BUOY" Force="BLUE"
 				Environment="SUBSURFACE" />
 			<SensorFit>
 				<BistaticReceiver Name="RX2_Receiver" Working="true" /></SensorFit>
@@ -138,7 +141,7 @@
 			</SSMovementCharacteristics>
 		</Buoy>
 		<Buoy Name="RX 3"  IsTransmitting="false">
-			<Category Type="SUBMARINE" Force="BLUE"
+			<Category Type="BUOY" Force="BLUE"
 				Environment="SUBSURFACE" />
 			<SensorFit>
 				<BistaticReceiver Name="RX3_Receiver" Working="true" /></SensorFit>
