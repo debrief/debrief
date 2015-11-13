@@ -839,32 +839,76 @@ public class RelativeTMASegment extends CoreTMASegment
 			// right, we if we have to add another
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.last();
+			
+			// note: we don't want one large leap.  So, insert a few points
+			long oldEndT = endDTG().getDate().getTime();
+			long newEndT = newEnd.getDate().getTime();
+			long thisT = oldEndT;
+			long typicalDelta = typicalTimeStep();
+			
+			while(thisT < newEndT)
+			{
+				thisT += typicalDelta;
+				
+				addFix(theLoc, thisT);
+			}
+			
+			// and create one at the end time
+			addFix(theLoc, newEndT);
 
-			// don't worry about the location, we're going to DR it on anyway...
-			final WorldLocation newLoc = null;
-			final Fix newFix = new Fix(newEnd, newLoc,
-					MWC.Algorithms.Conversions.Degs2Rads(this.getCourse()),
-					MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
-							WorldSpeed.Kts)));
-
-			// and apply the stretch
-			final FixWrapper newItem = new FixWrapper(newFix);
-
-			// set some other bits
-			newItem.setTrackWrapper(this._myTrack);
-			newItem.setColor(theLoc.getActualColor());
-			newItem.setSymbolShowing(theLoc.getSymbolShowing());
-			newItem.setArrowShowing(theLoc.getArrowShowing());
-			newItem.setLabelShowing(theLoc.getLabelShowing());
-			newItem.setLabelLocation(theLoc.getLabelLocation());
-			newItem.setLabelFormat(theLoc.getLabelFormat());
-
-			this.add(newItem);
 		}
 
 		// tell any listeners that we've changed
 		super.fireAdjusted();
 
+	}
+
+	private void addFix(final FixWrapper theLoc, long thisT) {
+		HiResDate newTime = new HiResDate(thisT);
+		
+		// don't worry about the location, we're going to DR it on anyway...
+		final WorldLocation newLoc = null;
+		final Fix newFix = new Fix(newTime, newLoc,
+				MWC.Algorithms.Conversions.Degs2Rads(this.getCourse()),
+				MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
+						WorldSpeed.Kts)));
+
+		// and apply the stretch
+		final FixWrapper newItem = new FixWrapper(newFix);
+
+		// set some other bits
+		newItem.setTrackWrapper(this._myTrack);
+		newItem.setColor(theLoc.getActualColor());
+		newItem.setSymbolShowing(theLoc.getSymbolShowing());
+		newItem.setArrowShowing(theLoc.getArrowShowing());
+		newItem.setLabelShowing(theLoc.getLabelShowing());
+		newItem.setLabelLocation(theLoc.getLabelLocation());
+		newItem.setLabelFormat(theLoc.getLabelFormat());
+		newItem.resetName();
+
+		this.add(newItem);
+	}
+
+	/** get the time interval of the first two data values
+	 * 
+	 * @return
+	 */
+	private long typicalTimeStep() {
+		Iterator<Editable> posI = this.getData().iterator();
+		FixWrapper previous = null;
+		while (posI.hasNext()) {
+			Editable editable = (Editable) posI.next();
+			FixWrapper fw = (FixWrapper) editable;
+			if(previous == null)
+			{
+				previous = fw;
+			}
+			else
+			{
+				return fw.getDateTimeGroup().getDate().getTime() - previous.getDTG().getDate().getTime();
+			}
+		}
+		return 0;
 	}
 
 	@FireExtended
@@ -940,7 +984,7 @@ public class RelativeTMASegment extends CoreTMASegment
 			// right, we if we have to add another
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.first();
-
+			
 			// don't worry about the location, we're going to DR it on anyway...
 			final WorldLocation newLoc = null;
 			final Fix newFix = new Fix(theNewStart, newLoc,
