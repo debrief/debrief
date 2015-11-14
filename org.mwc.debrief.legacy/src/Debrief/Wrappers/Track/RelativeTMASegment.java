@@ -843,14 +843,14 @@ public class RelativeTMASegment extends CoreTMASegment
 			// note: we don't want one large leap.  So, insert a few points
 			long oldEndT = endDTG().getDate().getTime();
 			long newEndT = newEnd.getDate().getTime();
-			long thisT = oldEndT;
-			long typicalDelta = typicalTimeStep();
+			final long typicalDelta = typicalTimeStep(false);
+			long thisT = oldEndT + typicalDelta;
 			
 			while(thisT < newEndT)
 			{
-				thisT += typicalDelta;
-				
 				addFix(theLoc, thisT);
+				
+				thisT += typicalDelta;
 			}
 			
 			// and create one at the end time
@@ -893,22 +893,25 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * 
 	 * @return
 	 */
-	private long typicalTimeStep() {
-		Iterator<Editable> posI = this.getData().iterator();
-		FixWrapper previous = null;
-		while (posI.hasNext()) {
-			Editable editable = (Editable) posI.next();
-			FixWrapper fw = (FixWrapper) editable;
-			if(previous == null)
-			{
-				previous = fw;
-			}
-			else
-			{
-				return fw.getDateTimeGroup().getDate().getTime() - previous.getDTG().getDate().getTime();
-			}
+	private long typicalTimeStep(boolean startGap) {
+		final long res;
+		FixWrapper[] dArr = this.getData().toArray(new FixWrapper[]{});
+		if(dArr.length < 2)
+		{
+			// special case, return useful gap
+			res = 5000;
 		}
-		return 0;
+		else if(startGap)
+		{
+			res = dArr[1].getDTG().getDate().getTime() - dArr[0].getDTG().getDate().getTime();
+		}
+		else
+		{
+			int len = dArr.length;
+			res = dArr[len-1].getDTG().getDate().getTime() - dArr[len-2].getDTG().getDate().getTime();
+		}
+		
+		return res;
 	}
 
 	@FireExtended
