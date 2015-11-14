@@ -987,32 +987,8 @@ public class RelativeTMASegment extends CoreTMASegment
 			// right, we if we have to add another
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.first();
-			
-//			// don't worry about the location, we're going to DR it on anyway...
-//			final WorldLocation newLoc = null;
-//			final Fix newFix = new Fix(theNewStart, newLoc,
-//					MWC.Algorithms.Conversions.Degs2Rads(this.getCourse()),
-//					MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
-//							WorldSpeed.Kts)));
-//
-//			// and apply the stretch
-//			final FixWrapper newItem = new FixWrapper(newFix);
-//
-//			// set some other bits
-//			newItem.setTrackWrapper(this._myTrack);
-//			newItem.setColor(theLoc.getActualColor());
-//			newItem.setSymbolShowing(theLoc.getSymbolShowing());
-//			newItem.setArrowShowing(theLoc.getArrowShowing());
-//			newItem.setLabelShowing(theLoc.getLabelShowing());
-//			newItem.setLabelLocation(theLoc.getLabelLocation());
-//			newItem.setLabelFormat(theLoc.getLabelFormat());
-//
-//			this.add(newItem);
-//			
-			
-			// right, we if we have to add another
-			// find the current last point
-		//	final FixWrapper theLoc = (FixWrapper) this.last();
+
+			// TODO: problem when we extend the start, sometimes we don't have a parent cut to refer to
 			
 			// note: we don't want one large leap.  So, insert a few points
 			long oldStartT = startDTG().getDate().getTime();
