@@ -1104,9 +1104,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		
 		// now try to stretch the start		
 
-		seg2.setDTG_Start(new HiResDate(80000));
-		assertEquals("new start time", 80000, seg2.getDTG_Start().getDate().getTime());
-		assertEquals("more points after stretch", 12, seg2.size());
+		seg2.setDTG_Start(new HiResDate(80002));
+		assertEquals("new start time", 80002, seg2.getDTG_Start().getDate().getTime());
+		assertEquals("more points after stretch", 17, seg2.size());
 
 		// have a look at the times
 		Iterator<Editable> sIter = seg2.getData().iterator();
