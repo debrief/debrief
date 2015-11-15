@@ -22,11 +22,13 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -78,7 +80,8 @@ public class RelativeTMASegment extends CoreTMASegment
 
 			try
 			{
-				final PropertyDescriptor[] res = {
+				final PropertyDescriptor[] res =
+				{
 						expertProp("Course", "Course of this TMA Solution", SOLUTION),
 						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
@@ -505,8 +508,49 @@ public class RelativeTMASegment extends CoreTMASegment
 				// ok, we don't need to worry about interpolating positions, since
 				// our time stamps match those of the sensor.
 				Watchable[] items = _referenceSensor.getNearestTo(startDTG());
-				SensorContactWrapper scw = (SensorContactWrapper) items[0];
-				res= scw.getLocation();
+				final Watchable hostLocation;
+
+				// hmm,
+				if (items.length > 0)
+				{
+					// cool get the location of the sensor
+					hostLocation = items[0];
+				}
+				else
+				{
+					// hmm, we don't have a cut at this location. Try to get the location
+					// of the host
+					TrackWrapper host = _referenceSensor.getHost();
+					if (host != null)
+					{
+						items = host.getNearestTo(startDTG());
+						if (items.length > 0)
+						{
+							hostLocation = items[0];
+						}
+						else
+						{
+							// ok, just get the first location
+							items = host.getNearestTo(host.getStartDTG());
+							hostLocation = items[0];
+						}
+					}
+					else
+					{
+						hostLocation = null;
+					}
+				}
+
+				// did we find a location?
+				if (hostLocation != null)
+				{
+					res = hostLocation.getLocation();
+				}
+				else
+				{
+					Application.logError2(ErrorLogger.ERROR, "Unable to find host location for this segment", null);
+				}
+
 			}
 			else
 			{
@@ -590,7 +634,6 @@ public class RelativeTMASegment extends CoreTMASegment
 		return _referenceSensor;
 	}
 
-	
 	public WatchableList getReferenceTrack()
 	{
 		// do we know it?
@@ -839,20 +882,20 @@ public class RelativeTMASegment extends CoreTMASegment
 			// right, we if we have to add another
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.last();
-			
-			// note: we don't want one large leap.  So, insert a few points
+
+			// note: we don't want one large leap. So, insert a few points
 			long oldEndT = endDTG().getDate().getTime();
 			long newEndT = newEnd.getDate().getTime();
 			final long typicalDelta = typicalTimeStep(false);
 			long thisT = oldEndT + typicalDelta;
-			
-			while(thisT < newEndT)
+
+			while (thisT < newEndT)
 			{
 				addFix(theLoc, thisT);
-				
+
 				thisT += typicalDelta;
 			}
-			
+
 			// and create one at the end time
 			addFix(theLoc, newEndT);
 
@@ -863,9 +906,10 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	}
 
-	private void addFix(final FixWrapper theLoc, long thisT) {
+	private void addFix(final FixWrapper theLoc, long thisT)
+	{
 		HiResDate newTime = new HiResDate(thisT);
-		
+
 		// don't worry about the location, we're going to DR it on anyway...
 		final WorldLocation newLoc = null;
 		final Fix newFix = new Fix(newTime, newLoc,
@@ -889,28 +933,33 @@ public class RelativeTMASegment extends CoreTMASegment
 		this.add(newItem);
 	}
 
-	/** get the time interval of the first two data values
+	/**
+	 * get the time interval of the first two data values
 	 * 
 	 * @return
 	 */
-	private long typicalTimeStep(boolean startGap) {
+	private long typicalTimeStep(boolean startGap)
+	{
 		final long res;
-		FixWrapper[] dArr = this.getData().toArray(new FixWrapper[]{});
-		if(dArr.length < 2)
+		FixWrapper[] dArr = this.getData().toArray(new FixWrapper[]
+		{});
+		if (dArr.length < 2)
 		{
 			// special case, return useful gap
 			res = 5000;
 		}
-		else if(startGap)
+		else if (startGap)
 		{
-			res = dArr[1].getDTG().getDate().getTime() - dArr[0].getDTG().getDate().getTime();
+			res = dArr[1].getDTG().getDate().getTime()
+					- dArr[0].getDTG().getDate().getTime();
 		}
 		else
 		{
 			int len = dArr.length;
-			res = dArr[len-1].getDTG().getDate().getTime() - dArr[len-2].getDTG().getDate().getTime();
+			res = dArr[len - 1].getDTG().getDate().getTime()
+					- dArr[len - 2].getDTG().getDate().getTime();
 		}
-		
+
 		return res;
 	}
 
@@ -988,26 +1037,25 @@ public class RelativeTMASegment extends CoreTMASegment
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.first();
 
-			// TODO: problem when we extend the start, sometimes we don't have a parent cut to refer to
-			
-			// note: we don't want one large leap.  So, insert a few points
+			// TODO: problem when we extend the start, sometimes we don't have a
+			// parent cut to refer to
+
+			// note: we don't want one large leap. So, insert a few points
 			long oldStartT = startDTG().getDate().getTime();
 			long newStartT = newStart.getDate().getTime();
 			final long typicalDelta = typicalTimeStep(true);
 			long thisT = oldStartT - typicalDelta;
-			
-			while(thisT > newStartT)
+
+			while (thisT > newStartT)
 			{
 				addFix(theLoc, thisT);
-				
+
 				thisT -= typicalDelta;
 			}
-			
+
 			// and create one at the end time
 			addFix(theLoc, newStartT);
 
-			
-			
 		}
 
 		// and sort out the new offset
@@ -1055,6 +1103,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		}
 
 	}
+
 	/**
 	 * temporarily store the sensor name, until we've finished loading and we can
 	 * sort it out for real.
@@ -1063,9 +1112,9 @@ public class RelativeTMASegment extends CoreTMASegment
 	 */
 	public void setSensorName(final String sensorName)
 	{
-		if(sensorName != null)
+		if (sensorName != null)
 		{
-			// 	better trim what we've recived
+			// better trim what we've recived
 			_referenceSensorName = sensorName.trim();
 		}
 	}
