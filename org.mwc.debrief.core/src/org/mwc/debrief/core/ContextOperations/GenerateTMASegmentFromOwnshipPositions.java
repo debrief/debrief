@@ -15,8 +15,6 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.Color;
-import java.util.Enumeration;
-import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -36,15 +34,16 @@ import org.mwc.debrief.core.wizards.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.EnterSolutionPage.SolutionDataItem;
 import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
 
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.RelativeTMASegment;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -53,7 +52,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * @author ian.mayo
  * 
  */
-public class GenerateTMASegment implements RightClickContextItemGenerator
+public class GenerateTMASegmentFromOwnshipPositions implements
+		RightClickContextItemGenerator
 {
 
 	private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
@@ -78,18 +78,19 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 		}
 	}
 
-	private static class TMAfromCuts extends CMAPOperation
+	private static class TMAfromPositions extends CMAPOperation
 	{
 
 		private final Layers _layers;
-		private final SensorContactWrapper[] _items;
+		private final FixWrapper[] _items;
 		private TrackWrapper _newTrack;
 		private final double _courseDegs;
 		private final WorldSpeed _speed;
 		private final WorldVector _offset;
 
-		public TMAfromCuts(final SensorContactWrapper[] items, final Layers theLayers,
-				final WorldVector offset, final double courseDegs, final WorldSpeed speed)
+		public TMAfromPositions(final FixWrapper[] items, WorldVector offset, final Layers theLayers,
+				final double courseDegs,
+				final WorldSpeed speed)
 		{
 			super("Create TMA solution");
 			_items = items;
@@ -103,9 +104,14 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			// create it, then
-			final TrackSegment seg = new RelativeTMASegment(_items, _offset, _speed,
-					_courseDegs, _layers);
+			HiResDate startTime = _items[0].getDTG();
+			HiResDate endTime = _items[_items.length - 1].getDTG();
+			WorldLocation startPoint = _items[0].getLocation().add(_offset);
+			final TrackSegment seg = new AbsoluteTMASegment(_courseDegs, _speed,
+					startPoint, startTime, endTime);
+
+			// _items, _offset, _speed,
+			// _courseDegs, _layers);
 
 			// now wrap it
 			_newTrack = new TrackWrapper();
@@ -152,107 +158,21 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 		// so, see if it's something we can do business with
 		if (subjects.length == 1)
 		{
-			// ok, do I know how to create a TMA segment from this?
-			final Editable onlyOne = subjects[0];
-			if (onlyOne instanceof SensorWrapper)
-			{
-				final SensorWrapper sw = (SensorWrapper) onlyOne;
-				// cool, go for it
-				final Vector<SensorContactWrapper> wraps = new Vector<SensorContactWrapper>();
-				final Enumeration<Editable> numer = sw.elements();
-				while (numer.hasMoreElements())
-				{
-					wraps.add((SensorContactWrapper) numer.nextElement());
-				}
-				if(!wraps.isEmpty())
-				{
-				final SensorContactWrapper[] items = new SensorContactWrapper[wraps.size()];
-				final SensorContactWrapper[] finalItems = wraps.toArray(items);
-				final SensorContactWrapper firstContact = finalItems[0];
-
-				// cool wrap it in an action.
-				_myAction = new Action("Generate TMA solution from all cuts")
-				{
-					@Override
-					public void run()
-					{
-						// get ready for the supporting data (using selected sensor data, if
-						// we can)
-						WorldVector res = null;
-						double courseDegs = 0;
-						WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-
-						// just check we have some kind of range
-						WorldDistance theDist = firstContact.getRange();
-						if (theDist == null)
-							theDist = new WorldDistance(6, WorldDistance.NM);
-
-						// get the supporting data
-						final TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
-								.getBearing(), theDist, DEFAULT_TARGET_COURSE,
-								DEFAULT_TARGET_SPEED);
-						final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-								.getActiveShell(), wizard);
-						dialog.create();
-						dialog.open();
-
-						// did it work?
-						if (dialog.getReturnCode() == WizardDialog.OK)
-						{
-
-							final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-									.getPage(RangeBearingPage.NAME);
-							if (offsetPage != null)
-							{
-								if (offsetPage.isPageComplete())
-								{
-									res = new WorldVector(MWC.Algorithms.Conversions
-											.Degs2Rads(offsetPage.getBearingDegs()), offsetPage
-											.getRange(), null);
-								}
-							}
-
-							final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
-									.getPage(EnterSolutionPage.NAME);
-							if (solutionPage != null)
-							{
-								if (solutionPage.isPageComplete())
-								{
-									final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
-											.getEditable();
-									courseDegs = item.getCourse();
-									speed = item.getSpeed();
-								}
-							}
-
-							// ok, go for it.
-							// sort it out as an operation
-							final IUndoableOperation convertToTrack1 = new TMAfromCuts(finalItems,
-									theLayers, res, courseDegs, speed);
-
-							// ok, stick it on the buffer
-							runIt(convertToTrack1);
-
-						}
-						else
-							System.err.println("user cancelled");
-					}
-				};
-				}; // whether there are any cuts for this sensor
-			}
+			// hmm, let's not allow it for just one item
+			// see the equivalent part of RelativeTMASegment if we wish to support this
 		}
 		else
 		{
 			// so, it's a number of items, Are they all sensor contact wrappers
 			boolean allGood = true;
-			final SensorContactWrapper[] items = new SensorContactWrapper[subjects.length];
+			final FixWrapper[] items = new FixWrapper[subjects.length];
 			for (int i = 0; i < subjects.length; i++)
 			{
 				final Editable editable = subjects[i];
-				if (editable instanceof SensorContactWrapper)
+				if (editable instanceof FixWrapper)
 				{
 					// cool, stick with it
-					items[i] = (SensorContactWrapper) editable;
+					items[i] = (FixWrapper) editable;
 				}
 				else
 				{
@@ -263,10 +183,8 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				// are we good to go?
 				if (allGood)
 				{
-					final SensorContactWrapper firstContact = items[0];
-
 					// cool wrap it in an action.
-					_myAction = new Action("Generate TMA solution from selected cuts")
+					_myAction = new Action("Generate TMA solution from selected positions")
 					{
 
 						@Override
@@ -274,8 +192,8 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 						{
 
 							// get the supporting data
-							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
-									.getBearing(), firstContact.getRange(),
+							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
+									45d, new WorldDistance(5, WorldDistance.NM),
 									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
 							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 									.getActiveShell(), wizard);
@@ -296,9 +214,9 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 								{
 									if (offsetPage.isPageComplete())
 									{
-										res = new WorldVector(MWC.Algorithms.Conversions
-												.Degs2Rads(offsetPage.getBearingDegs()), offsetPage
-												.getRange(), null);
+										res = new WorldVector(
+												MWC.Algorithms.Conversions.Degs2Rads(offsetPage
+														.getBearingDegs()), offsetPage.getRange(), null);
 									}
 								}
 
@@ -317,8 +235,8 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 
 								// ok, go for it.
 								// sort it out as an operation
-								final IUndoableOperation convertToTrack1 = new TMAfromCuts(items,
-										theLayers, res, courseDegs, speed);
+								final IUndoableOperation convertToTrack1 = new TMAfromPositions(
+										items, res, theLayers, courseDegs, speed);
 
 								// ok, stick it on the buffer
 								runIt(convertToTrack1);

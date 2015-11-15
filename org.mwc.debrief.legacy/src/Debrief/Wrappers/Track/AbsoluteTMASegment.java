@@ -67,9 +67,9 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			{
 				final PropertyDescriptor[] res =
 				{
-						displayExpertProp("Time_Start", "Start time",  "Start time for this TMA Solution",
+						displayExpertProp("DTG_Start", "Start time",  "Start time for this TMA Solution",
 								SOLUTION),
-						displayExpertProp("TimeEnd", "End time", "End time for this TMA Solution", SOLUTION),
+						displayExpertProp("DTG_End", "End time", "End time for this TMA Solution", SOLUTION),
 						expertProp("Course", "Course of this TMA Solution", SOLUTION),
 						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
@@ -215,12 +215,12 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		return new TMASegmentInfo(this);
 	}
 
-	public HiResDate getTime_Start()
+	public HiResDate getDTG_Start()
 	{
 		return _startTime;
 	}
 
-	public HiResDate getTimeEnd()
+	public HiResDate getDTG_End()
 	{
 		return _endTime;
 	}
@@ -282,7 +282,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		fireAdjusted();
 	}
 
-	public void setTime_Start(final HiResDate timeStart)
+	public void setDTG_Start(final HiResDate timeStart)
 	{
 		_startTime = timeStart;
 
@@ -290,7 +290,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		createDataFrom(_startTime, _endTime);
 	}
 
-	public void setTimeEnd(final HiResDate timeEnd)
+	public void setDTG_End(final HiResDate timeEnd)
 	{
 		_endTime = timeEnd;
 
