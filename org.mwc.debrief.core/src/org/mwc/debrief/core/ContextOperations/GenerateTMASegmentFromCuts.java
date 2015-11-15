@@ -53,7 +53,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * @author ian.mayo
  * 
  */
-public class GenerateTMASegment implements RightClickContextItemGenerator
+public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerator
 {
 
 	private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
