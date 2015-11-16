@@ -6296,8 +6296,12 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <title>Generating track segments</title>
 
           <para>Debrief allows you to generate a segment of track data from a block of sensor data -
-            replicating the process conducted on warships. Data to support the operation is
-            collected via a wizard, as described in the above tutorial.</para>
+            replicating the process conducted on warships.  This track segment adjusts dynamically
+            to reflect the sensor location changing (such as if the sensor offset is edited - 
+            see <xref linkend="SensorOffsetsEditor"/>).
+            In the absence of sensor data it is possible to generate a segment of target track
+            from a set of ownship positions.  Data to support these
+            operations is collected via a wizard, as described in the above tutorial.</para>
         </sect2>
 
         <sect2 xml:id="DraggingTracks">
