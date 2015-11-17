@@ -32,7 +32,7 @@
       </affiliation>
     </author>
     <edition>Documentation for Debrief NG</edition>
-    <pubdate>Summer 2015</pubdate>
+    <pubdate>Autumn 2015</pubdate>
     <abstract>
       <title>Contact details</title>
       <para>Should you wish to learn more about <application>Debrief</application> please make contact
@@ -52,6 +52,12 @@
       </formalpara>
     </abstract>
     <revhistory>
+      <revision>
+        <revnumber>2.8</revnumber>
+        <date>6th October 2015</date>
+        <authorinitials>IM</authorinitials>
+        <revremark>Update images to new look &amp; feel</revremark>
+      </revision>
       <revision>
         <revnumber>2.7</revnumber>
         <date>4th June 2015</date>
