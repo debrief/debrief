@@ -183,7 +183,7 @@ public final class StackedDotHelper
 
 											// and find any matching items
 											final SortedSet<Editable> items = ts.tailSet(index);
-											if(items.size() > 0)
+											if (items.size() > 0)
 											{
 												targetFix = (FixWrapper) items.first();
 											}
@@ -194,7 +194,8 @@ public final class StackedDotHelper
 							}
 
 							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-							if ((matches != null) && (matches.length > 0) && (targetFix != null))
+							if ((matches != null) && (matches.length > 0)
+									&& (targetFix != null))
 							{
 								final FixWrapper hostFix = (FixWrapper) matches[0];
 
@@ -332,22 +333,27 @@ public final class StackedDotHelper
 				// do we have target data?
 				if (thisD.getTarget() != null)
 				{
-					double calculatedBearing = thisD.getCalculatedBearing(null, null);
-					final Color calcColor = thisD.getTarget().getColor();
-					final double thisError = thisD.calculateBearingError(measuredBearing,
-							calculatedBearing);
-					final ColouredDataItem newError = new ColouredDataItem(thisMilli,
-							thisError, thisColor, false, null);
+					// and has this target fix know it's location? 
+					// (it may not, if it's a relative leg that has been extended)
+					if (thisD.getTarget().getFixLocation() != null)
+					{
+						double calculatedBearing = thisD.getCalculatedBearing(null, null);
+						final Color calcColor = thisD.getTarget().getColor();
+						final double thisError = thisD.calculateBearingError(
+								measuredBearing, calculatedBearing);
+						final ColouredDataItem newError = new ColouredDataItem(thisMilli,
+								thisError, thisColor, false, null);
 
-					if (flipAxes)
-						if (calculatedBearing > 180)
-							calculatedBearing -= 360;
+						if (flipAxes)
+							if (calculatedBearing > 180)
+								calculatedBearing -= 360;
 
-					final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
-							calculatedBearing, calcColor, true, null);
+						final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
+								calculatedBearing, calcColor, true, null);
 
-					errorValues.add(newError);
-					calculatedValues.add(cBearing);
+						errorValues.add(newError);
+						calculatedValues.add(cBearing);
+					}
 				}
 
 			}
