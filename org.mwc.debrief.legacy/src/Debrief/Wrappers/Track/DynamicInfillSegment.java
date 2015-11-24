@@ -182,7 +182,7 @@ public class DynamicInfillSegment extends TrackSegment
 				// note, we used to call "recalculate" here.  But, sometimes our precedent
 				// data doesn't know it's new location until after a paint event.
 				// so, we'll defer generating the points until they're required			
-				removeAllElements();
+				reconstruct();
 			}
 		};
 
@@ -592,9 +592,14 @@ public class DynamicInfillSegment extends TrackSegment
 		{
 			// ok, burn everything!
 			clear();
+			
+			// safety check. if we're being deleted, our parent may already be
+			// nnull
+			if (getWrapper() != null) {
 
-			// and remove ourselves from our parent
-			getWrapper().removeElement(this);
+				// and remove ourselves from our parent
+				getWrapper().removeElement(this);
+			}
 		}
 	}
 

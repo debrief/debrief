@@ -25,7 +25,9 @@ import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.DynamicLayer;
 import MWC.GUI.Editable;
@@ -57,6 +59,10 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 			res = DebriefPlugin.getImageDescriptor("icons/16/narrative.png");
 		else if (editable instanceof NarrativeEntry)
 			res = DebriefPlugin.getImageDescriptor("icons/16/narrative_entry.png");
+		else if (editable instanceof RelativeTMASegment)
+			res = DebriefPlugin.getImageDescriptor("icons/16/tma_segment.png");
+		else if (editable instanceof AbsoluteTMASegment)
+			res = DebriefPlugin.getImageDescriptor("icons/16/abs_tma_segment.png");
 		else if (editable instanceof CoreTMASegment)
 			res = DebriefPlugin.getImageDescriptor("icons/16/tma_segment.png");
 		else if (editable instanceof TrackSegment)
