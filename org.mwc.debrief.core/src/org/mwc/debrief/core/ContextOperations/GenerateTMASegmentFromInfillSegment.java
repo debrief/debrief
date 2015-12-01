@@ -14,8 +14,6 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.awt.Color;
-
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
@@ -37,19 +35,18 @@ import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
-import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
  * @author ian.mayo
@@ -81,55 +78,65 @@ public class GenerateTMASegmentFromInfillSegment implements
 		}
 	}
 
-	private static class TMAfromPositions extends CMAPOperation
+	private static class TMAfromInfill extends CMAPOperation
 	{
 
 		private final Layers _layers;
-		private final FixWrapper[] _items;
 		private TrackWrapper _newTrack;
 		private final double _courseDegs;
 		private final WorldSpeed _speed;
 		private final WorldVector _offset;
+		private final TrackWrapper _ownship;
+		private final TimePeriod _period;
+		private final DynamicInfillSegment _infill;
 
-		public TMAfromPositions(final FixWrapper[] items, WorldVector offset,
+		public TMAfromInfill(TrackWrapper ownship, TimePeriod requestedPeriod,
+				DynamicInfillSegment infill, WorldVector offset,
 				final Layers theLayers, final double courseDegs, final WorldSpeed speed)
 		{
 			super("Create TMA solution");
-			_items = items;
+			_ownship = ownship;
+			_period = requestedPeriod;
 			_layers = theLayers;
 			_courseDegs = courseDegs;
 			_speed = speed;
 			_offset = offset;
+			_infill = infill;
 		}
 
 		@Override
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			HiResDate startTime = _items[0].getDTG();
-			HiResDate endTime = _items[_items.length - 1].getDTG();
-			WorldLocation startPoint = _items[0].getLocation().add(_offset);
-			final TrackSegment seg = new AbsoluteTMASegment(_courseDegs, _speed,
-					startPoint, startTime, endTime);
 
-			// _items, _offset, _speed,
-			// _courseDegs, _layers);
+			Watchable[] matches = _ownship.getNearestTo(_period.getStartDTG());
+			if (matches.length != 1)
+			{
+				CorePlugin.logError(Status.ERROR,
+						"Not possible to find host location at " + _period.getStartDTG(),
+						null);
+				return Status.CANCEL_STATUS;
+			}
+			else
+			{
+				WorldLocation startPoint = matches[0].getLocation().add(_offset);
+				final TrackSegment seg = new AbsoluteTMASegment(_courseDegs, _speed,
+						startPoint, _period.getStartDTG(), _period.getEndDTG());
 
-			// now wrap it
-			_newTrack = new TrackWrapper();
-			_newTrack.setColor(Color.red);
-			_newTrack.add(seg);
-			final String tNow = TrackSegment.TMA_LEADER
-					+ FormatRNDateTime.toString(_newTrack.getStartDTG().getDate()
-							.getTime());
-			_newTrack.setName(tNow);
+				// now replace the infill with the new segment
+				TrackWrapper hostTrack = _infill.getWrapper();
+				
+				// remove the infill
+				hostTrack.removeElement(_infill);
+				
+				// add the new TMA segment
+				hostTrack.add(seg);
 
-			_layers.addThisLayerAllowDuplication(_newTrack);
+				// sorted, do the update
+				_layers.fireExtended();
 
-			// sorted, do the update
-			_layers.fireExtended();
-
-			return Status.OK_STATUS;
+				return Status.OK_STATUS;
+			}
 		}
 
 		@Override
@@ -156,6 +163,9 @@ public class GenerateTMASegmentFromInfillSegment implements
 	{
 		//
 		Action _myAction = null;
+		TimePeriod requestedPeriod = null;
+		TrackWrapper hostTrack = null;
+		DynamicInfillSegment infill = null;
 
 		// so, see if it's something we can do business with
 		if (subjects.length == 1)
@@ -167,8 +177,6 @@ public class GenerateTMASegmentFromInfillSegment implements
 		else
 		{
 			// so, it's a number of items, Are they all sensor contact wrappers
-			boolean allGood = true;
-			final FixWrapper[] items = new FixWrapper[subjects.length];
 			for (int i = 0; i < subjects.length; i++)
 			{
 				final Editable editable = subjects[i];
@@ -179,33 +187,56 @@ public class GenerateTMASegmentFromInfillSegment implements
 					FixWrapper fix = (FixWrapper) editable;
 					TrackWrapper track = fix.getTrackWrapper();
 					SegmentList segments = track.getSegments();
-					
-					TrackSegment parentSegment = segments.getSegmentFor(fix.getDateTimeGroup().getDate().getTime());
-					
+
+					TrackSegment parentSegment = segments.getSegmentFor(fix
+							.getDateTimeGroup().getDate().getTime());
+
 					// is this first leg a TMA segment?
 					if (parentSegment instanceof DynamicInfillSegment)
 					{
-						// cool, stick with it
-						items[i] = (FixWrapper) editable;
-					}
-					else
-					{
-						// no = in which case we won't offer to 
-						allGood = false;
+						// initialise ourselves
+						if (requestedPeriod == null)
+						{
+							requestedPeriod = new TimePeriod.BaseTimePeriod(
+									fix.getDateTimeGroup(), fix.getDateTimeGroup());
+							hostTrack = parentSegment.getWrapper();
+						}
+						else
+						{
+							requestedPeriod.extend(fix.getDateTimeGroup());
+						}
+
+						if (infill == null)
+						{
+							infill = (DynamicInfillSegment) parentSegment;
+						}
+						else
+						{
+							if (infill != parentSegment)
+							{
+								CorePlugin.logError(Status.WARNING,
+										"We need all positions to be in the same infill", null);
+								return;
+							}
+						}
+
 					}
 				}
 				else
 				{
-					allGood = false;
 					break;
 				}
 
 				// are we good to go?
-				if (allGood)
+				if (requestedPeriod != null)
 				{
+					final TrackWrapper fHost = hostTrack;
+					final TimePeriod fPeriod = requestedPeriod;
+					final DynamicInfillSegment fInfill = infill;
+
 					// cool wrap it in an action.
 					_myAction = new Action(
-							"Generate TMA solution from selected positions")
+							"Generate TMA solution for times at selected positions")
 					{
 
 						@Override
@@ -256,8 +287,8 @@ public class GenerateTMASegmentFromInfillSegment implements
 
 								// ok, go for it.
 								// sort it out as an operation
-								final IUndoableOperation convertToTrack1 = new TMAfromPositions(
-										items, res, theLayers, courseDegs, speed);
+								final IUndoableOperation convertToTrack1 = new TMAfromInfill(
+										fHost, fPeriod, fInfill, res, theLayers, courseDegs, speed);
 
 								// ok, stick it on the buffer
 								runIt(convertToTrack1);
