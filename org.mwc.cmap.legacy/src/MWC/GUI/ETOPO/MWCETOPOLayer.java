@@ -960,6 +960,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	protected Box palette = null;
 
 	/** Creates the interface palette. */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public java.awt.Component getGUI()
 	{
 

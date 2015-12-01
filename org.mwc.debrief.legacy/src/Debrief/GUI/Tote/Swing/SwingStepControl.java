@@ -309,6 +309,7 @@ public final class SwingStepControl extends StepControl implements
 
 	JToggleButton _autoBtn;
 
+	@SuppressWarnings("rawtypes")
 	JComboBox _thePainterSelector;
 
 	/**
@@ -460,6 +461,7 @@ public final class SwingStepControl extends StepControl implements
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected final void initForm()
 	{
 		_theToolbar = new JToolBar();
@@ -815,6 +817,7 @@ public final class SwingStepControl extends StepControl implements
 	/**
 	 * prepare the list of painters in the ComboBox
 	 */
+	@SuppressWarnings("unchecked")
 	private void prepareComboBox()
 	{
 		if (_thePainterSelector.getItemCount() > 0)

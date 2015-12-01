@@ -51,12 +51,12 @@ public class PlotDonutFrame extends Frame {
 		Area area;
     Color areaBorderColor = Color.decode("#95b770");
     Paint areaFillPaint = Color.decode("#cce9ad");
-    public Area getArea() { return this.area; }
+//    public Area getArea() { return this.area; }
     public void setArea(Area a) { this.area = a; }
-    public Color getAreaBorderColor() { return this.areaBorderColor; }
-    public void setAreaBorerColor(Color c) { this.areaBorderColor = c; }
-    public Paint getAreaFillPaint() { return this.areaFillPaint; }
-    public void setAreaFillPaint(Paint p) { this.areaFillPaint = p; }
+//    public Color getAreaBorderColor() { return this.areaBorderColor; }
+//    public void setAreaBorerColor(Color c) { this.areaBorderColor = c; }
+//    public Paint getAreaFillPaint() { return this.areaFillPaint; }
+//    public void setAreaFillPaint(Paint p) { this.areaFillPaint = p; }
     public void paint(Graphics g) {
       super.paint(g);
       Graphics2D g2 = (Graphics2D) g;

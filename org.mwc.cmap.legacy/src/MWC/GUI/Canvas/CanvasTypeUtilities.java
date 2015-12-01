@@ -44,7 +44,7 @@ public class CanvasTypeUtilities
 		double width = startPoint.distance(lastPoint);
 		
 		double stringWidth = dest.getStringWidth(font, textLabel);
-		double distance = (width-stringWidth)/2;
+//		double distance = (width-stringWidth)/2;
 		if (width > stringWidth * clippingThreshold)
 		{
 			// calculate the course 

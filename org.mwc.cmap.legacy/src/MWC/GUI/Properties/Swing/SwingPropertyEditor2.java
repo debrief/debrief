@@ -841,6 +841,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		_main.add("Center", new JLabel("This object has no editable properties"));
 	}
 
+	@SuppressWarnings("unchecked")
 	public static TickableComboBox createChoiceEditor(final PropertyEditor pe, final String[] tags)
 	{
 		final TickableComboBox cl = new TickableComboBox();
@@ -1134,6 +1135,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		return _theParent.getBuffer();
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected void updateThis(final Component c, final PropertyEditor pe)
 	{
 		// update the gui
@@ -1438,6 +1440,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 	// custom class to remember the current value, and paint the current item in
 	// RED
+	@SuppressWarnings("rawtypes")
 	public static class TickableComboBox extends JComboBox
 	{
 
@@ -1446,6 +1449,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@SuppressWarnings("unchecked")
 		public TickableComboBox()
 		{
 			this.setRenderer(new TickableComboBoxRenderer());

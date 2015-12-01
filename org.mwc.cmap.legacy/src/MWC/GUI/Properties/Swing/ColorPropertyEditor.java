@@ -92,7 +92,8 @@ public class ColorPropertyEditor extends
   ////////////////////////////////////////////////////////////
   /** combobox containing our choices
    */
-  JComboBox _theList;
+  @SuppressWarnings("rawtypes")
+	JComboBox _theList;
 
   /** the label indicating a custom colour
    *
@@ -282,7 +283,8 @@ public class ColorPropertyEditor extends
   //////////////////////////////////////
   // internal class which keeps track of the current value
   //////////////////////////////////////
-  private class TickableComboBox extends JComboBox
+  @SuppressWarnings("rawtypes")
+	private class TickableComboBox extends JComboBox
   {
     /**
 		 * 
@@ -293,7 +295,8 @@ public class ColorPropertyEditor extends
      */
     private int _currentValue;
 
-    public TickableComboBox(final java.util.Vector<?> list)
+    @SuppressWarnings("unchecked")
+		public TickableComboBox(final java.util.Vector<?> list)
     {
       super(list);
       this.setRenderer(new ColorRenderer());

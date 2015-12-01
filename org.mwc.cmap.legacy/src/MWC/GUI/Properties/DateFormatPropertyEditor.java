@@ -185,7 +185,8 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
     return getTags()[_myFormat];
   }
 
-  abstract static public class SwingDateFormatEditor extends javax.swing.JComboBox
+  @SuppressWarnings("rawtypes")
+	abstract static public class SwingDateFormatEditor extends javax.swing.JComboBox
   {
 
     /**
@@ -194,6 +195,7 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
 		private static final long serialVersionUID = 1L;
 
 
+		@SuppressWarnings({ "unchecked" })
 		public SwingDateFormatEditor()
     {
       // get our property editor data

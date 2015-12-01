@@ -65,7 +65,8 @@ public class WorldPathDetailEditor extends SwingCustomEditor
 	/**
    * the list we show our path inside
    */
-  JList _myList;
+  @SuppressWarnings("rawtypes")
+	JList _myList;
 
   /**
    * the sub-panel we use to show individual points
@@ -166,7 +167,8 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * create the form
    */
-  private void createForm()
+  @SuppressWarnings("rawtypes")
+	private void createForm()
   {
 
     // create the panel
@@ -514,7 +516,8 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * update our data
    */
-  void updateData()
+  @SuppressWarnings("unchecked")
+	void updateData()
   {
 
     // find out which one is selected

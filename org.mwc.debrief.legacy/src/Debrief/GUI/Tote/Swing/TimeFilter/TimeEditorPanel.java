@@ -93,7 +93,8 @@ final public class TimeEditorPanel extends JPanel
   /**
    * the list of operations we allow
    */
-  private JList _theOperationsList;
+  @SuppressWarnings("rawtypes")
+	private JList _theOperationsList;
 
   /**
    * the text box describing what the currently selected operation does
@@ -113,7 +114,8 @@ final public class TimeEditorPanel extends JPanel
   /**
    * the list of tracks which can be selected
    */
-  private JList _theTracksList;
+  @SuppressWarnings("rawtypes")
+	private JList _theTracksList;
   private static final long T_30_MINS = 30l * 60 * 1000 * 1000;
   private static final long T_30_DAYS = 30l * 24 * 60 * 60 * 60 * 1000 * 1000;
 
@@ -206,7 +208,8 @@ final public class TimeEditorPanel extends JPanel
   /**
    * construct the form
    */
-  private void initForm()
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+	private void initForm()
   {
     this.setLayout(new BorderLayout());
     final JPanel sliders = new JPanel();
@@ -314,7 +317,8 @@ final public class TimeEditorPanel extends JPanel
   /**
    * setup the lists of operations and tracks
    */
-  private void populateLists(final Debrief.GUI.Tote.StepControl theStepper)
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+	private void populateLists(final Debrief.GUI.Tote.StepControl theStepper)
   {
     // create our operations
     _myOperations.addElement(new SetTimeZero()
@@ -348,7 +352,8 @@ final public class TimeEditorPanel extends JPanel
   /**
    * find out which tracks are watchable, then populate the JList
    */
-  void populateTracks()
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+	void populateTracks()
   {
     // clear out the list to start with (by setting a new, blank, list)
     _theTracksList.setModel(new DefaultListModel());
@@ -616,7 +621,8 @@ final public class TimeEditorPanel extends JPanel
    *
    * @return the list of tracks
    */
-  private java.util.Vector<WatchableList> getSelectedTracks()
+  @SuppressWarnings("deprecation")
+	private java.util.Vector<WatchableList> getSelectedTracks()
   {
     java.util.Vector<WatchableList> res = null;
 

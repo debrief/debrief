@@ -163,7 +163,8 @@ public class FileUtils
     * @throws IOException - error message
     * @throws OSSException - error message
     */  
-   public static void copyFile(
+   @SuppressWarnings("unused")
+	public static void copyFile(
       final File flCurrent,
       final File flDestination
    ) throws IOException
@@ -481,7 +482,8 @@ public class FileUtils
     * @throws IOException - error in function
     * @throws OSSMultiException - double error in function
     */
-   public static void copyStreamToFile(
+   @SuppressWarnings("unused")
+	public static void copyStreamToFile(
       final InputStream input,
       final File        output
    ) throws IOException
