@@ -38,6 +38,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
@@ -181,7 +182,7 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 					TrackSegment parentSegment = segments.getSegmentFor(fix.getDateTimeGroup().getDate().getTime());
 					
 					// is this first leg a TMA segment?
-					if (parentSegment instanceof CoreTMASegment)
+					if (parentSegment instanceof CoreTMASegment || parentSegment instanceof DynamicInfillSegment)
 					{
 						// yes = in which case we won't offer to 
 						// generate a track based upon it
