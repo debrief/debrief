@@ -83,7 +83,8 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * combo-box to select the units
    */
-  JComboBox _theUnits;
+  @SuppressWarnings("rawtypes")
+	JComboBox _theUnits;
 
   /**
    * panel to hold everything
@@ -116,7 +117,8 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * build the editor
    */
-  public Component getCustomEditor()
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+	public Component getCustomEditor()
   {
     _theHolder = new JPanel();
 

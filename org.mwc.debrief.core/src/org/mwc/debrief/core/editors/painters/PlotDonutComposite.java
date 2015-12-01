@@ -67,6 +67,7 @@ public class PlotDonutComposite extends Composite {
     public void setAreaBorerColor(RGB c) { this.areaBorderColor = c; }
     public RGB getAreaFillColor() { return this.areaFillColor; }
     public void setAreaFillColor(RGB c) { this.areaFillColor = c; }
+    @Override
     public void paintControl(PaintEvent event) {
       final GC gc = event.gc;
       final Device device = gc.getGCData().device;

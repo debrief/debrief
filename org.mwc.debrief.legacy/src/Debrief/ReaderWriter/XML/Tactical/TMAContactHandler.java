@@ -495,7 +495,7 @@ abstract public class TMAContactHandler extends
 
 	public static void main(final String[] args)
 	{
-		final testIt ti = new testIt("scrap");
+//		final testIt ti = new testIt("scrap");
 		// TODo FIX-TEST
 		//ti.testRead();
 	}

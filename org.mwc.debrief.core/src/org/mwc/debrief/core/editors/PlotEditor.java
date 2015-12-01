@@ -174,7 +174,7 @@ import MWC.TacticalData.IRollingNarrativeProvider;
 /**
  * @author ian.mayo
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "restriction" })
 public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 {
 	// Extension point tag and attributes in plugin.xml
@@ -362,7 +362,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		this.addPropertyListener(new IPropertyListener()
 		{
 
-			@SuppressWarnings("synthetic-access")
+			@SuppressWarnings({ "synthetic-access" })
 			public void propertyChanged(final Object source, final int propId)
 			{
 				if (propId == PROP_INPUT)

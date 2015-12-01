@@ -72,6 +72,7 @@ public class PlotEditorActionBarContributor extends EditorActionBarContributor {
 		super.init(bars);
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void contributeToMenu(IMenuManager menuManager)
 	{

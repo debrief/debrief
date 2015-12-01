@@ -338,7 +338,8 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
   ////////////////////////////////////////////////////////////////////////
   // nested class custom editor for time frequencies
   //////////////////////////////////////////////////////////////////////////
-  static final class TimeFrequencyCombo extends JComboBox
+  @SuppressWarnings("rawtypes")
+	static final class TimeFrequencyCombo extends JComboBox
   {
 
     /**
@@ -379,7 +380,8 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
       0};
 
 
-    public TimeFrequencyCombo()
+    @SuppressWarnings("unchecked")
+		public TimeFrequencyCombo()
     {
       super();
       for(int i=0;i<stringTags.length;i++)
