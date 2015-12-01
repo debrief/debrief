@@ -37,7 +37,9 @@ import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -88,9 +90,8 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 		private final WorldSpeed _speed;
 		private final WorldVector _offset;
 
-		public TMAfromPositions(final FixWrapper[] items, WorldVector offset, final Layers theLayers,
-				final double courseDegs,
-				final WorldSpeed speed)
+		public TMAfromPositions(final FixWrapper[] items, WorldVector offset,
+				final Layers theLayers, final double courseDegs, final WorldSpeed speed)
 		{
 			super("Create TMA solution");
 			_items = items;
@@ -159,7 +160,8 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 		if (subjects.length == 1)
 		{
 			// hmm, let's not allow it for just one item
-			// see the equivalent part of RelativeTMASegment if we wish to support this
+			// see the equivalent part of RelativeTMASegment if we wish to support
+			// this
 		}
 		else
 		{
@@ -171,8 +173,25 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 				final Editable editable = subjects[i];
 				if (editable instanceof FixWrapper)
 				{
-					// cool, stick with it
-					items[i] = (FixWrapper) editable;
+					// hmm, we need to check if this fix is part of a solution. have a
+					// look at the parent
+					FixWrapper fix = (FixWrapper) editable;
+					TrackWrapper track = fix.getTrackWrapper();
+					SegmentList segments = track.getSegments();
+					Editable first = segments.getData().iterator().next();
+					
+					// is this first leg a TMA segment?
+					if (first instanceof CoreTMASegment)
+					{
+						// yes = in which case we won't offer to 
+						// generate a track based upon it
+						allGood = false;
+					}
+					else
+					{
+						// cool, stick with it
+						items[i] = (FixWrapper) editable;
+					}
 				}
 				else
 				{
@@ -184,7 +203,8 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 				if (allGood)
 				{
 					// cool wrap it in an action.
-					_myAction = new Action("Generate TMA solution from selected positions")
+					_myAction = new Action(
+							"Generate TMA solution from selected positions")
 					{
 
 						@Override
@@ -192,8 +212,8 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 						{
 
 							// get the supporting data
-							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
-									45d, new WorldDistance(5, WorldDistance.NM),
+							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(45d,
+									new WorldDistance(5, WorldDistance.NM),
 									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
 							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 									.getActiveShell(), wizard);
