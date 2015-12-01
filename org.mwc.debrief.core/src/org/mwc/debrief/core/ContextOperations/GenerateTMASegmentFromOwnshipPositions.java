@@ -178,10 +178,10 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 					FixWrapper fix = (FixWrapper) editable;
 					TrackWrapper track = fix.getTrackWrapper();
 					SegmentList segments = track.getSegments();
-					Editable first = segments.getData().iterator().next();
+					TrackSegment parentSegment = segments.getSegmentFor(fix.getDateTimeGroup().getDate().getTime());
 					
 					// is this first leg a TMA segment?
-					if (first instanceof CoreTMASegment)
+					if (parentSegment instanceof CoreTMASegment)
 					{
 						// yes = in which case we won't offer to 
 						// generate a track based upon it
