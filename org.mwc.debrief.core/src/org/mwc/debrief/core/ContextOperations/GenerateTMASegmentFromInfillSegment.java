@@ -38,6 +38,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
@@ -178,19 +179,19 @@ public class GenerateTMASegmentFromInfillSegment implements
 					FixWrapper fix = (FixWrapper) editable;
 					TrackWrapper track = fix.getTrackWrapper();
 					SegmentList segments = track.getSegments();
-					Editable first = segments.getData().iterator().next();
+					
+					TrackSegment parentSegment = segments.getSegmentFor(fix.getDateTimeGroup().getDate().getTime());
 					
 					// is this first leg a TMA segment?
-					if (first instanceof CoreTMASegment)
-					{
-						// yes = in which case we won't offer to 
-						// generate a track based upon it
-						allGood = false;
-					}
-					else
+					if (parentSegment instanceof DynamicInfillSegment)
 					{
 						// cool, stick with it
 						items[i] = (FixWrapper) editable;
+					}
+					else
+					{
+						// no = in which case we won't offer to 
+						allGood = false;
 					}
 				}
 				else
