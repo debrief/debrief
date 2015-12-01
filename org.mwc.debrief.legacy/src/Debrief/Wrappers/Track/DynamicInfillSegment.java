@@ -179,9 +179,10 @@ public class DynamicInfillSegment extends TrackSegment
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt)
 			{
-				// note, we used to call "recalculate" here.  But, sometimes our precedent
+				// note, we used to call "recalculate" here. But, sometimes our
+				// precedent
 				// data doesn't know it's new location until after a paint event.
-				// so, we'll defer generating the points until they're required			
+				// so, we'll defer generating the points until they're required
 				reconstruct();
 			}
 		};
@@ -363,6 +364,11 @@ public class DynamicInfillSegment extends TrackSegment
 
 		return super.getVisible();
 	}
+	
+	protected void sortOutDate(final HiResDate startDTG)
+	{
+		// skip - we'll use the infill name
+	}
 
 	/**
 	 * recalculate our set of positions
@@ -515,9 +521,12 @@ public class DynamicInfillSegment extends TrackSegment
 		}
 
 		// sort out our name
-		final String name = "infill_"
-				+ FormatRNDateTime.toShortString(new Date().getTime());
-		this.setName(name);
+		if (getName() == null)
+		{
+			final String name = "infill_"
+					+ FormatRNDateTime.toShortString(new Date().getTime());
+			this.setName(name);
+		}
 
 		// also make it dotted, since it's artificially generated
 		this.setLineStyle(CanvasType.DOTTED);
@@ -592,10 +601,11 @@ public class DynamicInfillSegment extends TrackSegment
 		{
 			// ok, burn everything!
 			clear();
-			
+
 			// safety check. if we're being deleted, our parent may already be
 			// nnull
-			if (getWrapper() != null) {
+			if (getWrapper() != null)
+			{
 
 				// and remove ourselves from our parent
 				getWrapper().removeElement(this);

@@ -978,6 +978,58 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 3, segs.lastElement().size());
 	}
 
+
+	public void testSegmentList()
+	{
+		
+		final TrackWrapper tw = new TrackWrapper();
+
+		
+		final TrackSegment ts0 = new TrackSegment();
+		ts0.addFix(createFix(10000, 1, 1, 20, 30));
+		ts0.addFix(createFix(11000, 1, 1, 20, 30));
+		ts0.addFix(createFix(12000, 1, 1, 20, 30));
+		ts0.addFix(createFix(13000, 1, 1, 20, 30));
+		
+		final TrackSegment ts1 = new TrackSegment();
+		ts1.addFix(createFix(14000, 1, 1, 20, 30));
+		ts1.addFix(createFix(15000, 1, 1, 20, 30));
+		ts1.addFix(createFix(16000, 1, 1, 20, 30));
+		ts1.addFix(createFix(17000, 1, 1, 20, 30));
+		
+		final TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(18000, 1, 1, 20, 30));
+		ts2.addFix(createFix(19000, 1, 1, 20, 30));
+		ts2.addFix(createFix(20000, 1, 1, 20, 30));
+		ts2.addFix(createFix(21000, 1, 1, 20, 30));
+		
+		tw.add(ts0);
+		tw.add(ts1);
+		tw.add(ts2);
+		
+		SegmentList sList = tw.getSegments();
+		TrackSegment i1 = sList.getSegmentFor(16000);
+		assertEquals("correct segment", ts1, i1);
+		i1 = sList.getSegmentFor(17000);
+		assertEquals("correct segment", ts1, i1);
+		i1 = sList.getSegmentFor(14000);
+		assertEquals("correct segment", ts1, i1);
+		
+		TrackSegment i0 = sList.getSegmentFor(10000);
+		assertEquals("correct segment", ts0, i0);
+		i0 = sList.getSegmentFor(13000);
+		assertEquals("correct segment", ts0, i0);
+		i0 = sList.getSegmentFor(11000);
+		assertEquals("correct segment", ts0, i0);
+
+		TrackSegment i2 = sList.getSegmentFor(18000);
+		assertEquals("correct segment", ts2, i2);
+		i2 = sList.getSegmentFor(21000);
+		assertEquals("correct segment", ts2, i2);
+
+		
+	}
+	
 	/**
 	 * .
 	 */
