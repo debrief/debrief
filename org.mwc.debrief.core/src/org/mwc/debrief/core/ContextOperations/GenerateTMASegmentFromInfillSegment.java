@@ -125,10 +125,10 @@ public class GenerateTMASegmentFromInfillSegment implements
 
 				// now replace the infill with the new segment
 				TrackWrapper hostTrack = _infill.getWrapper();
-				
+
 				// remove the infill
 				hostTrack.removeElement(_infill);
-				
+
 				// add the new TMA segment
 				hostTrack.add(seg);
 
@@ -206,12 +206,14 @@ public class GenerateTMASegmentFromInfillSegment implements
 							requestedPeriod.extend(fix.getDateTimeGroup());
 						}
 
+						// have we already found an infill?
 						if (infill == null)
 						{
 							infill = (DynamicInfillSegment) parentSegment;
 						}
 						else
 						{
+							// yes, is it the same one as this new one?
 							if (infill != parentSegment)
 							{
 								CorePlugin.logError(Status.WARNING,
@@ -219,7 +221,12 @@ public class GenerateTMASegmentFromInfillSegment implements
 								return;
 							}
 						}
-
+					}
+					else
+					{
+						CorePlugin.logError(Status.WARNING,
+								"We only allow positions from infill segments", null);
+						return;
 					}
 				}
 				else
@@ -227,82 +234,81 @@ public class GenerateTMASegmentFromInfillSegment implements
 					break;
 				}
 
-				// are we good to go?
-				if (requestedPeriod != null)
-				{
-					final TrackWrapper fHost = hostTrack;
-					final TimePeriod fPeriod = requestedPeriod;
-					final DynamicInfillSegment fInfill = infill;
-
-					// cool wrap it in an action.
-					_myAction = new Action(
-							"Generate TMA solution for times at selected positions")
-					{
-
-						@Override
-						public void run()
-						{
-
-							// get the supporting data
-							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(45d,
-									new WorldDistance(5, WorldDistance.NM),
-									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
-							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-									.getActiveShell(), wizard);
-							dialog.create();
-							dialog.open();
-
-							// did it work?
-							if (dialog.getReturnCode() == WizardDialog.OK)
-							{
-								WorldVector res = new WorldVector(0, new WorldDistance(5,
-										WorldDistance.NM), null);
-								double courseDegs = 0;
-								WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-
-								final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-										.getPage(RangeBearingPage.NAME);
-								if (offsetPage != null)
-								{
-									if (offsetPage.isPageComplete())
-									{
-										res = new WorldVector(
-												MWC.Algorithms.Conversions.Degs2Rads(offsetPage
-														.getBearingDegs()), offsetPage.getRange(), null);
-									}
-								}
-
-								final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
-										.getPage(EnterSolutionPage.NAME);
-								if (solutionPage != null)
-								{
-									if (solutionPage.isPageComplete())
-									{
-										final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
-												.getEditable();
-										courseDegs = item.getCourse();
-										speed = item.getSpeed();
-									}
-								}
-
-								// ok, go for it.
-								// sort it out as an operation
-								final IUndoableOperation convertToTrack1 = new TMAfromInfill(
-										fHost, fPeriod, fInfill, res, theLayers, courseDegs, speed);
-
-								// ok, stick it on the buffer
-								runIt(convertToTrack1);
-
-							}
-							else
-								System.err.println("user cancelled");
-
-						}
-					};
-				}
-
 			}
 
+			// are we good to go?
+			if (requestedPeriod != null)
+			{
+				final TrackWrapper fHost = hostTrack;
+				final TimePeriod fPeriod = requestedPeriod;
+				final DynamicInfillSegment fInfill = infill;
+
+				// cool wrap it in an action.
+				_myAction = new Action(
+						"Generate TMA solution for times at selected positions")
+				{
+
+					@Override
+					public void run()
+					{
+
+						// get the supporting data
+						final TMAFromSensorWizard wizard = new TMAFromSensorWizard(45d,
+								new WorldDistance(5, WorldDistance.NM), DEFAULT_TARGET_COURSE,
+								DEFAULT_TARGET_SPEED);
+						final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+								.getActiveShell(), wizard);
+						dialog.create();
+						dialog.open();
+
+						// did it work?
+						if (dialog.getReturnCode() == WizardDialog.OK)
+						{
+							WorldVector res = new WorldVector(0, new WorldDistance(5,
+									WorldDistance.NM), null);
+							double courseDegs = 0;
+							WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+
+							final RangeBearingPage offsetPage = (RangeBearingPage) wizard
+									.getPage(RangeBearingPage.NAME);
+							if (offsetPage != null)
+							{
+								if (offsetPage.isPageComplete())
+								{
+									res = new WorldVector(
+											MWC.Algorithms.Conversions.Degs2Rads(offsetPage
+													.getBearingDegs()), offsetPage.getRange(), null);
+								}
+							}
+
+							final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
+									.getPage(EnterSolutionPage.NAME);
+							if (solutionPage != null)
+							{
+								if (solutionPage.isPageComplete())
+								{
+									final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
+											.getEditable();
+									courseDegs = item.getCourse();
+									speed = item.getSpeed();
+								}
+							}
+
+							// ok, go for it.
+							// sort it out as an operation
+							final IUndoableOperation convertToTrack1 = new TMAfromInfill(
+									fHost, fPeriod, fInfill, res, theLayers, courseDegs, speed);
+
+							// ok, stick it on the buffer
+							runIt(convertToTrack1);
+
+						}
+						else
+							System.err.println("user cancelled");
+
+					}
+				};
+			}
 		}
 
 		// go for it, or not...
