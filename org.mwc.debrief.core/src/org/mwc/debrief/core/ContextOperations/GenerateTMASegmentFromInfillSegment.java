@@ -82,13 +82,13 @@ public class GenerateTMASegmentFromInfillSegment implements
 	{
 
 		private final Layers _layers;
-		private TrackWrapper _newTrack;
 		private final double _courseDegs;
 		private final WorldSpeed _speed;
 		private final WorldVector _offset;
 		private final TrackWrapper _ownship;
 		private final TimePeriod _period;
 		private final DynamicInfillSegment _infill;
+		private AbsoluteTMASegment _newSegment;
 
 		public TMAfromInfill(TrackWrapper ownship, TimePeriod requestedPeriod,
 				DynamicInfillSegment infill, WorldVector offset,
@@ -120,36 +120,79 @@ public class GenerateTMASegmentFromInfillSegment implements
 			else
 			{
 				WorldLocation startPoint = matches[0].getLocation().add(_offset);
-				final TrackSegment seg = new AbsoluteTMASegment(_courseDegs, _speed,
+				
+				_newSegment = new AbsoluteTMASegment(_courseDegs, _speed,
 						startPoint, _period.getStartDTG(), _period.getEndDTG());
 
-				// now replace the infill with the new segment
-				TrackWrapper hostTrack = _infill.getWrapper();
-
-				// remove the infill
-				hostTrack.removeElement(_infill);
-
-				// add the new TMA segment
-				hostTrack.add(seg);
-
-				// sorted, do the update
-				_layers.fireExtended();
-
-				return Status.OK_STATUS;
+				return	insertNewSeg();
 			}
+		}
+
+		
+		
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			return insertNewSeg();
+		}
+
+		private IStatus insertNewSeg()
+		{
+			// now replace the infill with the new segment
+			TrackWrapper hostTrack = _infill.getWrapper();
+
+			// remove the infill
+			hostTrack.removeElement(_infill);
+
+			// add the new TMA segment
+			hostTrack.add(_newSegment);
+
+			// sorted, do the update
+			_layers.fireExtended(_newSegment, hostTrack);
+			
+			return Status.OK_STATUS;
 		}
 
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			// forget about the new tracks
-			_layers.removeThisLayer(_newTrack);
-			_layers.fireExtended();
+			// now replace the infill with the new segment
+			TrackWrapper hostTrack = _newSegment.getWrapper();
+
+			// remove the infill
+			hostTrack.removeElement(_newSegment);
+
+			// add the new TMA segment
+			hostTrack.add(_infill);
+
+			// sorted, do the update
+			_layers.fireExtended(_infill, hostTrack);
 
 			return Status.OK_STATUS;
 		}
 
+		@Override
+		public boolean canExecute()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canRedo()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canUndo()
+		{
+			return true;
+		}
+
+		
+		
 	}
 
 	/**
