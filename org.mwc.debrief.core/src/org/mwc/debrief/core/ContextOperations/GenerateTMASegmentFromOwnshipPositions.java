@@ -94,7 +94,7 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 		public TMAfromPositions(final FixWrapper[] items, WorldVector offset,
 				final Layers theLayers, final double courseDegs, final WorldSpeed speed)
 		{
-			super("Create TMA solution");
+			super("Create TMA solution from ownship position times");
 			_items = items;
 			_layers = theLayers;
 			_courseDegs = courseDegs;
@@ -143,6 +143,37 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 			return Status.OK_STATUS;
 		}
 
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+
+			_layers.addThisLayerAllowDuplication(_newTrack);
+
+			// sorted, do the update
+			_layers.fireExtended();
+
+			return Status.OK_STATUS;
+		}
+
+		@Override
+		public boolean canExecute()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canRedo()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canUndo()
+		{
+			return true;
+		}
+
 	}
 
 	/**
@@ -179,12 +210,14 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 					FixWrapper fix = (FixWrapper) editable;
 					TrackWrapper track = fix.getTrackWrapper();
 					SegmentList segments = track.getSegments();
-					TrackSegment parentSegment = segments.getSegmentFor(fix.getDateTimeGroup().getDate().getTime());
-					
+					TrackSegment parentSegment = segments.getSegmentFor(fix
+							.getDateTimeGroup().getDate().getTime());
+
 					// is this first leg a TMA segment?
-					if (parentSegment instanceof CoreTMASegment || parentSegment instanceof DynamicInfillSegment)
+					if (parentSegment instanceof CoreTMASegment
+							|| parentSegment instanceof DynamicInfillSegment)
 					{
-						// yes = in which case we won't offer to 
+						// yes = in which case we won't offer to
 						// generate a track based upon it
 						allGood = false;
 					}

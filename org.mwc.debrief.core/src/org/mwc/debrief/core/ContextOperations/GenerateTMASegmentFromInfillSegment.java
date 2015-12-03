@@ -82,25 +82,23 @@ public class GenerateTMASegmentFromInfillSegment implements
 	{
 
 		private final Layers _layers;
-		private TrackWrapper _newTrack;
 		private final double _courseDegs;
 		private final WorldSpeed _speed;
-		private final WorldVector _offset;
-		private final TrackWrapper _ownship;
+		private final TrackWrapper _solution;
 		private final TimePeriod _period;
 		private final DynamicInfillSegment _infill;
+		private AbsoluteTMASegment _newSegment;
 
-		public TMAfromInfill(TrackWrapper ownship, TimePeriod requestedPeriod,
-				DynamicInfillSegment infill, WorldVector offset,
+		public TMAfromInfill(TrackWrapper solution, TimePeriod requestedPeriod,
+				DynamicInfillSegment infill,
 				final Layers theLayers, final double courseDegs, final WorldSpeed speed)
 		{
-			super("Create TMA solution");
-			_ownship = ownship;
+			super("Create TMA solution to replace infill points");
+			_solution = solution;
 			_period = requestedPeriod;
 			_layers = theLayers;
 			_courseDegs = courseDegs;
 			_speed = speed;
-			_offset = offset;
 			_infill = infill;
 		}
 
@@ -108,8 +106,7 @@ public class GenerateTMASegmentFromInfillSegment implements
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-
-			Watchable[] matches = _ownship.getNearestTo(_period.getStartDTG());
+			Watchable[] matches = _solution.getNearestTo(_period.getStartDTG());
 			if (matches.length != 1)
 			{
 				CorePlugin.logError(Status.ERROR,
@@ -119,35 +116,61 @@ public class GenerateTMASegmentFromInfillSegment implements
 			}
 			else
 			{
-				WorldLocation startPoint = matches[0].getLocation().add(_offset);
-				final TrackSegment seg = new AbsoluteTMASegment(_courseDegs, _speed,
-						startPoint, _period.getStartDTG(), _period.getEndDTG());
+				WorldLocation startPoint = new WorldLocation(matches[0].getLocation());
 
-				// now replace the infill with the new segment
-				TrackWrapper hostTrack = _infill.getWrapper();
+				_newSegment = new AbsoluteTMASegment(_courseDegs, _speed, startPoint,
+						_period.getStartDTG(), _period.getEndDTG());
 
-				// remove the infill
-				hostTrack.removeElement(_infill);
-
-				// add the new TMA segment
-				hostTrack.add(seg);
-
-				// sorted, do the update
-				_layers.fireExtended();
-
-				return Status.OK_STATUS;
+				// ok, go for it
+				return redo(monitor, info);
 			}
+		}
+
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			return insertNewSeg(_infill, _newSegment, _infill.getWrapper());
+		}
+
+		private IStatus insertNewSeg(TrackSegment toRemove, TrackSegment toInsert,
+				TrackWrapper solution)
+		{
+			// remove the infill
+			solution.removeElement(toRemove);
+
+			// add the new TMA segment
+			solution.add(toInsert);
+
+			// sorted, do the update
+			_layers.fireExtended(toInsert, solution);
+
+			return Status.OK_STATUS;
 		}
 
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			// forget about the new tracks
-			_layers.removeThisLayer(_newTrack);
-			_layers.fireExtended();
+			return insertNewSeg(_newSegment, _infill, _newSegment.getWrapper());
+		}
 
-			return Status.OK_STATUS;
+		@Override
+		public boolean canExecute()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canRedo()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canUndo()
+		{
+			return true;
 		}
 
 	}
@@ -242,7 +265,7 @@ public class GenerateTMASegmentFromInfillSegment implements
 				final TrackWrapper fHost = hostTrack;
 				final TimePeriod fPeriod = requestedPeriod;
 				final DynamicInfillSegment fInfill = infill;
-
+				
 				// cool wrap it in an action.
 				_myAction = new Action(
 						"Generate TMA solution for times at selected positions")
@@ -255,7 +278,7 @@ public class GenerateTMASegmentFromInfillSegment implements
 						// get the supporting data
 						final TMAFromSensorWizard wizard = new TMAFromSensorWizard(45d,
 								new WorldDistance(5, WorldDistance.NM), DEFAULT_TARGET_COURSE,
-								DEFAULT_TARGET_SPEED);
+								DEFAULT_TARGET_SPEED, false);
 						final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 								.getActiveShell(), wizard);
 						dialog.create();
@@ -264,23 +287,9 @@ public class GenerateTMASegmentFromInfillSegment implements
 						// did it work?
 						if (dialog.getReturnCode() == WizardDialog.OK)
 						{
-							WorldVector res = new WorldVector(0, new WorldDistance(5,
-									WorldDistance.NM), null);
 							double courseDegs = 0;
-							WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-
-							final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-									.getPage(RangeBearingPage.NAME);
-							if (offsetPage != null)
-							{
-								if (offsetPage.isPageComplete())
-								{
-									res = new WorldVector(
-											MWC.Algorithms.Conversions.Degs2Rads(offsetPage
-													.getBearingDegs()), offsetPage.getRange(), null);
-								}
-							}
-
+							WorldSpeed speed = null;
+							
 							final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
 									.getPage(EnterSolutionPage.NAME);
 							if (solutionPage != null)
@@ -297,7 +306,7 @@ public class GenerateTMASegmentFromInfillSegment implements
 							// ok, go for it.
 							// sort it out as an operation
 							final IUndoableOperation convertToTrack1 = new TMAfromInfill(
-									fHost, fPeriod, fInfill, res, theLayers, courseDegs, speed);
+									fHost, fPeriod, fInfill, theLayers, courseDegs, speed);
 
 							// ok, stick it on the buffer
 							runIt(convertToTrack1);

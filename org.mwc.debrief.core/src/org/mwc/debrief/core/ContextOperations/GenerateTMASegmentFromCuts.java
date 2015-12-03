@@ -53,7 +53,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * @author ian.mayo
  * 
  */
-public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerator
+public class GenerateTMASegmentFromCuts implements
+		RightClickContextItemGenerator
 {
 
 	private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
@@ -88,10 +89,11 @@ public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerato
 		private final WorldSpeed _speed;
 		private final WorldVector _offset;
 
-		public TMAfromCuts(final SensorContactWrapper[] items, final Layers theLayers,
-				final WorldVector offset, final double courseDegs, final WorldSpeed speed)
+		public TMAfromCuts(final SensorContactWrapper[] items,
+				final Layers theLayers, final WorldVector offset,
+				final double courseDegs, final WorldSpeed speed)
 		{
-			super("Create TMA solution");
+			super("Create TMA solution from sensor cuts");
 			_items = items;
 			_layers = theLayers;
 			_courseDegs = courseDegs;
@@ -135,6 +137,36 @@ public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerato
 			return Status.OK_STATUS;
 		}
 
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			_layers.addThisLayerAllowDuplication(_newTrack);
+
+			// sorted, do the update
+			_layers.fireExtended();
+
+			return Status.OK_STATUS;
+		}
+
+		@Override
+		public boolean canExecute()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canRedo()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canUndo()
+		{
+			return true;
+		}
+
 	}
 
 	/**
@@ -164,81 +196,84 @@ public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerato
 				{
 					wraps.add((SensorContactWrapper) numer.nextElement());
 				}
-				if(!wraps.isEmpty())
+				if (!wraps.isEmpty())
 				{
-				final SensorContactWrapper[] items = new SensorContactWrapper[wraps.size()];
-				final SensorContactWrapper[] finalItems = wraps.toArray(items);
-				final SensorContactWrapper firstContact = finalItems[0];
+					final SensorContactWrapper[] items = new SensorContactWrapper[wraps
+							.size()];
+					final SensorContactWrapper[] finalItems = wraps.toArray(items);
+					final SensorContactWrapper firstContact = finalItems[0];
 
-				// cool wrap it in an action.
-				_myAction = new Action("Generate TMA solution from all cuts")
-				{
-					@Override
-					public void run()
+					// cool wrap it in an action.
+					_myAction = new Action("Generate TMA solution from all cuts")
 					{
-						// get ready for the supporting data (using selected sensor data, if
-						// we can)
-						WorldVector res = null;
-						double courseDegs = 0;
-						WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-
-						// just check we have some kind of range
-						WorldDistance theDist = firstContact.getRange();
-						if (theDist == null)
-							theDist = new WorldDistance(6, WorldDistance.NM);
-
-						// get the supporting data
-						final TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
-								.getBearing(), theDist, DEFAULT_TARGET_COURSE,
-								DEFAULT_TARGET_SPEED);
-						final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-								.getActiveShell(), wizard);
-						dialog.create();
-						dialog.open();
-
-						// did it work?
-						if (dialog.getReturnCode() == WizardDialog.OK)
+						@Override
+						public void run()
 						{
+							// get ready for the supporting data (using selected sensor data,
+							// if
+							// we can)
+							WorldVector res = null;
+							double courseDegs = 0;
+							WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
-							final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-									.getPage(RangeBearingPage.NAME);
-							if (offsetPage != null)
+							// just check we have some kind of range
+							WorldDistance theDist = firstContact.getRange();
+							if (theDist == null)
+								theDist = new WorldDistance(6, WorldDistance.NM);
+
+							// get the supporting data
+							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
+									firstContact.getBearing(), theDist, DEFAULT_TARGET_COURSE,
+									DEFAULT_TARGET_SPEED);
+							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+									.getActiveShell(), wizard);
+							dialog.create();
+							dialog.open();
+
+							// did it work?
+							if (dialog.getReturnCode() == WizardDialog.OK)
 							{
-								if (offsetPage.isPageComplete())
+
+								final RangeBearingPage offsetPage = (RangeBearingPage) wizard
+										.getPage(RangeBearingPage.NAME);
+								if (offsetPage != null)
 								{
-									res = new WorldVector(MWC.Algorithms.Conversions
-											.Degs2Rads(offsetPage.getBearingDegs()), offsetPage
-											.getRange(), null);
+									if (offsetPage.isPageComplete())
+									{
+										res = new WorldVector(
+												MWC.Algorithms.Conversions.Degs2Rads(offsetPage
+														.getBearingDegs()), offsetPage.getRange(), null);
+									}
 								}
-							}
 
-							final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
-									.getPage(EnterSolutionPage.NAME);
-							if (solutionPage != null)
-							{
-								if (solutionPage.isPageComplete())
+								final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
+										.getPage(EnterSolutionPage.NAME);
+								if (solutionPage != null)
 								{
-									final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
-											.getEditable();
-									courseDegs = item.getCourse();
-									speed = item.getSpeed();
+									if (solutionPage.isPageComplete())
+									{
+										final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
+												.getEditable();
+										courseDegs = item.getCourse();
+										speed = item.getSpeed();
+									}
 								}
+
+								// ok, go for it.
+								// sort it out as an operation
+								final IUndoableOperation convertToTrack1 = new TMAfromCuts(
+										finalItems, theLayers, res, courseDegs, speed);
+
+								// ok, stick it on the buffer
+								runIt(convertToTrack1);
+
 							}
-
-							// ok, go for it.
-							// sort it out as an operation
-							final IUndoableOperation convertToTrack1 = new TMAfromCuts(finalItems,
-									theLayers, res, courseDegs, speed);
-
-							// ok, stick it on the buffer
-							runIt(convertToTrack1);
-
+							else
+								System.err.println("user cancelled");
 						}
-						else
-							System.err.println("user cancelled");
-					}
-				};
-				}; // whether there are any cuts for this sensor
+					};
+				}
+				; // whether there are any cuts for this sensor
 			}
 		}
 		else
@@ -274,8 +309,8 @@ public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerato
 						{
 
 							// get the supporting data
-							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
-									.getBearing(), firstContact.getRange(),
+							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
+									firstContact.getBearing(), firstContact.getRange(),
 									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
 							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 									.getActiveShell(), wizard);
@@ -296,9 +331,9 @@ public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerato
 								{
 									if (offsetPage.isPageComplete())
 									{
-										res = new WorldVector(MWC.Algorithms.Conversions
-												.Degs2Rads(offsetPage.getBearingDegs()), offsetPage
-												.getRange(), null);
+										res = new WorldVector(
+												MWC.Algorithms.Conversions.Degs2Rads(offsetPage
+														.getBearingDegs()), offsetPage.getRange(), null);
 									}
 								}
 
@@ -317,8 +352,8 @@ public class GenerateTMASegmentFromCuts implements RightClickContextItemGenerato
 
 								// ok, go for it.
 								// sort it out as an operation
-								final IUndoableOperation convertToTrack1 = new TMAfromCuts(items,
-										theLayers, res, courseDegs, speed);
+								final IUndoableOperation convertToTrack1 = new TMAfromCuts(
+										items, theLayers, res, courseDegs, speed);
 
 								// ok, stick it on the buffer
 								runIt(convertToTrack1);
