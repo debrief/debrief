@@ -4037,6 +4037,29 @@ and so on....</programlisting></para>
 
               <secondary>Obtaining VPF data</secondary>
             </indexterm> number of different sources, although the main resource is the <link xlink:href="http://www.nima.mil" xmlns:xlink="http://www.w3.org/1999/xlink">NIMA</link> web-site itself.</para>
+          <para>In Autumn 2015 VPF data was available from the US National Geospatial-Intelligence
+            Agency (NGA), at these locations:<itemizedlist>
+              <listitem>
+                <para><uri
+                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0noa.tar.gz"
+                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0noa.tar.gz </uri></para>
+              </listitem>
+              <listitem>
+                <para><uri
+                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0soa.tar.gz"
+                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0soa.tar.gz </uri></para>
+              </listitem>
+              <listitem>
+                <para><uri
+                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0eur.tar.gz"
+                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0eur.tar.gz</uri></para>
+              </listitem>
+              <listitem>
+                <para><uri
+                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0sas.tar.gz"
+                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0sas.tar.gz </uri></para>
+              </listitem>
+            </itemizedlist></para>
 
           <para>In the UK, the Director General of Military Survey (DG Mil Survey) were able to
             provide the VMap database (charged to a Royal Navy UIN).</para>
