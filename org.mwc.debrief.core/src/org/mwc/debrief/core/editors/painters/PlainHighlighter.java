@@ -21,7 +21,6 @@ import java.beans.PropertyDescriptor;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;

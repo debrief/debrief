@@ -10,6 +10,7 @@ import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
@@ -162,7 +163,6 @@ public class DynamicInfillSegment extends TrackSegment
 	 */
 	private final String _afterName;
 
-
 	/**
 	 * restore from file, where we only know the names of the legs
 	 * 
@@ -173,12 +173,16 @@ public class DynamicInfillSegment extends TrackSegment
 	{
 		_beforeName = beforeName;
 		_afterName = afterName;
-		
+
 		_moveListener = new PropertyChangeListener()
 		{
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt)
 			{
+				// note, we used to call "recalculate" here. But, sometimes our
+				// precedent
+				// data doesn't know it's new location until after a paint event.
+				// so, we'll defer generating the points until they're required
 				reconstruct();
 			}
 		};
@@ -360,6 +364,11 @@ public class DynamicInfillSegment extends TrackSegment
 
 		return super.getVisible();
 	}
+	
+	protected void sortOutDate(final HiResDate startDTG)
+	{
+		// skip - we'll use the infill name
+	}
 
 	/**
 	 * recalculate our set of positions
@@ -512,9 +521,12 @@ public class DynamicInfillSegment extends TrackSegment
 		}
 
 		// sort out our name
-		final String name = "infill_"
-				+ FormatRNDateTime.toShortString(new Date().getTime());
-		this.setName(name);
+		if (getName() == null)
+		{
+			final String name = "infill_"
+					+ FormatRNDateTime.toShortString(new Date().getTime());
+			this.setName(name);
+		}
 
 		// also make it dotted, since it's artificially generated
 		this.setLineStyle(CanvasType.DOTTED);
@@ -525,6 +537,18 @@ public class DynamicInfillSegment extends TrackSegment
 		segment.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
 		segment.addPropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
 				_wrapperListener);
+
+		// hmm, is it a relative segment?
+		if (segment instanceof RelativeTMASegment)
+		{
+			RelativeTMASegment rel = (RelativeTMASegment) segment;
+			SensorWrapper sensor = rel.getReferenceSensor();
+			if (sensor != null)
+			{
+				sensor.addPropertyChangeListener(SensorWrapper.LOCATION_CHANGED,
+						_moveListener);
+			}
+		}
 	}
 
 	private void stopWatching(final TrackSegment segment)
@@ -535,6 +559,19 @@ public class DynamicInfillSegment extends TrackSegment
 					_moveListener);
 			segment.removePropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
 					_wrapperListener);
+
+			// hmm, is it a relative segment?
+			if (segment instanceof RelativeTMASegment)
+			{
+				RelativeTMASegment rel = (RelativeTMASegment) segment;
+				SensorWrapper sensor = rel.getReferenceSensor();
+				if (sensor != null)
+				{
+					sensor.removePropertyChangeListener(SensorWrapper.LOCATION_CHANGED,
+							_moveListener);
+				}
+			}
+
 		}
 	}
 
@@ -565,8 +602,14 @@ public class DynamicInfillSegment extends TrackSegment
 			// ok, burn everything!
 			clear();
 
-			// and remove ourselves from our parent
-			getWrapper().removeElement(this);
+			// safety check. if we're being deleted, our parent may already be
+			// nnull
+			if (getWrapper() != null)
+			{
+
+				// and remove ourselves from our parent
+				getWrapper().removeElement(this);
+			}
 		}
 	}
 

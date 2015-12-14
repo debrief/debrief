@@ -439,6 +439,23 @@ public class TrackWrapper_Support
 				seg.setWrapper(_myTrack);
 			}
 		}
+
+		public TrackSegment getSegmentFor(long time)
+		{
+			// update our segments
+			final Collection<Editable> items = getData();
+			for (final Iterator<Editable> iterator = items.iterator(); iterator
+					.hasNext();)
+			{
+				final TrackSegment seg = (TrackSegment) iterator.next();
+				if(seg.endDTG().getDate().getTime() >= time && seg.startDTG().getDate().getTime() <= time )
+				{
+					return seg;
+				}
+			}
+
+			return null;
+		}
 	}
 
 }

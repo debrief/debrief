@@ -978,6 +978,58 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 3, segs.lastElement().size());
 	}
 
+
+	public void testSegmentList()
+	{
+		
+		final TrackWrapper tw = new TrackWrapper();
+
+		
+		final TrackSegment ts0 = new TrackSegment();
+		ts0.addFix(createFix(10000, 1, 1, 20, 30));
+		ts0.addFix(createFix(11000, 1, 1, 20, 30));
+		ts0.addFix(createFix(12000, 1, 1, 20, 30));
+		ts0.addFix(createFix(13000, 1, 1, 20, 30));
+		
+		final TrackSegment ts1 = new TrackSegment();
+		ts1.addFix(createFix(14000, 1, 1, 20, 30));
+		ts1.addFix(createFix(15000, 1, 1, 20, 30));
+		ts1.addFix(createFix(16000, 1, 1, 20, 30));
+		ts1.addFix(createFix(17000, 1, 1, 20, 30));
+		
+		final TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(18000, 1, 1, 20, 30));
+		ts2.addFix(createFix(19000, 1, 1, 20, 30));
+		ts2.addFix(createFix(20000, 1, 1, 20, 30));
+		ts2.addFix(createFix(21000, 1, 1, 20, 30));
+		
+		tw.add(ts0);
+		tw.add(ts1);
+		tw.add(ts2);
+		
+		SegmentList sList = tw.getSegments();
+		TrackSegment i1 = sList.getSegmentFor(16000);
+		assertEquals("correct segment", ts1, i1);
+		i1 = sList.getSegmentFor(17000);
+		assertEquals("correct segment", ts1, i1);
+		i1 = sList.getSegmentFor(14000);
+		assertEquals("correct segment", ts1, i1);
+		
+		TrackSegment i0 = sList.getSegmentFor(10000);
+		assertEquals("correct segment", ts0, i0);
+		i0 = sList.getSegmentFor(13000);
+		assertEquals("correct segment", ts0, i0);
+		i0 = sList.getSegmentFor(11000);
+		assertEquals("correct segment", ts0, i0);
+
+		TrackSegment i2 = sList.getSegmentFor(18000);
+		assertEquals("correct segment", ts2, i2);
+		i2 = sList.getSegmentFor(21000);
+		assertEquals("correct segment", ts2, i2);
+
+		
+	}
+	
 	/**
 	 * .
 	 */
@@ -991,6 +1043,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		final FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
 		final FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
+		tw.addFix(createFix(80000, 3, 3, 4, 12));
 		tw.addFix(f1);
 		tw.addFix(f2);
 		tw.addFix(createFix(300000, 3, 3, 4, 12));
@@ -1000,8 +1053,6 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 		final double course = 33;
 
-		// ok, create the segment
-		CoreTMASegment seg = null;
 
 		// check the before
 		FixWrapper firstFix = null;
@@ -1015,26 +1066,26 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		sw.add(createSensorItem(tw, sw, 120000));
 		sw.add(createSensorItem(tw, sw, 130000));
 		sw.add(createSensorItem(tw, sw, 140000));
-		seg = new RelativeTMASegment(sw, offset, speed, course, null);
+		final CoreTMASegment seg1 = new RelativeTMASegment(sw, offset, speed, course, null);
 
 		// check the create worked
-		assertEquals("enough points created", 4, seg.size());
+		assertEquals("enough points created", 4, seg1.size());
 
 		// check the before
-		firstFix = (FixWrapper) seg.getData().iterator().next();
-		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+		firstFix = (FixWrapper) seg1.getData().iterator().next();
+		assertEquals("correct course before", 33, seg1.getCourse(), 0.001);
 		assertEquals("correct speed before", 5,
-				seg.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
+				seg1.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
 		assertEquals("correct course before", 33,
 				MWC.Algorithms.Conversions.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
 
-		seg.setCourse(35);
-		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+		seg1.setCourse(35);
+		seg1.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
 
-		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
+		assertEquals("correct course after", 35, seg1.getCourse(), 0.001);
 		assertEquals("correct speed after", 15,
-				seg.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
+				seg1.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
 		assertEquals("correct course after", 35,
 				MWC.Algorithms.Conversions.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
@@ -1056,17 +1107,17 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			sensorContactWrapper.setSensor(sw);
 		}
 
-		seg = new RelativeTMASegment(items, offset, speed, course, null);
+		final RelativeTMASegment seg2 = new RelativeTMASegment(items, offset, speed, course, null);
 
 		// check the create worked
-		assertEquals("enough points created", 5, seg.size());
+		assertEquals("enough points created", 5, seg2.size());
 
-		final Iterator<Editable> someIt = seg.getData().iterator();
+		final Iterator<Editable> someIt = seg2.getData().iterator();
 		// check the before
 		firstFix = (FixWrapper) someIt.next();
-		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+		assertEquals("correct course before", 33, seg2.getCourse(), 0.001);
 		assertEquals("correct speed before", 5,
-				seg.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
+				seg2.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
 		assertEquals("correct course before", 33,
 				MWC.Algorithms.Conversions.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
@@ -1085,15 +1136,37 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("check dtg produced", 150000, firstFix.getDTG().getDate()
 				.getTime(), 0.001);
 
-		seg.setCourse(35);
-		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+		seg2.setCourse(35);
+		seg2.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
 
-		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
+		assertEquals("correct course after", 35, seg2.getCourse(), 0.001);
 		assertEquals("correct speed after", 15,
-				seg.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
+				seg2.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
 		assertEquals("correct course after", 35,
 				MWC.Algorithms.Conversions.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+
+		// check that new points get added as we extend the solution
+		assertEquals("start with correct points", 5, seg2.size());
+
+		seg2.setDTG_End(new HiResDate(200000));
+		assertEquals("more points after stretch", 11, seg2.size());
+		assertEquals("new end time", 200000, seg2.getDTG_End().getDate().getTime());
+		
+		
+		// now try to stretch the start		
+
+		seg2.setDTG_Start(new HiResDate(80002));
+		assertEquals("new start time", 80002, seg2.getDTG_Start().getDate().getTime());
+		assertEquals("more points after stretch", 17, seg2.size());
+
+		// have a look at the times
+		Iterator<Editable> sIter = seg2.getData().iterator();
+		while (sIter.hasNext())
+		{
+			FixWrapper fw = (FixWrapper) sIter.next();
+			System.out.println(fw.getDTG().getDate().getTime());
+		}
 
 	}
 

@@ -22,11 +22,13 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -84,15 +86,18 @@ public class RelativeTMASegment extends CoreTMASegment
 						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
-						displayExpertProp("HostName","Host name",
+						displayExpertProp("HostName", "Host name",
 								"Name of the track from which range/bearing measured", OFFSET),
-						displayExpertProp("OffsetRange", "Offset range", "Distance to start point on host track",
-								OFFSET),
-						displayExpertProp("OffsetBearing", "Offset bearing", 
+						displayExpertProp("SensorName", "Sensor name",
+								"Name of the sensor from which range/bearing measured", OFFSET),
+						displayExpertProp("OffsetRange", "Offset range",
+								"Distance to start point on host track", OFFSET),
+						displayExpertProp("OffsetBearing", "Offset bearing",
 								"Bearing from host track to start of this solution", OFFSET),
-						displayExpertProp("DTG_Start", "DTG Start",  "Start time for this TMA Solution",
-								SOLUTION),
-						displayExpertProp("DTG_End", "DTG End", "End time for this TMA Solution", SOLUTION) };
+						displayExpertProp("DTG_Start", "DTG Start",
+								"Start time for this TMA Solution", SOLUTION),
+						displayExpertProp("DTG_End", "DTG End",
+								"End time for this TMA Solution", SOLUTION) };
 				mine = res;
 			}
 			catch (final IntrospectionException e)
@@ -116,11 +121,19 @@ public class RelativeTMASegment extends CoreTMASegment
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * name of the watchable list we're going to use as our origin
+	 * name of the watchable list we're going to use as our origin. We need to
+	 * support storing this as a string so that we can defer finding the actual
+	 * object pointer until after file-load is complete
 	 * 
 	 * @return
 	 */
-	private String _hostName;
+	private String _referenceTrackName;
+
+	/**
+	 * name of the sensor we're going to use as our origin
+	 * 
+	 */
+	private String _referenceSensorName;
 
 	/**
 	 * the offset we apply to the origin
@@ -133,6 +146,12 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * 
 	 */
 	private TrackWrapper _referenceTrack;
+
+	/**
+	 * the sensor that we're using as an origin (particularly relevant for an
+	 * offset sensor like a towed array
+	 */
+	private SensorWrapper _referenceSensor;
 
 	/**
 	 * our editable details
@@ -175,7 +194,9 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// now the other bits
 		this._referenceTrack = relevantSegment._referenceTrack;
-		this._hostName = relevantSegment._hostName;
+		this._referenceSensor = relevantSegment._referenceSensor;
+		this._referenceTrackName = relevantSegment._referenceTrackName;
+		this._referenceSensorName = relevantSegment._referenceSensorName;
 
 		// lastly, insert the fixes
 		getData().addAll(theItems);
@@ -199,13 +220,17 @@ public class RelativeTMASegment extends CoreTMASegment
 	 *          the initial target course estimate
 	 */
 	public RelativeTMASegment(final SensorContactWrapper[] observations,
-			final WorldVector offset, final WorldSpeed speed, final double courseDegs, final Layers theLayers)
+			final WorldVector offset, final WorldSpeed speed,
+			final double courseDegs, final Layers theLayers)
 	{
 		this(courseDegs, speed, offset, theLayers);
 
 		// sort out the origin
 		final SensorContactWrapper scw = observations[0];
 		_referenceTrack = scw.getSensor().getHost();
+		_referenceTrackName = _referenceTrack.getName();
+		_referenceSensor = scw.getSensor();
+		_referenceSensorName = _referenceSensor.getName();
 
 		// create the points
 		createPointsFrom(observations);
@@ -231,6 +256,9 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// sort out the origin
 		_referenceTrack = sw.getHost();
+		_referenceSensor = sw;
+		_referenceTrackName = _referenceTrack.getName();
+		_referenceSensorName = sw.getName();
 
 		// create the points
 		createPointsFrom(sw);
@@ -274,7 +302,8 @@ public class RelativeTMASegment extends CoreTMASegment
 		final Enumeration<Editable> obs = sw.elements();
 		while (obs.hasMoreElements())
 		{
-			final SensorContactWrapper thisS = (SensorContactWrapper) obs.nextElement();
+			final SensorContactWrapper thisS = (SensorContactWrapper) obs
+					.nextElement();
 			doThisFix(thisS);
 		}
 	}
@@ -365,8 +394,8 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// sort out points on the line we have to meet
 		final WorldLocation outerStart = hisEnd;
-		final WorldLocation outerEnd = outerStart.add(new WorldVector(endBrg, _offset
-				.getRange(), 0));
+		final WorldLocation outerEnd = outerStart.add(new WorldVector(endBrg,
+				_offset.getRange(), 0));
 
 		// perform the line intersect
 		// taken from
@@ -405,12 +434,15 @@ public class RelativeTMASegment extends CoreTMASegment
 		// be
 		final WorldLocation newEnd = new WorldLocation(intersectY, intersectX, 0);
 		final double newLegLength = newEnd.subtract(myNewStart).getRange();
-		final WorldDistance lenDegs = new WorldDistance(newLegLength, WorldDistance.DEGS);
+		final WorldDistance lenDegs = new WorldDistance(newLegLength,
+				WorldDistance.DEGS);
 
 		// and what's our speed to cover this distance?
-		final double timeTakenMicros = (endDTG().getMicros() - startDTG().getMicros());
+		final double timeTakenMicros = (endDTG().getMicros() - startDTG()
+				.getMicros());
 		final double timeTakenHours = timeTakenMicros / 1000 / 1000 / 60 / 60;
-		final double speedKts = lenDegs.getValueIn(WorldDistance.NM) / timeTakenHours;
+		final double speedKts = lenDegs.getValueIn(WorldDistance.NM)
+				/ timeTakenHours;
 
 		// and change the speed proportionately
 		this.setSpeed(new WorldSpeed(speedKts, WorldSpeed.Kts));
@@ -470,18 +502,71 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		if (_referenceTrack != null)
 		{
-			// interpolate on the parent track
-			final boolean oldInterpSetting = _referenceTrack.getInterpolatePoints();
-
-			_referenceTrack.setInterpolatePoints(true);
-
-			final Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
-			if (pts.length > 0)
+			// hmm, are we drawn from a sensor?
+			if (_referenceSensor != null)
 			{
-				res = pts[0].getLocation();
-			}
+				// ok, we don't need to worry about interpolating positions, since
+				// our time stamps match those of the sensor.
+				Watchable[] items = _referenceSensor.getNearestTo(startDTG());
+				final Watchable hostLocation;
 
-			_referenceTrack.setInterpolatePoints(oldInterpSetting);
+				// hmm,
+				if (items.length > 0)
+				{
+					// cool get the location of the sensor
+					hostLocation = items[0];
+				}
+				else
+				{
+					// hmm, we don't have a cut at this location. Try to get the location
+					// of the host
+					TrackWrapper host = _referenceSensor.getHost();
+					if (host != null)
+					{
+						items = host.getNearestTo(startDTG());
+						if (items.length > 0)
+						{
+							hostLocation = items[0];
+						}
+						else
+						{
+							// ok, just get the first location
+							items = host.getNearestTo(host.getStartDTG());
+							hostLocation = items[0];
+						}
+					}
+					else
+					{
+						hostLocation = null;
+					}
+				}
+
+				// did we find a location?
+				if (hostLocation != null)
+				{
+					res = hostLocation.getLocation();
+				}
+				else
+				{
+					Application.logError2(ErrorLogger.ERROR, "Unable to find host location for this segment", null);
+				}
+
+			}
+			else
+			{
+				// interpolate on the parent track
+				final boolean oldInterpSetting = _referenceTrack.getInterpolatePoints();
+
+				_referenceTrack.setInterpolatePoints(true);
+
+				final Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
+				if (pts.length > 0)
+				{
+					res = pts[0].getLocation();
+				}
+
+				_referenceTrack.setInterpolatePoints(oldInterpSetting);
+			}
 		}
 		return res;
 	}
@@ -489,15 +574,20 @@ public class RelativeTMASegment extends CoreTMASegment
 	public String getHostName()
 	{
 		// just check we have some data
-		if (_hostName == null)
+		if (_referenceTrackName == null)
 		{
 			if (_referenceTrack == null)
 				identifyReferenceTrack();
 
-			_hostName = _referenceTrack.getName();
+			_referenceTrackName = _referenceTrack.getName();
 		}
 
-		return _hostName;
+		return _referenceTrackName;
+	}
+
+	public String getSensorName()
+	{
+		return _referenceSensorName;
 	}
 
 	@Override
@@ -534,6 +624,16 @@ public class RelativeTMASegment extends CoreTMASegment
 		return res;
 	}
 
+	public SensorWrapper getReferenceSensor()
+	{
+		// do we know it?
+		if (_referenceTrack == null)
+			identifyReferenceTrack();
+
+		// fingers crossed it's sorted.
+		return _referenceSensor;
+	}
+
 	public WatchableList getReferenceTrack()
 	{
 		// do we know it?
@@ -566,7 +666,22 @@ public class RelativeTMASegment extends CoreTMASegment
 	 */
 	private void identifyReferenceTrack()
 	{
-		_referenceTrack = (TrackWrapper) _theLayers.findLayer(_hostName);
+		_referenceTrack = (TrackWrapper) _theLayers.findLayer(_referenceTrackName);
+
+		// hmm, also try to find the sensor
+		if (_referenceTrack != null)
+		{
+			Enumeration<Editable> sensors = _referenceTrack.getSensors().elements();
+			while (sensors.hasMoreElements())
+			{
+				SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+				if (sensor.getName().equals(_referenceSensorName))
+				{
+					_referenceSensor = sensor;
+					break;
+				}
+			}
+		}
 	}
 
 	private void recalcPositions()
@@ -577,7 +692,8 @@ public class RelativeTMASegment extends CoreTMASegment
 		WorldLocation tmaLastLoc = null;
 		long tmaLastDTG = 0;
 
-		for (final Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = items.iterator(); iterator
+				.hasNext();)
 		{
 			final FixWrapper thisF = (FixWrapper) iterator.next();
 
@@ -767,31 +883,84 @@ public class RelativeTMASegment extends CoreTMASegment
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.last();
 
-			// don't worry about the location, we're going to DR it on anyway...
-			final WorldLocation newLoc = null;
-			final Fix newFix = new Fix(newEnd, newLoc,
-					MWC.Algorithms.Conversions.Degs2Rads(this.getCourse()),
-					MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
-							WorldSpeed.Kts)));
+			// note: we don't want one large leap. So, insert a few points
+			long oldEndT = endDTG().getDate().getTime();
+			long newEndT = newEnd.getDate().getTime();
+			final long typicalDelta = typicalTimeStep(false);
+			long thisT = oldEndT + typicalDelta;
 
-			// and apply the stretch
-			final FixWrapper newItem = new FixWrapper(newFix);
+			while (thisT < newEndT)
+			{
+				addFix(theLoc, thisT);
 
-			// set some other bits
-			newItem.setTrackWrapper(this._myTrack);
-			newItem.setColor(theLoc.getActualColor());
-			newItem.setSymbolShowing(theLoc.getSymbolShowing());
-			newItem.setArrowShowing(theLoc.getArrowShowing());
-			newItem.setLabelShowing(theLoc.getLabelShowing());
-			newItem.setLabelLocation(theLoc.getLabelLocation());
-			newItem.setLabelFormat(theLoc.getLabelFormat());
+				thisT += typicalDelta;
+			}
 
-			this.add(newItem);
+			// and create one at the end time
+			addFix(theLoc, newEndT);
+
 		}
 
 		// tell any listeners that we've changed
 		super.fireAdjusted();
-		
+
+	}
+
+	private void addFix(final FixWrapper theLoc, long thisT)
+	{
+		HiResDate newTime = new HiResDate(thisT);
+
+		// don't worry about the location, we're going to DR it on anyway...
+		final WorldLocation newLoc = null;
+		final Fix newFix = new Fix(newTime, newLoc,
+				MWC.Algorithms.Conversions.Degs2Rads(this.getCourse()),
+				MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
+						WorldSpeed.Kts)));
+
+		// and apply the stretch
+		final FixWrapper newItem = new FixWrapper(newFix);
+
+		// set some other bits
+		newItem.setTrackWrapper(this._myTrack);
+		newItem.setColor(theLoc.getActualColor());
+		newItem.setSymbolShowing(theLoc.getSymbolShowing());
+		newItem.setArrowShowing(theLoc.getArrowShowing());
+		newItem.setLabelShowing(theLoc.getLabelShowing());
+		newItem.setLabelLocation(theLoc.getLabelLocation());
+		newItem.setLabelFormat(theLoc.getLabelFormat());
+		newItem.resetName();
+
+		this.add(newItem);
+	}
+
+	/**
+	 * get the time interval of the first two data values
+	 * 
+	 * @return
+	 */
+	private long typicalTimeStep(boolean startGap)
+	{
+		final long res;
+		FixWrapper[] dArr = this.getData().toArray(new FixWrapper[]
+		{});
+		if (dArr.length < 2)
+		{
+			// special case, return useful gap
+			res = 5000;
+		}
+		else if (startGap)
+		{
+			res = dArr[1].getDTG().getDate().getTime()
+					- dArr[0].getDTG().getDate().getTime();
+		}
+		else
+		{
+			int len = dArr.length;
+			res = dArr[len - 1].getDTG().getDate().getTime()
+					- dArr[len - 2].getDTG().getDate().getTime();
+		}
+
+		return res;
 	}
 
 	@FireExtended
@@ -809,22 +978,23 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// and what distance does this mean?
 		final double deltaHrs = delta / 1000000d / 60d / 60d;
-		final double distDegs = this.getSpeed().getValueIn(WorldSpeed.Kts) * deltaHrs
-				/ 60;
+		final double distDegs = this.getSpeed().getValueIn(WorldSpeed.Kts)
+				* deltaHrs / 60;
 
-		final double theDirection = MWC.Algorithms.Conversions
-				.Degs2Rads(this.getCourse());
+		final double theDirection = MWC.Algorithms.Conversions.Degs2Rads(this
+				.getCourse());
 
 		// we don't need to worry about reversing the direction, since we have a -ve
 		// distance
 
 		// so what's the new origin?
 		final WorldLocation currentStart = new WorldLocation(this.getTrackStart());
-		final WorldLocation newOrigin = currentStart.add(new WorldVector(theDirection,
-				distDegs, 0));
+		final WorldLocation newOrigin = currentStart.add(new WorldVector(
+				theDirection, distDegs, 0));
 
 		// and what's the point on the host track
-		final Watchable[] matches = this.getReferenceTrack().getNearestTo(theNewStart);
+		final Watchable[] matches = this.getReferenceTrack().getNearestTo(
+				theNewStart);
 		final Watchable newRefPt = matches[0];
 		final WorldVector newOffset = newOrigin.subtract(newRefPt.getLocation());
 
@@ -867,26 +1037,25 @@ public class RelativeTMASegment extends CoreTMASegment
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.first();
 
-			// don't worry about the location, we're going to DR it on anyway...
-			final WorldLocation newLoc = null;
-			final Fix newFix = new Fix(theNewStart, newLoc,
-					MWC.Algorithms.Conversions.Degs2Rads(this.getCourse()),
-					MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
-							WorldSpeed.Kts)));
+			// TODO: problem when we extend the start, sometimes we don't have a
+			// parent cut to refer to
 
-			// and apply the stretch
-			final FixWrapper newItem = new FixWrapper(newFix);
+			// note: we don't want one large leap. So, insert a few points
+			long oldStartT = startDTG().getDate().getTime();
+			long newStartT = newStart.getDate().getTime();
+			final long typicalDelta = typicalTimeStep(true);
+			long thisT = oldStartT - typicalDelta;
 
-			// set some other bits
-			newItem.setTrackWrapper(this._myTrack);
-			newItem.setColor(theLoc.getActualColor());
-			newItem.setSymbolShowing(theLoc.getSymbolShowing());
-			newItem.setArrowShowing(theLoc.getArrowShowing());
-			newItem.setLabelShowing(theLoc.getLabelShowing());
-			newItem.setLabelLocation(theLoc.getLabelLocation());
-			newItem.setLabelFormat(theLoc.getLabelFormat());
+			while (thisT > newStartT)
+			{
+				addFix(theLoc, thisT);
 
-			this.add(newItem);
+				thisT -= typicalDelta;
+			}
+
+			// and create one at the end time
+			addFix(theLoc, newStartT);
+
 		}
 
 		// and sort out the new offset
@@ -897,7 +1066,8 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	}
 
-	public void setFirstSensorContact(final SensorContactWrapper firstSensorContact)
+	public void setFirstSensorContact(
+			final SensorContactWrapper firstSensorContact)
 	{
 		_firstSensorContact = firstSensorContact;
 	}
@@ -926,12 +1096,27 @@ public class RelativeTMASegment extends CoreTMASegment
 					_referenceTrack = null;
 
 					// now remember the new name
-					_hostName = hostName;
+					_referenceTrackName = hostName;
 				}
 			}
 
 		}
 
+	}
+
+	/**
+	 * temporarily store the sensor name, until we've finished loading and we can
+	 * sort it out for real.
+	 * 
+	 * @param sensorName
+	 */
+	public void setSensorName(final String sensorName)
+	{
+		if (sensorName != null)
+		{
+			// better trim what we've recived
+			_referenceSensorName = sensorName.trim();
+		}
 	}
 
 	public void setLastSensorContact(final SensorContactWrapper lastSensorContact)
@@ -1090,8 +1275,8 @@ public class RelativeTMASegment extends CoreTMASegment
 			final WorldVector thisLeg = getTrackStart().subtract(origin);
 
 			// now change the distance
-			final WorldVector newLeg = new WorldVector(thisLeg.getBearing(), theRngDegs,
-					thisLeg.getDepth());
+			final WorldVector newLeg = new WorldVector(thisLeg.getBearing(),
+					theRngDegs, thisLeg.getDepth());
 
 			// calculate the new start point
 			final WorldLocation newStart = origin.add(newLeg);
@@ -1130,7 +1315,7 @@ public class RelativeTMASegment extends CoreTMASegment
 				.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
 
 		_dragMsg = "[" + spdTxt + " kts]";
-		
+
 		// tell any listeners that we've moved
 		fireAdjusted();
 	}
@@ -1143,7 +1328,8 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * @param speedVal
 	 *          the (optional) speed to update
 	 */
-	private void updateCourseSpeed(final Double courseValRads, final Double speedValKts)
+	private void updateCourseSpeed(final Double courseValRads,
+			final Double speedValKts)
 	{
 		final Enumeration<Editable> obs = this.elements();
 		while (obs.hasMoreElements())

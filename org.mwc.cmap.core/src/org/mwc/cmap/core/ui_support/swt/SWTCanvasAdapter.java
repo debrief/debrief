@@ -1494,6 +1494,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setXORMode(boolean mode)
 	{

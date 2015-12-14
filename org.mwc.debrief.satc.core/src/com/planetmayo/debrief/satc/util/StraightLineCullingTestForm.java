@@ -105,6 +105,7 @@ public class StraightLineCullingTestForm extends JFrame
 		setJMenuBar(menuBar);
 	}
 	
+	@SuppressWarnings("resource")
 	private void loadFile(File file) throws IOException
 	{
   	Scanner scanner = new Scanner(file);

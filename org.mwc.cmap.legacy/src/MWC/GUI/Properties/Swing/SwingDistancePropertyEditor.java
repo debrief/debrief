@@ -120,7 +120,8 @@ public class SwingDistancePropertyEditor extends
 
   /** combo-box to select the units
    */
-  JComboBox _theUnits;
+  @SuppressWarnings("rawtypes")
+	JComboBox _theUnits;
 
   /** panel to hold everything
    */
@@ -146,7 +147,8 @@ public class SwingDistancePropertyEditor extends
 
   /** build the editor
    */
-  public java.awt.Component getCustomEditor()
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+	public java.awt.Component getCustomEditor()
   {
     _theHolder = new JPanel();
 

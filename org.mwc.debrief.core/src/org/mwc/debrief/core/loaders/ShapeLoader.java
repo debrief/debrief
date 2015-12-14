@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.core.loaders;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -79,8 +80,12 @@ public class ShapeLoader extends IPlotLoader.BaseLoader
 								// quick check, is this a KMZ
 								if(fileName.endsWith(".shp"))
 								{
+									// create a layer name from the filename
+									File tmpFile = new File(fileName);
+									String layerName = tmpFile.getName();
+									
 									// ok - get loading going
-									final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(ChartBoundsWrapper.SHAPEFILE_TYPE, fileName, fileName);
+									final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(ChartBoundsWrapper.SHAPEFILE_TYPE, layerName, fileName);
 									theLayers.addThisLayer(dl);
 								}
 								

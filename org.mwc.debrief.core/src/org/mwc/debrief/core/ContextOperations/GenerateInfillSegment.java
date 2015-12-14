@@ -154,7 +154,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 					break;
 			}
 
-			fireModified();
+			_layers.fireExtended(null, _parentTrack);
 
 			if (res == null)
 			{
@@ -225,11 +225,6 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			return true;
 		}
 
-		private void fireModified()
-		{
-			_layers.fireExtended();
-		}
-
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
@@ -244,7 +239,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			}
 
 			// cool, tell everyone
-			fireModified();
+			_layers.fireExtended(null, _parentTrack);
 
 			// register success
 			return new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,

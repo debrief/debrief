@@ -760,10 +760,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		};
 
-		// declare our arrays
-		_thePositions = new TrackWrapper_Support.SegmentList();
-		_thePositions.setWrapper(this);
-
 		_linkPositions = true;
 
 		// start off with positions showing (although the default setting for a
@@ -781,6 +777,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// initialise the symbol to use for plotting this track in snail mode
 		_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory
 				.createSymbol("Submarine");
+		
+		// declare our arrays
+		_thePositions = new TrackWrapper_Support.SegmentList();
+		_thePositions.setWrapper(this);
 	}
 
 	/**
@@ -3884,10 +3884,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					secondOffset);
 
 			// update the freq's
-			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
-					.getBaseFrequency());
-			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment)
-					.getBaseFrequency());
+			tr1.setBaseFrequency(theTMA.getBaseFrequency());
+			tr2.setBaseFrequency(theTMA.getBaseFrequency());
 
 			// and store them
 			ts1 = tr1;

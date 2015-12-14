@@ -287,7 +287,7 @@ public class ZigDetector
 
 		// ok, now have to slice it
 		double bestScore = Double.MAX_VALUE;
-		int bestSlice = -1;
+//		int bestSlice = -1;
 		long sliceTime = -1;
 		long bestLegOneEnd = -1;
 		long bestLegTwoStart = -1;
@@ -309,7 +309,7 @@ public class ZigDetector
 			{
 				// yes - store it.
 				bestScore = sum;
-				bestSlice = index;
+		//		bestSlice = index;
 				sliceTime = thisLegTimes.get(index);
 				bestLegOneEnd = thisLegTimes.get(legOneEnd);
 				bestLegTwoStart = thisLegTimes.get(legTwoStart);
