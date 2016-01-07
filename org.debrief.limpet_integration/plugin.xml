@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IFile"
+            id="org.debrief.limpet_integration.contribution1">
+         <menu
+               label="New Sample Submenu"
+               path="additions"
+               id="org.debrief.limpet_integration.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="New Sample Action"
+               class="org.debrief.limpet_integration.popup.actions.SampleAction"
+               menubarPath="org.debrief.limpet_integration.menu1/group1"
+               enablesFor="1"
+               id="org.debrief.limpet_integration.newAction">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>
