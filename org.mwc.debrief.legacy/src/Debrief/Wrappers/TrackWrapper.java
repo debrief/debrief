@@ -36,6 +36,7 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.Measurements.SupplementalData;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;
@@ -48,6 +49,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -55,7 +57,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
@@ -614,6 +615,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private boolean _interpolatePoints = false;
 
+	/** any extra data stored in the track
+	 * 
+	 */
+	private SupplementalData _otherData = new SupplementalData();
+	
 	/**
 	 * the end of the track to plot the label
 	 */
@@ -1211,6 +1217,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			res.add(_thePositions);
 		}
 
+		// do we have any other stored data?
+		if(_otherData != null)
+		{
+			res.add(_otherData);
+		}
+		
 		return new TrackWrapper_Support.IteratorWrapper(res.iterator());
 	}
 
