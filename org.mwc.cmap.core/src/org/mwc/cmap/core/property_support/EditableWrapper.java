@@ -99,9 +99,7 @@ public class EditableWrapper implements IPropertySource
 	 */
 	public EditableWrapper(final Editable plottable, final Layers theLayers)
 	{
-		_editable = plottable;
-		_theLayers = theLayers;
-		_parent = null;
+		this(plottable, null, theLayers);
 	}
 
 	/**
@@ -112,9 +110,7 @@ public class EditableWrapper implements IPropertySource
 	 */
 	public EditableWrapper(final Editable plottable)
 	{
-		_editable = plottable;
-		_theLayers = null;
-		_parent = null;
+		this(plottable, null, null);
 	}
 
 	public Layer getTopLevelLayer()
