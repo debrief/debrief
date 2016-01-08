@@ -12,8 +12,8 @@ public class SupplementalData extends ArrayList<SupplementalDataBlock>
 
 	public SupplementalData()
 	{
-		MeasurementBlock measurements = new MeasurementBlock();
-		measurements.setName("Measurements");
-		this.add(measurements);
+//		MeasurementBlock measurements = new MeasurementBlock();
+//		measurements.setName("Measurements");
+//		this.add(measurements);
 	}
 }
