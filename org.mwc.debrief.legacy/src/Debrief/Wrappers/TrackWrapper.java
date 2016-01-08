@@ -26,6 +26,7 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Measurements.SupplementalData;
+import Debrief.Wrappers.Measurements.SupplementalDataBlock;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;
@@ -907,6 +909,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// hey, sort out the positions
 			sortOutRelativePositions();
 		}
+		else if (point instanceof SupplementalDataBlock)
+		{
+			SupplementalDataBlock data = (SupplementalDataBlock) point;
+			_otherData.add(data);
+			data.setWrapper(this);
+			done = true;
+		}
 
 		if (!done)
 		{
@@ -1187,7 +1196,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public Enumeration<Editable> elements()
 	{
-		final TreeSet<Editable> res = new TreeSet<Editable>();
+		final ArrayList<Editable> res = new ArrayList<Editable>();
 
 		if (_mySensors.size() > 0)
 		{
@@ -1218,9 +1227,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		// do we have any other stored data?
-		if(_otherData != null)
+		if(_otherData.size() > 0)
 		{
-			res.add(_otherData);
+			res.addAll(_otherData);
 		}
 		
 		return new TrackWrapper_Support.IteratorWrapper(res.iterator());

@@ -1,8 +1,8 @@
 package Debrief.Wrappers.Measurements;
 
-import MWC.GUI.BaseLayer;
+import java.util.ArrayList;
 
-public class SupplementalData extends BaseLayer
+public class SupplementalData extends ArrayList<SupplementalDataBlock>
 {
 
 	/**
@@ -12,7 +12,8 @@ public class SupplementalData extends BaseLayer
 
 	public SupplementalData()
 	{
-		setName("Measurements");
+		MeasurementBlock measurements = new MeasurementBlock();
+		measurements.setName("Measurements");
+		this.add(measurements);
 	}
-
 }
