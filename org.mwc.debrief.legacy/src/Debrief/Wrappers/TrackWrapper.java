@@ -87,9 +87,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * the FixWrapper
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
-		WatchableList, MWC.GUI.Layer, DraggableItem,
-		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack,
-		DynamicPlottable
+		WatchableList, MWC.GUI.Layer, DraggableItem, HasDraggableComponents,
+		ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable
 {
 
 	// //////////////////////////////////////
@@ -120,7 +119,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// just add the reset color field first
 			final Class<TrackWrapper> c = TrackWrapper.class;
 
-			final MethodDescriptor[] mds = {
+			final MethodDescriptor[] mds =
+			{
 					method(c, "exportThis", null, "Export Shape"),
 					method(c, "resetLabels", null, "Reset DTG Labels"),
 					method(c, "calcCourseSpeed", null/* no params */,
@@ -140,40 +140,50 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			try
 			{
-				PropertyDescriptor[] res = {
+				PropertyDescriptor[] res =
+				{
 						displayExpertProp("SymbolType", "Symbol type",
 								"the type of symbol plotted for this label", FORMAT),
-						displayExpertProp("LineThickness", "Line thickness", "the width to draw this track", FORMAT),
+						displayExpertProp("LineThickness", "Line thickness",
+								"the width to draw this track", FORMAT),
 						expertProp("Name", "the track name"),
-						displayExpertProp("InterpolatePoints", "Interpolate points",  
+						displayExpertProp("InterpolatePoints", "Interpolate points",
 								"whether to interpolate points between known data points",
 								SPATIAL),
 						expertProp("Color", "the track color", FORMAT),
-						displayExpertProp("SymbolColor", "Symbol color", "the color of the symbol (when used)",
-								FORMAT),
+						displayExpertProp("SymbolColor", "Symbol color",
+								"the color of the symbol (when used)", FORMAT),
 						displayExpertProp(
-								"PlotArrayCentre", "Plot array centre",
+								"PlotArrayCentre",
+								"Plot array centre",
 								"highlight the sensor array centre when non-zero array length provided",
 								FORMAT),
-						displayExpertProp("TrackFont", "Track font", "the track label font", FORMAT),
-						displayExpertProp("NameVisible", "Name visible", "show the track label", VISIBILITY),
-						displayExpertProp("PositionsVisible", "Positions visible", "show individual Positions",
-								VISIBILITY),
+						displayExpertProp("TrackFont", "Track font",
+								"the track label font", FORMAT),
+						displayExpertProp("NameVisible", "Name visible",
+								"show the track label", VISIBILITY),
+						displayExpertProp("PositionsVisible", "Positions visible",
+								"show individual Positions", VISIBILITY),
 						displayExpertProp("NameAtStart", "Name at start",
 								"whether to show the track name at the start (or end)",
 								VISIBILITY),
-						displayExpertProp("LinkPositions", "Link positions", "whether to join the track points",
-								FORMAT),
+						displayExpertProp("LinkPositions", "Link positions",
+								"whether to join the track points", FORMAT),
 						expertProp("Visible", "whether the track is visible", VISIBILITY),
-						displayExpertLongProp("NameLocation", "Name location", "relative location of track label",
+						displayExpertLongProp("NameLocation", "Name location",
+								"relative location of track label",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
-						displayExpertLongProp("LabelFrequency", "Label frequency", "the label frequency",
+						displayExpertLongProp("LabelFrequency", "Label frequency",
+								"the label frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						displayExpertLongProp("SymbolFrequency", "Symbol frequency", "the symbol frequency",
+						displayExpertLongProp("SymbolFrequency", "Symbol frequency",
+								"the symbol frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						displayExpertLongProp("ResampleDataAt", "Resample data at", "the data sample rate",
+						displayExpertLongProp("ResampleDataAt", "Resample data at",
+								"the data sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						displayExpertLongProp("ArrowFrequency", "Arrow frequency", "the direction marker frequency",
+						displayExpertLongProp("ArrowFrequency", "Arrow frequency",
+								"the direction marker frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 						displayExpertLongProp("LineStyle", "Line style",
 								"the line style used to join track points",
@@ -194,8 +204,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// yes = better create height/width editors
 					final PropertyDescriptor[] res2 = new PropertyDescriptor[res.length + 2];
 					System.arraycopy(res, 0, res2, 2, res.length);
-					res2[0] = displayExpertProp("SymbolLength", "Symbol length", "Length of symbol", FORMAT);
-					res2[1] = displayExpertProp("SymbolWidth", "Symbol width", "Width of symbol", FORMAT);
+					res2[0] = displayExpertProp("SymbolLength", "Symbol length",
+							"Length of symbol", FORMAT);
+					res2[1] = displayExpertProp("SymbolWidth", "Symbol width",
+							"Width of symbol", FORMAT);
 
 					// and now use the new value
 					res = res2;
@@ -617,11 +629,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private boolean _interpolatePoints = false;
 
-	/** any extra data stored in the track
+	/**
+	 * any extra data stored in the track
 	 * 
 	 */
 	private SupplementalData _otherData = new SupplementalData();
-	
+
 	/**
 	 * the end of the track to plot the label
 	 */
@@ -785,7 +798,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// initialise the symbol to use for plotting this track in snail mode
 		_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory
 				.createSymbol("Submarine");
-		
+
 		// declare our arrays
 		_thePositions = new TrackWrapper_Support.SegmentList();
 		_thePositions.setWrapper(this);
@@ -820,13 +833,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (enumer.hasMoreElements())
 			{
 				SensorWrapper oldS = (SensorWrapper) enumer.nextElement();
-				
+
 				// does this have the same name?
 				if (oldS.getName().equals(swr.getName()))
 				{
 					// yes - ok, remember it
 					existing = oldS;
-					
+
 					// and append the data points
 					existing.append(swr);
 				}
@@ -1227,11 +1240,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		// do we have any other stored data?
-		if(_otherData.size() > 0)
+		if (_otherData.size() > 0)
 		{
 			res.addAll(_otherData);
 		}
-		
+
 		return new TrackWrapper_Support.IteratorWrapper(res.iterator());
 	}
 
@@ -1925,7 +1938,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// check that we do actually contain some data
 		if (_thePositions.size() == 0)
 		{
-			return new MWC.GenericData.Watchable[] {};
+			return new MWC.GenericData.Watchable[]
+			{};
 		}
 
 		// special case - if we've been asked for an invalid time value
@@ -1934,7 +1948,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final TrackSegment seg = (TrackSegment) _thePositions.first();
 			final FixWrapper fix = (FixWrapper) seg.first();
 			// just return our first location
-			return new MWC.GenericData.Watchable[] { fix };
+			return new MWC.GenericData.Watchable[]
+			{ fix };
 		}
 
 		// see if this is the DTG we have just requestsed
@@ -2095,11 +2110,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		if (res != null)
 		{
-			return new MWC.GenericData.Watchable[] { res };
+			return new MWC.GenericData.Watchable[]
+			{ res };
 		}
 		else
 		{
-			return new MWC.GenericData.Watchable[] {};
+			return new MWC.GenericData.Watchable[]
+			{};
 		}
 
 	}
@@ -3085,6 +3102,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// and clear the parent item
 			final TrackSegment ts = (TrackSegment) point;
 			ts.setWrapper(null);
+		}
+		else if (point instanceof SupplementalDataBlock)
+		{
+			SupplementalDataBlock block = (SupplementalDataBlock) point;
+			_otherData.remove(block);
+
+			// and clear the parent item
+			block.setWrapper(null);
 		}
 		else if (point == _mySensors)
 		{
