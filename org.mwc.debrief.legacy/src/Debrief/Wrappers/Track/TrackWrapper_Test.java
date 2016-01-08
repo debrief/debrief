@@ -399,8 +399,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.add(ts2);
 		tw.add(ts3);
 
-		final Enumeration<Editable> data = tw.elements();
-		final SegmentList sl = (SegmentList) data.nextElement();
+		final SegmentList sl = (SegmentList) tw.getSegments();
 
 		// check it's got the segs
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
@@ -551,8 +550,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			_ctr++;
 			list.nextElement();
 		}
-		assertEquals("just has positions", 1, _ctr);
-
+		
+		final int startCount = _ctr;
+		
 		// give it a little more data
 		final SensorWrapper sw = new SensorWrapper("sensor a");
 		sw.add(new SensorContactWrapper("trk", new HiResDate(12), null, null, null,
@@ -570,7 +570,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			_ctr++;
 			list.nextElement();
 		}
-		assertEquals("shows new item", 2, _ctr);
+		assertEquals("shows new item", startCount + 1, _ctr);
 	}
 
 	/**
@@ -704,24 +704,24 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// check there are the correct number of items
 		assertEquals("wrong num entries", 7, infill.size());
 
-//		Enumeration<Editable> numer = infill.elements();
-//		double minCourse = Math.toRadians(90);
-//		double maxCourse = Math.toRadians(135);
-//
-//		while (numer.hasMoreElements())
-//		{
-//			FixWrapper thisF = (FixWrapper) numer.nextElement();
-//
-//			// TODO: investigate splines to ensure the turn only include decrease or
-//			// increase in speed, not both (Github Issue# 664)
-//
-//			// check they maintain the speed
-////			assertEquals("correct speed", 12, thisF.getSpeed(), 0.002);
-//
-//			// check the speed doesn't go outside the provided range
-////			assertTrue("correct course", thisF.getCourse() >= minCourse);
-////			assertTrue("correct course", thisF.getCourse() <= maxCourse);
-//		}
+		// Enumeration<Editable> numer = infill.elements();
+		// double minCourse = Math.toRadians(90);
+		// double maxCourse = Math.toRadians(135);
+		//
+		// while (numer.hasMoreElements())
+		// {
+		// FixWrapper thisF = (FixWrapper) numer.nextElement();
+		//
+		// // TODO: investigate splines to ensure the turn only include decrease or
+		// // increase in speed, not both (Github Issue# 664)
+		//
+		// // check they maintain the speed
+		// // assertEquals("correct speed", 12, thisF.getSpeed(), 0.002);
+		//
+		// // check the speed doesn't go outside the provided range
+		// // assertTrue("correct course", thisF.getCourse() >= minCourse);
+		// // assertTrue("correct course", thisF.getCourse() <= maxCourse);
+		// }
 
 	}
 
@@ -919,8 +919,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
 
 		// check the names.
-		Enumeration<Editable> items = _tw.elements();
-		SegmentList list = (SegmentList) items.nextElement();
+		SegmentList list = _tw.getSegments();
 		Enumeration<Editable> segments = list.elements();
 		TrackSegment s1 = (TrackSegment) segments.nextElement();
 		TrackSegment s2 = (TrackSegment) segments.nextElement();
@@ -934,8 +933,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 2, segs2.firstElement().size());
 		assertEquals("first is of correct length", 2, segs2.lastElement().size());
 
-		items = _tw.elements();
-		list = (SegmentList) items.nextElement();
+		list = (SegmentList) _tw.getSegments();
 		segments = list.elements();
 		s1 = (TrackSegment) segments.nextElement();
 		s2 = (TrackSegment) segments.nextElement();
@@ -950,8 +948,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 2, segs.firstElement().size());
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
 
-		items = _tw.elements();
-		list = (SegmentList) items.nextElement();
+		list = (SegmentList) _tw.getSegments();
 		segments = list.elements();
 		s1 = (TrackSegment) segments.nextElement();
 		s2 = (TrackSegment) segments.nextElement();
@@ -978,35 +975,33 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 3, segs.lastElement().size());
 	}
 
-
 	public void testSegmentList()
 	{
-		
+
 		final TrackWrapper tw = new TrackWrapper();
 
-		
 		final TrackSegment ts0 = new TrackSegment();
 		ts0.addFix(createFix(10000, 1, 1, 20, 30));
 		ts0.addFix(createFix(11000, 1, 1, 20, 30));
 		ts0.addFix(createFix(12000, 1, 1, 20, 30));
 		ts0.addFix(createFix(13000, 1, 1, 20, 30));
-		
+
 		final TrackSegment ts1 = new TrackSegment();
 		ts1.addFix(createFix(14000, 1, 1, 20, 30));
 		ts1.addFix(createFix(15000, 1, 1, 20, 30));
 		ts1.addFix(createFix(16000, 1, 1, 20, 30));
 		ts1.addFix(createFix(17000, 1, 1, 20, 30));
-		
+
 		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(18000, 1, 1, 20, 30));
 		ts2.addFix(createFix(19000, 1, 1, 20, 30));
 		ts2.addFix(createFix(20000, 1, 1, 20, 30));
 		ts2.addFix(createFix(21000, 1, 1, 20, 30));
-		
+
 		tw.add(ts0);
 		tw.add(ts1);
 		tw.add(ts2);
-		
+
 		SegmentList sList = tw.getSegments();
 		TrackSegment i1 = sList.getSegmentFor(16000);
 		assertEquals("correct segment", ts1, i1);
@@ -1014,7 +1009,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("correct segment", ts1, i1);
 		i1 = sList.getSegmentFor(14000);
 		assertEquals("correct segment", ts1, i1);
-		
+
 		TrackSegment i0 = sList.getSegmentFor(10000);
 		assertEquals("correct segment", ts0, i0);
 		i0 = sList.getSegmentFor(13000);
@@ -1027,9 +1022,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		i2 = sList.getSegmentFor(21000);
 		assertEquals("correct segment", ts2, i2);
 
-		
 	}
-	
+
 	/**
 	 * .
 	 */
@@ -1053,7 +1047,6 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 		final double course = 33;
 
-
 		// check the before
 		FixWrapper firstFix = null;
 
@@ -1066,7 +1059,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		sw.add(createSensorItem(tw, sw, 120000));
 		sw.add(createSensorItem(tw, sw, 130000));
 		sw.add(createSensorItem(tw, sw, 140000));
-		final CoreTMASegment seg1 = new RelativeTMASegment(sw, offset, speed, course, null);
+		final CoreTMASegment seg1 = new RelativeTMASegment(sw, offset, speed,
+				course, null);
 
 		// check the create worked
 		assertEquals("enough points created", 4, seg1.size());
@@ -1107,7 +1101,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			sensorContactWrapper.setSensor(sw);
 		}
 
-		final RelativeTMASegment seg2 = new RelativeTMASegment(items, offset, speed, course, null);
+		final RelativeTMASegment seg2 = new RelativeTMASegment(items, offset,
+				speed, course, null);
 
 		// check the create worked
 		assertEquals("enough points created", 5, seg2.size());
@@ -1152,12 +1147,12 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		seg2.setDTG_End(new HiResDate(200000));
 		assertEquals("more points after stretch", 11, seg2.size());
 		assertEquals("new end time", 200000, seg2.getDTG_End().getDate().getTime());
-		
-		
-		// now try to stretch the start		
+
+		// now try to stretch the start
 
 		seg2.setDTG_Start(new HiResDate(80002));
-		assertEquals("new start time", 80002, seg2.getDTG_Start().getDate().getTime());
+		assertEquals("new start time", 80002, seg2.getDTG_Start().getDate()
+				.getTime());
 		assertEquals("more points after stretch", 17, seg2.size());
 
 		// have a look at the times
@@ -1462,17 +1457,13 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("track 3 is longer", 11, _tw.numFixes());
 
 		// check it's been a group, not an add
-		final Enumeration<Editable> iter = _tw.elements();
 		_ctr = 0;
-		while (iter.hasMoreElements())
+		final SegmentList sl = (SegmentList) _tw.getSegments();
+		final Enumeration<Editable> segments = sl.elements();
+		while (segments.hasMoreElements())
 		{
-			final SegmentList sl = (SegmentList) iter.nextElement();
-			final Enumeration<Editable> segments = sl.elements();
-			while (segments.hasMoreElements())
-			{
-				_ctr++;
-				segments.nextElement();
-			}
+			_ctr++;
+			segments.nextElement();
 		}
 		assertEquals("track _tw has several segments", 2, _ctr);
 
@@ -1500,8 +1491,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw3.add(ts2);
 		tw3.add(ts3);
 
-		Enumeration<Editable> elements = tw3.elements();
-		SegmentList list = (SegmentList) elements.nextElement();
+		SegmentList list = (SegmentList) tw3.getSegments();
 		Enumeration<Editable> segments = list.elements();
 		TrackSegment seg1 = (TrackSegment) segments.nextElement();
 		TrackSegment seg2 = (TrackSegment) segments.nextElement();
@@ -1518,8 +1508,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw3.add(ts2);
 		tw3.add(ts3);
 
-		elements = tw3.elements();
-		list = (SegmentList) elements.nextElement();
+		list = (SegmentList)tw3.getSegments();
 		segments = list.elements();
 		seg1 = (TrackSegment) segments.nextElement();
 		seg2 = (TrackSegment) segments.nextElement();
@@ -1592,7 +1581,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// have a look at the results
 		assertEquals("track is longer", 11, _tw.numFixes());
 		assertEquals("track got ditched", 2, theLayers.size());
-		final TrackSegment sl = (TrackSegment) _tw.elements().nextElement();
+		final TrackSegment sl = (TrackSegment) _tw.getSegments().elements()
+				.nextElement();
 		assertEquals("just the one segment - with all our points", 11, sl.size());
 
 	}
