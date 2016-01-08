@@ -24,5 +24,29 @@
          </action>
       </objectContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.debrief.limpet_integration.actionSet"
+            label="Limpet Menu Set"
+            visible="true">
+         <menu
+               id="TempLimpetMenu"
+               label="&amp;Limpet">
+            <separator
+                  name="sampleGroup">
+            </separator>
+         </menu>
+         <action
+               class="org.debrief.limpet_integration.actions.SampleAction"
+               icon="icons/sample.gif"
+               id="org.debrief.limpet_integration.actions.SampleAction"
+               label="&amp;Sample Action"
+               menubarPath="sampleMenu/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Hello, Eclipse world">
+         </action>
+      </actionSet>
+   </extension>
 
 </plugin>
