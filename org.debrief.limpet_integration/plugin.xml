@@ -3,28 +3,6 @@
 <plugin>
 
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            objectClass="org.eclipse.core.resources.IFile"
-            id="org.debrief.limpet_integration.contribution1">
-         <menu
-               label="New Sample Submenu"
-               path="additions"
-               id="org.debrief.limpet_integration.menu1">
-            <separator
-                  name="group1">
-            </separator>
-         </menu>
-         <action
-               label="New Sample Action"
-               class="org.debrief.limpet_integration.popup.actions.SampleAction"
-               menubarPath="org.debrief.limpet_integration.menu1/group1"
-               enablesFor="1"
-               id="org.debrief.limpet_integration.newAction">
-         </action>
-      </objectContribution>
-   </extension>
-   <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.debrief.limpet_integration.actionSet"
@@ -38,13 +16,13 @@
             </separator>
          </menu>
          <action
-               class="org.debrief.limpet_integration.actions.SampleAction"
+               class="org.debrief.limpet_integration.actions.LimpetTestAction"
                icon="icons/sample.gif"
                id="org.debrief.limpet_integration.actions.SampleAction"
-               label="&amp;Sample Action"
-               menubarPath="sampleMenu/sampleGroup"
+               label="&amp;Limpet Action"
+               menubarPath="TempLimpetMenu/sampleGroup"
                toolbarPath="sampleGroup"
-               tooltip="Hello, Eclipse world">
+               tooltip="Limpet Test action">
          </action>
       </actionSet>
    </extension>
