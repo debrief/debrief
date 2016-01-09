@@ -2,6 +2,9 @@
 <?eclipse version="3.4"?>
 <plugin>
 
+<extension point="org.eclipse.ui.startup">
+		<startup class="org.debrief.limpet_integration.DebriefIntegrationActivator" />
+	</extension>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
