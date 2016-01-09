@@ -16,7 +16,6 @@ package ui;
 
 import info.limpet.rcp.editors.LimpetLabelProvider;
 
-import org.debrief.limpet_integration.data.LimpetHolder;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 
@@ -35,19 +34,7 @@ public class LimpetImageHelper implements ViewLabelImageHelper
       prov = new LimpetLabelProvider();
     }
 
-    final ImageDescriptor res;
-    if (subject instanceof LimpetHolder)
-    {
-      LimpetHolder lw = (LimpetHolder) subject;
-
-      res = prov.getImageDescriptor(lw.getItem());
-    }
-    else
-    {
-      res = null;
-    }
-
-    return res;
+    return prov.getImageDescriptor(subject);
   }
 
 }

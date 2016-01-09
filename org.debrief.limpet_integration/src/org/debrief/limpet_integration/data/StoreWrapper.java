@@ -1,5 +1,6 @@
 package org.debrief.limpet_integration.data;
 
+import info.limpet.ICollection;
 import info.limpet.IStore;
 import info.limpet.IStoreGroup;
 import info.limpet.IStore.IStoreItem;
@@ -20,7 +21,8 @@ import MWC.GUI.Plottables;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class StoreWrapper implements SupplementalDataBlock, Layer, LimpetWrapper
+public class StoreWrapper implements SupplementalDataBlock, Layer,
+    LimpetWrapper
 {
 
   /**
@@ -173,9 +175,13 @@ public class StoreWrapper implements SupplementalDataBlock, Layer, LimpetWrapper
         IStoreGroup group = (IStoreGroup) storeItem;
         thisE = new GroupWrapper(group);
       }
-      else
+      else if (storeItem instanceof ICollection)
       {
         thisE = new ItemWrapper(storeItem);
+      }
+      else
+      {
+        thisE = null;
       }
 
       res.add(thisE);
@@ -184,7 +190,8 @@ public class StoreWrapper implements SupplementalDataBlock, Layer, LimpetWrapper
     return new Plottables.IteratorWrapper(res.iterator());
   }
 
-  protected static class GroupWrapper extends BaseLayer implements LimpetWrapper
+  protected static class GroupWrapper extends BaseLayer implements
+      LimpetWrapper
   {
 
     /**
