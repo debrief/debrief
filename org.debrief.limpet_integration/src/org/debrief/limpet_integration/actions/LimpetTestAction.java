@@ -4,7 +4,7 @@ import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IObjectCollection;
 import info.limpet.IQuantityCollection;
-import info.limpet.IStore.IStoreItem;
+import info.limpet.IStoreItem;
 import info.limpet.QuantityRange;
 import info.limpet.data.impl.MockContext;
 import info.limpet.data.impl.ObjectCollection;

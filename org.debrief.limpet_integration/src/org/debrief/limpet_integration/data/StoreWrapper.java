@@ -1,18 +1,17 @@
 package org.debrief.limpet_integration.data;
 
 import info.limpet.ICollection;
-import info.limpet.IStore;
 import info.limpet.IStoreGroup;
-import info.limpet.IStore.IStoreItem;
+import info.limpet.IStoreItem;
 import info.limpet.data.store.InMemoryStore;
 import info.limpet.rcp.data_provider.data.LimpetWrapper;
+import info.limpet.rcp.data_provider.data.ReflectivePropertySource;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
 import Debrief.Wrappers.Measurements.SupplementalDataBlock;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -161,13 +160,13 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
     return getElementsFor(_store);
   }
 
-  private Enumeration<Editable> getElementsFor(InMemoryStore store)
+  private Enumeration<Editable> getElementsFor(IStoreGroup store)
   {
     ArrayList<Editable> res = new ArrayList<Editable>();
     Iterator<IStoreItem> iter = store.iterator();
     while (iter.hasNext())
     {
-      IStore.IStoreItem storeItem = (IStore.IStoreItem) iter.next();
+      IStoreItem storeItem = (IStoreItem) iter.next();
       final Editable thisE;
 
       if (storeItem instanceof IStoreGroup)
@@ -190,8 +189,8 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
     return new Plottables.IteratorWrapper(res.iterator());
   }
 
-  protected static class GroupWrapper extends BaseLayer implements
-      LimpetWrapper
+  protected class GroupWrapper extends ReflectivePropertySource implements
+      Layer, LimpetWrapper
   {
 
     /**
@@ -203,14 +202,8 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
 
     public GroupWrapper(IStoreGroup group)
     {
+      super(group);
       _group = group;
-    }
-
-    @Override
-    public Enumeration<Editable> elements()
-    {
-      // TODO Auto-generated method stub
-      return super.elements();
     }
 
     @Override
@@ -231,15 +224,128 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
       return null;
     }
 
+    @Override
+    public boolean getVisible()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public double rangeFrom(WorldLocation other)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public int compareTo(Plottable o)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public boolean hasEditor()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public EditorType getInfo()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public void exportShape()
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void append(Layer other)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void paint(CanvasType dest)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public WorldArea getBounds()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public void setName(String val)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean hasOrderedChildren()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public int getLineThickness()
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public void add(Editable point)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void removeElement(Editable point)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setVisible(boolean val)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Enumeration<Editable> elements()
+    {
+      return getElementsFor(_group);
+    }
+
   }
 
-  protected static class ItemWrapper implements Editable, LimpetWrapper
+  protected static class ItemWrapper extends ReflectivePropertySource implements
+      Editable, LimpetWrapper
   {
 
     private IStoreItem _item;
 
     public ItemWrapper(IStoreItem storeItem)
     {
+      super(storeItem);
       _item = storeItem;
     }
 
@@ -258,14 +364,12 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
     @Override
     public boolean hasEditor()
     {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
     }
 
     @Override
     public EditorType getInfo()
     {
-      // TODO Auto-generated method stub
       return null;
     }
 

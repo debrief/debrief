@@ -14,18 +14,27 @@
  */
 package org.mwc.cmap.core.property_support;
 
+import java.lang.annotation.Annotation;
+
+import MWC.GUI.Editable;
+
 public interface IDebriefProperty
 {
 
-	public void setValue(Object text);
+  public void setValue(Object text);
 
-	Object getValue();
-	Object getRawValue();
+  Object getValue();
 
-	public String getName();
-	
-	public String getDisplayName();
+  Object getRawValue();
 
-	public EditorHelper getHelper();
+  public String getName();
+
+  public String getDisplayName();
+
+  public EditorHelper getHelper();
+
+  public Editable getEditable();
+
+  public Annotation[] getAnnotationsForSetter();
 
 }
