@@ -14,29 +14,40 @@
  */
 package ui;
 
+import info.limpet.rcp.editors.LimpetLabelProvider;
+
+import org.debrief.limpet_integration.data.LimpetHolder;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 
-import Debrief.Wrappers.Measurements.SupplementalData;
 import MWC.GUI.Editable;
-import info.limpet.rcp.Activator;
 
 public class LimpetImageHelper implements ViewLabelImageHelper
 {
 
-	public ImageDescriptor getImageFor(final Editable subject)
-	{
-		final ImageDescriptor res;
-		if (subject instanceof SupplementalData)
-		{
-			res = Activator.getImageDescriptor("icons/folder.png");
-		}
-		else
-		{
-			res = null;
-		}
+  private LimpetLabelProvider prov;
 
-		return res;
-	}
+  public ImageDescriptor getImageFor(final Editable subject)
+  {
+
+    if (prov == null)
+    {
+      prov = new LimpetLabelProvider();
+    }
+
+    final ImageDescriptor res;
+    if (subject instanceof LimpetHolder)
+    {
+      LimpetHolder lw = (LimpetHolder) subject;
+
+      res = prov.getImageDescriptor(lw.getItem());
+    }
+    else
+    {
+      res = null;
+    }
+
+    return res;
+  }
 
 }

@@ -4,6 +4,7 @@ import info.limpet.IStore;
 import info.limpet.IStoreGroup;
 import info.limpet.IStore.IStoreItem;
 import info.limpet.data.store.InMemoryStore;
+import info.limpet.rcp.data_provider.data.LimpetWrapper;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -19,229 +20,274 @@ import MWC.GUI.Plottables;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class StoreWrapper implements SupplementalDataBlock, Layer
+public class StoreWrapper implements SupplementalDataBlock, Layer, LimpetWrapper
 {
-	/**
+
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private final InMemoryStore _store;
+  private final InMemoryStore _store;
 
-	public StoreWrapper(InMemoryStore store)
-	{
-		_store = store;
-	}
+  public StoreWrapper(InMemoryStore store)
+  {
+    _store = store;
+  }
 
-	@Override
-	public void paint(CanvasType dest)
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void paint(CanvasType dest)
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public WorldArea getBounds()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public WorldArea getBounds()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	public boolean getVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+  @Override
+  public boolean getVisible()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public void setVisible(boolean val)
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void setVisible(boolean val)
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public double rangeFrom(WorldLocation other)
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
+  @Override
+  public double rangeFrom(WorldLocation other)
+  {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 
-	@Override
-	public String getName()
-	{
-		return "Measurements";
-	}
+  @Override
+  public String getName()
+  {
+    return "Measurements";
+  }
 
-	@Override
-	public boolean hasEditor()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+  @Override
+  public boolean hasEditor()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public EditorType getInfo()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public EditorType getInfo()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	public int compareTo(Plottable o)
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
+  @Override
+  public int compareTo(Plottable o)
+  {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 
-	@Override
-	public void setWrapper(Object parent)
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void setWrapper(Object parent)
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void exportShape()
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void exportShape()
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void append(Layer other)
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void append(Layer other)
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void setName(String val)
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void setName(String val)
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public boolean hasOrderedChildren()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+  @Override
+  public boolean hasOrderedChildren()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public int getLineThickness()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
+  @Override
+  public int getLineThickness()
+  {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 
-	@Override
-	public void add(Editable point)
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void add(Editable point)
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void removeElement(Editable point)
-	{
-		// TODO Auto-generated method stub
+  @Override
+  public void removeElement(Editable point)
+  {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public Enumeration<Editable> elements()
-	{
-		return getElementsFor(_store);
-	}
+  @Override
+  public Enumeration<Editable> elements()
+  {
+    return getElementsFor(_store);
+  }
 
-	private Enumeration<Editable> getElementsFor(InMemoryStore store)
-	{
-		ArrayList<Editable> res = new ArrayList<Editable>();
-		Iterator<IStoreItem> iter = store.iterator();
-		while (iter.hasNext())
-		{
-			IStore.IStoreItem storeItem = (IStore.IStoreItem) iter.next();
-			final Editable thisE;
+  private Enumeration<Editable> getElementsFor(InMemoryStore store)
+  {
+    ArrayList<Editable> res = new ArrayList<Editable>();
+    Iterator<IStoreItem> iter = store.iterator();
+    while (iter.hasNext())
+    {
+      IStore.IStoreItem storeItem = (IStore.IStoreItem) iter.next();
+      final Editable thisE;
 
-			if (storeItem instanceof IStoreGroup)
-			{
-				IStoreGroup group = (IStoreGroup) storeItem;
-				thisE = new GroupWrapper(group);
-			}
-			else
-			{
-				thisE = new ItemWrapper(storeItem);
-			}
+      if (storeItem instanceof IStoreGroup)
+      {
+        IStoreGroup group = (IStoreGroup) storeItem;
+        thisE = new GroupWrapper(group);
+      }
+      else
+      {
+        thisE = new ItemWrapper(storeItem);
+      }
 
-			res.add(thisE);
-		}
+      res.add(thisE);
+    }
 
-		return new Plottables.IteratorWrapper(res.iterator());
-	}
+    return new Plottables.IteratorWrapper(res.iterator());
+  }
 
-	protected static class GroupWrapper extends BaseLayer
-	{
+  protected static class GroupWrapper extends BaseLayer implements LimpetWrapper
+  {
 
-		/**
+    /**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-		private IStoreGroup _group;
+    private IStoreGroup _group;
 
-		public GroupWrapper(IStoreGroup group)
-		{
-			_group = group;
-		}
+    public GroupWrapper(IStoreGroup group)
+    {
+      _group = group;
+    }
 
-		@Override
-		public Enumeration<Editable> elements()
-		{
-			// TODO Auto-generated method stub
-			return super.elements();
-		}
+    @Override
+    public Enumeration<Editable> elements()
+    {
+      // TODO Auto-generated method stub
+      return super.elements();
+    }
 
-	}
+    @Override
+    public String getName()
+    {
+      return _group.getName();
+    }
 
-	protected static class ItemWrapper implements Editable
-	{
+    @Override
+    public Object getSubject()
+    {
+      return _group;
+    }
 
-		private IStoreItem _item;
+    @Override
+    public LimpetWrapper getParent()
+    {
+      return null;
+    }
 
-		public ItemWrapper(IStoreItem storeItem)
-		{
-			_item = storeItem;
-		}
+  }
 
-		@Override
-		public String getName()
-		{
-			return _item.getName();
-		}
+  protected static class ItemWrapper implements Editable, LimpetWrapper
+  {
 
-		@Override
-		public String toString()
-		{
-			return getName();
-		}
+    private IStoreItem _item;
 
-		@Override
-		public boolean hasEditor()
-		{
-			// TODO Auto-generated method stub
-			return false;
-		}
+    public ItemWrapper(IStoreItem storeItem)
+    {
+      _item = storeItem;
+    }
 
-		@Override
-		public EditorType getInfo()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
+    @Override
+    public String getName()
+    {
+      return _item.getName();
+    }
 
-	}
+    @Override
+    public String toString()
+    {
+      return getName();
+    }
+
+    @Override
+    public boolean hasEditor()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public EditorType getInfo()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public Object getSubject()
+    {
+      return _item;
+    }
+
+    @Override
+    public LimpetWrapper getParent()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+  }
+
+  @Override
+  public LimpetWrapper getParent()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Object getSubject()
+  {
+    return _store;
+  }
 
 }

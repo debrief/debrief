@@ -39,6 +39,9 @@ public class DebriefIntegrationActivator extends AbstractUIPlugin implements
 	{
 		super.start(context);
 		plugin = this;
+		
+        CoreViewLabelProvider.addImageHelper(new LimpetImageHelper());
+		
 	}
 
 	/*
