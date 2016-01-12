@@ -177,6 +177,7 @@ import java.beans.PropertyEditor;
 import java.beans.SimpleBeanInfo;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -226,6 +227,18 @@ public interface Editable
 	{
 
 	}
+
+  /** allow a class to override the detector for if an element has children
+   * 
+   * @author ian
+   *
+   */
+  public static interface customHasChildren
+  {
+    public boolean hasChildren();
+    
+    public Collection<Editable> children();
+  }
 
   
   /**
