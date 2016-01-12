@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.nebula.jface.cdatetime,
  org.junit,
  org.eclipse.help;bundle-version="3.6.0",
- org.mwc.cmap.geotools;bundle-version="12.1.0",
+ org.geotools,
  org.mwc.cmap.jfreechart,
  org.mwc.cmap.legacy
 Bundle-ActivationPolicy: lazy
