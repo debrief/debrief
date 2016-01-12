@@ -292,7 +292,7 @@ Library.
          unpack="false"/>
 
    <plugin
-         id="org.mwc.cmap.geotools"
+         id="org.geotools"
          download-size="0"
          install-size="0"
          version="0.0.0"
