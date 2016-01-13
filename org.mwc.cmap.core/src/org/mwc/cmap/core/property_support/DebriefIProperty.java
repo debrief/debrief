@@ -322,41 +322,15 @@ public class DebriefIProperty implements IPropertyDescriptor, IDebriefProperty
 
   public Object getRawValue()
   {
-
     Object res = null;
 
     if (_subject instanceof Editable2)
     {
       Editable2 e2 = (Editable2) _subject;
-      res = e2.getValue(_thisProp.getId() + "");
+      res = e2.getValue(_thisProp.getId());
     }
 
     return res;
-
-    // TODO: fix me
-    // Object res = null;
-    // try
-    // {
-    // // get our object
-    //
-    // // find out the type of the editor
-    // final Method m = _thisProp..getReadMethod();
-    //
-    // if (m == null)
-    // {
-    // System.out.println("tripped, prop was:" + _thisProp.getDisplayName());
-    // }
-    // else
-    // {
-    // res = m.invoke(_subject, (Object[]) null);
-    // }
-    // }
-    // catch (final Exception e)
-    // {
-    // MWC.Utilities.Errors.Trace.trace(e);
-    // }
-    //
-    // return res;
   }
 
   public Object getValue()
@@ -399,7 +373,7 @@ public class DebriefIProperty implements IPropertyDescriptor, IDebriefProperty
     if (_subject instanceof Editable2)
     {
       Editable2 e2 = (Editable2) _subject;
-      e2.setValue(_thisProp.getId() + "", theValue);
+      e2.setValue(_thisProp.getId(), theValue);
     }
   }
 
