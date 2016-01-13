@@ -89,7 +89,6 @@ public class LimpetTestAction implements IWorkbenchWindowActionDelegate {
 					InMemoryStore store = createData();
 					
 					StoreWrapper data = new StoreWrapper(store);
-					data.setName("Data_" + new Date());
 					
 					// add it to the track
 					firstTrack.add(data);
