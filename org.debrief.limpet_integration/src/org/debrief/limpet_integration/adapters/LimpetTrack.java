@@ -2,6 +2,7 @@ package org.debrief.limpet_integration.adapters;
 
 import info.limpet.IQuantityCollection;
 import info.limpet.IStoreItem;
+import info.limpet.ITemporalQuantityCollection;
 import info.limpet.data.impl.samples.TemporalLocation;
 import info.limpet.data.store.InMemoryStore.StoreGroup;
 
@@ -37,7 +38,7 @@ public class LimpetTrack extends StoreGroup
     TemporalLocation location = getLocations(_myTrack);
 
     // course
-    IQuantityCollection<Quantity> course = getDataset(_myTrack, new DoubleGetter(){
+    ITemporalQuantityCollection<Quantity> course = getDataset(_myTrack, new DoubleGetter(){
       @Override
       public double getValue(TrackWrapper track, long time)
       {
@@ -59,7 +60,7 @@ public class LimpetTrack extends StoreGroup
     return null;
   }
 
-  public IQuantityCollection<Quantity> getDataset(TrackWrapper track,
+  public ITemporalQuantityCollection<Quantity> getDataset(TrackWrapper track,
       DoubleGetter getter)
   {
     return null;
