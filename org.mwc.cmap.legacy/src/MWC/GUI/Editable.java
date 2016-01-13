@@ -186,13 +186,14 @@ import MWC.GUI.Tools.SubjectAction;
 
 /**
  * Interface defining behaviour for a screen item which should be editable by
- * the user (using Bean properties) <p/> The file also contains an abstract
- * which implements the required behaviour
+ * the user (using Bean properties)
+ * <p/>
+ * The file also contains an abstract which implements the required behaviour
  */
 public interface Editable
 {
 
-	/**
+  /**
    * the name of this object
    * 
    * @return the name of this editable object
@@ -220,27 +221,16 @@ public interface Editable
    */
   // public HelpContext getHelpInfo();
 
-	/** marker interface for objects with changeable descriptors - so we re-calculate them everytime
-	 * 
-	 */
-  public interface DynamicDescriptors
-	{
-
-	}
-
-  /** allow a class to override the detector for if an element has children
+  /**
+   * marker interface for objects with changeable descriptors - so we
+   * re-calculate them everytime
    * 
-   * @author ian
-   *
    */
-  public static interface customHasChildren
+  public interface DynamicDescriptors
   {
-    public boolean hasChildren();
-    
-    public Collection<Editable> children();
+
   }
 
-  
   /**
    * ******************************************************************* class
    * containing the help description for a particular
@@ -280,9 +270,9 @@ public interface Editable
     public final static String SPATIAL = "Spatial";
 
     public final static String VISIBILITY = "Visibility";
-    
+
     public final static String TEMPORAL = "Time-Related";
-    
+
     public final static String OPTIONAL = "Optional";
 
     /***************************************************************************
@@ -472,22 +462,23 @@ public interface Editable
      */
     public PropertyDescriptor[] getPropertyDescriptors()
     {
-			MWC.Utilities.Errors.Trace
-			.trace("Possible problem collating properties for:" + getName() + " (" + getData().getClass() + ")", false);
+      MWC.Utilities.Errors.Trace.trace(
+          "Possible problem collating properties for:" + getName() + " ("
+              + getData().getClass() + ")", false);
 
       return super.getPropertyDescriptors();
     }
 
-    /** get a series of undo-able operations
+    /**
+     * get a series of undo-able operations
      * 
      * @return the list
      */
-		public SubjectAction[] getUndoableActions()
-		{
-			return null;
-		}
+    public SubjectAction[] getUndoableActions()
+    {
+      return null;
+    }
 
-    
     /**
      * add the property listener which just listens out for a single property
      * type
@@ -513,8 +504,8 @@ public interface Editable
     public final void removePropertyChangeListener(final String propertyName,
         final PropertyChangeListener listener)
     {
-    	if(_pSupport != null)
-      _pSupport.removePropertyChangeListener(propertyName, listener);
+      if (_pSupport != null)
+        _pSupport.removePropertyChangeListener(propertyName, listener);
     }
 
     /**
@@ -541,7 +532,7 @@ public interface Editable
     public final void removePropertyChangeListener(
         final PropertyChangeListener listener)
     {
-    	if(_pSupport != null)
+      if (_pSupport != null)
         _pSupport.removePropertyChangeListener(listener);
     }
 
@@ -609,7 +600,7 @@ public interface Editable
       bp.setDisplayName(getDisplayName());
       return bp;
     }
-    
+
     /**
      * convenience class to create an expert property
      * 
@@ -624,11 +615,12 @@ public interface Editable
     protected final PropertyDescriptor legacyProp(final String name,
         final String description) throws IntrospectionException
     {
-      final PropertyDescriptor p = new DeprecatedPropertyDescriptor(name, _class);
+      final PropertyDescriptor p = new DeprecatedPropertyDescriptor(name,
+          _class);
       p.setShortDescription(description);
       p.setExpert(true);
       return p;
-    }    
+    }
 
     /**
      * convenience class to create an expert property
@@ -649,7 +641,7 @@ public interface Editable
       p.setExpert(true);
       return p;
     }
-    
+
     /**
      * convenience class to create an expert property
      * 
@@ -664,14 +656,14 @@ public interface Editable
      *           if the methods can't be found
      */
     protected final PropertyDescriptor displayExpertProp(final String name,
-    		final String displayName,
-        final String description) throws IntrospectionException
+        final String displayName, final String description)
+        throws IntrospectionException
     {
       final PropertyDescriptor p = expertProp(name, description);
       p.setDisplayName(displayName);
       return p;
     }
-    
+
     /**
      * convenience class to create an expert property
      * 
@@ -684,21 +676,23 @@ public interface Editable
      *           if the methods can't be found
      */
     protected final PropertyDescriptor expertProp(final String name,
-        final String description, final String category) throws IntrospectionException
+        final String description, final String category)
+        throws IntrospectionException
     {
-      final PropertyDescriptor p = new CategorisedPropertyDescriptor(category, name, _class);
+      final PropertyDescriptor p = new CategorisedPropertyDescriptor(category,
+          name, _class);
       p.setShortDescription(description);
       p.setExpert(true);
       return p;
     }
-    
+
     /**
      * convenience class to create an expert property
      * 
      * @param name
      *          name of this property
-     * @param
-     * 					display name
+     * @param display
+     *          name
      * @param description
      *          description of this property
      * @return property description
@@ -706,13 +700,13 @@ public interface Editable
      *           if the methods can't be found
      */
     protected final PropertyDescriptor displayExpertProp(final String name,
-    		final String displayName,
-        final String description, final String category) throws IntrospectionException
+        final String displayName, final String description,
+        final String category) throws IntrospectionException
     {
       final PropertyDescriptor p = expertProp(name, description, category);
       p.setDisplayName(displayName);
       return p;
-    }    
+    }
 
     /**
      * convenience class to create a property
@@ -732,7 +726,7 @@ public interface Editable
       p.setShortDescription(description);
       return p;
     }
-    
+
     /**
      * convenience class to create a property
      * 
@@ -741,17 +735,18 @@ public interface Editable
      * @param description
      *          description of this property
      * @param displayName
-     * 					display name
+     *          display name
      * @return property description
      * @throws IntrospectionException
      *           if the methods can't be found
      */
     protected final PropertyDescriptor displayProp(final String name,
-    		final String displayName, final String description) throws IntrospectionException
+        final String displayName, final String description)
+        throws IntrospectionException
     {
       final PropertyDescriptor p = prop(name, description);
       p.setDisplayName(displayName);
-    	return p;
+      return p;
     }
 
     /**
@@ -789,14 +784,14 @@ public interface Editable
      *           if the methods can't be found
      */
     protected final PropertyDescriptor displayProp(final String name,
-    		final String displayName,
-        final String description, final String category)
-        throws IntrospectionException
+        final String displayName, final String description,
+        final String category) throws IntrospectionException
     {
       final PropertyDescriptor p = prop(name, description, category);
       p.setDisplayName(displayName);
       return p;
     }
+
     /**
      * convenience function for creating property descriptor for property which
      * has its own editor
@@ -839,9 +834,8 @@ public interface Editable
      *           if we can't create property
      */
     protected final PropertyDescriptor displayExpertLongProp(final String name,
-    		final String displayName,
-        final String description, final Class<?> editor)
-        throws IntrospectionException
+        final String displayName, final String description,
+        final Class<?> editor) throws IntrospectionException
     {
       final PropertyDescriptor p = expertLongProp(name, description, editor);
       p.setDisplayName(displayName);
@@ -871,7 +865,7 @@ public interface Editable
       p.setPropertyEditorClass(editor);
       return p;
     }
-    
+
     /**
      * convenience function for creating property descriptor for property which
      * has its own editor
@@ -889,9 +883,8 @@ public interface Editable
      *           if we can't create property
      */
     protected final PropertyDescriptor displayLongProp(final String name,
-    		final String displayName, 
-    		final String description, final Class<?> editor)
-        throws IntrospectionException
+        final String displayName, final String description,
+        final Class<?> editor) throws IntrospectionException
     {
       final PropertyDescriptor p = longProp(name, description, editor);
       p.setDisplayName(displayName);
@@ -909,7 +902,7 @@ public interface Editable
      * @param editor
      *          editor to use for this property
      * @param category
-     *          the category for this property     
+     *          the category for this property
      * @return propertyDescriptor for this object
      * @throws IntrospectionException
      *           if we can't create property
@@ -924,7 +917,7 @@ public interface Editable
       p.setPropertyEditorClass(editor);
       return p;
     }
-    
+
     /**
      * convenience function for creating property descriptor for property which
      * has its own editor
@@ -932,20 +925,20 @@ public interface Editable
      * @param name
      *          name of property
      * @param displayName
-     * 					display name
+     *          display name
      * @param description
      *          description of property (for tooltip)
      * @param editor
      *          editor to use for this property
      * @param category
-     *          the category for this property     
+     *          the category for this property
      * @return propertyDescriptor for this object
      * @throws IntrospectionException
      *           if we can't create property
      */
     protected final PropertyDescriptor displayLongProp(final String name,
-    		final String displayName,
-        final String description, final Class<?> editor, final String category)
+        final String displayName, final String description,
+        final Class<?> editor, final String category)
         throws IntrospectionException
     {
       final PropertyDescriptor p = longProp(name, description, editor, category);
@@ -979,7 +972,7 @@ public interface Editable
       }
       catch (final Exception e)
       {
-      	final String msg = "Failed to find method " + name + " for " + theClass;
+        final String msg = "Failed to find method " + name + " for " + theClass;
         MWC.Utilities.Errors.Trace.trace(e, msg);
       }
       return res;
@@ -1014,26 +1007,29 @@ public interface Editable
 
   }
 
-
-  /** convenience class for marking a property as deprecated (one that we won't load in NG)
+  /**
+   * convenience class for marking a property as deprecated (one that we won't
+   * load in NG)
    * 
    * @author ian.mayo
-   *
+   * 
    */
   public static class DeprecatedPropertyDescriptor extends PropertyDescriptor
   {
-  	/** constructor - just pass the data on
-  	 * 
-  	 * @param name
-  	 * @param _class
-  	 * @throws IntrospectionException
-  	 */
-		public DeprecatedPropertyDescriptor(final String name, final Class<?> _class)  throws IntrospectionException
-		{
-			super(name, _class);
-		}
+    /**
+     * constructor - just pass the data on
+     * 
+     * @param name
+     * @param _class
+     * @throws IntrospectionException
+     */
+    public DeprecatedPropertyDescriptor(final String name, final Class<?> _class)
+        throws IntrospectionException
+    {
+      super(name, _class);
+    }
   }
-  
+
   /**
    * ******************************************************************* class
    * adding category information to a property (used in SWT)
@@ -1134,12 +1130,12 @@ public interface Editable
           catch (final InstantiationException e)
           {
             e.printStackTrace(); // To change body of catch statement use File
-                                  // | Settings | File Templates.
+                                 // | Settings | File Templates.
           }
           catch (final IllegalAccessException e)
           {
             e.printStackTrace(); // To change body of catch statement use File
-                                  // | Settings | File Templates.
+                                 // | Settings | File Templates.
           }
           // check it worked
           Assert.assertNotNull("we didn't create the custom editor for:",
@@ -1192,8 +1188,9 @@ public interface Editable
             }
             catch (final InvocationTargetException ie)
             {
-              Assert.fail("missing getter for " + toBeTested + " called:" + getter.getName() + " property:"
-                  + p.getDisplayName() + " (" + et.getClass() + ") because:" + ie.getCause());
+              Assert.fail("missing getter for " + toBeTested + " called:"
+                  + getter.getName() + " property:" + p.getDisplayName() + " ("
+                  + et.getClass() + ") because:" + ie.getCause());
             }
             catch (final IllegalAccessException al)
             {
@@ -1202,7 +1199,8 @@ public interface Editable
 
             try
             {
-              final Object[] params = { res };
+              final Object[] params =
+              { res };
               // sort out the setter
               setter.invoke(data, params);
             }
@@ -1228,8 +1226,8 @@ public interface Editable
             // check if we can get a property editor GUI component for this
             SwingPropertyEditor2.checkPropertyEditors();
             final PropertyEditor editor = SwingPropertyEditor2.findEditor(p);
-            Assert.assertNotNull("could not find GUI editor component for:" + data
-                + " getter:" + p.getReadMethod().getName(), editor);
+            Assert.assertNotNull("could not find GUI editor component for:"
+                + data + " getter:" + p.getReadMethod().getName(), editor);
 
           }
         } // whether there was a customizer class
@@ -1250,22 +1248,20 @@ public interface Editable
     }
   }
 
+  public static interface DoNoInspectChildren
+  {
 
-	public static interface DoNoInspectChildren
-	{
-		
-	}
+  }
 
+  /**
+   * marker interface used by classes that don't want to be highlighted by a
+   * snail painter, or the plot selection indicator
+   * 
+   * @author ian.mayo
+   * 
+   */
+  public static interface DoNotHighlightMe
+  {
 
-	/**
-	 * marker interface used by classes that don't want to be highlighted by a snail painter, or the 
-	 * plot selection indicator
-	 * 
-	 * @author ian.mayo
-	 * 
-	 */
-	public static interface DoNotHighlightMe
-	{
-	
-	}
+  }
 }
