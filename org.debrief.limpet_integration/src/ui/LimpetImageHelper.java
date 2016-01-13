@@ -14,7 +14,7 @@
  */
 package ui;
 
-import info.limpet.rcp.editors.LimpetLabelProvider;
+import info.limpet.ui.editors.LimpetLabelProvider;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;

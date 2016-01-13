@@ -32,7 +32,7 @@ import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
-import MWC.GUI.Editable.customHasChildren;
+import MWC.GUI.Editable2;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -221,11 +221,12 @@ public class EditableWrapper implements IPropertySource
         for (int i = 0; i < tmpDescriptors.length; i++)
         {
           IPropertyDescriptor thisS = tmpDescriptors[i];
+          
+          // ok, wrap it in a new class that makes an IPropertyDescriptor
+          // look like an IDebriefProperty
           DebriefIProperty wrapped =
               new DebriefIProperty(thisS, _editable, null);
           list.add(wrapped);
-          // ok, wrap it in a new class that makes an IPropertyDescriptor
-          // look like an IDebriefProperty
         }
 
       }
@@ -481,7 +482,7 @@ public class EditableWrapper implements IPropertySource
 
     // get the value, if it worked
     res = thisProp.getValue();
-
+    
     // done. for better or for worse..
     return res;
   }
@@ -533,9 +534,10 @@ public class EditableWrapper implements IPropertySource
     boolean layerThatCanBEInspected =
         (_editable instanceof Layer)
             && (!(_editable instanceof Editable.DoNoInspectChildren));
+    
     boolean customHasChildren =
-        _editable instanceof customHasChildren
-            && ((customHasChildren) _editable).hasChildren();
+        _editable instanceof Editable2
+            && ((Editable2) _editable).hasChildren();
     return layerThatCanBEInspected || customHasChildren;
   }
 

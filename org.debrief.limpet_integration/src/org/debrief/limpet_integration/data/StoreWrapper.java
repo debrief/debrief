@@ -4,30 +4,24 @@ import info.limpet.ICollection;
 import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
 import info.limpet.data.store.InMemoryStore;
-import info.limpet.rcp.data_provider.data.LimpetWrapper;
-import info.limpet.rcp.data_provider.data.ReflectivePropertySource;
+import info.limpet.ui.data_provider.data.LimpetWrapper;
+import info.limpet.ui.data_provider.data.ReflectivePropertySource;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collection;
 import java.util.Iterator;
 
 import Debrief.Wrappers.Measurements.SupplementalDataBlock;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
+import MWC.GUI.Editable2;
 import MWC.GUI.Plottable;
-import MWC.GUI.Plottables;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class StoreWrapper implements SupplementalDataBlock, Layer,
+public class StoreWrapper implements SupplementalDataBlock, Editable2,
     LimpetWrapper
 {
-
-  /**
-	 * 
-	 */
-  private static final long serialVersionUID = 1L;
 
   private final InMemoryStore _store;
 
@@ -105,62 +99,8 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
 
   }
 
-  @Override
-  public void exportShape()
-  {
-    // TODO Auto-generated method stub
 
-  }
-
-  @Override
-  public void append(Layer other)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void setName(String val)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public boolean hasOrderedChildren()
-  {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public int getLineThickness()
-  {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public void add(Editable point)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void removeElement(Editable point)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public Enumeration<Editable> elements()
-  {
-    return getElementsFor(_store);
-  }
-
-  private Enumeration<Editable> getElementsFor(IStoreGroup store)
+  private ArrayList<Editable> getElementsFor(IStoreGroup store)
   {
     ArrayList<Editable> res = new ArrayList<Editable>();
     Iterator<IStoreItem> iter = store.iterator();
@@ -186,17 +126,12 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
       res.add(thisE);
     }
 
-    return new Plottables.IteratorWrapper(res.iterator());
+    return res;
   }
 
   protected class GroupWrapper extends ReflectivePropertySource implements
-      Layer, LimpetWrapper
+      Editable2, LimpetWrapper
   {
-
-    /**
-		 * 
-		 */
-    private static final long serialVersionUID = 1L;
 
     private IStoreGroup _group;
 
@@ -225,27 +160,6 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
     }
 
     @Override
-    public boolean getVisible()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public double rangeFrom(WorldLocation other)
-    {
-      // TODO Auto-generated method stub
-      return 0;
-    }
-
-    @Override
-    public int compareTo(Plottable o)
-    {
-      // TODO Auto-generated method stub
-      return 0;
-    }
-
-    @Override
     public boolean hasEditor()
     {
       // TODO Auto-generated method stub
@@ -260,85 +174,34 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
     }
 
     @Override
-    public void exportShape()
+    public boolean hasChildren()
     {
-      // TODO Auto-generated method stub
-
+      return _group.size()>0;
     }
 
     @Override
-    public void append(Layer other)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void paint(CanvasType dest)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public WorldArea getBounds()
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public void setName(String val)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean hasOrderedChildren()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public int getLineThickness()
-    {
-      // TODO Auto-generated method stub
-      return 0;
-    }
-
-    @Override
-    public void add(Editable point)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void removeElement(Editable point)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setVisible(boolean val)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public Enumeration<Editable> elements()
+    public Collection<Editable> getChildren()
     {
       return getElementsFor(_group);
     }
 
+    @Override
+    public Object getValue(Object descriptor)
+    {
+      return super.getPropertyValue(descriptor);
+    }
+
+    @Override
+    public void setValue(Object id, Object theValue)
+    {
+      super.setPropertyValue(id,  theValue);
+    }
+
+
   }
 
   protected static class ItemWrapper extends ReflectivePropertySource implements
-      Editable, LimpetWrapper
+      Editable2, LimpetWrapper
   {
 
     private IStoreItem _item;
@@ -385,6 +248,34 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
       // TODO Auto-generated method stub
       return null;
     }
+    
+
+    @Override
+    public Object getValue(Object descriptor)
+    {
+      return super.getPropertyValue(descriptor);
+    }
+
+    @Override
+    public boolean hasChildren()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public Collection<Editable> getChildren()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+    
+    @Override
+    public void setValue(Object id, Object theValue)
+    {
+      super.setPropertyValue(id,  theValue);
+    }
+//
 
   }
 
@@ -399,6 +290,32 @@ public class StoreWrapper implements SupplementalDataBlock, Layer,
   public Object getSubject()
   {
     return _store;
+  }
+
+  @Override
+  public boolean hasChildren()
+  {
+    return _store.size() > 0;
+  }
+
+  @Override
+  public Collection<Editable> getChildren()
+  {
+    return getElementsFor(_store);
+  }
+
+  @Override
+  public Object getValue(Object descriptor)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void setValue(Object id, Object theValue)
+  {
+    // TODO Auto-generated method stub
+    
   }
 
 }

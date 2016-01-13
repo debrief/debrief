@@ -23,10 +23,13 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 
-import MWC.GUI.*;
-import MWC.GUI.Editable.customHasChildren;
+import MWC.GUI.Editable;
+import MWC.GUI.Editable2;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottables;
 
 /*
  * The content provider class is responsible for providing objects to the view.
@@ -71,10 +74,28 @@ public class ViewContentProvider implements IStructuredContentProvider,
       while (numer.hasMoreElements())
       {
         final Layer thisL = (Layer) numer.nextElement();
-        final EditableWrapper wrapper =
-            new EditableWrapper(thisL, null, theLayers);
+        final EditableWrapper wrapper = new EditableWrapper(thisL, null,
+            theLayers);
         list.add(wrapper);
       }
+      res = list.toArray();
+    }
+    else if (parent instanceof Editable2)
+    {
+      Editable2 hasC = (Editable2) parent;
+      final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
+      Collection<Editable> children = hasC.getChildren();
+      if (children != null)
+      {
+        Iterator<Editable> iter = children.iterator();
+        while (iter.hasNext())
+        {
+          Editable object = iter.next();
+          EditableWrapper ew = new EditableWrapper(object);
+          list.add(ew);
+        }
+      }
+      
       res = list.toArray();
     }
     return res;
@@ -115,9 +136,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
             while (numer.hasMoreElements())
             {
               final Editable thisP = (Editable) numer.nextElement();
-              final EditableWrapper pw =
-                  new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl
-                      .getLayers(), index);
+              final EditableWrapper pw = new EditableWrapper.OrderedEditableWrapper(
+                  thisP, pl, pl.getLayers(), index);
               list.add(pw);
               index++;
             }
@@ -130,29 +150,29 @@ public class ViewContentProvider implements IStructuredContentProvider,
               while (numer.hasMoreElements())
               {
                 final Editable thisP = (Editable) numer.nextElement();
-                final EditableWrapper pw =
-                    new EditableWrapper(thisP, pl, pl.getLayers());
+                final EditableWrapper pw = new EditableWrapper(thisP, pl,
+                    pl.getLayers());
                 list.add(pw);
               }
             }
           }
 
         }
-        else if (thisE instanceof customHasChildren)
+        else if(thisE instanceof Editable2)
         {
-          Editable.customHasChildren hasC = (customHasChildren) thisE;
-          Collection<Editable> children = hasC.children();
-          if (children != null)
+          Editable2 ed2 = (Editable2) thisE;
+          if(ed2.hasChildren())
           {
-            Iterator<Editable> iter = children.iterator();
-            while (iter.hasNext())
+            Iterator<Editable> iter2 = ed2.getChildren().iterator();
+            while (iter2.hasNext())
             {
-              Editable object = iter.next();
-              EditableWrapper ew = new EditableWrapper(object);
-              list.add(ew);
+              Editable editable = (Editable) iter2.next();
+              list.add(new EditableWrapper(editable, pl, pl.getLayers()));
             }
+            
           }
         }
+
 
         res = list.toArray();
       }
@@ -167,7 +187,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
     {
       final EditableWrapper pw = (EditableWrapper) parent;
 
-      // special case - only allow the layer to open if it has less than max-items
+      // special case - only allow the layer to open if it has less than
+      // max-items
       Editable ed = pw.getEditable();
       if (ed instanceof Plottables)
       {
