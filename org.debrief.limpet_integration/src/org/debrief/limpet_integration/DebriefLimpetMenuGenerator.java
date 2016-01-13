@@ -5,6 +5,7 @@ import info.limpet.IOperation;
 import info.limpet.IStore;
 import info.limpet.IStoreItem;
 import info.limpet.data.operations.admin.OperationsLibrary;
+import info.limpet.ui.RCPContext;
 import info.limpet.ui.data_provider.data.LimpetWrapper;
 import info.limpet.ui.editors.DataManagerEditor;
 import info.limpet.ui.editors.RCPOperationsLibrary;
@@ -27,6 +28,12 @@ public class DebriefLimpetMenuGenerator implements
     AlternateRightClickContextItemGenerator
 {
   
+  final IContext myContext;
+  
+  public DebriefLimpetMenuGenerator()
+  {
+    myContext = new RCPContext();
+  }
   
 
   private ArrayList<IAdapterFactory> _adapters;
@@ -60,12 +67,22 @@ public class DebriefLimpetMenuGenerator implements
             Object match = iAdapterFactory.getAdapter(editable, IStoreItem.class);
             if(match != null)
             {
+              // ok, we've got an item
               selection.add((IStoreItem)match);
             }
           }
         }
       }
     }
+    
+    IStore theStore = null;
+    
+    // ok, have we found anything suitable?
+    if(selection.size() > 0)
+    {
+      // ok, find a store, where we can put the results
+    }
+    
 
     // get the list of operations
     HashMap<String, List<IOperation<?>>> ops = OperationsLibrary
@@ -91,9 +108,7 @@ public class DebriefLimpetMenuGenerator implements
       // now loop through this set of operations
       List<IOperation<?>> values = ops.get(name);
 
-      IStore store = null;
-      IContext context = null;
-      DataManagerEditor.showThisList(selection, newM, values, store, context);
+      DataManagerEditor.showThisList(selection, newM, values, theStore, myContext);
     }
 
   }
