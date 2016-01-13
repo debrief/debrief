@@ -11,6 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core;bundle-version="1.0.189",
  org.mwc.cmap.legacy;bundle-version="1.0.204",
  org.mwc.debrief.legacy;bundle-version="1.0.297",
- info.limpet;bundle-version="1.0.4",
+ info.limpet;bundle-version="1.0.6",
+ info.limpet.libs;bundle-version="1.0.6",
  info.limpet.ui;bundle-version="1.0.6"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
