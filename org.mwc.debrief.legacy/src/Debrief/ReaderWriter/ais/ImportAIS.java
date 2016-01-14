@@ -491,7 +491,7 @@ public class ImportAIS
 
 		public void testNewImport() throws Exception
 		{
-			String testFile = "/home/ian/Downloads/AIS_TEST_FILES/150304_0914.txt";
+			String testFile = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0914.txt";
 			File testI = new File(testFile);
 			assertTrue(testI.exists());
 
@@ -504,7 +504,7 @@ public class ImportAIS
 
 			// ok, now for the second file
 			is.close();
-			testFile = "/home/ian/Downloads/AIS_TEST_FILES/150304_0924.txt";
+			testFile = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0924.txt";
 			testI = new File(testFile);
 			assertTrue(testI.exists());
 
