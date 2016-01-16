@@ -25,7 +25,7 @@ public class LimpetTrack extends StoreGroup
    * 
    */
   private static final long serialVersionUID = 1L;
-  private TrackWrapper _myTrack;
+  private final TrackWrapper _myTrack;
 
   public LimpetTrack(TrackWrapper track)
   {
@@ -34,6 +34,11 @@ public class LimpetTrack extends StoreGroup
     _myTrack = track;
     
     init();
+  }
+  
+  public TrackWrapper getTrack()
+  {
+    return _myTrack;
   }
 
   protected void init()
