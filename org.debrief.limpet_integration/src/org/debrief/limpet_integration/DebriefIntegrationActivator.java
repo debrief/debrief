@@ -1,5 +1,8 @@
 package org.debrief.limpet_integration;
 
+import info.limpet.ui.Activator;
+import info.limpet.ui.core_view.CoreAnalysisView;
+
 import org.debrief.limpet_integration.adapters.DebriefLimpetAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IStartup;
@@ -90,11 +93,14 @@ public class DebriefIntegrationActivator extends AbstractUIPlugin implements
 
     // also declare our right-click editor
     DebriefLimpetMenuGenerator genny = new DebriefLimpetMenuGenerator();
-    RightClickSupport
-        .addAlternateRightClickGenerator(genny);
-    
+    RightClickSupport.addAlternateRightClickGenerator(genny);
+
     // also give Debrief an adapter factory
-    genny.addAdapterFactory(new DebriefLimpetAdapterFactory());
+    DebriefLimpetAdapterFactory limpetAdapters = new DebriefLimpetAdapterFactory();
+    genny.addAdapterFactory(limpetAdapters);
+
+    // give Limpet the adapter factory too
+    Activator.getDefault().addAdapterFactory(limpetAdapters);
 
   }
 }

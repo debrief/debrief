@@ -3,8 +3,10 @@ package org.debrief.limpet_integration;
 import info.limpet.IContext;
 import info.limpet.IOperation;
 import info.limpet.IStore;
+import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
 import info.limpet.data.operations.admin.OperationsLibrary;
+import info.limpet.data.store.IGroupWrapper;
 import info.limpet.ui.RCPContext;
 import info.limpet.ui.data_provider.data.LimpetWrapper;
 import info.limpet.ui.editors.DataManagerEditor;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.debrief.limpet_integration.data.StoreWrapper;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -39,8 +42,8 @@ public class DebriefLimpetMenuGenerator implements
   private ArrayList<IAdapterFactory> _adapters;
 
   @Override
-  public void generate(IMenuManager parent, Layers theLayers,
-      Collection<Editable> parentLayers, Collection<Editable> subjects)
+  public void generate(IMenuManager parent, final Layers theLayers,
+      final Collection<Editable> parentLayers, final Collection<Editable> subjects)
   {
     // build up a selection
     List<IStoreItem> selection = new ArrayList<IStoreItem>();
@@ -75,14 +78,31 @@ public class DebriefLimpetMenuGenerator implements
       }
     }
     
-    IStore theStore = null;
-    
     // ok, have we found anything suitable?
+    IStore destination = null;
+    
     if(selection.size() > 0)
     {
       // ok, find a store, where we can put the results
+      if(parentLayers.size() > 0)
+      {
+        Editable parentE = parentLayers.iterator().next();
+        if(parentE instanceof IGroupWrapper)
+        {
+          IGroupWrapper tgt = (IGroupWrapper) parentE;
+          
+          final IStoreGroup group = tgt.getGroup();
+          
+          // TODO: we shouldn't have difference between IStore and IStoreGroup
+          destination = new StoreGroupAsStore(group);
+        }
+        else if(parentE instanceof StoreWrapper)
+        {
+          StoreWrapper store = (StoreWrapper) parentE;
+          destination = (IStore) store.getSubject();
+        }
+      }
     }
-    
 
     // get the list of operations
     HashMap<String, List<IOperation<?>>> ops = OperationsLibrary
@@ -96,6 +116,17 @@ public class DebriefLimpetMenuGenerator implements
     // did we find anything?
     Iterator<String> hIter = ops.keySet().iterator();
 
+    // change listener
+    Runnable changeListener = new Runnable(){
+
+      @Override
+      public void run()
+      {
+        System.out.println("DATA MODIFIED");
+        
+        theLayers.fireExtended();
+      }};
+    
     while (hIter.hasNext())
     {
       // ok, we're in a menu grouping
@@ -108,7 +139,7 @@ public class DebriefLimpetMenuGenerator implements
       // now loop through this set of operations
       List<IOperation<?>> values = ops.get(name);
 
-      DataManagerEditor.showThisList(selection, newM, values, theStore, myContext);
+      DataManagerEditor.showThisList(selection, newM, values, destination, myContext, changeListener);
     }
 
   }

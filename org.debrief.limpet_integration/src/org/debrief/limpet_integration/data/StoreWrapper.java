@@ -3,7 +3,9 @@ package org.debrief.limpet_integration.data;
 import info.limpet.ICollection;
 import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
+import info.limpet.data.store.IGroupWrapper;
 import info.limpet.data.store.InMemoryStore;
+import info.limpet.ui.data_provider.data.GroupWrapper;
 import info.limpet.ui.data_provider.data.LimpetWrapper;
 import info.limpet.ui.data_provider.data.ReflectivePropertySource;
 
@@ -23,6 +25,10 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     LimpetWrapper
 {
 
+  /**
+   * 
+   */
+  private static final String STORE_NAME = "Measurements";
   private final InMemoryStore _store;
 
   public StoreWrapper(InMemoryStore store)
@@ -68,7 +74,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   @Override
   public String getName()
   {
-    return "Measurements";
+    return STORE_NAME;
   }
 
   @Override
@@ -92,6 +98,11 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     return 0;
   }
 
+  public String toString()
+  {
+    return STORE_NAME;
+  }
+
   @Override
   public void setWrapper(Object parent)
   {
@@ -99,6 +110,37 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
 
   }
 
+  @Override
+  public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + _store.hashCode();
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+    {
+      return true;
+    }
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    StoreWrapper other = (StoreWrapper) obj;
+    if (other.hashCode() != hashCode())
+    {
+      return false;
+    }
+    return true;
+  }
 
   private ArrayList<Editable> getElementsFor(IStoreGroup store)
   {
@@ -130,7 +172,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   }
 
   protected class GroupWrapper extends ReflectivePropertySource implements
-      Editable2, LimpetWrapper
+      Editable2, LimpetWrapper, IGroupWrapper
   {
 
     private IStoreGroup _group;
@@ -147,8 +189,38 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       return _group.getName();
     }
 
-    
-    
+    @Override
+    public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + _group.hashCode();
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      if (this == obj)
+      {
+        return true;
+      }
+      if (obj == null)
+      {
+        return false;
+      }
+      if (getClass() != obj.getClass())
+      {
+        return false;
+      }
+      GroupWrapper other = (GroupWrapper) obj;
+      if (other.hashCode() != hashCode())
+      {
+        return false;
+      }
+      return true;
+    }
+
     @Override
     public String toString()
     {
@@ -184,7 +256,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public boolean hasChildren()
     {
-      return _group.size()>0;
+      return _group.size() > 0;
     }
 
     @Override
@@ -202,9 +274,19 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public void setValue(Object id, Object theValue)
     {
-      super.setPropertyValue(id,  theValue);
+      super.setPropertyValue(id, theValue);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.limpet.data.store.IGroupWrapper#getGroup()
+     */
+    @Override
+    public IStoreGroup getGroup()
+    {
+      return _group;
+    }
 
   }
 
@@ -218,6 +300,38 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     {
       super(storeItem);
       _item = storeItem;
+    }
+
+    @Override
+    public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + _item.hashCode();
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      if (this == obj)
+      {
+        return true;
+      }
+      if (obj == null)
+      {
+        return false;
+      }
+      if (getClass() != obj.getClass())
+      {
+        return false;
+      }
+      ItemWrapper other = (ItemWrapper) obj;
+      if (other.hashCode() != hashCode())
+      {
+        return false;
+      }
+      return true;
     }
 
     @Override
@@ -256,7 +370,6 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       // TODO Auto-generated method stub
       return null;
     }
-    
 
     @Override
     public Object getValue(Object descriptor)
@@ -277,13 +390,13 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       // TODO Auto-generated method stub
       return null;
     }
-    
+
     @Override
     public void setValue(Object id, Object theValue)
     {
-      super.setPropertyValue(id,  theValue);
+      super.setPropertyValue(id, theValue);
     }
-//
+    //
 
   }
 
@@ -323,7 +436,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   public void setValue(Object id, Object theValue)
   {
     // TODO Auto-generated method stub
-    
+
   }
 
 }
