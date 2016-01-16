@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.debrief.limpet_integration.adapters.LimpetTrack;
 import org.debrief.limpet_integration.data.StoreWrapper;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.action.IMenuManager;
@@ -25,26 +26,31 @@ import org.eclipse.jface.action.MenuManager;
 import org.mwc.cmap.core.property_support.RightClickSupport.AlternateRightClickContextItemGenerator;
 
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
 public class DebriefLimpetMenuGenerator implements
     AlternateRightClickContextItemGenerator
 {
-  
+
   final IContext myContext;
-  
+
   public DebriefLimpetMenuGenerator()
   {
     myContext = new RCPContext();
   }
-  
 
   private ArrayList<IAdapterFactory> _adapters;
 
   @Override
   public void generate(IMenuManager parent, final Layers theLayers,
-      final Collection<Editable> parentLayers, final Collection<Editable> subjects)
+      final Collection<Editable> parentLayers,
+      final Collection<Editable> subjects)
   {
+
+    // see if we can learn about the top level for the data
+    Layer topLayer = null;
+
     // build up a selection
     List<IStoreItem> selection = new ArrayList<IStoreItem>();
     Iterator<Editable> iter = subjects.iterator();
@@ -61,42 +67,51 @@ public class DebriefLimpetMenuGenerator implements
       else
       {
         // hmm, do we have another way of getting it?
-        if(_adapters != null)
+        if (_adapters != null)
         {
           Iterator<IAdapterFactory> aIter = _adapters.iterator();
           while (aIter.hasNext())
           {
             IAdapterFactory iAdapterFactory = (IAdapterFactory) aIter.next();
-            Object match = iAdapterFactory.getAdapter(editable, IStoreItem.class);
-            if(match != null)
+            Object match = iAdapterFactory.getAdapter(editable,
+                IStoreItem.class);
+            if (match != null)
             {
               // ok, we've got an item
-              selection.add((IStoreItem)match);
+              selection.add((IStoreItem) match);
             }
           }
         }
       }
     }
-    
+
     // ok, have we found anything suitable?
     IStore destination = null;
-    
-    if(selection.size() > 0)
+
+    if (selection.size() > 0)
     {
       // ok, find a store, where we can put the results
-      if(parentLayers.size() > 0)
+      if (parentLayers.size() > 0)
       {
         Editable parentE = parentLayers.iterator().next();
-        if(parentE instanceof IGroupWrapper)
+        if (parentE instanceof IGroupWrapper)
         {
           IGroupWrapper tgt = (IGroupWrapper) parentE;
-          
+
           final IStoreGroup group = tgt.getGroup();
-          
+
           // TODO: we shouldn't have difference between IStore and IStoreGroup
           destination = new StoreGroupAsStore(group);
+
+          // hmm, can we find the top level layer?
+          if (group instanceof LimpetTrack)
+          {
+            LimpetTrack lt = (LimpetTrack) group;
+            topLayer = lt.getTrack();
+          }
+
         }
-        else if(parentE instanceof StoreWrapper)
+        else if (parentE instanceof StoreWrapper)
         {
           StoreWrapper store = (StoreWrapper) parentE;
           destination = (IStore) store.getSubject();
@@ -117,16 +132,25 @@ public class DebriefLimpetMenuGenerator implements
     Iterator<String> hIter = ops.keySet().iterator();
 
     // change listener
-    Runnable changeListener = new Runnable(){
+    final Layer finalDestination = topLayer;
+
+    Runnable changeListener = new Runnable()
+    {
 
       @Override
       public void run()
       {
-        System.out.println("DATA MODIFIED");
-        
-        theLayers.fireExtended();
-      }};
-    
+        if (finalDestination != null)
+        {
+          theLayers.fireExtended(null, finalDestination);
+        }
+        else
+        {
+          theLayers.fireExtended();
+        }
+      }
+    };
+
     while (hIter.hasNext())
     {
       // ok, we're in a menu grouping
@@ -139,15 +163,15 @@ public class DebriefLimpetMenuGenerator implements
       // now loop through this set of operations
       List<IOperation<?>> values = ops.get(name);
 
-      DataManagerEditor.showThisList(selection, newM, values, destination, myContext, changeListener);
+      DataManagerEditor.showThisList(selection, newM, values, destination,
+          myContext, changeListener);
     }
 
   }
 
-  public void addAdapterFactory(
-      IAdapterFactory newFactory)
+  public void addAdapterFactory(IAdapterFactory newFactory)
   {
-    if(_adapters == null)
+    if (_adapters == null)
     {
       _adapters = new ArrayList<IAdapterFactory>();
     }
