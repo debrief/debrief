@@ -65,7 +65,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		}
 	}
 
-	private static final String TRACK_NAME = "test track";
+	public static final String TRACK_NAME = "test track";
 
 	public static FixWrapper createFix(final int timeMillis, final int vLatDeg,
 			final int vLatMin, final double vLatSec, final int vLongDeg,
@@ -84,7 +84,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		return theFix;
 	}
 
-	private TrackSegment getDummyList()
+	public static TrackSegment getDummyList()
 	{
 		final TrackSegment ts0 = new TrackSegment();
 		final FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
@@ -1800,9 +1800,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		return sCtr;
 	}
 
-	private TrackWrapper getDummyTrack()
+	public static TrackWrapper getDummyTrack()
 	{
 		final TrackWrapper tw = new TrackWrapper();
+		tw.setName(TRACK_NAME);
 
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
