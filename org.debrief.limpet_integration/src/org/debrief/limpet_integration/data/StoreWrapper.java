@@ -147,6 +147,14 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       return _group.getName();
     }
 
+    
+    
+    @Override
+    public String toString()
+    {
+      return getName();
+    }
+
     @Override
     public Object getSubject()
     {
