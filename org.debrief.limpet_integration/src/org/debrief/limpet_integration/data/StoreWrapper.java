@@ -30,6 +30,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
    */
   private static final String STORE_NAME = "Measurements";
   private final InMemoryStore _store;
+  private Editable _parent;
 
   public StoreWrapper(InMemoryStore store)
   {
@@ -105,9 +106,8 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
 
   @Override
   public void setWrapper(Object parent)
-  {
-    // TODO Auto-generated method stub
-
+  {    
+    _parent = (Editable) parent;
   }
 
   @Override
@@ -142,7 +142,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     return true;
   }
 
-  private ArrayList<Editable> getElementsFor(IStoreGroup store)
+  private ArrayList<Editable> getElementsFor(IStoreGroup store, LimpetWrapper parent)
   {
     ArrayList<Editable> res = new ArrayList<Editable>();
     Iterator<IStoreItem> iter = store.iterator();
@@ -154,11 +154,15 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       if (storeItem instanceof IStoreGroup)
       {
         IStoreGroup group = (IStoreGroup) storeItem;
-        thisE = new GroupWrapper(group);
+        GroupWrapper gw =new GroupWrapper(group);
+        gw.setParent(parent);
+        thisE = gw;
       }
       else if (storeItem instanceof ICollection)
       {
-        thisE = new ItemWrapper(storeItem);
+        ItemWrapper item =new ItemWrapper(storeItem);
+        item.setParent(parent);
+        thisE = item;
       }
       else
       {
@@ -176,11 +180,21 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   {
 
     private IStoreGroup _group;
+    private LimpetWrapper _parent;
 
     public GroupWrapper(IStoreGroup group)
     {
       super(group);
       _group = group;
+    }
+
+    /**
+     * @param store
+     */
+    public void setParent(LimpetWrapper parent)
+    {
+      this._parent = parent;
+      _group.setParent((IStoreGroup) parent.getSubject());
     }
 
     @Override
@@ -236,7 +250,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public LimpetWrapper getParent()
     {
-      return null;
+      return _parent;
     }
 
     @Override
@@ -262,7 +276,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public Collection<Editable> getChildren()
     {
-      return getElementsFor(_group);
+      return getElementsFor(_group, this);
     }
 
     @Override
@@ -295,6 +309,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   {
 
     private IStoreItem _item;
+    private LimpetWrapper _parent;
 
     public ItemWrapper(IStoreItem storeItem)
     {
@@ -367,10 +382,14 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public LimpetWrapper getParent()
     {
-      // TODO Auto-generated method stub
-      return null;
+      return this._parent;
     }
 
+    public void setParent(LimpetWrapper parent)
+    {
+      this._parent = parent;
+    }
+    
     @Override
     public Object getValue(Object descriptor)
     {
@@ -422,7 +441,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   @Override
   public Collection<Editable> getChildren()
   {
-    return getElementsFor(_store);
+    return getElementsFor(_store, this);
   }
 
   @Override
