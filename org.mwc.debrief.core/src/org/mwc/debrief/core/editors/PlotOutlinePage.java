@@ -735,7 +735,19 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
       // ok, add it to our more versatile list
       altList.add(wrapper.getEditable());
-      altParents.add(wrapper.getParent().getEditable());
+
+      // handle instance where top-level elements don't have a parent
+      final Editable thisParent;
+      if (wrapper.getParent() != null)
+      {
+        thisParent = wrapper.getParent().getEditable();
+      }
+      else
+      {
+        thisParent = wrapper.getEditable();
+      }
+
+      altParents.add(thisParent);
 
       // see if it's a plain old object type
       if (!(wrapper.getEditable() instanceof Editable2))
