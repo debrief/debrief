@@ -6,6 +6,7 @@ import info.limpet.ui.data_provider.data.LimpetWrapper;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
@@ -35,6 +36,11 @@ public class DebriefLimpetAdapterFactory implements IAdapterFactory
         // ok, take the steps to make it look like a Limpet Group Track
 
         // now store this in our dictionary, in case we get asked again
+      }
+      else if(subject instanceof LabelWrapper)
+      {
+        LabelWrapper lw= (LabelWrapper) subject;
+        res = new LimpetSingletonTrack(lw);
       }
       else if (subject instanceof EditableWrapper)
       {
