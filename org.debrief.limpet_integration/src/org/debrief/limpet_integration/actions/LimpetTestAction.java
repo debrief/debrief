@@ -5,7 +5,7 @@ import info.limpet.data.store.InMemoryStore;
 
 import java.util.Enumeration;
 
-import org.debrief.limpet_integration.DebriefLimpetMenuGenerator;
+import org.debrief.limpet_integration.TopLevelTarget;
 import org.debrief.limpet_integration.adapters.DebriefLimpetAdapterFactory;
 import org.debrief.limpet_integration.data.StoreWrapper;
 import org.eclipse.jface.action.IAction;
@@ -89,27 +89,13 @@ public class LimpetTestAction implements IWorkbenchWindowActionDelegate
           if (limpetItem != null)
           {
             handleThis(layer, limpetItem, layers, (Layer) layer);
-
           }
         }
       }
       // also try to add the top level entity
-      layers.addThisLayer(new DebriefLimpetMenuGenerator.TopLevelTarget(layers)
-      {
-
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public String toString()
-        {
-          // TODO Auto-generated method stub
-          return "Init Measurements";
-        }
-
-      });
+      TopLevelTarget topLevel = new TopLevelTarget(layers);
+      topLevel.setRealised(true);
+      layers.addThisLayer(topLevel);
     }
   }
 
