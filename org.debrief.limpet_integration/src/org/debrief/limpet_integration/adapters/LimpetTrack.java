@@ -1,6 +1,8 @@
 package org.debrief.limpet_integration.adapters;
 
 import info.limpet.IStoreItem;
+import info.limpet.data.impl.samples.StockTypes;
+import info.limpet.data.impl.samples.TemporalLocation;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -33,6 +35,9 @@ public class LimpetTrack extends CoreLimpetTrack
           @Override
           public void propertyChange(PropertyChangeEvent evt)
           {
+            // ok, clear our data
+            reset(false);
+
             Iterator<IStoreItem> children = children().iterator();
             while (children.hasNext())
             {
@@ -41,8 +46,14 @@ public class LimpetTrack extends CoreLimpetTrack
             }
           }
         });
-    
-    init(false);
+
+    // store our data
+    super.add(new StockTypes.Temporal.AngleDegrees(COURSE, null));
+    super.add(new StockTypes.Temporal.SpeedMSec(SPEED, null));
+    super.add(new StockTypes.Temporal.LengthM(DEPTH, null));
+    super.add(new TemporalLocation(LOCATION));
+
+    reset(false);
 
   }
 

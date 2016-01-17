@@ -1,6 +1,7 @@
 package org.debrief.limpet_integration.adapters;
 
 import info.limpet.IStoreItem;
+import info.limpet.data.impl.samples.StockTypes;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -36,6 +37,9 @@ public class LimpetSingletonTrack extends CoreLimpetTrack
           @Override
           public void propertyChange(PropertyChangeEvent evt)
           {
+            // ok, clear our data
+            reset(true);
+
             Iterator<IStoreItem> children = children().iterator();
             while (children.hasNext())
             {
@@ -44,9 +48,14 @@ public class LimpetSingletonTrack extends CoreLimpetTrack
             }
           }
         });
-    
-    
-    init(true);
+
+    // create out input data
+    super.add(new StockTypes.NonTemporal.AngleDegrees(COURSE, null));
+    super.add(new StockTypes.NonTemporal.SpeedMSec(SPEED, null));
+    super.add(new StockTypes.NonTemporal.LengthM(DEPTH, null));
+    super.add(new StockTypes.NonTemporal.Location(LOCATION));
+
+    reset(true);
   }
 
   /*

@@ -5,8 +5,8 @@ package org.debrief.limpet_integration.adapters;
 
 import info.limpet.IObjectCollection;
 import info.limpet.IQuantityCollection;
+import info.limpet.IStoreItem;
 import info.limpet.ITemporalQuantityCollection;
-import info.limpet.data.impl.samples.StockTypes;
 import info.limpet.data.impl.samples.TemporalLocation;
 import info.limpet.data.operations.spatial.GeoSupport;
 import info.limpet.data.operations.spatial.IGeoCalculator;
@@ -14,6 +14,7 @@ import info.limpet.data.store.InMemoryStore.StoreGroup;
 
 import java.awt.geom.Point2D;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
@@ -34,6 +35,8 @@ abstract public class CoreLimpetTrack extends StoreGroup
   public static final String SPEED = "Speed";
   public static final String COURSE = "Course";
 
+  protected boolean _pending = true;
+
   /**
    * @param name
    */
@@ -44,20 +47,41 @@ abstract public class CoreLimpetTrack extends StoreGroup
 
   abstract Enumeration<Editable> getLocations();
 
-  protected void init(boolean isSingleton)
+  /**
+   * clear our stored data, it has clearly changed
+   * 
+   */
+  protected void reset(boolean isSingleton)
+  {
+    Iterator<IStoreItem> kids = children().iterator();
+    while (kids.hasNext())
+    {
+      IObjectCollection<?> item = (IObjectCollection<?>) kids.next();
+      item.clearQuiet();
+    }
+
+    _pending = true;
+
+    // ok, populate ourselves
+    init(isSingleton);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void init(boolean isSingleton)
   {
     // have we been built/collated?
-    if (size() == 0)
+    if (_pending)
     {
       // nope, get building
 
       // location
       Enumeration<Editable> fixes = getLocations();
 
-      IObjectCollection<Point2D> location = fillLocations(fixes, isSingleton);
+      fillLocations((IObjectCollection<Point2D>) get(LOCATION), fixes,
+          isSingleton);
 
       // course
-      IQuantityCollection<?> course = fillDataset(getLocations(),
+      fillDataset((IQuantityCollection<?>) get(COURSE), getLocations(),
           new DoubleGetter()
           {
             @Override
@@ -65,22 +89,8 @@ abstract public class CoreLimpetTrack extends StoreGroup
             {
               return fix.getCourse();
             }
-
-            @Override
-            public IQuantityCollection<?> getOutput(boolean isSingleton)
-            {
-              if (isSingleton)
-              {
-                return new StockTypes.NonTemporal.AngleDegrees(COURSE, null);
-              }
-              else
-              {
-                return new StockTypes.Temporal.AngleDegrees(COURSE, null);
-              }
-            }
-
           }, isSingleton);
-      IQuantityCollection<?> speed = fillDataset(getLocations(),
+      fillDataset((IQuantityCollection<?>) get(SPEED), getLocations(),
           new DoubleGetter()
           {
             @Override
@@ -89,22 +99,8 @@ abstract public class CoreLimpetTrack extends StoreGroup
               WorldSpeed kts = new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts);
               return kts.getValueIn(WorldSpeed.M_sec);
             }
-
-            @Override
-            public IQuantityCollection<?> getOutput(boolean isSingleton)
-            {
-              if (isSingleton)
-              {
-                return new StockTypes.NonTemporal.SpeedMSec(SPEED, null);
-              }
-              else
-              {
-                return new StockTypes.Temporal.SpeedMSec(SPEED, null);
-              }
-            }
-
           }, isSingleton);
-      IQuantityCollection<?> depth = fillDataset(getLocations(),
+      fillDataset((IQuantityCollection<?>) get(DEPTH), getLocations(),
           new DoubleGetter()
           {
             @Override
@@ -112,43 +108,17 @@ abstract public class CoreLimpetTrack extends StoreGroup
             {
               return fix.getLocation().getDepth();
             }
-
-            @Override
-            public IQuantityCollection<?> getOutput(boolean isSingleton)
-            {
-              if (isSingleton)
-              {
-                return new StockTypes.NonTemporal.LengthM(DEPTH, null);
-              }
-              else
-              {
-                return new StockTypes.Temporal.LengthM(DEPTH, null);
-              }
-            }
           }, isSingleton);
 
-      // collate results
-      add(location);
-      add(course);
-      add(speed);
-      add(depth);
+      _pending = false;
+
     }
   }
 
   protected IObjectCollection<Point2D> fillLocations(
-      Enumeration<Editable> fixes, boolean isSingleton)
+      IObjectCollection<Point2D> destination, Enumeration<Editable> fixes,
+      boolean isSingleton)
   {
-    final IObjectCollection<Point2D> destination;
-
-    if (isSingleton)
-    {
-      destination = new StockTypes.NonTemporal.Location(LOCATION);
-    }
-    else
-    {
-      destination = new TemporalLocation(LOCATION);
-
-    }
 
     while (fixes.hasMoreElements())
     {
@@ -170,10 +140,9 @@ abstract public class CoreLimpetTrack extends StoreGroup
   }
 
   protected static IQuantityCollection<?> fillDataset(
-      Enumeration<Editable> fixes, DoubleGetter getter, boolean isSingleton)
+      IQuantityCollection<?> destination, Enumeration<Editable> fixes,
+      DoubleGetter getter, boolean isSingleton)
   {
-    IQuantityCollection<?> destination = getter.getOutput(isSingleton);
-
     while (fixes.hasMoreElements())
     {
       final FixWrapper fix = (FixWrapper) fixes.nextElement();
@@ -195,8 +164,6 @@ abstract public class CoreLimpetTrack extends StoreGroup
   protected static interface DoubleGetter
   {
     double getValue(FixWrapper fix);
-
-    IQuantityCollection<?> getOutput(boolean isSingleton);
   }
 
 }
