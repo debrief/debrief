@@ -1,40 +1,53 @@
 package org.debrief.limpet_integration.data;
 
 import info.limpet.ICollection;
+import info.limpet.IStore;
 import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
 import info.limpet.data.store.IGroupWrapper;
 import info.limpet.data.store.InMemoryStore;
-import info.limpet.ui.data_provider.data.GroupWrapper;
 import info.limpet.ui.data_provider.data.LimpetWrapper;
 import info.limpet.ui.data_provider.data.ReflectivePropertySource;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 
 import Debrief.Wrappers.Measurements.SupplementalDataBlock;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable2;
+import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public class StoreWrapper implements SupplementalDataBlock, Editable2,
-    LimpetWrapper
+    LimpetWrapper, Layer
 {
 
   /**
    * 
    */
+  private static final long serialVersionUID = 1L;
+  /**
+   * 
+   */
   private static final String STORE_NAME = "Measurements";
   private final InMemoryStore _store;
+  @SuppressWarnings("unused")
   private Editable _parent;
 
   public StoreWrapper(InMemoryStore store)
   {
     _store = store;
+  }
+
+  public IStore getStore()
+  {
+    return _store;
   }
 
   @Override
@@ -106,7 +119,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
 
   @Override
   public void setWrapper(Object parent)
-  {    
+  {
     _parent = (Editable) parent;
   }
 
@@ -142,7 +155,8 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     return true;
   }
 
-  private ArrayList<Editable> getElementsFor(IStoreGroup store, LimpetWrapper parent)
+  public static ArrayList<Editable> getElementsFor(IStoreGroup store,
+      LimpetWrapper parent)
   {
     ArrayList<Editable> res = new ArrayList<Editable>();
     Iterator<IStoreItem> iter = store.iterator();
@@ -154,13 +168,13 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       if (storeItem instanceof IStoreGroup)
       {
         IStoreGroup group = (IStoreGroup) storeItem;
-        GroupWrapper gw =new GroupWrapper(group);
+        GroupWrapper gw = new GroupWrapper(group);
         gw.setParent(parent);
         thisE = gw;
       }
       else if (storeItem instanceof ICollection)
       {
-        ItemWrapper item =new ItemWrapper(storeItem);
+        ItemWrapper item = new ItemWrapper(storeItem);
         item.setParent(parent);
         thisE = item;
       }
@@ -175,8 +189,8 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     return res;
   }
 
-  protected class GroupWrapper extends ReflectivePropertySource implements
-      Editable2, LimpetWrapper, IGroupWrapper
+  protected static class GroupWrapper extends ReflectivePropertySource
+      implements Editable2, LimpetWrapper, IGroupWrapper
   {
 
     private IStoreGroup _group;
@@ -389,7 +403,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     {
       this._parent = parent;
     }
-    
+
     @Override
     public Object getValue(Object descriptor)
     {
@@ -422,7 +436,6 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   @Override
   public LimpetWrapper getParent()
   {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -456,6 +469,102 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
   {
     // TODO Auto-generated method stub
 
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#exportShape()
+   */
+  @Override
+  public void exportShape()
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#append(MWC.GUI.Layer)
+   */
+  @Override
+  public void append(Layer other)
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#setName(java.lang.String)
+   */
+  @Override
+  public void setName(String val)
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#hasOrderedChildren()
+   */
+  @Override
+  public boolean hasOrderedChildren()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#getLineThickness()
+   */
+  @Override
+  public int getLineThickness()
+  {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#add(MWC.GUI.Editable)
+   */
+  @Override
+  public void add(Editable point)
+  {
+    throw new RuntimeException(
+        "Adding Debrief item to StoreWrapper not implemented");
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#removeElement(MWC.GUI.Editable)
+   */
+  @Override
+  public void removeElement(Editable point)
+  {
+    throw new RuntimeException(
+        "Removing Debrief item from StoreWrapper not implemented");
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see MWC.GUI.Layer#elements()
+   */
+  @Override
+  public Enumeration<Editable> elements()
+  {
+    Iterator<Editable> kids = getChildren().iterator();
+    return new Plottables.IteratorWrapper(kids);
   }
 
 }
