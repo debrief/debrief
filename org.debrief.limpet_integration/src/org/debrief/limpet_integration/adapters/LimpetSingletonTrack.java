@@ -6,28 +6,31 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
 
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
+import MWC.TacticalData.Fix;
 
-public class LimpetTrack extends CoreLimpetTrack
+public class LimpetSingletonTrack extends CoreLimpetTrack
 {
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
-  private TrackWrapper _myTrack;
+  private LabelWrapper _myLabel;
 
-  public LimpetTrack(TrackWrapper track)
+  public LimpetSingletonTrack(LabelWrapper label)
   {
-    super(track.getName(), false);
+    super(label.getName(), true);
 
-    _myTrack = track;
+    _myLabel = label;
 
     // setup listeners
-    _myTrack.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+    _myLabel.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
         new PropertyChangeListener()
         {
           @Override
@@ -42,13 +45,8 @@ public class LimpetTrack extends CoreLimpetTrack
           }
         });
     
-    init(false);
-
-  }
-
-  public TrackWrapper getTrack()
-  {
-    return _myTrack;
+    
+    init(true);
   }
 
   /*
@@ -59,7 +57,11 @@ public class LimpetTrack extends CoreLimpetTrack
   @Override
   Enumeration<Editable> getLocations()
   {
-    return _myTrack.getPositions();
+    Fix newF = new Fix(null, _myLabel.getLocation(), 0, 0);
+    FixWrapper fw = new FixWrapper(newF);
+    Vector<Editable> res = new Vector<Editable>();
+    res.add(fw);
+    return res.elements();
   }
 
 }
