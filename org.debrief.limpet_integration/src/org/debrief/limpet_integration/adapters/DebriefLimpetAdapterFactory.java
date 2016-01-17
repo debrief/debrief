@@ -17,6 +17,7 @@ public class DebriefLimpetAdapterFactory implements IAdapterFactory
   private static final Class<?>[] adapterList =
   { IStoreItem.class };
 
+  @SuppressWarnings("rawtypes")
   @Override
   public Object getAdapter(Object subject, Class adapterType)
   {
@@ -62,7 +63,7 @@ public class DebriefLimpetAdapterFactory implements IAdapterFactory
   }
 
   @Override
-  public Class[] getAdapterList()
+  public Class<?>[] getAdapterList()
   {
     return adapterList;
   }
