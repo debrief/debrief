@@ -1,7 +1,6 @@
 package org.debrief.limpet_integration;
 
 import info.limpet.ui.Activator;
-import info.limpet.ui.core_view.CoreAnalysisView;
 
 import org.debrief.limpet_integration.adapters.DebriefLimpetAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
