@@ -31,6 +31,11 @@ public class TopLevelTarget extends InMemoryStore implements Layer
   /**
    * 
    */
+  public static final String LAYER_NAME = "Common Measurements";
+
+  /**
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   final private Layers _theLayers;
@@ -56,10 +61,18 @@ public class TopLevelTarget extends InMemoryStore implements Layer
     return res;
   }
 
+  /**
+   * @param b
+   */
+  public void setRealised(boolean b)
+  {
+    _realised = true;
+  }
+
   @Override
   public String toString()
   {
-    return "Measurements";
+    return LAYER_NAME;
   }
 
   /*
