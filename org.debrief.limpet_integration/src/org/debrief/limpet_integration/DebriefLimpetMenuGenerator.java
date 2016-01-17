@@ -41,6 +41,7 @@ public class DebriefLimpetMenuGenerator implements
   }
 
   private ArrayList<IAdapterFactory> _adapters;
+  private TopLevelTarget _topLevel;
 
   @Override
   public void generate(IMenuManager parent, final Layers theLayers,
@@ -79,6 +80,7 @@ public class DebriefLimpetMenuGenerator implements
             {
               // ok, we've got an item
               selection.add((IStoreItem) match);
+              break;
             }
           }
         }
@@ -88,35 +90,58 @@ public class DebriefLimpetMenuGenerator implements
     // ok, have we found anything suitable?
     IStore destination = null;
 
-    if (selection.size() > 0)
+    // ok, find a store, where we can put the results
+    if (parentLayers.size() > 0)
     {
-      // ok, find a store, where we can put the results
-      if (parentLayers.size() > 0)
+      Editable parentE = parentLayers.iterator().next();
+      if (parentE instanceof IGroupWrapper)
       {
-        Editable parentE = parentLayers.iterator().next();
-        if (parentE instanceof IGroupWrapper)
+        IGroupWrapper tgt = (IGroupWrapper) parentE;
+
+        final IStoreGroup group = tgt.getGroup();
+
+        // TODO: we shouldn't have difference between IStore and IStoreGroup
+        destination = new StoreGroupAsStore(group);
+
+        // hmm, can we find the top level layer?
+        if (group instanceof LimpetTrack)
         {
-          IGroupWrapper tgt = (IGroupWrapper) parentE;
-
-          final IStoreGroup group = tgt.getGroup();
-
-          // TODO: we shouldn't have difference between IStore and IStoreGroup
-          destination = new StoreGroupAsStore(group);
-
-          // hmm, can we find the top level layer?
-          if (group instanceof LimpetTrack)
-          {
-            LimpetTrack lt = (LimpetTrack) group;
-            topLayer = lt.getTrack();
-          }
-
+          LimpetTrack lt = (LimpetTrack) group;
+          topLayer = lt.getTrack();
         }
-        else if (parentE instanceof StoreWrapper)
+
+      }
+      else if (parentE instanceof StoreWrapper)
+      {
+        StoreWrapper store = (StoreWrapper) parentE;
+        destination = store.getStore();
+      }
+      else if (parentE instanceof IStore)
+      {
+        TopLevelTarget tgt = (TopLevelTarget) parentE;
+        destination = tgt;
+      }
+    }
+
+    // hmm, do we need to offer a top-level destination?
+    if (destination == null)
+    {
+      // do we have a top level object?
+      if (_topLevel == null)
+      {
+        // look in the layers
+        _topLevel = (TopLevelTarget) theLayers
+            .findLayer(TopLevelTarget.LAYER_NAME);
+
+        // hmm, did it work?
+        if (_topLevel == null)
         {
-          StoreWrapper store = (StoreWrapper) parentE;
-          destination = (IStore) store.getSubject();
+          // ok, create a deferred one
+          _topLevel = new TopLevelTarget(theLayers);
         }
       }
+
+      destination = _topLevel;
     }
 
     // get the list of operations
