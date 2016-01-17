@@ -1,11 +1,12 @@
 package org.debrief.limpet_integration.actions;
 
-import info.limpet.data.impl.samples.SampleData;
+import info.limpet.IStoreItem;
 import info.limpet.data.store.InMemoryStore;
 
 import java.util.Enumeration;
 
-import org.debrief.limpet_integration.adapters.LimpetTrack;
+import org.debrief.limpet_integration.DebriefLimpetMenuGenerator;
+import org.debrief.limpet_integration.adapters.DebriefLimpetAdapterFactory;
 import org.debrief.limpet_integration.data.StoreWrapper;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -15,6 +16,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
 /**
@@ -53,43 +55,86 @@ public class LimpetTestAction implements IWorkbenchWindowActionDelegate
       Layers layers = (Layers) editor.getAdapter(Layers.class);
       if (layers != null)
       {
-        TrackWrapper firstTrack = null;
         Enumeration<Editable> iter = layers.elements();
         while (iter.hasMoreElements())
         {
-          Editable editable = (Editable) iter.nextElement();
-          if (editable instanceof TrackWrapper)
+          Editable layer = (Editable) iter.nextElement();
+
+          // can we wrap this?
+          IStoreItem limpetItem = (IStoreItem) new DebriefLimpetAdapterFactory()
+              .getAdapter(layer, IStoreItem.class);
+
+          if (limpetItem == null)
           {
-            firstTrack = (TrackWrapper) editable;
-            break;
+            // hmm, do we need to walk this item?
+            if (layer instanceof Layer)
+            {
+              Layer bl = (Layer) layer;
+              Enumeration<Editable> elems = bl.elements();
+              while (elems.hasMoreElements())
+              {
+                Editable thisE = (Editable) elems.nextElement();
+
+                IStoreItem thislimpetItem = (IStoreItem) new DebriefLimpetAdapterFactory()
+                    .getAdapter(layer, IStoreItem.class);
+
+                if (thislimpetItem != null)
+                {
+                  handleThis(thisE, thislimpetItem, layers, bl);
+                }
+              }
+            }
+          }
+
+          if (limpetItem != null)
+          {
+            handleThis(layer, limpetItem, layers, (Layer) layer);
+
           }
         }
-
-        if (firstTrack != null)
-        {
-          // create some limpet data
-//          InMemoryStore store = createData();
-          InMemoryStore store = new InMemoryStore();// createData();
-
-          StoreWrapper data = new StoreWrapper(store);
-
-          // add it to the track
-          firstTrack.add(data);
-
-          // also add a wrapped version of the track
-          store.add(new LimpetTrack(firstTrack));
-
-          layers.fireExtended(data, firstTrack);
-        }
       }
+      // also try to add the top level entity
+      layers.addThisLayer(new DebriefLimpetMenuGenerator.TopLevelTarget(layers)
+      {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String toString()
+        {
+          // TODO Auto-generated method stub
+          return "Init Measurements";
+        }
+
+      });
     }
   }
 
-  private InMemoryStore createData()
+  /**
+   * @param thisE
+   * @param thislimpetItem
+   */
+  private void handleThis(Editable thisE, IStoreItem limpetItem, Layers layers,
+      Layer subjectLayer)
   {
-    InMemoryStore data = new SampleData().getData(32);
+    if (thisE instanceof TrackWrapper)
+    {
+      InMemoryStore store = new InMemoryStore();// createData();
 
-    return data;
+      StoreWrapper data = new StoreWrapper(store);
+      TrackWrapper track = (TrackWrapper) thisE;
+      track.add(data);
+
+      // also add a wrapped version of the track
+      store.add(limpetItem);
+
+      layers.fireExtended(data, subjectLayer);
+
+    }
+
   }
 
   /**
