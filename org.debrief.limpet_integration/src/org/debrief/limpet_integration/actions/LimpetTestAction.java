@@ -1,6 +1,8 @@
 package org.debrief.limpet_integration.actions;
 
+import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
+import info.limpet.data.impl.samples.StockTypes;
 import info.limpet.data.store.InMemoryStore;
 
 import java.util.Enumeration;
@@ -95,6 +97,12 @@ public class LimpetTestAction implements IWorkbenchWindowActionDelegate
       // also try to add the top level entity
       TopLevelTarget topLevel = new TopLevelTarget(layers);
       topLevel.setRealised(true);
+      
+      // TMP: stick in a sound speed
+      StockTypes.NonTemporal.SpeedKts sspd = new StockTypes.NonTemporal.SpeedKts("Sound Speed", null);
+      sspd.add(950);
+      topLevel.add(sspd);
+      
       layers.addThisLayer(topLevel);
     }
   }
@@ -116,6 +124,16 @@ public class LimpetTestAction implements IWorkbenchWindowActionDelegate
 
       // also add a wrapped version of the track
       store.add(limpetItem);
+      
+      // TMP: stick in a sounds speed
+      if(limpetItem instanceof IStoreGroup)
+      {
+        IStoreGroup grp = (IStoreGroup) limpetItem;
+        StockTypes.NonTemporal.FrequencyHz sspd = new StockTypes.NonTemporal.FrequencyHz("Rad Freq", null);
+        sspd.add(950);
+        grp.add(sspd);
+      }
+
 
       layers.fireExtended(data, subjectLayer);
 
