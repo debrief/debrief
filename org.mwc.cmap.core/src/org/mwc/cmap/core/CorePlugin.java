@@ -114,6 +114,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 	public static final String OVERVIEW_PLOT = "org.mwc.cmap.overview.views.ChartOverview";
 
+	public final static String DIS_LISTENER_VIEW = "org.mwc.debrief.dis.views.DisListenerView";
+
 	public static final String STACKED_DOTS = "org.mwc.debrief.track_shift.views.StackedDotsView";
 	public static final String FREQ_RESIDUALS = "org.mwc.debrief.track_shift.views.FrequencyResidualsView";
 	public static final String GRID_EDITOR = "com.pml.grid.editor";
