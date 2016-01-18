@@ -19,7 +19,7 @@
             class="org.mwc.debrief.dis.views.DisListenerView"
             icon="icons/document_chart.png"
             id="org.mwc.debrief.dis.views.DisListenerView"
-            name="Dis Listener" restorable="false">
+            name="DIS Listener" restorable="false">
       </view>
    </extension>
     
