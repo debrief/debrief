@@ -57,7 +57,19 @@ abstract public class CoreLimpetTrack extends StoreGroup
     while (kids.hasNext())
     {
       IObjectCollection<?> item = (IObjectCollection<?>) kids.next();
-      item.clearQuiet();
+      
+      // just check it's one of our manually maintained entries
+      final String name = item.getName();
+      switch(name)
+      {
+      case LOCATION:
+      case DEPTH:
+      case SPEED:
+      case COURSE:
+        item.clearQuiet();
+        break;
+      }
+      
     }
 
     _pending = true;
