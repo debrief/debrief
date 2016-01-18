@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -40,12 +38,17 @@ public class ImportSATC
 		_layers = target;
 	}
 
+  private String filename(String fullPath, String extensionSeparator, String pathSeparator) { // gets filename without extension
+    int dot = fullPath.lastIndexOf(extensionSeparator);
+    int sep = fullPath.lastIndexOf(pathSeparator);
+    return fullPath.substring(sep + 1, dot);
+  }
+	
 	public void importThis(final String fName, final InputStream is)
 			throws Exception
 	{
 		// extract the file part of the name (up to the last ".")
-		Path p = Paths.get(fName);
-		String trackName = p.getFileName().toString();
+    String trackName = filename(fName, "/",".");
 		
 		// trim the suffix
 		if(trackName.lastIndexOf(".")!= -1)
