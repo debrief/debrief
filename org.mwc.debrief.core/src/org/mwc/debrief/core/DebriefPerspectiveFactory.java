@@ -14,7 +14,10 @@
  */
 package org.mwc.debrief.core;
 
-import org.eclipse.ui.*;
+import org.eclipse.ui.IFolderLayout;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.IPlaceholderFolderLayout;
 import org.mwc.cmap.core.CorePlugin;
 
 /**
@@ -47,6 +50,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		midLeft.addView(IPageLayout.ID_PROP_SHEET);		
 		midLeft.addView(CorePlugin.TOTE);
 		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
+		midLeft.addView(CorePlugin.DIS_LISTENER_VIEW);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
 		
 		// Bottom left: Outline view and Property Sheet view
@@ -80,6 +84,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.FREQ_RESIDUALS);
 		layout.addShowViewShortcut(CorePlugin.GRID_EDITOR);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
+		layout.addShowViewShortcut(CorePlugin.DIS_LISTENER_VIEW);
 		
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
 		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
