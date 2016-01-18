@@ -43,6 +43,7 @@ public class DisListenerView extends ViewPart
   private Button pauseButton;
   private Button resumeButton;
   private Button playButton;
+  @SuppressWarnings("unused")
   private ChartComposite chartComposite;
   private Text pathText;
   private Button newPlotButton;
