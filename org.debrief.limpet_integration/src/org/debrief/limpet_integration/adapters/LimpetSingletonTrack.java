@@ -1,32 +1,23 @@
 package org.debrief.limpet_integration.adapters;
 
-import info.limpet.IStoreItem;
 import info.limpet.data.impl.samples.StockTypes;
 
+import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
-import MWC.TacticalData.Fix;
+import MWC.GenericData.WorldLocation;
 
-public class LimpetSingletonTrack extends CoreLimpetTrack
+public class LimpetSingletonTrack extends StockTypes.NonTemporal.Location
 {
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
 
-  private LabelWrapper _myLabel;
+  private final LabelWrapper _myLabel;
 
   public LimpetSingletonTrack(LabelWrapper label)
   {
-    super(label.getName(), true);
+    super(label.getName());
 
     _myLabel = label;
 
@@ -38,39 +29,27 @@ public class LimpetSingletonTrack extends CoreLimpetTrack
           public void propertyChange(PropertyChangeEvent evt)
           {
             // ok, clear our data
-            reset(true);
+            reset();
 
-            Iterator<IStoreItem> children = children().iterator();
-            while (children.hasNext())
-            {
-              IStoreItem iStoreItem = (IStoreItem) children.next();
-              iStoreItem.fireDataChanged();
-            }
+            fireDataChanged();
           }
         });
 
-    // create out input data
-    super.add(new StockTypes.NonTemporal.AngleDegrees(COURSE, null));
-    super.add(new StockTypes.NonTemporal.SpeedMSec(SPEED, null));
-    super.add(new StockTypes.NonTemporal.LengthM(DEPTH, null));
-    super.add(new StockTypes.NonTemporal.Location(LOCATION));
-
-    reset(true);
+    reset();
   }
 
-  /*
-   * (non-Javadoc)
+  /**
    * 
-   * @see org.debrief.limpet_integration.adapters.CoreLimpetTrack#getLocations()
    */
-  @Override
-  Enumeration<Editable> getLocations()
+  private void reset()
   {
-    Fix newF = new Fix(null, _myLabel.getLocation(), 0, 0);
-    FixWrapper fw = new FixWrapper(newF);
-    Vector<Editable> res = new Vector<Editable>();
-    res.add(fw);
-    return res.elements();
+    // get rid of existing data
+    this.clearQuiet();
+
+    // stick our location into the track
+    WorldLocation loc = _myLabel.getLocation();
+    Point2D pt = new Point2D.Double(loc.getLong(), loc.getLat());
+    add(pt);
   }
 
 }
