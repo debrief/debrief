@@ -811,6 +811,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
         thisFix.setFixLocation(newLoc);
       }
     }
+    
+    // tell the parent we've moved
+    this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this.getWrapper());
   }
 
   /**
