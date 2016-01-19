@@ -33,5 +33,8 @@
 ## Supported by
 The development of Debrief has been supported by [Oxygen XML](http://www.oxygenxml.com)
 
-
 ![Oxygen Logo](http://www.oxygenxml.com/img/resources/oxygen190x62.png)
+
+The development of Debrief has also been supported by the [YourKit Java Profiler](https://www.yourkit.com)
+
+![YourKit Logo](https://www.yourkit.com/images/yklogo.png)
