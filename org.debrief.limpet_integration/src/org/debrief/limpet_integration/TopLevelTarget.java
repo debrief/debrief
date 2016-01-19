@@ -44,6 +44,7 @@ public class TopLevelTarget extends InMemoryStore implements Layer
   public TopLevelTarget(Layers theLayers)
   {
     _theLayers = theLayers;
+    setName(LAYER_NAME);
   }
 
   @Override
