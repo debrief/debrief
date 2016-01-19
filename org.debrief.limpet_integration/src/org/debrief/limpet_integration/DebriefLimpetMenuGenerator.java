@@ -43,6 +43,31 @@ public class DebriefLimpetMenuGenerator implements
   private ArrayList<IAdapterFactory> _adapters;
   private TopLevelTarget _topLevel;
 
+  private Object getAdapted(Object subject, Class<?> target)
+  {
+    Object res = null;
+
+    // hmm, do we have another way of getting it?
+    if (_adapters != null)
+    {
+      Iterator<IAdapterFactory> aIter = _adapters.iterator();
+      while (aIter.hasNext())
+      {
+        IAdapterFactory iAdapterFactory = (IAdapterFactory) aIter.next();
+        Object match = iAdapterFactory.getAdapter(subject, target);
+        if (match != null)
+        {
+          // ok, we've got an item
+          res = match;
+          break;
+        }
+      }
+    }
+
+    return res;
+
+  }
+
   @Override
   public void generate(IMenuManager parent, final Layers theLayers,
       final Collection<Editable> parentLayers,
@@ -67,22 +92,11 @@ public class DebriefLimpetMenuGenerator implements
       }
       else
       {
-        // hmm, do we have another way of getting it?
-        if (_adapters != null)
+        Object match = getAdapted(editable, IStoreItem.class);
+        if (match != null)
         {
-          Iterator<IAdapterFactory> aIter = _adapters.iterator();
-          while (aIter.hasNext())
-          {
-            IAdapterFactory iAdapterFactory = (IAdapterFactory) aIter.next();
-            Object match = iAdapterFactory.getAdapter(editable,
-                IStoreItem.class);
-            if (match != null)
-            {
-              // ok, we've got an item
-              selection.add((IStoreItem) match);
-              break;
-            }
-          }
+          // ok, we've got an item
+          selection.add((IStoreItem) match);
         }
       }
     }
@@ -91,9 +105,10 @@ public class DebriefLimpetMenuGenerator implements
     IStore destination = null;
 
     // ok, find a store, where we can put the results
-    if (parentLayers.size() > 0)
+    Iterator<Editable> lIter = parentLayers.iterator();
+    while (lIter.hasNext() && (destination == null))
     {
-      Editable parentE = parentLayers.iterator().next();
+      Editable parentE = lIter.next();
       if (parentE instanceof IGroupWrapper)
       {
         IGroupWrapper tgt = (IGroupWrapper) parentE;
@@ -121,26 +136,32 @@ public class DebriefLimpetMenuGenerator implements
         TopLevelTarget tgt = (TopLevelTarget) parentE;
         destination = tgt;
       }
+      else
+      {
+        // hmm, see if our adapter can get us a data store
+        // TODO: our debrief limpet adapter needs to provide store groups
+        IStoreGroup group = (IStore) getAdapted(parentE, IStoreGroup.class);
+        if (group != null)
+        {
+          // TODO: we shouldn't have difference between IStore and IStoreGroup
+          destination = new StoreGroupAsStore(group);
+        }
+      }
     }
 
     // hmm, do we need to offer a top-level destination?
     if (destination == null)
     {
-      // do we have a top level object?
+      // look in the layers
+      _topLevel = (TopLevelTarget) theLayers
+          .findLayer(TopLevelTarget.LAYER_NAME);
+
+      // hmm, did it work?
       if (_topLevel == null)
       {
-        // look in the layers
-        _topLevel = (TopLevelTarget) theLayers
-            .findLayer(TopLevelTarget.LAYER_NAME);
-
-        // hmm, did it work?
-        if (_topLevel == null)
-        {
-          // ok, create a deferred one
-          _topLevel = new TopLevelTarget(theLayers);
-        }
+        // ok, create a deferred one
+        _topLevel = new TopLevelTarget(theLayers);
       }
-
       destination = _topLevel;
     }
 
