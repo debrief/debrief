@@ -129,9 +129,9 @@ public class LimpetTestAction implements IWorkbenchWindowActionDelegate
       if(limpetItem instanceof IStoreGroup)
       {
         IStoreGroup grp = (IStoreGroup) limpetItem;
-        StockTypes.NonTemporal.FrequencyHz sspd = new StockTypes.NonTemporal.FrequencyHz("Rad Freq", null);
-        sspd.add(950);
-        grp.add(sspd);
+        StockTypes.NonTemporal.FrequencyHz freq = new StockTypes.NonTemporal.FrequencyHz("Rad Freq", null);
+        freq.add(100);
+        grp.add(freq);
       }
 
 
