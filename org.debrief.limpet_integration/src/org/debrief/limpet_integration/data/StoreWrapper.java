@@ -1,5 +1,25 @@
 package org.debrief.limpet_integration.data;
 
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
+
+import Debrief.Wrappers.Measurements.SupplementalDataBlock;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Editable2;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 import info.limpet.ICollection;
 import info.limpet.IStore;
 import info.limpet.IStoreGroup;
@@ -8,21 +28,6 @@ import info.limpet.data.store.IGroupWrapper;
 import info.limpet.data.store.InMemoryStore;
 import info.limpet.ui.data_provider.data.LimpetWrapper;
 import info.limpet.ui.data_provider.data.ReflectivePropertySource;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-
-import Debrief.Wrappers.Measurements.SupplementalDataBlock;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GUI.Editable2;
-import MWC.GUI.Layer;
-import MWC.GUI.Plottable;
-import MWC.GUI.Plottables;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 public class StoreWrapper implements SupplementalDataBlock, Editable2,
     LimpetWrapper, Layer
@@ -324,6 +329,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
 
     private IStoreItem _item;
     private LimpetWrapper _parent;
+    private EditorType _info;
 
     public ItemWrapper(IStoreItem storeItem)
     {
@@ -384,7 +390,32 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public EditorType getInfo()
     {
-      return null;
+      if (_info == null)
+      {
+        _info = new EditorType(this, getName(), getName())
+        {
+
+          @Override
+          public PropertyDescriptor[] getPropertyDescriptors()
+          {
+            return getPropertyDescriptors();
+          }
+
+          @Override
+          public String getDisplayName()
+          {
+            return getDisplayName();
+          }
+
+          @Override
+          public String getName()
+          {
+            return getName();
+          }
+
+        };
+      }
+      return _info;
     }
 
     @Override
@@ -427,10 +458,25 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public void setValue(Object id, Object theValue)
     {
+      Object oldVal = getValue(id);
       super.setPropertyValue(id, theValue);
+      getInfo().fireChanged(this, getName(), oldVal, theValue);
+      Runnable runnable = new Runnable()
+      {
+        
+        @Override
+        public void run()
+        {
+          IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+          Layers layers = (Layers) editor.getAdapter(Layers.class);
+          if (layers != null)
+          {
+            layers.fireExtended();
+          }
+        }
+      };
+      Display.getDefault().asyncExec(runnable);
     }
-    //
-
   }
 
   @Override

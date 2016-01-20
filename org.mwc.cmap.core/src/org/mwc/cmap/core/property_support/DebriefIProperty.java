@@ -238,6 +238,10 @@ public class DebriefIProperty implements IPropertyDescriptor, IDebriefProperty
     {
       res = _myHelper.getCellEditorFor(parent);
     }
+    if (res == null)
+    {
+      res = _thisProp.createPropertyEditor(parent);
+    }
     return res;
   }
 
