@@ -4,6 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="dis-src"/>
+	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="lib" path="libs/dis-enums_1.1.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate3.jar"/>
 	<classpathentry kind="lib" path="libs/srm_4.4.0.jar"/>
