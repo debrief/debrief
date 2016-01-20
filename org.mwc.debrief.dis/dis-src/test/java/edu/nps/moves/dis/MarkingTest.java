@@ -26,7 +26,7 @@ public class MarkingTest
     {
         EntityStatePdu espdu = new EntityStatePdu();
         Marking marking = espdu.getMarking();
-        marking.setCharacters("This is a marking that is much, much too loong");
+        marking.setCharacters(new String("This is a marking that is much, much too loong").getBytes());
         byte[] buff = marking.getCharacters();
         assertEquals(buff.length, 11);
     }
@@ -36,7 +36,7 @@ public class MarkingTest
     {
         EntityStatePdu espdu = new EntityStatePdu();
         Marking marking = espdu.getMarking();
-        marking.setCharacters("short");
+        marking.setCharacters(new String("short").getBytes());
         byte[] buff = marking.getCharacters();
         assertEquals(buff.length, 11);
     }
