@@ -7,11 +7,8 @@ Bundle-Activator: org.mwc.debrief.dis.DisActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.cmap.core,
  org.mwc.cmap.legacy,
- org.mwc.debrief.legacy,
- org.eclipse.ui.views,
- org.mwc.cmap.plotViewer
+ org.eclipse.ui.views
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
