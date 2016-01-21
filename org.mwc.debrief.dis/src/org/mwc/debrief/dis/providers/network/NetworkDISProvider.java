@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mwc.debrief.dis.core.DISModule;
+import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.core.IDISPreferences;
+import org.mwc.debrief.dis.diagnostics.TestFixListener;
+import org.mwc.debrief.dis.diagnostics.TestPrefs;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
@@ -79,18 +84,6 @@ public class NetworkDISProvider implements IPDUProvider
 					IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
 					git.logPDU(pdu);
 				}
-				//
-				// System.out.print("got PDU of type: " + pdu.getClass().getName());
-				// if(pdu instanceof EntityStatePdu)
-				// {
-				// EntityID eid = ((EntityStatePdu)pdu).getEntityID();
-				// Vector3Double position = ((EntityStatePdu)pdu).getEntityLocation();
-				// System.out.print(" EID:[" + eid.getSite() + ", " +
-				// eid.getApplication() + ", " + eid.getEntity() + "] ");
-				// System.out.print(" Location in DIS coordinates: [" + position.getX()
-				// + ", " + position.getY() + ", " + position.getZ() + "]");
-				// }
-				// System.out.println();
 
 			} // end while
 		} // End try
@@ -107,6 +100,35 @@ public class NetworkDISProvider implements IPDUProvider
 	 */
 	public void disconnect()
 	{
+
+	}
+
+	public static void main(String[] args)
+	{
+
+		IDISModule subject = new DISModule();
+		IDISPreferences prefs = new TestPrefs(true, "file.txt");
+		IDISNetworkPrefs netPrefs = new CoreNetPrefs(
+				EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
+		IPDUProvider provider = new NetworkDISProvider(netPrefs);
+		TestFixListener fixL = new TestFixListener();
+
+		subject.addGeneralPDUListener(new IDISGeneralPDUListener()
+		{
+
+			@Override
+			public void logPDU(Pdu pdu)
+			{
+				System.out.println("data at:" + pdu);
+			}
+		});
+
+		subject.setPrefs(prefs);
+		subject.addFixListener(fixL);
+		subject.setProvider(provider);
+
+		// tell the network provider to start
+		provider.connect();
 
 	}
 

@@ -47,9 +47,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 		// remember we're restarting
 		_newStart = true;
 
+		// register as a listener, to hear about new data
 		provider.addListener(this);
-
-		provider.connect();
 	}
 
 	private void handleFix(EntityStatePdu pdu)

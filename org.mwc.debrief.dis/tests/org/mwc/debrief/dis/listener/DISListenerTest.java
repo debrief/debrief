@@ -17,8 +17,12 @@ import org.mwc.debrief.dis.diagnostics.TestPrefs;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 import org.mwc.debrief.dis.providers.dummy.DummyDataProvider;
+import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
+import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
+import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
 import edu.nps.moves.dis.Pdu;
+import edu.nps.moves.examples.EspduSender;
 
 public class DISListenerTest
 {
@@ -57,6 +61,7 @@ public class DISListenerTest
 		});
 
 		subject.setProvider(provider);
+		provider.connect();
 
 		assertEquals("got all PDUs", 15, events.size());
 	}
@@ -72,6 +77,8 @@ public class DISListenerTest
 		subject.setPrefs(prefs);
 		subject.addFixListener(fixL);
 		subject.setProvider(provider);
+		
+		provider.connect();
 
 		assertEquals("correct num tracks", 3, fixL.getData().keySet().size());
 		assertEquals("correct num fixes", 10, fixL.getData().values().iterator()
@@ -87,5 +94,6 @@ public class DISListenerTest
 		assertTrue("has course", thisF._course != 0);
 		assertTrue("has speed", thisF._speed != 0);
 	}
+
 
 }
