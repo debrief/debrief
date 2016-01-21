@@ -6,7 +6,7 @@
 		point="org.eclipse.ui.preferencePages">
         <page
         	category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
-        	class="org.mwc.debrief.dis.preferences.DisPrefs"
+        	class="org.mwc.debrief.dis.ui.preferences.DisPrefs"
             id="org.mwc.debrief.dis.preferences.DisPrefs"
             name="DIS Preferences">
         </page>
@@ -16,7 +16,7 @@
          point="org.eclipse.ui.views">
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.debrief.dis.views.DisListenerView"
+            class="org.mwc.debrief.dis.ui.views.DisListenerView"
             icon="icons/document_chart.png"
             id="org.mwc.debrief.dis.views.DisListenerView"
             name="DIS Listener" restorable="false">

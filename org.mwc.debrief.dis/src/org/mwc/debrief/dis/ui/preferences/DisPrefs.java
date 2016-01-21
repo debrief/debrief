@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.debrief.dis.preferences;
+package org.mwc.debrief.dis.ui.preferences;
 
 import java.io.File;
 import java.util.regex.Pattern;

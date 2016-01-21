@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.debrief.dis.views;
+package org.mwc.debrief.dis.ui.views;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -32,7 +32,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.JFreeChart;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.mwc.debrief.dis.preferences.DisPrefs;
+import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
 public class DisListenerView extends ViewPart
 {
