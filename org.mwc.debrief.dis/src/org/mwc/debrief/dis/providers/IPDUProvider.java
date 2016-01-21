@@ -16,7 +16,7 @@ public interface IPDUProvider
 	 * start providing data
 	 * 
 	 */
-	void connect();
+	void start();
 
 	/**
 	 * stop providing data

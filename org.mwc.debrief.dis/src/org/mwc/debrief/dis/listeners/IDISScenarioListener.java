@@ -10,6 +10,7 @@ public interface IDISScenarioListener
   /**
    * we've been told that the scenario has completed. we may wish to modify the UI or data
    * accordingly.
+   * @param reason 
    */
-  void complete();
+  void complete(String reason);
 }

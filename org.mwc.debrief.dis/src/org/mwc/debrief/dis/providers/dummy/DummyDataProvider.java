@@ -48,7 +48,7 @@ public class DummyDataProvider implements IPDUProvider
 	}
 
 	@Override
-	public void connect()
+	public void start()
 	{
 		while (ctr < (_numPoints * _numTracks))
 		{
@@ -121,6 +121,15 @@ public class DummyDataProvider implements IPDUProvider
 				thisL.logPDU(res);
 			}
 
+		}
+		
+		// ok, send complete
+		Iterator<IDISGeneralPDUListener> iL = _listeners.iterator();
+		while (iL.hasNext())
+		{
+			IDISGeneralPDUListener thisL = (IDISGeneralPDUListener) iL
+					.next();
+			thisL.complete("COMPLETE");
 		}
 	}
 

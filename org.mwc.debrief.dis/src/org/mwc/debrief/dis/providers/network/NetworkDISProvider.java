@@ -53,7 +53,7 @@ public class NetworkDISProvider implements IPDUProvider
 	 * start listening
 	 * 
 	 */
-	public void connect()
+	public void start()
 	{
 		MulticastSocket socket;
 		DatagramPacket packet;
@@ -121,6 +121,13 @@ public class NetworkDISProvider implements IPDUProvider
 			{
 				System.out.println("data at:" + pdu);
 			}
+
+			@Override
+			public void complete(String reason)
+			{
+				// TODO Auto-generated method stub
+
+			}
 		});
 
 		subject.setPrefs(prefs);
@@ -128,7 +135,7 @@ public class NetworkDISProvider implements IPDUProvider
 		subject.setProvider(provider);
 
 		// tell the network provider to start
-		provider.connect();
+		provider.start();
 
 	}
 

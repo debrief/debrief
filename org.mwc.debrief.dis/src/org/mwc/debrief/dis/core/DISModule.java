@@ -128,4 +128,16 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 		}
 	}
 
+	@Override
+	public void complete(String reason)
+	{
+		// tell any scenario listeners
+		Iterator<IDISScenarioListener> sIter = _scenarioListeners.iterator();
+		while (sIter.hasNext())
+		{
+			IDISScenarioListener thisS = (IDISScenarioListener) sIter.next();
+			thisS.complete(reason);
+		}
+	}
+
 }

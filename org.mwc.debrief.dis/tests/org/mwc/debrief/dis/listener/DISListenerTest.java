@@ -15,14 +15,11 @@ import org.mwc.debrief.dis.diagnostics.TestFixListener;
 import org.mwc.debrief.dis.diagnostics.TestFixListener.Item;
 import org.mwc.debrief.dis.diagnostics.TestPrefs;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
+import org.mwc.debrief.dis.listeners.IDISScenarioListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 import org.mwc.debrief.dis.providers.dummy.DummyDataProvider;
-import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
-import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
-import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
 import edu.nps.moves.dis.Pdu;
-import edu.nps.moves.examples.EspduSender;
 
 public class DISListenerTest
 {
@@ -38,14 +35,46 @@ public class DISListenerTest
 	}
 
 	@Test
+	public void testScenarioStateMonitoring()
+	{
+		IDISModule subject = new DISModule();
+		IPDUProvider provider = new DummyDataProvider(3, 5, 3000, 5000);
+
+		TestFixListener fixL = new TestFixListener();
+
+		subject.addFixListener(fixL);
+		subject.setProvider(provider);
+		final List<String> events = new ArrayList<String>();
+		subject.addScenarioListener(new IDISScenarioListener()
+		{
+			@Override
+			public void restart()
+			{
+				events.add("restarted");
+			}
+
+			@Override
+			public void complete(String reason)
+			{
+				events.add("complete");
+			}
+		});
+
+		provider.start();
+
+		assertTrue("received restart", events.contains("restarted"));
+		assertTrue("received complete", events.contains("complete"));
+
+	}
+
+	@Test
 	public void testActivityMonitoring()
 	{
 		IDISModule subject = new DISModule();
-		IDISPreferences prefs = new TestPrefs(true, "file.txt");
 		IPDUProvider provider = new DummyDataProvider(3, 5, 3000, 5000);
+
 		TestFixListener fixL = new TestFixListener();
 
-		subject.setPrefs(prefs);
 		subject.addFixListener(fixL);
 
 		final List<String> events = new ArrayList<String>();
@@ -58,10 +87,17 @@ public class DISListenerTest
 			{
 				events.add("");
 			}
+
+			@Override
+			public void complete(String reason)
+			{
+				// TODO Auto-generated method stub
+				
+			}
 		});
 
 		subject.setProvider(provider);
-		provider.connect();
+		provider.start();
 
 		assertEquals("got all PDUs", 15, events.size());
 	}
@@ -77,8 +113,8 @@ public class DISListenerTest
 		subject.setPrefs(prefs);
 		subject.addFixListener(fixL);
 		subject.setProvider(provider);
-		
-		provider.connect();
+
+		provider.start();
 
 		assertEquals("correct num tracks", 3, fixL.getData().keySet().size());
 		assertEquals("correct num fixes", 10, fixL.getData().values().iterator()
@@ -94,6 +130,5 @@ public class DISListenerTest
 		assertTrue("has course", thisF._course != 0);
 		assertTrue("has speed", thisF._speed != 0);
 	}
-
 
 }
