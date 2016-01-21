@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="eclipse38" sequenceNumber="6">
+<?pde version="3.8"?><target name="eclipse38" sequenceNumber="11">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.8.2.M20130131-0800"/>
@@ -16,6 +16,11 @@
 <unit id="org.eclipse.emf.sdk.feature.group" version="2.8.3.v20130125-0826"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.4.2.v201211061806-7H7GFeJDxumUrsn5qkiQgOEhsz0p60HAmPyU6VX"/>
 <repository location="http://download.eclipse.org/releases/juno/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="info.limpet.feature.feature.group" version="0.0.0"/>
+<unit id="info.limpet.ui.feature.feature.group" version="0.0.0"/>
+<repository location="http://debrief.github.io/limpet-update/1.0"/>
 </location>
 </locations>
 </target>
