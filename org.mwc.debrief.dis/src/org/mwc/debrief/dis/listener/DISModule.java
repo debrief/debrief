@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.mwc.debrief.dis.listener.DISListenerTest.IDISFixListener;
 import org.mwc.debrief.dis.listener.DISListenerTest.IDISModule;
-import org.mwc.debrief.dis.listener.DISListenerTest.IDISPrefs;
+import org.mwc.debrief.dis.listener.DISListenerTest.IDISNetworkPrefs;
 import org.mwc.debrief.dis.listener.DISListenerTest.IDISScenarioListener;
 import org.mwc.debrief.dis.listener.DISListenerTest.IPDUProvider;
 
@@ -20,7 +20,7 @@ import edu.nps.moves.disutil.CoordinateConversions;
 public class DISModule implements IDISModule
 {
 	private List<IDISFixListener> _fixListeners = new ArrayList<IDISFixListener>();
-	private IDISPrefs _prefs;
+	private IDISNetworkPrefs _prefs;
 
 	public DISModule()
 	{
@@ -41,7 +41,7 @@ public class DISModule implements IDISModule
 	}
 
 	@Override
-	public void setPrefs(IDISPrefs prefs)
+	public void setPrefs(IDISNetworkPrefs prefs)
 	{
 		_prefs = prefs;
 	}
@@ -84,8 +84,6 @@ public class DISModule implements IDISModule
 		double[] worldCoords = CoordinateConversions.getXYZfromLatLonDegrees(loc.getX(), loc.getY(), loc.getZ());
 		Orientation orientation = pdu.getEntityOrientation();
 		Vector3Float velocity = pdu.getEntityLinearVelocity();
-		
-		System.out.println("d is is: " + hisId);
 		
 		// entity state
 		Iterator<IDISFixListener> fIter = _fixListeners.iterator();
