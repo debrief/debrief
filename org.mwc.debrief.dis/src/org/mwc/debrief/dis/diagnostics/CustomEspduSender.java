@@ -51,6 +51,7 @@ public class CustomEspduSender
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
     int port = PORT;
+    @SuppressWarnings("unused")
     NetworkMode mode = NetworkMode.MULTICAST;
     InetAddress destinationIp = null;
 
@@ -153,18 +154,18 @@ public class CustomEspduSender
     try
     {
       _terminate = false;
-      
+
       System.out.println("Sending 100 ESPDU packets to "
           + destinationIp.toString());
       for (int idx = 0; idx < 100; idx++)
       {
-        
+
         // just check if we're being terminated early
-        if(_terminate)
+        if (_terminate)
         {
           break;
         }
-        
+
         // DIS time is a pain in the ass. DIS time units are 2^31-1 units per
         // hour, and time is set to DIS time units from the top of the hour.
         // This means that if you start sending just before the top of the hour
@@ -265,7 +266,7 @@ public class CustomEspduSender
     }
 
   }
-  
+
   public static void terminate()
   {
     _terminate = true;
