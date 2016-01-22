@@ -280,7 +280,6 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       return false;
     }
 
-
     @Override
     public EditorType getInfo()
     {
@@ -311,6 +310,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       }
       return _info;
     }
+
     @Override
     public boolean hasChildren()
     {
@@ -337,11 +337,12 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       getInfo().fireChanged(this, getName(), oldVal, theValue);
       Runnable runnable = new Runnable()
       {
-        
+
         @Override
         public void run()
         {
-          IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+          IEditorPart editor = PlatformUI.getWorkbench()
+              .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
           Layers layers = (Layers) editor.getAdapter(Layers.class);
           if (layers != null)
           {
@@ -505,11 +506,12 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       getInfo().fireChanged(this, getName(), oldVal, theValue);
       Runnable runnable = new Runnable()
       {
-        
+
         @Override
         public void run()
         {
-          IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+          IEditorPart editor = PlatformUI.getWorkbench()
+              .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
           Layers layers = (Layers) editor.getAdapter(Layers.class);
           if (layers != null)
           {
