@@ -1,5 +1,14 @@
 package org.debrief.limpet_integration.data;
 
+import info.limpet.ICollection;
+import info.limpet.IStore;
+import info.limpet.IStoreGroup;
+import info.limpet.IStoreItem;
+import info.limpet.data.store.IGroupWrapper;
+import info.limpet.data.store.InMemoryStore;
+import info.limpet.ui.data_provider.data.LimpetWrapper;
+import info.limpet.ui.data_provider.data.ReflectivePropertySource;
+
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,14 +29,6 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import info.limpet.ICollection;
-import info.limpet.IStore;
-import info.limpet.IStoreGroup;
-import info.limpet.IStoreItem;
-import info.limpet.data.store.IGroupWrapper;
-import info.limpet.data.store.InMemoryStore;
-import info.limpet.ui.data_provider.data.LimpetWrapper;
-import info.limpet.ui.data_provider.data.ReflectivePropertySource;
 
 public class StoreWrapper implements SupplementalDataBlock, Editable2,
     LimpetWrapper, Layer
@@ -504,6 +505,8 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       Object oldVal = getValue(id);
       super.setPropertyValue(id, theValue);
       getInfo().fireChanged(this, getName(), oldVal, theValue);
+      // TODO: we should only be updating the top level layer for this item,
+      // not the whole layers object
       Runnable runnable = new Runnable()
       {
 
