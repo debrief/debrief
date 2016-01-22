@@ -70,17 +70,6 @@ public class NetworkDISProvider implements IPDUProvider
     };
     job.setUser(false);
     job.schedule();    
-    
-//    Runnable runner = new Runnable()
-//    {
-//
-//      @Override
-//      public void run()
-//      {
-//      }
-//    };
-//
-//  //  Display.getDefault().asyncExec(runner);
   }
 
 
@@ -152,8 +141,6 @@ public class NetworkDISProvider implements IPDUProvider
 //    IDISNetworkPrefs netPrefs = new CoreNetPrefs(
 //        EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
 //    IPDUProvider provider = new NetworkDISProvider(netPrefs);
-//    TestFixListener fixL = new TestFixListener();
-//    subject.addFixListener(fixL);
 //    subject.setProvider(provider);
 //
 //    // tell the network provider to start
