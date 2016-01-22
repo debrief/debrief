@@ -48,7 +48,7 @@ public class DummyDataProvider implements IPDUProvider
 	}
 
 	@Override
-	public void start()
+	public void attach()
 	{
 		while (ctr < (_numPoints * _numTracks))
 		{
@@ -134,7 +134,7 @@ public class DummyDataProvider implements IPDUProvider
 	}
 
 	@Override
-	public void disconnect()
+	public void detach()
 	{
 		// TODO Auto-generated method stub
 

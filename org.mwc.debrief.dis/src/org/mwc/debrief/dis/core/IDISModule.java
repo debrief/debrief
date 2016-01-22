@@ -7,20 +7,18 @@ import org.mwc.debrief.dis.providers.IPDUProvider;
 
 public interface IDISModule
 {
-	void setProvider(IPDUProvider provider);
+  void setProvider(IPDUProvider provider);
 
-	IDISPreferences getPrefs();
+  IDISPreferences getPrefs();
 
-	void setPrefs(IDISPreferences preferences);
+  // /////////////
+  // LISTENERS
+  // /////////////
 
-	// /////////////
-	// LISTENERS
-	// /////////////
+  void addFixListener(IDISFixListener listener);
 
-	void addFixListener(IDISFixListener listener);
+  void addGeneralPDUListener(IDISGeneralPDUListener listener);
 
-	void addGeneralPDUListener(IDISGeneralPDUListener listener);
-
-	void addScenarioListener(IDISScenarioListener handler);
+  void addScenarioListener(IDISScenarioListener handler);
 
 }

@@ -7,11 +7,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mwc.debrief.dis.core.DISModule;
-import org.mwc.debrief.dis.core.IDISModule;
-import org.mwc.debrief.dis.core.IDISPreferences;
-import org.mwc.debrief.dis.diagnostics.TestFixListener;
-import org.mwc.debrief.dis.diagnostics.TestPrefs;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
@@ -27,116 +26,138 @@ import edu.nps.moves.examples.EspduSender;
  */
 public class NetworkDISProvider implements IPDUProvider
 {
-	@SuppressWarnings("unused")
-	private final IDISNetworkPrefs _myPrefs;
-	private List<IDISGeneralPDUListener> _gen = new ArrayList<IDISGeneralPDUListener>();
+  @SuppressWarnings("unused")
+  private final IDISNetworkPrefs _myPrefs;
+  private List<IDISGeneralPDUListener> _gen = new ArrayList<IDISGeneralPDUListener>();
+  private boolean _running;
 
-	/**
-	 * Max size of a PDU in binary format that we can receive. This is actually
-	 * somewhat outdated--PDUs can be larger--but this is a reasonable starting
-	 * point
-	 */
-	public static final int MAX_PDU_SIZE = 8192;
+  /**
+   * Max size of a PDU in binary format that we can receive. This is actually
+   * somewhat outdated--PDUs can be larger--but this is a reasonable starting
+   * point
+   */
+  public static final int MAX_PDU_SIZE = 8192;
 
-	public NetworkDISProvider(IDISNetworkPrefs prefs)
-	{
-		_myPrefs = prefs;
-	}
+  public NetworkDISProvider(IDISNetworkPrefs prefs)
+  {
+    _myPrefs = prefs;
+  }
 
-	@Override
-	public void addListener(IDISGeneralPDUListener listener)
-	{
-		_gen.add(listener);
-	}
+  @Override
+  public void addListener(IDISGeneralPDUListener listener)
+  {
+    _gen.add(listener);
+  }
 
-	/**
-	 * start listening
-	 * 
-	 */
-	public void start()
-	{
-		MulticastSocket socket;
-		DatagramPacket packet;
-		InetAddress address;
-		PduFactory pduFactory = new PduFactory();
+  /**
+   * start listening
+   * 
+   */
+  public void attach()
+  {
+    
+    Job job = new Job("Handle incoming") {
+      @Override
+      protected IStatus run(IProgressMonitor monitor) {
+        // set the running flag to true
+        _running = true;
+        
+        startListening();
+        // use this to open a Shell in the UI thread
+        return Status.OK_STATUS;
+      }
 
-		try
-		{
-			// Specify the socket to receive data
-			socket = new MulticastSocket(EspduSender.PORT);
-			address = InetAddress.getByName(EspduSender.DEFAULT_MULTICAST_GROUP);
-			socket.joinGroup(address);
+    };
+    job.setUser(false);
+    job.schedule();    
+    
+//    Runnable runner = new Runnable()
+//    {
+//
+//      @Override
+//      public void run()
+//      {
+//      }
+//    };
+//
+//  //  Display.getDefault().asyncExec(runner);
+  }
 
-			// Loop infinitely, receiving datagrams
-			while (true)
-			{
-				byte buffer[] = new byte[MAX_PDU_SIZE];
-				packet = new DatagramPacket(buffer, buffer.length);
 
-				socket.receive(packet);
+  /**
+   * stop listening
+   * 
+   */
+  public void detach()
+  {
+    // set the flag, so we naturally stop
+    _running = false;
+  }
+  
+  /**
+   * start listening
+   * 
+   */
+  private void startListening()
+  {
+    MulticastSocket socket;
+    DatagramPacket packet;
+    InetAddress address;
+    PduFactory pduFactory = new PduFactory();
 
-				Pdu pdu = pduFactory.createPdu(packet.getData());
+    try
+    {
+      // Specify the socket to receive data
+      socket = new MulticastSocket(EspduSender.PORT);
+      address = InetAddress.getByName(EspduSender.DEFAULT_MULTICAST_GROUP);
+      socket.joinGroup(address);
 
-				// share the good news
-				Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
-				while (gIter.hasNext())
-				{
-					IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
-					git.logPDU(pdu);
-				}
+      // Loop infinitely, receiving datagrams
+      while (_running)
+      {
+        byte buffer[] = new byte[MAX_PDU_SIZE];
+        packet = new DatagramPacket(buffer, buffer.length);
 
-			} // end while
-		} // End try
-		catch (Exception e)
-		{
+        socket.receive(packet);
 
-			System.out.println(e);
-		}
-	}
+        Pdu pdu = pduFactory.createPdu(packet.getData());
 
-	/**
-	 * stop listening
-	 * 
-	 */
-	public void disconnect()
-	{
+        // share the good news
+        Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
+        while (gIter.hasNext())
+        {
+          IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
+          git.logPDU(pdu);
+        }
 
-	}
+      } // end while
+      
+      // ok, we've finished
+      socket.leaveGroup(address);
+      
+    } // End try
+    catch (Exception e)
+    {
 
-	public static void main(String[] args)
-	{
+      System.out.println(e);
+    }
+  }
 
-		IDISModule subject = new DISModule();
-		IDISPreferences prefs = new TestPrefs(true, "file.txt");
-		IDISNetworkPrefs netPrefs = new CoreNetPrefs(
-				EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
-		IPDUProvider provider = new NetworkDISProvider(netPrefs);
-		TestFixListener fixL = new TestFixListener();
-
-		subject.addGeneralPDUListener(new IDISGeneralPDUListener()
-		{
-
-			@Override
-			public void logPDU(Pdu pdu)
-			{
-				System.out.println("data at:" + pdu);
-			}
-
-			@Override
-			public void complete(String reason)
-			{
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-		subject.setPrefs(prefs);
-		subject.addFixListener(fixL);
-		subject.setProvider(provider);
-
-		// tell the network provider to start
-		provider.start();
-
-	}
+//
+//  public static void main(String[] args)
+//  {
+//
+//    IDISPreferences prefs = new TestPrefs(true, "file.txt");
+//    IDISModule subject = new DISModule(prefs);
+//    IDISNetworkPrefs netPrefs = new CoreNetPrefs(
+//        EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
+//    IPDUProvider provider = new NetworkDISProvider(netPrefs);
+//    TestFixListener fixL = new TestFixListener();
+//    subject.addFixListener(fixL);
+//    subject.setProvider(provider);
+//
+//    // tell the network provider to start
+//    provider.attach();
+//  }
 
 }

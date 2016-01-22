@@ -45,6 +45,9 @@ public class TestFixListener implements IDISFixListener
 		newI._depth = depth;
 		newI._course = courseDegs;
 		newI._speed = speedMS;
+		
+		
+		System.out.println("id:" + id);
 
 		List<TestFixListener.Item> thisL = _items.get(id);
 		if (thisL == null)

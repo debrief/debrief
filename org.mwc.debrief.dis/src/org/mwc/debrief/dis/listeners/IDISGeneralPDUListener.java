@@ -6,7 +6,7 @@ import edu.nps.moves.dis.Pdu;
  * listener that's interested in all PDU activity, and gets raw PDU data
  * 
  */
-public interface IDISGeneralPDUListener
+public interface IDISGeneralPDUListener 
 {
 	/**
 	 * here is some data

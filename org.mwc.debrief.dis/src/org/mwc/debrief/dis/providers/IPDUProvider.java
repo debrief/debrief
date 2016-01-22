@@ -16,11 +16,11 @@ public interface IPDUProvider
 	 * start providing data
 	 * 
 	 */
-	void start();
+	void attach();
 
 	/**
 	 * stop providing data
 	 * 
 	 */
-	void disconnect();
+	void detach();
 }

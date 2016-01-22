@@ -18,126 +18,130 @@ import edu.nps.moves.disutil.CoordinateConversions;
 
 public class DISModule implements IDISModule, IDISGeneralPDUListener
 {
-	private IDISPreferences _disPrefs = null;
-	private List<IDISFixListener> _fixListeners = new ArrayList<IDISFixListener>();
-	private List<IDISGeneralPDUListener> _generalListeners = new ArrayList<IDISGeneralPDUListener>();
-	private List<IDISScenarioListener> _scenarioListeners = new ArrayList<IDISScenarioListener>();
-	private boolean _newStart = false;
+  final private IDISPreferences _disPrefs;
+  private List<IDISFixListener> _fixListeners = new ArrayList<IDISFixListener>();
+  private List<IDISGeneralPDUListener> _generalListeners = new ArrayList<IDISGeneralPDUListener>();
+  private List<IDISScenarioListener> _scenarioListeners = new ArrayList<IDISScenarioListener>();
+  private boolean _newStart = false;
 
-	public DISModule()
-	{
+  public DISModule(final IDISPreferences disPrefs)
+  {
+    _disPrefs = disPrefs;
+  }
 
-	}
+  @Override
+  public void addFixListener(IDISFixListener handler)
+  {
+    _fixListeners.add(handler);
+  }
 
-	@Override
-	public void addFixListener(IDISFixListener handler)
-	{
-		_fixListeners.add(handler);
-	}
+  @Override
+  public void addScenarioListener(IDISScenarioListener handler)
+  {
+    _scenarioListeners.add(handler);
+  }
 
-	@Override
-	public void addScenarioListener(IDISScenarioListener handler)
-	{
-		_scenarioListeners.add(handler);
-	}
+  @Override
+  public void setProvider(IPDUProvider provider)
+  {
+    // remember we're restarting
+    _newStart = true;
 
-	@Override
-	public void setProvider(IPDUProvider provider)
-	{
-		// remember we're restarting
-		_newStart = true;
+    // register as a listener, to hear about new data
+    provider.addListener(this);
+  }
 
-		// register as a listener, to hear about new data
-		provider.addListener(this);
-	}
+  private void handleFix(EntityStatePdu pdu)
+  {
+    // unpack the data
+    final long hisId = pdu.getEntityID().getEntity();
+    final long time = pdu.getTimestamp();
+    Vector3Double loc = pdu.getEntityLocation();
+    double[] locArr = new double[]
+    { loc.getX(), loc.getY(), loc.getZ() };
+    double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+    Orientation orientation = pdu.getEntityOrientation();
+    Vector3Float velocity = pdu.getEntityLinearVelocity();
 
-	private void handleFix(EntityStatePdu pdu)
-	{
-		// unpack the data
-		final long hisId = pdu.getEntityID().getEntity();
-		final long time = pdu.getTimestamp();
-		Vector3Double loc = pdu.getEntityLocation();
-		double[] worldCoords = CoordinateConversions.getXYZfromLatLonDegrees(
-				loc.getX(), loc.getY(), loc.getZ());
-		Orientation orientation = pdu.getEntityOrientation();
-		Vector3Float velocity = pdu.getEntityLinearVelocity();
+    // entity state
+    Iterator<IDISFixListener> fIter = _fixListeners.iterator();
+    while (fIter.hasNext())
+    {
+      IDISFixListener thisF = (IDISFixListener) fIter.next();
+      thisF.add(time, hisId, worldCoords[0], worldCoords[1], worldCoords[2],
+          orientation.getPhi(), velocity.getX());
+    }
+  }
 
-		// entity state
-		Iterator<IDISFixListener> fIter = _fixListeners.iterator();
-		while (fIter.hasNext())
-		{
-			IDISFixListener thisF = (IDISFixListener) fIter.next();
-			thisF.add(time, hisId, worldCoords[0], worldCoords[1], worldCoords[2],
-					orientation.getPhi(), velocity.getX());
-		}
-	}
+  @Override
+  public void addGeneralPDUListener(IDISGeneralPDUListener listener)
+  {
+    _generalListeners.add(listener);
+  }
 
-	@Override
-	public void addGeneralPDUListener(IDISGeneralPDUListener listener)
-	{
-		_generalListeners.add(listener);
-	}
+  @Override
+  public IDISPreferences getPrefs()
+  {
+    return _disPrefs;
+  }
 
-	@Override
-	public IDISPreferences getPrefs()
-	{
-		return _disPrefs;
-	}
+  @Override
+  public void logPDU(Pdu data)
+  {
+    // is this new?
+    if (_newStart)
+    {
+      // share the good news
+      Iterator<IDISScenarioListener> sIter = _scenarioListeners.iterator();
+      while (sIter.hasNext())
+      {
+        IDISScenarioListener sl = (IDISScenarioListener) sIter.next();
+        sl.restart();
+      }
+      _newStart = false;
+    }
 
-	@Override
-	public void setPrefs(IDISPreferences preferences)
-	{
-		_disPrefs = preferences;
-	}
+    // give it to any general listenrs
+    Iterator<IDISGeneralPDUListener> gIter = _generalListeners.iterator();
+    while (gIter.hasNext())
+    {
+      IDISGeneralPDUListener gPdu = (IDISGeneralPDUListener) gIter.next();
+      gPdu.logPDU(data);
+    }
 
-	@Override
-	public void logPDU(Pdu data)
-	{
-		// is this new?
-		if (_newStart)
-		{
-			// share the good news
-			Iterator<IDISScenarioListener> sIter = _scenarioListeners.iterator();
-			while (sIter.hasNext())
-			{
-				IDISScenarioListener sl = (IDISScenarioListener) sIter.next();
-				sl.restart();
-			}
-			_newStart = false;
-		}
+    // check the type
+    final short type = data.getPduType();
+    switch (type)
+    {
+    case 1:
+    {
+      handleFix((EntityStatePdu) data);
+      break;
+    }
+    default:
+      throw new RuntimeException("PDU type not handled:" + type);
+    }
+  }
 
-		// give it to any general listenrs
-		Iterator<IDISGeneralPDUListener> gIter = _generalListeners.iterator();
-		while (gIter.hasNext())
-		{
-			IDISGeneralPDUListener gPdu = (IDISGeneralPDUListener) gIter.next();
-			gPdu.logPDU(data);
-		}
+  @Override
+  public void complete(String reason)
+  {
+    // tell any scenario listeners
+    Iterator<IDISScenarioListener> sIter = _scenarioListeners.iterator();
+    while (sIter.hasNext())
+    {
+      IDISScenarioListener thisS = (IDISScenarioListener) sIter.next();
+      thisS.complete(reason);
+    }
 
-		// check the type
-		final short type = data.getPduType();
-		switch (type)
-		{
-		case 1:
-		{
-			handleFix((EntityStatePdu) data);
-			break;
-		}
-		default:
-			throw new RuntimeException("PDU type not handled:" + type);
-		}
-	}
+    // also tell any general liseners
+    Iterator<IDISGeneralPDUListener> gIter = _generalListeners.iterator();
+    while (gIter.hasNext())
+    {
+      IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
+      git.complete(reason);
 
-	@Override
-	public void complete(String reason)
-	{
-		// tell any scenario listeners
-		Iterator<IDISScenarioListener> sIter = _scenarioListeners.iterator();
-		while (sIter.hasNext())
-		{
-			IDISScenarioListener thisS = (IDISScenarioListener) sIter.next();
-			thisS.complete(reason);
-		}
-	}
+    }
+  }
 
 }
