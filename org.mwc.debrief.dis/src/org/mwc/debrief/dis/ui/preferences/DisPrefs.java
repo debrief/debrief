@@ -36,15 +36,18 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.debrief.dis.DisActivator;
+import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 
-public class DisPrefs extends PreferencePage implements IWorkbenchPreferencePage
+public class DisPrefs extends PreferencePage implements
+    IWorkbenchPreferencePage
 {
   public static final String ID = "org.mwc.debrief.dis.preferences.DisPrefs";
   private Text simulationPathText;
   private Text ipAddressText;
   private Text portText;
-  private static final Pattern IP_ADDRESS_PATTERN = Pattern.compile(
-      "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+  private static final Pattern IP_ADDRESS_PATTERN =
+      Pattern
+          .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
   public DisPrefs()
   {
@@ -72,8 +75,8 @@ public class DisPrefs extends PreferencePage implements IWorkbenchPreferencePage
     composite.setLayout(layout);
 
     createLabel(composite, "Path to executable:");
-    simulationPathText = createText(composite,
-        DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
+    simulationPathText =
+        createText(composite, DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
 
     final Button simulationPathBrowse = new Button(composite, SWT.PUSH);
     simulationPathBrowse.setText("Browse...");
@@ -205,8 +208,8 @@ public class DisPrefs extends PreferencePage implements IWorkbenchPreferencePage
   @Override
   protected void performDefaults()
   {
-    simulationPathText.setText(""); //$NON-NLS-1$
-    ipAddressText.setText("");
+    simulationPathText.setText(CustomEspduSender.DEFAULT_MULTICAST_GROUP); //$NON-NLS-1$
+    ipAddressText.setText("" + CustomEspduSender.PORT);
     portText.setText("");
     storePreferences();
     super.performDefaults();
