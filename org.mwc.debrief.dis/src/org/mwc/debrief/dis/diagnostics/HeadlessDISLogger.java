@@ -13,8 +13,6 @@ import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
-import edu.nps.moves.examples.EspduSender;
-
 public class HeadlessDISLogger
 {
 
@@ -26,10 +24,10 @@ public class HeadlessDISLogger
     String root = "/tmp";
 
     // do we have an IP address?
-    String address = EspduSender.DEFAULT_MULTICAST_GROUP;
+    String address = CustomEspduSender.DEFAULT_MULTICAST_GROUP;
 
     // do we have a PORT?
-    int port = EspduSender.PORT;
+    int port = CustomEspduSender.PORT;
     
     // TODO: retrieve the above params from the args
     
