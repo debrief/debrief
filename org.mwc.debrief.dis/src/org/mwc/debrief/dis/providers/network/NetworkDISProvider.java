@@ -16,7 +16,6 @@ import org.mwc.debrief.dis.providers.IPDUProvider;
 
 import edu.nps.moves.dis.Pdu;
 import edu.nps.moves.disutil.PduFactory;
-import edu.nps.moves.examples.EspduSender;
 
 /**
  * data provider that listens for data on a network multicast socket
@@ -26,15 +25,14 @@ import edu.nps.moves.examples.EspduSender;
  */
 public class NetworkDISProvider implements IPDUProvider
 {
-  @SuppressWarnings("unused")
   private final IDISNetworkPrefs _myPrefs;
-  private List<IDISGeneralPDUListener> _gen = new ArrayList<IDISGeneralPDUListener>();
+  private List<IDISGeneralPDUListener> _gen =
+      new ArrayList<IDISGeneralPDUListener>();
   private boolean _running;
 
   /**
-   * Max size of a PDU in binary format that we can receive. This is actually
-   * somewhat outdated--PDUs can be larger--but this is a reasonable starting
-   * point
+   * Max size of a PDU in binary format that we can receive. This is actually somewhat
+   * outdated--PDUs can be larger--but this is a reasonable starting point
    */
   public static final int MAX_PDU_SIZE = 8192;
 
@@ -55,13 +53,15 @@ public class NetworkDISProvider implements IPDUProvider
    */
   public void attach()
   {
-    
-    Job job = new Job("Handle incoming") {
+
+    Job job = new Job("Handle incoming")
+    {
       @Override
-      protected IStatus run(IProgressMonitor monitor) {
+      protected IStatus run(IProgressMonitor monitor)
+      {
         // set the running flag to true
         _running = true;
-        
+
         startListening();
         // use this to open a Shell in the UI thread
         return Status.OK_STATUS;
@@ -69,9 +69,8 @@ public class NetworkDISProvider implements IPDUProvider
 
     };
     job.setUser(false);
-    job.schedule();    
+    job.schedule();
   }
-
 
   /**
    * stop listening
@@ -82,7 +81,7 @@ public class NetworkDISProvider implements IPDUProvider
     // set the flag, so we naturally stop
     _running = false;
   }
-  
+
   /**
    * start listening
    * 
@@ -97,8 +96,8 @@ public class NetworkDISProvider implements IPDUProvider
     try
     {
       // Specify the socket to receive data
-      socket = new MulticastSocket(EspduSender.PORT);
-      address = InetAddress.getByName(EspduSender.DEFAULT_MULTICAST_GROUP);
+      socket = new MulticastSocket(_myPrefs.getPort());
+      address = InetAddress.getByName(_myPrefs.getIPAddress());
       socket.joinGroup(address);
 
       // Loop infinitely, receiving datagrams
@@ -120,10 +119,10 @@ public class NetworkDISProvider implements IPDUProvider
         }
 
       } // end while
-      
+
       // ok, we've finished
       socket.leaveGroup(address);
-      
+
     } // End try
     catch (Exception e)
     {
@@ -132,19 +131,19 @@ public class NetworkDISProvider implements IPDUProvider
     }
   }
 
-//
-//  public static void main(String[] args)
-//  {
-//
-//    IDISPreferences prefs = new TestPrefs(true, "file.txt");
-//    IDISModule subject = new DISModule(prefs);
-//    IDISNetworkPrefs netPrefs = new CoreNetPrefs(
-//        EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
-//    IPDUProvider provider = new NetworkDISProvider(netPrefs);
-//    subject.setProvider(provider);
-//
-//    // tell the network provider to start
-//    provider.attach();
-//  }
+  //
+  // public static void main(String[] args)
+  // {
+  //
+  // IDISPreferences prefs = new TestPrefs(true, "file.txt");
+  // IDISModule subject = new DISModule(prefs);
+  // IDISNetworkPrefs netPrefs = new CoreNetPrefs(
+  // EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
+  // IPDUProvider provider = new NetworkDISProvider(netPrefs);
+  // subject.setProvider(provider);
+  //
+  // // tell the network provider to start
+  // provider.attach();
+  // }
 
 }
