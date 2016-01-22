@@ -40,9 +40,12 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.debrief.dis.core.DISModule;
+import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
 import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
+import org.mwc.debrief.dis.listeners.impl.DISContext;
+import org.mwc.debrief.dis.listeners.impl.FixListener;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
@@ -118,6 +121,16 @@ public class DisListenerView extends ViewPart
     PerformanceGraph perfGraph = new PerformanceGraph(chartComposite);
     _disModule.addGeneralPDUListener(perfGraph);
     _disModule.addScenarioListener(perfGraph);
+    
+    setupListeners(_disModule);
+  }
+
+  private void setupListeners(IDISModule module)
+  {
+    DISContext context = new DISContext();
+
+    // ok, Debrief fix listener
+    module.addFixListener(new FixListener(context));
   }
 
   @Override
