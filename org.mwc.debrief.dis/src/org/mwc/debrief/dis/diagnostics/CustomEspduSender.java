@@ -45,8 +45,8 @@ public class CustomEspduSender
     DisTime disTime = DisTime.getInstance();
 
     // ICBM coordinates for my office
-    double lat = 36.595517;
-    double lon = -121.877000;
+    double lat = 50.1;
+    double lon = -1.877000;
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
