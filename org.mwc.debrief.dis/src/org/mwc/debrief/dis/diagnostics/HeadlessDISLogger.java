@@ -15,7 +15,7 @@ import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
 import edu.nps.moves.examples.EspduSender;
 
-public class TestDISLogger
+public class HeadlessDISLogger
 {
 
   final String LINE_BREAK = System.getProperty("line.separator");
@@ -30,12 +30,16 @@ public class TestDISLogger
 
     // do we have a PORT?
     int port = EspduSender.PORT;
+    
+    // TODO: retrieve the above params from the args
+    
+    // TODO: add support for outputting the expected args
 
     // setup the output destinations
     boolean toFile = true;
     boolean toScreen = false;
 
-    new TestDISLogger(address, port, root, toFile, toScreen);
+    new HeadlessDISLogger(address, port, root, toFile, toScreen);
 
     while (true)
     {
@@ -43,7 +47,7 @@ public class TestDISLogger
     }
   }
 
-  public TestDISLogger(final String address, final int port, final String root,
+  public HeadlessDISLogger(final String address, final int port, final String root,
       boolean toFile, boolean toScreen)
   {
     IDISPreferences prefs = new TestPrefs(true, "file.txt");
