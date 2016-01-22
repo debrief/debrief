@@ -34,10 +34,14 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
+import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
@@ -145,6 +149,8 @@ public class DisListenerView extends ViewPart
       public void widgetSelected(SelectionEvent e)
       {
         _netProvider.attach();
+        connectButton.setEnabled(false);
+        disconnectButton.setEnabled(true);
       }
 
     });
@@ -156,6 +162,8 @@ public class DisListenerView extends ViewPart
       public void widgetSelected(SelectionEvent e)
       {
         _netProvider.detach();
+        connectButton.setEnabled(true);
+        disconnectButton.setEnabled(false);
       }
 
     });
@@ -184,6 +192,8 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
+        CustomEspduSender.terminate();
+
         _simJob.cancel();
 
         stopButton.setEnabled(false);
@@ -228,7 +238,7 @@ public class DisListenerView extends ViewPart
           @Override
           protected IStatus run(IProgressMonitor monitor)
           {
-            EspduSender.main(new String[]
+            CustomEspduSender.main(new String[]
             {});
             return Status.OK_STATUS;
           }
@@ -294,8 +304,12 @@ public class DisListenerView extends ViewPart
     layout = new GridLayout(1, false);
     chartWrapperComposite.setLayout(layout);
 
+    XYDataset dataset = new TimeSeriesCollection();
+    JFreeChart theChart =
+        ChartFactory.createTimeSeriesChart("Line Chart", "Time", "Hertz",
+            dataset);
     chartComposite =
-        new ChartComposite(chartWrapperComposite, SWT.NONE, null, 400, 600,
+        new ChartComposite(chartWrapperComposite, SWT.NONE, theChart, 400, 600,
             300, 200, 1800, 1800, true, true, true, true, true, true)
         {
           @Override
