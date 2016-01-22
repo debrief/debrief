@@ -200,6 +200,7 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
 
     private IStoreGroup _group;
     private LimpetWrapper _parent;
+    private EditorType _info;
 
     public GroupWrapper(IStoreGroup group)
     {
@@ -279,13 +280,37 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
       return false;
     }
 
+
     @Override
     public EditorType getInfo()
     {
-      // TODO Auto-generated method stub
-      return null;
-    }
+      if (_info == null)
+      {
+        _info = new EditorType(this, getName(), getName())
+        {
 
+          @Override
+          public PropertyDescriptor[] getPropertyDescriptors()
+          {
+            return getPropertyDescriptors();
+          }
+
+          @Override
+          public String getDisplayName()
+          {
+            return getDisplayName();
+          }
+
+          @Override
+          public String getName()
+          {
+            return getName();
+          }
+
+        };
+      }
+      return _info;
+    }
     @Override
     public boolean hasChildren()
     {
@@ -307,7 +332,24 @@ public class StoreWrapper implements SupplementalDataBlock, Editable2,
     @Override
     public void setValue(Object id, Object theValue)
     {
+      Object oldVal = getValue(id);
       super.setPropertyValue(id, theValue);
+      getInfo().fireChanged(this, getName(), oldVal, theValue);
+      Runnable runnable = new Runnable()
+      {
+        
+        @Override
+        public void run()
+        {
+          IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+          Layers layers = (Layers) editor.getAdapter(Layers.class);
+          if (layers != null)
+          {
+            layers.fireExtended();
+          }
+        }
+      };
+      Display.getDefault().asyncExec(runnable);
     }
 
     /*
