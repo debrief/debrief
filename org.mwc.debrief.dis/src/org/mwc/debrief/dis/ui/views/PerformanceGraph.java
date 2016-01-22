@@ -69,7 +69,7 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
           data.addSeries(new TimeSeries("Sim"));
         }
         TimeSeries series = data.getSeries("Sim");
-        series.add(new Second(new Date()), Math.random() * 50);
+        series.addOrUpdate(new Second(new Date()), Math.random() * 50);
 
       }
     });
