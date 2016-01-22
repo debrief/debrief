@@ -43,13 +43,12 @@ import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
 import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
-import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
+import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
 import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
 import edu.nps.moves.dis.Pdu;
-import edu.nps.moves.examples.EspduSender;
 
 public class DisListenerView extends ViewPart
 {
@@ -71,11 +70,11 @@ public class DisListenerView extends ViewPart
 
   private void initModule()
   {
+    // IDISNetworkPrefs netPrefs =
+    // new CoreNetPrefs(EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
+
     // get the debrief prefs
-    // IDISNetworkPrefs netPrefs = new DebriefDISNetPrefs();
-    //
-    IDISNetworkPrefs netPrefs =
-        new CoreNetPrefs(EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
+    IDISNetworkPrefs netPrefs = new DebriefDISNetPrefs();
 
     // get the network data source
     _netProvider = new NetworkDISProvider(netPrefs);
