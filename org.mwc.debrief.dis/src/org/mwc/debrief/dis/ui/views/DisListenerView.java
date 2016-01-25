@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.dis.ui.views;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -27,6 +29,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -39,6 +42,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
@@ -333,6 +337,13 @@ public class DisListenerView extends ViewPart
             }
           }
         };
+        
+        fixChartComposite();
+
+    gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+    chartComposite.setLayoutData(gd);
+    layout = new GridLayout(1, false);
+    chartComposite.setLayout(layout);
 
     Composite checkboxComposite = new Composite(composite, SWT.NONE);
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -375,6 +386,30 @@ public class DisListenerView extends ViewPart
     // ok, we can go for it
     initModule();
 
+  }
+
+  private void fixChartComposite()
+  {
+    Class<ChartComposite> clazz = ChartComposite.class;
+    try
+    {
+      Field field = clazz.getDeclaredField("canvas");
+      field.setAccessible(true);
+      Object object = field.get(chartComposite);
+      if (object instanceof Canvas)
+      {
+        Canvas canvas = (Canvas) object;
+        GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+        canvas.setLayoutData(gd);
+        GridLayout layout = new GridLayout(1, false);
+        canvas.setLayout(layout);
+      }
+    }
+    catch (NoSuchFieldException | SecurityException
+        | IllegalArgumentException | IllegalAccessException e1)
+    {
+      DisActivator.log(e1);
+    }
   }
 
   private Button createButton(Composite composite, String label)
