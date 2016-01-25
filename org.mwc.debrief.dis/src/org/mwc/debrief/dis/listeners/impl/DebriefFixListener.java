@@ -1,6 +1,7 @@
 package org.mwc.debrief.dis.listeners.impl;
 
-import org.eclipse.swt.widgets.Display;
+import java.awt.Color;
+
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
 import Debrief.Wrappers.FixWrapper;
@@ -22,18 +23,25 @@ public class DebriefFixListener implements IDISFixListener
   }
 
   @Override
-  public void add(long time, short exerciseId, long id, double dLat, double dLong,
-      double depth, double courseDegs, double speedMS)
+  public void add(long time, short exerciseId, long id, double dLat,
+      double dLong, double depth, double courseDegs, double speedMS)
   {
     final Layers layers = _context.getLayersFor(exerciseId);
     if (layers != null)
     {
-      TrackWrapper track = (TrackWrapper) layers.findLayer("DIS_" + id);
+      String theName = "DIS_" + id;
+      TrackWrapper track = (TrackWrapper) layers.findLayer(theName);
       if (track == null)
       {
         track = new TrackWrapper();
-        track.setName("DIS_" + id);
+        track.setName(theName);
+
+        Color newCol = colorFor(theName);
+        // ok, give it some color
+        track.setColor(newCol);
+
         layers.addThisLayer(track);
+
       }
 
       WorldLocation loc = new WorldLocation(dLat, dLong, depth);
@@ -42,25 +50,30 @@ public class DebriefFixListener implements IDISFixListener
       FixWrapper fw = new FixWrapper(newF);
       fw.resetName();
       track.add(fw);
-      
+
       final TrackWrapper finalTrack = track;
-      
-      if(_context.getLiveUpdates())
+
+      if (_context.getLiveUpdates())
       {
         final Plottable newItem = null;
-        
-        // pass the new item to the extended method in order to display it in the layer manager
-        // newItem = fw;
-        Display.getDefault().asyncExec(new Runnable(){
 
-          @Override
-          public void run()
-          {
-            layers.fireExtended(newItem, finalTrack);
-          }});
+        _context.fireUpdate(newItem, finalTrack);
       }
     }
 
+  }
+
+  private final java.awt.Color[] defaultColors = new java.awt.Color[]
+  {java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
+      java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
+      java.awt.Color.darkGray, java.awt.Color.orange, java.awt.Color.pink,
+      java.awt.Color.lightGray};
+
+  private Color colorFor(String name)
+  {
+    // ok, get the hashmap
+    int index = name.hashCode() % defaultColors.length;
+    return defaultColors[index];
   }
 
 }

@@ -9,8 +9,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
 
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 
 abstract public class DISContext
 {
@@ -92,25 +95,28 @@ abstract public class DISContext
               PlatformUI.getWorkbench().getActiveWorkbenchWindow();
           IWorkbenchPage activePage = iw.getActivePage();
           IEditorPart editor = activePage.getActiveEditor();
-          _myLayers = (Layers) editor.getAdapter(Layers.class);
+          if (editor != null)
+          {
+            _myLayers = (Layers) editor.getAdapter(Layers.class);
+          }
         }
       });
 
     }
     return _myLayers;
   }
-  
+
   // TODO: produc
   public class DISInput implements IEditorInput
   {
 
     final private String _name;
-    
+
     public DISInput(String name)
     {
       _name = name;
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Override
     public Object getAdapter(Class adapter)
@@ -151,8 +157,65 @@ abstract public class DISContext
     {
       return "New DIS Session";
     }
-    
+
   }
 
-  
+  abstract public boolean getFitToData();
+
+  public void fitToWindow()
+  {
+    Display.getDefault().syncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        IWorkbenchWindow window =
+            PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchPage page = window.getActivePage();
+        IEditorPart editor = page.getActiveEditor();
+        IControllableViewport icv =
+            (IControllableViewport) editor
+                .getAdapter(IControllableViewport.class);
+        if (icv != null)
+        {
+          icv.rescale();
+        }
+      }
+    });
+  }
+
+  private boolean updating = false;
+
+  public void
+      fireUpdate(final Plottable newItem, final TrackWrapper finalTrack)
+  {
+    if (updating)
+    {
+      System.out.println("SKIP UPDATE");
+    }
+    else
+    {
+      updating = true;
+      // pass the new item to the extended method in order to display it in
+      // the layer manager
+      // newItem = fw;
+      Display.getDefault().asyncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          _myLayers.fireExtended(newItem, finalTrack);
+
+          // hmm, do we need to resize?
+          if (getFitToData())
+          {
+            fitToWindow();
+          }
+        }
+      });
+      updating = false;
+    }
+  }
 }

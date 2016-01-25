@@ -21,6 +21,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -35,6 +38,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
@@ -42,6 +46,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
@@ -67,6 +72,7 @@ public class DisListenerView extends ViewPart
   private Text pathText;
   private Button newPlotButton;
   private Button liveUpdatesButton;
+  private Action fitToDataAction;
   private DISModule _disModule;
   private NetworkDISProvider _netProvider;
   protected Thread _simThread;
@@ -81,6 +87,7 @@ public class DisListenerView extends ViewPart
    * we need to access the setting of new plots from outside the UI thread, so store it here.
    */
   private boolean _newPlotPerReplication = false;
+  private boolean _fitToDataValue = true;
 
   private void initModule()
   {
@@ -135,6 +142,12 @@ public class DisListenerView extends ViewPart
       public boolean getUseNewPlot()
       {
         return _newPlotPerReplication;
+      }
+
+      @Override
+      public boolean getFitToData()
+      {
+        return _fitToDataValue;
       }
 
     };
@@ -397,6 +410,22 @@ public class DisListenerView extends ViewPart
     });
     liveUpdatesButton.setSelection(_doLiveUpdates);
 
+    fitToDataAction = new org.eclipse.jface.action.Action()
+    {
+      public void run()
+      {
+        _fitToDataValue = fitToDataAction.isChecked();
+      }
+    };
+    fitToDataAction.setChecked(_fitToDataValue);
+    fitToDataAction.setText("Fit to data");
+    fitToDataAction
+        .setToolTipText("Zoom the selected plot out to show the full data");
+    fitToDataAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/fit_to_win.png"));
+
+    contributeToActionBars();
+
     // ok, we can go for it
     initModule();
 
@@ -424,6 +453,22 @@ public class DisListenerView extends ViewPart
     {
       DisActivator.log(e1);
     }
+  }
+
+  private void contributeToActionBars()
+  {
+    final IActionBars bars = getViewSite().getActionBars();
+    fillLocalPullDown(bars.getMenuManager());
+    fillLocalToolBar(bars.getToolBarManager());
+  }
+
+  private void fillLocalPullDown(final IMenuManager manager)
+  {
+  }
+
+  private void fillLocalToolBar(final IToolBarManager manager)
+  {
+    manager.add(fitToDataAction);
   }
 
   private Button createButton(Composite composite, String label)
