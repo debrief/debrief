@@ -48,6 +48,11 @@ public class CustomEspduSender
     double lat = 50.1;
     double lon = -1.877000;
     double courseRads = Math.toRadians(80d);
+    
+    // give a short offset to the start positions, to give some variety
+    lat += -0.01 + Math.random() * 0.01;
+    lat += -0.02 +  Math.random() * 0.01;
+    
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
@@ -127,7 +132,10 @@ public class CustomEspduSender
     // a way to differentiate between different virtual worlds on one network.
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
-    espdu.setExerciseID((short) 1);
+    
+    short exerciseId = (short) (Math.random() * 1000d);
+    
+    espdu.setExerciseID(exerciseId);
 
     // The EID is the unique identifier for objects in the world. This
     // EID should match up with the ID for the object specified in the
@@ -135,7 +143,12 @@ public class CustomEspduSender
     EntityID eid = espdu.getEntityID();
     eid.setSite(0);
     eid.setApplication(1);
-    eid.setEntity(2);
+
+    int entityId = 2;
+    
+    entityId = 1 + (int)(Math.random() * 20d);
+    
+    eid.setEntity(entityId);
 
     // Set the entity type. SISO has a big list of enumerations, so that by
     // specifying various numbers we can say this is an M1A2 American tank,
@@ -218,8 +231,9 @@ public class CustomEspduSender
 
         if ((idx % 10) == 0)
         {
-          final double newCourse = ((int) (Math.random() * 360d)) * 360d;
+          final double newCourse = ((int) (Math.random() * 36d)) * 10d;
           courseRads = Math.toRadians(newCourse);
+          System.out.println("new course:" + newCourse);
         }
 
         // lon = lon + (double) ((double) idx / 1000.0);
