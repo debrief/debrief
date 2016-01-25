@@ -71,6 +71,11 @@ public class DisListenerView extends ViewPart
   protected Thread _simThread;
   protected Job _simJob;
 
+  /**
+   * we need to access the setting of live updates from outside the UI thread, so store it here.
+   */
+  private boolean _doLiveUpdates = false;
+
   private void initModule()
   {
     // IDISNetworkPrefs netPrefs =
@@ -100,34 +105,27 @@ public class DisListenerView extends ViewPart
     };
 
     _disModule = new DISModule(prefs);
-
-    _disModule.addGeneralPDUListener(new IDISGeneralPDUListener()
-    {
-
-      @Override
-      public void logPDU(Pdu pdu)
-      {
-        System.out.println("PING");
-      }
-
-      @Override
-      public void complete(String reason)
-      {
-      }
-    });
-
     _disModule.setProvider(_netProvider);
 
     PerformanceGraph perfGraph = new PerformanceGraph(chartComposite);
     _disModule.addGeneralPDUListener(perfGraph);
     _disModule.addScenarioListener(perfGraph);
-    
+
     setupListeners(_disModule);
   }
 
   private void setupListeners(IDISModule module)
   {
-    DISContext context = new DISContext();
+    DISContext context = new DISContext()
+    {
+
+      @Override
+      public boolean getLiveUpdates()
+      {
+        return _doLiveUpdates;
+      }
+
+    };
 
     // ok, Debrief fix listener
     module.addFixListener(new FixListener(context));
@@ -368,11 +366,11 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        // FIXME Live updates.
+        _doLiveUpdates = liveUpdatesButton.getSelection();
       }
 
     });
-    liveUpdatesButton.setSelection(true);
+    liveUpdatesButton.setSelection(_doLiveUpdates);
 
     // ok, we can go for it
     initModule();
