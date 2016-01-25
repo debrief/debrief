@@ -149,8 +149,8 @@ public class HeadlessDISLogger
     }
 
     @Override
-    public void add(long time, long id, double dLat, double dLong,
-        double depth, double courseDegs, double speedMS)
+    public void add(long time, long exerciseId, long id, double dLat,
+        double dLong, double depth, double courseDegs, double speedMS)
     {
       // create the line
       StringBuffer out = new StringBuffer();

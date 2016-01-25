@@ -48,7 +48,7 @@ import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
 import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
-import org.mwc.debrief.dis.listeners.impl.FixListener;
+import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
@@ -140,7 +140,7 @@ public class DisListenerView extends ViewPart
     };
 
     // ok, Debrief fix listener
-    module.addFixListener(new FixListener(context));
+    module.addFixListener(new DebriefFixListener(context));
   }
 
   @Override
