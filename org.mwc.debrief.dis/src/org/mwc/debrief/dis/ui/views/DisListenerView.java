@@ -47,15 +47,12 @@ import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
 import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
-import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.FixListener;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
 import org.mwc.debrief.dis.ui.preferences.DisPrefs;
-
-import edu.nps.moves.dis.Pdu;
 
 public class DisListenerView extends ViewPart
 {
@@ -79,6 +76,11 @@ public class DisListenerView extends ViewPart
    * we need to access the setting of live updates from outside the UI thread, so store it here.
    */
   private boolean _doLiveUpdates = false;
+
+  /**
+   * we need to access the setting of new plots from outside the UI thread, so store it here.
+   */
+  private boolean _newPlotPerReplication = false;
 
   private void initModule()
   {
@@ -127,6 +129,12 @@ public class DisListenerView extends ViewPart
       public boolean getLiveUpdates()
       {
         return _doLiveUpdates;
+      }
+
+      @Override
+      public boolean getUseNewPlot()
+      {
+        return _newPlotPerReplication;
       }
 
     };
@@ -337,13 +345,15 @@ public class DisListenerView extends ViewPart
             }
           }
         };
-        
-        fixChartComposite();
+
+    fixChartComposite();
 
     gd = new GridData(SWT.FILL, SWT.FILL, true, true);
     chartComposite.setLayoutData(gd);
     layout = new GridLayout(1, false);
     chartComposite.setLayout(layout);
+    theChart.getLegend().setVisible(false);
+    theChart.getTitle().setVisible(false);
 
     Composite checkboxComposite = new Composite(composite, SWT.NONE);
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -363,10 +373,11 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        // FIXME new plot ...
+        _newPlotPerReplication = newPlotButton.getSelection();
       }
-
     });
+    newPlotButton.setSelection(_newPlotPerReplication);
+
     liveUpdatesButton = new Button(checkboxComposite, SWT.CHECK);
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
     liveUpdatesButton.setLayoutData(gd);
@@ -405,8 +416,8 @@ public class DisListenerView extends ViewPart
         canvas.setLayout(layout);
       }
     }
-    catch (NoSuchFieldException | SecurityException
-        | IllegalArgumentException | IllegalAccessException e1)
+    catch (NoSuchFieldException | SecurityException | IllegalArgumentException
+        | IllegalAccessException e1)
     {
       DisActivator.log(e1);
     }

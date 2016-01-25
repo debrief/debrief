@@ -12,6 +12,12 @@ abstract public class DISContext
 {
   Layers _myLayers = null;
 
+  /** whether a new plot should be created for each new replication
+   * 
+   * @return
+   */
+  abstract public boolean getUseNewPlot();
+ 
   /** whether a UI should update on each new data item
    * 
    * @return
