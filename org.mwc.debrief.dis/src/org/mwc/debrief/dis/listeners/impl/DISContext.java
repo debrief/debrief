@@ -8,10 +8,16 @@ import org.eclipse.ui.PlatformUI;
 
 import MWC.GUI.Layers;
 
-public class DISContext
+abstract public class DISContext
 {
   Layers _myLayers = null;
 
+  /** whether a UI should update on each new data item
+   * 
+   * @return
+   */
+  abstract public boolean getLiveUpdates();
+  
   public Layers getLayers()
   {
     if (_myLayers == null)
