@@ -149,7 +149,7 @@ public class HeadlessDISLogger
     }
 
     @Override
-    public void add(long time, long exerciseId, long id, double dLat,
+    public void add(long time, short exerciseId, long id, double dLat,
         double dLong, double depth, double courseDegs, double speedMS)
     {
       // create the line

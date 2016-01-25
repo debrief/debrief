@@ -22,10 +22,10 @@ public class DebriefFixListener implements IDISFixListener
   }
 
   @Override
-  public void add(long time, long exerciseId, long id, double dLat, double dLong,
+  public void add(long time, short exerciseId, long id, double dLat, double dLong,
       double depth, double courseDegs, double speedMS)
   {
-    final Layers layers = _context.getLayers();
+    final Layers layers = _context.getLayersFor(exerciseId);
     if (layers != null)
     {
       TrackWrapper track = (TrackWrapper) layers.findLayer("DIS_" + id);
