@@ -28,6 +28,24 @@ public class CustomEspduSender
 
   private static boolean _terminate;
 
+  private static class State
+  {
+    private State(final int id, double oLat, double oLong, double range)
+    {
+      this.id = id;
+      latVal = oLat + Math.random() * range;
+      longVal = oLong + Math.random() * range;
+      courseRads = Math.toRadians(((int) (Math.random() * 36d)) * 10d);
+    }
+
+    final int id;
+    double latVal;
+    double longVal;
+    double courseRads;
+  }
+
+  private static Map<Integer, State> states = new HashMap<Integer, State>();
+
   /**
    * Possible system properties, passed in via -Dattr=val networkMode: unicast, broadcast, multicast
    * destinationIp: where to send the packet. If in multicast mode, this can be mcast. To determine
@@ -44,15 +62,19 @@ public class CustomEspduSender
     MulticastSocket socket = null;
     DisTime disTime = DisTime.getInstance();
 
-    // origin of path
-    double lat = 50.1;
-    double lon = -1.877000;
-    double courseRads = Math.toRadians(80d);
-    
-    // give a short offset to the start positions, to give some variety
-    lat += -0.01 + Math.random() * 0.01;
-    lat += -0.02 +  Math.random() * 0.01;
-    
+    long stepMillis = 1000;
+    long numParts = 1;
+
+    // try to extract the step millis from the args
+    if (args.length >= 1)
+    {
+      stepMillis = Long.parseLong(args[0]);
+    }
+
+    if (args.length >= 2)
+    {
+      numParts = Long.parseLong(args[1]);
+    }
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
@@ -132,9 +154,9 @@ public class CustomEspduSender
     // a way to differentiate between different virtual worlds on one network.
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
-    
+
     short exerciseId = (short) (Math.random() * 1000d);
-    
+
     espdu.setExerciseID(exerciseId);
 
     // The EID is the unique identifier for objects in the world. This
@@ -145,9 +167,7 @@ public class CustomEspduSender
     eid.setApplication(1);
 
     int entityId = 2;
-    
-    entityId = 1 + (int)(Math.random() * 20d);
-    
+
     eid.setEntity(entityId);
 
     // Set the entity type. SISO has a big list of enumerations, so that by
@@ -171,6 +191,7 @@ public class CustomEspduSender
 
       System.out.println("Sending 100 ESPDU packets to "
           + destinationIp.toString());
+
       for (int idx = 0; idx < 100; idx++)
       {
 
@@ -180,110 +201,92 @@ public class CustomEspduSender
           break;
         }
 
-        // DIS time is a pain in the ass. DIS time units are 2^31-1 units per
-        // hour, and time is set to DIS time units from the top of the hour.
-        // This means that if you start sending just before the top of the hour
-        // the time units can roll over to zero as you are sending. The receivers
-        // (escpecially homegrown ones) are often not able to detect rollover
-        // and may start discarding packets as dupes or out of order. We use
-        // an NPS timestamp here, hundredths of a second since the start of the
-        // year. The DIS standard for time is often ignored in the wild; I've seen
-        // people use Unix time (seconds since 1970) and more. Or you can
-        // just stuff idx into the timestamp field to get something that is monotonically
-        // increasing.
-
-        // Note that timestamp is used to detect duplicate and out of order packets.
-        // That means if you DON'T change the timestamp, many implementations will simply
-        // discard subsequent packets that have an identical timestamp. Also, if they
-        // receive a PDU with an timestamp lower than the last one they received, they
-        // may discard it as an earlier, out-of-order PDU. So it is a good idea to
-        // update the timestamp on ALL packets sent.
-
-        // espdu.setTimestamp(disTime.getNpsTimestamp());
-
         // An alterative approach: actually follow the standard. It's a crazy concept,
         // but it might just work.
         int ts = disTime.getDisAbsoluteTimestamp();
         espdu.setTimestamp(ts);
 
-        // Set the position of the entity in the world. DIS uses a cartesian
-        // coordinate system with the origin at the center of the earth, the x
-        // axis out at the equator and prime meridian, y out at the equator and
-        // 90 deg east, and z up and out the north pole. To place an object on
-        // the earth's surface you also need a model for the shape of the earth
-        // (it's not a sphere.) All the fancy math necessary to do this is in
-        // the SEDRIS SRM package. There are also some one-off formulas for
-        // doing conversions from, for example, lat/lon/altitude to DIS coordinates.
-        // Here we use those one-off formulas.
-
-        // Modify the position of the object. This will send the object a little
-        // due east by adding some to the longitude every iteration. Since we
-        // are on the Pacific coast, this sends the object east. Assume we are
-        // at zero altitude. In other worlds you'd use DTED to determine the
-        // local ground altitude at that lat/lon, or you'd just use ground clamping.
-        // The x and y values will change, but the z value should not.
-
-        double dLat = Math.cos(courseRads) * ((double) idx / 1000d);
-        double dLon = Math.sin(courseRads) * ((double) idx / 1000d);
-
-        lon = lon + dLon;
-        lat = lat + dLat;
-
-        if ((idx % 10) == 0)
+        // loop for each participants
+        for (int iP = 0; iP < numParts; iP++)
         {
-          final double newCourse = ((int) (Math.random() * 36d)) * 10d;
-          courseRads = Math.toRadians(newCourse);
-          System.out.println("new course:" + newCourse);
+
+          // get the state
+          State thisS = states.get(iP);
+
+          if (thisS == null)
+          {
+            int eId = 1 + (int) (Math.random() * 20d);
+
+            thisS = new State(eId, 50.1, -1.87, 0.01);
+            states.put(iP, thisS);
+          }
+
+          eid.setEntity(thisS.id);
+
+          double courseRads = thisS.courseRads;
+
+          double dLat = Math.cos(courseRads) * ((double) idx / 1000d);
+          double dLon = Math.sin(courseRads) * ((double) idx / 1000d);
+
+          double lon = thisS.longVal + dLon;
+          double lat = thisS.latVal + dLat;
+
+          if ((idx % 10) == 0)
+          {
+            final double newCourse = ((int) (Math.random() * 36d)) * 10d;
+            thisS.courseRads = Math.toRadians(newCourse);
+            System.out.println("new course:" + newCourse);
+          }
+
+          // lon = lon + (double) ((double) idx / 1000.0);
+
+          double disCoordinates[] =
+              CoordinateConversions.getXYZfromLatLonDegrees(lat, lon, 0.0);
+          Vector3Double location = espdu.getEntityLocation();
+          location.setX(disCoordinates[0]);
+          location.setY(disCoordinates[1]);
+          location.setZ(disCoordinates[2]);
+
+          // Optionally, we can do some rotation of the entity
+          /*
+           * Orientation orientation = espdu.getEntityOrientation(); float psi =
+           * orientation.getPsi(); psi = psi + idx; orientation.setPsi(psi);
+           * orientation.setTheta((float)(orientation.getTheta() + idx /2.0));
+           */
+
+          // You can set other ESPDU values here, such as the velocity, acceleration,
+          // and so on.
+
+          // Marshal out the espdu object to a byte array, then send a datagram
+          // packet with that data in it.
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          DataOutputStream dos = new DataOutputStream(baos);
+          espdu.marshal(dos);
+
+          // The byte array here is the packet in DIS format. We put that into a
+          // datagram and send it.
+          byte[] data = baos.toByteArray();
+
+          DatagramPacket packet =
+              new DatagramPacket(data, data.length, destinationIp, PORT);
+
+          socket.send(packet);
+
+          location = espdu.getEntityLocation();
         }
 
-        // lon = lon + (double) ((double) idx / 1000.0);
-
-        double disCoordinates[] =
-            CoordinateConversions.getXYZfromLatLonDegrees(lat, lon, 0.0);
-        Vector3Double location = espdu.getEntityLocation();
-        location.setX(disCoordinates[0]);
-        location.setY(disCoordinates[1]);
-        location.setZ(disCoordinates[2]);
-
-        // Optionally, we can do some rotation of the entity
-        /*
-         * Orientation orientation = espdu.getEntityOrientation(); float psi = orientation.getPsi();
-         * psi = psi + idx; orientation.setPsi(psi);
-         * orientation.setTheta((float)(orientation.getTheta() + idx /2.0));
-         */
-
-        // You can set other ESPDU values here, such as the velocity, acceleration,
-        // and so on.
-
-        // Marshal out the espdu object to a byte array, then send a datagram
-        // packet with that data in it.
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        espdu.marshal(dos);
-
-        // The byte array here is the packet in DIS format. We put that into a
-        // datagram and send it.
-        byte[] data = baos.toByteArray();
-
-        DatagramPacket packet =
-            new DatagramPacket(data, data.length, destinationIp, PORT);
-
-        socket.send(packet);
-
         // Send every 1 sec. Otherwise this will be all over in a fraction of a second.
-        Thread.sleep(1000);
+        Thread.sleep(stepMillis);
 
-        location = espdu.getEntityLocation();
-
-        System.out.print("Espdu #" + idx + " EID=[" + eid.getSite() + ","
-            + eid.getApplication() + "," + eid.getEntity() + "]");
-        System.out.print(" DIS coordinates location=[" + location.getX() + ","
-            + location.getY() + "," + location.getZ() + "]");
-        double c[] =
-        {location.getX(), location.getY(), location.getZ()};
-        double lla[] = CoordinateConversions.xyzToLatLonDegrees(c);
-        System.out.println(" Location (lat/lon/alt): [" + lla[0] + ", "
-            + lla[1] + ", " + lla[2] + "]");
+        // System.out.print("Espdu #" + idx + " EID=[" + eid.getSite() + ","
+        // + eid.getApplication() + "," + eid.getEntity() + "]");
+        // System.out.print(" DIS coordinates location=[" + location.getX() + ","
+        // + location.getY() + "," + location.getZ() + "]");
+        // double c[] =
+        // {location.getX(), location.getY(), location.getZ()};
+        // double lla[] = CoordinateConversions.xyzToLatLonDegrees(c);
+        // System.out.println(" Location (lat/lon/alt): [" + lla[0] + ", "
+        // + lla[1] + ", " + lla[2] + "]");
 
       }
     }
