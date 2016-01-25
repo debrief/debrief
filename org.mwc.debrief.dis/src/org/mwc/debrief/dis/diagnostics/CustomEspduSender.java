@@ -66,7 +66,7 @@ public class CustomEspduSender
     long numParts = 1;
 
     // try to extract the step millis from the args
-    if (args.length >= 1)
+    if (args.length >= 1 && args[0].length() > 1)
     {
       stepMillis = Long.parseLong(args[0]);
     }
@@ -93,7 +93,8 @@ public class CustomEspduSender
       System.exit(0);
     }
 
-    // All system properties, passed in on the command line via -Dattribute=value
+    // All system properties, passed in on the command line via
+    // -Dattribute=value
     Properties systemProperties = System.getProperties();
 
     // IP address we send to
@@ -103,8 +104,11 @@ public class CustomEspduSender
     String portString = systemProperties.getProperty("port");
 
     // Network mode: unicast, multicast, broadcast
-    String networkModeString = systemProperties.getProperty("networkMode"); // unicast or multicast
-                                                                            // or broadcast
+    String networkModeString = systemProperties.getProperty("networkMode"); // unicast
+                                                                            // or
+                                                                            // multicast
+                                                                            // or
+                                                                            // broadcast
 
     // Set up a socket to send information
     try
@@ -177,9 +181,11 @@ public class CustomEspduSender
     // enumerations in C++ and Java, but to keep things simple we just use
     // numbers here.
     EntityType entityType = espdu.getEntityType();
-    entityType.setEntityKind((short) 1); // Platform (vs lifeform, munition, sensor, etc.)
+    entityType.setEntityKind((short) 1); // Platform (vs lifeform, munition,
+                                         // sensor, etc.)
     entityType.setCountry(225); // USA
-    entityType.setDomain((short) 1); // Land (vs air, surface, subsurface, space)
+    entityType.setDomain((short) 1); // Land (vs air, surface, subsurface,
+                                     // space)
     entityType.setCategory((short) 1); // Tank
     entityType.setSubcategory((short) 1); // M1 Abrams
     entityType.setSpec((short) 3); // M1A2 Abrams
@@ -201,7 +207,8 @@ public class CustomEspduSender
           break;
         }
 
-        // An alterative approach: actually follow the standard. It's a crazy concept,
+        // An alterative approach: actually follow the standard. It's a crazy
+        // concept,
         // but it might just work.
         int ts = disTime.getDisAbsoluteTimestamp();
         espdu.setTimestamp(ts);
@@ -225,11 +232,11 @@ public class CustomEspduSender
 
           double courseRads = thisS.courseRads;
 
-          double dLat = Math.cos(courseRads) * ((double) idx / 1000d);
-          double dLon = Math.sin(courseRads) * ((double) idx / 1000d);
+          double dLat = Math.cos(courseRads) * 0.01;
+          double dLon = Math.sin(courseRads) * 0.01;
 
-          double lon = thisS.longVal + dLon;
-          double lat = thisS.latVal + dLat;
+          thisS.longVal += dLon;
+          thisS.latVal += dLat;
 
           if ((idx % 10) == 0)
           {
@@ -241,7 +248,8 @@ public class CustomEspduSender
           // lon = lon + (double) ((double) idx / 1000.0);
 
           double disCoordinates[] =
-              CoordinateConversions.getXYZfromLatLonDegrees(lat, lon, 0.0);
+              CoordinateConversions.getXYZfromLatLonDegrees(thisS.latVal,
+                  thisS.longVal, 0.0);
           Vector3Double location = espdu.getEntityLocation();
           location.setX(disCoordinates[0]);
           location.setY(disCoordinates[1]);
@@ -254,7 +262,8 @@ public class CustomEspduSender
            * orientation.setTheta((float)(orientation.getTheta() + idx /2.0));
            */
 
-          // You can set other ESPDU values here, such as the velocity, acceleration,
+          // You can set other ESPDU values here, such as the velocity,
+          // acceleration,
           // and so on.
 
           // Marshal out the espdu object to a byte array, then send a datagram
@@ -275,12 +284,14 @@ public class CustomEspduSender
           location = espdu.getEntityLocation();
         }
 
-        // Send every 1 sec. Otherwise this will be all over in a fraction of a second.
+        // Send every 1 sec. Otherwise this will be all over in a fraction of a
+        // second.
         Thread.sleep(stepMillis);
 
         // System.out.print("Espdu #" + idx + " EID=[" + eid.getSite() + ","
         // + eid.getApplication() + "," + eid.getEntity() + "]");
-        // System.out.print(" DIS coordinates location=[" + location.getX() + ","
+        // System.out.print(" DIS coordinates location=[" + location.getX() +
+        // ","
         // + location.getY() + "," + location.getZ() + "]");
         // double c[] =
         // {location.getX(), location.getY(), location.getZ()};
