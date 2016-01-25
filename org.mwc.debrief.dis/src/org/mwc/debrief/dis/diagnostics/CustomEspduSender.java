@@ -44,9 +44,10 @@ public class CustomEspduSender
     MulticastSocket socket = null;
     DisTime disTime = DisTime.getInstance();
 
-    // ICBM coordinates for my office
+    // origin of path
     double lat = 50.1;
     double lon = -1.877000;
+    double courseRads = Math.toRadians(80d);
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
@@ -208,8 +209,20 @@ public class CustomEspduSender
         // at zero altitude. In other worlds you'd use DTED to determine the
         // local ground altitude at that lat/lon, or you'd just use ground clamping.
         // The x and y values will change, but the z value should not.
-        lon = lon + (double) ((double) idx / 1000.0);
-        System.out.println("lla=" + lat + "," + lon + ", 0.0");
+
+        double dLat = Math.cos(courseRads) * ((double) idx / 1000d);
+        double dLon = Math.sin(courseRads) * ((double) idx / 1000d);
+
+        lon = lon + dLon;
+        lat = lat + dLat;
+
+        if ((idx % 10) == 0)
+        {
+          final double newCourse = ((int) (Math.random() * 360d)) * 360d;
+          courseRads = Math.toRadians(newCourse);
+        }
+
+        // lon = lon + (double) ((double) idx / 1000.0);
 
         double disCoordinates[] =
             CoordinateConversions.getXYZfromLatLonDegrees(lat, lon, 0.0);
