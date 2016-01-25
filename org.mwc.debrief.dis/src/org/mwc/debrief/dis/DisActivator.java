@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.dis;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -73,4 +75,9 @@ public class DisActivator extends AbstractUIPlugin
     return plugin;
   }
 
+  public static void log (Throwable t)
+  {
+    IStatus status = new Status(IStatus.WARNING, PLUGIN_ID, t.getMessage(), t);
+    getDefault().getLog().log(status);
+  }
 }

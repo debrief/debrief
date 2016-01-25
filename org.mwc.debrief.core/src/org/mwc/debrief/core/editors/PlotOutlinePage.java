@@ -1467,6 +1467,10 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			{
 				public void run()
 				{
+				  if (_treeViewer.getControl().isDisposed())
+				  {
+				    return;
+				  }
 					final TreePath[] paths = _treeViewer.getExpandedTreePaths();
 
 					// ok, fire the change in the UI thread
