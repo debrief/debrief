@@ -255,13 +255,16 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
+
+        // collate the input args
+        final String[] inArgs = pathText.getText().split(" ");
+
         _simJob = new Job("Run simulation")
         {
           @Override
           protected IStatus run(IProgressMonitor monitor)
           {
-            CustomEspduSender.main(new String[]
-            {});
+            CustomEspduSender.main(inArgs);
             return Status.OK_STATUS;
           }
 
@@ -285,11 +288,11 @@ public class DisListenerView extends ViewPart
     label.setLayoutData(gd);
     label.setText("Path to input file:");
 
-    Text text = new Text(buttonComposite, SWT.SINGLE | SWT.BORDER);
+    pathText = new Text(buttonComposite, SWT.SINGLE | SWT.BORDER);
     gd = new GridData(SWT.FILL, SWT.FILL, false, false);
     gd.horizontalSpan = 2;
     gd.widthHint = 150;
-    text.setLayoutData(gd);
+    pathText.setLayoutData(gd);
 
     final Button browseButton = new Button(buttonComposite, SWT.PUSH);
     gd = new GridData(SWT.FILL, SWT.FILL, false, false);
