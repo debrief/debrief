@@ -1,10 +1,12 @@
 package org.mwc.debrief.dis.listeners.impl;
 
+import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -23,7 +25,7 @@ public class FixListener implements IDISFixListener
   public void add(long time, long id, double dLat, double dLong, double depth,
       double courseDegs, double speedMS)
   {
-    Layers layers = _context.getLayers();
+    final Layers layers = _context.getLayers();
     if (layers != null)
     {
       TrackWrapper track = (TrackWrapper) layers.findLayer("DIS_" + id);
@@ -41,7 +43,22 @@ public class FixListener implements IDISFixListener
       fw.resetName();
       track.add(fw);
       
-      layers.fireExtended(fw, track);
+      final TrackWrapper finalTrack = track;
+      
+      if(_context.getLiveUpdates())
+      {
+        final Plottable newItem = null;
+        
+        // pass the new item to the extended method in order to display it in the layer manager
+        // newItem = fw;
+        Display.getDefault().asyncExec(new Runnable(){
+
+          @Override
+          public void run()
+          {
+            layers.fireExtended(newItem, finalTrack);
+          }});
+      }
     }
 
   }
