@@ -11,19 +11,19 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
-public class FixListener implements IDISFixListener
+public class DebriefFixListener implements IDISFixListener
 {
 
   final private DISContext _context;
 
-  public FixListener(DISContext context)
+  public DebriefFixListener(DISContext context)
   {
     _context = context;
   }
 
   @Override
-  public void add(long time, long id, double dLat, double dLong, double depth,
-      double courseDegs, double speedMS)
+  public void add(long time, long exerciseId, long id, double dLat, double dLong,
+      double depth, double courseDegs, double speedMS)
   {
     final Layers layers = _context.getLayers();
     if (layers != null)
