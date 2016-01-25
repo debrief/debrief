@@ -23,7 +23,11 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
     IDISScenarioListener
 {
 
+  private static final int NULL_TIME = -1;
+
   private ChartComposite _chart;
+  
+  private long _lastTime=NULL_TIME;
 
   /**
    * @param chartComposite
@@ -41,8 +45,7 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   @Override
   public void restart()
   {
-    // TODO Auto-generated method stub
-
+    _lastTime = NULL_TIME;
   }
 
   /*
@@ -69,8 +72,17 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
           data.addSeries(new TimeSeries("Sim"));
         }
         TimeSeries series = data.getSeries("Sim");
-        series.addOrUpdate(new Second(new Date()), Math.random() * 50);
-
+        
+        long timeNow = System.currentTimeMillis();
+        
+        if(_lastTime != NULL_TIME)
+        {
+          long thisDelta = timeNow - _lastTime;
+          double thisFreq = 1000d / thisDelta;
+          series.addOrUpdate(new Second(new Date()), thisFreq);
+        }
+        
+        _lastTime = timeNow;
       }
     });
 
