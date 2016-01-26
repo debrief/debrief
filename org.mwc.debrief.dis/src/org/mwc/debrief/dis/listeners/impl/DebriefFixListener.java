@@ -2,6 +2,7 @@ package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
 
+import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
 import Debrief.Wrappers.FixWrapper;
@@ -40,7 +41,18 @@ public class DebriefFixListener implements IDISFixListener
         // ok, give it some color
         track.setColor(newCol);
 
-        layers.addThisLayer(track);
+        final TrackWrapper finalTrack = track;
+
+        // place the layer update in the display thread
+        Display.getDefault().syncExec(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            layers.addThisLayer(finalTrack);
+          }
+        });
 
       }
 
