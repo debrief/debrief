@@ -66,8 +66,7 @@ public class DebriefFixListener implements IDISFixListener
   private final java.awt.Color[] defaultColors = new java.awt.Color[]
   {java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
       java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
-      java.awt.Color.darkGray, java.awt.Color.orange, java.awt.Color.pink,
-      java.awt.Color.lightGray};
+      java.awt.Color.orange, java.awt.Color.pink};
 
   private Color colorFor(String name)
   {
