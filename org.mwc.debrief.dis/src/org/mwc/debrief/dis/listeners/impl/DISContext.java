@@ -1,5 +1,9 @@
 package org.mwc.debrief.dis.listeners.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -12,30 +16,79 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
-abstract public class DISContext
+abstract public class DISContext implements IDISContext
 {
-  Layers _myLayers = null;
+  /**
+   * the current layers object (for the current exercise)
+   * 
+   */
+  private Layers _myLayers = null;
 
+  /**
+   * keep track of layers created for this exercise
+   * 
+   */
+  final private List<Layer> _newLayers = new ArrayList<Layer>();
+
+  /**
+   * the exercise that we're currently playing
+   * 
+   */
   short _currentEx = -1;
 
-  /**
-   * whether a new plot should be created for each new replication
+  /*
+   * (non-Javadoc)
    * 
-   * @return
+   * @see org.mwc.debrief.dis.listeners.impl.IDISContext#getUseNewPlot()
    */
+  @Override
   abstract public boolean getUseNewPlot();
 
-  /**
-   * whether a UI should update on each new data item
+  /*
+   * (non-Javadoc)
    * 
-   * @return
+   * @see org.mwc.debrief.dis.listeners.impl.IDISContext#getLiveUpdates()
    */
+  @Override
   abstract public boolean getLiveUpdates();
 
-  public Layers getLayersFor(final short exerciseId)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.debrief.dis.listeners.impl.IDISContext#addThisLayer(MWC.GUI.Layer)
+   */
+  @Override
+  public void addThisLayer(final Layer layer)
+  {
+    Display.getDefault().syncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        // remember this top-level data
+        _newLayers.add(layer);
+
+        // and put it into the screen
+        if (_myLayers != null)
+        {
+          _myLayers.addThisLayerDoNotResize(layer);
+        }
+      }
+    });
+  }
+
+  /**
+   * get the layers object for this exercise (creating a new plot, if necessary)
+   * 
+   * @param exerciseId
+   *          the exercise that's being played
+   * @return the layers object for this exercise
+   */
+  private Layers getLayersFor(final short exerciseId)
   {
     // check if this is our existing exercise
     if (_currentEx != exerciseId)
@@ -78,7 +131,23 @@ abstract public class DISContext
       }
       else
       {
-        // ok, reuse the current one - no action required
+        Display.getDefault().syncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            if (_myLayers != null)
+            {
+              // and clear the new layers
+              Iterator<Layer> lIter = _newLayers.iterator();
+              while (lIter.hasNext())
+              {
+                Layer thisL = (Layer) lIter.next();
+                _myLayers.removeThisLayer(thisL);
+              }
+            }
+          }
+        });
       }
 
       _currentEx = exerciseId;
@@ -160,13 +229,22 @@ abstract public class DISContext
 
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.debrief.dis.listeners.impl.IDISContext#getFitToData()
+   */
+  @Override
   abstract public boolean getFitToData();
 
-  public void fitToWindow()
+  /**
+   * direct the plot to resize to show all visible data
+   * 
+   */
+  protected void fitToWindow()
   {
     Display.getDefault().syncExec(new Runnable()
     {
-
       @Override
       public void run()
       {
@@ -187,8 +265,14 @@ abstract public class DISContext
 
   private boolean updating = false;
 
-  public void
-      fireUpdate(final Plottable newItem, final TrackWrapper finalTrack)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.debrief.dis.listeners.impl.IDISContext#fireUpdate(MWC.GUI.Plottable,
+   * MWC.GUI.Layer)
+   */
+  @Override
+  public void fireUpdate(final Plottable newItem, final Layer layer)
   {
     if (updating)
     {
@@ -206,7 +290,7 @@ abstract public class DISContext
         @Override
         public void run()
         {
-          _myLayers.fireExtended(newItem, finalTrack);
+          _myLayers.fireExtended(newItem, layer);
 
           // hmm, do we need to resize?
           if (getFitToData())
@@ -217,5 +301,28 @@ abstract public class DISContext
       });
       updating = false;
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.debrief.dis.listeners.impl.IDISContext#findLayer(short, java.lang.String)
+   */
+  @Override
+  public TrackWrapper findLayer(short exerciseId, String theName)
+  {
+    TrackWrapper res = null;
+
+    /*
+     * get the layers, creating a new plot if necessary
+     */
+    Layers tgt = getLayersFor(exerciseId);
+
+    if (tgt != null)
+    {
+      res = (TrackWrapper) tgt.findLayer(theName);
+    }
+
+    return res;
   }
 }

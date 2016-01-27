@@ -54,6 +54,7 @@ import org.mwc.debrief.dis.core.IDISPreferences;
 import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
+import org.mwc.debrief.dis.listeners.impl.IDISContext;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
@@ -129,7 +130,7 @@ public class DisListenerView extends ViewPart
 
   private void setupListeners(IDISModule module)
   {
-    DISContext context = new DISContext()
+    IDISContext context = new DISContext()
     {
 
       @Override
