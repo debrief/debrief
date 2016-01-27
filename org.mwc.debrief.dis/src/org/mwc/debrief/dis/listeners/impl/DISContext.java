@@ -40,6 +40,12 @@ abstract public class DISContext implements IDISContext
    */
   short _currentEx = -1;
 
+  /**
+   * whether we are currently processing an update
+   * 
+   */
+  private boolean updating = false;
+
   /*
    * (non-Javadoc)
    * 
@@ -262,8 +268,6 @@ abstract public class DISContext implements IDISContext
       }
     });
   }
-
-  private boolean updating = false;
 
   /*
    * (non-Javadoc)
