@@ -396,10 +396,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     _theLabel.setFixedOffset(new java.awt.Dimension(4, 4));
 
     // orient the label according to the current heading
-    _theLabel.setRelativeLocation(orientationFor(theFix.getCourse()));
-
-    // reset (recalculate) the name bit
-    // resetName();
+    resetLabelLocation();
 
     // hide the name, by default
     _showLabel = Boolean.FALSE;
@@ -421,6 +418,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
       _myArea = new WorldArea(wl, wl);
     }
 
+  }
+
+  public void resetLabelLocation()
+  {
+    _theLabel.setRelativeLocation(orientationFor(getCourse()));
   }
 
   private static int orientationFor(double courseRads)

@@ -4034,6 +4034,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             currFw.getLocation().subtract(prevFw.getLocation());
         prevFw.getFix().setCourse(wv.getBearing());
 
+        // also, set the correct label alignment
+        currFw.resetLabelLocation();
+        
         // calculate the speed
         // get distance in meters
         final WorldDistance wd = new WorldDistance(wv);
