@@ -420,47 +420,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
   }
 
-  public void resetLabelLocation()
-  {
-    _theLabel.setRelativeLocation(orientationFor(getCourse()));
-  }
-
-  private static int orientationFor(double courseRads)
-  {
-    final int res;
-
-    double degs = Math.toDegrees(courseRads);
-
-    // put it in the correct domain
-    while (degs < 0)
-    {
-      degs += 360;
-    }
-    while (degs > 360)
-    {
-      degs -= 360;
-    }
-
-    if (degs >= 295 || degs <= 65)
-    {
-      res = LocationPropertyEditor.LEFT;
-    }
-    else if (degs <= 115)
-    {
-      res = LocationPropertyEditor.TOP;
-    }
-    else if (degs <= 245)
-    {
-      res = LocationPropertyEditor.RIGHT;
-    }
-    else
-    {
-      res = LocationPropertyEditor.BOTTOM;
-    }
-
-    return res;
-  }
-
   /**
    * instruct this object to clear itself out, ready for ditching
    * 
@@ -1287,13 +1246,13 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
           orientationFor(Math.toRadians(0)));
       assertEquals("correct orient", LocationPropertyEditor.LEFT,
           orientationFor(Math.toRadians(20)));
-      assertEquals("correct orient", LocationPropertyEditor.TOP,
+      assertEquals("correct orient", LocationPropertyEditor.LEFT,
           orientationFor(Math.toRadians(60)));
       assertEquals("correct orient", LocationPropertyEditor.TOP,
           orientationFor(Math.toRadians(80)));
       assertEquals("correct orient", LocationPropertyEditor.TOP,
           orientationFor(Math.toRadians(115)));
-      assertEquals("correct orient", LocationPropertyEditor.TOP,
+      assertEquals("correct orient", LocationPropertyEditor.RIGHT,
           orientationFor(Math.toRadians(135)));
       assertEquals("correct orient", LocationPropertyEditor.RIGHT,
           orientationFor(Math.toRadians(160)));
@@ -1490,4 +1449,59 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     return _userLabelSupplied;
 
   }
+
+  /**
+   * the course may have changed, or been assigned. So recalculate where the label should be
+   */
+  final public void resetLabelLocation()
+  {
+    _theLabel.setRelativeLocation(orientationFor(getCourse()));
+  }
+
+  /**
+   * intelligently locate the text label. Note, this isn't exactly according to the quadrants, since
+   * we know the label is wider than it is tall, so it's suitable for courses that are more
+   * horizontal than vertical
+   * 
+   * @param courseRads
+   *          the current course (Rads)
+   * @return the label orientation to use
+   */
+  private static int orientationFor(double courseRads)
+  {
+    final int res;
+
+    double degs = Math.toDegrees(courseRads);
+
+    // put it in the correct domain
+    while (degs < 0)
+    {
+      degs += 360;
+    }
+    while (degs > 360)
+    {
+      degs -= 360;
+    }
+
+    // ok, now decide the quadrant
+    if (degs >= 295 || degs <= 65)
+    {
+      res = LocationPropertyEditor.LEFT;
+    }
+    else if (degs <= 115)
+    {
+      res = LocationPropertyEditor.TOP;
+    }
+    else if (degs <= 245)
+    {
+      res = LocationPropertyEditor.RIGHT;
+    }
+    else
+    {
+      res = LocationPropertyEditor.BOTTOM;
+    }
+
+    return res;
+  }
+
 }
