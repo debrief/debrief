@@ -604,7 +604,7 @@ public class TextLabel extends PlainShape implements Editable
 			break;
 		case LocationPropertyEditor.RIGHT:
 			// res = new Point(wid/2 + horizBalance, -(blockHeight / 2));
-			res = new Point(horizBalance + 4, -(blockHeight / 2));
+			res = new Point(horizBalance + 4, -(blockHeight / 2) + 2);
 			res.translate(_theFixedOffset.width / 2, verticalBalance);
 			break;
 		case LocationPropertyEditor.TOP:
