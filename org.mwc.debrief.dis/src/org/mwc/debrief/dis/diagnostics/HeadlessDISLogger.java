@@ -84,7 +84,7 @@ public class HeadlessDISLogger
           double dLong, double depth, double courseDegs, double speedMS)
       {
         System.out.println("STATE: time:" + time + " eid:" + exerciseId
-            + " entity:" + id + "dLat:" + dLat + " dLon:" + dLong + " depth:"
+            + " entity:" + id + " dLat:" + dLat + " dLon:" + dLong + " depth:"
             + depth + " course:" + courseDegs + " speed" + speedMS);
       }
     });
