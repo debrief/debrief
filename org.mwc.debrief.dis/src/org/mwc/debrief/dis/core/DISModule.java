@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mwc.debrief.dis.listeners.IDISDetonationListener;
+import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
+import edu.nps.moves.dis.DetonationPdu;
+import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
+import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.Orientation;
 import edu.nps.moves.dis.Pdu;
 import edu.nps.moves.dis.Vector3Double;
@@ -20,6 +25,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 {
   final private IDISPreferences _disPrefs;
   private List<IDISFixListener> _fixListeners = new ArrayList<IDISFixListener>();
+  private List<IDISEventListener> _eventListeners = new ArrayList<IDISEventListener>();
+  private List<IDISDetonationListener> _detonationListeners = new ArrayList<IDISDetonationListener>();
   private List<IDISGeneralPDUListener> _generalListeners = new ArrayList<IDISGeneralPDUListener>();
   private List<IDISScenarioListener> _scenarioListeners = new ArrayList<IDISScenarioListener>();
   private boolean _newStart = false;
@@ -33,6 +40,19 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   public void addFixListener(IDISFixListener handler)
   {
     _fixListeners.add(handler);
+  }
+  
+  @Override
+  public void addEventListener(IDISEventListener handler)
+  {
+    _eventListeners.add(handler);
+  }
+  
+
+  @Override
+  public void addDetonationListener(IDISDetonationListener handler)
+  {
+    _detonationListeners.add(handler);
   }
 
   @Override
@@ -72,6 +92,44 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       thisF.add(time, eid, hisId, worldCoords[0], worldCoords[1],
           worldCoords[2], orientation.getPhi(), velocity.getX());
     }
+  }
+
+  private void handleEvent(EventReportPdu pdu)
+  {
+    short eid = pdu.getExerciseID();
+    long time = pdu.getTimestamp();
+    int originator = pdu.getOriginatingEntityID().getEntity();
+    
+    Iterator<IDISEventListener> eIter = _eventListeners.iterator();
+    while (eIter.hasNext())
+    {
+      IDISEventListener thisE = (IDISEventListener) eIter.next();
+      thisE.add(time, eid, originator);
+    }
+        
+  }
+  
+  private void handleDetonation(DetonationPdu pdu)
+  {
+    short eid = pdu.getExerciseID();
+    Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
+    Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
+    double[] locArr = new double[]
+    { eLoc.getX(), eLoc.getY(), eLoc.getZ() };
+    double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+    long time = pdu.getTimestamp();
+    int hisId = pdu.getFiringEntityID().getEntity();
+    
+    System.out.println(wLoc.getX() + ", " + wLoc.getY() + ", " + wLoc.getZ());
+    
+    Iterator<IDISDetonationListener> dIter = _detonationListeners.iterator();
+    while (dIter.hasNext())
+    {
+      IDISDetonationListener thisD =
+          (IDISDetonationListener) dIter.next();
+      thisD.add(time, eid, hisId, worldCoords[0], worldCoords[1], worldCoords[2]);      
+    }
+    
   }
 
   @Override
@@ -119,10 +177,22 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       handleFix((EntityStatePdu) data);
       break;
     }
+    case 3:
+    {
+      handleDetonation((DetonationPdu) data);
+      break;
+    }
+    case 21:
+    {
+      handleEvent((EventReportPdu) data);
+      break;
+    }
     default:
-      throw new RuntimeException("PDU type not handled:" + type);
+      System.err.println("PDU type not handled:" + type);
     }
   }
+
+  
 
   @Override
   public void complete(String reason)
