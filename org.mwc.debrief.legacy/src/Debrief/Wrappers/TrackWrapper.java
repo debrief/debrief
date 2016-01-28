@@ -573,6 +573,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       FixWrapper existingFix = (FixWrapper) tsPts.nextElement();
       FixWrapper newF = new FixWrapper(existingFix.getFix());
+      
+      // also duplicate the label
+      newF.setLabel(existingFix.getLabel());
+      
       target.addFix(newF);
     }
   }
