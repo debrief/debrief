@@ -110,12 +110,19 @@ public class NetworkDISProvider implements IPDUProvider
 
         Pdu pdu = pduFactory.createPdu(packet.getData());
 
-        // share the good news
-        Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
-        while (gIter.hasNext())
+        if (pdu != null)
         {
-          IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
-          git.logPDU(pdu);
+          // share the good news
+          Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
+          while (gIter.hasNext())
+          {
+            IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
+            git.logPDU(pdu);
+          }
+        }
+        else
+        {
+          System.err.println("PDU not recognised");
         }
 
       } // end while
@@ -126,8 +133,7 @@ public class NetworkDISProvider implements IPDUProvider
     } // End try
     catch (Exception e)
     {
-
-      System.out.println(e);
+      e.printStackTrace();
     }
   }
 
