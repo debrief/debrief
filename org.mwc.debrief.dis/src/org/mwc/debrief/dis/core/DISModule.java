@@ -12,7 +12,6 @@ import org.mwc.debrief.dis.listeners.IDISScenarioListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
 import edu.nps.moves.dis.DetonationPdu;
-import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.Orientation;
@@ -119,8 +118,6 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
     long time = pdu.getTimestamp();
     int hisId = pdu.getFiringEntityID().getEntity();
-    
-    System.out.println(wLoc.getX() + ", " + wLoc.getY() + ", " + wLoc.getZ());
     
     Iterator<IDISDetonationListener> dIter = _detonationListeners.iterator();
     while (dIter.hasNext())

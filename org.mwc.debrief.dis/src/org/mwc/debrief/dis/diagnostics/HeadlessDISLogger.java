@@ -7,6 +7,8 @@ import java.io.IOException;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
+import org.mwc.debrief.dis.listeners.IDISDetonationListener;
+import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
@@ -21,16 +23,16 @@ public class HeadlessDISLogger
   public static void main(String[] args)
   {
     // do we have a root?
-    String root = "/tmp";
+    String root = System.getProperty("java.io.tmpdir");
 
     // do we have an IP address?
     String address = CustomEspduSender.DEFAULT_MULTICAST_GROUP;
 
     // do we have a PORT?
     int port = CustomEspduSender.PORT;
-    
+
     // TODO: retrieve the above params from the args
-    
+
     // TODO: add support for outputting the expected args
 
     // setup the output destinations
@@ -45,8 +47,8 @@ public class HeadlessDISLogger
     }
   }
 
-  public HeadlessDISLogger(final String address, final int port, final String root,
-      boolean toFile, boolean toScreen)
+  public HeadlessDISLogger(final String address, final int port,
+      final String root, boolean toFile, boolean toScreen)
   {
     IDISPreferences prefs = new TestPrefs(true, "file.txt");
     IDISModule subject = new DISModule(prefs);
@@ -55,13 +57,44 @@ public class HeadlessDISLogger
     subject.setProvider(provider);
 
     // setup our loggers
-    subject.addFixListener(new FixListener(root, toFile, toScreen));
+    subject.addFixListener(new FixToFileListener(root, toFile, toScreen));
+    subject.addDetonationListener(new IDISDetonationListener()
+    {
+      @Override
+      public void add(long time, short eid, int hisId, double dLat,
+          double dLon, double depth)
+      {
+        System.out.println("DETONATION: time:" + time + " eid:" + eid
+            + " hisID:" + hisId + " lat:" + dLat + " lon:" + dLon + " depth:"
+            + depth);
+      }
+    });
+    subject.addEventListener(new IDISEventListener()
+    {
+      @Override
+      public void add(long time, short exerciseId, long id)
+      {
+        System.out.println("EVENT: time: " + time + " eid:" + exerciseId
+            + " hisId:" + id);
+      }
+    });
+    subject.addFixListener(new IDISFixListener()
+    {
+      @Override
+      public void add(long time, short exerciseId, long id, double dLat,
+          double dLong, double depth, double courseDegs, double speedMS)
+      {
+        System.out.println("STATE: time:" + time + " eid:" + exerciseId
+            + " entity:" + id + "dLat:" + dLat + " dLon:" + dLong + " depth:"
+            + depth + " course:" + courseDegs + " speed" + speedMS);
+      }
+    });
 
     // tell the network provider to start
     provider.attach();
   }
 
-  protected class CoreListener
+  protected class CoreFileListener
   {
     final private String _path;
     private FileWriter _outF;
@@ -80,7 +113,7 @@ public class HeadlessDISLogger
      * @param toScreen
      *          whether to write to standard output
      */
-    private CoreListener(String root, boolean toFile, boolean toScreen,
+    private CoreFileListener(String root, boolean toFile, boolean toScreen,
         String filename, String header)
     {
       _path = root;
@@ -139,10 +172,11 @@ public class HeadlessDISLogger
     }
   }
 
-  protected class FixListener extends CoreListener implements IDISFixListener
+  protected class FixToFileListener extends CoreFileListener implements
+      IDISFixListener
   {
 
-    public FixListener(String root, boolean toFile, boolean toScreen)
+    public FixToFileListener(String root, boolean toFile, boolean toScreen)
     {
       super(root, toFile, toScreen, "fix.csv",
           "time, id, dLat, dLong, depth, courseDegs, speedMS");
