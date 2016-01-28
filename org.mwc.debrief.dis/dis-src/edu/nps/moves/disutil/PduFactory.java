@@ -194,7 +194,10 @@ public class PduFactory {
                 aPdu = new StopFreezePdu();
                 aPdu.unmarshal(dis);
                 break;
-
+            case EVENT_REPORT:
+              aPdu = new EventReportPdu();
+              aPdu.unmarshal(dis);
+              break;
             default:
                 logger.log(Level.INFO, "PDU not implemented. Type = " + pduType + "\n");
                 if (pduTypeEnum != null) {
@@ -293,6 +296,10 @@ public class PduFactory {
 
             case ACTION_REQUEST:
                 aPdu = new ActionRequestPdu();
+                break;
+                
+            case EVENT_REPORT:
+                aPdu = new EventReportPdu();
                 break;
 
             default:
