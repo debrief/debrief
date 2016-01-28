@@ -737,7 +737,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   {
     return _theFix;
   }
-
+  
   @FireReformatted
   public void resetName()
   {
@@ -1174,6 +1174,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
       final MethodDescriptor[] mds =
           {method(c, "resetColor", null, "Reset Color"),
               method(c, "resetName", null, "Reset Label"),
+              method(c, "resetLabelLocation", null, "Reset label location"),
               method(c, "exportThis", null, "Export Shape")};
       return mds;
     }
@@ -1453,6 +1454,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   /**
    * the course may have changed, or been assigned. So recalculate where the label should be
    */
+  @FireReformatted
   final public void resetLabelLocation()
   {
     _theLabel.setRelativeLocation(orientationFor(getCourse()));
