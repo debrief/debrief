@@ -22,7 +22,6 @@ import edu.nps.moves.disutil.CoordinateConversions;
 
 public class DISModule implements IDISModule, IDISGeneralPDUListener
 {
-  final private IDISPreferences _disPrefs;
   private List<IDISFixListener> _fixListeners = new ArrayList<IDISFixListener>();
   private List<IDISEventListener> _eventListeners = new ArrayList<IDISEventListener>();
   private List<IDISDetonationListener> _detonationListeners = new ArrayList<IDISDetonationListener>();
@@ -30,9 +29,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private List<IDISScenarioListener> _scenarioListeners = new ArrayList<IDISScenarioListener>();
   private boolean _newStart = false;
 
-  public DISModule(final IDISPreferences disPrefs)
+  public DISModule()
   {
-    _disPrefs = disPrefs;
   }
 
   @Override
@@ -112,6 +110,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   {
     short eid = pdu.getExerciseID();
     Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
+    @SuppressWarnings("unused")
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
     double[] locArr = new double[]
     { eLoc.getX(), eLoc.getY(), eLoc.getZ() };
@@ -133,12 +132,6 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   public void addGeneralPDUListener(IDISGeneralPDUListener listener)
   {
     _generalListeners.add(listener);
-  }
-
-  @Override
-  public IDISPreferences getPrefs()
-  {
-    return _disPrefs;
   }
 
   @Override

@@ -50,8 +50,7 @@ public class HeadlessDISLogger
   public HeadlessDISLogger(final String address, final int port,
       final String root, boolean toFile, boolean toScreen)
   {
-    IDISPreferences prefs = new TestPrefs(true, "file.txt");
-    IDISModule subject = new DISModule(prefs);
+    IDISModule subject = new DISModule();
     IDISNetworkPrefs netPrefs = new CoreNetPrefs(address, port);
     IPDUProvider provider = new NetworkDISProvider(netPrefs);
     subject.setProvider(provider);

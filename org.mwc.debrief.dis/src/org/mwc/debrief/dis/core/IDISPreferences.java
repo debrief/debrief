@@ -7,10 +7,4 @@ public interface IDISPreferences
 	 * @return yes/no
 	 */
 	public boolean reusePlot();
-	
-	/** path to the current scenario input file
-	 * 
-	 * @return
-	 */
-	public String inputFile();
 }

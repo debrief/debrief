@@ -47,6 +47,15 @@ public class NetworkDISProvider implements IPDUProvider
     _gen.add(listener);
   }
 
+  /** get the network preferences
+   * 
+   * @return
+   */
+  public IDISNetworkPrefs getPrefs()
+  {
+    return _myPrefs;
+  }
+  
   /**
    * start listening
    * 

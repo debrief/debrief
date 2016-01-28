@@ -30,6 +30,8 @@ public class DisActivator extends AbstractUIPlugin
 
   public static final String PATH_TO_SIMULATION_EXECUTABLE =
       "pathToSimulationExecutable";
+  public static final String PATH_TO_INPUT_FILE =
+      "pathToSimulationInput";
   public static final String IP_ADDRESS = "ipAddress";
   public static final String PORT = "port";
 

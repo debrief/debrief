@@ -11,8 +11,6 @@ public interface IDISModule
 {
   void setProvider(IPDUProvider provider);
 
-  IDISPreferences getPrefs();
-
   // /////////////
   // LISTENERS
   // /////////////

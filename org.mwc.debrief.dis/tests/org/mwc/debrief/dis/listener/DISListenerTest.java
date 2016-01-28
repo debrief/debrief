@@ -24,19 +24,9 @@ public class DISListenerTest
 {
 
   @Test
-  public void testConfig()
-  {
-    TestPrefs tp = new TestPrefs(true, "path.rep");
-    IDISModule subject = new DISModule(tp);
-    assertNotNull(subject.getPrefs());
-    assertNotNull(subject);
-  }
-
-  @Test
   public void testScenarioStateMonitoring()
   {
-    TestPrefs tp = new TestPrefs(true, "path.rep");
-    IDISModule subject = new DISModule(tp);
+    IDISModule subject = new DISModule();
     IPDUProvider provider = new DummyDataProvider(3, 5, 3000, 5000);
 
     TestFixListener fixL = new TestFixListener();
@@ -69,8 +59,7 @@ public class DISListenerTest
   @Test
   public void testActivityMonitoring()
   {
-    TestPrefs tp = new TestPrefs(true, "path.rep");
-    IDISModule subject = new DISModule(tp);
+    IDISModule subject = new DISModule();
     IPDUProvider provider = new DummyDataProvider(3, 5, 3000, 5000);
 
     TestFixListener fixL = new TestFixListener();
@@ -105,8 +94,7 @@ public class DISListenerTest
   @Test
   public void testESHandling()
   {
-    TestPrefs tp = new TestPrefs(true, "path.rep");
-    IDISModule subject = new DISModule(tp);
+    IDISModule subject = new DISModule();
     IPDUProvider provider = new DummyDataProvider(3, 10, 3000, 5000);
     TestFixListener fixL = new TestFixListener();
 

@@ -16,16 +16,16 @@ package org.mwc.debrief.dis.ui.views;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -51,13 +51,14 @@ import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.core.IDISPreferences;
-import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
 import org.mwc.debrief.dis.listeners.impl.IDISContext;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
+import org.mwc.debrief.dis.runner.SimulationRunner;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
+import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
 public class DisListenerView extends ViewPart
@@ -66,8 +67,8 @@ public class DisListenerView extends ViewPart
   private Button connectButton;
   private Button disconnectButton;
   private Button stopButton;
-  private Button pauseButton;
-  private Button resumeButton;
+//  private Button pauseButton;
+//  private Button resumeButton;
   private Button playButton;
   private ChartComposite chartComposite;
   private Text pathText;
@@ -88,12 +89,17 @@ public class DisListenerView extends ViewPart
    * we need to access the setting of new plots from outside the UI thread, so store it here.
    */
   private boolean _newPlotPerReplication = false;
+  /**
+   * we need to access the setting of fit to data from outside the UI thread, so store it here.
+   */
   private boolean _fitToDataValue = true;
+  private DebriefDISSimulatorPrefs _simPrefs;
+  protected SimulationRunner _simulationRunner;
 
   private void initModule()
   {
-    // IDISNetworkPrefs netPrefs =
-    // new CoreNetPrefs(EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
+
+    _simPrefs = new DebriefDISSimulatorPrefs();
 
     // get the debrief prefs
     IDISNetworkPrefs netPrefs = new DebriefDISNetPrefs();
@@ -101,29 +107,14 @@ public class DisListenerView extends ViewPart
     // get the network data source
     _netProvider = new NetworkDISProvider(netPrefs);
 
-    // we can get the other prefs ourselves
-    IDISPreferences prefs = new IDISPreferences()
-    {
-
-      @Override
-      public boolean reusePlot()
-      {
-        return resumeButton.getSelection();
-      }
-
-      @Override
-      public String inputFile()
-      {
-        return pathText.getText();
-      }
-    };
-
-    _disModule = new DISModule(prefs);
+    _disModule = new DISModule();
     _disModule.setProvider(_netProvider);
 
     PerformanceGraph perfGraph = new PerformanceGraph(chartComposite);
     _disModule.addGeneralPDUListener(perfGraph);
     _disModule.addScenarioListener(perfGraph);
+
+    _simulationRunner = new SimulationRunner(_simPrefs);
 
     setupListeners(_disModule);
   }
@@ -206,7 +197,7 @@ public class DisListenerView extends ViewPart
 
     final Link link = new Link(buttonComposite, SWT.NONE);
     gd = new GridData(SWT.END, SWT.FILL, false, false);
-    gd.horizontalSpan = 4;
+    gd.horizontalSpan = 2;
     link.setLayoutData(gd);
     link.setText("<a href=\"id\">Server Prefs</a>");
     link.addSelectionListener(new SelectionAdapter()
@@ -228,9 +219,10 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        CustomEspduSender.terminate();
-
-        _simJob.cancel();
+        // CustomEspduSender.terminate();
+        //
+        // _simJob.cancel();
+        _simulationRunner.stop();
 
         stopButton.setEnabled(false);
         playButton.setEnabled(true);
@@ -238,29 +230,27 @@ public class DisListenerView extends ViewPart
 
     });
 
-    pauseButton = createButton(buttonComposite, "Pause");
-    pauseButton.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        // FIXME pause
-      }
-
-    });
-
-    resumeButton = createButton(buttonComposite, "Resume");
-    resumeButton.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        // FIXME resume
-      }
-
-    });
+//    pauseButton = createButton(buttonComposite, "Pause");
+//    pauseButton.addSelectionListener(new SelectionAdapter()
+//    {
+//
+//      @Override
+//      public void widgetSelected(SelectionEvent e)
+//      {
+//      }
+//
+//    });
+//
+//    resumeButton = createButton(buttonComposite, "Resume");
+//    resumeButton.addSelectionListener(new SelectionAdapter()
+//    {
+//
+//      @Override
+//      public void widgetSelected(SelectionEvent e)
+//      {
+//      }
+//
+//    });
 
     playButton = createButton(buttonComposite, "Play");
     playButton.addSelectionListener(new SelectionAdapter()
@@ -270,21 +260,21 @@ public class DisListenerView extends ViewPart
       public void widgetSelected(SelectionEvent e)
       {
 
-        // collate the input args
-        final String[] inArgs = pathText.getText().split(" ");
+        _simulationRunner.run();
 
-        _simJob = new Job("Run simulation")
-        {
-          @Override
-          protected IStatus run(IProgressMonitor monitor)
-          {
-            CustomEspduSender.main(inArgs);
-            return Status.OK_STATUS;
-          }
-
-        };
-        _simJob.setUser(false);
-        _simJob.schedule();
+        // _simJob = new Job("Run simulation")
+        // {
+        // @Override
+        // protected IStatus run(IProgressMonitor monitor)
+        // {
+        //
+        // // CustomEspduSender.main(inArgs);
+        // return Status.OK_STATUS;
+        // }
+        //
+        // };
+        // _simJob.setUser(false);
+        // _simJob.schedule();
 
         playButton.setEnabled(false);
         stopButton.setEnabled(true);
@@ -293,8 +283,8 @@ public class DisListenerView extends ViewPart
     });
 
     stopButton.setEnabled(false);
-    pauseButton.setEnabled(false);
-    resumeButton.setEnabled(false);
+//    pauseButton.setEnabled(false);
+//    resumeButton.setEnabled(false);
     disconnectButton.setEnabled(false);
 
     Label label = new Label(buttonComposite, SWT.NONE);
@@ -307,6 +297,24 @@ public class DisListenerView extends ViewPart
     gd.horizontalSpan = 2;
     gd.widthHint = 150;
     pathText.setLayoutData(gd);
+    pathText.addModifyListener(new ModifyListener()
+    {
+
+      @Override
+      public void modifyText(ModifyEvent e)
+      {
+        String newText = pathText.getText();
+        if (newText != null)
+        {
+          IPreferenceStore store =
+              DisActivator.getDefault().getPreferenceStore();
+          store.setValue(DisActivator.PATH_TO_INPUT_FILE, pathText.getText());
+        }
+      }
+    });
+    IPreferenceStore store =
+        DisActivator.getDefault().getPreferenceStore();
+    pathText.setText(store.getString(DisActivator.PATH_TO_INPUT_FILE));
 
     final Button browseButton = new Button(buttonComposite, SWT.PUSH);
     gd = new GridData(SWT.FILL, SWT.FILL, false, false);
