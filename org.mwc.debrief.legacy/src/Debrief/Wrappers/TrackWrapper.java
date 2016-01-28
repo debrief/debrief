@@ -573,6 +573,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       FixWrapper existingFix = (FixWrapper) tsPts.nextElement();
       FixWrapper newF = new FixWrapper(existingFix.getFix());
+      
+      // also duplicate the label
+      newF.setLabel(existingFix.getLabel());
+      
       target.addFix(newF);
     }
   }
@@ -4034,6 +4038,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             currFw.getLocation().subtract(prevFw.getLocation());
         prevFw.getFix().setCourse(wv.getBearing());
 
+        // also, set the correct label alignment
+        currFw.resetLabelLocation();
+        
         // calculate the speed
         // get distance in meters
         final WorldDistance wd = new WorldDistance(wv);
