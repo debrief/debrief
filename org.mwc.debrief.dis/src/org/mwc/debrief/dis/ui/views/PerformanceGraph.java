@@ -6,12 +6,14 @@ package org.mwc.debrief.dis.ui.views;
 import java.util.Date;
 
 import org.eclipse.swt.widgets.Display;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
+import org.mwc.debrief.dis.listeners.impl.PerformanceQueue;
 
 import edu.nps.moves.dis.Pdu;
 
@@ -22,12 +24,9 @@ import edu.nps.moves.dis.Pdu;
 public class PerformanceGraph implements IDISGeneralPDUListener,
     IDISScenarioListener
 {
-
-  private static final int NULL_TIME = -1;
-
   private ChartComposite _chart;
-  
-  private long _lastTime=NULL_TIME;
+
+  PerformanceQueue perfQ = new PerformanceQueue(5000);
 
   /**
    * @param chartComposite
@@ -45,7 +44,7 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   @Override
   public void restart()
   {
-    _lastTime = NULL_TIME;
+    perfQ.clear();
   }
 
   /*
@@ -56,35 +55,54 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   @Override
   public void logPDU(Pdu pdu)
   {
+    perfQ.add(new Date().getTime());
 
-    Display.getDefault().asyncExec(new Runnable()
+    Runnable doUpdate = new Runnable()
     {
-
       @Override
       public void run()
       {
-        TimeSeriesCollection data =
-            (TimeSeriesCollection) _chart.getChart().getXYPlot().getDataset();
+        Display.getDefault().syncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
 
-        // do we have any data?
-        if (data.getSeriesCount() == 0)
+            double freq = perfQ.freqAt(new Date().getTime()) * 1000d;
+            TimeSeriesCollection data =
+                (TimeSeriesCollection) _chart.getChart().getXYPlot()
+                    .getDataset();
+
+            // do we have any data?
+            if (data.getSeriesCount() == 0)
+            {
+              data.addSeries(new TimeSeries("Sim"));
+            }
+            TimeSeries series = data.getSeries("Sim");
+
+            series.addOrUpdate(new Second(new Date()), freq);
+
+            // clear them out?
+            DateAxis tAxis =
+                (DateAxis) _chart.getChart().getXYPlot().getDomainAxis();
+            tAxis.setRange(new Date(new Date().getTime() - 20000), new Date());
+          }
+
+        });
+        try
         {
-          data.addSeries(new TimeSeries("Sim"));
+          Thread.sleep(1000);
         }
-        TimeSeries series = data.getSeries("Sim");
-        
-        long timeNow = System.currentTimeMillis();
-        
-        if(_lastTime != NULL_TIME)
+        catch (InterruptedException e)
         {
-          long thisDelta = timeNow - _lastTime;
-          double thisFreq = 1000d / thisDelta;
-          series.addOrUpdate(new Second(new Date()), thisFreq);
+          e.printStackTrace();
         }
-        
-        _lastTime = timeNow;
       }
-    });
+    };
+
+    Thread updateThread = new Thread(doUpdate);
+    updateThread.setDaemon(true);
+    updateThread.start();
 
   }
 

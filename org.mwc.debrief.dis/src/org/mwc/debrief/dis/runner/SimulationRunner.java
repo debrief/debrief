@@ -3,6 +3,11 @@ package org.mwc.debrief.dis.runner;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 
 public class SimulationRunner
@@ -10,6 +15,7 @@ public class SimulationRunner
 
   final private DebriefDISSimulatorPrefs _prefs;
   private Process _process;
+  private Job _simJob;
 
   public SimulationRunner(DebriefDISSimulatorPrefs simPrefs)
   {
@@ -25,6 +31,21 @@ public class SimulationRunner
     if (!exe.exists())
     {
       System.err.println("Executable not found");
+      
+      // FOR TESTING - FIRE OUR GENERATOR
+       _simJob = new Job("Run simulation")
+      {
+        @Override
+        protected IStatus run(IProgressMonitor monitor)
+        {
+          CustomEspduSender.main(new String[]{"600", "4"});
+          return Status.OK_STATUS;
+        }
+
+      };
+      _simJob.setUser(false);
+      _simJob.schedule();
+
     }
     else if (!input.exists())
     {
@@ -80,6 +101,13 @@ public class SimulationRunner
     {
       _process.destroy();
       _process = null;
+    }
+    
+    // TESTING
+    if(_simJob != null)
+    {
+      _simJob.cancel();
+      _simJob = null;
     }
   }
 
