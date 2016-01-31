@@ -989,12 +989,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // _locationListener);
 
     // tell any layer-level listeners about it
-    List<INewItemListener> itemListeners = _myLayers.getNewItemListeners();
-    Iterator<INewItemListener> iter = itemListeners.iterator();
-    while (iter.hasNext())
+    if (_myLayers != null)
     {
-      Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-      newI.newItem(this, theFix);
+      List<INewItemListener> itemListeners = _myLayers.getNewItemListeners();
+      Iterator<INewItemListener> iter = itemListeners.iterator();
+      while (iter.hasNext())
+      {
+        Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
+        newI.newItem(this, theFix);
+      }
     }
   }
 
