@@ -4239,8 +4239,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     // have a go at a format
 
-    _myLayers.addNewItemListener(new CoreFormatItemListener("Show Symbols", this.getName(), null,
-        15 * 60 * 1000)
+    _myLayers.addNewItemListener(new CoreFormatItemListener("Show Symbols",
+        this.getName(), null, 15 * 60 * 1000, true)
     {
       @Override
       protected void formatTrack(TrackWrapper track, HiResDate interval)
@@ -4255,8 +4255,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
     });
 
-    _myLayers.addNewItemListener(new CoreFormatItemListener("Show labels", this.getName(), null,
-        30 * 60 * 1000)
+    _myLayers.addNewItemListener(new CoreFormatItemListener("Show labels", this
+        .getName(), null, 30 * 60 * 1000, true)
     {
       @Override
       protected void formatTrack(TrackWrapper track, HiResDate interval)
@@ -4271,8 +4271,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
     });
 
-    _myLayers.addNewItemListener(new CoreFormatItemListener("Show arrows", this.getName(), null,
-        10 * 60 * 1000)
+    _myLayers.addNewItemListener(new CoreFormatItemListener("Show arrows", this
+        .getName(), null, 10 * 60 * 1000, true)
     {
       @Override
       protected void formatTrack(TrackWrapper track, HiResDate interval)
