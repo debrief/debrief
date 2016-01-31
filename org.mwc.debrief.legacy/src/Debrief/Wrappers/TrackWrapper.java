@@ -29,6 +29,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -36,6 +37,7 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;
@@ -48,14 +50,16 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.INewItemListener;
+import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.MessageProvider;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
@@ -84,7 +88,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     WatchableList, MWC.GUI.Layer, DraggableItem, HasDraggableComponents,
-    ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable
+    ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable,
+    NeedsToKnowAboutLayers
 {
 
   // //////////////////////////////////////
@@ -573,10 +578,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       FixWrapper existingFix = (FixWrapper) tsPts.nextElement();
       FixWrapper newF = new FixWrapper(existingFix.getFix());
-      
+
       // also duplicate the label
       newF.setLabel(existingFix.getLabel());
-      
+
       target.addFix(newF);
     }
   }
@@ -752,6 +757,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   transient private WorldArea _myWorldArea;
 
   transient private final PropertyChangeListener _locationListener;
+
+  private Layers _myLayers;
 
   // //////////////////////////////////////
   // constructors
@@ -981,6 +988,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     //
     // theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
     // _locationListener);
+
+    // tell any layer-level listeners about it
+    List<INewItemListener> itemListeners = _myLayers.getNewItemListeners();
+    Iterator<INewItemListener> iter = itemListeners.iterator();
+    while (iter.hasNext())
+    {
+      Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
+      newI.newItem(this, theFix);
+    }
   }
 
   /**
@@ -3871,7 +3887,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         }
       }
     }
-    
+
     // yup, do our first split
     final SortedSet<Editable> p1 = relevantSegment.headSet(splitPnt);
     final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPnt);
@@ -3889,10 +3905,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // find the ownship location at the relevant time
       WorldLocation secondLegOrigin = null;
-      
+
       // get the time of the split
       final HiResDate splitTime = splitPnt.getDateTimeGroup();
-
 
       // aah, sort out if we are splitting before or after.
       SensorWrapper sensor = theTMA.getReferenceSensor();
@@ -3909,10 +3924,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // if we couldn't get a sensor origin, try for the track origin
       if (secondLegOrigin == null)
       {
-        final Watchable firstMatch = theTMA.getReferenceTrack()
-            .getNearestTo(splitTime)[0];
-        secondLegOrigin =
-            firstMatch.getLocation();
+        final Watchable firstMatch =
+            theTMA.getReferenceTrack().getNearestTo(splitTime)[0];
+        secondLegOrigin = firstMatch.getLocation();
       }
       final WorldVector secondOffset =
           splitPnt.getLocation().subtract(secondLegOrigin);
@@ -3937,7 +3951,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final AbsoluteTMASegment theTMA = (AbsoluteTMASegment) relevantSegment;
 
       // aah, sort out if we are splitting before or after.
-      
+
       // find out the offset at the split point, so we can initiate it for
       // the
       // second part of the track
@@ -4040,7 +4054,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // also, set the correct label alignment
         currFw.resetLabelLocation();
-        
+
         // calculate the speed
         // get distance in meters
         final WorldDistance wd = new WorldDistance(wv);
@@ -4214,6 +4228,64 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       }
     }
+
+  }
+
+  @SuppressWarnings("serial")
+  @Override
+  public void setLayers(Layers parent)
+  {
+    _myLayers = parent;
+
+    // have a go at a format
+
+    _myLayers.addNewItemListener(new CoreFormatItemListener("Show Symbols", this.getName(), null,
+        15 * 60 * 1000)
+    {
+      @Override
+      protected void formatTrack(TrackWrapper track, HiResDate interval)
+      {
+        track.setSymbolFrequency(interval);
+      }
+
+      @Override
+      protected void applyFormat(FixWrapper fix)
+      {
+        fix.setSymbolShowing(true);
+      }
+    });
+
+    _myLayers.addNewItemListener(new CoreFormatItemListener("Show labels", this.getName(), null,
+        30 * 60 * 1000)
+    {
+      @Override
+      protected void formatTrack(TrackWrapper track, HiResDate interval)
+      {
+        track.setLabelFrequency(interval);
+      }
+
+      @Override
+      protected void applyFormat(FixWrapper fix)
+      {
+        fix.setLabelShowing(true);
+      }
+    });
+
+    _myLayers.addNewItemListener(new CoreFormatItemListener("Show arrows", this.getName(), null,
+        10 * 60 * 1000)
+    {
+      @Override
+      protected void formatTrack(TrackWrapper track, HiResDate interval)
+      {
+        track.setArrowFrequency(interval);
+      }
+
+      @Override
+      protected void applyFormat(FixWrapper fix)
+      {
+        fix.setArrowShowing(true);
+      }
+    });
 
   }
 
