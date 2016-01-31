@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
@@ -19,7 +18,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
-public abstract class CoreFormatItemListener extends PlainWrapper implements
+public class CoreFormatItemListener extends PlainWrapper implements
     INewItemListener, INewLayerListener
 {
 
@@ -28,7 +27,8 @@ public abstract class CoreFormatItemListener extends PlainWrapper implements
     public void testRegularIntervals()
     {
       CoreFormatItemListener cf =
-          new CoreFormatItemListener("Test", null, null, 5000L, true)
+          new CoreFormatItemListener("Test", null, null, 5000L, true,
+              Attribute.SYMBOL)
           {
 
             /**
@@ -68,11 +68,12 @@ public abstract class CoreFormatItemListener extends PlainWrapper implements
       assertTrue(f4.getSymbolShowing());
       assertFalse(f5.getSymbolShowing());
     }
-    
+
     public void testIntervals()
     {
       CoreFormatItemListener cf =
-          new CoreFormatItemListener("Test", null, null, 5000L, false)
+          new CoreFormatItemListener("Test", null, null, 5000L, false,
+              Attribute.SYMBOL)
           {
 
             /**
@@ -123,6 +124,11 @@ public abstract class CoreFormatItemListener extends PlainWrapper implements
     }
   }
 
+  public static enum Attribute
+  {
+    LABEL, SYMBOL, ARROW
+  }
+
   /**
    * 
    */
@@ -133,17 +139,19 @@ public abstract class CoreFormatItemListener extends PlainWrapper implements
   private long _interval;
   private Map<String, Long> _lastTimes = new HashMap<String, Long>();
   private String _formatName;
+  private Attribute _type;
 
   private boolean _regularInterval;
 
   public CoreFormatItemListener(String name, String layerName,
-      String symbology, long interval, boolean regularInterval)
+      String symbology, long interval, boolean regularInterval, Attribute type)
   {
     _formatName = name;
     _layerName = layerName;
     _sym = symbology;
     _interval = interval;
     _regularInterval = regularInterval;
+    _type = type;
   }
 
   @Override
@@ -217,7 +225,21 @@ public abstract class CoreFormatItemListener extends PlainWrapper implements
     }
   }
 
-  abstract protected void applyFormat(FixWrapper fix);
+  protected void applyFormat(FixWrapper fix)
+  {
+    switch (_type)
+    {
+    case ARROW:
+      fix.setArrowShowing(true);
+      break;
+    case SYMBOL:
+      fix.setSymbolShowing(true);
+      break;
+    case LABEL:
+      fix.setLabelShowing(true);
+      break;
+    }
+  }
 
   @Override
   public void newLayer(Layer layer)
@@ -228,6 +250,38 @@ public abstract class CoreFormatItemListener extends PlainWrapper implements
     }
   }
 
-  abstract protected void formatTrack(TrackWrapper track, HiResDate interval);
+  protected void formatTrack(TrackWrapper track, HiResDate interval)
+  {
+    switch (_type)
+    {
+    case ARROW:
+      track.setArrowFrequency(interval);
+      break;
+    case SYMBOL:
+      track.setSymbolFrequency(interval);
+      break;
+    case LABEL:
+      track.setLabelFrequency(interval);
+      break;
+    }
+  }
+
+  public static Attribute valueOf(String attributeType)
+  {
+    Attribute res = null;
+    switch (attributeType)
+    {
+    case "ARROW":
+      res = Attribute.ARROW;
+      break;
+    case "SYMBOL":
+      res = Attribute.SYMBOL;
+      break;
+    case "LABEL":
+      res = Attribute.LABEL;
+      break;
+    }
+    return res;
+  }
 
 }
