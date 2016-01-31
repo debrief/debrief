@@ -218,6 +218,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
   // ////////////////////////////////////////////////////
 
   /**
+   * the name of the formatters layer
+   */
+  private static final String FORMATTERS = "Formatters";
+
+  /**
    * the name of the chart-features layer
    */
   public static final String CHART_FEATURES = "Chart Features";
@@ -869,6 +874,31 @@ public class Layers implements Serializable, Plottable, PlottablesType
     if (!_newItemListeners.contains(theListener))
     {
       _newItemListeners.add(theListener);
+
+      // and store it
+      storeFormatter(theListener);
+    }
+
+  }
+
+  /**
+   * store this formatter, if it's sutiable
+   * 
+   * @param theListener
+   */
+  private void storeFormatter(final Object theListener)
+  {
+    // if it's an editable, we can add it to the formatters
+    if (theListener instanceof Editable)
+    {
+      Layer formatL = this.findLayer(FORMATTERS);
+      if (formatL == null)
+      {
+        formatL = new BaseLayer(false);
+        formatL.setName(FORMATTERS);
+        this.addThisLayer(formatL);
+      }
+      formatL.add((Editable) theListener);
     }
   }
 
@@ -883,6 +913,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
     if (!_newLayerListeners.contains(theListener))
     {
       _newLayerListeners.add(theListener);
+
+      // and store it
+      storeFormatter(theListener);
+
     }
   }
 

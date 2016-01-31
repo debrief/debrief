@@ -165,6 +165,12 @@ public class CoreFormatItemListener extends PlainWrapper implements
   {
     return _formatName;
   }
+  
+  @Override
+  public String toString()
+  {
+    return getName();
+  }
 
   @Override
   public WorldArea getBounds()
