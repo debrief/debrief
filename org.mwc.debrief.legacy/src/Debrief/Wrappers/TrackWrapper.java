@@ -37,7 +37,6 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
-import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;
@@ -4231,62 +4230,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   }
 
-  @SuppressWarnings("serial")
   @Override
   public void setLayers(Layers parent)
   {
     _myLayers = parent;
-
-    // have a go at a format
-
-    _myLayers.addNewItemListener(new CoreFormatItemListener("Show Symbols",
-        this.getName(), null, 15 * 60 * 1000, true)
-    {
-      @Override
-      protected void formatTrack(TrackWrapper track, HiResDate interval)
-      {
-        track.setSymbolFrequency(interval);
-      }
-
-      @Override
-      protected void applyFormat(FixWrapper fix)
-      {
-        fix.setSymbolShowing(true);
-      }
-    });
-
-    _myLayers.addNewItemListener(new CoreFormatItemListener("Show labels", this
-        .getName(), null, 30 * 60 * 1000, true)
-    {
-      @Override
-      protected void formatTrack(TrackWrapper track, HiResDate interval)
-      {
-        track.setLabelFrequency(interval);
-      }
-
-      @Override
-      protected void applyFormat(FixWrapper fix)
-      {
-        fix.setLabelShowing(true);
-      }
-    });
-
-    _myLayers.addNewItemListener(new CoreFormatItemListener("Show arrows", this
-        .getName(), null, 10 * 60 * 1000, true)
-    {
-      @Override
-      protected void formatTrack(TrackWrapper track, HiResDate interval)
-      {
-        track.setArrowFrequency(interval);
-      }
-
-      @Override
-      protected void applyFormat(FixWrapper fix)
-      {
-        fix.setArrowShowing(true);
-      }
-    });
-
   }
-
 }
