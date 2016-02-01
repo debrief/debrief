@@ -187,7 +187,8 @@ public class CoreFormatItemListener extends PlainWrapper implements
 
     final String hisName = parent.getName();
 
-    if (_layerName != null && !_layerName.equals(parent.getName()))
+    if (_layerName != null && _layerName.length() > 0
+        && !_layerName.equals(parent.getName()))
     {
       return;
     }
