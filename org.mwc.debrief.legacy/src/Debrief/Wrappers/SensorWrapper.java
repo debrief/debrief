@@ -723,7 +723,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 								"the forward/backward offset (m) of this sensor from the attack datum"),
 						displayProp("WormInHole", "Worm in hole", 
 								"whether the origin of this sensor is offset in straight line, or back along the host track"),
-            prop("Coverage", "the time coverage for this sensor"),
+            displayProp("Coverage", "Start/Stop DTG", "the time coverage for this sensor"),
 						displayLongProp("VisibleFrequency", "Visible frequency",
 								"How frequently to display sensor cuts", 
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
