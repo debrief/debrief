@@ -946,47 +946,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public void addFix(final FixWrapper theFix)
   {
-    // do we have any track segments
-    if (_thePositions.size() == 0)
-    {
-      // nope, add one
-      final TrackSegment firstSegment = new TrackSegment();
-      firstSegment.setName("Positions");
-      _thePositions.addSegment(firstSegment);
-    }
-
-    // add fix to last track segment
-    final TrackSegment last = (TrackSegment) _thePositions.last();
-    last.addFix(theFix);
-
-    // tell the fix about it's daddy
-    theFix.setTrackWrapper(this);
-
-    // and extend the start/end DTGs
-    if (_myTimePeriod == null)
-    {
-      _myTimePeriod =
-          new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix
-              .getDateTimeGroup());
-    }
-    else
-    {
-      _myTimePeriod.extend(theFix.getDateTimeGroup());
-    }
-
-    if (_myWorldArea == null)
-    {
-      _myWorldArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
-    }
-    else
-    {
-      _myWorldArea.extend(theFix.getLocation());
-    }
-
-    // we want to listen out for the fix being moved. better listen in to it
-    //
-    // theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-    // _locationListener);
+    // handle the core fix addition
+    addNoFormat(theFix);
 
     // tell any layer-level listeners about it
     if (_myLayers != null)
@@ -4237,5 +4198,50 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public void setLayers(Layers parent)
   {
     _myLayers = parent;
+  }
+
+  public void addNoFormat(FixWrapper theFix)
+  {
+    // do we have any track segments
+    if (_thePositions.size() == 0)
+    {
+      // nope, add one
+      final TrackSegment firstSegment = new TrackSegment();
+      firstSegment.setName("Positions");
+      _thePositions.addSegment(firstSegment);
+    }
+
+    // add fix to last track segment
+    final TrackSegment last = (TrackSegment) _thePositions.last();
+    last.addFix(theFix);
+
+    // tell the fix about it's daddy
+    theFix.setTrackWrapper(this);
+
+    // and extend the start/end DTGs
+    if (_myTimePeriod == null)
+    {
+      _myTimePeriod =
+          new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix
+              .getDateTimeGroup());
+    }
+    else
+    {
+      _myTimePeriod.extend(theFix.getDateTimeGroup());
+    }
+
+    if (_myWorldArea == null)
+    {
+      _myWorldArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
+    }
+    else
+    {
+      _myWorldArea.extend(theFix.getLocation());
+    }
+
+    // we want to listen out for the fix being moved. better listen in to it
+    //
+    // theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+    // _locationListener);
   }
 }
