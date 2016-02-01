@@ -179,6 +179,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class SensorWrapper extends TacticalDataWrapper implements
 		GriddableSeriesMarker, Cloneable
@@ -722,6 +723,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 								"the forward/backward offset (m) of this sensor from the attack datum"),
 						displayProp("WormInHole", "Worm in hole", 
 								"whether the origin of this sensor is offset in straight line, or back along the host track"),
+            prop("Coverage", "the time coverage for this sensor"),
 						displayLongProp("VisibleFrequency", "Visible frequency",
 								"How frequently to display sensor cuts", 
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
@@ -1213,6 +1215,31 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	public boolean requiresManualSave()
 	{
 		return false;
+	}
+	
+	/** provide the time coverage, in text form
+	 * 
+	 * @return
+	 */
+	public String getCoverage()
+	{
+    final SensorContactWrapper first =
+        (SensorContactWrapper) _myContacts.first();
+    final SensorContactWrapper last = (SensorContactWrapper) _myContacts.last();
+    final String res =
+        FullFormatDateTime.toString(first.getDTG().getDate().getTime()) + " - "
+            + FullFormatDateTime.toString(last.getDTG().getDate().getTime());
+    return res;
+	}
+	
+	/** we need a getter in order to support Java Beans, though
+	 * we don't actually allow it to be edited
+	 * 
+	 * @param val new value of coverage (ignored)
+	 */
+	public void setCoverage(String val)
+	{
+	  System.err.println("We don't support setting hte coverage value");
 	}
 
 	@Override
