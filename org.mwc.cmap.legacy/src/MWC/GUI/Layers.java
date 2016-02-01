@@ -899,7 +899,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
         this.addThisLayer(formatL);
       }
       formatL.add((Editable) theListener);
+      
+      // ok, clear out the lists
+      _newItemListeners.clear();
+      _newLayerListeners.clear();
     }
+    
+    
   }
 
   /**
@@ -927,6 +933,24 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   public List<INewLayerListener> getNewLayerListeners()
   {
+    // do we need to rescan the listeners?
+    if(_newLayerListeners.size() == 0)
+    {
+      Layer fLayer = findLayer(FORMATTERS);
+      if(fLayer != null)
+      {
+        Enumeration<Editable> fEnum = fLayer.elements();
+        while (fEnum.hasMoreElements())
+        {
+          Editable thisE = (Editable) fEnum.nextElement();
+          if(thisE instanceof INewLayerListener)
+          {
+            _newLayerListeners.add((INewLayerListener) thisE);
+          }
+        }
+      }
+    }
+    
     return _newLayerListeners;
   }
 
@@ -937,6 +961,24 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   public List<INewItemListener> getNewItemListeners()
   {
+    // do we need to rescan the listeners?
+    if(_newItemListeners.size() == 0)
+    {
+      Layer fLayer = findLayer(FORMATTERS);
+      if(fLayer != null)
+      {
+        Enumeration<Editable> fEnum = fLayer.elements();
+        while (fEnum.hasMoreElements())
+        {
+          Editable thisE = (Editable) fEnum.nextElement();
+          if(thisE instanceof INewItemListener)
+          {
+            _newItemListeners.add((INewItemListener) thisE);
+          }
+        }
+      }
+    }
+    
     return _newItemListeners;
   }
 
