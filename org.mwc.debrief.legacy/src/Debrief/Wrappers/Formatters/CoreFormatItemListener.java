@@ -11,6 +11,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Layers.INewLayerListener;
+import MWC.GUI.Properties.AttributeTypePropertyEditor;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
@@ -28,12 +29,8 @@ public class CoreFormatItemListener extends PlainWrapper implements
     {
       CoreFormatItemListener cf =
           new CoreFormatItemListener("Test", null, null, 5000L, true,
-              Attribute.SYMBOL)
+              AttributeTypePropertyEditor.SYMBOL)
           {
-
-            /**
-         * 
-         */
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -73,7 +70,7 @@ public class CoreFormatItemListener extends PlainWrapper implements
     {
       CoreFormatItemListener cf =
           new CoreFormatItemListener("Test", null, null, 5000L, false,
-              Attribute.SYMBOL)
+              AttributeTypePropertyEditor.SYMBOL)
           {
 
             /**
@@ -124,11 +121,6 @@ public class CoreFormatItemListener extends PlainWrapper implements
     }
   }
 
-  public static enum Attribute
-  {
-    LABEL, SYMBOL, ARROW
-  }
-
   /**
    * 
    */
@@ -139,12 +131,12 @@ public class CoreFormatItemListener extends PlainWrapper implements
   private long _interval;
   private Map<String, Long> _lastTimes = new HashMap<String, Long>();
   private String _formatName;
-  private Attribute _type;
+  private Integer _type;
 
   private boolean _regularInterval;
 
   public CoreFormatItemListener(String name, String layerName,
-      String symbology, long interval, boolean regularInterval, Attribute type)
+      String symbology, long interval, boolean regularInterval, Integer type)
   {
     _formatName = name;
     _layerName = layerName;
@@ -165,7 +157,7 @@ public class CoreFormatItemListener extends PlainWrapper implements
   {
     return _formatName;
   }
-  
+
   @Override
   public String toString()
   {
@@ -235,13 +227,13 @@ public class CoreFormatItemListener extends PlainWrapper implements
   {
     switch (_type)
     {
-    case ARROW:
+    case AttributeTypePropertyEditor.ARROW:
       fix.setArrowShowing(true);
       break;
-    case SYMBOL:
+    case AttributeTypePropertyEditor.SYMBOL:
       fix.setSymbolShowing(true);
       break;
-    case LABEL:
+    case AttributeTypePropertyEditor.LABEL:
       fix.setLabelShowing(true);
       break;
     }
@@ -260,34 +252,46 @@ public class CoreFormatItemListener extends PlainWrapper implements
   {
     switch (_type)
     {
-    case ARROW:
+    case AttributeTypePropertyEditor.ARROW:
       track.setArrowFrequency(interval);
       break;
-    case SYMBOL:
+    case AttributeTypePropertyEditor.SYMBOL:
       track.setSymbolFrequency(interval);
       break;
-    case LABEL:
+    case AttributeTypePropertyEditor.LABEL:
       track.setLabelFrequency(interval);
       break;
     }
   }
 
-  public static Attribute valueOf(String attributeType)
+  public String getLayerName()
   {
-    Attribute res = null;
-    switch (attributeType)
-    {
-    case "ARROW":
-      res = Attribute.ARROW;
-      break;
-    case "SYMBOL":
-      res = Attribute.SYMBOL;
-      break;
-    case "LABEL":
-      res = Attribute.LABEL;
-      break;
-    }
-    return res;
+    return _layerName;
+  }
+
+  public String getSymbology()
+  {
+    return _sym;
+  }
+
+  public long getInterval()
+  {
+    return _interval;
+  }
+
+  public int getAttributeType()
+  {
+    return _type;
+  }
+
+  public void setAttributeType(int type)
+  {
+    _type = type;
+  }
+
+  public boolean getRegularIntervals()
+  {
+    return _regularInterval;
   }
 
 }

@@ -68,6 +68,7 @@ import java.util.StringTokenizer;
 
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
+import MWC.GUI.Properties.AttributeTypePropertyEditor;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 
 /**
@@ -126,13 +127,14 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
     }
     regularTimes = Boolean.parseBoolean(st.nextToken());
     interval = Long.parseLong(st.nextToken());
-
-    CoreFormatItemListener.Attribute attr =
-        CoreFormatItemListener.valueOf(attributeType);
+    
+    AttributeTypePropertyEditor pe = new AttributeTypePropertyEditor();
+    pe.setAsText(attributeType);
+    int attType = (int) pe.getValue();
 
     CoreFormatItemListener cif =
         new CoreFormatItemListener(formatName, trackName, symbology, interval,
-            regularTimes, attr);
+            regularTimes, attType);
 
     return cif;
   }
