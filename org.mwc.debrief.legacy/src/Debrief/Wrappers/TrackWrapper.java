@@ -948,6 +948,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // handle the core fix addition
     addNoFormat(theFix);
+    
+    THE REP HANDLER SHOULD CALL AN addAndFormat method, other 
+    usages remain as normal
 
     // tell any layer-level listeners about it
     if (_myLayers != null)
