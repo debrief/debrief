@@ -31,6 +31,7 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -42,6 +43,7 @@ import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
@@ -362,7 +364,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			@Override
 			public void addPlottable(final MWC.GUI.Plottable fix)
 			{
-				addThis(fix);
+				addFix((FixWrapper) fix);
 			}
 		});
 		addAttributeHandler(new HandleAttribute("Name")
@@ -500,7 +502,12 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 	}
 
-	void addThis(final MWC.GUI.Plottable val)
+	void addThis(final Plottable val)
+	{
+	  _myTrack.add(val);
+	}
+	
+	void addFix(final FixWrapper val)
 	{
 //		if(val instanceof BaseItemLayer)
 //		{
@@ -508,7 +515,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 //			bil.setWrapper(_myTrack);
 //		}
 //		
-		_myTrack.add(val);
+		_myTrack.addNoFormat(val);
 	}
 
 	@Override
