@@ -82,7 +82,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
 {
 
   /*
-   * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000 
+   * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000
    */
 
   /**
@@ -104,7 +104,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
     String trackName;
     String symbology;
     boolean regularTimes;
-    long interval;
+    int interval;
     String attributeType;
 
     // skip the comment identifier
@@ -117,23 +117,23 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
     // trouble - the track name may have been quoted, in which case we will
     // pull in the remaining fields aswell
     trackName = checkForQuotedName(st).trim();
-    
+
     // bit of tidying
-    if(trackName.equals("NULL"))
+    if (trackName.equals("NULL"))
     {
       trackName = null;
     }
-    
+
     symbology = st.nextToken();
-    
+
     // bit of tidying
-    if(symbology.equals("NULL"))
+    if (symbology.equals("NULL"))
     {
       symbology = null;
     }
     regularTimes = Boolean.parseBoolean(st.nextToken());
-    interval = Long.parseLong(st.nextToken());
-    
+    interval = Integer.parseInt(st.nextToken());
+
     AttributeTypePropertyEditor pe = new AttributeTypePropertyEditor();
     pe.setAsText(attributeType);
     int attType = (int) pe.getValue();
@@ -208,9 +208,9 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
     public void testRead()
     {
       /*
-       * example:  
+       * example:
        */
-      
+
       ImportFixFormatter iff = new ImportFixFormatter();
       CoreFormatItemListener res =
           (CoreFormatItemListener) iff
@@ -223,7 +223,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
       assertEquals("has correct attr", 1, res.getAttributeType());
       assertEquals("has correct freq", 600000, res.getInterval());
       assertTrue("regular intervals", res.getRegularIntervals());
-      
+
       res =
           (CoreFormatItemListener) iff
               .readThisLine(";FORMAT_FIX: 10_sec_sym ARROW \"Track One\" @A FALSE 100000");
@@ -235,7 +235,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
       assertEquals("has correct attr", 0, res.getAttributeType());
       assertEquals("has correct freq", 100000, res.getInterval());
       assertFalse("regular intervals", res.getRegularIntervals());
-      
+
       res =
           (CoreFormatItemListener) iff
               .readThisLine(";FORMAT_FIX: \"10 arrow\" ARROW \"Track One\" BB FALSE 100000");
@@ -246,8 +246,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
       assertTrue("active", res.getVisible());
       assertNotNull("has name", res.getName());
 
-
     }
   }
-  
+
 }
