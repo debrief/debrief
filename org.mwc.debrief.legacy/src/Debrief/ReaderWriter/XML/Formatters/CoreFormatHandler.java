@@ -38,6 +38,7 @@ public abstract class CoreFormatHandler extends
    * 
    */
   private static final String NAME = "Name";
+  private static final String ACTIVE = "Active";
   private static final String LAYER_NAME = "LayerName";
   private static final String SYMBOLOGY = "Symbology";
   private static final String INTERVAL = "Interval";
@@ -47,9 +48,11 @@ public abstract class CoreFormatHandler extends
   private String fName;
   private String layerName;
   private String symbology;
-  private long interval;
+  private int interval;
   private boolean regularIntervals;
   private int attrType;
+
+  protected boolean active;
 
   public CoreFormatHandler()
   {
@@ -87,9 +90,9 @@ public abstract class CoreFormatHandler extends
       }
     });
     
-    addAttributeHandler(new HandleLongAttribute(INTERVAL)
+    addAttributeHandler(new HandleIntegerAttribute(INTERVAL)
     {
-      public void setValue(final String name, final long value)
+      public void setValue(final String name, final int value)
       {
         interval = value;
       }
@@ -102,6 +105,13 @@ public abstract class CoreFormatHandler extends
         regularIntervals = value;
       }
     });
+    addAttributeHandler(new HandleBooleanAttribute(ACTIVE)
+    {
+      public void setValue(final String name, final boolean value)
+      {
+        active = value;
+      }
+    });
 
   }
 
@@ -110,7 +120,7 @@ public abstract class CoreFormatHandler extends
     // create the object
     CoreFormatItemListener listener =
         new CoreFormatItemListener(fName, layerName, symbology, interval,
-            regularIntervals, attrType);
+            regularIntervals, attrType, active);
 
     addFormatter(listener);
 
@@ -121,6 +131,7 @@ public abstract class CoreFormatHandler extends
     interval = 10000000;
     regularIntervals = false;
     attrType = 1;
+    active = true;
   }
 
   abstract public void addFormatter(MWC.GUI.Editable editable);
@@ -142,9 +153,10 @@ public abstract class CoreFormatHandler extends
     theFormatter.setAttribute(NAME, theShape.getName());
     theFormatter.setAttribute(LAYER_NAME, theShape.getLayerName());
     theFormatter.setAttribute(SYMBOLOGY, theShape.getSymbology());
-    theFormatter.setAttribute(INTERVAL, writeThis(theShape.getInterval()));
+    theFormatter.setAttribute(INTERVAL, writeThis(theShape.getInterval().getDate().getTime()));
     theFormatter.setAttribute(A_TYPE, pe.getAsText());
     theFormatter.setAttribute(REGULAR_INTERVALS, writeThis(theShape.getRegularIntervals()));
+    theFormatter.setAttribute(ACTIVE, writeThis(theShape.getVisible()));
   }
 
 }
