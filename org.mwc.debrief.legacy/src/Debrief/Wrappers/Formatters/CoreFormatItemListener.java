@@ -13,7 +13,6 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers.INewItemListener;
-import MWC.GUI.Layers.INewLayerListener;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.AttributeTypePropertyEditor;
@@ -24,7 +23,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
 public class CoreFormatItemListener extends PlainWrapper implements
-    INewItemListener, INewLayerListener
+    INewItemListener
 {
 
   // ///////////////////////////////////////////////////////////
@@ -248,6 +247,15 @@ public class CoreFormatItemListener extends PlainWrapper implements
       final String symbology)
   {
 
+    // just check if this is actually a new layer call
+    if (item == null)
+    {
+      if (parent instanceof TrackWrapper)
+      {
+        formatTrack((TrackWrapper) parent, new HiResDate(_interval));
+      }
+    }
+
     // are we active
     if (!getVisible())
     {
@@ -283,20 +291,20 @@ public class CoreFormatItemListener extends PlainWrapper implements
       Long lastTime = _lastTimes.get(hisName);
       TimeStampedDataItem tsd = (TimeStampedDataItem) item;
       long thisTime = tsd.getDTG().getDate().getTime();
-      
+
       // just check if we're doing "apply all"
-      if(longInt == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
+      if (longInt == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
       {
         // ok, skip it
       }
-      else if( longInt == 0)
+      else if (longInt == 0)
       {
         applyFormat((FixWrapper) item);
       }
       else if (lastTime == null || thisTime >= lastTime + longInt)
       {
         // ok, we need to test if we're actually doing it
-        
+
         // do we need to clip the time to a regular interval?
         if (_regularInterval)
         {
@@ -326,15 +334,6 @@ public class CoreFormatItemListener extends PlainWrapper implements
     case AttributeTypePropertyEditor.LABEL:
       fix.setLabelShowing(true);
       break;
-    }
-  }
-
-  @Override
-  public void newLayer(Layer layer)
-  {
-    if (layer instanceof TrackWrapper)
-    {
-      formatTrack((TrackWrapper) layer, new HiResDate(_interval));
     }
   }
 

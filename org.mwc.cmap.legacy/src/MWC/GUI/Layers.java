@@ -264,12 +264,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
   transient private List<INewItemListener> _newItemListeners;
 
   /**
-   * classes that want to know about new layers
-   * 
-   */
-  transient private List<INewLayerListener> _newLayerListeners;
-
-  /**
    * the editors for these layers
    */
   transient private MWC.GUI.Tools.Chart.RightClickEdit _myEditor;
@@ -371,7 +365,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
     _dataExtendedListeners = new Vector<DataListener>(0, 1);
     _dataReformattedListeners = new Vector<DataListener>(0, 1);
     _newItemListeners = new ArrayList<INewItemListener>();
-    _newLayerListeners = new ArrayList<INewLayerListener>();
   }
 
   /**
@@ -902,56 +895,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
       
       // ok, clear out the lists
       _newItemListeners.clear();
-      _newLayerListeners.clear();
     }
     
     
-  }
-
-  /**
-   * add this listener
-   * 
-   * @param theListener
-   *          the listener to add
-   */
-  public void addNewLayerListener(final INewLayerListener theListener)
-  {
-    if (!_newLayerListeners.contains(theListener))
-    {
-      _newLayerListeners.add(theListener);
-
-      // and store it
-      storeFormatter(theListener);
-
-    }
-  }
-
-  /**
-   * get the new layer listeners
-   * 
-   * @return
-   */
-  public List<INewLayerListener> getNewLayerListeners()
-  {
-    // do we need to rescan the listeners?
-    if(_newLayerListeners.size() == 0)
-    {
-      Layer fLayer = findLayer(FORMATTERS);
-      if(fLayer != null)
-      {
-        Enumeration<Editable> fEnum = fLayer.elements();
-        while (fEnum.hasMoreElements())
-        {
-          Editable thisE = (Editable) fEnum.nextElement();
-          if(thisE instanceof INewLayerListener)
-          {
-            _newLayerListeners.add((INewLayerListener) thisE);
-          }
-        }
-      }
-    }
-    
-    return _newLayerListeners;
   }
 
   /**
@@ -1140,22 +1086,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
   }
 
   /**
-   * interface for classes that want to know about new layers being added to the layers object
-   * 
-   * @author ian
-   * 
-   */
-  public interface INewLayerListener
-  {
-    /**
-     * a new layer has been added
-     * 
-     * @param layer
-     */
-    void newLayer(Layer layer);
-  }
-
-  /**
    * interface for classes that want to know about new items being added
    * 
    * @author ian
@@ -1164,14 +1094,15 @@ public class Layers implements Serializable, Plottable, PlottablesType
   public interface INewItemListener
   {
     /**
-     * a new item has been added
+     * a new layer, or a new item has been added
      * 
      * @param parent
      *          the layer that has a new item
      * @param item
-     *          the new item
+     *          the new item (null if this is actually just a new layer)
+     * @param theSymbology 
      */
-    void newItem(Layer parent, Editable item);
+    void newItem(Layer parent, Editable item, String theSymbology);
   }
 
   /**

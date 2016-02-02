@@ -1,21 +1,25 @@
 package Debrief.Wrappers.Formatters;
 
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.Layers.INewLayerListener;
+import MWC.GUI.Layers.INewItemListener;
 
-public class SetPrimaryListener implements INewLayerListener
+public class SetPrimaryListener implements INewItemListener
 {
 
   @Override
-  public void newLayer(Layer layer)
+  public void newItem(Layer layer, Editable item, String theSymbology)
   {
-    if (layer instanceof TrackWrapper)
+    if (item == null)
     {
-      TrackWrapper track = (TrackWrapper) layer;
+      if (layer instanceof TrackWrapper)
+      {
+        TrackWrapper track = (TrackWrapper) layer;
 
-      // TODO: get a TrackDataManager object from the current editor,
-      // then set this track as primary
+        // TODO: get a TrackDataManager object from the current editor,
+        // then set this track as primary
+      }
     }
   }
 

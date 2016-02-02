@@ -288,11 +288,10 @@ import MWC.GUI.Editable;
 import MWC.GUI.ExportLayerAsSingleItem;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Layers.INewItemListener;
-import MWC.GUI.Layers.INewLayerListener;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
@@ -574,15 +573,15 @@ public class ImportReplay extends PlainImporterBase
 
       // add our new layer to the Layers object
       addLayer(trkWrapper);
-      
+
       // see if there is any formatting to be done
       // lastly - see if the layers object has some formatters
-      Iterator<INewLayerListener> newIiter = getLayers().getNewLayerListeners().iterator();
+      Iterator<INewItemListener> newIiter =
+          getLayers().getNewItemListeners().iterator();
       while (newIiter.hasNext())
       {
-        INewLayerListener newI =
-             newIiter.next();
-        newI.newLayer(trkWrapper);
+        INewItemListener newI = newIiter.next();
+        newI.newItem(trkWrapper, null, null);
       }
     }
 
@@ -611,16 +610,16 @@ public class ImportReplay extends PlainImporterBase
       // give this fix it's unique colour
       thisWrapper.setColor(thisColor);
     }
-    
+
     // lastly - see if the layers object has some formatters
-    Iterator<INewItemListener> newIiter = getLayers().getNewItemListeners().iterator();
+    Iterator<INewItemListener> newIiter =
+        getLayers().getNewItemListeners().iterator();
     while (newIiter.hasNext())
     {
-      Layers.INewItemListener newI =
-          (Layers.INewItemListener) newIiter.next();
+      Layers.INewItemListener newI = (Layers.INewItemListener) newIiter.next();
       newI.newItem(trkWrapper, thisWrapper, rf.theSymbology);
     }
-    
+
     return res;
 
   }
@@ -954,16 +953,6 @@ public class ImportReplay extends PlainImporterBase
     else if (thisObject instanceof INewItemListener)
     {
       getLayers().addNewItemListener((INewItemListener) thisObject);
-
-      // just double check if it's also a new layer formatter
-      if (thisObject instanceof INewLayerListener)
-      {
-        getLayers().addNewLayerListener((INewLayerListener) thisObject);
-      }
-    }
-    else if (thisObject instanceof INewLayerListener)
-    {
-      getLayers().addNewLayerListener((INewLayerListener) thisObject);
     }
 
     // ////////
