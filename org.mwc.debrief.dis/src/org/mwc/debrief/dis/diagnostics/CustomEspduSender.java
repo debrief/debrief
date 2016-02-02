@@ -1,12 +1,20 @@
 package org.mwc.debrief.dis.diagnostics;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
-import edu.nps.moves.dis.*;
+import edu.nps.moves.dis.EntityID;
+import edu.nps.moves.dis.EntityStatePdu;
+import edu.nps.moves.dis.EntityType;
+import edu.nps.moves.dis.Vector3Double;
 import edu.nps.moves.disutil.CoordinateConversions;
-import edu.nps.moves.disutil.DisTime;
 
 /**
  * Creates and sends ESPDUs in IEEE binary format.
@@ -60,7 +68,7 @@ public class CustomEspduSender
     /** an entity state pdu */
     EntityStatePdu espdu = new EntityStatePdu();
     MulticastSocket socket = null;
-    DisTime disTime = DisTime.getInstance();
+//    DisTime disTime = DisTime.getInstance();
 
     long stepMillis = 1000;
     long numParts = 1;
@@ -215,7 +223,7 @@ public class CustomEspduSender
         // concept,
         // but it might just work.
         lastTime += 5 * 60 * 1000;
-        long ts = System.currentTimeMillis();
+//        long ts = System.currentTimeMillis();
 //        int ts = disTime.getDisAbsoluteTimestamp();
         
 //        System.out.println("time is:" + ts + " = " + new Date(lastTime));
