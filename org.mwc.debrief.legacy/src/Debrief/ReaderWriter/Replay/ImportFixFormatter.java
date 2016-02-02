@@ -66,6 +66,10 @@ package Debrief.ReaderWriter.Replay;
 
 import java.util.StringTokenizer;
 
+import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import MWC.GUI.Properties.AttributeTypePropertyEditor;
@@ -106,11 +110,13 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
     // skip the comment identifier
     st.nextToken();
 
-    formatName = st.nextToken();
+    formatName = checkForQuotedName(st).trim();
     attributeType = st.nextToken();
 
     // do processing for track name in quotes
-    trackName = st.nextToken();
+    // trouble - the track name may have been quoted, in which case we will
+    // pull in the remaining fields aswell
+    trackName = checkForQuotedName(st).trim();
     
     // bit of tidying
     if(trackName.equals("NULL"))
@@ -134,7 +140,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
 
     CoreFormatItemListener cif =
         new CoreFormatItemListener(formatName, trackName, symbology, interval,
-            regularTimes, attType);
+            regularTimes, attType, true);
 
     return cif;
   }
@@ -196,4 +202,52 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
     return res;
   }
 
+  public static class TestMe extends TestCase
+  {
+    @Test
+    public void testRead()
+    {
+      /*
+       * example:  
+       */
+      
+      ImportFixFormatter iff = new ImportFixFormatter();
+      CoreFormatItemListener res =
+          (CoreFormatItemListener) iff
+              .readThisLine(";FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000");
+      assertNotNull(res);
+      assertNull("No track", res.getLayerName());
+      assertNull("no sym", res.getSymbology());
+      assertTrue("active", res.getVisible());
+      assertNotNull("has name", res.getName());
+      assertEquals("has correct attr", 1, res.getAttributeType());
+      assertEquals("has correct freq", 600000, res.getInterval());
+      assertTrue("regular intervals", res.getRegularIntervals());
+      
+      res =
+          (CoreFormatItemListener) iff
+              .readThisLine(";FORMAT_FIX: 10_sec_sym ARROW \"Track One\" @A FALSE 100000");
+      assertNotNull(res);
+      assertEquals("No track", "Track One", res.getLayerName());
+      assertNotNull("sym", res.getSymbology());
+      assertTrue("active", res.getVisible());
+      assertNotNull("has name", res.getName());
+      assertEquals("has correct attr", 0, res.getAttributeType());
+      assertEquals("has correct freq", 100000, res.getInterval());
+      assertFalse("regular intervals", res.getRegularIntervals());
+      
+      res =
+          (CoreFormatItemListener) iff
+              .readThisLine(";FORMAT_FIX: \"10 arrow\" ARROW \"Track One\" BB FALSE 100000");
+      assertNotNull(res);
+      assertEquals("No track", "Track One", res.getLayerName());
+      assertNotNull("sym", res.getSymbology());
+      assertEquals("correct sym", "BB", res.getSymbology());
+      assertTrue("active", res.getVisible());
+      assertNotNull("has name", res.getName());
+
+
+    }
+  }
+  
 }
