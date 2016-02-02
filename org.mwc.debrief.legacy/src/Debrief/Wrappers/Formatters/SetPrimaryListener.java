@@ -15,6 +15,7 @@ public class SetPrimaryListener implements INewItemListener
     {
       if (layer instanceof TrackWrapper)
       {
+        @SuppressWarnings("unused")
         TrackWrapper track = (TrackWrapper) layer;
 
         // TODO: get a TrackDataManager object from the current editor,
