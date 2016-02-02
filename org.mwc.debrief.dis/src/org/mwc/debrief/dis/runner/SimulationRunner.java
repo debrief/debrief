@@ -38,10 +38,15 @@ public class SimulationRunner
         @Override
         protected IStatus run(IProgressMonitor monitor)
         {
-          CustomEspduSender.main(new String[]{"600", "4"});
+          CustomEspduSender.main(new String[]{"2000", "2"});
           return Status.OK_STATUS;
         }
 
+        @Override
+        protected void canceling()
+        {
+          CustomEspduSender.terminate();
+        }
       };
       _simJob.setUser(false);
       _simJob.schedule();
