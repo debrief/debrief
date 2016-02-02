@@ -1,11 +1,14 @@
 package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
+import java.util.Iterator;
 
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -38,6 +41,14 @@ public class DebriefFixListener implements IDISFixListener
 
       // and store it
       _context.addThisLayer(track);
+
+      // share the news
+      Iterator<INewItemListener> iter = _context.getNewItemListeners();
+      while (iter.hasNext())
+      {
+        Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
+        newI.newItem(track, null, null);
+      }
     }
 
     WorldLocation loc = new WorldLocation(dLat, dLong, depth);
@@ -55,6 +66,20 @@ public class DebriefFixListener implements IDISFixListener
 
       _context.fireUpdate(newItem, finalTrack);
     }
+
+    // share the news about the new time
+    System.out.println("== setting new time:" + date.getDate());
+    _context.setNewTime(date.getDate().getTime());
+    
+
+    // should we try any formatting?
+    Iterator<INewItemListener> iter = _context.getNewItemListeners();
+    while (iter.hasNext())
+    {
+      Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
+      newI.newItem(finalTrack, fw, null);
+    }
+
   }
 
   private final java.awt.Color[] defaultColors = new java.awt.Color[]
