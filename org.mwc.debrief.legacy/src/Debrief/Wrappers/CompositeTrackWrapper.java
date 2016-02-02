@@ -826,9 +826,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
   @Override
   public void setLayers(final Layers parent)
   {
-    // let the parent class know
-    super.setLayers(parent);
-
     // ok, we've been pasted. just double check that our children know who is
     // the boss
     final Enumeration<Editable> numer = getSegments().elements();

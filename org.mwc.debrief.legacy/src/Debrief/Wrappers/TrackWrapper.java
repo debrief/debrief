@@ -29,7 +29,6 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -56,8 +55,6 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
-import MWC.GUI.Layers.INewItemListener;
-import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -87,8 +84,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     WatchableList, MWC.GUI.Layer, DraggableItem, HasDraggableComponents,
-    ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable,
-    NeedsToKnowAboutLayers
+    ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable
 {
 
   // //////////////////////////////////////
@@ -757,8 +753,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   transient private final PropertyChangeListener _locationListener;
 
-  private Layers _myLayers;
-
   // //////////////////////////////////////
   // constructors
   // //////////////////////////////////////
@@ -935,33 +929,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
           "Sorry it is not possible to add:" + point.getName() + " to "
               + this.getName());
-    }
-  }
-
-  /**
-   * add the fix wrapper to the track
-   * 
-   * @param theFix
-   *          the Fix to be added
-   */
-  public void addFix(final FixWrapper theFix)
-  {
-    // handle the core fix addition
-    addNoFormat(theFix);
-    
-    THE REP HANDLER SHOULD CALL AN addAndFormat method, other 
-    usages remain as normal
-
-    // tell any layer-level listeners about it
-    if (_myLayers != null)
-    {
-      List<INewItemListener> itemListeners = _myLayers.getNewItemListeners();
-      Iterator<INewItemListener> iter = itemListeners.iterator();
-      while (iter.hasNext())
-      {
-        Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-        newI.newItem(this, theFix);
-      }
     }
   }
 
@@ -4197,13 +4164,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   }
 
-  @Override
-  public void setLayers(Layers parent)
-  {
-    _myLayers = parent;
-  }
-
-  public void addNoFormat(FixWrapper theFix)
+  public void addFix(FixWrapper theFix)
   {
     // do we have any track segments
     if (_thePositions.size() == 0)
