@@ -15,6 +15,7 @@
 package org.mwc.debrief.dis.ui.views;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
@@ -34,11 +35,17 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
@@ -47,10 +54,10 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
-import org.mwc.debrief.dis.core.IDISPreferences;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
 import org.mwc.debrief.dis.listeners.impl.IDISContext;
@@ -61,14 +68,16 @@ import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
+import MWC.GenericData.HiResDate;
+
 public class DisListenerView extends ViewPart
 {
 
   private Button connectButton;
   private Button disconnectButton;
   private Button stopButton;
-//  private Button pauseButton;
-//  private Button resumeButton;
+  // private Button pauseButton;
+  // private Button resumeButton;
   private Button playButton;
   private ChartComposite chartComposite;
   private Text pathText;
@@ -124,6 +133,8 @@ public class DisListenerView extends ViewPart
     IDISContext context = new DISContext()
     {
 
+      ControllableTime ct = null;
+      
       @Override
       public boolean getLiveUpdates()
       {
@@ -142,6 +153,47 @@ public class DisListenerView extends ViewPart
         return _fitToDataValue;
       }
 
+      @Override
+      public void setNewTime(long time)
+      {
+        if (_doLiveUpdates)
+        {
+          // tell the plot editor about the newtime
+          if(ct == null)
+          {
+            Display.getDefault().syncExec(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                final IWorkbench wb = PlatformUI.getWorkbench();
+                final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+                if (win != null)
+                {
+                  final IWorkbenchPage page = win.getActivePage();
+                  final IEditorPart editor = page.getActiveEditor();
+                  if (editor != null)
+                  {
+                    ct =
+                        (ControllableTime) editor
+                            .getAdapter(ControllableTime.class);
+                  }
+                }
+              }
+            });
+          }
+          
+          if(ct != null)
+          {
+            System.out.println("view setting new time:" + new Date(time));
+            ct.setTime(this, new HiResDate(time), true);
+          }
+          else
+          {
+            System.err.println("ct was null");
+          }
+        }
+      }
     };
 
     // ok, Debrief fix listener
@@ -219,9 +271,6 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        // CustomEspduSender.terminate();
-        //
-        // _simJob.cancel();
         _simulationRunner.stop();
 
         stopButton.setEnabled(false);
@@ -230,27 +279,6 @@ public class DisListenerView extends ViewPart
 
     });
 
-//    pauseButton = createButton(buttonComposite, "Pause");
-//    pauseButton.addSelectionListener(new SelectionAdapter()
-//    {
-//
-//      @Override
-//      public void widgetSelected(SelectionEvent e)
-//      {
-//      }
-//
-//    });
-//
-//    resumeButton = createButton(buttonComposite, "Resume");
-//    resumeButton.addSelectionListener(new SelectionAdapter()
-//    {
-//
-//      @Override
-//      public void widgetSelected(SelectionEvent e)
-//      {
-//      }
-//
-//    });
 
     playButton = createButton(buttonComposite, "Play");
     playButton.addSelectionListener(new SelectionAdapter()
@@ -259,22 +287,13 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
+        
+         
+        IPreferenceStore store =
+        DisActivator.getDefault().getPreferenceStore();
+        String pText = store.getString(DisActivator.PATH_TO_INPUT_FILE);
 
-        _simulationRunner.run();
-
-        // _simJob = new Job("Run simulation")
-        // {
-        // @Override
-        // protected IStatus run(IProgressMonitor monitor)
-        // {
-        //
-        // // CustomEspduSender.main(inArgs);
-        // return Status.OK_STATUS;
-        // }
-        //
-        // };
-        // _simJob.setUser(false);
-        // _simJob.schedule();
+        _simulationRunner.run(pText);
 
         playButton.setEnabled(false);
         stopButton.setEnabled(true);
@@ -283,8 +302,8 @@ public class DisListenerView extends ViewPart
     });
 
     stopButton.setEnabled(false);
-//    pauseButton.setEnabled(false);
-//    resumeButton.setEnabled(false);
+    // pauseButton.setEnabled(false);
+    // resumeButton.setEnabled(false);
     disconnectButton.setEnabled(false);
 
     Label label = new Label(buttonComposite, SWT.NONE);
@@ -312,8 +331,7 @@ public class DisListenerView extends ViewPart
         }
       }
     });
-    IPreferenceStore store =
-        DisActivator.getDefault().getPreferenceStore();
+    IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     pathText.setText(store.getString(DisActivator.PATH_TO_INPUT_FILE));
 
     final Button browseButton = new Button(buttonComposite, SWT.PUSH);
