@@ -272,7 +272,7 @@
       </sect2>
 
       <sect2 xml:id="SwitchToOpen">
-        <title>The switch to Open Source</title>
+        <title>The Switch to Open Source</title>
 
         <para>In Summer 2000 the Maritime Warfare Centre committed to switching the
             <application>Debrief</application> application to <indexterm significance="preferred">
@@ -342,8 +342,8 @@
           text, and display of sensor-data.</para>
 
         <para>Debrief development continued in 2002, with the update to <application>Debrief
-            2002</application>, which bought greatly improved 3-d plotting facilities and a number
-          of incremental improvements to other areas of functionality.</para>
+            2002</application>, which bought greatly improved 3D plotting facilities and a number of
+          incremental improvements to other areas of functionality.</para>
 
         <para>The year 2002 also saw the first conference paper extolling the virtues of Debrief and
           the Open Source principles behind it, at <indexterm>
@@ -360,12 +360,12 @@
           modified to complement the Debrief look and feel, and to provide greater usability
           resulting in the track-shifting editor included in Debrief 2002.</para>
 
-        <para>Through 2003-2007 Deep Blue C has continued to provide MWC with contracted support for
-          Debrief. This support has included user guidance, bug fixes and addition of new features.
-          Additionally this support contract was used to deliver Debrief 2003; (including provision
-          of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable
-          graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular
-          architecture ready to seamlessly accommodate ad-hoc analysis tools).</para>
+        <para>Through 2003-2007 Deep Blue C continued to provide MWC with contracted support for
+          Debrief. This support  included user guidance, bug fixes and addition of new features.
+          Additionally, this support contract was used to deliver Debrief 2003 (including the
+          provision of a bathymetric bottom in 3D views, presentation of TMA data, and improved
+          time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a
+          modular architecture ready to seamlessly accommodate ad-hoc analysis tools).</para>
 
         <para>In 2009 MWC extended Debrief to support Single Sided Reconstruction, that is the
           derivation of a Red track from a Blue track plus sensor data. These extensions also
@@ -373,19 +373,18 @@
           smoothing.</para>
 
         <para>2011 saw the introduction of support for plotting chart backdrops in GeoTiff format.
-          Unfortunately it exposed performance shortcomings in the render cycle. So, it has been
+          Unfortunately, this exposed performance shortcomings in the render cycle and has been
           temporarily removed pending streamlining / cacheing of the render pipeline. </para>
-        <para> Charting support was recommenced in Spring 2012, and an implementation was found that
-          didn&apos;t suffer the previous performance problems (See <xref linkend="ChartBackdrops"/>).
-          Support was also introduced for using Debrief in the process of Exercise Planning (See
-            <xref linkend="ExercisePlanning"/>).</para>
-        <para>In 2015, under 
-          <link xlink:href="https://www.gov.uk/government/organisations/defence-science-and-technology-laboratory">DSTL</link> 
-          sponsorship, support for the Natural Earth dataset was added to
-        Debrief.  This will be of value to the wide body of Debrief users (see <xref linkend="natural_earth"/>).
-          DSTL also sponsored
-         the development of Semi Automatic Track Construction, but this is of very, very niche interest
-         (see <xref linkend="satc"/>).</para>
+        <para>Charting support recommenced in Spring 2012, and a suitable implementation was found
+          (See <xref linkend="ChartBackdrops"/>). Support was also introduced for using Debrief in
+          the process of Exercise Planning (See <xref linkend="ExercisePlanning"/>).</para>
+        <para>In 2015, under <link
+            xlink:href="https://www.gov.uk/government/organisations/defence-science-and-technology-laboratory"
+            >DSTL</link> sponsorship, support for the Natural Earth dataset and sponsorship for the
+          development of Semi Automatic Track Construction, was added to Debrief. Both are of
+          enormous value, the former to the wide body of Debrief users (see <xref
+            linkend="natural_earth"/>), and the latter to specialists interested in this small but
+          select niche (see <xref linkend="satc"/>).</para>
       </sect2>
     </sect1>
 
@@ -421,24 +420,38 @@
 <postcode>  PO14 1AS</postcode>
 <country>United Kingdom</country></address></para></entry>
               </row>
+              <row>
+                <entry><inlinemediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/DeepBlueC.png" width="100"/>
+                    </imageobject>
+                  </inlinemediaobject></entry>
+                <entry>Debrief Project Manager.
+                  <address>
+<personname>Mr Ian Mayo</personname>
+<otheraddr>Deep Blue C Technology Ltd</otheraddr>
+<city>Fareham, HANTS</city>
 
+<country>United Kingdom</country>
+<email>ian@DeepBlueC.com</email></address></entry>
+              </row>
+              
               <row>
                 <entry><para><inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="figures/csds12.gif" width="100"/>
-                      </imageobject>
-                    </inlinemediaobject></para></entry>
-
+                  <imageobject>
+                    <imagedata fileref="figures/csds12.gif" width="100"/>
+                  </imageobject>
+                </inlinemediaobject></para></entry>
+                
                 <entry><para xml:id="csds">COMSUBDEVRON 12
-                    <address>
-                      
-<street>Submarine Development Squadron Twelve</street>
-<city>Naval Submarine Base New London</city>
-<state>Groton, CT, 06349-5200</state>
-<country>USA</country>
-</address></para></entry>
+                  <address>
+                    
+                    <street>Submarine Development Squadron Twelve</street>
+                    <city>Naval Submarine Base New London</city>
+                    <state>Groton, CT, 06349-5200</state>
+                    <country>USA</country>
+                  </address></para></entry>
               </row>
-
               <row>
                 <entry><para><inlinemediaobject>
                       <imageobject>
@@ -504,62 +517,45 @@ Naval Undersea Warfare Center (NUWC)
           <title>Document conventions</title>
 
           <tgroup cols="2">
-            <colspec colname="col01" colnum="1" colwidth="1.00*"/>
-
-            <colspec colname="col1" colnum="2" colwidth="3.0*"/>
-
+            <colspec colname="col01" colnum="1" colwidth="1*"/>
+            <colspec colname="col1" colnum="2" colwidth="2.51*"/>
             <thead>
               <row>
                 <entry>Descriptions</entry>
-
                 <entry>Appearance</entry>
               </row>
             </thead>
-
             <tbody>
               <row>
                 <entry>File Names</entry>
-
                 <entry><filename>file.extension</filename></entry>
               </row>
-
               <row>
                 <entry>Label of a screen item</entry>
-
                 <entry><guilabel>View Toolbar</guilabel></entry>
               </row>
-
               <row>
                 <entry>On-screen button</entry>
-
                 <entry><guibutton>Auto Generate</guibutton></entry>
               </row>
-
               <row>
-                <entry>Name of an applications</entry>
-
+                <entry>Name of an application</entry>
                 <entry><application>Internet Explorer</application></entry>
               </row>
-
               <row>
                 <entry>Emphasized text</entry>
-
                 <entry><emphasis>word</emphasis></entry>
               </row>
-
               <row>
                 <entry>An entry in the glossary (click to view)</entry>
-
                 <entry><glossterm linkend="g_plt">Plot</glossterm></entry>
               </row>
-
               <row>
                 <entry>Source Example</entry>
-
-                <entry><programlisting>
- <tag class="starttag">para</tag>Beginning and end of paragraph
- <tag class="endtag">para</tag>
-                  </programlisting></entry>
+                <entry>
+                  <programlisting> <tag class="starttag">para</tag>Beginning and end of paragraph
+ <tag class="endtag">para</tag>         </programlisting>
+                </entry>
               </row>
             </tbody>
           </tgroup>
@@ -587,13 +583,13 @@ Naval Undersea Warfare Center (NUWC)
         annotation fresh plots.</para>
       <para>If this is your first time using the User Guide and you haven't installed
           <application>Debrief</application> yet, then we would recommend reading the chapters and
-        sections in the order that they appear. This way, you know what you need to do before
+        sections in the order that they appear. This way you know what you need to do before
         installing <application>Debrief</application>, how to perform the installation, configure
         the data, etc.</para>
       <para>Also, don't forget that we have a series of tutorials and videos to help you get up to
-        speed quickly. These don't take long to read or watch, and you can follow along at your own
-        pace. These are probably the quickest way of getting to grips and up to speed with
-          <application>Debrief</application>. </para>
+        speed quickly. These don't take long to read or watch, and are probably the quickest way of
+        getting to grips and up to speed with <application>Debrief</application>; you can follow
+        these at your own pace. </para>
     </partintro>
 
     <chapter xml:id="get_start">
@@ -604,41 +600,48 @@ Naval Undersea Warfare Center (NUWC)
       <para>
         <orderedlist>
           <listitem>
-            <para>Before installing <application>Debrief</application>(<xref linkend="pre_install_debrief"/>)</para>
+            <para>Before installing <application>Debrief</application> (<xref
+                linkend="pre_install_debrief"/>)</para>
           </listitem>
           <listitem>
-            <para>Performing installation(<xref linkend="running_installer"/>)</para>
+            <para>Performing installation (<xref linkend="running_installer"/>)</para>
           </listitem>
           <listitem>
-            <para>Configuring reference data(<xref linkend="setting_location_prefs"/>)</para>
+            <para>Configuring reference data (<xref linkend="setting_location_prefs"/>)</para>
           </listitem>
           <listitem>
-            <para>Start <application>Debrief</application>(<xref linkend="start_up"/>)</para>
+            <para>Start <application>Debrief</application> (<xref linkend="start_up"/>)</para>
           </listitem>
           <listitem>
-            <para>Importing track data(<xref linkend="import_range_data"/>)</para>
+            <para>Importing track data (<xref linkend="import_range_data"/>)</para>
           </listitem>
           <listitem>
             <para>Moving around the view.</para>
-            <para>Once you've completed these, you can then move onto Part B - Using <application>Debrief</application>(<xref linkend="UsingDebrief"/>).</para>
+            <para>Once you've completed these, you can then move onto Part B - Using
+                <application>Debrief</application> (<xref linkend="UsingDebrief"/>).</para>
           </listitem>
         </orderedlist>
       </para>
 
       <sect1 xml:id="pre_install_debrief">
-        <title>Before installing Debrief</title>
-        <para>In this section, we will look at Obtaining <application>Debrief</application>, look at where you can get help on Debrief, and the Debrief CD-Rom. Once you've completed this, you can proceed with installing Debrief.</para>
+        <title>Before Installing Debrief</title>
+        <para>In this section, we will look at obtaining <application>Debrief</application>, via
+          download or CD-Rom, and where you can get help on Debrief. Then, we'll look at installing
+          Debrief.</para>
        <sect2 xml:id="obtainingDebrief">
           <title>Obtaining Debrief</title>
           <para>A number of project <indexterm>
               <primary>Debrief</primary>
               <secondary>Obtaining Debrief</secondary>
             </indexterm>support activities (news, feature-requests, bug-reports) for
-              <application>Debrief</application> are conducted online, at 
-            <glossterm linkend="g_github">GitHub</glossterm> (<link xlink:href="https://github.com/debrief/debrief">https://github.com/debrief/debrief</link>). </para>
+              <application>Debrief</application> are conducted online at <glossterm
+              linkend="g_github">GitHub</glossterm> (<link
+              xlink:href="https://github.com/debrief/debrief"
+              >https://github.com/debrief/debrief</link>). </para>
             
-          <para> To obtain the latest version, examine the list of <link xlink:href="https://github.com/debrief/debrief/releases">available downloads</link>,
-            and the relevant zip-file for your operating system.</para>
+          <para>In addition, you can also go to this URL to obtain the latest version, examine the
+            list of available downloads, and the relevant zip-file for your operating system: <link
+              xlink:href="https://github.com/debrief/debrief/releases"></link>.</para>
         </sect2>
         
 
@@ -651,10 +654,10 @@ Naval Undersea Warfare Center (NUWC)
                   <title>This document</title>
 
                   <para>The Debrief NG User guide is a useful reference for determining where to
-                    find something, the overall capabilities of the tool, and assorted reference
-                    guidance. It&apos;s presented online as part of Debrief NG help within a help browser
-                    (accessed via <guimenuitem>Help Contents</guimenuitem> on the
-                      <guimenu>Help</guimenu> menu.</para>
+                    find information on Debrief, as well as the overall capabilities of the tool,
+                    and assorted reference guidance. It&apos;s also accessed and presented online
+                    via web browser help from within Debrief NG (accessed via <guimenuitem>Help
+                      Contents</guimenuitem> on the <guimenu>Help</guimenu> menu).</para>
                 </formalpara>
               </listitem>
 
@@ -665,12 +668,12 @@ Naval Undersea Warfare Center (NUWC)
                   <para><indexterm>
                       <primary>Tutorials</primary>
                     </indexterm>A series of interactive tutorials are distributed with Debrief.
-                    These sheets guide the user through a series of complex tasks to achieve overall
-                    goals such as: <emphasis>loading data into Debrief</emphasis> or
-                      <emphasis>analysing narrative data</emphasis>. The tutorials are accessed by
-                    selecting <guimenuitem>Debrief Tutorials</guimenuitem> from the
-                      <guimenu>Help</guimenu> menu in Debrief NG. A PDF version of the tutorials
-                    (suitable for printing) is in the Debrief installation folder.</para>
+                    These guide users through a series of complex tasks to achieve overall goals
+                    such as <emphasis>loading data into Debrief</emphasis> or <emphasis>analysing
+                      narrative data</emphasis>. The tutorials are accessed by selecting
+                      <guimenuitem>Debrief Tutorials</guimenuitem> from the <guimenu>Help</guimenu>
+                    menu in Debrief NG. A PDF version of the tutorials (suitable for printing) is in
+                    the Debrief installation folder.</para>
                 </formalpara>
               </listitem>
 
@@ -678,9 +681,9 @@ Naval Undersea Warfare Center (NUWC)
                 <formalpara>
                   <title>Welcome Page</title>
 
-                  <para>Debrief NG&apos;s welcome page provides a high level overview of Debrief,
-                    and guides the user to further sources of information, tutorials (tutorials),
-                    and samples.</para>
+                  <para>Debrief NG&apos;s welcome page provides a high level overview of Debrief and
+                    guides the user to further sources of information, tutorials, and
+                    samples.</para>
                 </formalpara>
               </listitem>
             </orderedlist></para>
@@ -710,29 +713,25 @@ Naval Undersea Warfare Center (NUWC)
             <guibutton>Start</guibutton> menu.</para>
         </warning>
 
-        <para>Hey, Debrief NG needs no installer.  Just unzip the downloaded application zip file, and you&apos;re ready to go!  
-        <tip>
-        <para>
-        To follow
-        MS Windows conventions you may wish to copy the unzipped folder into your Programs folder, but you 
-        don&apos;t have to.
+        <para>Once you've done this, just unzip the downloaded application zip file, and you&apos;re
+          ready to go!  Debrief NG needs no installer. <tip>
+            <para> You don't have to but if you wish to follow MS Windows conventions you can copy
+              the unzipped folder into your Programs folder. </para>
+          </tip>
         </para>
-        </tip>
-        
-        </para>
-        <para>To start the application just click
-        on the <emphasis>Debrief NG</emphasis> executable in the top level of the unpacked folder. </para>
+        <para>Then, to start the application just double-click on the <emphasis>Debrief
+            NG</emphasis> executable in the top level of the unpacked folder. </para>
       </sect1>
 
       <sect1 xml:id="setting_location_prefs">
         <title>Configuring reference data</title>
 
-        <para>If you want to take advantage of Debrief&apos;s support for background datasets, don&apos;t
-          forget to read the instructions on how to configure their locations, shown below. Note, the
-          datasets probably aren&apos;t present in your Debrief installation (due to their
-          size), so you will have to request/load them separately. In 2015 Debrief added support
-          for the Natural Earth dataset, superceding the VPF and ETOPO datasets - so you
-          probably won't need to configure them.<itemizedlist>
+        <para>If you want to take advantage of Debrief&apos;s support for background datasets,
+          don&apos;t forget to read the instructions on how to configure their locations (shown
+          below). Note, due to their size, the datasets probably aren&apos;t present in your Debrief
+          installation, so you will have to request and then load them separately. In 2015 Debrief
+          added support for the Natural Earth dataset, superceding the VPF and ETOPO datasets - so
+          you probably won't need to configure them.<itemizedlist>
             <listitem>
               <para>Natural Earth instructions are in <xref linkend="ne_use"/></para>
             </listitem>
@@ -749,17 +748,15 @@ Naval Undersea Warfare Center (NUWC)
         <title>Start Debrief</title>
 
         <sect2 xml:id="opening_application">
-          <title>Opening application</title>
-
-          <para>Open the application using the executable in your Debrief folder. The application may take a couple of seconds to load, but don&apos;t worry about the
-            speed; once the windows are open Debrief runs quite quickly. If you are viewing this
-            tutorial online, arrange this window and the <application>Debrief</application> window
+          <title>Opening the application</title>
+          <para>Open the application by double-clicking on the executable in your Debrief folder. It
+            may take a couple of seconds to load, but don&apos;t worry about this as, once the
+            windows are open, Debrief runs quite quickly. If you are viewing this tutorial online,
+            arrange this window and the <application>Debrief</application> window as best you can,
             so that both are visible (although you may need to let them overlap if you have limited
             screen space).</para>
-
           <figure xml:id="welcomeView">
             <title>Debrief&apos;s Welcome view</title>
-
             <screenshot>
               <mediaobject>
                 <imageobject>
@@ -768,28 +765,24 @@ Naval Undersea Warfare Center (NUWC)
               </mediaobject>
             </screenshot>
           </figure>
-
-          <para>When opened for the very first time Debrief shows its Welcome page. This page (shown
-            above) includes a series of links to high-level introductory information. The Overview
-            page contains guidance for new-adopters of Debrief, whereas the Tutorials page contains
-            leads users through more specific tasks through the use of <glossterm linkend="g_cheat"
-              >tutorials</glossterm> - small pages breaking a task down into a series of tasks. The
-            buttons at the top-left of each page navigate you around the welcome guidance. On the
-              <guilabel>Tutorials</guilabel> page one tutorial in particular will help new Debrief-adopters:<variablelist>
-              <varlistentry>
-                <term>A Debrief Walkthrough</term>
-                <listitem>
-                  <para>Let Debrief itself lead you through your first session</para>
-                </listitem>
-              </varlistentry>
-            </variablelist></para>
-
+          <para>When Debrief is opened for the very first time you will see the Welcome page (shown
+            above). This page includes a series of links to high-level introductory information.
+            Though we do have a quick summary of each below, we do recommend that you go through
+            each of these links and familiarise yourself with what's there.</para>
+          <para>The Overview page contains guidance for new-adopters of Debrief, whereas the
+            Tutorials page leads users through more specific tasks through the use of <glossterm
+              linkend="g_cheat">tutorials</glossterm> - small pages breaking a task down into a
+            series of steps. The buttons at the top-left of each page navigate you around the
+            welcome guidance. On the <guilabel>Tutorials</guilabel> page one tutorial in particular
+            will help new Debrief-adopters.</para>
+        </sect2>
+        <sect2>
+          <title>A Debrief Walkthrough</title>
+          <para>It's a good idea to let Debrief itself lead you through your first session</para>
           <para>Starting any of the tutorials will shrink the Welcome guidance to a smaller pane
             exposing the rest of Debrief NG as shown in the following diagram.</para>
-
           <figure xml:id="defaultView">
             <title>Debrief&apos;s default view</title>
-
             <screenshot>
               <mediaobject>
                 <imageobject>
@@ -798,25 +791,25 @@ Naval Undersea Warfare Center (NUWC)
               </mediaobject>
             </screenshot>
           </figure>
-          <para>Debrief requires you to have a working folder (project) to store your data in.  As a
-            convenience, when you open Debrief it will check if there are any projects present. If
+          <para>Debrief requires you to have a working folder to store your data in (a project). As
+            a convenience, when you open Debrief it will check if there are any projects present. If
             none are present, you will be invited to create a project folder. Debrief will also
-            offer to copy in some sample data.</para>
-
+            offer to copy in some sample data - it's a good idea to do this.</para>
           <para>The Debrief user-interface follows the Workbench convention, whereby a users edits
             individual files in an <emphasis>Editor</emphasis> assisted by a series of supporting
             information panes called <emphasis>Views</emphasis>. The specific arrangement of editors
             and views offered by Default is called a <emphasis>
-              <glossterm linkend="g_perspective">Perspective</glossterm>
-            </emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective.
-            The Tactical Analysis perspective arranges the views into sets of grouped tabs, though
-            views can be dragged to any other location on the workbench, or floated above the
-            workbench. Views frequently have their own toolbar and drop-down menu providing actions
-            related to that particular task. Once selected, views are closed by clicking on the
-            white diagonally oriented cross. To re-open a view, or open a fresh view select
-              <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu. A list
-            of Debrief-related views will be shown. Other views can be selected from the
-              <guimenuitem>Other...</guimenuitem> menu item</para>
+              <glossterm linkend="g_perspective">Perspective</glossterm> - </emphasis>in this
+            opening instance it will be the <emphasis>Tactical Analysis</emphasis> perspective. </para>
+          <para>Though views can either be dragged to any other location on the workbench or floated
+            above the workbench, the Tactical Analysis perspective arranges the views into sets of
+            grouped tabs. Views frequently have their own toolbar and drop-down menu which provides
+            actions related to that particular task. </para>
+          <para>Once selected, views are closed by clicking on the white diagonally-oriented cross.
+            To re-open a view or open a fresh view select <guimenuitem>Show View</guimenuitem> from
+            the <guimenu>Window</guimenu> menu; a list of Debrief-related views will then be shown.
+            Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu
+            item.</para>
         </sect2>
 
         <sect2 xml:id="navigating_debrief">
@@ -844,15 +837,17 @@ Naval Undersea Warfare Center (NUWC)
 
             <para><indexterm>
                 <primary>Editors</primary>
-              </indexterm>Any number of editors can be open at once, but only one can be active at a
-              time. The main menu bar and toolbar for Debrief contain operations that are applicable
-              to the active editor. Initially the active editor will always be the Debrief plot, but
-              the extensibility of Debrief NG means other types of editor can be implemented. Tabs
-              at the top of the editor area indicate the names of files that are currently open for
-              editing (<filename>Sample.dpf</filename> in the previous screenshot). An asterisk (*)
-              indicates that an editor has unsaved changes. By default, editors are stacked in the
-              editor area, but you can choose to tile them (by dragging the tabbed plot-name) in
-              order to view source files simultaneously.</para>
+              </indexterm>Any number of editors can be open at once but, as is common with many
+              applications, only one can be active at a time. The main menu bar and toolbar for
+              Debrief contain operations that are applicable to the active editor. Initially the
+              active editor will always be the Debrief plot, but the extensibility of Debrief NG
+              means other types of editor can be implemented. Tabs at the top of the editor area
+              indicate the names of files that are currently open for editing
+                (<filename>Sample.dpf</filename> in the previous screenshot). An asterisk (*) in the
+              tab indicates that an editor has unsaved changes. By default, editors are stacked in
+              the editor area, but you can easily tile them by dragging and dropping the tabbed
+              plot-name to another location in the window; this allows you to view source files
+              simultaneously.</para>
           </sect3>
 
           <sect3 xml:id="debrief_views">
@@ -871,11 +866,11 @@ Naval Undersea Warfare Center (NUWC)
               within that view.</para>
 
             <para>A view might appear by itself, or stacked with other views in a tabbed notebook.
-              You can change the layout of a perspective by opening and closing views and by docking
-              them in different positions in the Workbench window. We&apos;ve attempted to provide a
-              logical arrangement of Debrief views, but feel free to experiment. Debrief will
-              remember your settings, but you can return to the defaults at any point by selecting
-                <guimenuitem>Reset Perspective</guimenuitem> from the <guimenu>Window</guimenu>
+              You can change the layout of a perspective by opening and closing views as well as by
+              docking them in different positions in the Workbench window. We&apos;ve attempted to
+              provide a logical arrangement of Debrief views, but feel free to experiment. Debrief
+              will remember your settings, but if at any point you wish to return to the presets
+              select <guimenuitem>Reset Perspective</guimenuitem> from the <guimenu>Window</guimenu>
               menu.</para>
           </sect3>
 
@@ -884,52 +879,54 @@ Naval Undersea Warfare Center (NUWC)
 
             <para>There are four kinds of toolbars in Debrief.</para>
 
-            <para>The main toolbar, sometimes called the Workbench toolbar, is displayed at the top
-              of the Workbench window directly beneath the menu bar. Items in the toolbar might be
-              enabled or disabled based on the state of either the active view or editor. Sections
-              of the main toolbar can be rearranged using the mouse.</para>
+            <para>The <emphasis role="bold">main toolbar</emphasis>, sometimes called the Workbench
+              toolbar, is displayed at the top of the Workbench window directly beneath the menu
+              bar. Items in the toolbar might be enabled or disabled based on the state of either
+              the active view or editor. Sections of the main toolbar can be rearranged by dragging
+              and droppign with the mouse.</para>
 
-            <para>There are also individual view toolbars, which appear in the title bar of a view.
-              Actions in a view&apos;s toolbar apply only to the view in which they appear. Some view
-              toolbars include a Menu button, shown as an inverted triangle, that contain actions
-              for that view.</para>
+            <para>There are also <emphasis role="bold">individual view toolbars</emphasis>, these
+              appear in the title bar of a view. It's important to note that actions in a
+              view&apos;s toolbar apply only to the view in which they appear. Some view toolbars
+              also include a Menu button, shown as an inverted triangle, that contain actions for
+              that view.</para>
 
-            <para>Whilst Debrief doesn&apos;t currently make use of Perspectives (see <xref linkend="perspectives_note"/>), a third type of toolbar is the perspective switcher.
-              The perspective switcher allows quick access to perspectives that are currently open.
-              It also has a button that can open new perspectives. The perspective switcher is
-              normally located in the top-right, next to the main toolbar. However, it is also
-              possible to position it below the main toolbar ("top-left"), or to position it
-              vertically on the left-hand side of the workbench ("left"). The name of the
-              perspectives is shown by default, but it is possible to hide the text and show only
-              the icons. To reposition the perspective or hide the text, right-click on it and
-              choose the appropriate item from the context menu. When Debrief contains modules for
-              Track Reconstruction it would be understandable for a Track Reconstruction perspective
-              to provide a suitably tailored set of views.</para>
+            <para>Whilst Debrief doesn&apos;t currently make use of Perspectives (refer to the <xref
+                linkend="perspectives_note"/> note, below), a third type of toolbar is <emphasis
+                role="bold">the perspective switcher</emphasis>. The perspective switcher allows
+              quick access to perspectives that are currently open. It also has a button that can
+              open new perspectives. The perspective switcher is normally located in the top-right,
+              next to the main toolbar. However, it is also possible to position it below the main
+              toolbar ("top-left"), or to position it vertically on the left-hand side of the
+              workbench ("left"). The name of the perspective is shown by default, but it is
+              possible to hide the text and show only the icons. To reposition the perspective or
+              hide the text, right-click on it and choose the appropriate item from the context
+              menu. When Debrief contains modules for Track Reconstruction it would be
+              understandable for a Track Reconstruction perspective to provide a suitably tailored
+              set of views.</para>
 
-            <para>Finally, the fast view bar is a toolbar that contains icons representing the
-              current set of fast views. A fast view is a shortcut to a view that is frequently used
-              - generated by right-clicking in a view&apos;s title bar. The fast view bar appears in the
-              bottom left corner of the workbench by default. However, it is possible to position it
-              on the left or right as well. In all cases, you can find out what toolbar buttons do
-              by moving your mouse pointer over the button and reading the tooltip that opens. . <note>
+            <para>Finally, <emphasis role="bold">the fast view bar</emphasis> is a toolbar that
+              contains icons representing the current set of fast views. A fast view is a shortcut
+              to a view that is frequently used; it is generated by right-clicking in a view&apos;s
+              title bar. The fast view bar appears in the bottom left corner of the workbench by
+              default. However, it is possible to position it on the left or right as well. In all
+              cases, you can find out what toolbar buttons do by moving your mouse pointer over the
+              button and reading the tooltip that opens.<note>
                 <formalpara xml:id="perspectives_note">
                   <title>Perspectives</title>
-
                   <para><indexterm>
                       <primary>Perspectives</primary>
                     </indexterm>Each Workbench window contains one or more perspectives. A
                     perspective defines the initial set and layout of views in the Workbench window.
-                    Within the window, each perspective shares the same set of editors. Each
-                    perspective provides a set of functionality aimed at accomplishing a specific
-                    type of task or works with specific types of resources. For example, the
-                    Tactical Analysis perspective combines views that you would commonly use while
-                    editing analysing tactical exercises. Perspectives control what appears in
-                    certain menus and toolbars. They define visible action sets, which you can
-                    change to customize a perspective. You can save a perspective that you build in
-                    this manner, making your own custom perspective that you can open again later.
-                    You can use the <guilabel>General</guilabel> &gt;
-                      <guilabel>Perspectives</guilabel> preference page to open perspectives in the
-                    same window or in a new window.</para>
+                    Within the window, each perspective shares the same set of editors as well as
+                    providing a set of functionality aimed at accomplishing a specific type of task
+                    or works with specific types of resources. For example, the Tactical Analysis
+                    perspective combines views that you would commonly use while analysing and
+                    editing tactical exercises. Perspectives control what appears in certain menus
+                    and toolbars and define visible action sets that you can change to customize a
+                    perspective. Debrief allows you to save customized perspectives. These can then
+                    be loaded in the same or a new window via the  <guilabel>General</guilabel> &gt;
+                      <guilabel>Perspectives</guilabel> preference page.</para>
                 </formalpara>
               </note></para>
           </sect3>
@@ -938,8 +935,8 @@ Naval Undersea Warfare Center (NUWC)
         <sect2 xml:id="first_plot">
           <title>Loading your first plot</title>
 
-          <para>See the Debrief Cheat-Sheet (<xref linkend="g_cheat"/>) for guidance in creating a
-            new Debrief plot, or loading an existing plot.</para>
+          <para>Refer to the Debrief tutorials (<xref linkend="g_cheat"/>) for guidance in creating
+            either a new Debrief plot, or in loading an existing plot.</para>
         </sect2>
       </sect1>
 
@@ -949,9 +946,11 @@ Naval Undersea Warfare Center (NUWC)
         <sect2 xml:id="intro_to_replay">
           <title>Introduction to Replay files</title>
 
-          <para>Debrief reads text files using a format named the Replay file format ( <glossterm linkend="g_replay">Replay</glossterm> was an application used in
+          <para>Debrief reads text files using a format named the Replay file format (<glossterm
+              linkend="g_replay">Replay</glossterm> was an application used in
               <application>Debrief</application>-style tasks in Royal Navy analysis in past years).<tip>
-              <para>Debrief can also load data stored in the increasingly popular KML format.<xref linkend="IntroToKML"/></para>
+              <para>Debrief can also load data stored in the increasingly popular KML format. This
+                is covered in the <xref linkend="IntroToKML"/></para>
             </tip></para>
 
           <para>Replay files are ASCII-files containing vessel position data in a flat-file format
@@ -984,11 +983,11 @@ Naval Undersea Warfare Center (NUWC)
             </listitem>
 
             <listitem>
-              <para>Time (hours, minutes, seconds, decimal seconds))</para>
+              <para>Time (hours, minutes, seconds, decimal seconds)</para>
             </listitem>
 
             <listitem>
-              <para>Vessel Name (single-word))</para>
+              <para>Vessel Name (single-word)</para>
             </listitem>
 
             <listitem>
@@ -997,28 +996,29 @@ Naval Undersea Warfare Center (NUWC)
             </listitem>
 
             <listitem>
-              <para>Latitude (deg, min, sec, hemisphere))</para>
+              <para>Latitude (deg, min, sec, hemisphere)</para>
             </listitem>
 
             <listitem>
-              <para>Longitude (deg, min, sec, hemisphere))</para>
+              <para>Longitude (deg, min, sec, hemisphere)</para>
             </listitem>
 
             <listitem>
-              <para>Course (degrees))</para>
+              <para>Course (degrees)</para>
             </listitem>
 
             <listitem>
-              <para>Speed (knots))</para>
+              <para>Speed (knots)</para>
             </listitem>
 
             <listitem>
-              <para>Depth (m))</para>
+              <para>Depth (m)</para>
             </listitem>
           </itemizedlist>
 
-          <para>Note the third line, which contains a <glossterm linkend="g_narrative">narrative</glossterm> entry. This entry represents one of a group of types of data
-            called <glossterm linkend="g_annotation">Annotation</glossterm> Entries. These entries
+          <para>Note the third line, which contains a <glossterm linkend="g_narrative"
+              >narrative</glossterm> entry. This entry represents one of a group of types of data
+            called <glossterm linkend="g_annotation">Annotation</glossterm> entries. These entries
             allow inclusion of data other than vessel locations, and can be interspersed with
             positional data throughout the file.</para>
 
@@ -1026,24 +1026,26 @@ Naval Undersea Warfare Center (NUWC)
 
           <para>For more detail regarding this file format, including how to represent annotations
             which are only visible for a defined time period, together with lines, ellipses and
-            rectangles, examine the maintainers section of the this document (<xref linkend="maintainers_guide"/>).</para>
+            rectangles, refer to the maintainers section of the this document (<xref
+              linkend="maintainers_guide"/>).</para>
         </sect2>
 
         <sect2 xml:id="DebrieffileFormat">
           <title>The Debrief file format</title>
 
-          <para>Note that the Replay file format just stores sensor readings, it does not store any
-            formatting details. Thus, any formatting applied to a plot cannot be saved as a Replay
-            file. Thus, Debrief has its <emphasis>Debrief File Format</emphasis>. This is a more
-            complex file format that stores a wide range of data-types, formatting instructions, and
-            user-interface settings (such as the current viewport on the data).</para>
+          <para>Note that the Replay file format just stores sensor readings - it does not store any
+            formatting details. As a result, any formatting applied to a plot cannot be saved as a
+            Replay file. Thus, Debrief has the <emphasis>Debrief File Format</emphasis>: This is a
+            more complex file format that stores a wide range of data-types, formatting
+            instructions, and user-interface settings (such as the current viewport on the
+            data).</para>
 
           <para>Thus, whilst you may load data from a <emphasis>.REP</emphasis> Replay file, any
             modifications made to the plot must be stored in a Debrief Plot File
               (<emphasis>.dpf</emphasis>). No changes are save to REP files by the Debrief plot
-            editor (though it possible to make textual changes to REP files using Debrief&apos;s built-in
-            text editor). DPF files use the XML storage format, capable of storing structured information in
-            predefined types, as in the following
+            editor (though it possible to make textual changes to REP files using Debrief&apos;s
+            built-in text editor). DPF files use the XML storage format which is capable of storing
+            structured information in predefined types, as shown in the following
             example:<programlisting width="70">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
    &lt;plot Created="Tue Nov 18 09:54:38 GMT 2008" Name="Debrief Plot"&gt;
      &lt;details Text="Saved with Debrief version dated Tue Nov 18 09:51:52 GMT 2008"/&gt;
@@ -1053,16 +1055,18 @@ and so on....</programlisting></para>
         <sect2 xml:id="import_section">
           <title>Importing data</title>
 
-          <para>See the tutorial covering importing existing data into Debrief (<xref
-              linkend="g_track"/>).</para>
+          <para>If this is the first time of doing this, refer to the tutorial covering importing
+            existing data into Debrief (<xref linkend="g_track"/>).</para>
 
           <para>When data is imported, <application>Debrief</application> applies default values to
-            the time labels for positions. The first point in a <glossterm linkend="g_track">track</glossterm>, together with the first point every day includes the day,
+            the time labels for positions. The first point in a <glossterm linkend="g_track"
+              >track</glossterm>, together with the first point every day, includes the day,
             otherwise just hours and minutes are displayed.</para>
 
-          <para>Of course though, you haven&apos;t learnt how to show the labels, so that&apos;s still to
-            follow - but remember, when you switch on the labels for a <glossterm linkend="g_track">track</glossterm>, it was at the import stage that the default labels were
-            set.</para>
+          <para>We do realise that you haven&apos;t learnt how to show the labels on a track yet -
+            that&apos;s still to follow; but remember, when you switch on the labels for a
+              <glossterm linkend="g_track">track</glossterm>, the default labels are set at the
+            import stage.</para>
         </sect2>
 
         <sect2 xml:id="import_modes">
@@ -1076,8 +1080,9 @@ and so on....</programlisting></para>
               <primary>OTG import mode</primary>
             </indexterm>Since the 2009 introduction of extensions to support Single Sided
             Reconstruction (see <xref linkend="TwoThouOnwards"/>), Debrief is able to import data in
-            either <glossterm linkend="g_DeadReckoning">DR</glossterm> or <glossterm linkend="g_OverTheGround">OTG</glossterm> mode. The mode to be used is decided at the
-            REP Import stage by answering the following dialog:<screenshot>
+            either <glossterm linkend="g_DeadReckoning">DR</glossterm> or <glossterm
+              linkend="g_OverTheGround">OTG</glossterm> mode. The mode to be used is decided at the
+            REP import stage via the Select track mode dialog:<screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/SelectImportMode.png"/>
@@ -1085,14 +1090,12 @@ and so on....</programlisting></para>
               </mediaobject>
             </screenshot></para>
 
-          <para>Once imported, it is not possible to switch between the two track modes. To switch
-            from one mode to the other, delete the track then re-import providing the relevant
-            answer to the above dialog.</para>
+          <para>Once imported, it is not possible to switch between the two track modes. As such, if
+            you need to switch modes, delete the track, re-import it, and then select the track mode
+            required.</para>
 
-          <para>It is possible to direct Debrief to always import using the indicated mode - by
-            clicking on the Automatically use this mode next time. Once set to &apos;automatic&apos;, you can
-            switch back to manual selection using the selections in the Maritime Analysis
-            Preferences dialog:<screenshot>
+          <para>If you want to set a different default import mode, then use the Maritime Analysis
+            Preferences dialog located in Windows > Preferences:<screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/ImportModePreference.png" scalefit="1" width="100%"/>
@@ -1109,10 +1112,9 @@ and so on....</programlisting></para>
           <title>Introduction</title>
 
           <para>Once data is loaded into <application>Debrief</application>, there are a number of
-            ways of controlling the view of the track data using the buttons on the View toolbar.
-              <figure xml:id="view_toolbar_demo">
+            ways of controlling the view of the track data, but the most efficient way is by using
+            the buttons on the View toolbar: <figure xml:id="view_toolbar_demo">
               <title>View toolbar</title>
-
               <screenshot>
                 <mediaobject>
                   <imageobject>
@@ -1123,13 +1125,13 @@ and so on....</programlisting></para>
             </figure></para>
 
           <tip>
-            <para>For most of Debrief&apos;s operations (such as adding drawing features) it needs to
-              have an area to look at. When re-opening an existing plot file, or importing data,
-              Debrief can determine the area covered by the plot. However, when starting a new,
-              blank session, Debrief does not know what area to cover. In this circumstance Debrief
-              sets the origin to its own origin, at Fort Blockhouse, HMS Dolphin, Portsmouth, United
-              Kingdom - the plot will be centred approximately on 50 degrees 49 minutes North, 1
-              degree 19 minutes West.</para>
+            <para>For most of Debrief&apos;s operations (such as adding drawing features) it needs
+              to have an area to work with. When re-opening an existing plot file, or importing
+              data, Debrief determines the area covered by the plot from the given data. However,
+              when starting a new, blank session, Debrief doesn't know what area to use and defaults
+              to its own origin at Fort Blockhouse, HMS Dolphin, Portsmouth, United Kingdom: the
+              plot will be centred on 50 degrees 49 minutes North, 1 degree 19 minutes West
+              (approx).</para>
           </tip>
         </sect2>
 
@@ -1138,23 +1140,22 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Drag buttons</primary>
-            </indexterm>The first five buttons represent modes of use and are selectable
-            individually, with only one selected at a time. When one does get clicked, it remains
-            depressed, popping up the button previously in use. <variablelist>
+            </indexterm>The first five buttons on the View toolbar represent modes of use and are
+            selectable individually with the limitation that only one button at a time can be
+            selected. When clicked, the previous selection is deactivated, and this button becomes
+            active. <variablelist>
               <varlistentry>
                 <term><guiicon><inlinemediaobject>
                       <imageobject>
                         <imagedata align="center" fileref="figures/SelectSegment.png"/>
                       </imageobject>
                     </inlinemediaobject></guiicon>Drag Track Segment</term>
-
                 <listitem>
-                  <para>This setting lets you drag a single segment of track, and is of particular
-                    relevance when manipulating track segments in Single Sided Reconstruction (see
-                      <xref linkend="track_shifting"/>).</para>
+                  <para>Drag Track Segment allows you to drag a single segment of track. It is of
+                    particular relevance when manipulating track segments in Single Sided
+                    Reconstruction (see <xref linkend="track_shifting"/>).</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term><guiicon>
                     <inlinemediaobject>
@@ -1163,14 +1164,12 @@ and so on....</programlisting></para>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon>Drag Component</term>
-
                 <listitem>
-                  <para>This setting lets you drag a single point within a large feature. For
+                  <para>Drag Component lets you drag a single point within a large feature. For
                     example, after switching to Drag Component mode you can drag the corners of a
                     rectangle or a single point within a vessel track.</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term><guiicon>
                     <inlinemediaobject>
@@ -1179,14 +1178,12 @@ and so on....</programlisting></para>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon>Drag Whole Feature</term>
-
                 <listitem>
                   <para>This setting lets you drag a complete feature. In Drag Whole Feature mode
                     you can drag a rectangle around the plot, or move a complete vessel track (see
                       <xref linkend="track_shifting"/>).</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term><guiicon>
                     <inlinemediaobject>
@@ -1195,13 +1192,12 @@ and so on....</programlisting></para>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon>Pan</term>
-
                 <listitem>
                   <para>The Pan control lets you move your current viewpoint. Click on the Pan
-                    button, and then drag the mouse around the <glossterm linkend="g_plt">plot</glossterm> -- you will see the view change as you do it.</para>
+                    button, and then drag the mouse around the <glossterm linkend="g_plt"
+                      >plot</glossterm> -- you will see the view change as you do it.</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term><guiicon>
                     <inlinemediaobject>
@@ -1210,27 +1206,23 @@ and so on....</programlisting></para>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon>Range Bearing</term>
-
                 <listitem>
-                  <para>Whilst the Range and Bearing control does not allow you to move around the
-                    view, it does merit discussion at this point. Select the Range and Bearing
-                    control, then drag the mouse to measure the range and bearing between two points
-                    - you will see the calculated results displayed at the mid-point of the
-                    connecting, as shown below. The default units are yards, but different units may
-                    be selected from the <guimenuitem>CMAP</guimenuitem> section of the properties
-                    shown in the <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>
-                    dialog.</para>
-
+                  <para>The Range and Bearing control neither allows you to move around the view nor
+                    move objects, but selecting it allows you to measure the precise range and
+                    bearing between two points on the plot. As you click and drag, you will see the
+                    calculated results displayed at the mid-point of the connection, as shown below.
+                    The default units are yards, but different units may be selected from the
+                      <guimenuitem>CMAP</guimenuitem> section of the properties shown in the
+                      <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu> dialog.</para>
                   <para><guiicon>
                       <inlinemediaobject>
                         <imageobject>
-                          <imagedata align="center" fileref="figures/RngDisplay.png"/>
+                          <imagedata align="center" fileref="figures/RngDisplay.png" width="350"/>
                         </imageobject>
                       </inlinemediaobject>
                     </guiicon></para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term xml:id="zoom_in.title"><guiicon>
                     <inlinemediaobject>
@@ -1239,7 +1231,6 @@ and so on....</programlisting></para>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon>Zoom in</term>
-
                 <listitem>
                   <para>You are in the Zoom In mode by default. So, click and drag the mouse across
                     the area where the two <glossterm linkend="g_track">track</glossterm>s are
@@ -1253,20 +1244,21 @@ and so on....</programlisting></para>
             <para>In addition to the mouse mode buttons described above, the middle mouse button may
               be used to navigate irrespective of the current mouse mode. Hold the middle mouse
               button down and drag the cursor to pan around the plot, or hold down the
-                <guibutton>CTRL</guibutton> key and roll your mouse wheel backwards and forwards to zoom
-              in and out of the plot</para>
+                <guibutton>CTRL</guibutton> key and roll your mouse wheel backwards and forwards to
+              zoom in and out of the plot.</para>
           </tip>
           <tip>
-            <para>And another tip, for free: when the plot is selected you can use the
-                <guibutton>tab</guibutton> key to cycle through the above drag modes.</para>
+            <para>Handy tip no. 2 is when the plot is selected you can use the
+                <guibutton>tab</guibutton> key to cycle through the toolbar drag modes.</para>
           </tip>
         </sect2>
 
         <sect2 xml:id="the_click_btns">
           <title>Click buttons</title>
 
-          <para>The next set of buttons do not involve mouse interaction with the plot, they just
-            require mouse clicks <variablelist>
+          <para>The remaining buttons on the View toolbar differ from the previous ones in that they
+            don't involve mouse interaction with the plot, and selecting one of these doesn't
+            deselect the already selected mouse mode button. <variablelist>
               <varlistentry>
                 <term><guiicon>
                     <inlinemediaobject>
@@ -1274,18 +1266,17 @@ and so on....</programlisting></para>
                         <imagedata align="center" fileref="figures/ZoomOut.png"/>
                       </imageobject>
                     </inlinemediaobject></guiicon>Zoom out</term>
-
                 <listitem>
-                  <para>If you now click on the Zoom out button, you will "zoom out" of the
-                      <glossterm linkend="g_plt">plot</glossterm> (surprise, surprise). This button
-                    works well in conjunction with the Zoom in button, since this does not take the
-                    mouse out of "zoom in" mode -- therefore you can zoom in on areas, click zoom
-                    out a couple of times, then zoom in again, all with the minimum of mouse clicks.
-                    The wheel-mouse may also be used to zoom out as described above in
-                      <emphasis>Toggle Buttons</emphasis></para>
+                  <para>If you click on the Zoom out button, you will "zoom out" of the <glossterm
+                      linkend="g_plt">plot</glossterm> (surprise, surprise). However, as mentioned
+                    in the brief introduction (above), if the Zoom in button is already selected,
+                    selecting Zoom out doesn't deselect it - they're designed to work in conjunction
+                    with each other. You click on Zoom out as many times as is required and, as soon
+                    as you stop, you can then drag an area to zoom in on and work. If you have a
+                    wheel-mouse, holding the Ctrl key down allows you to zoom in or out, as
+                    described above in <emphasis>Toggle Buttons</emphasis>.</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry xml:id="Fit_To_Win">
                 <term><guiicon>
                     <inlinemediaobject>
@@ -1294,21 +1285,21 @@ and so on....</programlisting></para>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon>Fit to Window</term>
-
                 <listitem>
-                  <para>Whilst the meaning of the icon on this button is not all that clear (it&apos;s
-                    meant to be a combination of zoom in, zoom out, and all of the pan/move
-                    buttons), it fits the view to display all of the currently visible data. Note
-                    that there may be data on the <glossterm linkend="g_plt">plot</glossterm> which
-                    is not visible (hidden layers), the area covered by the hidden items of
-                    information is not included in the "Fit to window" operation. Additionally this
+                  <para>Clicking on Fit to Window will display all currently visible plot data
+                    within the confines of the <glossterm linkend="g_plt">plot</glossterm>  area.
+                    This is good if you're zoomed in too far and need to see all the data, a single
+                    click will zoom out so you can see all visible information; conversely, if
+                    you've zoomed out too far, and the plot shapes are mere pin-pricks, a single
+                    click will zoom in, fill your plot, and allow you to see exactly what you have
+                    displayed. Note, this operation only applies to visible data, not that there may
+                    be data on the plot which is not visible (hidden layers). In addition, this
                     phenomenon relates to the data once you have pressed "Filter to time period"
                     from the Time Controller - the <glossterm linkend="g_plt">plot</glossterm> is
-                    resized to fit the data contained in the indicated time period (yes, you&apos;ll
+                    resized to fit the data contained in the indicated time period (you&apos;ll
                     learn about this later in <xref linkend="filter_time_period"/>).</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term><guiicon>
                     <inlinemediaobject>
@@ -1317,10 +1308,9 @@ and so on....</programlisting></para>
                       </imageobject>
                     </inlinemediaobject>
                   </guiicon>Refresh View</term>
-
                 <listitem>
                   <para>This button refreshes the current view. Refreshing is occasionally required
-                    when switching between display modes</para>
+                    when switching between display modes.</para>
                 </listitem>
               </varlistentry>
             </variablelist></para>
@@ -1329,14 +1319,15 @@ and so on....</programlisting></para>
         <sect2 xml:id="overview_window">
           <title>Chart Overview</title>
 
-          <para>The Chart Overview provides an overview of the full exercise area. This view is
-            opened from the <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop
-            down list. Using it is quite simple. Drag a region in the overview and the current plot
-            will quickly zoom to show that area. A highlight rectangle shows the current plot view.
-            Once you&apos;ve zoomed in a little you can double-click in the overview to recenter the main
-            plot on that point. <figure xml:id="overviewChart_sample">
+          <para>The Chart Overview view provides an large scale view of the entire exercise area.
+            This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show
+              View...</guimenuitem> drop down list (if you can't see it in the drop-down list, click
+            on 'Other' at the bottom of the Show View list, and a dialog will open where you can
+            select from unlisted views). Using it is quite simple: drag a region in the overview and
+            the current plot will quickly zoom to show that area. A highlight rectangle shows the
+            current plot view. Once you&apos;ve zoomed in a little you can double-click in the
+            overview to recenter the main plot on that point. <figure xml:id="overviewChart_sample">
               <title>Overview chart in use</title>
-
               <screenshot>
                 <mediaobject>
                   <imageobject>
@@ -1352,33 +1343,33 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Undo support</primary>
-            </indexterm><application>Debrief</application> contains an unending list of undo-able
-            operations, only cleared when the current session is closed. Most changes to the
-              <application>Debrief</application> plot are undo-able - whether they be creating a new
-            feature, changing an attribute of a feature (such as color), or changing the current
-            perspective. If something doesn&apos;t undo, then the changes are we&apos;ve missed it. Please
-            report the oversight using the procedure in <xref linkend="debrief_bugs"/> and we&apos;ll
-            correct it.</para>
+            </indexterm><application>Debrief</application> contains an unending list of undoable
+            operations which are only cleared when the current session is closed. Most changes to
+            the <application>Debrief</application> plot are undoable, whether they be creating a new
+            feature, changing an attribute of a feature (such as color), changing the current
+            perspective, etc. If something doesn&apos;t undo, then the changes are it's something
+            we&apos;ve overlooked, so please let us know about it using the procedure in <xref
+              linkend="debrief_bugs"/> and we&apos;ll correct it as soon as possible.</para>
 
-          <para>Each open Debrief plot has its own undo buffer - so if the undo button appears
-            disabled you must first make sure you&apos;ve clicked on the plot it relates to. Whilst you
-            may have made the edit via the Outline View, you must still click on the plot before
-            conducting an undo operation.</para>
+          <para>Each open Debrief plot has its own undo buffer, so if the undo button is disabled on
+            a particular plot you must first make sure it's active (single click on it to do that).
+            Furthermore, even though you may have made the edit via the Outline View, you must still
+            click on the plot before conducting an undo operation.</para>
         </sect2>
 
         <sect2 xml:id="format_the_plot">
           <title>Formatting the plot</title>
 
-          <para>The background color for the Debrief plot can be <indexterm>
+          <para>The Debrief plot itself can be customised in a number of ways. For example, the
+            background color can be <indexterm>
               <primary>Formatting</primary>
-
               <secondary>Plot (background color)</secondary>
-            </indexterm>changed to suit different projection/printing mediums, or to suit the
-            analysts personal choice. Additionally, the width at which lines of tactical objects are
-            drawn can also be changed. Either of these options are accessed by right-clicking on the
-            plot and selecting <emphasis>Edit base chart</emphasis>. A properties panel will appear,
-            use the drop-down list to change the background colour, or move the slider to change the
-            line width itself.</para>
+            </indexterm>changed to suit different projection/printing mediums, or just to suit the
+            analysts' personal choice. Another way is by changing the line widths of tactical
+            objects which are displayed. Either of these options are easily accessible by
+            right-clicking on the plot and selecting <emphasis>Edit base chart</emphasis>. A
+            properties panel will then appear, and you can use the drop-down list to change the
+            background colour, move the slider to change the line width itself, etc.</para>
         </sect2>
       </sect1>
 
@@ -1396,34 +1387,34 @@ and so on....</programlisting></para>
         specifically, these are:</para>
       <itemizedlist>
         <listitem>
-          <para>Manipulating track data(<xref linkend="formatting_data"/>)</para>
+          <para>Manipulating track data (<xref linkend="formatting_data"/>)</para>
         </listitem>
         <listitem>
-          <para>Analysing data(<xref linkend="analysing_data"/>)</para>
+          <para>Analysing data (<xref linkend="analysing_data"/>)</para>
         </listitem>
         <listitem>
-          <para>Exporting data(<xref linkend="exporting_data"/>)</para>
+          <para>Exporting data (<xref linkend="exporting_data"/>)</para>
         </listitem>
         <listitem>
-          <para>Symbol sets(<xref linkend="symbol_sets"/>)</para>
+          <para>Symbol sets (<xref linkend="symbol_sets"/>)</para>
         </listitem>
         <listitem>
-          <para>External datasets(<xref linkend="external_datasets"/>)</para>
+          <para>External datasets (<xref linkend="external_datasets"/>)</para>
         </listitem>
         <listitem>
-          <para>Exercise planning(<xref linkend="ExercisePlanning"/>)</para>
+          <para>Exercise planning (<xref linkend="ExercisePlanning"/>)</para>
         </listitem>
         <listitem>
-          <para>Viewing narratives(<xref linkend="viewing_narratives"/>)</para>
+          <para>Viewing narratives (<xref linkend="viewing_narratives"/>)</para>
         </listitem>
         <listitem>
-          <para>Using chart backdrops(<xref linkend="ChartBackdrops"/>)</para>
+          <para>Using chart backdrops (<xref linkend="ChartBackdrops"/>)</para>
         </listitem>
         <listitem>
-          <para>Analysing sensor data(<xref linkend="analyse_sensor_data"/>)</para>
+          <para>Analysing sensor data (<xref linkend="analyse_sensor_data"/>)</para>
         </listitem>
         <listitem>
-          <para>Management of TMA and TUA solutions(<xref linkend="tma_data"/>)</para>
+          <para>Management of TMA and TUA solutions (<xref linkend="tma_data"/>)</para>
         </listitem>
       </itemizedlist>
     </partintro>
@@ -1463,8 +1454,7 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Property editor</primary>
-            </indexterm>Track editing is performed on the Properties Window (see <xref
-              linkend="g_property_window"/>), and is initiated by selecting the track either from
+            </indexterm>Track editing is performed on the Properties Window (see <xref linkend="g_property_window"/>), and is initiated by selecting the track either from
             the plot or the Outline View, as described in the <emphasis>Editing your data</emphasis> tutorial.<note>
               <para>Many of these editing operations can be performed without using the Properties
                 Window, simply by right-clicking on a track either in the Outline View or on the
@@ -1597,7 +1587,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons2.png" />
+                    <imagedata fileref="figures/PaletteButtons2.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3002,8 +2992,7 @@ and so on....</programlisting></para>
 
             <para>The sample shown below gives a demonstration of the use of this mode. You can
               quickly see that the blue vessel is directly ahead of the red trailing vessel, and
-              your use of the Range Ring Highlighter gives us a quick indication of range. <figure
-                xml:id="relative_display_demo">
+              your use of the Range Ring Highlighter gives us a quick indication of range. <figure xml:id="relative_display_demo">
                 <title>Sample of primary centered/North oriented mode</title>
                 <screenshot>
                   <mediaobject>
@@ -3352,9 +3341,7 @@ and so on....</programlisting></para>
                   colour to sections of track is performed within the Outline View.</para>
               </tip><note>
                 <para>The last two columns output give identifier information: the first of these is
-                  the name of the current item in this <glossterm linkend="g_track"
-                    >track</glossterm>, and the second is the point in the primary <glossterm
-                    linkend="g_track">track</glossterm> nearest to the current time stamp: that-is
+                  the name of the current item in this <glossterm linkend="g_track">track</glossterm>, and the second is the point in the primary <glossterm linkend="g_track">track</glossterm> nearest to the current time stamp: that-is
                   the point in the primary track which has been used for the calculated
                   results.</para>
               </note></para>
@@ -3753,8 +3740,7 @@ and so on....</programlisting></para>
           </indexterm> can either be attached to a text label, or used to highlight a current vessel
           location when stepping through tracks.</para>
         <para>Twenty-two Symbols are provided in 3 sizes. When the 2 smaller sizes are shown, any
-          internal characters (as used in the sonar buoys) are not plotted. <figure
-            xml:id="debrief_symbols">
+          internal characters (as used in the sonar buoys) are not plotted. <figure xml:id="debrief_symbols">
             <title>Symbols provided by <application>Debrief</application></title>
             <mediaobject>
               <imageobject>
@@ -3769,8 +3755,7 @@ and so on....</programlisting></para>
             at fixed screen sizes, but as representative sizes of the subject vessel - so they
             resize as you zoom in on a plot. In summer 2011 the range of vessels represented by
             scaled symbols was extended, plus it became possible to specify the length and width of
-            the subject platform for a realistically sized vehicle representation.<figure
-              xml:id="scaled_symbols">
+            the subject platform for a realistically sized vehicle representation.<figure xml:id="scaled_symbols">
               <title>Scaled vessel symbols in <application>Debrief</application></title>
               <mediaobject>
                 <imageobject>
@@ -3966,8 +3951,7 @@ and so on....</programlisting></para>
 
                     <tbody>
                       <row>
-                        <entry nameend="c2" namest="c1">The Vector Product Format (<glossterm
-                            linkend="g_vpf">VPF</glossterm>) is a standard format, structure, and
+                        <entry nameend="c2" namest="c1">The Vector Product Format (<glossterm linkend="g_vpf">VPF</glossterm>) is a standard format, structure, and
                           organization for large geographic databases that are based on a
                           georelational data model and are intended for direct use. VPF is designed
                           to be compatible with a wide variety of applications and products. VPF
@@ -4040,24 +4024,16 @@ and so on....</programlisting></para>
           <para>In Autumn 2015 VPF data was available from the US National Geospatial-Intelligence
             Agency (NGA), at these locations:<itemizedlist>
               <listitem>
-                <para><uri
-                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0noa.tar.gz"
-                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0noa.tar.gz </uri></para>
+                <para><uri xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0noa.tar.gz">http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0noa.tar.gz </uri></para>
               </listitem>
               <listitem>
-                <para><uri
-                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0soa.tar.gz"
-                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0soa.tar.gz </uri></para>
+                <para><uri xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0soa.tar.gz">http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0soa.tar.gz </uri></para>
               </listitem>
               <listitem>
-                <para><uri
-                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0eur.tar.gz"
-                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0eur.tar.gz</uri></para>
+                <para><uri xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0eur.tar.gz">http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0eur.tar.gz</uri></para>
               </listitem>
               <listitem>
-                <para><uri
-                    xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0sas.tar.gz"
-                    >http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0sas.tar.gz </uri></para>
+                <para><uri xlink:href="http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0sas.tar.gz">http://geoengine.nga.mil/ftpdir/archive/vpf_data/v0sas.tar.gz </uri></para>
               </listitem>
             </itemizedlist></para>
 
@@ -5416,8 +5392,7 @@ and so on....</programlisting></para>
                 quietly slip in.</para>
             </note><note>
               <para>An item of note is that it is only since the 2001 update that
-                  <application>Debrief</application> has been able to properly show <glossterm
-                  linkend="g_sensor">sensor</glossterm> data. A rudimentary way of showing bearing
+                  <application>Debrief</application> has been able to properly show <glossterm linkend="g_sensor">sensor</glossterm> data. A rudimentary way of showing bearing
                 lines has been present for a number of years, but Debrief has not performed any
                 useful processing on this data.</para>
             </note></para>
@@ -7621,8 +7596,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             </indexterm>The symbology data field describes the representation required for this
             vessel track, specifying the colour of track to use and symbol-type to represent that
             vehicle. The Symbol style read in is used when tracks are to be shown by using symbol
-            (in 2D or 3D), as described in <xref linkend="symbol_sets"/>.<table
-              xml:id="debrief_Sym">
+            (in 2D or 3D), as described in <xref linkend="symbol_sets"/>.<table xml:id="debrief_Sym">
               <title>Debrief core symbology data fields</title>
               <tgroup cols="4">
                 <colspec colname="c1"/>
@@ -7911,9 +7885,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                 to use a 2 or 5 character symbology element for each REP line. This was of
                 particular value in supporting quick turnaround, in-stride, fast-look analysis. It
                 is also of value when high volumes of annotations are produced using a simulation
-                environment such as <link
-                  xlink:href="https://www.atlas-elektronik.com/what-we-do/submarine-systems/odin/"
-                  >Odin</link>.</para>
+                environment such as <link xlink:href="https://www.atlas-elektronik.com/what-we-do/submarine-systems/odin/">Odin</link>.</para>
             </note>
             <table xml:id="debrief_ExtendedSym">
               <title>Debrief extended symbology data fields</title>
@@ -8096,7 +8068,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             degrees as in the standard replay file format, and symbology representations are as in
             the above tables.</para>     
         </sect2>
-          <sect2  xml:id="replay_core_annotations">
+          <sect2 xml:id="replay_core_annotations">
              <title>Core Elements</title>
             <para><indexterm>
               <primary>Annotation Data</primary>
@@ -8202,7 +8174,7 @@ and entry type can be multi-word if surrounded by quotes (").
             </markup>   </screen>
             </para>
           </sect2>
-          <sect2  xml:id="replay_dynamic_annotations">
+          <sect2 xml:id="replay_dynamic_annotations">
               <title>Dynamic Elements</title>
             
             <para>In addition to individual annotation shapes it is possible to define a dynamic annotation.  Do
@@ -8230,7 +8202,7 @@ and entry type can be multi-word if surrounded by quotes (").
             </screen>
             </para>
           </sect2>
-          <sect2  xml:id="replay_dynamic_track_annotations">
+          <sect2 xml:id="replay_dynamic_track_annotations">
             <title>Dynamic Track Annotations</title>
             
             <para>
