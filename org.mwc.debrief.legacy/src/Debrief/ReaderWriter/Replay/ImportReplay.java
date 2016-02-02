@@ -574,6 +574,16 @@ public class ImportReplay extends PlainImporterBase
 
       // add our new layer to the Layers object
       addLayer(trkWrapper);
+      
+      // see if there is any formatting to be done
+      // lastly - see if the layers object has some formatters
+      Iterator<INewLayerListener> newIiter = getLayers().getNewLayerListeners().iterator();
+      while (newIiter.hasNext())
+      {
+        INewLayerListener newI =
+             newIiter.next();
+        newI.newLayer(trkWrapper);
+      }
     }
 
     // Note: line style & thickness only (currently) apply to whole tracks,
@@ -590,7 +600,7 @@ public class ImportReplay extends PlainImporterBase
     }
 
     // add the fix to the track
-    trkWrapper.addFix((FixWrapper) thisWrapper);
+    trkWrapper.addFix(thisWrapper);
 
     // let's also tell the fix about it's track
     ((FixWrapper) thisWrapper).setTrackWrapper(trkWrapper);
@@ -601,6 +611,16 @@ public class ImportReplay extends PlainImporterBase
       // give this fix it's unique colour
       thisWrapper.setColor(thisColor);
     }
+    
+    // lastly - see if the layers object has some formatters
+    Iterator<INewItemListener> newIiter = getLayers().getNewItemListeners().iterator();
+    while (newIiter.hasNext())
+    {
+      Layers.INewItemListener newI =
+          (Layers.INewItemListener) newIiter.next();
+      newI.newItem(trkWrapper, thisWrapper, rf.theSymbology);
+    }
+    
     return res;
 
   }
