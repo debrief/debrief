@@ -48,6 +48,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -55,7 +56,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
@@ -573,6 +573,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       FixWrapper existingFix = (FixWrapper) tsPts.nextElement();
       FixWrapper newF = new FixWrapper(existingFix.getFix());
+
+      // also duplicate the label
+      newF.setLabel(existingFix.getLabel());
+
       target.addFix(newF);
     }
   }
@@ -926,57 +930,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           "Sorry it is not possible to add:" + point.getName() + " to "
               + this.getName());
     }
-  }
-
-  /**
-   * add the fix wrapper to the track
-   * 
-   * @param theFix
-   *          the Fix to be added
-   */
-  public void addFix(final FixWrapper theFix)
-  {
-    // do we have any track segments
-    if (_thePositions.size() == 0)
-    {
-      // nope, add one
-      final TrackSegment firstSegment = new TrackSegment();
-      firstSegment.setName("Positions");
-      _thePositions.addSegment(firstSegment);
-    }
-
-    // add fix to last track segment
-    final TrackSegment last = (TrackSegment) _thePositions.last();
-    last.addFix(theFix);
-
-    // tell the fix about it's daddy
-    theFix.setTrackWrapper(this);
-
-    // and extend the start/end DTGs
-    if (_myTimePeriod == null)
-    {
-      _myTimePeriod =
-          new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix
-              .getDateTimeGroup());
-    }
-    else
-    {
-      _myTimePeriod.extend(theFix.getDateTimeGroup());
-    }
-
-    if (_myWorldArea == null)
-    {
-      _myWorldArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
-    }
-    else
-    {
-      _myWorldArea.extend(theFix.getLocation());
-    }
-
-    // we want to listen out for the fix being moved. better listen in to it
-    //
-    // theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-    // _locationListener);
   }
 
   /**
@@ -3867,7 +3820,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         }
       }
     }
-    
+
     // yup, do our first split
     final SortedSet<Editable> p1 = relevantSegment.headSet(splitPnt);
     final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPnt);
@@ -3885,10 +3838,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // find the ownship location at the relevant time
       WorldLocation secondLegOrigin = null;
-      
+
       // get the time of the split
       final HiResDate splitTime = splitPnt.getDateTimeGroup();
-
 
       // aah, sort out if we are splitting before or after.
       SensorWrapper sensor = theTMA.getReferenceSensor();
@@ -3905,10 +3857,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // if we couldn't get a sensor origin, try for the track origin
       if (secondLegOrigin == null)
       {
-        final Watchable firstMatch = theTMA.getReferenceTrack()
-            .getNearestTo(splitTime)[0];
-        secondLegOrigin =
-            firstMatch.getLocation();
+        final Watchable firstMatch =
+            theTMA.getReferenceTrack().getNearestTo(splitTime)[0];
+        secondLegOrigin = firstMatch.getLocation();
       }
       final WorldVector secondOffset =
           splitPnt.getLocation().subtract(secondLegOrigin);
@@ -3933,7 +3884,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final AbsoluteTMASegment theTMA = (AbsoluteTMASegment) relevantSegment;
 
       // aah, sort out if we are splitting before or after.
-      
+
       // find out the offset at the split point, so we can initiate it for
       // the
       // second part of the track
@@ -4033,6 +3984,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final WorldVector wv =
             currFw.getLocation().subtract(prevFw.getLocation());
         prevFw.getFix().setCourse(wv.getBearing());
+
+        // also, set the correct label alignment
+        currFw.resetLabelLocation();
 
         // calculate the speed
         // get distance in meters
@@ -4210,4 +4164,48 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   }
 
+  public void addFix(FixWrapper theFix)
+  {
+    // do we have any track segments
+    if (_thePositions.size() == 0)
+    {
+      // nope, add one
+      final TrackSegment firstSegment = new TrackSegment();
+      firstSegment.setName("Positions");
+      _thePositions.addSegment(firstSegment);
+    }
+
+    // add fix to last track segment
+    final TrackSegment last = (TrackSegment) _thePositions.last();
+    last.addFix(theFix);
+
+    // tell the fix about it's daddy
+    theFix.setTrackWrapper(this);
+
+    // and extend the start/end DTGs
+    if (_myTimePeriod == null)
+    {
+      _myTimePeriod =
+          new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix
+              .getDateTimeGroup());
+    }
+    else
+    {
+      _myTimePeriod.extend(theFix.getDateTimeGroup());
+    }
+
+    if (_myWorldArea == null)
+    {
+      _myWorldArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
+    }
+    else
+    {
+      _myWorldArea.extend(theFix.getLocation());
+    }
+
+    // we want to listen out for the fix being moved. better listen in to it
+    //
+    // theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+    // _locationListener);
+  }
 }

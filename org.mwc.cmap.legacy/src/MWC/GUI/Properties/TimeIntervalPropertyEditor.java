@@ -65,7 +65,6 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
@@ -91,68 +90,49 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    */
   private static int _freqs[] = null;
 
-  
   private static void initialise()
   {
-  	if(_stringTags == null)
-  	{
-  		_stringTags = new String[]
-      {
-        "1/10 Sec",
-        "1/5 Sec",
-        "1/3 Sec",
-        "1/2 Sec",
-        "1 Sec",
-        "5 Secs",
-        "10 Secs",
-        "30 Secs",
-        "1 Minute",
-        "2 Minutes",
-        "5 Minutes",
-        "10 Minutes"};
-  		
-  		_freqs = new int[]
-      {
-        100,
-        200,
-        333,
-        500,
-        1000,
-        5000,
-        10 * 1000,
-        30 * 1000,
-        60 * 1000,
-        2 * 60 * 1000,
-        5 * 60 * 1000,
-        10 * 60 * 1000
-      };  		
-  	}
+    if (_stringTags == null)
+    {
+      _stringTags =
+          new String[]
+          {"1/10 Sec", "1/5 Sec", "1/3 Sec", "1/2 Sec", "1 Sec", "5 Secs",
+              "10 Secs", "30 Secs", "1 Minute", "2 Minutes", "5 Minutes",
+              "10 Minutes", "15 Minutes", "30 Minutes", "60 Minutes"};
+
+      _freqs =
+          new int[]
+          {100, 200, 333, 500, 1000, 5000, 10 * 1000, 30 * 1000, 60 * 1000,
+              2 * 60 * 1000, 5 * 60 * 1000, 10 * 60 * 1000, 15 * 60 * 1000,
+              30 * 60 * 1000, 60 * 60 * 1000};
+    }
   }
 
-  /** static version of return tag list (used for reference)
+  /**
+   * static version of return tag list (used for reference)
    * 
    * @return
    */
   public static String[] getTagList()
   {
-  	initialise();
-  	return _stringTags;
+    initialise();
+    return _stringTags;
   }
-  
 
-  /** static version of return values
+  /**
+   * static version of return values
    * 
    * @return
    */
-	public static int[] getValueList()
-	{
-		initialise();
-		return _freqs;
-	}  
-  
+  public static int[] getValueList()
+  {
+    initialise();
+    return _freqs;
+  }
+
   /**
    * return the labels to use
-   *
+   * 
    * @return list of labels
    */
   public String[] getTags()
@@ -170,7 +150,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
 
   /**
    * get the current value
-   *
+   * 
    * @return current interval in millis as asn Integer
    */
   public Object getValue()
@@ -178,12 +158,12 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
     return _myFreq;
   }
 
-
   /**
-   * Initialise the value of this editable object (expecting to receive
-   * either an Integer or a String
-   *
-   * @param p1 the value to use
+   * Initialise the value of this editable object (expecting to receive either an Integer or a
+   * String
+   * 
+   * @param p1
+   *          the value to use
    */
   public void setValue(final Object p1)
   {
@@ -200,8 +180,9 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
 
   /**
    * User has selected an item from the list, update our internal value
-   *
-   * @param val user input
+   * 
+   * @param val
+   *          user input
    */
   public void setAsText(final String val)
   {
@@ -221,7 +202,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
 
   /**
    * find the current value of this field
-   *
+   * 
    * @return current value in text form
    */
   public String getAsText()
@@ -239,11 +220,15 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
         res = tags[i];
         break;
       }
+    }
 
+    // hmm, did we manage it?
+    if (res == null)
+    {
+      res = tags[tags.length - 1];
     }
 
     return res;
   }
 
 }
-  

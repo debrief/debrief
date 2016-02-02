@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="%featureName"
-      version="1.0.313"
+      version="1.0.314"
       provider-name="MWC"
       plugin="org.mwc.debrief.core">
 
@@ -253,12 +253,12 @@ Library.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-   
+
    <plugin
          id="org.mwc.debrief.dis"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-   
+
 </feature>

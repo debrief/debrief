@@ -209,7 +209,12 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
         res = tags[i];
         break;
       }
-
+    }
+    
+    // hmm, did we manage it?
+    if (res == null)
+    {
+      res = tags[tags.length - 2];
     }
 
     return res;
