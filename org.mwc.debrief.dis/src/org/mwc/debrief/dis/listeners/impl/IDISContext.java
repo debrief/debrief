@@ -1,7 +1,10 @@
 package org.mwc.debrief.dis.listeners.impl;
 
+import java.util.Iterator;
+
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
 
 public interface IDISContext
@@ -12,29 +15,34 @@ public interface IDISContext
    * 
    * @return
    */
-  abstract public boolean getUseNewPlot();
+  boolean getUseNewPlot();
 
   /**
    * whether a UI should update on each new data item
    * 
    * @return
    */
-  abstract public boolean getLiveUpdates();
+  boolean getLiveUpdates();
 
   /**
    * store this new layer
    * 
    * @param layer
    */
-  public abstract void addThisLayer(Layer layer);
+  void addThisLayer(Layer layer);
 
   /**
    * whether the user wants the Debrief plot to resize to show visible data
    * 
    * @return
    */
-  abstract public boolean getFitToData();
+  boolean getFitToData();
 
+  /** move the display time forward
+   * 
+   * @param time
+   */
+  public void setNewTime(long time);
 
   /**
    * trigger a screen update
@@ -42,7 +50,7 @@ public interface IDISContext
    * @param newItem
    * @param layer
    */
-  public abstract void fireUpdate(Plottable newItem, Layer layer);
+  void fireUpdate(Plottable newItem, Layer layer);
 
   /**
    * find the specified track for this exercise
@@ -51,6 +59,12 @@ public interface IDISContext
    * @param theName
    * @return
    */
-  public abstract TrackWrapper findLayer(short exerciseId, String theName);
+  TrackWrapper findLayer(short exerciseId, String theName);
+
+  /** get iterator, so we can work through the new item listeners
+   * 
+   * @return
+   */
+  Iterator<INewItemListener> getNewItemListeners();
 
 }
