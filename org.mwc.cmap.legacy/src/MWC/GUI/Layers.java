@@ -196,8 +196,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import MWC.GUI.Layer.BackgroundLayer;
@@ -205,939 +207,1042 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
- * Plain implementation of layer manager. In addition to managing a set of
- * layers this class provides additional (GUI-independent) support for GUI
- * classes which handle layers
+ * Plain implementation of layer manager. In addition to managing a set of layers this class
+ * provides additional (GUI-independent) support for GUI classes which handle layers
  */
 public class Layers implements Serializable, Plottable, PlottablesType
 {
 
-	// ////////////////////////////////////////////////////
-	// member variables
-	// ////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////
+  // member variables
+  // ////////////////////////////////////////////////////
 
-	/**
-	 * the name of the chart-features layer
-	 */
-	public static final String CHART_FEATURES = "Chart Features";
-	
-	/**
-	 * the name of the chart-features layer
-	 */
-	public static final String DYNAMIC_FEATURES = "Dynamic Features";
+  /**
+   * the name of the formatters layer
+   */
+  private static final String FORMATTERS = "Formatters";
 
-	/**
+  /**
+   * the name of the chart-features layer
+   */
+  public static final String CHART_FEATURES = "Chart Features";
+
+  /**
+   * the name of the chart-features layer
+   */
+  public static final String DYNAMIC_FEATURES = "Dynamic Features";
+
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * the layer data
-	 */
-	private final Vector<Editable> _theLayers = new Vector<Editable>(0, 1);
+  /**
+   * the layer data
+   */
+  private final Vector<Editable> _theLayers = new Vector<Editable>(0, 1);
 
-	/**
-	 * the set of callbacks for when data has been modified
-	 */
-	transient private Vector<DataListener> _dataModifiedListeners;
+  /**
+   * the set of callbacks for when data has been modified
+   */
+  transient private Vector<DataListener> _dataModifiedListeners;
 
-	/**
-	 * the set of callbacks for when the data on this layer has been added to or
-	 * removed
-	 */
-	transient private Vector<DataListener> _dataExtendedListeners;
+  /**
+   * the set of callbacks for when the data on this layer has been added to or removed
+   */
+  transient private Vector<DataListener> _dataExtendedListeners;
 
-	/**
-	 * the set of callbacks for when formatting details of data on this layer have
-	 * been modified
-	 */
-	transient private Vector<DataListener> _dataReformattedListeners;
+  /**
+   * the set of callbacks for when formatting details of data on this layer have been modified
+   */
+  transient private Vector<DataListener> _dataReformattedListeners;
 
-	/**
-	 * the editors for these layers
-	 */
-	transient private MWC.GUI.Tools.Chart.RightClickEdit _myEditor;
+  /**
+   * classes that want to know about new items
+   * 
+   */
+  transient private List<INewItemListener> _newItemListeners;
 
-	/**
-	 * whether these layers are visible
-	 */
-	private boolean _isVisible = true;
+  /**
+   * the editors for these layers
+   */
+  transient private MWC.GUI.Tools.Chart.RightClickEdit _myEditor;
 
-	/**
-	 * flag to track if we should allow the fireExtended() method to fire or not.
-	 */
-	private boolean _suspendFiringExtended;
+  /**
+   * whether these layers are visible
+   */
+  private boolean _isVisible = true;
 
-	/**
-	 * handler for if the formatting of a layer hcanges
-	 * 
-	 */
-	private final PropertyChangeListener _formatListener;
+  /**
+   * flag to track if we should allow the fireExtended() method to fire or not.
+   */
+  private boolean _suspendFiringExtended;
 
-	/**
-	 * handler for if the size (length) of a layer changes
-	 * 
-	 */
-	private final PropertyChangeListener _extendedListener;
+  /**
+   * handler for if the formatting of a layer hcanges
+   * 
+   */
+  private final PropertyChangeListener _formatListener;
 
-	// ////////////////////////////////////////////////////
-	// constructor
-	// ////////////////////////////////////////////////////
+  /**
+   * handler for if the size (length) of a layer changes
+   * 
+   */
+  private final PropertyChangeListener _extendedListener;
 
-	/**
-	 * a list of layers
-	 */
-	public Layers()
-	{
-		_formatListener = new ReformatListener();
-		_extendedListener = new PropertyChangeListener()
-		{
-			@Override
-			public void propertyChange(PropertyChangeEvent arg0)
-			{
-				fireExtended();
-			}
-		};
+  // ////////////////////////////////////////////////////
+  // constructor
+  // ////////////////////////////////////////////////////
 
-		produceLists();
-	}
+  /**
+   * a list of layers
+   */
+  public Layers()
+  {
+    _formatListener = new ReformatListener();
+    _extendedListener = new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(PropertyChangeEvent arg0)
+      {
+        fireExtended();
+      }
+    };
 
-	/** make the property listener class into an embedded class - because
-	 * we were experiencing some not-serializable problems
-	 * 
-	 * @author ian
-	 *
-	 */
-	private class ReformatListener implements PropertyChangeListener, Serializable
-	{
-		/**
+    produceLists();
+
+  }
+
+  /**
+   * make the property listener class into an embedded class - because we were experiencing some
+   * not-serializable problems
+   * 
+   * @author ian
+   * 
+   */
+  private class ReformatListener implements PropertyChangeListener,
+      Serializable
+  {
+    /**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
-
-		public void propertyChange(final PropertyChangeEvent evt)
-		{
-			final Layer layer = (Layer) evt.getSource();
-			fireReformatted(layer);
-		}
-
-	}
-
-	// ////////////////////////////////////////////////////
-	// member functions
-	// ////////////////////////////////////////////////////
-
-	/**
-	 * store editor to go with this set of layers. Ideally we would like to store
-	 * this editor in the LayerManager, but since the LayerManager is an editor
-	 * itself it doesn't have a constructor and there's no way of setting this
-	 * data (other than via static data, but it needs to be unique for each
-	 * operation).
-	 */
-	public void setEditor(final MWC.GUI.Tools.Chart.RightClickEdit editor)
-	{
-		_myEditor = editor;
-	}
-
-	/**
-	 * Retrieve actions to go with this set of layers.
-	 */
-	public MWC.GUI.Tools.Chart.RightClickEdit getEditor()
-	{
-		return _myEditor;
-	}
-
-	private void produceLists()
-	{
-		_dataModifiedListeners = new Vector<DataListener>(0, 1);
-		_dataExtendedListeners = new Vector<DataListener>(0, 1);
-		_dataReformattedListeners = new Vector<DataListener>(0, 1);
-	}
-
-	/**
-	 * get the bounds of this set of layers (return our SPECIAL area in absence of
-	 * bounds)
-	 */
-	public WorldArea getBounds()
-	{
-		WorldArea res = null;
-
-		final Iterator<Editable> it = _theLayers.iterator();
-		while (it.hasNext())
-		{
-			final Layer thisL = (Layer) it.next();
-			final WorldArea newBounds = thisL.getBounds();
-			if (newBounds != null)
-			{
-				if (res == null)
-					res = new WorldArea(newBounds);
-				else
-					res.extend(newBounds);
-			}
-		}
-
-		// did we find anything?
-		if (res == null)
-		{
-			res = getDebriefOrigin();
-		}
-
-		return res;
-
-	}
-
-	/**
-	 * if we don't have any data, we still want to be able to centre on a
-	 * geographic location. use HMS Dolphin.
-	 * 
-	 * @return WorldArea to provide default origin
-	 */
-	public static final WorldArea getDebriefOrigin()
-	{
-		// no, return the origin of Debrief (Fort Blockhouse, HMS Dolphin)
-		return new WorldArea(new WorldLocation(51, 12, 8.27, 'N', 001, 58, 7.62,
-				'W', 0), new WorldLocation(50, 30, 26.99, 'N', 0, 42, 56.58, 'W', 0));
-	}
-
-	/**
-	 * add the other layers to ours (perform shallow copy)
-	 * 
-	 * @param theOther
-	 *          layer to add to us
-	 */
-	public void addThis(final Layers theOther)
-	{
-		//
-		final Enumeration<Editable> other = theOther._theLayers.elements();
-		while (other.hasMoreElements())
-		{
-			final Layer thisL = (Layer) other.nextElement();
-			// see if we are storing this layer already
-			final Layer current = findLayer(thisL.getName());
-			if (current == null)
-			{
-				// ok, now we can add it
-				_theLayers.addElement(thisL);
-			}
-			else
-			{
-				current.append(thisL);
-			}
-		}
-
-	}
-
-	/**
-	 * clear out all layers
-	 * 
-	 */
-	public void clear()
-	{
-		_theLayers.clear();
-
-		// and fire the extended event
-		fireExtended(null, null);
-
-	}
-
-	//
-	/**
-	 * get the current number of layers
-	 * 
-	 * @return current number of layers
-	 */
-	public int size()
-	{
-		return _theLayers.size();
-	}
-
-	public Enumeration<Editable> elements()
-	{
-		return _theLayers.elements();
-	}
-
-	/**
-	 * retrieve the layers. Right, we do some SPECIAL PROCESSING HERE.
-	 * 
-	 * We want to ensure that we return
-	 * 
-	 * @return
-	 */
-	public Enumeration<Layer> sortedElements()
-	{
-		// have a got a creating a sorted set of layers
-		final Vector<Layer> res = new Vector<Layer>(0, 1);
-		final Enumeration<Editable> numer = _theLayers.elements();
-
-		final Vector<Layer> _backgrounds = new Vector<Layer>(0, 1);
-		final Vector<Layer> _buffered = new Vector<Layer>(0, 1);
-		final Vector<Layer> _nonBuffered = new Vector<Layer>(0, 1);
-		while (numer.hasMoreElements())
-		{
-			boolean inserted = false;
-			final Layer thisLayer = (Layer) numer.nextElement();
-			if (thisLayer instanceof BackgroundLayer)
-			{
-				_backgrounds.add(thisLayer);
-				inserted = true;
-			}
-			else if (thisLayer instanceof BaseLayer)
-			{
-				final BaseLayer bl = (BaseLayer) thisLayer;
-				if (bl.isBuffered())
-				{
-					_buffered.add(thisLayer);
-					inserted = true;
-				}
-			}
-
-			if (!inserted)
-				_nonBuffered.add(thisLayer);
-		}
-
-		res.addAll(_backgrounds);
-		res.addAll(_buffered);
-		res.addAll(_nonBuffered);
-		return res.elements();
-	}
-
-	public boolean getVisible()
-	{
-		return _isVisible;
-	}
-
-	public void setVisible(final boolean visible)
-	{
-		this._isVisible = visible;
-	}
-
-	public double rangeFrom(final WorldLocation other)
-	{
-		return -1;
-	}
-
-	/**
-	 * see if we can find this layer
-	 * 
-	 * @param theLayerName
-	 *          the name of the layer to look for
-	 * @return the layer
-	 */
-	public Layer findLayer(final String theLayerName)
-	{
-		Layer res = null;
-		// step through our layers
-		final Enumeration<Editable> enumer = _theLayers.elements();
-		while (enumer.hasMoreElements())
-		{
-			final Layer thisL = (Layer) enumer.nextElement();
-			final String layerName = thisL.getName();
-			if (layerName != null)
-				if (layerName.equalsIgnoreCase(theLayerName))
-				{
-					res = thisL;
-					break;
-				}
-		}
-		//
-		return res;
-	}
-
-	public void addThisLayerDoNotResize(final Layer theLayer)
-	{
-		// see if we are already storing this layer
-		final Layer res = findLayer(theLayer.getName());
-
-		if (res == null)
-		{
-			// no, we know nothing about it, create a fresh one
-
-			// is this a layer which wants to go at the back?
-			if (theLayer instanceof Layer.BackgroundLayer)
-			{
-				_theLayers.insertElementAt(theLayer, 0);
-			}
-			else
-			{
-				_theLayers.add(theLayer);
-			}
-		}
-		else
-		{
-			// we know about it already, copy the new one into our existing one
-			res.append(theLayer);
-		}
-
-		if (theLayer instanceof SupportsPropertyListeners)
-		{
-			final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
-			pr.addPropertyChangeListener(SupportsPropertyListeners.FORMAT,
-					_formatListener);
-			pr.addPropertyChangeListener(SupportsPropertyListeners.EXTENDED,
-					_extendedListener);
-		}
-
-	}
-
-	/**
-	 * add this layer to our list
-	 * 
-	 * @param theLayer
-	 *          the layer to add
-	 */
-	public void addThisLayer(final Layer theLayer)
-	{
-		Layer layer = theLayer;
-		// right, see if it's one to be wrapped
-		if (layer instanceof NeedsWrappingInLayerManager)
-		{
-			// right, does it already exist at the top level
-			final Layer exists = this.findLayer(layer.getName());
-			if (exists != null)
-			{
-				// better rename it then
-				layer.setName(layer.getName() + "_"
-						+ (int) (Math.random() * 1000));
-			}
-
-			// now wrap it
-			final NeedsWrappingInLayerManager nl = (NeedsWrappingInLayerManager) layer;
-			layer = nl.wrapMe();
-		}
-		
-		// does it need to know about the layers, or that it has been added to the layers?
-		if(layer instanceof NeedsToKnowAboutLayers)
-		{
-			final NeedsToKnowAboutLayers need = (NeedsToKnowAboutLayers) layer;
-			need.setLayers(this);
-		}
-
-		addThisLayerDoNotResize(layer);
-
-		// and fire the extended event
-		fireExtended(null, layer);
-	}
-
-	/**
-	 * add this layer to our list, even if there is already one with the same name
-	 * 
-	 * @param theLayer
-	 *          the layer to add
-	 */
-	public void addThisLayerAllowDuplication(final Layer theLayer)
-	{
-		// right, does this layer name already exist?
-		final Iterator<Editable> iter = _theLayers.iterator();
-		while (iter.hasNext())
-		{
-			final Layer thisLayer = (Layer) iter.next();
-			if (thisLayer.getName().equals(theLayer.getName()))
-			{
-				// right, we've got to subtlely change the new layer name
-				theLayer.setName(theLayer.getName() + "_1");
-			}
-		}
-
-		// ok, now we can add it - we've changed the name if that's necessary.
-		_theLayers.add(theLayer);
-
-		// and fire the extended event
-		fireExtended();
-	}
-
-	/**
-	 * remove a layer from our list
-	 * 
-	 * @param theLayer
-	 *          the layer to remove
-	 */
-	public void removeThisLayer(final Layer theLayer)
-	{
-		// first remove the layer
-		_theLayers.removeElement(theLayer);
-
-		if (theLayer instanceof SupportsPropertyListeners)
-		{
-			final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
-			pr.removePropertyChangeListener(SupportsPropertyListeners.FORMAT,
-					_formatListener);
-			pr.removePropertyChangeListener(SupportsPropertyListeners.EXTENDED,
-					_extendedListener);
-		}
-		
-		// do we need to tell it that it's being removed?
-		if(theLayer instanceof NeedsToBeInformedOfRemove)
-		{
-			NeedsToBeInformedOfRemove rem = (NeedsToBeInformedOfRemove) theLayer;
-			rem.beingRemoved();
-		}
-
-		// and fire the modified event
-		fireExtended(null, theLayer);
-	}
-
-	/**
-	 * return the layer at this index
-	 * 
-	 * @param index
-	 *          the index to look at
-	 * @return the Layer, or null
-	 */
-	public Layer elementAt(final int index)
-	{
-		return (Layer) _theLayers.elementAt(index);
-	}
-
-	/**
-	 * paint all of the layers in this canvas
-	 * 
-	 * @param dest
-	 *          destination for the plotting
-	 */
-	public void paint(final CanvasType dest)
-	{
-		// check that we have a valid canvas (that the sizes are set)
-		final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
-		if (sArea != null)
-		{
-			if (sArea.width > 0)
-			{
-				final Enumeration<Editable> enumer = _theLayers.elements();
-				while (enumer.hasMoreElements())
-				{
-					final Layer thisLayer = (Layer) enumer.nextElement();
-
-					// set the line width
-					final float oldWid = dest.getLineWidth();
-					dest.setLineWidth(thisLayer.getLineThickness());
-					thisLayer.paint(dest);
-					dest.setLineWidth((int) oldWid);
-				}
-			}
-		}
-	}
-
-	/**
-	 * create an empty layer, and return it
-	 * 
-	 * @return a blank layer
-	 */
-	public Layer cleanLayer()
-	{
-		final Layer res = new BaseLayer();
-		return res;
-	}
-
-	// ////////////////////////////////////////////////////
-	// callback management
-	// ////////////////////////////////////////////////////
-
-	/**
-	 * inform listeners that we have been extended
-	 */
-	public void fireExtended()
-	{
-		if (!_suspendFiringExtended)
-		{
-			final Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
-			while (enumer.hasMoreElements())
-			{
-				final DataListener thisOne = (DataListener) enumer.nextElement();
-				thisOne.dataExtended(this);
-			}
-		}
-	}
-
-	/**
-	 * inform listeners that we have been extended
-	 */
-	public void fireExtended(final Plottable newItem, final Layer parent)
-	{
-		if (!_suspendFiringExtended)
-		{
-			final Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
-			while (enumer.hasMoreElements())
-			{
-				final DataListener thisOne = (DataListener) enumer.nextElement();
-
-				// just see if this is a special listener
-				if (thisOne instanceof DataListener2)
-				{
-					// yes, indicate which is the new item
-					final DataListener2 d2 = (DataListener2) thisOne;
-					d2.dataExtended(this, newItem, parent);
-				}
-				else
-					thisOne.dataExtended(this);
-			}
-		}
-	}
-
-	/**
-	 * inform listeners that we have been modified
-	 */
-	public void fireModified(final Layer changedLayer)
-	{
-		final Enumeration<DataListener> enumer = _dataModifiedListeners.elements();
-		while (enumer.hasMoreElements())
-		{
-			final DataListener thisOne = (DataListener) enumer.nextElement();
-			thisOne.dataModified(this, changedLayer);
-		}
-	}
-
-	/**
-	 * inform listeners that we have had a formatting change
-	 */
-	public void fireReformatted(final Layer changedLayer)
-	{
-		final Enumeration<DataListener> enumer = _dataReformattedListeners.elements();
-		while (enumer.hasMoreElements())
-		{
-			final DataListener thisOne = (DataListener) enumer.nextElement();
-			thisOne.dataReformatted(this, changedLayer);
-		}
-	}
-
-	/**
-	 * add this listener
-	 * 
-	 * @param theListener
-	 *          the listener to add
-	 */
-	public void addDataModifiedListener(final DataListener theListener)
-	{
-		if (!_dataModifiedListeners.contains(theListener))
-		{
-			_dataModifiedListeners.addElement(theListener);
-		}
-	}
-
-	/**
-	 * add this listener
-	 * 
-	 * @param theListener
-	 *          the listener to add
-	 */
-	public void addDataExtendedListener(final DataListener theListener)
-	{
-		if (!_dataExtendedListeners.contains(theListener))
-		{
-			_dataExtendedListeners.addElement(theListener);
-		}
-	}
-
-	/**
-	 * add this listener
-	 * 
-	 * @param theListener
-	 *          the listener to add
-	 */
-	public void addDataReformattedListener(final DataListener theListener)
-	{
-		if (!_dataReformattedListeners.contains(theListener))
-		{
-			_dataReformattedListeners.addElement(theListener);
-		}
-	}
-
-	/**
-	 * remove this listener
-	 * 
-	 * @param theListener
-	 *          the listener to remove
-	 */
-	public void removeDataModifiedListener(final DataListener theListener)
-	{
-		_dataModifiedListeners.removeElement(theListener);
-	}
-
-	/**
-	 * remove this listener
-	 * 
-	 * @param theListener
-	 *          the listener to remove
-	 */
-	public void removeDataExtendedListener(final DataListener theListener)
-	{
-		_dataExtendedListeners.removeElement(theListener);
-	}
-
-	/**
-	 * remove this listener
-	 * 
-	 * @param theListener
-	 *          the listener to remove
-	 */
-	public void removeDataReformattedListener(final DataListener theListener)
-	{
-		_dataReformattedListeners.removeElement(theListener);
-	}
-
-	private void readObject(final java.io.ObjectInputStream in) throws IOException,
-			ClassNotFoundException
-	{
-
-		in.defaultReadObject();
-
-		produceLists();
-	}
-
-	/**
-	 * the name of this object
-	 * 
-	 * @return name
-	 */
-	public String toString()
-	{
-		return getName();
-	}
-
-	/**
-	 * the Name of this object
-	 * 
-	 * @return the name
-	 */
-	public String getName()
-	{
-		return "The Layers";
-	}
-
-	/**
-	 * duff editable, not used
-	 * 
-	 * @param val
-	 *          largely ignored by the people of New Guinea
-	 */
-	public void setName(final String val)
-	{
-		//
-	}
-
-	/**
-	 * whether this item has an editor (yes, of course)
-	 * 
-	 * @return yes/no flag
-	 */
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	/**
-	 * get the editable information for this object
-	 * 
-	 * @return details needed for editing
-	 */
-	public Editable.EditorType getInfo()
-	{
-		return new LayersInfo(this);
-	}
-
-	public int compareTo(final Plottable arg0)
-	{
-		final int res;
-		final Plottable other = (Plottable) arg0;
-		final int myCode = hashCode();
-		final int otherCode = other.hashCode();
-		if (myCode < otherCode)
-			res = -1;
-		else if (myCode > otherCode)
-			res = 1;
-		else
-			res = 0;
-		return res;
-	}
-
-	/**
-	 * finalise function, removes all references to layers
-	 */
-	public void close()
-	{
-		// first, get the layers to close themselves
-		final Enumeration<Editable> enumer = _theLayers.elements();
-		while (enumer.hasMoreElements())
-		{
-			final Object layer = enumer.nextElement();
-			if (layer instanceof PlainWrapper)
-			{
-				final PlainWrapper pw = (PlainWrapper) layer;
-				pw.closeMe();
-			}
-		}
-
-		// and now empty the object itself
-		_theLayers.removeAllElements();
-
-		// also tidy up the listeners
-		_dataExtendedListeners.clear();
-		_dataModifiedListeners.clear();
-		_dataReformattedListeners.clear();
-	}
-
-	// ////////////////////////////////////////////////////////////////
-	// interface definition
-	// ////////////////////////////////////////////////////////////////
-
-	/**
-	 * marker for objects that must be wrapped before they are pasted into the
-	 * layer manager
-	 * 
-	 */
-	public static interface NeedsWrappingInLayerManager
-	{
-
-		public Layer wrapMe();
-	}
-
-	/**
-	 * marker for objects that want to know about the parent layer (prob because
-	 * they can create other layers)
-	 */
-	public static interface NeedsToKnowAboutLayers
-	{
-		public void setLayers(Layers parent);
-	}
-
-	/**
-	 * interface to be implemented by classes intending to watch the full set of
-	 * data for this scenarion
-	 */
-	public interface DataListener
-	{
-		/**
-		 * some part of the data has been modified (not necessarily formatting
-		 * though)
-		 * 
-		 * @param theData
-		 *          the Layers containing the item of data which has been modified
-		 * @param changedLayer
-		 *          a layer which has changed (or null if not known)
-		 */
-		public void dataModified(Layers theData, Layer changedLayer);
-
-		/**
-		 * a new piece of data has been edited
-		 * 
-		 * @param theData
-		 *          the Layers which have had something edited
-		 */
-		public void dataExtended(Layers theData);
-
-		/**
-		 * some kind of formatting has been applied
-		 * 
-		 * @param theData
-		 *          the Layers containing the data which has been reformatted
-		 * @param changedLayer
-		 *          a layer which has changed (or null if not known)
-		 */
-		public void dataReformatted(Layers theData, Layer changedLayer);
-
-	}
-
-	/**
-	 * extended interface which indicates the new item
-	 */
-	public interface DataListener2 extends DataListener
-	{
-		/**
-		 * a new piece of data has been edited
-		 * 
-		 * @param theData
-		 *          the Layers which have had something edited
-		 * @param newItem
-		 *          the item which has been added
-		 * @param parent
-		 *          the layer containing the item
-		 */
-		public void dataExtended(Layers theData, Plottable newItem, Layer parent);
-	}
-
-	// //////////////////////////////////////////////////////////////////////////
-	// embedded class, used for editing this layer
-	// //////////////////////////////////////////////////////////////////////////
-	/**
-	 * the definition of what is editable about this object
-	 */
-	public class LayersInfo extends Editable.EditorType
-	{
-
-		/**
-		 * constructor for editable details of a set of Layers
-		 * 
-		 * @param data
-		 *          the Layers themselves
-		 */
-		public LayersInfo(final Layers data)
-		{
-			super(data, data.getName(), "");
-		}
-
-		/**
-		 * return a description of this bean, also specifies the custom editor we
-		 * use
-		 * 
-		 * @return the BeanDescriptor
-		 */
-		public BeanDescriptor getBeanDescriptor()
-		{
-			final BeanDescriptor bp = new BeanDescriptor(Layers.class,
-					MWC.GUI.LayerManager.Swing.SwingLayerManager.class);
-			bp.setDisplayName("Layer Manager");
-			return bp;
-		}
-
-		/**
-		 * The things about these Layers which are editable. We don't really use
-		 * this list, since we have our own custom editor anyway
-		 * 
-		 * @return property descriptions
-		 */
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ prop("Name", "the name for these layers"), };
-
-				return res;
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class LayersTest extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public LayersTest(final String val)
-		{
-			super(val);
-		}
-
-		public void testMyParams()
-		{
-			MWC.GUI.Editable ed = new Layers();
-			Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
-	/**
-	 * class to stop the layer manager from firing "extended" messages -
-	 * particularly when we're loading a lot of data
-	 * 
-	 * @param suspendFiring
-	 */
-	public void suspendFiringExtended(final boolean suspendFiring)
-	{
-		_suspendFiringExtended = suspendFiring;
-	}
+    private static final long serialVersionUID = 1L;
+
+    public void propertyChange(final PropertyChangeEvent evt)
+    {
+      final Layer layer = (Layer) evt.getSource();
+      fireReformatted(layer);
+    }
+
+  }
+
+  // ////////////////////////////////////////////////////
+  // member functions
+  // ////////////////////////////////////////////////////
+
+  /**
+   * store editor to go with this set of layers. Ideally we would like to store this editor in the
+   * LayerManager, but since the LayerManager is an editor itself it doesn't have a constructor and
+   * there's no way of setting this data (other than via static data, but it needs to be unique for
+   * each operation).
+   */
+  public void setEditor(final MWC.GUI.Tools.Chart.RightClickEdit editor)
+  {
+    _myEditor = editor;
+  }
+
+  /**
+   * Retrieve actions to go with this set of layers.
+   */
+  public MWC.GUI.Tools.Chart.RightClickEdit getEditor()
+  {
+    return _myEditor;
+  }
+
+  private void produceLists()
+  {
+    _dataModifiedListeners = new Vector<DataListener>(0, 1);
+    _dataExtendedListeners = new Vector<DataListener>(0, 1);
+    _dataReformattedListeners = new Vector<DataListener>(0, 1);
+    _newItemListeners = new ArrayList<INewItemListener>();
+  }
+
+  /**
+   * get the bounds of this set of layers (return our SPECIAL area in absence of bounds)
+   */
+  public WorldArea getBounds()
+  {
+    WorldArea res = null;
+
+    final Iterator<Editable> it = _theLayers.iterator();
+    while (it.hasNext())
+    {
+      final Layer thisL = (Layer) it.next();
+      final WorldArea newBounds = thisL.getBounds();
+      if (newBounds != null)
+      {
+        if (res == null)
+          res = new WorldArea(newBounds);
+        else
+          res.extend(newBounds);
+      }
+    }
+
+    // did we find anything?
+    if (res == null)
+    {
+      res = getDebriefOrigin();
+    }
+
+    return res;
+
+  }
+
+  /**
+   * if we don't have any data, we still want to be able to centre on a geographic location. use HMS
+   * Dolphin.
+   * 
+   * @return WorldArea to provide default origin
+   */
+  public static final WorldArea getDebriefOrigin()
+  {
+    // no, return the origin of Debrief (Fort Blockhouse, HMS Dolphin)
+    return new WorldArea(new WorldLocation(51, 12, 8.27, 'N', 001, 58, 7.62,
+        'W', 0), new WorldLocation(50, 30, 26.99, 'N', 0, 42, 56.58, 'W', 0));
+  }
+
+  /**
+   * add the other layers to ours (perform shallow copy)
+   * 
+   * @param theOther
+   *          layer to add to us
+   */
+  public void addThis(final Layers theOther)
+  {
+    //
+    final Enumeration<Editable> other = theOther._theLayers.elements();
+    while (other.hasMoreElements())
+    {
+      final Layer thisL = (Layer) other.nextElement();
+      // see if we are storing this layer already
+      final Layer current = findLayer(thisL.getName());
+      if (current == null)
+      {
+        // ok, now we can add it
+        _theLayers.addElement(thisL);
+      }
+      else
+      {
+        current.append(thisL);
+      }
+    }
+
+  }
+
+  /**
+   * clear out all layers
+   * 
+   */
+  public void clear()
+  {
+    _theLayers.clear();
+
+    // and fire the extended event
+    fireExtended(null, null);
+
+  }
+
+  //
+  /**
+   * get the current number of layers
+   * 
+   * @return current number of layers
+   */
+  public int size()
+  {
+    return _theLayers.size();
+  }
+
+  public Enumeration<Editable> elements()
+  {
+    return _theLayers.elements();
+  }
+
+  /**
+   * retrieve the layers. Right, we do some SPECIAL PROCESSING HERE.
+   * 
+   * We want to ensure that we return
+   * 
+   * @return
+   */
+  public Enumeration<Layer> sortedElements()
+  {
+    // have a got a creating a sorted set of layers
+    final Vector<Layer> res = new Vector<Layer>(0, 1);
+    final Enumeration<Editable> numer = _theLayers.elements();
+
+    final Vector<Layer> _backgrounds = new Vector<Layer>(0, 1);
+    final Vector<Layer> _buffered = new Vector<Layer>(0, 1);
+    final Vector<Layer> _nonBuffered = new Vector<Layer>(0, 1);
+    while (numer.hasMoreElements())
+    {
+      boolean inserted = false;
+      final Layer thisLayer = (Layer) numer.nextElement();
+      if (thisLayer instanceof BackgroundLayer)
+      {
+        _backgrounds.add(thisLayer);
+        inserted = true;
+      }
+      else if (thisLayer instanceof BaseLayer)
+      {
+        final BaseLayer bl = (BaseLayer) thisLayer;
+        if (bl.isBuffered())
+        {
+          _buffered.add(thisLayer);
+          inserted = true;
+        }
+      }
+
+      if (!inserted)
+        _nonBuffered.add(thisLayer);
+    }
+
+    res.addAll(_backgrounds);
+    res.addAll(_buffered);
+    res.addAll(_nonBuffered);
+    return res.elements();
+  }
+
+  public boolean getVisible()
+  {
+    return _isVisible;
+  }
+
+  public void setVisible(final boolean visible)
+  {
+    this._isVisible = visible;
+  }
+
+  public double rangeFrom(final WorldLocation other)
+  {
+    return -1;
+  }
+
+  /**
+   * see if we can find this layer
+   * 
+   * @param theLayerName
+   *          the name of the layer to look for
+   * @return the layer
+   */
+  public Layer findLayer(final String theLayerName)
+  {
+    Layer res = null;
+    // step through our layers
+    final Enumeration<Editable> enumer = _theLayers.elements();
+    while (enumer.hasMoreElements())
+    {
+      final Layer thisL = (Layer) enumer.nextElement();
+      final String layerName = thisL.getName();
+      if (layerName != null)
+        if (layerName.equalsIgnoreCase(theLayerName))
+        {
+          res = thisL;
+          break;
+        }
+    }
+    //
+    return res;
+  }
+
+  public void addThisLayerDoNotResize(final Layer theLayer)
+  {
+    // see if we are already storing this layer
+    final Layer res = findLayer(theLayer.getName());
+
+    if (res == null)
+    {
+      // no, we know nothing about it, create a fresh one
+
+      // is this a layer which wants to go at the back?
+      if (theLayer instanceof Layer.BackgroundLayer)
+      {
+        _theLayers.insertElementAt(theLayer, 0);
+      }
+      else
+      {
+        _theLayers.add(theLayer);
+      }
+    }
+    else
+    {
+      // we know about it already, copy the new one into our existing one
+      res.append(theLayer);
+    }
+
+    if (theLayer instanceof SupportsPropertyListeners)
+    {
+      final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
+      pr.addPropertyChangeListener(SupportsPropertyListeners.FORMAT,
+          _formatListener);
+      pr.addPropertyChangeListener(SupportsPropertyListeners.EXTENDED,
+          _extendedListener);
+    }
+
+  }
+
+  /**
+   * add this layer to our list
+   * 
+   * @param theLayer
+   *          the layer to add
+   */
+  public void addThisLayer(final Layer theLayer)
+  {
+    Layer layer = theLayer;
+    // right, see if it's one to be wrapped
+    if (layer instanceof NeedsWrappingInLayerManager)
+    {
+      // right, does it already exist at the top level
+      final Layer exists = this.findLayer(layer.getName());
+      if (exists != null)
+      {
+        // better rename it then
+        layer.setName(layer.getName() + "_" + (int) (Math.random() * 1000));
+      }
+
+      // now wrap it
+      final NeedsWrappingInLayerManager nl =
+          (NeedsWrappingInLayerManager) layer;
+      layer = nl.wrapMe();
+    }
+
+    // does it need to know about the layers, or that it has been added to the layers?
+    if (layer instanceof NeedsToKnowAboutLayers)
+    {
+      final NeedsToKnowAboutLayers need = (NeedsToKnowAboutLayers) layer;
+      need.setLayers(this);
+    }
+
+    addThisLayerDoNotResize(layer);
+
+    // and fire the extended event
+    fireExtended(null, layer);
+  }
+
+  /**
+   * add this layer to our list, even if there is already one with the same name
+   * 
+   * @param theLayer
+   *          the layer to add
+   */
+  public void addThisLayerAllowDuplication(final Layer theLayer)
+  {
+    // right, does this layer name already exist?
+    final Iterator<Editable> iter = _theLayers.iterator();
+    while (iter.hasNext())
+    {
+      final Layer thisLayer = (Layer) iter.next();
+      if (thisLayer.getName().equals(theLayer.getName()))
+      {
+        // right, we've got to subtlely change the new layer name
+        theLayer.setName(theLayer.getName() + "_1");
+      }
+    }
+
+    // ok, now we can add it - we've changed the name if that's necessary.
+    _theLayers.add(theLayer);
+
+    // and fire the extended event
+    fireExtended();
+  }
+
+  /**
+   * remove a layer from our list
+   * 
+   * @param theLayer
+   *          the layer to remove
+   */
+  public void removeThisLayer(final Layer theLayer)
+  {
+    // first remove the layer
+    _theLayers.removeElement(theLayer);
+
+    if (theLayer instanceof SupportsPropertyListeners)
+    {
+      final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
+      pr.removePropertyChangeListener(SupportsPropertyListeners.FORMAT,
+          _formatListener);
+      pr.removePropertyChangeListener(SupportsPropertyListeners.EXTENDED,
+          _extendedListener);
+    }
+
+    // do we need to tell it that it's being removed?
+    if (theLayer instanceof NeedsToBeInformedOfRemove)
+    {
+      NeedsToBeInformedOfRemove rem = (NeedsToBeInformedOfRemove) theLayer;
+      rem.beingRemoved();
+    }
+
+    // and fire the modified event
+    fireExtended(null, theLayer);
+  }
+
+  /**
+   * return the layer at this index
+   * 
+   * @param index
+   *          the index to look at
+   * @return the Layer, or null
+   */
+  public Layer elementAt(final int index)
+  {
+    return (Layer) _theLayers.elementAt(index);
+  }
+
+  /**
+   * paint all of the layers in this canvas
+   * 
+   * @param dest
+   *          destination for the plotting
+   */
+  public void paint(final CanvasType dest)
+  {
+    // check that we have a valid canvas (that the sizes are set)
+    final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
+    if (sArea != null)
+    {
+      if (sArea.width > 0)
+      {
+        final Enumeration<Editable> enumer = _theLayers.elements();
+        while (enumer.hasMoreElements())
+        {
+          final Layer thisLayer = (Layer) enumer.nextElement();
+
+          // set the line width
+          final float oldWid = dest.getLineWidth();
+          dest.setLineWidth(thisLayer.getLineThickness());
+          thisLayer.paint(dest);
+          dest.setLineWidth((int) oldWid);
+        }
+      }
+    }
+  }
+
+  /**
+   * create an empty layer, and return it
+   * 
+   * @return a blank layer
+   */
+  public Layer cleanLayer()
+  {
+    final Layer res = new BaseLayer();
+    return res;
+  }
+
+  // ////////////////////////////////////////////////////
+  // callback management
+  // ////////////////////////////////////////////////////
+
+  /**
+   * inform listeners that we have been extended
+   */
+  public void fireExtended()
+  {
+    if (!_suspendFiringExtended)
+    {
+      final Enumeration<DataListener> enumer =
+          _dataExtendedListeners.elements();
+      while (enumer.hasMoreElements())
+      {
+        final DataListener thisOne = (DataListener) enumer.nextElement();
+        thisOne.dataExtended(this);
+      }
+    }
+  }
+
+  /**
+   * inform listeners that we have been extended
+   */
+  public void fireExtended(final Plottable newItem, final Layer parent)
+  {
+    if (!_suspendFiringExtended)
+    {
+      final Enumeration<DataListener> enumer =
+          _dataExtendedListeners.elements();
+      while (enumer.hasMoreElements())
+      {
+        final DataListener thisOne = (DataListener) enumer.nextElement();
+
+        // just see if this is a special listener
+        if (thisOne instanceof DataListener2)
+        {
+          // yes, indicate which is the new item
+          final DataListener2 d2 = (DataListener2) thisOne;
+          d2.dataExtended(this, newItem, parent);
+        }
+        else
+          thisOne.dataExtended(this);
+      }
+    }
+  }
+
+  /**
+   * inform listeners that we have been modified
+   */
+  public void fireModified(final Layer changedLayer)
+  {
+    final Enumeration<DataListener> enumer = _dataModifiedListeners.elements();
+    while (enumer.hasMoreElements())
+    {
+      final DataListener thisOne = (DataListener) enumer.nextElement();
+      thisOne.dataModified(this, changedLayer);
+    }
+  }
+
+  /**
+   * inform listeners that we have had a formatting change
+   */
+  public void fireReformatted(final Layer changedLayer)
+  {
+    final Enumeration<DataListener> enumer =
+        _dataReformattedListeners.elements();
+    while (enumer.hasMoreElements())
+    {
+      final DataListener thisOne = (DataListener) enumer.nextElement();
+      thisOne.dataReformatted(this, changedLayer);
+    }
+  }
+
+  /**
+   * add this listener
+   * 
+   * @param theListener
+   *          the listener to add
+   */
+  public void addDataModifiedListener(final DataListener theListener)
+  {
+    if (!_dataModifiedListeners.contains(theListener))
+    {
+      _dataModifiedListeners.addElement(theListener);
+    }
+  }
+
+  /**
+   * add this listener
+   * 
+   * @param theListener
+   *          the listener to add
+   */
+  public void addDataExtendedListener(final DataListener theListener)
+  {
+    if (!_dataExtendedListeners.contains(theListener))
+    {
+      _dataExtendedListeners.addElement(theListener);
+    }
+  }
+
+  /**
+   * add this listener
+   * 
+   * @param theListener
+   *          the listener to add
+   */
+  public void addDataReformattedListener(final DataListener theListener)
+  {
+    if (!_dataReformattedListeners.contains(theListener))
+    {
+      _dataReformattedListeners.addElement(theListener);
+    }
+  }
+
+  /**
+   * add this listener
+   * 
+   * @param theListener
+   *          the listener to add
+   */
+  public void addNewItemListener(final INewItemListener theListener)
+  {
+    if (!_newItemListeners.contains(theListener))
+    {
+      _newItemListeners.add(theListener);
+
+      // and store it
+      storeFormatter(theListener);
+    }
+
+  }
+
+  /**
+   * store this formatter, if it's sutiable
+   * 
+   * @param theListener
+   */
+  private void storeFormatter(final Object theListener)
+  {
+    // if it's an editable, we can add it to the formatters
+    if (theListener instanceof Editable)
+    {
+      Layer formatL = this.findLayer(FORMATTERS);
+      if (formatL == null)
+      {
+        formatL = new BaseLayer(false);
+        formatL.setName(FORMATTERS);
+        this.addThisLayer(formatL);
+      }
+      formatL.add((Editable) theListener);
+      
+      // ok, clear out the lists
+      _newItemListeners.clear();
+    }
+    
+    
+  }
+
+  /**
+   * get the new item listeners
+   * 
+   * @return
+   */
+  public List<INewItemListener> getNewItemListeners()
+  {
+    // do we need to rescan the listeners?
+    if(_newItemListeners.size() == 0)
+    {
+      Layer fLayer = findLayer(FORMATTERS);
+      if(fLayer != null)
+      {
+        Enumeration<Editable> fEnum = fLayer.elements();
+        while (fEnum.hasMoreElements())
+        {
+          Editable thisE = (Editable) fEnum.nextElement();
+          if(thisE instanceof INewItemListener)
+          {
+            _newItemListeners.add((INewItemListener) thisE);
+          }
+        }
+      }
+    }
+    
+    return _newItemListeners;
+  }
+
+  /**
+   * remove this listener
+   * 
+   * @param theListener
+   *          the listener to remove
+   */
+  public void removeDataModifiedListener(final DataListener theListener)
+  {
+    _dataModifiedListeners.removeElement(theListener);
+  }
+
+  /**
+   * remove this listener
+   * 
+   * @param theListener
+   *          the listener to remove
+   */
+  public void removeDataExtendedListener(final DataListener theListener)
+  {
+    _dataExtendedListeners.removeElement(theListener);
+  }
+
+  /**
+   * remove this listener
+   * 
+   * @param theListener
+   *          the listener to remove
+   */
+  public void removeDataReformattedListener(final DataListener theListener)
+  {
+    _dataReformattedListeners.removeElement(theListener);
+  }
+
+  private void readObject(final java.io.ObjectInputStream in)
+      throws IOException, ClassNotFoundException
+  {
+
+    in.defaultReadObject();
+
+    produceLists();
+  }
+
+  /**
+   * the name of this object
+   * 
+   * @return name
+   */
+  public String toString()
+  {
+    return getName();
+  }
+
+  /**
+   * the Name of this object
+   * 
+   * @return the name
+   */
+  public String getName()
+  {
+    return "The Layers";
+  }
+
+  /**
+   * duff editable, not used
+   * 
+   * @param val
+   *          largely ignored by the people of New Guinea
+   */
+  public void setName(final String val)
+  {
+    //
+  }
+
+  /**
+   * whether this item has an editor (yes, of course)
+   * 
+   * @return yes/no flag
+   */
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  /**
+   * get the editable information for this object
+   * 
+   * @return details needed for editing
+   */
+  public Editable.EditorType getInfo()
+  {
+    return new LayersInfo(this);
+  }
+
+  public int compareTo(final Plottable arg0)
+  {
+    final int res;
+    final Plottable other = (Plottable) arg0;
+    final int myCode = hashCode();
+    final int otherCode = other.hashCode();
+    if (myCode < otherCode)
+      res = -1;
+    else if (myCode > otherCode)
+      res = 1;
+    else
+      res = 0;
+    return res;
+  }
+
+  /**
+   * finalise function, removes all references to layers
+   */
+  public void close()
+  {
+    // first, get the layers to close themselves
+    final Enumeration<Editable> enumer = _theLayers.elements();
+    while (enumer.hasMoreElements())
+    {
+      final Object layer = enumer.nextElement();
+      if (layer instanceof PlainWrapper)
+      {
+        final PlainWrapper pw = (PlainWrapper) layer;
+        pw.closeMe();
+      }
+    }
+
+    // and now empty the object itself
+    _theLayers.removeAllElements();
+
+    // also tidy up the listeners
+    _dataExtendedListeners.clear();
+    _dataModifiedListeners.clear();
+    _dataReformattedListeners.clear();
+  }
+
+  // ////////////////////////////////////////////////////////////////
+  // interface definition
+  // ////////////////////////////////////////////////////////////////
+
+  /**
+   * marker for objects that must be wrapped before they are pasted into the layer manager
+   * 
+   */
+  public static interface NeedsWrappingInLayerManager
+  {
+
+    public Layer wrapMe();
+  }
+
+  /**
+   * marker for objects that want to know about the parent layer (prob because they can create other
+   * layers)
+   */
+  public static interface NeedsToKnowAboutLayers
+  {
+    public void setLayers(Layers parent);
+  }
+
+  /**
+   * interface for classes that want to know about new items being added
+   * 
+   * @author ian
+   * 
+   */
+  public interface INewItemListener
+  {
+    /**
+     * a new layer, or a new item has been added
+     * 
+     * @param parent
+     *          the layer that has a new item
+     * @param item
+     *          the new item (null if this is actually just a new layer)
+     * @param theSymbology 
+     */
+    void newItem(Layer parent, Editable item, String theSymbology);
+  }
+
+  /**
+   * interface to be implemented by classes intending to watch the full set of data for this
+   * scenarion
+   */
+  public interface DataListener
+  {
+    /**
+     * some part of the data has been modified (not necessarily formatting though)
+     * 
+     * @param theData
+     *          the Layers containing the item of data which has been modified
+     * @param changedLayer
+     *          a layer which has changed (or null if not known)
+     */
+    public void dataModified(Layers theData, Layer changedLayer);
+
+    /**
+     * a new piece of data has been edited
+     * 
+     * @param theData
+     *          the Layers which have had something edited
+     */
+    public void dataExtended(Layers theData);
+
+    /**
+     * some kind of formatting has been applied
+     * 
+     * @param theData
+     *          the Layers containing the data which has been reformatted
+     * @param changedLayer
+     *          a layer which has changed (or null if not known)
+     */
+    public void dataReformatted(Layers theData, Layer changedLayer);
+
+  }
+
+  /**
+   * extended interface which indicates the new item
+   */
+  public interface DataListener2 extends DataListener
+  {
+    /**
+     * a new piece of data has been edited
+     * 
+     * @param theData
+     *          the Layers which have had something edited
+     * @param newItem
+     *          the item which has been added
+     * @param parent
+     *          the layer containing the item
+     */
+    public void dataExtended(Layers theData, Plottable newItem, Layer parent);
+  }
+
+  // //////////////////////////////////////////////////////////////////////////
+  // embedded class, used for editing this layer
+  // //////////////////////////////////////////////////////////////////////////
+  /**
+   * the definition of what is editable about this object
+   */
+  public class LayersInfo extends Editable.EditorType
+  {
+
+    /**
+     * constructor for editable details of a set of Layers
+     * 
+     * @param data
+     *          the Layers themselves
+     */
+    public LayersInfo(final Layers data)
+    {
+      super(data, data.getName(), "");
+    }
+
+    /**
+     * return a description of this bean, also specifies the custom editor we use
+     * 
+     * @return the BeanDescriptor
+     */
+    public BeanDescriptor getBeanDescriptor()
+    {
+      final BeanDescriptor bp =
+          new BeanDescriptor(Layers.class,
+              MWC.GUI.LayerManager.Swing.SwingLayerManager.class);
+      bp.setDisplayName("Layer Manager");
+      return bp;
+    }
+
+    /**
+     * The things about these Layers which are editable. We don't really use this list, since we
+     * have our own custom editor anyway
+     * 
+     * @return property descriptions
+     */
+    public PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+        {prop("Name", "the name for these layers"),};
+
+        return res;
+      }
+      catch (final IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public class LayersTest extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public LayersTest(final String val)
+    {
+      super(val);
+    }
+
+    public void testMyParams()
+    {
+      MWC.GUI.Editable ed = new Layers();
+      Editable.editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+  }
+
+  /**
+   * class to stop the layer manager from firing "extended" messages - particularly when we're
+   * loading a lot of data
+   * 
+   * @param suspendFiring
+   */
+  public void suspendFiringExtended(final boolean suspendFiring)
+  {
+    _suspendFiringExtended = suspendFiring;
+  }
 }
