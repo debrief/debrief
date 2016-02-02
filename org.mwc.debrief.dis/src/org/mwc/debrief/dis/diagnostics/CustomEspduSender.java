@@ -189,6 +189,10 @@ public class CustomEspduSender
     entityType.setCategory((short) 1); // Tank
     entityType.setSubcategory((short) 1); // M1 Abrams
     entityType.setSpec((short) 3); // M1A2 Abrams
+    
+    int randomHour =(int)(2 + Math.random() * 20);
+    @SuppressWarnings("deprecation")
+    long lastTime = new Date(2015,1,1,randomHour,0).getTime();
 
     // Loop through sending 100 ESPDUs
     try
@@ -210,8 +214,13 @@ public class CustomEspduSender
         // An alterative approach: actually follow the standard. It's a crazy
         // concept,
         // but it might just work.
-        int ts = disTime.getDisAbsoluteTimestamp();
-        espdu.setTimestamp(ts);
+        lastTime += 5 * 60 * 1000;
+        long ts = System.currentTimeMillis();
+//        int ts = disTime.getDisAbsoluteTimestamp();
+        
+//        System.out.println("time is:" + ts + " = " + new Date(lastTime));
+        
+        espdu.setTimestamp(lastTime);
 
         // loop for each participants
         for (int iP = 0; iP < numParts; iP++)
