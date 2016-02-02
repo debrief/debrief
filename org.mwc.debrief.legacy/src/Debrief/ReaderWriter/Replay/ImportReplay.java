@@ -266,6 +266,7 @@ import java.io.Reader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -1074,6 +1075,9 @@ public class ImportReplay extends PlainImporterBase
       // check stream is valid
       if (is.available() > 0)
       {
+        
+        // clear the output list
+        _newLayers.clear();
 
         thisLine = br.readLine();
 
@@ -1097,7 +1101,7 @@ public class ImportReplay extends PlainImporterBase
         // lastly have a go at formatting these tracks
         for (int k = 0; k < _myFormatters.length; k++)
         {
-          _myFormatters[k].formatLayers(getLayers());
+          _myFormatters[k].formatLayers(_newLayers);
         }
 
         final long end = System.currentTimeMillis();
@@ -1478,7 +1482,7 @@ public class ImportReplay extends PlainImporterBase
    */
   public static interface LayersFormatter
   {
-    public void formatLayers(Layers newData);
+    public void formatLayers(List<Layer> newLayers);
   }
 
   // ///////////////////////////////////////////////////////////////////////////////////////////
