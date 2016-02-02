@@ -22,7 +22,7 @@ public class SimulationRunner
     _prefs = simPrefs;
   }
 
-  public void run()
+  public void run(final String args)
   {
     final File exe = new File(_prefs.getExePath());
     final File input = new File(_prefs.getInputFile());
@@ -31,14 +31,15 @@ public class SimulationRunner
     if (!exe.exists())
     {
       System.err.println("Executable not found");
-      
+
       // FOR TESTING - FIRE OUR GENERATOR
-       _simJob = new Job("Run simulation")
+      _simJob = new Job("Run simulation")
       {
         @Override
         protected IStatus run(IProgressMonitor monitor)
         {
-          CustomEspduSender.main(new String[]{"2000", "2"});
+          String[] cArgs = args.split(" ");
+          CustomEspduSender.main(cArgs);
           return Status.OK_STATUS;
         }
 
@@ -64,8 +65,6 @@ public class SimulationRunner
     {
       final String[] exeCmd = new String[]
       {_prefs.getExePath(), _prefs.getInputFile()};
-//      SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
-//      final String processName = input.getName() + " " + sdf.format(new Date());
       // fire up the processs
       try
       {
@@ -79,27 +78,6 @@ public class SimulationRunner
     }
   }
 
-//  private MessageConsole findConsole(String name)
-//  {
-//    ConsolePlugin plugin = ConsolePlugin.getDefault();
-//    IConsoleManager conMan = plugin.getConsoleManager();
-//    IConsole[] existing = conMan.getConsoles();
-//    for (int i = 0; i < existing.length; i++)
-//    {
-//      if (name.equals(existing[i].getName()))
-//      {
-//        return (MessageConsole) existing[i];
-//      }
-//    }
-//    // no console found -> create new one
-//    MessageConsole newConsole =
-//        new MessageConsole(name, CorePlugin
-//            .getImageDescriptor("icons/16/Calculator.png"));
-//    conMan.addConsoles(new IConsole[]
-//    {newConsole});
-//    return newConsole;
-//  }
-
   public void stop()
   {
     if (_process != null)
@@ -107,9 +85,9 @@ public class SimulationRunner
       _process.destroy();
       _process = null;
     }
-    
+
     // TESTING
-    if(_simJob != null)
+    if (_simJob != null)
     {
       _simJob.cancel();
       _simJob = null;
