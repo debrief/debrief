@@ -92,7 +92,7 @@ public class DisListenerView extends ViewPart
   /**
    * we need to access the setting of live updates from outside the UI thread, so store it here.
    */
-  private boolean _doLiveUpdates = false;
+  private boolean _doLiveUpdates = true;
 
   /**
    * we need to access the setting of new plots from outside the UI thread, so store it here.
@@ -101,7 +101,7 @@ public class DisListenerView extends ViewPart
   /**
    * we need to access the setting of fit to data from outside the UI thread, so store it here.
    */
-  private boolean _fitToDataValue = true;
+  private boolean _fitToDataValue = false;
   private DebriefDISSimulatorPrefs _simPrefs;
   protected SimulationRunner _simulationRunner;
 
@@ -185,7 +185,6 @@ public class DisListenerView extends ViewPart
           
           if(ct != null)
           {
-            System.out.println("view setting new time:" + new Date(time));
             ct.setTime(this, new HiResDate(time), true);
           }
           else
