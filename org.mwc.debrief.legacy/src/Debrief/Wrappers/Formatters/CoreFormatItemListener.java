@@ -412,4 +412,10 @@ public class CoreFormatItemListener extends PlainWrapper implements
   {
     this._regularInterval = regularInterval;
   }
+
+  @Override
+  public void reset()
+  {
+    _lastTimes.clear();
+  }
 }
