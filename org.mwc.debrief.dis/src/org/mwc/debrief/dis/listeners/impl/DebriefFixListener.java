@@ -29,9 +29,14 @@ public class DebriefFixListener implements IDISFixListener
       double dLong, double depth, double courseDegs, double speedMS)
   {
     final String theName = "DIS_" + id;
+    
+//    System.out.println("new fix for:" + theName);
+    
     TrackWrapper track = (TrackWrapper) _context.findLayer(exerciseId, theName);
     if (track == null)
     {
+//      System.out.println("couldn't find:" + theName);
+      
       track = new TrackWrapper();
       track.setName(theName);
 
@@ -68,7 +73,7 @@ public class DebriefFixListener implements IDISFixListener
     }
 
     // share the news about the new time
-    System.out.println("== setting new time:" + date.getDate());
+//    System.out.println("== setting new time:" + date.getDate());
     _context.setNewTime(date.getDate().getTime());
     
 
