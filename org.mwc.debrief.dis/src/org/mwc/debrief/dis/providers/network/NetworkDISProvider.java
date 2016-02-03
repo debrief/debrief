@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,7 @@ public class NetworkDISProvider implements IPDUProvider
   private List<IDISGeneralPDUListener> _gen =
       new ArrayList<IDISGeneralPDUListener>();
   private boolean _running;
+  private MulticastSocket _listenerSocket;
 
   /**
    * Max size of a PDU in binary format that we can receive. This is actually somewhat
@@ -89,6 +91,9 @@ public class NetworkDISProvider implements IPDUProvider
   {
     // set the flag, so we naturally stop
     _running = false;
+
+    // and force the socket to close
+    _listenerSocket.close();
   }
 
   /**
@@ -100,7 +105,7 @@ public class NetworkDISProvider implements IPDUProvider
     // set the running flag to true
     _running = true;
 
-    MulticastSocket socket = null;
+    _listenerSocket = null;
     DatagramPacket packet;
     InetAddress address = null;
     PduFactory pduFactory = new PduFactory();
@@ -108,9 +113,9 @@ public class NetworkDISProvider implements IPDUProvider
     try
     {
       // Specify the socket to receive data
-      socket = new MulticastSocket(_myPrefs.getPort());
+      _listenerSocket = new MulticastSocket(_myPrefs.getPort());
       address = InetAddress.getByName(_myPrefs.getIPAddress());
-      socket.joinGroup(address);
+      _listenerSocket.joinGroup(address);
 
       // Loop infinitely, receiving datagrams
       while (_running)
@@ -118,7 +123,7 @@ public class NetworkDISProvider implements IPDUProvider
         byte buffer[] = new byte[MAX_PDU_SIZE];
         packet = new DatagramPacket(buffer, buffer.length);
 
-        socket.receive(packet);
+        _listenerSocket.receive(packet);
 
         Pdu pdu = pduFactory.createPdu(packet.getData());
 
@@ -140,20 +145,25 @@ public class NetworkDISProvider implements IPDUProvider
       } // end while
 
     } // End try
+    catch (SocketException se)
+    {
+      // ok - this happens when the socket is killed.
+      // we don't need to do anything
+    }
     catch (Exception e)
     {
       e.printStackTrace();
     }
     finally
     {
-      if (socket != null)
+      if (_listenerSocket != null && !_listenerSocket.isClosed())
       {
         // ok, we've finished
         try
         {
           if (address != null)
           {
-            socket.leaveGroup(address);
+            _listenerSocket.leaveGroup(address);
           }
         }
         catch (IOException e)
@@ -162,7 +172,7 @@ public class NetworkDISProvider implements IPDUProvider
         }
         finally
         {
-          socket.close();
+          _listenerSocket.close();
         }
       }
     }
