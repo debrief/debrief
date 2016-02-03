@@ -15,13 +15,15 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 
-import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.CanvasType;
+import MWC.GUI.CanvasType.ScreenUpdateProvider;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
 
-abstract public class DISContext implements IDISContext
+abstract public class DISContext implements IDISContext,
+    CanvasType.ScreenUpdateListener
 {
   /**
    * the current layers object (for the current exercise)
@@ -88,6 +90,21 @@ abstract public class DISContext implements IDISContext
     });
   }
 
+  private void listenTo(IEditorPart editor)
+  {
+    if (editor != null)
+    {
+      Object suProvider =
+          editor.getAdapter(CanvasType.ScreenUpdateProvider.class);
+      if (suProvider != null)
+      {
+        ScreenUpdateProvider matched =
+            (CanvasType.ScreenUpdateProvider) suProvider;
+        matched.addScreenUpdateListener(this);
+      }
+    }
+  }
+
   /**
    * get the layers object for this exercise (creating a new plot, if necessary)
    * 
@@ -123,6 +140,7 @@ abstract public class DISContext implements IDISContext
                   PlatformUI.getWorkbench().getActiveWorkbenchWindow();
               IWorkbenchPage page = window.getActivePage();
               IEditorPart newP = page.openEditor(input, editorId);
+              listenTo(newP);
 
               // and get the new layers object
               _myLayers = (Layers) newP.getAdapter(Layers.class);
@@ -152,7 +170,7 @@ abstract public class DISContext implements IDISContext
                 Layer thisL = (Layer) lIter.next();
                 _myLayers.removeThisLayer(thisL);
               }
-              
+
               // also, we have to restart any formatters in that layer
               Iterator<INewItemListener> iter = getNewItemListeners();
               while (iter.hasNext())
@@ -160,7 +178,7 @@ abstract public class DISContext implements IDISContext
                 Layers.INewItemListener thisI =
                     (Layers.INewItemListener) iter.next();
                 thisI.reset();
-                
+
               }
             }
           }
@@ -181,6 +199,8 @@ abstract public class DISContext implements IDISContext
               PlatformUI.getWorkbench().getActiveWorkbenchWindow();
           IWorkbenchPage activePage = iw.getActivePage();
           IEditorPart editor = activePage.getActiveEditor();
+          listenTo(editor);
+
           if (editor != null)
           {
             _myLayers = (Layers) editor.getAdapter(Layers.class);
@@ -192,7 +212,6 @@ abstract public class DISContext implements IDISContext
     return _myLayers;
   }
 
-  // TODO: produc
   public class DISInput implements IEditorInput
   {
 
@@ -279,7 +298,7 @@ abstract public class DISContext implements IDISContext
       }
     });
   }
-  
+
   @Override
   public Iterator<INewItemListener> getNewItemListeners()
   {
@@ -330,9 +349,9 @@ abstract public class DISContext implements IDISContext
    * @see org.mwc.debrief.dis.listeners.impl.IDISContext#findLayer(short, java.lang.String)
    */
   @Override
-  public TrackWrapper findLayer(short exerciseId, String theName)
+  public Layer findLayer(short exerciseId, String theName)
   {
-    TrackWrapper res = null;
+    Layer res = null;
 
     /*
      * get the layers, creating a new plot if necessary
@@ -341,7 +360,7 @@ abstract public class DISContext implements IDISContext
 
     if (tgt != null)
     {
-      res = (TrackWrapper) tgt.findLayer(theName);
+      res = tgt.findLayer(theName);
     }
 
     return res;
