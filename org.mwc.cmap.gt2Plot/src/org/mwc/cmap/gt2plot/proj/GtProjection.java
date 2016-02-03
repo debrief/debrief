@@ -233,12 +233,12 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		catch (final org.opengis.referencing.operation.NoninvertibleTransformException e)
 		{
 			GtActivator.logError(Status.ERROR,
-					"Unexpected problem whilst performing screen to world", e);
+					"Unexpected non-invertable problem whilst performing screen to world", e);
 		}
 		catch (final TransformException e)
 		{
 			GtActivator.logError(Status.ERROR,
-					"Unexpected problem whilst performing screen to world", e);
+					"Unexpected transform problem whilst performing screen to world", e);
 		}
 		return res;
 	}
