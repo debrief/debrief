@@ -1,5 +1,6 @@
 package org.mwc.debrief.dis.providers.network;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -47,7 +48,8 @@ public class NetworkDISProvider implements IPDUProvider
     _gen.add(listener);
   }
 
-  /** get the network preferences
+  /**
+   * get the network preferences
    * 
    * @return
    */
@@ -55,7 +57,7 @@ public class NetworkDISProvider implements IPDUProvider
   {
     return _myPrefs;
   }
-  
+
   /**
    * start listening
    * 
@@ -68,10 +70,8 @@ public class NetworkDISProvider implements IPDUProvider
       @Override
       protected IStatus run(IProgressMonitor monitor)
       {
-        // set the running flag to true
-        _running = true;
-
         startListening();
+
         // use this to open a Shell in the UI thread
         return Status.OK_STATUS;
       }
@@ -97,9 +97,12 @@ public class NetworkDISProvider implements IPDUProvider
    */
   private void startListening()
   {
-    MulticastSocket socket;
+    // set the running flag to true
+    _running = true;
+
+    MulticastSocket socket = null;
     DatagramPacket packet;
-    InetAddress address;
+    InetAddress address = null;
     PduFactory pduFactory = new PduFactory();
 
     try
@@ -136,13 +139,32 @@ public class NetworkDISProvider implements IPDUProvider
 
       } // end while
 
-      // ok, we've finished
-      socket.leaveGroup(address);
-
     } // End try
     catch (Exception e)
     {
       e.printStackTrace();
+    }
+    finally
+    {
+      if (socket != null)
+      {
+        // ok, we've finished
+        try
+        {
+          if (address != null)
+          {
+            socket.leaveGroup(address);
+          }
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace();
+        }
+        finally
+        {
+          socket.close();
+        }
+      }
     }
   }
 
