@@ -15,7 +15,6 @@
 package org.mwc.debrief.dis.ui.views;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
