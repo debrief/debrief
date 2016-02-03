@@ -246,6 +246,12 @@ public class CoreFormatItemListener extends PlainWrapper implements
   public void newItem(final Layer parent, final Editable item,
       final String symbology)
   {
+    // are we active
+    if (!getVisible())
+    {
+      return;
+    }
+
 
     // just check if this is actually a new layer call
     if (item == null)
@@ -254,12 +260,6 @@ public class CoreFormatItemListener extends PlainWrapper implements
       {
         formatTrack((TrackWrapper) parent, new HiResDate(_interval));
       }
-    }
-
-    // are we active
-    if (!getVisible())
-    {
-      return;
     }
 
     // is this a fix?
