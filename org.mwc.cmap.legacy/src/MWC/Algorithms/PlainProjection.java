@@ -18,7 +18,6 @@
 
 package MWC.Algorithms;
 
-
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyChangeListener;
@@ -31,19 +30,17 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
- * interface describing how to transform from
- * earth coordinates to screen coordinates
+ * interface describing how to transform from earth coordinates to screen coordinates
  */
-abstract public class PlainProjection implements Serializable,
-  Editable
+abstract public class PlainProjection implements Serializable, Editable
 {
 
   /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-/**
+  /**
    * event name for zoom
    */
   public static final String ZOOM_EVENT = "Zoom";
@@ -89,8 +86,7 @@ abstract public class PlainProjection implements Serializable,
   private double _dataBorder;
 
   /**
-   * the parent class which will give us the information
-   * necessary to produce a relative plot
+   * the parent class which will give us the information necessary to produce a relative plot
    */
   protected RelativeProjectionParent _relativePlotter;
 
@@ -104,21 +100,22 @@ abstract public class PlainProjection implements Serializable,
    */
   protected java.beans.PropertyChangeSupport _pSupport = null;
 
-  /** whether to centre the plot on the primary track's position
+  /**
+   * whether to centre the plot on the primary track's position
    * 
    */
-	private boolean _primaryCentred;
+  private boolean _primaryCentred;
 
-  /////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////
   // constructor
-  ////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////
   protected PlainProjection(final String theName)
   {
     name = theName;
     _theDataArea = null;
     _theScreenArea = null;
 
-    //    setDataBorder(1.05);
+    // setDataBorder(1.05);
     setDataBorder(1.1);
   }
 
@@ -127,15 +124,15 @@ abstract public class PlainProjection implements Serializable,
     return getName();
   }
 
-
-  //////////////////////////////////////////////////
+  // ////////////////////////////////////////////////
   // property change support
-  //////////////////////////////////////////////////
+  // ////////////////////////////////////////////////
 
   /**
    * add a listener
-   *
-   * @param listener the new listener
+   * 
+   * @param listener
+   *          the new listener
    */
   public void addListener(final java.beans.PropertyChangeListener listener)
   {
@@ -155,19 +152,22 @@ abstract public class PlainProjection implements Serializable,
 
   /**
    * fire a property change, if we have any listeners
-   *
-   * @param event_type the type of event to fire
-   * @param oldValue   the old value
-   * @param newValue   the new value
+   * 
+   * @param event_type
+   *          the type of event to fire
+   * @param oldValue
+   *          the old value
+   * @param newValue
+   *          the new value
    */
-  public void firePropertyChange(final String event_type, final Object oldValue, final Object newValue)
+  public void firePropertyChange(final String event_type,
+      final Object oldValue, final Object newValue)
   {
     if (_pSupport != null)
     {
       _pSupport.firePropertyChange(event_type, oldValue, newValue);
     }
   }
-
 
   /**
    * allow the name to be modified
@@ -206,31 +206,38 @@ abstract public class PlainProjection implements Serializable,
     return _theDataArea;
   }
 
-
   /**
    * get the current area of the screen, in data coordinates
-   *
+   * 
    * @return the screen area, in data coordinates
    */
   public WorldArea getVisibleDataArea()
   {
     if (_theVisibleDataArea == null)
     {
-      // we'll have to recalculate it then!
-      final WorldLocation origin = this.toWorld(new Point(0, 0));
-      if (origin != null)
+      // check we've got an area, not just a point
+      if (this.getDataArea().getWidth() != 0)
       {
-        final WorldLocation TL = new WorldLocation(origin);
-        final WorldLocation BR = new WorldLocation(toWorld(new Point((int) this.getScreenArea().getWidth(),
-                                                               (int) this.getScreenArea().getHeight())));
-        _theVisibleDataArea = new WorldArea(TL, BR);
+        // we'll have to recalculate it then!
+        final WorldLocation origin = this.toWorld(new Point(0, 0));
+        if (origin != null)
+        {
+          final WorldLocation TL = new WorldLocation(origin);
+          final WorldLocation BR =
+              new WorldLocation(toWorld(new Point((int) this.getScreenArea()
+                  .getWidth(), (int) this.getScreenArea().getHeight())));
+          _theVisibleDataArea = new WorldArea(TL, BR);
+        }
+      }
+      else
+      {
+        System.out.println("SKIPPING");
       }
     }
 
     return _theVisibleDataArea;
 
   }
-
 
   /**
    *
@@ -245,7 +252,7 @@ abstract public class PlainProjection implements Serializable,
 
   /**
    * the screen area
-   *
+   * 
    * @return the dimensions of the screen
    */
   public java.awt.Dimension getScreenArea()
@@ -265,30 +272,32 @@ abstract public class PlainProjection implements Serializable,
 
   public abstract WorldLocation toWorld(java.awt.Point val);
 
-
   /**
    * zoom into the plot using the supplied scale factor (or fit to window)
-   *
-   * @param value the scale to zoom in on (or zero for fit to win)
+   * 
+   * @param value
+   *          the scale to zoom in on (or zero for fit to win)
    */
   abstract public void zoom(double value);
 
   /**
-   * zoom into the plot using the supplied scale factor (or fit to window)
-   * translate the view to the center of the specified area
-   *
-   * @param value the scale to zoom in on (or zero for fit to win)
-   * @param area the area to be centered at
+   * zoom into the plot using the supplied scale factor (or fit to window) translate the view to the
+   * center of the specified area
+   * 
+   * @param value
+   *          the scale to zoom in on (or zero for fit to win)
+   * @param area
+   *          the area to be centered at
    */
   public void zoom(final double value, final WorldArea area)
   {
-	  throw new RuntimeException("'zoom(final double value, final WorldArea area)' is not implemented yet.");
+    throw new RuntimeException(
+        "'zoom(final double value, final WorldArea area)' is not implemented yet.");
   }
-
 
   /**
    * get the border around the data
-   *
+   * 
    * @return the border, as a proportion of the data area (e.g. 1.1)
    */
   public double getDataBorder()
@@ -298,8 +307,9 @@ abstract public class PlainProjection implements Serializable,
 
   /**
    * set the border around the data
-   *
-   * @param theBorder the border, as a proportion of the data area (e.g. 1.1)
+   * 
+   * @param theBorder
+   *          the border, as a proportion of the data area (e.g. 1.1)
    */
   public void setDataBorder(final double theBorder)
   {
@@ -310,22 +320,25 @@ abstract public class PlainProjection implements Serializable,
     zoom(0d);
 
   }
-  
-  /** allow the border to be set without triggering a zoom operation
+
+  /**
+   * allow the border to be set without triggering a zoom operation
    * 
-   * @param theBorder the new border to use..
+   * @param theBorder
+   *          the new border to use..
    */
   public void setDataBorderNoZoom(final double theBorder)
   {
-  	_dataBorder = theBorder;
+    _dataBorder = theBorder;
   }
 
-  public void setRelativeMode(final boolean primaryCentred, final boolean primaryOriented)
+  public void setRelativeMode(final boolean primaryCentred,
+      final boolean primaryOriented)
   {
-  	_primaryOriented = primaryOriented;
-  	_primaryCentred = primaryCentred;
+    _primaryOriented = primaryOriented;
+    _primaryCentred = primaryCentred;
   }
-  
+
   /**
    * produce a relative plot
    */
@@ -333,29 +346,30 @@ abstract public class PlainProjection implements Serializable,
   {
     _primaryOriented = val;
   }
-  
-  /** indicate if there's anything strange going on
+
+  /**
+   * indicate if there's anything strange going on
    * 
    * @return yes/no
    */
   public boolean getNonStandardPlotting()
   {
-  	return _primaryOriented || _primaryCentred;
+    return _primaryOriented || _primaryCentred;
   }
 
   public boolean getPrimaryOriented()
   {
     return _primaryOriented;
   }
-  
+
   public boolean getPrimaryCentred()
   {
-  	return _primaryCentred;
+    return _primaryCentred;
   }
-  
+
   public void setPrimaryCentred(final boolean val)
   {
-  	_primaryCentred = val;
+    _primaryCentred = val;
   }
 
   public Editable.EditorType getInfo()
@@ -371,10 +385,9 @@ abstract public class PlainProjection implements Serializable,
     return true;
   }
 
-
-  ////////////////////////////////////////////////////////////////////////////
-  //  embedded class, used for editing the projection
-  ////////////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////////
+  // embedded class, used for editing the projection
+  // //////////////////////////////////////////////////////////////////////////
   public class PlainProjectionInfo extends Editable.EditorType
   {
 
@@ -387,9 +400,9 @@ abstract public class PlainProjection implements Serializable,
     {
       try
       {
-        final PropertyDescriptor[] res = {
-          displayProp("DataBorder", "Data border", "the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
-        };
+        final PropertyDescriptor[] res =
+            {displayProp("DataBorder", "Data border",
+                "the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),};
 
         return res;
       }
@@ -400,10 +413,10 @@ abstract public class PlainProjection implements Serializable,
     }
   }
 
-  ///////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////
   // interface for classes which are able to provide us with
   // sufficient information to allow use to produce a relative plot
-  ///////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////
   static public interface RelativeProjectionParent
   {
     /**
@@ -417,7 +430,4 @@ abstract public class PlainProjection implements Serializable,
     public WorldLocation getLocation();
   }
 
-
 }
-
-
