@@ -2433,10 +2433,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         continue;
       }
 
-      final Enumeration<Editable> fixWrappers = seg.elements();
-      while (fixWrappers.hasMoreElements())
+      // final Enumeration<Editable> fixWrappers = seg.elements();
+      // while (fixWrappers.hasMoreElements())
+      // {
+      // final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
+
+      // get the data as an array - to avoid the concurrent modification
+      // problems we were getting when doing network monitoring (DIS support)
+      Editable[] existingWrapper = seg.getData().toArray(new Editable[]
+      {null});
+      
+      for (int i = 0; i < existingWrapper.length; i++)
       {
-        final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
+        final FixWrapper fw = (FixWrapper) existingWrapper[i];
 
         // now there's a chance that our fix has forgotten it's
         // parent,
@@ -2816,25 +2825,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       } // through the sensors
     } // whether the sensor layer is visible
-
-    // now plot the sensor arcs
-    // if (_mySensorArcs.getVisible())
-    // {
-    // final Enumeration<Editable> iter = _mySensorArcs.elements();
-    // while (iter.hasMoreElements())
-    // {
-    // final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
-    // // just check that the sensor knows we're it's parent
-    // if (sw.getHost() == null)
-    // {
-    // sw.setHost(this);
-    // }
-    //
-    // // and do the paint
-    // sw.paint(dest);
-    //
-    // }
-    // }
 
     // /////////////////////////////////////////////
     // and now the track itself
