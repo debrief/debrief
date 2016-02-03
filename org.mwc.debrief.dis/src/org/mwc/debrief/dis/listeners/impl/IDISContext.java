@@ -2,7 +2,6 @@ package org.mwc.debrief.dis.listeners.impl;
 
 import java.util.Iterator;
 
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
@@ -59,7 +58,7 @@ public interface IDISContext
    * @param theName
    * @return
    */
-  TrackWrapper findLayer(short exerciseId, String theName);
+  Layer findLayer(short exerciseId, String theName);
 
   /** get iterator, so we can work through the new item listeners
    * 
