@@ -227,10 +227,9 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        _netProvider.attach();
-        connectButton.setEnabled(false);
-        disconnectButton.setEnabled(true);
+        doConnect();
       }
+
 
     });
     disconnectButton = createButton(buttonComposite, "Disconnect", 2);
@@ -240,9 +239,7 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        _netProvider.detach();
-        connectButton.setEnabled(true);
-        disconnectButton.setEnabled(false);
+        doDisconnect();
       }
 
     });
@@ -271,11 +268,9 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        _simulationRunner.stop();
-
-        stopButton.setEnabled(false);
-        playButton.setEnabled(true);
+        doStop();
       }
+
 
     });
 
@@ -288,15 +283,7 @@ public class DisListenerView extends ViewPart
       public void widgetSelected(SelectionEvent e)
       {
         
-         
-        IPreferenceStore store =
-        DisActivator.getDefault().getPreferenceStore();
-        String pText = store.getString(DisActivator.PATH_TO_INPUT_FILE);
-
-        _simulationRunner.run(pText);
-
-        playButton.setEnabled(false);
-        stopButton.setEnabled(true);
+        doPlay();
       }
 
     });
@@ -519,6 +506,57 @@ public class DisListenerView extends ViewPart
   {
     // TODO Auto-generated method stub
 
+  }
+
+  private void doStop()
+  {
+    _simulationRunner.stop();
+
+    stopButton.setEnabled(false);
+    playButton.setEnabled(true);
+    
+    if(!connectButton.getSelection())
+    {
+      disconnectButton.setSelection(true);
+      doDisconnect();
+    }
+  }
+
+  private void doPlay()
+  {
+    // ok, start with a "connect", if we have to
+    if(!connectButton.getSelection())
+    {
+      connectButton.setSelection(true);
+      doConnect();
+    }
+     
+    IPreferenceStore store =
+    DisActivator.getDefault().getPreferenceStore();
+    String pText = store.getString(DisActivator.PATH_TO_INPUT_FILE);
+
+    _simulationRunner.run(pText);
+
+    playButton.setEnabled(false);
+    stopButton.setEnabled(true);
+  }
+  
+  private void doConnect()
+  {
+    _netProvider.attach();
+    connectButton.setEnabled(false);
+    disconnectButton.setEnabled(true);
+    
+    System.out.println("CONNECTED");
+  }
+
+
+
+  private void doDisconnect()
+  {
+    _netProvider.detach();
+    connectButton.setEnabled(true);
+    disconnectButton.setEnabled(false);
   }
 
 }
