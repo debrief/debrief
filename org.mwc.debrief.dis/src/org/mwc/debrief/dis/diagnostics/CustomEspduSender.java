@@ -245,7 +245,7 @@ public class CustomEspduSender
 
           if (thisS == null)
           {
-            int eId = 1 + (int) (Math.random() * 20d);
+            int eId = iP+1;//1 + (int) (Math.random() * 20d);
 
             thisS = new State(eId, startX, startY, startZ);
             states.put(iP, thisS);
