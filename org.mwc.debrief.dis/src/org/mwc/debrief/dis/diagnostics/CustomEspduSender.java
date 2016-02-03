@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EntityType;
@@ -229,6 +230,11 @@ public class CustomEspduSender
 //        System.out.println("time is:" + ts + " = " + new Date(lastTime));
         
         espdu.setTimestamp(lastTime);
+        
+        final double startX = 50.1;
+        final double startY = -1.87;
+        final double startZ = 0.01;
+        
 
         // loop for each participants
         for (int iP = 0; iP < numParts; iP++)
@@ -241,7 +247,7 @@ public class CustomEspduSender
           {
             int eId = 1 + (int) (Math.random() * 20d);
 
-            thisS = new State(eId, 50.1, -1.87, 0.01);
+            thisS = new State(eId, startX, startY, startZ);
             states.put(iP, thisS);
           }
 
@@ -299,8 +305,41 @@ public class CustomEspduSender
           socket.send(packet);
 
           location = espdu.getEntityLocation();
+          
+          System.out.println(".");
         }
 
+        // put in a random detonation
+        if(Math.random() >= 0.9)
+        {
+          System.out.println("===== DETONATION =====");
+          
+          DetonationPdu dp = new DetonationPdu();
+          dp.setExerciseID(espdu.getExerciseID());
+          dp.setFiringEntityID(eid);
+          dp.setTimestamp(lastTime);
+          Vector3Double wLoc = new Vector3Double();
+          wLoc.setX(startX + Math.random() * 0.02);
+          wLoc.setY(startY + Math.random() * 0.02);
+          wLoc.setZ(startZ);
+          dp.setLocationInWorldCoordinates(wLoc);
+          
+          // Marshal out the espdu object to a byte array, then send a datagram
+          // packet with that data in it.
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          DataOutputStream dos = new DataOutputStream(baos);
+          dp.marshal(dos);
+
+          // The byte array here is the packet in DIS format. We put that into a
+          // datagram and send it.
+          byte[] data = baos.toByteArray();
+
+          DatagramPacket packet =
+              new DatagramPacket(data, data.length, destinationIp, PORT);
+
+          socket.send(packet);
+        }
+        
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
         // second.
         Thread.sleep(stepMillis);
