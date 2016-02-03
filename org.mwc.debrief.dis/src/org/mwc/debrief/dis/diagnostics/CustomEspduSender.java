@@ -265,7 +265,6 @@ public class CustomEspduSender
           {
             final double newCourse = ((int) (Math.random() * 36d)) * 10d;
             thisS.courseRads = Math.toRadians(newCourse);
-            System.out.println("new course:" + newCourse);
           }
 
           // lon = lon + (double) ((double) idx / 1000.0);
@@ -305,8 +304,6 @@ public class CustomEspduSender
           socket.send(packet);
 
           location = espdu.getEntityLocation();
-          
-          System.out.println(".");
         }
 
         // put in a random detonation
