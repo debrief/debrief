@@ -52,12 +52,14 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.ui.RectangleEdge;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
+import org.mwc.debrief.dis.listeners.impl.DebriefDetonationListener;
 import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
 import org.mwc.debrief.dis.listeners.impl.IDISContext;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
@@ -103,6 +105,7 @@ public class DisListenerView extends ViewPart
   private boolean _fitToDataValue = false;
   private DebriefDISSimulatorPrefs _simPrefs;
   protected SimulationRunner _simulationRunner;
+  private PerformanceGraph _perfGraph;
 
   private void initModule()
   {
@@ -118,9 +121,9 @@ public class DisListenerView extends ViewPart
     _disModule = new DISModule();
     _disModule.setProvider(_netProvider);
 
-    PerformanceGraph perfGraph = new PerformanceGraph(chartComposite);
-    _disModule.addGeneralPDUListener(perfGraph);
-    _disModule.addScenarioListener(perfGraph);
+    _perfGraph = new PerformanceGraph(chartComposite);
+    _disModule.addGeneralPDUListener(_perfGraph);
+    _disModule.addScenarioListener(_perfGraph);
 
     _simulationRunner = new SimulationRunner(_simPrefs);
 
@@ -192,10 +195,18 @@ public class DisListenerView extends ViewPart
           }
         }
       }
+
+      @Override
+      public void screenUpdated()
+      {
+        _perfGraph.screenUpdate();
+      }
     };
 
     // ok, Debrief fix listener
     module.addFixListener(new DebriefFixListener(context));
+    module.addDetonationListener(new DebriefDetonationListener(context));
+   
   }
 
   @Override
@@ -380,7 +391,8 @@ public class DisListenerView extends ViewPart
     chartComposite.setLayoutData(gd);
     layout = new GridLayout(1, false);
     chartComposite.setLayout(layout);
-    theChart.getLegend().setVisible(false);
+    theChart.getLegend().setVisible(true);
+    theChart.getLegend().setPosition(RectangleEdge.BOTTOM);
     theChart.getTitle().setVisible(false);
 
     Composite checkboxComposite = new Composite(composite, SWT.NONE);
