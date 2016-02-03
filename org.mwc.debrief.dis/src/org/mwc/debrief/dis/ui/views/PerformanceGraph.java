@@ -24,9 +24,14 @@ import edu.nps.moves.dis.Pdu;
 public class PerformanceGraph implements IDISGeneralPDUListener,
     IDISScenarioListener
 {
-  private ChartComposite _chart;
+  private static final String SCREEN_NAME = "Screen Updates";
 
-  PerformanceQueue perfQ = new PerformanceQueue(5000);
+  private static final String SIM_NAME = "Model Updates";
+
+  private final ChartComposite _chart;
+
+  final private PerformanceQueue disQ = new PerformanceQueue(5000);
+  final private PerformanceQueue screenQ = new PerformanceQueue(5000);
 
   /**
    * @param chartComposite
@@ -44,7 +49,8 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   @Override
   public void restart()
   {
-    perfQ.clear();
+    screenQ.clear();
+    disQ.clear();
   }
 
   /*
@@ -53,7 +59,17 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
    * @see org.mwc.debrief.dis.listeners.IDISGeneralPDUListener#logPDU(edu.nps.moves.dis.Pdu)
    */
   @Override
-  public void logPDU(Pdu pdu)
+  public void logPDU(final Pdu pdu)
+  {
+    doUpdate(SIM_NAME, disQ);
+  }
+  
+  public void screenUpdate()
+  {
+    doUpdate(SCREEN_NAME, screenQ);
+  }
+
+  private void doUpdate(final String name, final PerformanceQueue queue)
   {
     Runnable doUpdate = new Runnable()
     {
@@ -66,19 +82,21 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
           public void run()
           {
             // store the new time in the queue
-            perfQ.add(new Date().getTime());
+            queue.add(new Date().getTime());
 
-            double freq = perfQ.freqAt(new Date().getTime()) * 1000d;
+            double freq = queue.freqAt(new Date().getTime()) * 1000d;
+            
             TimeSeriesCollection data =
                 (TimeSeriesCollection) _chart.getChart().getXYPlot()
                     .getDataset();
 
-            // do we have any data?
-            if (data.getSeriesCount() == 0)
+            // do we know this series?
+            TimeSeries series = data.getSeries(name);
+            if (series == null)
             {
-              data.addSeries(new TimeSeries("Sim"));
+              series = new TimeSeries(name);
+              data.addSeries(series);
             }
-            TimeSeries series = data.getSeries("Sim");
 
             series.addOrUpdate(new Second(new Date()), freq);
 
@@ -103,7 +121,6 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
     Thread updateThread = new Thread(doUpdate);
     updateThread.setDaemon(true);
     updateThread.start();
-
   }
 
   /*
