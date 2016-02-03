@@ -125,7 +125,7 @@ import MWC.GenericData.WorldLocation;
 
 public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
-		IChartBasedEditor, IUndoable
+		IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider
 {
 
 	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
@@ -1077,6 +1077,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 		{
 			res = _myChart.getCanvas();
 		}
+		else if(adapter == CanvasType.ScreenUpdateProvider.class)
+		{
+		  res = this;
+		}
 
 		return res;
 	}
@@ -1150,6 +1154,20 @@ public abstract class CorePlotEditor extends EditorPart implements
 			_selectionListeners.add(listener);
 	}
 
+
+	/** let someone listen to screen updates
+	 * 
+	 * @param listener
+	 */
+	@Override
+  public void addScreenUpdateListener(SWTCanvas.ScreenUpdateListener listener)
+  {
+    if (getChart() != null)
+    {
+      getChart().getSWTCanvas().addScreenUpdateListener(listener);
+    }
+  }
+  
 	/**
 	 * Returns the ActionbarContributor for the Editor. ISelectionChangedListener
 	 * 

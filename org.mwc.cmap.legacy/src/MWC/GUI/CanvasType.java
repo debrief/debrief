@@ -156,6 +156,27 @@ public interface CanvasType {
   //////////////////////////////////////
   // Plain drawing commands
   //////////////////////////////////////
+  
+  /** interface for classes that are able to provide
+   * screen update information
+   * 
+   * @author ian
+   *
+   */
+  static interface ScreenUpdateProvider
+  {
+    void addScreenUpdateListener(final ScreenUpdateListener listener);
+  }
+  
+  /** interface for classes that want to know when screen refreshes happen
+   * 
+   * @author ian
+   *
+   */
+  static interface ScreenUpdateListener
+  {
+    void screenUpdated();
+  }
 
   /** list of line styles to (try to) plot
    *

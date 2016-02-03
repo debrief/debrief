@@ -114,7 +114,9 @@
 package org.mwc.cmap.plotViewer.editors.chart;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
@@ -153,564 +155,571 @@ import MWC.GenericData.WorldLocation;
 /**
  * Swing implementation of a canvas.
  */
-public class SWTCanvas extends SWTCanvasAdapter
+public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpdateProvider
 {
 
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////
+  // member variables
+  // //////////////////////////////////////////////////////////
 
-	protected boolean _deferPaints = true;
+  protected boolean _deferPaints = true;
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-
-	private org.eclipse.swt.widgets.Canvas _myCanvas = null;
-
-	/**
-	 * an event queue - where we place screen update events, to trim down lots of
-	 * consecutive screen updates
-	 */
-//	private EventStack _eventQue = new EventStack(100);
-
-	/**
-	 * our double-buffering safe copy.
-	 */
-	private transient Image _dblBuff;
-
-	private LocationSelectedAction _copyLocation;
-
-	Shell _tooltip;
-
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-
-	/**
-	 * default constructor.
-	 * 
-	 * @param projection
-	 */
-	public SWTCanvas(final Composite parent, final GeoToolsHandler projection)
-	{
-		super((PlainProjection) projection);
-		// super(null);
-
-		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
-		_myCanvas.addMouseTrackListener(new MouseTrackAdapter()
-		{
-
-			public void mouseHover(final MouseEvent e)
-			{
-				String tip = getTheToolTipText(new java.awt.Point(e.x, e.y));
-
-				// clear the existing tooltip
-				_myCanvas.setToolTipText(null);
-
-				if (tip != null)
-				{
-					if (tip.length() > 0)
-					{
-						// strip out the HTML
-						tip = tip.replace("<u>", "");
-						tip = tip.replace("</u>", "");
-						tip = tip.replace("\\n", " ");
-						tip = tip.replace("<BR>", "\n");
-						tip = tip.replace("<html><font face=\"sansserif\">", "");
-						tip = tip.replace("</font></html>", "");
-
-						_myCanvas.setToolTipText(tip);
-					}
-				}
-			}
-		});
-		_myCanvas.addMouseMoveListener(new MouseMoveListener()
-		{
-			public void mouseMove(final MouseEvent e)
-			{
-				if (_tooltip == null)
-					return;
-
-				_tooltip.dispose();
-				_tooltip = null;
-			}
-		});
-
-		// add handler to catch canvas resizes
-		_myCanvas.addControlListener(new ControlAdapter()
-		{
-
-			public void controlResized(final ControlEvent e)
-			{
-				final Point pt = _myCanvas.getSize();
-				final Dimension dim = new Dimension(pt.x, pt.y);
-				setScreenSize(dim);
-			}
-		});
-
-		// setup our own painter
-		_myCanvas.addPaintListener(new org.eclipse.swt.events.PaintListener()
-		{
-			public void paintControl(final PaintEvent e)
-			{
-				repaintMe(e);
-			}
-		});
-
-		// _myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.BLUE));
-
-		_myCanvas.addMouseListener(new MouseAdapter()
-		{
-
-			/**
-			 * @param e
-			 */
-			public void mouseUp(final MouseEvent e)
-			{
-				if (e.button == 3)
-				{
-					// cool, right-had button. process it
-					final MenuManager mmgr = new MenuManager();
-					final Point display = Display.getCurrent().getCursorLocation();
-					final Point scrPoint = _myCanvas.toControl(display);
-					final WorldLocation targetLoc = getProjection().toWorld(
-							new java.awt.Point(scrPoint.x, scrPoint.y));
-					fillContextMenu(mmgr, scrPoint, targetLoc);
-					final Menu thisM = mmgr.createContextMenu(_myCanvas);
-					thisM.setVisible(true);
-				}
-			}
-
-		});
-	}
-
-	/**
-	 * indicate whether paint events should build up, with only the most recent
-	 * event getting painted
-	 * 
-	 * @param defer
-	 *          yes/no
-	 */
-	public void setDeferPaints(final boolean defer)
-	{
-		_deferPaints = defer;
-	}
-
-	/**
-	 * ok - insert the right-hand button related items
-	 * 
-	 * @param mmgr
-	 * @param scrPoint
-	 */
-	protected void fillContextMenu(final MenuManager mmgr, final Point scrPoint,
-			final WorldLocation loc)
-	{
-		// right, we create the actions afresh each time here. We can't
-		// automatically calculate it.
-		_copyLocation = new LocationSelectedAction("Copy cursor location",
-				SWT.PUSH, loc)
-		{
-			/**
-			 * @param loc
-			 *          the converted world location for the mouse-click
-			 * @param pt
-			 *          the screen coordinate of the click
-			 */
-			public void run(final WorldLocation theLoc)
-			{
-				// represent the location as a text-string
-				final String locText = CorePlugin.toClipboard(theLoc);
-
-				// right, copy the location to the clipboard
-				final Clipboard clip = CorePlugin.getDefault().getClipboard();
-				final Object[] data = new Object[]
-				{ locText };
-				final Transfer[] types = new Transfer[]
-				{ TextTransfer.getInstance() };
-				clip.setContents(data, types);
-
-			}
-		};
-
-		mmgr.add(_copyLocation);
-		mmgr.add(new Separator());
-
-	}
-
-	// ////////////////////////////////////////////////////
-	// screen redraw related
-	// ////////////////////////////////////////////////////
-
-	protected void repaintMe(final PaintEvent pe)
-	{
-
-		// paintPlot(pe.gc);
-		// get the graphics destination
-		final GC gc = pe.gc;
-
-		// put double-buffering code in here.
-		if (_dblBuff == null)
-		{
-			// ok, create the new image
-			final Point theSize = _myCanvas.getSize();
-
-			if ((theSize.x == 0) || (theSize.y == 0))
-				return;
-
-			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
-			final GC theDest = new GC(_dblBuff);
-
-			// prepare the ground (remember the graphics dest for a start)
-			startDraw(theDest);
-
-			// and paint into it
-			paintPlot(this);
-
-			// all finished, close it now
-			endDraw(null);
-
-			// and ditch the GC
-			theDest.dispose();
-
-		}
-
-		// finally put the required bits of the target image onto the screen
-		if (_dblBuff != null)
-			gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
-					pe.width, pe.height);
-		else
-		{
-			CorePlugin.logError(Status.INFO,
-					"Double-buffering failed, no image produced", null);
-		}
-	}
-	
-	public Image getImage()
-	{
-			final Point theSize = _myCanvas.getSize();
-			if ((theSize.x == 0) || (theSize.y == 0))
-				return null;
-
-			Image image = new Image(Display.getCurrent(), theSize.x, theSize.y);
-			final GC theDest = new GC(image);
-
-			// prepare the ground (remember the graphics dest for a start)
-			startDraw(theDest);
-
-			// and paint into it
-			paintPlot(this);
-
-			// all finished, close it now
-			endDraw(null);
-
-			// and ditch the GC
-			theDest.dispose();
-			return image;
-	}
-
-	/**
-	 * the real paint function, called when it's not satisfactory to just paint in
-	 * our safe double-buffered image.
-	 * 
-	 * @param g1
-	 */
-	public void paintPlot(final CanvasType dest)
-	{
-		// go through our painters
-		final Enumeration<PaintListener> enumer = _thePainters.elements();
-		while (enumer.hasMoreElements())
-		{
-			final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer
-					.nextElement();
-
-			// check the screen has been defined
-			final Dimension area = this.getProjection().getScreenArea();
-			if ((area == null) || (area.getWidth() <= 0) || (area.getHeight() <= 0))
-			{
-				return;
-			}
-
-			// it must be ok
-			thisPainter.paintMe(dest);
-		}
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-
-	// ///////////////////////////////////////////////////////////
-	// projection related
-	// //////////////////////////////////////////////////////////
-	/**
-	 * handler for a screen resize - inform our projection of the resize then
-	 * inform the painters.
-	 */
-	public void setScreenSize(final java.awt.Dimension p1)
-	{
-		super.setScreenSize(p1);
-
-		// check if this is a real resize
-		if ((_theSize == null) || (!_theSize.equals(p1)))
-		{
-			// inform our parent
-			_myCanvas.setSize(p1.width, p1.height);
-
-			// erase the double buffer, (if we have one)
-			// since it is now invalid
-			if (_dblBuff != null)
-			{
-				_dblBuff.dispose();
-				_dblBuff = null;
-			}
-
-			// inform the listeners that we have resized
-			final Enumeration<PaintListener> enumer = _thePainters.elements();
-			while (enumer.hasMoreElements())
-			{
-				final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer
-						.nextElement();
-				thisPainter.resizedEvent(_theProjection, p1);
-			}
-
-		}
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// graphics plotting related
-	// //////////////////////////////////////////////////////////
-
-	/**
-	 * first repaint the plot, then trigger a screen update
-	 */
-	public final void updateMe()
-	{
-		if (_dblBuff != null)
-		{
-			if (!_dblBuff.isDisposed())
-			{
-				_dblBuff.dispose();
-			}
-			_dblBuff = null;
-		}
-
-		redraw();
-
-	}
-
-	/**
-	 * provide close method, clear elements.
-	 */
-	public final void close()
-	{
-		if (_dblBuff != null)
-			if (!_dblBuff.isDisposed())
-				_dblBuff.dispose();
-		_dblBuff = null;
-	}
-
-	public String getName()
-	{
-		return "SWT Canvas";
-	}
-
-	public void redraw(final int x, final int y, final int width, final int height, final boolean b)
-	{
-		_myCanvas.redraw(x, y, width, height, b);
-	}
-
-	private long lastRun = 0;
-
-	/**
-	 * perform an immediate redraw, not a deferred one like we do for an updateme
-	 * operation
-	 * 
-	 */
-	public void redraw()
-	{
-
-		final long TIME_INTERVAL = 150;
-		
-		if (_deferPaints)
-		{
-
-			final long tNow = System.currentTimeMillis();
-			final long elapsed = tNow - lastRun;
-			if (elapsed > TIME_INTERVAL)
-			{
-				lastRun = tNow;
-
-				// nope, fire it right away
-				final Display thisD = Display.getDefault();
-				if (thisD != null)
-					thisD.syncExec(new Runnable()
-					{
-
-						public void run()
-						{
-							_myCanvas.redraw();
-						}
-					});
-			}
-
-			// NOTE: this is the previous stacked events, used to reduce number of
-			// redraws
-			//
-			// if (!_myCanvas.isDisposed())
-			// {
-			// // create the runnable to place in the que
-			// Runnable runme = new Runnable()
-			// {
-			// public void run()
-			// {
-			// if (!_myCanvas.isDisposed())
-			// {
-			// _myCanvas.redraw();
-			// }
-			// }
-			// };
-			//
-			// // add it to the cache
-			// _eventQue.addEvent(runme);
-			// }
-		}
-		else
-		{
-			// nope, fire it right away
-			final Display thisD = Display.getDefault();
-			if (thisD != null)
-				thisD.syncExec(new Runnable()
-				{
-
-					public void run()
-					{
-						_myCanvas.redraw();
-					}
-				});
-		}
-	}
-
-	public void addControlListener(final ControlAdapter adapter)
-	{
-		_myCanvas.addControlListener(adapter);
-	}
-
-	public void addMouseMoveListener(final MouseMoveListener listener)
-	{
-		_myCanvas.addMouseMoveListener(listener);
-	}
-
-	public void addMouseListener(final MouseListener listener)
-	{
-		_myCanvas.addMouseListener(listener);
-
-	}
-
-	public void addMouseWheelListener(final MouseWheelListener listener)
-	{
-		_myCanvas.addMouseWheelListener(listener);
-	}
-
-	public Control getCanvas()
-	{
-		return _myCanvas;
-	}
-
-	public abstract static class LocationSelectedAction extends Action
-	{
-
-		WorldLocation _theLoc;
-
-		/**
-		 * pass some parameters back to the main parent
+  private static final long serialVersionUID = 1L;
+
+  private org.eclipse.swt.widgets.Canvas _myCanvas = null;
+
+  /**
+   * an event queue - where we place screen update events, to trim down lots of consecutive screen
+   * updates
+   */
+  // private EventStack _eventQue = new EventStack(100);
+
+  /**
+   * our double-buffering safe copy.
+   */
+  private transient Image _dblBuff;
+
+  private LocationSelectedAction _copyLocation;
+
+  Shell _tooltip;
+
+  private ArrayList<ScreenUpdateListener> _updateListeners;
+
+  // ///////////////////////////////////////////////////////////
+  // constructor
+  // //////////////////////////////////////////////////////////
+
+  /**
+   * default constructor.
+   * 
+   * @param projection
+   */
+  public SWTCanvas(final Composite parent, final GeoToolsHandler projection)
+  {
+    super((PlainProjection) projection);
+    // super(null);
+
+    _updateListeners = new ArrayList<ScreenUpdateListener>();
+    
+    _myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
+    _myCanvas.addMouseTrackListener(new MouseTrackAdapter()
+    {
+
+      public void mouseHover(final MouseEvent e)
+      {
+        String tip = getTheToolTipText(new java.awt.Point(e.x, e.y));
+
+        // clear the existing tooltip
+        _myCanvas.setToolTipText(null);
+
+        if (tip != null)
+        {
+          if (tip.length() > 0)
+          {
+            // strip out the HTML
+            tip = tip.replace("<u>", "");
+            tip = tip.replace("</u>", "");
+            tip = tip.replace("\\n", " ");
+            tip = tip.replace("<BR>", "\n");
+            tip = tip.replace("<html><font face=\"sansserif\">", "");
+            tip = tip.replace("</font></html>", "");
+
+            _myCanvas.setToolTipText(tip);
+          }
+        }
+      }
+    });
+    _myCanvas.addMouseMoveListener(new MouseMoveListener()
+    {
+      public void mouseMove(final MouseEvent e)
+      {
+        if (_tooltip == null)
+          return;
+
+        _tooltip.dispose();
+        _tooltip = null;
+      }
+    });
+
+    // add handler to catch canvas resizes
+    _myCanvas.addControlListener(new ControlAdapter()
+    {
+
+      public void controlResized(final ControlEvent e)
+      {
+        final Point pt = _myCanvas.getSize();
+        final Dimension dim = new Dimension(pt.x, pt.y);
+        setScreenSize(dim);
+      }
+    });
+
+    // setup our own painter
+    _myCanvas.addPaintListener(new org.eclipse.swt.events.PaintListener()
+    {
+      public void paintControl(final PaintEvent e)
+      {
+        repaintMe(e);
+      }
+    });
+
+    // _myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.BLUE));
+
+    _myCanvas.addMouseListener(new MouseAdapter()
+    {
+
+      /**
+       * @param e
+       */
+      public void mouseUp(final MouseEvent e)
+      {
+        if (e.button == 3)
+        {
+          // cool, right-had button. process it
+          final MenuManager mmgr = new MenuManager();
+          final Point display = Display.getCurrent().getCursorLocation();
+          final Point scrPoint = _myCanvas.toControl(display);
+          final WorldLocation targetLoc =
+              getProjection().toWorld(
+                  new java.awt.Point(scrPoint.x, scrPoint.y));
+          fillContextMenu(mmgr, scrPoint, targetLoc);
+          final Menu thisM = mmgr.createContextMenu(_myCanvas);
+          thisM.setVisible(true);
+        }
+      }
+
+    });
+  }
+
+  /**
+   * indicate whether paint events should build up, with only the most recent event getting painted
+   * 
+   * @param defer
+   *          yes/no
+   */
+  public void setDeferPaints(final boolean defer)
+  {
+    _deferPaints = defer;
+  }
+
+  /**
+   * ok - insert the right-hand button related items
+   * 
+   * @param mmgr
+   * @param scrPoint
+   */
+  protected void fillContextMenu(final MenuManager mmgr, final Point scrPoint,
+      final WorldLocation loc)
+  {
+    // right, we create the actions afresh each time here. We can't
+    // automatically calculate it.
+    _copyLocation =
+        new LocationSelectedAction("Copy cursor location", SWT.PUSH, loc)
+        {
+          /**
+           * @param loc
+           *          the converted world location for the mouse-click
+           * @param pt
+           *          the screen coordinate of the click
+           */
+          public void run(final WorldLocation theLoc)
+          {
+            // represent the location as a text-string
+            final String locText = CorePlugin.toClipboard(theLoc);
+
+            // right, copy the location to the clipboard
+            final Clipboard clip = CorePlugin.getDefault().getClipboard();
+            final Object[] data = new Object[]
+            {locText};
+            final Transfer[] types = new Transfer[]
+            {TextTransfer.getInstance()};
+            clip.setContents(data, types);
+
+          }
+        };
+
+    mmgr.add(_copyLocation);
+    mmgr.add(new Separator());
+
+  }
+
+  // ////////////////////////////////////////////////////
+  // screen redraw related
+  // ////////////////////////////////////////////////////
+
+  protected void repaintMe(final PaintEvent pe)
+  {
+
+    // paintPlot(pe.gc);
+    // get the graphics destination
+    final GC gc = pe.gc;
+
+    // put double-buffering code in here.
+    if (_dblBuff == null)
+    {
+      // ok, create the new image
+      final Point theSize = _myCanvas.getSize();
+
+      if ((theSize.x == 0) || (theSize.y == 0))
+        return;
+
+      _dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
+      final GC theDest = new GC(_dblBuff);
+
+      // prepare the ground (remember the graphics dest for a start)
+      startDraw(theDest);
+
+      // and paint into it
+      paintPlot(this);
+
+      // all finished, close it now
+      endDraw(null);
+
+      // and ditch the GC
+      theDest.dispose();
+
+    }
+
+    // finally put the required bits of the target image onto the screen
+    if (_dblBuff != null)
+      gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
+          pe.width, pe.height);
+    else
+    {
+      CorePlugin.logError(Status.INFO,
+          "Double-buffering failed, no image produced", null);
+    }
+  }
+
+  public Image getImage()
+  {
+    final Point theSize = _myCanvas.getSize();
+    if ((theSize.x == 0) || (theSize.y == 0))
+      return null;
+
+    Image image = new Image(Display.getCurrent(), theSize.x, theSize.y);
+    final GC theDest = new GC(image);
+
+    // prepare the ground (remember the graphics dest for a start)
+    startDraw(theDest);
+
+    // and paint into it
+    paintPlot(this);
+
+    // all finished, close it now
+    endDraw(null);
+
+    // and ditch the GC
+    theDest.dispose();
+    return image;
+  }
+
+  /**
+   * the real paint function, called when it's not satisfactory to just paint in our safe
+   * double-buffered image.
+   * 
+   * @param g1
+   */
+  public void paintPlot(final CanvasType dest)
+  {
+    // go through our painters
+    final Enumeration<PaintListener> enumer = _thePainters.elements();
+    while (enumer.hasMoreElements())
+    {
+      final CanvasType.PaintListener thisPainter =
+          (CanvasType.PaintListener) enumer.nextElement();
+
+      // check the screen has been defined
+      final Dimension area = this.getProjection().getScreenArea();
+      if ((area == null) || (area.getWidth() <= 0) || (area.getHeight() <= 0))
+      {
+        return;
+      }
+
+      // it must be ok
+      thisPainter.paintMe(dest);
+    }
+  }
+
+  // ///////////////////////////////////////////////////////////
+  // member functions
+  // //////////////////////////////////////////////////////////
+
+  // ///////////////////////////////////////////////////////////
+  // projection related
+  // //////////////////////////////////////////////////////////
+  /**
+   * handler for a screen resize - inform our projection of the resize then inform the painters.
+   */
+  public void setScreenSize(final java.awt.Dimension p1)
+  {
+    super.setScreenSize(p1);
+
+    // check if this is a real resize
+    if ((_theSize == null) || (!_theSize.equals(p1)))
+    {
+      // inform our parent
+      _myCanvas.setSize(p1.width, p1.height);
+
+      // erase the double buffer, (if we have one)
+      // since it is now invalid
+      if (_dblBuff != null)
+      {
+        _dblBuff.dispose();
+        _dblBuff = null;
+      }
+
+      // inform the listeners that we have resized
+      final Enumeration<PaintListener> enumer = _thePainters.elements();
+      while (enumer.hasMoreElements())
+      {
+        final CanvasType.PaintListener thisPainter =
+            (CanvasType.PaintListener) enumer.nextElement();
+        thisPainter.resizedEvent(_theProjection, p1);
+      }
+
+    }
+  }
+
+  // ///////////////////////////////////////////////////////////
+  // graphics plotting related
+  // //////////////////////////////////////////////////////////
+
+  /**
+   * first repaint the plot, then trigger a screen update
+   */
+  public final void updateMe()
+  {
+    if (_dblBuff != null)
+    {
+      if (!_dblBuff.isDisposed())
+      {
+        _dblBuff.dispose();
+      }
+      _dblBuff = null;
+    }
+
+    redraw();
+
+  }
+
+  /**
+   * provide close method, clear elements.
+   */
+  public final void close()
+  {
+    if (_dblBuff != null)
+      if (!_dblBuff.isDisposed())
+        _dblBuff.dispose();
+    _dblBuff = null;
+  }
+
+  public String getName()
+  {
+    return "SWT Canvas";
+  }
+
+  public void redraw(final int x, final int y, final int width,
+      final int height, final boolean b)
+  {
+    _myCanvas.redraw(x, y, width, height, b);
+  }
+
+  private long lastRun = 0;
+
+  /**
+   * tell anybody interested that we have updated
+   * 
+   */
+  final private void screenUpdated()
+  {
+    Iterator<ScreenUpdateListener> iter = _updateListeners.iterator();
+    while (iter.hasNext())
+    {
+      ScreenUpdateListener thisL =
+          (ScreenUpdateListener) iter.next();
+      thisL.screenUpdated();
+    }
+  }
+
+  /**
+   * perform an immediate redraw, not a deferred one like we do for an updateme operation
+   * 
+   */
+  public void redraw()
+  {
+
+    final long TIME_INTERVAL = 150;
+
+    if (_deferPaints)
+    {
+
+      final long tNow = System.currentTimeMillis();
+      final long elapsed = tNow - lastRun;
+      if (elapsed > TIME_INTERVAL)
+      {
+        lastRun = tNow;
+
+        // nope, fire it right away
+        final Display thisD = Display.getDefault();
+        if (thisD != null)
+          thisD.syncExec(new Runnable()
+          {
+
+            public void run()
+            {
+              _myCanvas.redraw();
+              
+              screenUpdated();
+            }
+          });
+        
+        
+      }
+    }
+    else
+    {
+      // nope, fire it right away
+      final Display thisD = Display.getDefault();
+      if (thisD != null)
+        thisD.syncExec(new Runnable()
+        {
+
+          public void run()
+          {
+            _myCanvas.redraw();
+          }
+        });
+    }
+  }
+
+  public void addControlListener(final ControlAdapter adapter)
+  {
+    _myCanvas.addControlListener(adapter);
+  }
+  
+  public void addScreenUpdateListener(final ScreenUpdateListener listener)
+  {
+    _updateListeners.add(listener);
+  }
+
+  public void addMouseMoveListener(final MouseMoveListener listener)
+  {
+    _myCanvas.addMouseMoveListener(listener);
+  }
+
+  public void addMouseListener(final MouseListener listener)
+  {
+    _myCanvas.addMouseListener(listener);
+
+  }
+
+  public void addMouseWheelListener(final MouseWheelListener listener)
+  {
+    _myCanvas.addMouseWheelListener(listener);
+  }
+
+  public Control getCanvas()
+  {
+    return _myCanvas;
+  }
+
+  public abstract static class LocationSelectedAction extends Action
+  {
+
+    WorldLocation _theLoc;
+
+    /**
+     * pass some parameters back to the main parent
+     * 
+     * @param text
+     * @param style
+     * @param theCanvas
+     *          - used to get the screen coords
+     * @param theProjection
+     *          - our screen/world converter
+     */
+    public LocationSelectedAction(final String text, final int style,
+        final WorldLocation theLoc)
+    {
+      super(text, style);
+      _theLoc = theLoc;
+    }
+
+    /**
 		 * 
-		 * @param text
-		 * @param style
-		 * @param theCanvas
-		 *          - used to get the screen coords
-		 * @param theProjection
-		 *          - our screen/world converter
 		 */
-		public LocationSelectedAction(final String text, final int style, final WorldLocation theLoc)
-		{
-			super(text, style);
-			_theLoc = theLoc;
-		}
+    public void run()
+    {
+      // ok - trigger our geospatial operation
+      run(_theLoc);
+    }
 
-		/**
-		 * 
-		 */
-		public void run()
-		{
-			// ok - trigger our geospatial operation
-			run(_theLoc);
-		}
+    /**
+     * so, the user has selected a chart location, process the selection
+     * 
+     * @param loc
+     */
+    abstract public void run(WorldLocation loc);
+  }
 
-		/**
-		 * so, the user has selected a chart location, process the selection
-		 * 
-		 * @param loc
-		 */
-		abstract public void run(WorldLocation loc);
-	}
+  // ////////////////////////////////////////////////
+  // testing code...
+  // ////////////////////////////////////////////////
+  static public class testImport extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-	// ////////////////////////////////////////////////
-	// testing code...
-	// ////////////////////////////////////////////////
-	static public class testImport extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "CONV";
+    public testImport(final String val)
+    {
+      super(val);
+    }
 
-		public testImport(final String val)
-		{
-			super(val);
-		}
+    public void testClipboardTextManagement()
+    {
+      WorldLocation theLoc = new WorldLocation(12.3, 12.555555, 1.2);
+      String txt = CorePlugin.toClipboard(theLoc);
+      assertEquals("correct string not produced", "LOC:12.3,12.555555,1.2", txt);
 
-		public void testClipboardTextManagement()
-		{
-			WorldLocation theLoc = new WorldLocation(12.3, 12.555555, 1.2);
-			String txt = CorePlugin.toClipboard(theLoc);
-			assertEquals("correct string not produced", "LOC:12.3,12.555555,1.2", txt);
+      // check for valid location
+      Object validStr;
+      validStr = CorePlugin.fromClipboard(txt);
+      assertNotNull("is a location string", validStr);
 
-			// check for valid location
-			Object validStr;
-			validStr = CorePlugin.fromClipboard(txt);
-			assertNotNull("is a location string", validStr);
+      // and check for duff location
+      validStr = CorePlugin.fromClipboard("aasdfasdfasdfadf");
+      assertNull("is a location string", validStr);
 
-			// and check for duff location
-			validStr = CorePlugin.fromClipboard("aasdfasdfasdfadf");
-			assertNull("is a location string", validStr);
+      // and back to the location
+      final WorldLocation loc2 = CorePlugin.fromClipboard(txt);
+      assertEquals("correct location parsed back in", theLoc, loc2);
 
-			// and back to the location
-			final WorldLocation loc2 = CorePlugin.fromClipboard(txt);
-			assertEquals("correct location parsed back in", theLoc, loc2);
+      // try southern/western location
+      theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
+      txt = CorePlugin.toClipboard(theLoc);
+      assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2",
+          txt);
 
-			// try southern/western location
-			theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
-			txt = CorePlugin.toClipboard(theLoc);
-			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2",
-					txt);
+      WorldLocation loc3 = CorePlugin.fromClipboard("12.5 13.5");
+      assertNotNull("is a location string", loc3);
 
-			WorldLocation loc3 = CorePlugin.fromClipboard("12.5 13.5");
-			assertNotNull("is a location string", loc3);
+      loc3 = CorePlugin.fromClipboard("-12.5 13.5");
+      assertNotNull("is a location string", loc3);
 
-			loc3 = CorePlugin.fromClipboard("-12.5 13.5");
-			assertNotNull("is a location string", loc3);
+      loc3 = CorePlugin.fromClipboard("-12.5\t 13.5");
+      assertNotNull("is a location string", loc3);
 
-			loc3 = CorePlugin.fromClipboard("-12.5\t 13.5");
-			assertNotNull("is a location string", loc3);
+      loc3 = CorePlugin.fromClipboard("-12.5t 13.5");
+      assertNull("is not a location string", loc3);
 
-			loc3 = CorePlugin.fromClipboard("-12.5t 13.5");
-			assertNull("is not a location string", loc3);
+      loc3 = CorePlugin.fromClipboard("12 01 02 N 14 12 32 W");
+      assertNotNull("is a location string", loc3);
 
-			loc3 = CorePlugin.fromClipboard("12 01 02 N 14 12 32 W");
-			assertNotNull("is a location string", loc3);
+      loc3 = CorePlugin.fromClipboard("12 01 02.225 S 14 12 32.116 E");
+      assertNotNull("is a location string", loc3);
 
-			loc3 = CorePlugin.fromClipboard("12 01 02.225 S 14 12 32.116 E");
-			assertNotNull("is a location string", loc3);
-
-		}
-	}
+    }
+  }
 }
