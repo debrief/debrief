@@ -1103,6 +1103,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
      * @param theSymbology 
      */
     void newItem(Layer parent, Editable item, String theSymbology);
+    
+    /** the data has been reloaded, forget any existing state
+     * 
+     */
+    void reset();
   }
 
   /**
