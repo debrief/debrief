@@ -63,6 +63,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   private static final String LINE_THICKNESS = "LineThickness";
   private static final String LINE_STYLE = "LineStyle";
   private static final String INTERPOLATE_POINTS = "InterpolatePoints";
+  private static final String END_TIME_LABELS = "EndTimeLabels";
 
   final MWC.GUI.Layers _theLayers;
 
@@ -114,6 +115,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     lp.setValue(track.getNameLocation());
     trk.setAttribute("NameLocation", lp.getAsText());
     trk.setAttribute("Symbol", track.getSymbolType());
+    trk.setAttribute(END_TIME_LABELS, writeThis(track.getEndTimeLabels()));
 
     // whether the sensor/solution layers should be visible
     trk.setAttribute(SENSORS_VISIBLE,
@@ -393,6 +395,14 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
       public void setValue(final String name, final boolean val)
       {
         _myTrack.getSensors().setVisible(val);
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute(END_TIME_LABELS)
+    {
+      @Override
+      public void setValue(final String name, final boolean val)
+      {
+        _myTrack.setEndTimeLabels(val);
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(SOLUTIONS_VISIBLE)

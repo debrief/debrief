@@ -746,6 +746,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     {
       _theLabel.setString(FormatRNDateTime.toShortString(_theFix.getTime()
           .getDate().getTime()));
+      _theFormat = FormatRNDateTime.getExample();
     }
     else
     {

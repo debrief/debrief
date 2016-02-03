@@ -59,6 +59,7 @@ import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
+import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
@@ -147,6 +148,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                     "whether to interpolate points between known data points",
                     SPATIAL),
                 expertProp("Color", "the track color", FORMAT),
+                displayExpertProp("EndTimeLabels", "Start/End time labels",
+                    "Whether to label track start/end with 6-figure DTG",
+                    FORMAT),
                 displayExpertProp("SymbolColor", "Symbol color",
                     "the color of the symbol (when used)", FORMAT),
                 displayExpertProp(
@@ -648,6 +652,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   private HiResDate _lastDataFrequency = new HiResDate(0,
       TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+
+  /**
+   * whether to show a time label at the start/end of the track
+   * 
+   */
+  private boolean _endTimeLabels = true;
 
   /**
    * the width of this track
@@ -1835,6 +1845,28 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   /**
+   * whether to show time labels at the start/end of the track
+   * 
+   * @return yes/no
+   */
+  public boolean getEndTimeLabels()
+  {
+    return _endTimeLabels;
+  }
+
+  /**
+   * whether to show time labels at the start/end of the track
+   * 
+   * @param endTimeLabels
+   *          yes/no
+   */
+  @FireReformatted
+  public void setEndTimeLabels(boolean endTimeLabels)
+  {
+    this._endTimeLabels = endTimeLabels;
+  }
+
+  /**
    * the relative location of the label
    * 
    * @return the relative location
@@ -2522,6 +2554,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         {
           locatedTrack = true;
           _theLabel.setLocation(new WorldLocation(lastLocation));
+          int theLoc =
+              LabelLocationPropertyEditor.oppositeFor(fw.getLabelLocation());
+          _theLabel.setRelativeLocation(theLoc);
         }
 
         // are we
@@ -2586,12 +2621,59 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         if (_showPositions && fw.getVisible())
         {
+          final boolean isVis = fw.getLabelShowing();
+          final String fmt = fw.getLabelFormat();
+          final String lblVal = fw.getLabel();
+
+          // hmm, is it the last fix?
+          boolean endFix =
+              fw.getDTG().equals(this.getStartDTG())
+                  || fw.getDTG().equals(this.getEndDTG());
+
+          // are we plotting DTG at ends?
+          if (getEndTimeLabels())
+          {
+            if (endFix)
+            {
+              // set the custom format for our end labels (6-fig DTG)
+              fw.setLabelFormat("ddHHmm");
+              fw.setLabelShowing(true);
+            }
+          }
+
           // this next method just paints the fix. we've put the
           // call into paintThisFix so we can override the painting
           // in the CompositeTrackWrapper class
           paintThisFix(dest, lastLocation, fw);
-        }
 
+          // do we need to restore it?
+          if (getEndTimeLabels())
+          {
+            if (endFix)
+            {
+              fw.setLabelFormat(fmt);
+              fw.setLabelShowing(isVis);
+              fw.setLabel(lblVal);
+            }
+          }
+
+          // see if we need to use the last label location to position
+          // the track name
+          // are we trying to put the label at the end of the track?
+          // have we found at least one location to plot?
+          if (fw.getDateTimeGroup().equals(this.getEndDTG()))
+          {
+            if (!_LabelAtStart)
+            {
+              _theLabel.setLocation(new WorldLocation(fw.getLocation()));
+              int loc =
+                  LabelLocationPropertyEditor
+                      .oppositeFor(fw.getLabelLocation());
+              _theLabel.setRelativeLocation(loc);
+            }
+          }
+
+        }
       }// while fixWrappers has more elements
 
       // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
@@ -2629,13 +2711,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // ok, just see if we have any pending polylines to paint
       paintSetOfPositions(dest, lastCol, thisLineStyle);
 
-    }
-
-    // are we trying to put the label at the end of the track?
-    // have we found at least one location to plot?
-    if (!_LabelAtStart && lastLocation != null)
-    {
-      _theLabel.setLocation(new WorldLocation(lastLocation));
     }
 
     return plotted_anything;
