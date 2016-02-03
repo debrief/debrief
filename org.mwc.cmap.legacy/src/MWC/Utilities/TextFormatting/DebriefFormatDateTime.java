@@ -239,7 +239,8 @@ public class DebriefFormatDateTime
 
 		// right. Special check to see if this is an incorrectly represented null
 		// date (-1)
-		if (theRawText.equals(NULL_DATE_STRING) || theRawText.equals(INVALID_DATE_STRING))
+//		if (theRawText.equals(NULL_DATE_STRING) || theRawText.equals(INVALID_DATE_STRING))
+	    if (theRawText.equals(NULL_DATE_STRING))
 		{
 			System.err.println("Invalid date read from xml file: " + theRawText);
 			res = null;
