@@ -152,6 +152,16 @@ abstract public class DISContext implements IDISContext
                 Layer thisL = (Layer) lIter.next();
                 _myLayers.removeThisLayer(thisL);
               }
+              
+              // also, we have to restart any formatters in that layer
+              Iterator<INewItemListener> iter = getNewItemListeners();
+              while (iter.hasNext())
+              {
+                Layers.INewItemListener thisI =
+                    (Layers.INewItemListener) iter.next();
+                thisI.reset();
+                
+              }
             }
           }
         });
@@ -287,7 +297,7 @@ abstract public class DISContext implements IDISContext
   {
     if (updating)
     {
-      System.out.println("SKIP UPDATE");
+      // System.out.println("SKIP UPDATE");
     }
     else
     {
@@ -308,9 +318,9 @@ abstract public class DISContext implements IDISContext
           {
             fitToWindow();
           }
+          updating = false;
         }
       });
-      updating = false;
     }
   }
 
