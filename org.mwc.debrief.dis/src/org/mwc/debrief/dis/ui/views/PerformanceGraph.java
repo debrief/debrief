@@ -55,18 +55,18 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   @Override
   public void logPDU(Pdu pdu)
   {
-    perfQ.add(new Date().getTime());
-
     Runnable doUpdate = new Runnable()
     {
       @Override
       public void run()
       {
-        Display.getDefault().syncExec(new Runnable()
+        Display.getDefault().asyncExec(new Runnable()
         {
           @Override
           public void run()
           {
+            // store the new time in the queue
+            perfQ.add(new Date().getTime());
 
             double freq = perfQ.freqAt(new Date().getTime()) * 1000d;
             TimeSeriesCollection data =
