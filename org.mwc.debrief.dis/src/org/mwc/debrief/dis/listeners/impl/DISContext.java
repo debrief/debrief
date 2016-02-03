@@ -18,6 +18,7 @@ import org.mwc.cmap.core.interfaces.IControllableViewport;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
 
 abstract public class DISContext implements IDISContext
@@ -267,6 +268,12 @@ abstract public class DISContext implements IDISContext
         }
       }
     });
+  }
+  
+  @Override
+  public Iterator<INewItemListener> getNewItemListeners()
+  {
+    return _myLayers.getNewItemListeners().iterator();
   }
 
   /*
