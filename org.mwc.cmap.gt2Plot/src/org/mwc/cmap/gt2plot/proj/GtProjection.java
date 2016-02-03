@@ -219,11 +219,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 		try
 		{
-			// now got to screen
-			_view.getScreenToWorld().transform(_workScreen, _workMetres);
-			_degs2metres.inverse().transform(_workMetres, _workDegs);
-			res = new WorldLocation(_workDegs.getCoordinate()[1],
-					_workDegs.getCoordinate()[0], 0);
+      // hmm, do we have an area?
+      final WorldArea dArea = this.getDataArea();
+      if (dArea.getWidth() > 0 || dArea.getHeight() > 0)
+      {
+        // now got to screen
+        _view.getScreenToWorld().transform(_workScreen, _workMetres);
+        _degs2metres.inverse().transform(_workMetres, _workDegs);
+        res =
+            new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
+                .getCoordinate()[0], 0);
+      }
 		}
 		catch (final MismatchedDimensionException e)
 		{
