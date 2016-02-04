@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -69,7 +70,7 @@ public class CustomEspduSender
     /** an entity state pdu */
     EntityStatePdu espdu = new EntityStatePdu();
     MulticastSocket socket = null;
-//    DisTime disTime = DisTime.getInstance();
+    // DisTime disTime = DisTime.getInstance();
 
     long stepMillis = 1000;
     long numParts = 1;
@@ -198,10 +199,10 @@ public class CustomEspduSender
     entityType.setCategory((short) 1); // Tank
     entityType.setSubcategory((short) 1); // M1 Abrams
     entityType.setSpec((short) 3); // M1A2 Abrams
-    
-    int randomHour =(int)(2 + Math.random() * 20);
+
+    int randomHour = (int) (2 + Math.random() * 20);
     @SuppressWarnings("deprecation")
-    long lastTime = new Date(2015,1,1,randomHour,0).getTime();
+    long lastTime = new Date(2015, 1, 1, randomHour, 0).getTime();
 
     // Loop through sending 100 ESPDUs
     try
@@ -210,6 +211,20 @@ public class CustomEspduSender
 
       System.out.println("Sending 100 ESPDU packets to "
           + destinationIp.toString());
+      
+      final double startX = 50.1;
+      final double startY = -1.87;
+      final double startZ = 0.01;
+      
+      // generate the inital states
+      for(int i=0;i<numParts;i++)
+      {
+        int eId = i + 1;// 1 + (int) (Math.random() * 20d);
+
+        State newS = new State(eId, startX, startY, startZ);
+        states.put(eId, newS);
+      }
+
 
       for (int idx = 0; idx < 100; idx++)
       {
@@ -224,32 +239,19 @@ public class CustomEspduSender
         // concept,
         // but it might just work.
         lastTime += 5 * 60 * 1000;
-//        long ts = System.currentTimeMillis();
-//        int ts = disTime.getDisAbsoluteTimestamp();
-        
-//        System.out.println("time is:" + ts + " = " + new Date(lastTime));
-        
+        // long ts = System.currentTimeMillis();
+        // int ts = disTime.getDisAbsoluteTimestamp();
+
+        // System.out.println("time is:" + ts + " = " + new Date(lastTime));
+
         espdu.setTimestamp(lastTime);
-        
-        final double startX = 50.1;
-        final double startY = -1.87;
-        final double startZ = 0.01;
-        
 
         // loop for each participants
-        for (int iP = 0; iP < numParts; iP++)
+        Iterator<Integer> sIter = states.keySet().iterator();
+        while (sIter.hasNext())
         {
-
-          // get the state
-          State thisS = states.get(iP);
-
-          if (thisS == null)
-          {
-            int eId = iP+1;//1 + (int) (Math.random() * 20d);
-
-            thisS = new State(eId, startX, startY, startZ);
-            states.put(iP, thisS);
-          }
+          final Integer thisId = (Integer) sIter.next();
+          final State thisS = states.get(thisId);
 
           eid.setEntity(thisS.id);
 
@@ -307,20 +309,31 @@ public class CustomEspduSender
         }
 
         // put in a random detonation
-        if(Math.random() >= 0.9)
+        if ((states.size() > 1) && (Math.random() >= 0.9))
         {
           System.out.println("===== DETONATION =====");
           
+          Iterator<Integer> iter = states.keySet().iterator();
+          State recipient = states.get(iter.next());
+          State firingPlatform = states.get(iter.next());
+
+          // store the id of the firing platform
+          eid.setEntity(firingPlatform.id);
+
+          // and remove the recipient
+          states.remove(recipient.id);
+
+          // build up the PDU
           DetonationPdu dp = new DetonationPdu();
           dp.setExerciseID(espdu.getExerciseID());
           dp.setFiringEntityID(eid);
           dp.setTimestamp(lastTime);
           Vector3Double wLoc = new Vector3Double();
-          wLoc.setX(startX + Math.random() * 0.02);
-          wLoc.setY(startY + Math.random() * 0.02);
+          wLoc.setX(recipient.longVal);
+          wLoc.setY(recipient.latVal);
           wLoc.setZ(startZ);
           dp.setLocationInWorldCoordinates(wLoc);
-          
+
           // Marshal out the espdu object to a byte array, then send a datagram
           // packet with that data in it.
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -336,7 +349,7 @@ public class CustomEspduSender
 
           socket.send(packet);
         }
-        
+
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
         // second.
         Thread.sleep(stepMillis);
