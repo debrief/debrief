@@ -41,7 +41,7 @@ public class HeadlessDISLogger
     new HeadlessDISLogger(address, port, root, toFile, toScreen);
     
     // ok, run the ESPDU pusher
-    CustomEspduSender.main(new String[]{"500", "6"});
+    CustomEspduSender.main(new String[]{"1000", "3"});
 
     while (true)
     {
@@ -73,10 +73,10 @@ public class HeadlessDISLogger
     subject.addEventListener(new IDISEventListener()
     {
       @Override
-      public void add(long time, short exerciseId, long id)
+      public void add(long time, short exerciseId, long id, String msg)
       {
         System.out.println("EVENT: time: " + time + " eid:" + exerciseId
-            + " hisId:" + id);
+            + " hisId:" + id + " msg:" + msg);
       }
     });
     subject.addFixListener(new IDISFixListener()
@@ -85,9 +85,10 @@ public class HeadlessDISLogger
       public void add(long time, short exerciseId, long id, double dLat,
           double dLong, double depth, double courseDegs, double speedMS)
       {
-        System.out.println("STATE: time:" + time + " eid:" + exerciseId
-            + " entity:" + id + " dLat:" + dLat + " dLon:" + dLong + " depth:"
-            + depth + " course:" + courseDegs + " speed" + speedMS);
+        System.out.print(".");
+//        System.out.println("STATE: time:" + time + " eid:" + exerciseId
+//            + " entity:" + id + " dLat:" + dLat + " dLon:" + dLong + " depth:"
+//            + depth + " course:" + courseDegs + " speed" + speedMS);
       }
     });
 
