@@ -73,6 +73,9 @@ public class CustomEspduSender
     MulticastSocket socket = null;
     // DisTime disTime = DisTime.getInstance();
 
+    // clear the states
+    states.clear();
+
     long stepMillis = 1000;
     long numParts = 1;
 
@@ -212,20 +215,18 @@ public class CustomEspduSender
 
       System.out.println("Sending 100 ESPDU packets to "
           + destinationIp.toString());
-      
+
       final double startX = 50.1;
       final double startY = -1.87;
       final double startZ = 0.01;
-      
+
       // generate the inital states
-      for(int i=0;i<numParts;i++)
+      for (int i = 0; i < numParts; i++)
       {
         int eId = i + 1;// 1 + (int) (Math.random() * 20d);
-
         State newS = new State(eId, startX, startY, startZ);
         states.put(eId, newS);
       }
-
 
       for (int idx = 0; idx < 100; idx++)
       {
@@ -236,14 +237,8 @@ public class CustomEspduSender
           break;
         }
 
-        // An alterative approach: actually follow the standard. It's a crazy
-        // concept,
-        // but it might just work.
+        // increment time
         lastTime += 5 * 60 * 1000;
-        // long ts = System.currentTimeMillis();
-        // int ts = disTime.getDisAbsoluteTimestamp();
-
-        // System.out.println("time is:" + ts + " = " + new Date(lastTime));
 
         espdu.setTimestamp(lastTime);
 
@@ -313,7 +308,7 @@ public class CustomEspduSender
         if ((states.size() > 1) && (Math.random() >= 0.9))
         {
           System.out.println("===== DETONATION =====");
-          
+
           Iterator<Integer> iter = states.keySet().iterator();
           State recipient = states.get(iter.next());
           State firingPlatform = states.get(iter.next());
@@ -329,7 +324,7 @@ public class CustomEspduSender
           dp.setExerciseID(espdu.getExerciseID());
           dp.setFiringEntityID(eid);
           dp.setTimestamp(lastTime);
-          
+
           // and the location
           double disCoordinates[] =
               CoordinateConversions.getXYZfromLatLonDegrees(recipient.latVal,
@@ -340,7 +335,6 @@ public class CustomEspduSender
           location.setZ((float) disCoordinates[2]);
           dp.setLocationInEntityCoordinates(location);
 
-          
           Vector3Double wLoc = new Vector3Double();
           wLoc.setX(recipient.longVal);
           wLoc.setY(recipient.latVal);
@@ -366,18 +360,6 @@ public class CustomEspduSender
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
         // second.
         Thread.sleep(stepMillis);
-
-        // System.out.print("Espdu #" + idx + " EID=[" + eid.getSite() + ","
-        // + eid.getApplication() + "," + eid.getEntity() + "]");
-        // System.out.print(" DIS coordinates location=[" + location.getX() +
-        // ","
-        // + location.getY() + "," + location.getZ() + "]");
-        // double c[] =
-        // {location.getX(), location.getY(), location.getZ()};
-        // double lla[] = CoordinateConversions.xyzToLatLonDegrees(c);
-        // System.out.println(" Location (lat/lon/alt): [" + lla[0] + ", "
-        // + lla[1] + ", " + lla[2] + "]");
-
       }
     }
     catch (Exception e)
