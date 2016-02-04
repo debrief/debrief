@@ -20,7 +20,7 @@
           <orgname/>
           <orgdiv><inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/planet.gif"/>
+                <imagedata fileref="figures/DeepBlueC.png"/>
               </imageobject>
             </inlinemediaobject></orgdiv>
           <orgdiv><inlinemediaobject>
@@ -423,7 +423,7 @@
               <row>
                 <entry><inlinemediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/DeepBlueC.png" width="100"/>
+                      <imagedata fileref="figures/planet.gif" width="100"/>
                     </imageobject>
                   </inlinemediaobject></entry>
                 <entry>Debrief Project Manager.
@@ -946,15 +946,16 @@ Naval Undersea Warfare Center (NUWC)
         <sect2 xml:id="intro_to_replay">
           <title>Introduction to Replay files</title>
 
-          <para>Debrief reads text files using a format named the Replay file format (<glossterm
-              linkend="g_replay">Replay</glossterm> was an application used in
-              <application>Debrief</application>-style tasks in Royal Navy analysis in past years).<tip>
+          <para>One of the file formats that Debrief uses is the Replay format (<emphasis
+              role="bold">.rep</emphasis>). These are ASCII files that contain vessel position date
+            in a flat-file format. (<glossterm linkend="g_replay">Replay</glossterm> was an
+            application used in <application>Debrief</application>-style tasks in Royal Navy
+            analysis in past years.)<tip>
               <para>Debrief can also load data stored in the increasingly popular KML format. This
                 is covered in the <xref linkend="IntroToKML"/></para>
             </tip></para>
 
-          <para>Replay files are ASCII-files containing vessel position data in a flat-file format
-            similar to that below:</para>
+          <para>A sample rep file is below:</para>
 
           <example xml:id="sample_replay_file">
             <title>Sample Replay file contents</title>
@@ -1016,6 +1017,13 @@ Naval Undersea Warfare Center (NUWC)
             </listitem>
           </itemizedlist>
 
+          <para>To further illustrate this, refer to this image:</para>
+          <para><inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="../../../user%20guide%20images/replay_log_file.png" width="100%"
+                />
+              </imageobject>
+            </inlinemediaobject></para>
           <para>Note the third line, which contains a <glossterm linkend="g_narrative"
               >narrative</glossterm> entry. This entry represents one of a group of types of data
             called <glossterm linkend="g_annotation">Annotation</glossterm> entries. These entries
@@ -1105,273 +1113,7 @@ and so on....</programlisting></para>
         </sect2>
       </sect1>
 
-      <sect1 xml:id="moving_around">
-        <title>Moving around the view</title>
-
-        <sect2 xml:id="move_intro">
-          <title>Introduction</title>
-
-          <para>Once data is loaded into <application>Debrief</application>, there are a number of
-            ways of controlling the view of the track data, but the most efficient way is by using
-            the buttons on the View toolbar: <figure xml:id="view_toolbar_demo">
-              <title>View toolbar</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/PaletteButtons3.png" align="center"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
-
-          <tip>
-            <para>For most of Debrief&apos;s operations (such as adding drawing features) it needs
-              to have an area to work with. When re-opening an existing plot file, or importing
-              data, Debrief determines the area covered by the plot from the given data. However,
-              when starting a new, blank session, Debrief doesn't know what area to use and defaults
-              to its own origin at Fort Blockhouse, HMS Dolphin, Portsmouth, United Kingdom: the
-              plot will be centred on 50 degrees 49 minutes North, 1 degree 19 minutes West
-              (approx).</para>
-          </tip>
-        </sect2>
-
-        <sect2 xml:id="toggle_buttons">
-          <title xml:id="toggle_buttons.title">Mouse mode buttons</title>
-
-          <para><indexterm>
-              <primary>Drag buttons</primary>
-            </indexterm>The first five buttons on the View toolbar represent modes of use and are
-            selectable individually with the limitation that only one button at a time can be
-            selected. When clicked, the previous selection is deactivated, and this button becomes
-            active. <variablelist>
-              <varlistentry>
-                <term><guiicon><inlinemediaobject>
-                      <imageobject>
-                        <imagedata align="center" fileref="figures/SelectSegment.png"/>
-                      </imageobject>
-                    </inlinemediaobject></guiicon>Drag Track Segment</term>
-                <listitem>
-                  <para>Drag Track Segment allows you to drag a single segment of track. It is of
-                    particular relevance when manipulating track segments in Single Sided
-                    Reconstruction (see <xref linkend="track_shifting"/>).</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata align="center" fileref="figures/DragComponent.png"/>
-                      </imageobject>
-                    </inlinemediaobject>
-                  </guiicon>Drag Component</term>
-                <listitem>
-                  <para>Drag Component lets you drag a single point within a large feature. For
-                    example, after switching to Drag Component mode you can drag the corners of a
-                    rectangle or a single point within a vessel track.</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata align="center" fileref="figures/DragWholeFeature.png"/>
-                      </imageobject>
-                    </inlinemediaobject>
-                  </guiicon>Drag Whole Feature</term>
-                <listitem>
-                  <para>This setting lets you drag a complete feature. In Drag Whole Feature mode
-                    you can drag a rectangle around the plot, or move a complete vessel track (see
-                      <xref linkend="track_shifting"/>).</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata align="center" fileref="figures/Pan.png"/>
-                      </imageobject>
-                    </inlinemediaobject>
-                  </guiicon>Pan</term>
-                <listitem>
-                  <para>The Pan control lets you move your current viewpoint. Click on the Pan
-                    button, and then drag the mouse around the <glossterm linkend="g_plt"
-                      >plot</glossterm> -- you will see the view change as you do it.</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata align="center" fileref="figures/RngBrg.png"/>
-                      </imageobject>
-                    </inlinemediaobject>
-                  </guiicon>Range Bearing</term>
-                <listitem>
-                  <para>The Range and Bearing control neither allows you to move around the view nor
-                    move objects, but selecting it allows you to measure the precise range and
-                    bearing between two points on the plot. As you click and drag, you will see the
-                    calculated results displayed at the mid-point of the connection, as shown below.
-                    The default units are yards, but different units may be selected from the
-                      <guimenuitem>CMAP</guimenuitem> section of the properties shown in the
-                      <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu> dialog.</para>
-                  <para><guiicon>
-                      <inlinemediaobject>
-                        <imageobject>
-                          <imagedata align="center" fileref="figures/RngDisplay.png" width="350"/>
-                        </imageobject>
-                      </inlinemediaobject>
-                    </guiicon></para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term xml:id="zoom_in.title"><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata align="center" fileref="figures/ZoomIn.png"/>
-                      </imageobject>
-                    </inlinemediaobject>
-                  </guiicon>Zoom in</term>
-                <listitem>
-                  <para>You are in the Zoom In mode by default. So, click and drag the mouse across
-                    the area where the two <glossterm linkend="g_track">track</glossterm>s are
-                    located near the centre of the <glossterm linkend="g_plt">plot</glossterm>. When
-                    you release the mouse button you will see a zoomed in view of the data.</para>
-                </listitem>
-              </varlistentry>
-            </variablelist></para>
-
-          <tip xml:id="middle_controls">
-            <para>In addition to the mouse mode buttons described above, the middle mouse button may
-              be used to navigate irrespective of the current mouse mode. Hold the middle mouse
-              button down and drag the cursor to pan around the plot, or hold down the
-                <guibutton>CTRL</guibutton> key and roll your mouse wheel backwards and forwards to
-              zoom in and out of the plot.</para>
-          </tip>
-          <tip>
-            <para>Handy tip no. 2 is when the plot is selected you can use the
-                <guibutton>tab</guibutton> key to cycle through the toolbar drag modes.</para>
-          </tip>
-        </sect2>
-
-        <sect2 xml:id="the_click_btns">
-          <title>Click buttons</title>
-
-          <para>The remaining buttons on the View toolbar differ from the previous ones in that they
-            don't involve mouse interaction with the plot, and selecting one of these doesn't
-            deselect the already selected mouse mode button. <variablelist>
-              <varlistentry>
-                <term><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata align="center" fileref="figures/ZoomOut.png"/>
-                      </imageobject>
-                    </inlinemediaobject></guiicon>Zoom out</term>
-                <listitem>
-                  <para>If you click on the Zoom out button, you will "zoom out" of the <glossterm
-                      linkend="g_plt">plot</glossterm> (surprise, surprise). However, as mentioned
-                    in the brief introduction (above), if the Zoom in button is already selected,
-                    selecting Zoom out doesn't deselect it - they're designed to work in conjunction
-                    with each other. You click on Zoom out as many times as is required and, as soon
-                    as you stop, you can then drag an area to zoom in on and work. If you have a
-                    wheel-mouse, holding the Ctrl key down allows you to zoom in or out, as
-                    described above in <emphasis>Toggle Buttons</emphasis>.</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry xml:id="Fit_To_Win">
-                <term><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="figures/FitToWin.png"/>
-                      </imageobject>
-                    </inlinemediaobject>
-                  </guiicon>Fit to Window</term>
-                <listitem>
-                  <para>Clicking on Fit to Window will display all currently visible plot data
-                    within the confines of the <glossterm linkend="g_plt">plot</glossterm>  area.
-                    This is good if you're zoomed in too far and need to see all the data, a single
-                    click will zoom out so you can see all visible information; conversely, if
-                    you've zoomed out too far, and the plot shapes are mere pin-pricks, a single
-                    click will zoom in, fill your plot, and allow you to see exactly what you have
-                    displayed. Note, this operation only applies to visible data, not that there may
-                    be data on the plot which is not visible (hidden layers). In addition, this
-                    phenomenon relates to the data once you have pressed "Filter to time period"
-                    from the Time Controller - the <glossterm linkend="g_plt">plot</glossterm> is
-                    resized to fit the data contained in the indicated time period (you&apos;ll
-                    learn about this later in <xref linkend="filter_time_period"/>).</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term><guiicon>
-                    <inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="figures/Repaint.png"/>
-                      </imageobject>
-                    </inlinemediaobject>
-                  </guiicon>Refresh View</term>
-                <listitem>
-                  <para>This button refreshes the current view. Refreshing is occasionally required
-                    when switching between display modes.</para>
-                </listitem>
-              </varlistentry>
-            </variablelist></para>
-        </sect2>
-
-        <sect2 xml:id="overview_window">
-          <title>Chart Overview</title>
-
-          <para>The Chart Overview view provides an large scale view of the entire exercise area.
-            This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show
-              View...</guimenuitem> drop down list (if you can't see it in the drop-down list, click
-            on 'Other' at the bottom of the Show View list, and a dialog will open where you can
-            select from unlisted views). Using it is quite simple: drag a region in the overview and
-            the current plot will quickly zoom to show that area. A highlight rectangle shows the
-            current plot view. Once you&apos;ve zoomed in a little you can double-click in the
-            overview to recenter the main plot on that point. <figure xml:id="overviewChart_sample">
-              <title>Overview chart in use</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/OverviewInUse.png" width="100%"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
-        </sect2>
-
-        <sect2 xml:id="undo_btn">
-          <title>Undo</title>
-
-          <para><indexterm>
-              <primary>Undo support</primary>
-            </indexterm><application>Debrief</application> contains an unending list of undoable
-            operations which are only cleared when the current session is closed. Most changes to
-            the <application>Debrief</application> plot are undoable, whether they be creating a new
-            feature, changing an attribute of a feature (such as color), changing the current
-            perspective, etc. If something doesn&apos;t undo, then the changes are it's something
-            we&apos;ve overlooked, so please let us know about it using the procedure in <xref
-              linkend="debrief_bugs"/> and we&apos;ll correct it as soon as possible.</para>
-
-          <para>Each open Debrief plot has its own undo buffer, so if the undo button is disabled on
-            a particular plot you must first make sure it's active (single click on it to do that).
-            Furthermore, even though you may have made the edit via the Outline View, you must still
-            click on the plot before conducting an undo operation.</para>
-        </sect2>
-
-        <sect2 xml:id="format_the_plot">
-          <title>Formatting the plot</title>
-
-          <para>The Debrief plot itself can be customised in a number of ways. For example, the
-            background color can be <indexterm>
-              <primary>Formatting</primary>
-              <secondary>Plot (background color)</secondary>
-            </indexterm>changed to suit different projection/printing mediums, or just to suit the
-            analysts' personal choice. Another way is by changing the line widths of tactical
-            objects which are displayed. Either of these options are easily accessible by
-            right-clicking on the plot and selecting <emphasis>Edit base chart</emphasis>. A
-            properties panel will then appear, and you can use the drop-down list to change the
-            background colour, move the slider to change the line width itself, etc.</para>
-        </sect2>
-      </sect1>
+      
 
       <!-- formatting track data -->
     </chapter>
@@ -1418,7 +1160,275 @@ and so on....</programlisting></para>
         </listitem>
       </itemizedlist>
     </partintro>
-
+    <chapter xml:id="moving_around">
+      <title>Moving around the view</title>
+      
+      <sect1 xml:id="move_intro">
+        <title>Introduction</title>
+        
+        <para>Once data is loaded into <application>Debrief</application>, there are a number of
+          ways of controlling the view of the track data, but the most efficient way is by using
+          the buttons on the View toolbar: <figure xml:id="view_toolbar_demo">
+            <title>View toolbar</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/PaletteButtons3.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+        
+        <tip>
+          <para>For most of Debrief&apos;s operations (such as adding drawing features) it needs
+            to have an area to work with. When re-opening an existing plot file, or importing
+            data, Debrief determines the area covered by the plot from the given data. However,
+            when starting a new, blank session, Debrief doesn't know what area to use and defaults
+            to its own origin at Fort Blockhouse, HMS Dolphin, Portsmouth, United Kingdom: the
+            plot will be centred on 50 degrees 49 minutes North, 1 degree 19 minutes West
+            (approx).</para>
+        </tip>
+      </sect1>
+      
+      <sect1 xml:id="toggle_buttons">
+        <title xml:id="toggle_buttons.title">Mouse mode buttons</title>
+        
+        <para><indexterm>
+          <primary>Drag buttons</primary>
+        </indexterm>The first five buttons on the View toolbar represent modes of use and are
+          selectable individually with the limitation that only one button at a time can be
+          selected. When clicked, the previous selection is deactivated, and this button becomes
+          active. <variablelist>
+            <varlistentry>
+              <term><guiicon><inlinemediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="figures/SelectSegment.png"/>
+                </imageobject>
+              </inlinemediaobject></guiicon>Drag Track Segment</term>
+              <listitem>
+                <para>Drag Track Segment allows you to drag a single segment of track. It is of
+                  particular relevance when manipulating track segments in Single Sided
+                  Reconstruction (see <xref linkend="track_shifting"/>).</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/DragComponent.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>Drag Component</term>
+              <listitem>
+                <para>Drag Component lets you drag a single point within a large feature. For
+                  example, after switching to Drag Component mode you can drag the corners of a
+                  rectangle or a single point within a vessel track.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/DragWholeFeature.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>Drag Whole Feature</term>
+              <listitem>
+                <para>This setting lets you drag a complete feature. In Drag Whole Feature mode
+                  you can drag a rectangle around the plot, or move a complete vessel track (see
+                  <xref linkend="track_shifting"/>).</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/Pan.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>Pan</term>
+              <listitem>
+                <para>The Pan control lets you move your current viewpoint. Click on the Pan
+                  button, and then drag the mouse around the <glossterm linkend="g_plt"
+                    >plot</glossterm> -- you will see the view change as you do it.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/RngBrg.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>Range Bearing</term>
+              <listitem>
+                <para>The Range and Bearing control neither allows you to move around the view nor
+                  move objects, but selecting it allows you to measure the precise range and
+                  bearing between two points on the plot. As you click and drag, you will see the
+                  calculated results displayed at the mid-point of the connection, as shown below.
+                  The default units are yards, but different units may be selected from the
+                  <guimenuitem>CMAP</guimenuitem> section of the properties shown in the
+                  <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu> dialog.</para>
+                <para><guiicon>
+                  <inlinemediaobject>
+                    <imageobject>
+                      <imagedata align="center" fileref="figures/RngDisplay.png" width="350"/>
+                    </imageobject>
+                  </inlinemediaobject>
+                </guiicon></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term xml:id="zoom_in.title"><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/ZoomIn.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>Zoom in</term>
+              <listitem>
+                <para>You are in the Zoom In mode by default. So, click and drag the mouse across
+                  the area where the two <glossterm linkend="g_track">track</glossterm>s are
+                  located near the centre of the <glossterm linkend="g_plt">plot</glossterm>. When
+                  you release the mouse button you will see a zoomed in view of the data.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+        
+        <tip xml:id="middle_controls">
+          <para>In addition to the mouse mode buttons described above, the middle mouse button may
+            be used to navigate irrespective of the current mouse mode. Hold the middle mouse
+            button down and drag the cursor to pan around the plot, or hold down the
+            <guibutton>CTRL</guibutton> key and roll your mouse wheel backwards and forwards to
+            zoom in and out of the plot.</para>
+        </tip>
+        <tip>
+          <para>Handy tip no. 2 is when the plot is selected you can use the
+            <guibutton>tab</guibutton> key to cycle through the toolbar drag modes.</para>
+        </tip>
+      </sect1>
+      
+      <sect1 xml:id="the_click_btns">
+        <title>Click buttons</title>
+        
+        <para>The remaining buttons on the View toolbar differ from the previous ones in that they
+          don't involve mouse interaction with the plot, and selecting one of these doesn't
+          deselect the already selected mouse mode button. <variablelist>
+            <varlistentry>
+              <term><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/ZoomOut.png"/>
+                  </imageobject>
+                </inlinemediaobject></guiicon>Zoom out</term>
+              <listitem>
+                <para>If you click on the Zoom out button, you will "zoom out" of the <glossterm
+                  linkend="g_plt">plot</glossterm> (surprise, surprise). However, as mentioned
+                  in the brief introduction (above), if the Zoom in button is already selected,
+                  selecting Zoom out doesn't deselect it - they're designed to work in conjunction
+                  with each other. You click on Zoom out as many times as is required and, as soon
+                  as you stop, you can then drag an area to zoom in on and work. If you have a
+                  wheel-mouse, holding the Ctrl key down allows you to zoom in or out, as
+                  described above in <emphasis>Toggle Buttons</emphasis>.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry xml:id="Fit_To_Win">
+              <term><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/FitToWin.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>Fit to Window</term>
+              <listitem>
+                <para>Clicking on Fit to Window will display all currently visible plot data
+                  within the confines of the <glossterm linkend="g_plt">plot</glossterm>  area.
+                  This is good if you're zoomed in too far and need to see all the data, a single
+                  click will zoom out so you can see all visible information; conversely, if
+                  you've zoomed out too far, and the plot shapes are mere pin-pricks, a single
+                  click will zoom in, fill your plot, and allow you to see exactly what you have
+                  displayed. Note, this operation only applies to visible data, not that there may
+                  be data on the plot which is not visible (hidden layers). In addition, this
+                  phenomenon relates to the data once you have pressed "Filter to time period"
+                  from the Time Controller - the <glossterm linkend="g_plt">plot</glossterm> is
+                  resized to fit the data contained in the indicated time period (you&apos;ll
+                  learn about this later in <xref linkend="filter_time_period"/>).</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/Repaint.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>Refresh View</term>
+              <listitem>
+                <para>This button refreshes the current view. Refreshing is occasionally required
+                  when switching between display modes.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </sect1>
+      
+      <sect1 xml:id="overview_window">
+        <title>Chart Overview</title>
+        
+        <para>The Chart Overview view provides an large scale view of the entire exercise area.
+          This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show
+            View...</guimenuitem> drop down list (if you can't see it in the drop-down list, click
+          on 'Other' at the bottom of the Show View list, and a dialog will open where you can
+          select from unlisted views). Using it is quite simple: drag a region in the overview and
+          the current plot will quickly zoom to show that area. A highlight rectangle shows the
+          current plot view. Once you&apos;ve zoomed in a little you can double-click in the
+          overview to recenter the main plot on that point. <figure xml:id="overviewChart_sample">
+            <title>Overview chart in use</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/OverviewInUse.png" width="100%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+      </sect1>
+      
+      <sect1 xml:id="undo_btn">
+        <title>Undo</title>
+        
+        <para><indexterm>
+          <primary>Undo support</primary>
+        </indexterm><application>Debrief</application> contains an unending list of undoable
+          operations which are only cleared when the current session is closed. Most changes to
+          the <application>Debrief</application> plot are undoable, whether they be creating a new
+          feature, changing an attribute of a feature (such as color), changing the current
+          perspective, etc. If something doesn&apos;t undo, then the changes are it's something
+          we&apos;ve overlooked, so please let us know about it using the procedure in <xref
+            linkend="debrief_bugs"/> and we&apos;ll correct it as soon as possible.</para>
+        
+        <para>Each open Debrief plot has its own undo buffer, so if the undo button is disabled on
+          a particular plot you must first make sure it's active (single click on it to do that).
+          Furthermore, even though you may have made the edit via the Outline View, you must still
+          click on the plot before conducting an undo operation.</para>
+      </sect1>
+      
+      <sect1 xml:id="format_the_plot">
+        <title>Formatting the plot</title>
+        
+        <para>The Debrief plot itself can be customised in a number of ways. For example, the
+          background color can be <indexterm>
+            <primary>Formatting</primary>
+            <secondary>Plot (background color)</secondary>
+          </indexterm>changed to suit different projection/printing mediums, or just to suit the
+          analysts' personal choice. Another way is by changing the line widths of tactical
+          objects which are displayed. Either of these options are easily accessible by
+          right-clicking on the plot and selecting <emphasis>Edit base chart</emphasis>. A
+          properties panel will then appear, and you can use the drop-down list to change the
+          background colour, move the slider to change the line width itself, etc.</para>
+        <para>Now we know how to move around the view, use the mouse buttons, and format the plot,
+          we can now move onto manipulating track data.</para>
+      </sect1>
+    </chapter>
     <chapter xml:id="formatting_data">
       <title>Manipulating track data</title>
 
@@ -2193,20 +2203,21 @@ and so on....</programlisting></para>
             </itemizedlist></para>
 
           <para>Whilst a plot is typically created from an REP file, it may not be saved back into
-            that REP file - it must be saved as an DPF Plot-File. To save your work as an <glossterm linkend="g_xml">DPF</glossterm> file, click on the Save button: <guiicon>
+            that REP file - it must be saved as a Debrief  <glossterm linkend="g_plot_file"
+              >Plot-File</glossterm> ( <filename>DPF</filename>). </para>
+          <para>To save your work as a <glossterm linkend="g_xml">DPF</glossterm> file, click on the
+            Save button: <guiicon>
               <inlinemediaobject>
                 <imageobject>
                   <imagedata fileref="figures/SaveBtn.png"/>
                 </imageobject>
               </inlinemediaobject>
-            </guiicon> from the Workbench toolbar or the <guimenu>File</guimenu> menu. A file dialog
-            will open (see below), allowing you to save the current session as a
-              <application>Debrief</application>
-            <glossterm linkend="g_plot_file">Plot-File</glossterm> ( <filename>DPF</filename>).<note>
+            </guiicon> on the Workbench toolbar (or via the <guimenu>File</guimenu> menu). A file
+            dialog will open (see below), allowing you to save the current session in this format.<note>
               <para>Debrief will only let you save the new plot into one of your project folders, so
                 you must both select a folder and a provide a filename for the new file. Usefully,
                 Debrief guesses that you probably want to name the plot the same as the REP file
-                first loaded. Hey, it&apos;s only a guess.</para>
+                first loaded, but you can change this as required.</para>
             </note></para>
 
           <para/>
@@ -2484,10 +2495,8 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Grid editor</primary>
-            </indexterm>Another feature introduced alongside the 2009 Single Sided Reconstruction
-            extensions (see <xref linkend="TwoThouOnwards"/>) is the Grid Editor. This is a tabular
-            editor with an associated xy plot that allows bulk editing of data points, together with
-            data smoothing operations.<screenshot>
+            </indexterm>The Grid Editor is a tabular editor with an associated xy plot that allows
+            bulk editing of data points, together with data smoothing operations.<screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/GridOverview.png" scalefit="1" width="100%"/>
@@ -2774,11 +2783,10 @@ and so on....</programlisting></para>
                 </itemizedlist></para>
             </note>
             <tip xml:id="interp_data">
-              <para>In Autumn 2005 the Interpolate Points property was added to tracks. When ticked,
-                Debrief interpolates positions between actual data points. The highlight cursor
-                changes appearance when on an interpolated data point.<figure xml:id="interpolate_demo">
+              <para>Debrief has an interpolates points property which, when ticked, interpolates the
+                positions between actual data points. The highlight cursor changes appearance when
+                on an interpolated data point.<figure xml:id="interpolate_demo">
                   <title>Display of an interpolated point</title>
-
                   <screenshot>
                     <mediaobject>
                       <imageobject>
@@ -2793,17 +2801,19 @@ and so on....</programlisting></para>
 
       <sect1 xml:id="controlling_time">
         <title>Controlling time</title>
+        <para>Time is managed within Debrief through the use of the Time Controller. As with all
+          views, this is accessible through the Window > Show View menu.</para>
 
         <sect2 xml:id="time_controller">
           <title>The Time Controller</title>
 
           <para><indexterm>
               <primary>Time controller</primary>
-            </indexterm>Time is managed within Debrief through the Time Controller. This view
-            displays the current serial time, allows control of that time, and provides access to a
-            series of time-related functions in <application>Debrief</application>.<figure xml:id="time_controller_demo">
+            </indexterm>The Time Controller is a view that provides a number of functions, including
+            displaying the current serial time, allowing control of that time, and providing access
+            to a series of time-related functions in <application>Debrief</application>.<figure
+              xml:id="time_controller_demo">
               <title>Time Controller view</title>
-
               <screenshot>
                 <mediaobject>
                   <imageobject>
@@ -2814,24 +2824,19 @@ and so on....</programlisting></para>
             </figure>Your temporal (time-related) view of track data is dependent on three settings:<variablelist>
               <varlistentry>
                 <term>Display Mode</term>
-
                 <listitem>
                   <para>How the track is displayed</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term>Plotting mode</term>
-
                 <listitem>
                   <para>Whether the data dynamically adjusts to follow the location/orientation of
                     the primary track</para>
                 </listitem>
               </varlistentry>
-
               <varlistentry>
                 <term>Highlight Mode</term>
-
                 <listitem>
                   <para>How the current position is displayed</para>
                 </listitem>
@@ -3109,7 +3114,9 @@ and so on....</programlisting></para>
 
           <para>The green digits of the time display are tied closely to the slider-bar immediately
             beneath them. Dragging the slider controls the current display time together with how
-            the current data is displayed. Other Debrief views (such as the Narrative Viewer (<xref linkend="viewing_narratives"/>)and the Time-Variable (<xref linkend="show_time_vars"/>)graphs) update in response to time changes from the time slider.</para>
+            the current data is displayed. Other Debrief views, such as the Narrative Viewer (<xref
+              linkend="viewing_narratives"/>) and the Time-Variable (<xref linkend="show_time_vars"
+            /> graphs) update in response to time changes from the time slider.</para>
 
           <para>A range of display formats are provided to make the displayed time more consistent
             with that in a supporting document, or of sufficient fidelity to support the current
@@ -3191,11 +3198,12 @@ and so on....</programlisting></para>
             <para><indexterm>
                 <primary>Export</primary>
                 <secondary>SAM Format</secondary>
-              </indexterm>This control exports a data file of tab-separated variables formatted
-              according to the Flat File format specified later in this document (<xref linkend="Section_Flat"/>). Data is exported for the specified time period for the
-              current primary and secondary tracks, using any sensor data that is visible over that
-              period. Debrief will remember the folder and sensor type specified in previous export
-              operations.</para>
+              </indexterm>This option allows you to export primary and secondary data as a flat-file
+              format. As part of this, data can be constrained to a particular time period and can
+              also include any visible sensor data for those tracks. This file format consists of a
+              data file of tab-separated variables and is described further in <xref
+                linkend="Section_Flat"/>. When you perform this export, Debrief will remember the
+              folder and sensor type used in previous export operations.</para>
 
             <sect4 xml:id="ExportToSamAlg">
               <title>SAM Export algorithm</title>
@@ -3751,11 +3759,10 @@ and so on....</programlisting></para>
         <note>
           <para><indexterm>
               <primary>Scaled symbols</primary>
-            </indexterm>In summer 2010 a set of scaled symbols were introduced. These are not shown
-            at fixed screen sizes, but as representative sizes of the subject vessel - so they
-            resize as you zoom in on a plot. In summer 2011 the range of vessels represented by
-            scaled symbols was extended, plus it became possible to specify the length and width of
-            the subject platform for a realistically sized vehicle representation.<figure xml:id="scaled_symbols">
+            </indexterm>The scaled symbols are not shown at fixed screen sizes, but as
+            representative sizes of the subject vessel - so they resize as you zoom in on a plot. It
+            is also possible to specify the length and width of the subject platform for a
+            realistically sized vehicle representation.<figure xml:id="scaled_symbols">
               <title>Scaled vessel symbols in <application>Debrief</application></title>
               <mediaobject>
                 <imageobject>
@@ -3780,15 +3787,16 @@ and so on....</programlisting></para>
             track has a symbol type property which is shown when the plot has SymbolHighlighter
             selected as the current highlighter.</para>
 
-          <para>To access this property, select the Properties button on the <glossterm linkend="g_tote">Tote</glossterm> (first button on bottom row), and change the current
-              <glossterm linkend="g_highlighter">highlighter</glossterm> to "SymbolHighlighter". Now
-            the current data point on each track will be shown using the symbol for that track. <guiicon>
-              <inlinemediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/PropertiesBtn.gif"/>
-                </imageobject>
-              </inlinemediaobject>
-            </guiicon></para>
+          <para>To access this property, select the Properties button on the <glossterm
+              linkend="g_tote">Time Controller</glossterm> (the drop-down button on the view), and
+            change to Symbol Highlight in Plotting Mode. As shown below:</para>
+          <para><inlinemediaobject>
+              <imageobject>
+                <imagedata
+                  fileref="../../../user%20guide%20images/time_controller_symbolhighlighter.png"
+                  width="100%"/>
+              </imageobject>
+            </inlinemediaobject></para>
 
           <tip>
             <para>By switching to Snail mode and reducing the reducing the Trail Length to zero, a
