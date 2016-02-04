@@ -109,13 +109,14 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import MWC.GUI.Editable;
+import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
-		MWC.GUI.Layer, IRollingNarrativeProvider
+		MWC.GUI.Layer, IRollingNarrativeProvider, NeedsToBeInformedOfRemove
 {
 
 	// //////////////////////////////////////
@@ -545,5 +546,11 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_myListeners.remove(listener);
 	}
+
+  @Override
+  public void beingRemoved()
+  {
+    _myEntries.clear();
+  }
 
 }
