@@ -139,6 +139,9 @@ public class DisPrefs extends PreferencePage implements
 
   private void validate()
   {
+    // clear the message, to start with
+    setErrorMessage(null);
+    
     String path = simulationPathText.getText();
     if (path != null && !path.isEmpty())
     {
