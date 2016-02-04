@@ -37,7 +37,7 @@ public class CustomEspduSender
   /** Port we send on */
   public static final int PORT = 62040;
 
-  private static boolean _terminate;
+  private boolean _terminate;
 
   private static class State
   {
@@ -55,7 +55,13 @@ public class CustomEspduSender
     double courseRads;
   }
 
-  private static Map<Integer, State> states = new HashMap<Integer, State>();
+  private Map<Integer, State> states = new HashMap<Integer, State>();
+
+  public static void main(String args[])
+  {
+    CustomEspduSender sender = new CustomEspduSender();
+    sender.run(args);
+  }
 
   /**
    * Possible system properties, passed in via -Dattr=val networkMode: unicast, broadcast, multicast
@@ -66,7 +72,7 @@ public class CustomEspduSender
    * 
    * @param args
    */
-  public static void main(String args[])
+  public void run(String args[])
   {
     /** an entity state pdu */
     EntityStatePdu espdu = new EntityStatePdu();
@@ -369,7 +375,7 @@ public class CustomEspduSender
 
   }
 
-  public static void terminate()
+  public void terminate()
   {
     _terminate = true;
   }

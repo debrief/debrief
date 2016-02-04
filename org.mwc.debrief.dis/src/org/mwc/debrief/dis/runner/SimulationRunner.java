@@ -35,18 +35,21 @@ public class SimulationRunner
       // FOR TESTING - FIRE OUR GENERATOR
       _simJob = new Job("Run simulation")
       {
+        final private CustomEspduSender sender = new CustomEspduSender();
+
         @Override
         protected IStatus run(IProgressMonitor monitor)
         {
           String[] cArgs = args.split(" ");
-          CustomEspduSender.main(cArgs);
+          sender.run(cArgs);
           return Status.OK_STATUS;
         }
 
         @Override
         protected void canceling()
         {
-          CustomEspduSender.terminate();
+          // terminate the data generator
+          sender.terminate();
         }
       };
       _simJob.setUser(false);
