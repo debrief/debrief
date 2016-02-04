@@ -120,10 +120,7 @@ abstract public class DISContext implements IDISContext,
       // ok, new exercise - do we need a new plot?
       if (getUseNewPlot())
       {
-
         // ok, create a new plot
-        System.out.println("== CREATING NEW PLOT FOR NEW EXERCISE ==");
-
         Display.getDefault().syncExec(new Runnable()
         {
 
