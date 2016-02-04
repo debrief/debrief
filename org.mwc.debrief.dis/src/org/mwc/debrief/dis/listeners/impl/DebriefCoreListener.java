@@ -5,15 +5,15 @@ import java.util.Iterator;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
 import MWC.GUI.Layers.INewItemListener;
+import MWC.GUI.Plottable;
 
 public class DebriefCoreListener
 {
   protected final java.awt.Color[] defaultColors = new java.awt.Color[]
-  {java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
-      java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
-      java.awt.Color.orange, java.awt.Color.pink};
+  {java.awt.Color.red, java.awt.Color.green, java.awt.Color.blue,
+      java.awt.Color.cyan, java.awt.Color.magenta, java.awt.Color.orange,
+      java.awt.Color.pink};
 
   protected final IDISContext _context;
 
@@ -100,8 +100,10 @@ public class DebriefCoreListener
 
     if (_context.getLiveUpdates())
     {
-      final Plottable newItem = null;
-      _context.fireUpdate(newItem, finalLayer);
+      // provide null item, to prevent the Outline view trying to show it
+      Plottable nullItem = null;
+
+      _context.fireUpdate(nullItem, finalLayer);
     }
 
     // should we try any formatting?
