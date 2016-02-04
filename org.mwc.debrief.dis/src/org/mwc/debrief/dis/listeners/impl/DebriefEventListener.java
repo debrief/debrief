@@ -25,6 +25,8 @@ public class DebriefEventListener extends DebriefCoreListener implements
   {
     final String theName = "DIS_" + id;
     final String message = "Message from " + theName;
+    
+    System.out.println("NEW EVENT!");
 
     // and the narrative entry
     addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
@@ -40,7 +42,7 @@ public class DebriefEventListener extends DebriefCoreListener implements
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(theName, "DETONATION", new HiResDate(time),
+            new NarrativeEntry(theName, "EVENT", new HiResDate(time),
                 message);
         Color theColor = colorFor(theName);
         newE.setColor(theColor);

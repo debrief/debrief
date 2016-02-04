@@ -60,6 +60,7 @@ import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefDetonationListener;
+import org.mwc.debrief.dis.listeners.impl.DebriefEventListener;
 import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
 import org.mwc.debrief.dis.listeners.impl.IDISContext;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
@@ -206,6 +207,7 @@ public class DisListenerView extends ViewPart
     // ok, Debrief fix listener
     module.addFixListener(new DebriefFixListener(context));
     module.addDetonationListener(new DebriefDetonationListener(context));
+    module.addEventListener(new DebriefEventListener(context));
    
   }
 

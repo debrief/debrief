@@ -15,6 +15,7 @@ import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EntityType;
+import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.Vector3Double;
 import edu.nps.moves.dis.Vector3Float;
 import edu.nps.moves.disutil.CoordinateConversions;
@@ -234,7 +235,8 @@ public class CustomEspduSender
         states.put(eId, newS);
       }
 
-      for (int idx = 0; idx < 100; idx++)
+      // generate 100 entries
+      for (int idx = 0; idx < 1000; idx++)
       {
 
         // just check if we're being terminated early
@@ -362,6 +364,42 @@ public class CustomEspduSender
 
           socket.send(packet);
         }
+        
+
+        // put in a random event
+        double thisR = Math.random();
+        if ((states.size() > 1) && (thisR >= 0.6))
+        {
+          System.out.println("===== EVENT ===== ");
+
+          // build up the PDU
+          EventReportPdu dp = new EventReportPdu();
+          dp.setExerciseID(espdu.getExerciseID());
+          dp.setTimestamp(lastTime);
+          dp.setEventType((long) (Math.random() * 50));
+          
+          // produce random participant.
+          int partId = randomEntity();
+          eid.setEntity(partId);
+          dp.setOriginatingEntityID(eid);
+
+          // Marshal out the espdu object to a byte array, then send a datagram
+          // packet with that data in it.
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          DataOutputStream dos = new DataOutputStream(baos);
+          dp.marshal(dos);
+
+          // The byte array here is the packet in DIS format. We put that into a
+          // datagram and send it.
+          byte[] data = baos.toByteArray();
+
+          DatagramPacket packet =
+              new DatagramPacket(data, data.length, destinationIp, PORT);
+
+          socket.send(packet);
+        }
+
+        
 
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
         // second.
@@ -373,6 +411,18 @@ public class CustomEspduSender
       System.out.println(e);
     }
 
+  }
+
+  private int randomEntity()
+  {
+    int index = (int) (Math.random() * (double) states.size());
+    Iterator<Integer> sIter2 = states.keySet().iterator();
+    int partId = 0;
+    for(int i=0;i<=index;i++)
+    {
+      partId = sIter2.next();
+    }
+    return partId;
   }
 
   public void terminate()
