@@ -5,9 +5,11 @@ import java.io.DataOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -16,6 +18,8 @@ import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EntityType;
 import edu.nps.moves.dis.EventReportPdu;
+import edu.nps.moves.dis.OneByteChunk;
+import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
 import edu.nps.moves.dis.Vector3Float;
 import edu.nps.moves.disutil.CoordinateConversions;
@@ -382,6 +386,28 @@ public class CustomEspduSender
           int partId = randomEntity();
           eid.setEntity(partId);
           dp.setOriginatingEntityID(eid);
+          
+          // and some message
+          final String msg = " Some event from entity " + partId;
+          
+          VariableDatum d = new VariableDatum();
+          byte[] theBytes = msg.getBytes();
+          List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
+          
+          for (int i = 0; i < theBytes.length; i++)
+          {
+            byte thisB = theBytes[i];
+            OneByteChunk chunk = new OneByteChunk();
+            chunk.setOtherParameters(new byte[]{thisB});
+            chunks.add(chunk);
+          }
+          
+          d.setVariableData(chunks);
+          d.setVariableDatumLength(theBytes.length);
+          d.setVariableDatumID(lastTime);
+          List<VariableDatum> datums = new ArrayList<VariableDatum>();
+          datums.add(d);
+          dp.setVariableDatums(datums);
 
           // Marshal out the espdu object to a byte array, then send a datagram
           // packet with that data in it.
