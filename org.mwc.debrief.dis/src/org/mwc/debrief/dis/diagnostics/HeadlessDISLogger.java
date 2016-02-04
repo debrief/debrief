@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
-import org.mwc.debrief.dis.core.IDISPreferences;
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
@@ -40,6 +39,9 @@ public class HeadlessDISLogger
     boolean toScreen = false;
 
     new HeadlessDISLogger(address, port, root, toFile, toScreen);
+    
+    // ok, run the ESPDU pusher
+    CustomEspduSender.main(new String[]{"500", "6"});
 
     while (true)
     {

@@ -5,22 +5,21 @@ import java.util.Iterator;
 
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 
-import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.BaseLayer;
+import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
-import MWC.GenericData.WorldLocation;
+import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeEntry;
 
-public class DebriefDetonationListener implements IDISDetonationListener
+public class DebriefStateListener implements IDISDetonationListener
 {
 
-  final private String LAYER_NAME = "Detonations";
-  
   final private IDISContext _context;
 
-  public DebriefDetonationListener(IDISContext context)
+  public DebriefStateListener(IDISContext context)
   {
     _context = context;
   }
@@ -32,13 +31,13 @@ public class DebriefDetonationListener implements IDISDetonationListener
 
     final String theName = "DIS_" + hisId;
 
-    // find the narratives layer    
-    Layer nLayer =  _context.findLayer(eid, LAYER_NAME);
+    // find the narratives layer
+    
+    Layer nLayer =  _context.findLayer(eid, ImportReplay.NARRATIVE_LAYER);
     if (nLayer == null)
     {
       
-      nLayer = new BaseLayer();
-      nLayer.setName(LAYER_NAME);
+      nLayer = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
       
       // and store it
       _context.addThisLayer(nLayer);
@@ -51,11 +50,9 @@ public class DebriefDetonationListener implements IDISDetonationListener
         newI.newItem(nLayer, null, null);
       }
     }
-    
-    
-    WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-    Plottable newE = new LabelWrapper("Detonation fired from:" + theName, newLoc, Color.red);
 
+    NarrativeEntry newE = new NarrativeEntry(theName, "DETONATION", new HiResDate(time), "new narrative");
+    newE.setColor(Color.black);
     nLayer.add(newE);
 
     final Layer finalLayer = nLayer;

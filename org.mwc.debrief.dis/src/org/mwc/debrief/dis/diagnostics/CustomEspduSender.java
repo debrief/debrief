@@ -16,6 +16,7 @@ import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EntityType;
 import edu.nps.moves.dis.Vector3Double;
+import edu.nps.moves.dis.Vector3Float;
 import edu.nps.moves.disutil.CoordinateConversions;
 
 /**
@@ -328,6 +329,18 @@ public class CustomEspduSender
           dp.setExerciseID(espdu.getExerciseID());
           dp.setFiringEntityID(eid);
           dp.setTimestamp(lastTime);
+          
+          // and the location
+          double disCoordinates[] =
+              CoordinateConversions.getXYZfromLatLonDegrees(recipient.latVal,
+                  recipient.longVal, 0.0);
+          Vector3Float location = new Vector3Float();
+          location.setX((float) disCoordinates[0]);
+          location.setY((float) disCoordinates[1]);
+          location.setZ((float) disCoordinates[2]);
+          dp.setLocationInEntityCoordinates(location);
+
+          
           Vector3Double wLoc = new Vector3Double();
           wLoc.setX(recipient.longVal);
           wLoc.setY(recipient.latVal);
