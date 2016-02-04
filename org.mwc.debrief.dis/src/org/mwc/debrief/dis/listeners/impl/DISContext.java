@@ -324,7 +324,7 @@ abstract public class DISContext implements IDISContext,
       // pass the new item to the extended method in order to display it in
       // the layer manager
       // newItem = fw;
-      Display.getDefault().asyncExec(new Runnable()
+      Display.getDefault().syncExec(new Runnable()
       {
 
         @Override
