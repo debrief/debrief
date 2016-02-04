@@ -31,7 +31,7 @@ public class DebriefCoreListener
   protected Color colorFor(String name)
   {
     // ok, get the hashmap
-    int index = name.hashCode() % defaultColors.length;
+    int index = Math.abs(name.hashCode()) % defaultColors.length;
     return defaultColors[index];
   }
 
