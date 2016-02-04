@@ -1,82 +1,82 @@
 package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
-import java.util.Iterator;
 
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.NarrativeEntry;
 
-public class DebriefDetonationListener implements IDISDetonationListener
+public class DebriefDetonationListener  extends DebriefCoreListener implements IDISDetonationListener
 {
 
-  final private String LAYER_NAME = "Detonations";
-  
-  final private IDISContext _context;
+  final private String DETONATIONS_LAYER = "Detonations";
 
   public DebriefDetonationListener(IDISContext context)
   {
-    _context = context;
+    super(context);
   }
 
   @Override
-  public void add(long time, short eid, int hisId, double dLat, double dLon,
-      double depth)
+  public void add(final long time, short eid, int hisId, final double dLat,
+      final double dLon, final double depth)
   {
 
     final String theName = "DIS_" + hisId;
+    final String message = "Detonation fired from:" + theName;
 
-    // find the narratives layer    
-    Layer nLayer =  _context.findLayer(eid, LAYER_NAME);
-    if (nLayer == null)
+    // create the text marker
+    addNewItem(eid, DETONATIONS_LAYER, new ListenerHelper()
     {
-      
-      nLayer = new BaseLayer();
-      nLayer.setName(LAYER_NAME);
-      
-      // and store it
-      _context.addThisLayer(nLayer);
 
-      // share the news
-      Iterator<INewItemListener> iter = _context.getNewItemListeners();
-      while (iter.hasNext())
+      @Override
+      public Layer createLayer()
       {
-        Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-        newI.newItem(nLayer, null, null);
+        Layer newB = new BaseLayer();
+        newB.setName(DETONATIONS_LAYER);
+        return newB;
       }
-    }
-    
-    
-    WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-    Plottable newE = new LabelWrapper("Detonation fired from:" + theName, newLoc, Color.red);
 
-    nLayer.add(newE);
+      @Override
+      public Plottable createItem()
+      {
+        WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
+        Color theColor = colorFor(theName);
+        return new LabelWrapper(message, newLoc, theColor);
+      }
+    });
 
-    final Layer finalLayer = nLayer;
-
-    if (_context.getLiveUpdates())
+    // and the narrative entry
+    addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
     {
-      final Plottable newItem = null;
-      _context.fireUpdate(newItem, finalLayer);
-    }
+
+      @Override
+      public Layer createLayer()
+      {
+        return new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      }
+
+      @Override
+      public Plottable createItem()
+      {
+        NarrativeEntry newE =
+            new NarrativeEntry(theName, "DETONATION", new HiResDate(time),
+                message);
+        Color theColor = colorFor(theName);
+        newE.setColor(theColor);
+        return newE;
+      }
+    });
 
     // share the news about the new time
-//    System.out.println("== setting new time:" + date.getDate());
     _context.setNewTime(time);
-
-    // should we try any formatting?
-    Iterator<INewItemListener> iter = _context.getNewItemListeners();
-    while (iter.hasNext())
-    {
-      Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-      newI.newItem(finalLayer, newE, null);
-    }
   }
 
 }
