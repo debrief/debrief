@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
@@ -39,7 +40,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -79,6 +79,7 @@ import MWC.GenericData.HiResDate;
 public class DisListenerView extends ViewPart
 {
 
+  public  static final String HELP_CONTEXT = "org.mwc.debrief.help.DISSupport";
   private Button connectButton;
   private Button disconnectButton;
   private Button stopButton;
@@ -485,7 +486,9 @@ public class DisListenerView extends ViewPart
 
     // ok, we can go for it
     initModule();
-
+    
+    // ok, sort out the help
+    PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HELP_CONTEXT);
   }
 
   private void fixChartComposite()
@@ -521,6 +524,9 @@ public class DisListenerView extends ViewPart
 
   private void fillLocalPullDown(final IMenuManager manager)
   {
+    manager.add(new Separator());
+    manager.add(CorePlugin.createOpenHelpAction(
+        HELP_CONTEXT, null, this));
   }
 
   private void fillLocalToolBar(final IToolBarManager manager)

@@ -6696,6 +6696,26 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
       </sect1>
     </chapter>
+    
+    
+    <chapter xml:id="dis_support">
+      <title>Support for DIS Protocol</title>
+      
+      <sect1 xml:id="dis_intro">
+        <title>Introduction</title>
+        <para>In Spring 2016 Debrief added support for this DIS Protocol (<link
+            xlink:href="https://en.wikipedia.org/wiki/Distributed_Interactive_Simulation"
+            >https://en.wikipedia.org/wiki/Distributed_Interactive_Simulation</link>).</para>
+      </sect1>
+      <sect1 xml:id="dis_config">
+        <title>Configuring DIS</title>
+        <para>.</para>
+      </sect1>
+      <sect1 xml:id="dis_tips">
+        <title>DIS Tips &amp; Tricks</title>
+        <para>.</para>
+      </sect1>
+    </chapter>
   </part>
 
   <!-- ********************************************************************** -->
@@ -10925,6 +10945,23 @@ end</screen>
         </section>
       </section>
     </chapter>
+    <chapter xml:id="dis_ref">
+      <title>System Documentation for DIS integration</title>
+      <sect1>
+        <title>Introduction</title>
+        <para>The display of chart data in Debrief is all down to the <link xlink:href="http://geotools.org/"><citetitle>GeoTools</citetitle></link> library.
+          Recently the SWT module was added to this library. The SWT module incorporates the
+          SwtMapPane class upon which the Debrief plot now sits. With the incorporation of GeoTools
+          brings a wide range of new file formats, both image and vector, plus more advanced
+          topographic and earth model related capabilities. Rest assured, Debrief will exploit these
+          library features as much as possible in coming months/years.</para>
+      </sect1>
+      <sect1>
+        <title>Messages supported</title>
+        <para>table of messages goes here</para>
+      </sect1>
+    </chapter>
+    
   </part>
   <!-- ********************************************************************** -->
   
