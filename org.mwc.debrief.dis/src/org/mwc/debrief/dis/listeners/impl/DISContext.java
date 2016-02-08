@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.core.ui_support.PartMonitor.ICallback;
@@ -277,9 +278,8 @@ abstract public class DISContext implements IDISContext,
     @Override
     public ImageDescriptor getImageDescriptor()
     {
-      // we don't need to provide a descriptor, since the Debrief
-      // editor provides its own icon anyway
-      return null;
+      return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.dis",
+          "icons/16px/dis_icon.png");
     }
 
     @Override

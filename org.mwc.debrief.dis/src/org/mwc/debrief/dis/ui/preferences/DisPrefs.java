@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -25,6 +26,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -35,8 +37,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
+import org.mwc.debrief.dis.ui.views.DisListenerView;
 
 public class DisPrefs extends PreferencePage implements
     IWorkbenchPreferencePage
@@ -45,6 +49,7 @@ public class DisPrefs extends PreferencePage implements
   private Text simulationPathText;
   private Text ipAddressText;
   private Text portText;
+  private IWorkbench _myBench;
   private static final Pattern IP_ADDRESS_PATTERN =
       Pattern
           .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
@@ -61,6 +66,7 @@ public class DisPrefs extends PreferencePage implements
    */
   public void init(IWorkbench workbench)
   {
+    _myBench = workbench;
   }
 
   @Override
@@ -74,6 +80,31 @@ public class DisPrefs extends PreferencePage implements
     layout.marginHeight = 0;
     composite.setLayout(layout);
 
+    // put a help button at the top-right
+    createLabel(composite, " ");
+    createLabel(composite, " ");
+    final Action act = CorePlugin.createOpenHelpAction(
+        DisListenerView.HELP_CONTEXT, null, _myBench.getHelpSystem());
+    Button helpBtn = new Button(composite, SWT.PUSH);
+    helpBtn.addSelectionListener(new SelectionListener()
+    {
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+        act.run();
+      }
+      
+      @Override
+      public void widgetDefaultSelected(SelectionEvent e)
+      {
+      }
+    });
+    helpBtn.setImage(CorePlugin.getImageDescriptor("icons/16/help.png").createImage());
+    GridData gd2 = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+    helpBtn.setLayoutData(gd2);    
+
+    // now the rest of the prefs
+    
     createLabel(composite, "Path to executable:");
     simulationPathText =
         createText(composite, DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
@@ -134,6 +165,7 @@ public class DisPrefs extends PreferencePage implements
     });
 
     validate();
+    
     return composite;
   }
 
@@ -202,11 +234,17 @@ public class DisPrefs extends PreferencePage implements
 
   private void createLabel(Composite composite, String text)
   {
+    createAlignedLabel(composite, text, SWT.FILL);
+  }
+
+  private void createAlignedLabel(Composite composite, String text, int alignment)
+  {
     Label label = new Label(composite, SWT.NONE);
-    GridData gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
+    GridData gd = new GridData(alignment, SWT.CENTER, false, false);
     label.setLayoutData(gd);
     label.setText(text);
   }
+
 
   @Override
   protected void performDefaults()

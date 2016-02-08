@@ -5,22 +5,18 @@ import java.io.DataOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import edu.nps.moves.dis.DetonationPdu;
-import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EntityType;
 import edu.nps.moves.dis.EventReportPdu;
-import edu.nps.moves.dis.OneByteChunk;
-import edu.nps.moves.dis.VariableDatum;
+import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.Vector3Double;
 import edu.nps.moves.dis.Vector3Float;
 import edu.nps.moves.disutil.CoordinateConversions;
@@ -377,7 +373,6 @@ public class CustomEspduSender
 
           socket.send(packet);
         }
-        
 
         // put in a random event
         double thisR = Math.random();
@@ -390,33 +385,38 @@ public class CustomEspduSender
           dp.setExerciseID(espdu.getExerciseID());
           dp.setTimestamp(lastTime);
           dp.setEventType((long) (Math.random() * 50));
-          
+
           // produce random participant.
           int partId = randomEntity();
           eid.setEntity(partId);
           dp.setOriginatingEntityID(eid);
-          
+
           // and some message
           final String msg = " Some event from entity " + partId;
-          
-          VariableDatum d = new VariableDatum();
-          byte[] theBytes = msg.getBytes();
-          List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
-          
-          for (int i = 0; i < theBytes.length; i++)
-          {
-            byte thisB = theBytes[i];
-            OneByteChunk chunk = new OneByteChunk();
-            chunk.setOtherParameters(new byte[]{thisB});
-            chunks.add(chunk);
-          }
-          
-          d.setVariableData(chunks);
-          d.setVariableDatumLength(theBytes.length);
-          d.setVariableDatumID(lastTime);
-          List<VariableDatum> datums = new ArrayList<VariableDatum>();
-          datums.add(d);
-          dp.setVariableDatums(datums);
+
+
+          // INSERTING TEXT STRING
+          //
+//          VariableDatum d = new VariableDatum();
+//          byte[] theBytes = msg.getBytes();
+//          List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
+//
+//          for (int i = 0; i < theBytes.length; i++)
+//          {
+//            byte thisB = theBytes[i];
+//            OneByteChunk chunk = new OneByteChunk();
+//            chunk.setOtherParameters(new byte[]
+//            {thisB});
+//            chunks.add(chunk);
+//          }
+//          d.setVariableData(chunks);
+//          d.setVariableDatumLength(theBytes.length);
+//          d.setVariableDatumID(lastTime);
+//          List<VariableDatum> datums = new ArrayList<VariableDatum>();
+//          datums.add(d);
+//          dp.setVariableDatums(datums);
+//          
+          // 
 
           // Marshal out the espdu object to a byte array, then send a datagram
           // packet with that data in it.
@@ -434,17 +434,27 @@ public class CustomEspduSender
           socket.send(packet);
         }
 
+        // put in a random launch
+        if (Math.random() >= 0.92)
+        {
+          System.out.println("===== LAUNCH ===== ");
+
+          final int newId = (int) (1000 + (Math.random() * 1000d));
+          State newS = new State(newId, startX, startY, startZ);
+          states.put(newId, newS);
+        }
+
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
         // second.
         Thread.sleep(stepMillis);
       }
-      
+
       // ok, data complete. send stop PDU
       // The byte array here is the packet in DIS format. We put that into a
       // datagram and send it.
       StopFreezePdu stopPdu = new StopFreezePdu();
       stopPdu.setReason(STOP_PDU_TERMINATED);
-      
+
       // Marshal out the espdu object to a byte array, then send a datagram
       // packet with that data in it.
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -459,7 +469,7 @@ public class CustomEspduSender
           new DatagramPacket(data, data.length, destinationIp, PORT);
 
       socket.send(packet);
-      
+
       System.out.println("COMPLETE SENT!");
     }
     catch (Exception e)
@@ -474,7 +484,7 @@ public class CustomEspduSender
     int index = (int) (Math.random() * (double) states.size());
     Iterator<Integer> sIter2 = states.keySet().iterator();
     int partId = 0;
-    for(int i=0;i<=index;i++)
+    for (int i = 0; i <= index; i++)
     {
       partId = sIter2.next();
     }
