@@ -2550,7 +2550,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // so, we're looking at the first data point. Do
         // we want to use this to locate the track name?
         // or have we already sorted out the location
-        if (_LabelAtStart && !locatedTrack)
+        if (getNameAtStart() && !locatedTrack)
         {
           locatedTrack = true;
           _theLabel.setLocation(new WorldLocation(lastLocation));
@@ -2626,10 +2626,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           final String lblVal = fw.getLabel();
 
           // hmm, is it the last fix?
-          boolean endFix =
-              fw.getDTG().equals(this.getStartDTG())
-                  || fw.getDTG().equals(this.getEndDTG());
 
+          boolean startFix = fw.getDTG().equals(this.getStartDTG());
+          boolean finishFix = fw.getDTG().equals(this.getEndDTG()); 
+          boolean endFix = startFix || finishFix;
+          
+          // are we plotting the track name?
+          
           // are we plotting DTG at ends?
           if (getEndTimeLabels())
           {
@@ -2663,7 +2666,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           // have we found at least one location to plot?
           if (fw.getDateTimeGroup().equals(this.getEndDTG()))
           {
-            if (!_LabelAtStart)
+            if (!getNameAtStart())
             {
               _theLabel.setLocation(new WorldLocation(fw.getLocation()));
               int loc =
