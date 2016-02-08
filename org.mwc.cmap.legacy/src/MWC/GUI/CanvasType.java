@@ -166,6 +166,7 @@ public interface CanvasType {
   static interface ScreenUpdateProvider
   {
     void addScreenUpdateListener(final ScreenUpdateListener listener);
+    void removeScreenUpdateListener(final ScreenUpdateListener listener);    
   }
   
   /** interface for classes that want to know when screen refreshes happen

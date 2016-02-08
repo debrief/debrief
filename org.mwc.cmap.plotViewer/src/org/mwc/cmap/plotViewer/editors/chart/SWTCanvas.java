@@ -605,6 +605,11 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
     _updateListeners.add(listener);
   }
 
+  public void removeScreenUpdateListener(final ScreenUpdateListener listener)
+  {
+    _updateListeners.remove(listener);
+  }
+
   public void addMouseMoveListener(final MouseMoveListener listener)
   {
     _myCanvas.addMouseMoveListener(listener);
