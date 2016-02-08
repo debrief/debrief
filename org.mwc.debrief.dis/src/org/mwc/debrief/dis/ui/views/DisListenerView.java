@@ -532,6 +532,8 @@ public class DisListenerView extends ViewPart
   private void fillLocalToolBar(final IToolBarManager manager)
   {
     manager.add(fitToDataAction);
+    manager.add(CorePlugin.createOpenHelpAction(
+        HELP_CONTEXT, null, this));
   }
 
   private Button createButton(Composite composite, String label)

@@ -80,6 +80,30 @@ public class DisPrefs extends PreferencePage implements
     layout.marginHeight = 0;
     composite.setLayout(layout);
 
+    // put a help button at the top-right
+    createLabel(composite, " ");
+    createLabel(composite, " ");
+    final Action act = CorePlugin.createOpenHelpAction(
+        DisListenerView.HELP_CONTEXT, null, _myBench.getHelpSystem());
+    Button helpBtn = new Button(composite, SWT.PUSH);
+    helpBtn.addSelectionListener(new SelectionListener()
+    {
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+        act.run();
+      }
+      
+      @Override
+      public void widgetDefaultSelected(SelectionEvent e)
+      {
+      }
+    });
+    helpBtn.setImage(CorePlugin.getImageDescriptor("icons/16/help.png").createImage());
+    GridData gd2 = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+    helpBtn.setLayoutData(gd2);    
+
+    // now the rest of the prefs
     
     createLabel(composite, "Path to executable:");
     simulationPathText =
@@ -141,31 +165,6 @@ public class DisPrefs extends PreferencePage implements
     });
 
     validate();
-    
-    // ok, have a go at the help button
-    createLabel(composite, " ");
-    createAlignedLabel(composite,"Learn more",  SWT.RIGHT);
-    
-    // now the button itself
-    final Action act = CorePlugin.createOpenHelpAction(
-        DisListenerView.HELP_CONTEXT, null, _myBench.getHelpSystem());
-    Button helpBtn = new Button(composite, SWT.PUSH);
-    helpBtn.addSelectionListener(new SelectionListener()
-    {
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        act.run();
-      }
-      
-      @Override
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-      }
-    });
-    helpBtn.setText("Help");
-    
-
     
     return composite;
   }
