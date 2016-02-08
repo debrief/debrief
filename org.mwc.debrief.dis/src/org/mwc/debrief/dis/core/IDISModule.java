@@ -5,6 +5,7 @@ import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
+import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
 public interface IDISModule
@@ -24,5 +25,7 @@ public interface IDISModule
   void addScenarioListener(IDISScenarioListener handler);
 
   void addEventListener(IDISEventListener handler);
+
+  void addStopListener(IDISStopListener idisStopListener);
 
 }

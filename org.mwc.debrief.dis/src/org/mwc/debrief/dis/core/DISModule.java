@@ -9,10 +9,12 @@ import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
+import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
 import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityStatePdu;
+import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.OneByteChunk;
 import edu.nps.moves.dis.Orientation;
@@ -34,6 +36,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       new ArrayList<IDISGeneralPDUListener>();
   private List<IDISScenarioListener> _scenarioListeners =
       new ArrayList<IDISScenarioListener>();
+  private List<IDISStopListener> _stopListeners =
+      new ArrayList<IDISStopListener>();
   private boolean _newStart = false;
 
   public DISModule()
@@ -201,8 +205,27 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       handleEvent((EventReportPdu) data);
       break;
     }
+    case 14:
+    {
+      handleStop((StopFreezePdu) data);
+      break;
+    }
     default:
       System.err.println("PDU type not handled:" + type);
+    }
+  }
+
+  private void handleStop(StopFreezePdu pdu)
+  {
+    long time = pdu.getTimestamp();
+    short eid = pdu.getExerciseID();
+    short reason = pdu.getReason();
+
+    Iterator<IDISStopListener> dIter = _stopListeners.iterator();
+    while (dIter.hasNext())
+    {
+      IDISStopListener thisD =  dIter.next();
+      thisD.stop(time,  eid,  reason);
     }
   }
 
@@ -225,6 +248,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       git.complete(reason);
 
     }
+  }
+
+  @Override
+  public void addStopListener(IDISStopListener idisStopListener)
+  {
+    _stopListeners.add(idisStopListener);
   }
 
 }
