@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import edu.nps.moves.dis.DetonationPdu;
+import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EntityType;
@@ -31,6 +32,8 @@ import edu.nps.moves.disutil.CoordinateConversions;
  */
 public class CustomEspduSender
 {
+  private static final short STOP_PDU_TERMINATED = 2;
+
   public enum NetworkMode
   {
     UNICAST, MULTICAST, BROADCAST
@@ -89,6 +92,7 @@ public class CustomEspduSender
 
     long stepMillis = 1000;
     long numParts = 1;
+    int numMessages = 1000;
 
     // try to extract the step millis from the args
     if (args.length >= 1 && args[0].length() > 1)
@@ -99,6 +103,11 @@ public class CustomEspduSender
     if (args.length >= 2)
     {
       numParts = Long.parseLong(args[1]);
+    }
+
+    if (args.length >= 3)
+    {
+      numMessages = Integer.parseInt(args[2]);
     }
 
     // Default settings. These are used if no system properties are set.
@@ -224,7 +233,7 @@ public class CustomEspduSender
     {
       _terminate = false;
 
-      System.out.println("Sending 100 ESPDU packets to "
+      System.out.println("Sending " + numMessages + " ESPDU packets to "
           + destinationIp.toString());
 
       final double startX = 50.1;
@@ -240,7 +249,7 @@ public class CustomEspduSender
       }
 
       // generate 100 entries
-      for (int idx = 0; idx < 1000; idx++)
+      for (int idx = 0; idx < numMessages; idx++)
       {
 
         // just check if we're being terminated early
@@ -425,12 +434,33 @@ public class CustomEspduSender
           socket.send(packet);
         }
 
-        
-
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
         // second.
         Thread.sleep(stepMillis);
       }
+      
+      // ok, data complete. send stop PDU
+      // The byte array here is the packet in DIS format. We put that into a
+      // datagram and send it.
+      StopFreezePdu stopPdu = new StopFreezePdu();
+      stopPdu.setReason(STOP_PDU_TERMINATED);
+      
+      // Marshal out the espdu object to a byte array, then send a datagram
+      // packet with that data in it.
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      DataOutputStream dos = new DataOutputStream(baos);
+      stopPdu.marshal(dos);
+
+      // The byte array here is the packet in DIS format. We put that into a
+      // datagram and send it.
+      byte[] data = baos.toByteArray();
+
+      DatagramPacket packet =
+          new DatagramPacket(data, data.length, destinationIp, PORT);
+
+      socket.send(packet);
+      
+      System.out.println("COMPLETE SENT!");
     }
     catch (Exception e)
     {
