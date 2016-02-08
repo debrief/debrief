@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -59,6 +61,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefDetonationListener;
 import org.mwc.debrief.dis.listeners.impl.DebriefEventListener;
@@ -215,6 +218,30 @@ public class DisListenerView extends ViewPart
     module.addFixListener(new DebriefFixListener(context));
     module.addDetonationListener(new DebriefDetonationListener(context));
     module.addEventListener(new DebriefEventListener(context));
+    module.addStopListener(new IDISStopListener()
+    {
+
+      @Override
+      public void stop(long time, short eid, final short reason)
+      {
+        Display.getDefault().syncExec(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            // ok, popup message
+            MessageBox dialog = new MessageBox(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OK);
+            dialog.setText("DIS Interface");
+            dialog.setMessage("The simulation has completed, with reason: "
+                + reason);
+
+            // open dialog
+            dialog.open();
+          }
+        });
+      }
+    });
 
   }
 
