@@ -55,6 +55,7 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.RectangleEdge;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
@@ -107,6 +108,7 @@ public class DisListenerView extends ViewPart
   private DebriefDISSimulatorPrefs _simPrefs;
   protected SimulationRunner _simulationRunner;
   private PerformanceGraph _perfGraph;
+  private PartMonitor _myPartMonitor;
 
   private void initModule()
   {
@@ -128,16 +130,21 @@ public class DisListenerView extends ViewPart
 
     _simulationRunner = new SimulationRunner(_simPrefs);
 
+    // sort out the part listneer. Note - we have to do this before we can setup the DIS listeners
+    // (below)
+    _myPartMonitor =
+        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+
     setupListeners(_disModule);
+
   }
 
   private void setupListeners(IDISModule module)
   {
-    IDISContext context = new DISContext()
+    IDISContext context = new DISContext(_myPartMonitor)
     {
-
       ControllableTime ct = null;
-      
+
       @Override
       public boolean getLiveUpdates()
       {
@@ -162,7 +169,7 @@ public class DisListenerView extends ViewPart
         if (_doLiveUpdates)
         {
           // tell the plot editor about the newtime
-          if(ct == null)
+          if (ct == null)
           {
             Display.getDefault().syncExec(new Runnable()
             {
@@ -185,8 +192,8 @@ public class DisListenerView extends ViewPart
               }
             });
           }
-          
-          if(ct != null)
+
+          if (ct != null)
           {
             ct.setTime(this, new HiResDate(time), true);
           }
@@ -208,7 +215,7 @@ public class DisListenerView extends ViewPart
     module.addFixListener(new DebriefFixListener(context));
     module.addDetonationListener(new DebriefDetonationListener(context));
     module.addEventListener(new DebriefEventListener(context));
-   
+
   }
 
   @Override
@@ -240,7 +247,6 @@ public class DisListenerView extends ViewPart
       {
         doConnect();
       }
-
 
     });
     disconnectButton = createButton(buttonComposite, "Disconnect", 2);
@@ -282,9 +288,7 @@ public class DisListenerView extends ViewPart
         doStop();
       }
 
-
     });
-
 
     playButton = createButton(buttonComposite, "Play");
     playButton.addSelectionListener(new SelectionAdapter()
@@ -293,7 +297,7 @@ public class DisListenerView extends ViewPart
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        
+
         doPlay();
       }
 
@@ -526,8 +530,8 @@ public class DisListenerView extends ViewPart
 
     stopButton.setEnabled(false);
     playButton.setEnabled(true);
-    
-    if(!connectButton.getSelection())
+
+    if (!connectButton.getSelection())
     {
       disconnectButton.setSelection(true);
       doDisconnect();
@@ -537,14 +541,13 @@ public class DisListenerView extends ViewPart
   private void doPlay()
   {
     // ok, start with a "connect", if we have to
-    if(!connectButton.getSelection())
+    if (!connectButton.getSelection())
     {
       connectButton.setSelection(true);
       doConnect();
     }
-     
-    IPreferenceStore store =
-    DisActivator.getDefault().getPreferenceStore();
+
+    IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     String pText = store.getString(DisActivator.PATH_TO_INPUT_FILE);
 
     _simulationRunner.run(pText);
@@ -552,17 +555,15 @@ public class DisListenerView extends ViewPart
     playButton.setEnabled(false);
     stopButton.setEnabled(true);
   }
-  
+
   private void doConnect()
   {
     _netProvider.attach();
     connectButton.setEnabled(false);
     disconnectButton.setEnabled(true);
-    
+
     System.out.println("CONNECTED");
   }
-
-
 
   private void doDisconnect()
   {

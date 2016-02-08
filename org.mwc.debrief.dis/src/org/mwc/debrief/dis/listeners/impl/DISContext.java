@@ -10,10 +10,13 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.core.ui_support.PartMonitor.ICallback;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.CanvasType.ScreenUpdateProvider;
@@ -25,6 +28,12 @@ import MWC.GUI.Plottable;
 abstract public class DISContext implements IDISContext,
     CanvasType.ScreenUpdateListener
 {
+  /**
+   * the current editor
+   * 
+   */
+  private IEditorPart _myEditor = null;
+
   /**
    * the current layers object (for the current exercise)
    * 
@@ -48,6 +57,28 @@ abstract public class DISContext implements IDISContext,
    * 
    */
   private boolean updating = false;
+
+  /**
+   * construcutor, handle some internal initialisation
+   * 
+   */
+  public DISContext(final PartMonitor pm)
+  {
+    // ok, sort out the editor closing functionality
+    pm.addPartListener(IEditorPart.class, PartMonitor.CLOSED, new ICallback()
+    {
+      @Override
+      public void eventTriggered(String type, Object instance,
+          IWorkbenchPart parentPart)
+      {
+        if (instance == _myEditor)
+        {
+          stopListeningTo((IEditorPart) instance);
+        }
+      }
+    });
+
+  }
 
   /*
    * (non-Javadoc)
@@ -90,10 +121,23 @@ abstract public class DISContext implements IDISContext,
     });
   }
 
-  private void listenTo(IEditorPart editor)
+  protected void stopListeningTo(IEditorPart editor)
+  {
+    // ok, stop listening to updates
+    ScreenUpdateProvider se = (ScreenUpdateProvider) _myEditor;
+    se.removeScreenUpdateListener(this);
+
+    // clear some pointers
+    _myEditor = null;
+    _myLayers = null;
+  }
+
+  protected void listenTo(IEditorPart editor)
   {
     if (editor != null)
     {
+      // we want to know about screen updates, to
+      // keep track of rendering performance
       Object suProvider =
           editor.getAdapter(CanvasType.ScreenUpdateProvider.class);
       if (suProvider != null)
@@ -102,7 +146,44 @@ abstract public class DISContext implements IDISContext,
             (CanvasType.ScreenUpdateProvider) suProvider;
         matched.addScreenUpdateListener(this);
       }
+
+      // ok, remember this editor
+      _myEditor = editor;
     }
+  }
+
+  /**
+   * create the new editor, as a place to store our data
+   * 
+   * @param exerciseId
+   * @return
+   */
+  private IEditorPart getEditor(final boolean forceNew, final short exerciseId)
+  {
+    if (forceNew || _myEditor == null)
+    {
+      // ok, we'll have to create one
+      IEditorInput input = new DISInput("DIS Exercise: " + exerciseId);
+      String editorId = "org.mwc.debrief.TrackEditor";
+      try
+      {
+        IWorkbenchWindow window =
+            PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchPage page = window.getActivePage();
+        _myEditor = page.openEditor(input, editorId);
+      }
+      catch (PartInitException e)
+      {
+        e.printStackTrace();
+      }
+      listenTo(_myEditor);
+
+      // and get the new layers object
+      _myLayers = (Layers) _myEditor.getAdapter(Layers.class);
+    }
+
+    // ok, done.
+    return _myEditor;
   }
 
   /**
@@ -128,31 +209,14 @@ abstract public class DISContext implements IDISContext,
           public void run()
           {
             // create a new plot
-
-            IEditorInput input = new DISInput("DIS Exercise: " + exerciseId);
-            String editorId = "org.mwc.debrief.TrackEditor";
-            try
-            {
-              IWorkbenchWindow window =
-                  PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-              IWorkbenchPage page = window.getActivePage();
-              IEditorPart newP = page.openEditor(input, editorId);
-              listenTo(newP);
-
-              // and get the new layers object
-              _myLayers = (Layers) newP.getAdapter(Layers.class);
-            }
-            catch (PartInitException e)
-            {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-            }
+            getEditor(true, exerciseId);
           }
-        });
 
+        });
       }
       else
       {
+        // no, we can re-use the old one
         Display.getDefault().syncExec(new Runnable()
         {
           @Override
@@ -160,31 +224,17 @@ abstract public class DISContext implements IDISContext,
           {
             if (_myLayers != null)
             {
-              // and clear the new layers
-              Iterator<Layer> lIter = _newLayers.iterator();
-              while (lIter.hasNext())
-              {
-                Layer thisL = (Layer) lIter.next();
-                _myLayers.removeThisLayer(thisL);
-              }
-
-              // also, we have to restart any formatters in that layer
-              Iterator<INewItemListener> iter = getNewItemListeners();
-              while (iter.hasNext())
-              {
-                Layers.INewItemListener thisI =
-                    (Layers.INewItemListener) iter.next();
-                thisI.reset();
-
-              }
+              clearLayers();
             }
           }
         });
       }
 
+      // and remember the exercise id
       _currentEx = exerciseId;
     }
 
+    // have we managed to find some layers?
     if (_myLayers == null)
     {
       Display.getDefault().syncExec(new Runnable()
@@ -192,19 +242,10 @@ abstract public class DISContext implements IDISContext,
         @Override
         public void run()
         {
-          IWorkbenchWindow iw =
-              PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-          IWorkbenchPage activePage = iw.getActivePage();
-          IEditorPart editor = activePage.getActiveEditor();
-          listenTo(editor);
-
-          if (editor != null)
-          {
-            _myLayers = (Layers) editor.getAdapter(Layers.class);
-          }
+          // create a new plot
+          getEditor(false, exerciseId);
         }
       });
-
     }
     return _myLayers;
   }
@@ -223,21 +264,21 @@ abstract public class DISContext implements IDISContext,
     @Override
     public Object getAdapter(Class adapter)
     {
-      // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public boolean exists()
     {
-      // TODO Auto-generated method stub
-      return false;
+      // we indicate that this exists, so that Debrief can start the save process
+      return true;
     }
 
     @Override
     public ImageDescriptor getImageDescriptor()
     {
-      // TODO Auto-generated method stub
+      // we don't need to provide a descriptor, since the Debrief
+      // editor provides its own icon anyway
       return null;
     }
 
@@ -250,7 +291,6 @@ abstract public class DISContext implements IDISContext,
     @Override
     public IPersistableElement getPersistable()
     {
-      // TODO Auto-generated method stub
       return null;
     }
 
@@ -259,7 +299,6 @@ abstract public class DISContext implements IDISContext,
     {
       return "New DIS Session";
     }
-
   }
 
   /*
@@ -299,7 +338,17 @@ abstract public class DISContext implements IDISContext,
   @Override
   public Iterator<INewItemListener> getNewItemListeners()
   {
-    return _myLayers.getNewItemListeners().iterator();
+    final Iterator<INewItemListener> res;
+    if (_myLayers != null)
+    {
+      res = _myLayers.getNewItemListeners().iterator();
+    }
+    else
+    {
+      res = null;
+    }
+
+    return res;
   }
 
   /*
@@ -361,5 +410,28 @@ abstract public class DISContext implements IDISContext,
     }
 
     return res;
+  }
+
+  /**
+   * forget about any new layers that have been loaded
+   * 
+   */
+  private void clearLayers()
+  {
+    // and clear the new layers
+    Iterator<Layer> lIter = _newLayers.iterator();
+    while (lIter.hasNext())
+    {
+      Layer thisL = (Layer) lIter.next();
+      _myLayers.removeThisLayer(thisL);
+    }
+
+    // also, we have to restart any formatters in that layer
+    Iterator<INewItemListener> iter = getNewItemListeners();
+    while (iter.hasNext())
+    {
+      Layers.INewItemListener thisI = (Layers.INewItemListener) iter.next();
+      thisI.reset();
+    }
   }
 }
