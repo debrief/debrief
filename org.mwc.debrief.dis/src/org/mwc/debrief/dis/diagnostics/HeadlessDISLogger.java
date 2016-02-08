@@ -9,6 +9,7 @@ import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
+import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
@@ -18,9 +19,21 @@ public class HeadlessDISLogger
 {
 
   final String LINE_BREAK = System.getProperty("line.separator");
-
+  
+  private boolean _terminated = false;
+  
   public static void main(String[] args)
   {
+
+    // start running
+    new HeadlessDISLogger(args);
+  }
+  
+  
+
+  public HeadlessDISLogger(String[] args)
+  {
+    
     // do we have a root?
     String root = System.getProperty("java.io.tmpdir");
 
@@ -38,20 +51,6 @@ public class HeadlessDISLogger
     boolean toFile = true;
     boolean toScreen = false;
 
-    new HeadlessDISLogger(address, port, root, toFile, toScreen);
-    
-    // ok, run the ESPDU pusher
-    CustomEspduSender.main(new String[]{"1000", "3"});
-
-    while (true)
-    {
-      // stay alive!
-    }
-  }
-
-  public HeadlessDISLogger(final String address, final int port,
-      final String root, boolean toFile, boolean toScreen)
-  {
     IDISModule subject = new DISModule();
     IDISNetworkPrefs netPrefs = new CoreNetPrefs(address, port);
     IPDUProvider provider = new NetworkDISProvider(netPrefs);
@@ -59,6 +58,15 @@ public class HeadlessDISLogger
 
     // setup our loggers
     subject.addFixListener(new FixToFileListener(root, toFile, toScreen));
+    subject.addStopListener(new IDISStopListener()
+    {
+      @Override
+      public void stop(long time, short eid, short reason)
+      {
+        System.out.println("STOP: time:" + time + " eid:" + eid + " reason:" + reason);
+        _terminated = true;
+      }
+    });
     subject.addDetonationListener(new IDISDetonationListener()
     {
       @Override
@@ -94,6 +102,16 @@ public class HeadlessDISLogger
 
     // tell the network provider to start
     provider.attach();
+    
+    
+    // ok, run the ESPDU pusher
+    CustomEspduSender.main(new String[]{"100", "3", "100"});
+
+    while (!_terminated)
+    {
+      // stay alive!
+    }
+
   }
 
   protected class CoreFileListener
