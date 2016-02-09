@@ -29,8 +29,8 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       final double dLon, final double depth)
   {
 
-    final String theName = "DIS_" + hisId;
-    final String message = "Detonation fired from:" + theName;
+    final String firingName = "DIS_" + hisId;
+    final String message = "Detonation fired from:" + firingName;
 
     // create the text marker
     addNewItem(eid, DETONATIONS_LAYER, new ListenerHelper()
@@ -48,7 +48,7 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       public Plottable createItem()
       {
         WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-        Color theColor = colorFor(theName);
+        Color theColor = colorFor(firingName);
         return new LabelWrapper(message, newLoc, theColor);
       }
     });
@@ -67,9 +67,9 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(theName, "DETONATION", new HiResDate(time),
+            new NarrativeEntry(firingName, "DETONATION", new HiResDate(time),
                 message);
-        Color theColor = colorFor(theName);
+        Color theColor = colorFor(firingName);
         newE.setColor(theColor);
         return newE;
       }
