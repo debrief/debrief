@@ -161,6 +161,29 @@ abstract public class DISContext implements IDISContext,
    */
   private IEditorPart getEditor(final boolean forceNew, final short exerciseId)
   {
+    if(_myEditor == null)
+    {
+      // we may have just opened. have a look at any existing editors
+      Display.getDefault().syncExec(new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          IWorkbenchWindow window =
+              PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+          IWorkbenchPage page = window.getActivePage();
+          IEditorPart editor = page.getActiveEditor();
+          _myLayers = (Layers) editor.getAdapter(Layers.class);
+          if(_myLayers != null)
+          {
+            // ok, it's suitable
+            _myEditor = editor;
+          }
+        }
+      });
+
+    }
+    
     if (forceNew || _myEditor == null)
     {
       // ok, we'll have to create one
