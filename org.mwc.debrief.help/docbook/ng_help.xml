@@ -423,7 +423,7 @@
               <row>
                 <entry><inlinemediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/planet.gif" width="100"/>
+                      <imagedata fileref="figures/DeepBlueC.png" width="100"/>
                     </imageobject>
                   </inlinemediaobject></entry>
                 <entry>Debrief Project Manager.
@@ -1020,7 +1020,7 @@ Naval Undersea Warfare Center (NUWC)
           <para>To further illustrate this, refer to this image:</para>
           <para><inlinemediaobject>
               <imageobject>
-                <imagedata fileref="../../../user%20guide%20images/replay_log_file.png" width="100%"
+                <imagedata fileref="figures/replay_log_file.png" width="100%"
                 />
               </imageobject>
             </inlinemediaobject></para>
@@ -3793,7 +3793,7 @@ and so on....</programlisting></para>
           <para><inlinemediaobject>
               <imageobject>
                 <imagedata
-                  fileref="../../../user%20guide%20images/time_controller_symbolhighlighter.png"
+                  fileref="figures/time_controller_symbolhighlighter.png"
                   width="100%"/>
               </imageobject>
             </inlinemediaobject></para>
