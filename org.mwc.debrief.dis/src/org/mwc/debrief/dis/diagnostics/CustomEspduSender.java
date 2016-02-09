@@ -3,6 +3,7 @@ package org.mwc.debrief.dis.diagnostics;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -48,7 +49,13 @@ public class CustomEspduSender
 
   private boolean _terminate;
 
-  private static class Participant
+  private MulticastSocket socket;
+
+  private InetAddress destinationIp;
+
+  private short exerciseId;
+
+  private class Participant
   {
     private Participant(final int id, double oLat, double oLong, double range)
     {
@@ -70,7 +77,7 @@ public class CustomEspduSender
     public int targetId = -1;
 
     public void update(Map<Integer, Participant> states, double distStep,
-        int idx)
+        int idx, long lastTime, EntityID sampleId)
     {
       // hmm, do we have a target?
       if (targetId != -1)
@@ -86,6 +93,7 @@ public class CustomEspduSender
           {
             // ok, target found. where is he?
             targetLoc = new Point2D.Double(thisP.longVal, thisP.latVal);
+            break;
           }
         }
 
@@ -94,12 +102,19 @@ public class CustomEspduSender
         {
           double dLon = targetLoc.getX() - longVal;
           double dLat = targetLoc.getY() - latVal;
-          double bearing = Math.atan2(dLat, dLon);
+          double bearing = Math.atan2(dLon, dLat);
           courseRads = bearing;
+          
+          // target lost, forget about it
+          final String theMsg = "platform:" + id + " turned towards:" + targetId;
+          sendMessage(exerciseId, lastTime, 12, sampleId, theMsg);
         }
         else
         {
           // target lost, forget about it
+          final String theMsg = "target for:" + id + " was lost, was:" + targetId;
+          sendMessage(exerciseId, lastTime, 12, sampleId, theMsg);
+          System.out.println(theMsg);
           targetId = -1;
         }
 
@@ -111,7 +126,7 @@ public class CustomEspduSender
       longVal += dLon;
       latVal += dLat;
 
-      if ((idx % 10) == 0)
+      if ((idx % 10) == 0 && targetId == -1)
       {
         final double newCourse = ((int) (Math.random() * 36d)) * 10d;
         courseRads = Math.toRadians(newCourse);
@@ -138,7 +153,6 @@ public class CustomEspduSender
   {
     /** an entity state pdu */
     EntityStatePdu espdu = new EntityStatePdu();
-    MulticastSocket socket = null;
     // DisTime disTime = DisTime.getInstance();
 
     // declare the states
@@ -172,7 +186,7 @@ public class CustomEspduSender
     int port = PORT;
     @SuppressWarnings("unused")
     NetworkMode mode = NetworkMode.MULTICAST;
-    InetAddress destinationIp = null;
+    destinationIp = null;
 
     try
     {
@@ -247,7 +261,7 @@ public class CustomEspduSender
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
 
-    short exerciseId = (short) (Math.random() * 1000d);
+    exerciseId = (short) (Math.random() * 1000d);
 
     espdu.setExerciseID(exerciseId);
 
@@ -340,7 +354,7 @@ public class CustomEspduSender
           final double distStep = 0.01;
 
           // get the subject to move forward
-          thisS.update(states, distStep, idx);
+          thisS.update(states, distStep, idx, lastTime, eid);
 
           double disCoordinates[] =
               CoordinateConversions.getXYZfromLatLonDegrees(thisS.latVal,
@@ -396,7 +410,7 @@ public class CustomEspduSender
 
           // and remove the recipient
           states.remove(recipient.id);
-          
+
           // hmm, also remove the detonating platform
           states.remove(firingPlatform.id);
 
@@ -458,47 +472,7 @@ public class CustomEspduSender
           eid.setEntity(partId);
           dp.setOriginatingEntityID(eid);
 
-          // INSERTING TEXT STRING
-          //
-          // final String msg = " Some event from entity " + partId;
-          // VariableDatum d = new VariableDatum();
-          // byte[] theBytes = msg.getBytes();
-          // List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
-          //
-          // for (int i = 0; i < theBytes.length; i++)
-          // {
-          // byte thisB = theBytes[i];
-          // OneByteChunk chunk = new OneByteChunk();
-          // chunk.setOtherParameters(new byte[]
-          // {thisB});
-          // chunks.add(chunk);
-          // }
-          // d.setVariableData(chunks);
-          // d.setVariableDatumLength(theBytes.length);
-          // d.setVariableDatumID(lastTime);
-          // List<VariableDatum> datums = new ArrayList<VariableDatum>();
-          // datums.add(d);
-          // dp.setVariableDatums(datums);
-          //
-          //
-
-          // Marshal out the espdu object to a byte array, then send a datagram
-          // packet with that data in it.
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          DataOutputStream dos = new DataOutputStream(baos);
-          dp.marshal(dos);
-
-          // The byte array here is the packet in DIS format. We put that into a
-          // datagram and send it.
-          byte[] data = baos.toByteArray();
-
-          DatagramPacket packet =
-              new DatagramPacket(data, data.length, destinationIp, PORT);
-
-          socket.send(packet);
-
-          System.out.println(": event from " + partId);
-
+          sendMessage(espdu.getExerciseID(), lastTime, 12, eid, "some message");
         }
 
         // put in a random launch
@@ -567,6 +541,70 @@ public class CustomEspduSender
       System.out.println(e);
     }
 
+  }
+
+  private void sendMessage(short exerciseID, long lastTime, long eventType,
+      EntityID eid, String msg)
+  {
+
+    // build up the PDU
+    EventReportPdu dp = new EventReportPdu();
+    dp.setExerciseID(exerciseID);
+    dp.setTimestamp(lastTime);
+    dp.setEventType(eventType);
+
+    // produce random participant.
+    dp.setOriginatingEntityID(eid);
+
+    
+
+    // INSERTING TEXT STRING
+    //
+    // final String msg = " Some event from entity " + partId;
+    // VariableDatum d = new VariableDatum();
+    // byte[] theBytes = msg.getBytes();
+    // List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
+    //
+    // for (int i = 0; i < theBytes.length; i++)
+    // {
+    // byte thisB = theBytes[i];
+    // OneByteChunk chunk = new OneByteChunk();
+    // chunk.setOtherParameters(new byte[]
+    // {thisB});
+    // chunks.add(chunk);
+    // }
+    // d.setVariableData(chunks);
+    // d.setVariableDatumLength(theBytes.length);
+    // d.setVariableDatumID(lastTime);
+    // List<VariableDatum> datums = new ArrayList<VariableDatum>();
+    // datums.add(d);
+    // dp.setVariableDatums(datums);
+    //
+    //
+    
+    // Marshal out the espdu object to a byte array, then send a datagram
+    // packet with that data in it.
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+    dp.marshal(dos);
+    
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    byte[] data = baos.toByteArray();
+
+    DatagramPacket packet =
+        new DatagramPacket(data, data.length, destinationIp, PORT);
+
+    try
+    {
+      socket.send(packet);
+      System.out.println(": event from " + eid.getEntity());
+    }
+    catch (IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   private Participant randomEntity(Collection<Participant> collection)
