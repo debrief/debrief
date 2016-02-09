@@ -1,5 +1,6 @@
 package org.mwc.debrief.dis.core;
 
+import org.mwc.debrief.dis.listeners.IDISCollisionListener;
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFireListener;
@@ -30,5 +31,7 @@ public interface IDISModule
   void addStopListener(IDISStopListener idisStopListener);
 
   void addFireListener(IDISFireListener handler);
+
+  void addCollisionListener(IDISCollisionListener handler);
 
 }

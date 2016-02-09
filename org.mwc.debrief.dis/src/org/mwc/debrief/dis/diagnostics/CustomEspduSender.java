@@ -1,6 +1,5 @@
 package org.mwc.debrief.dis.diagnostics;
 
-import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,13 +15,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import edu.nps.moves.dis.CollisionPdu;
 import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EntityType;
 import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.FirePdu;
+import edu.nps.moves.dis.OneByteChunk;
 import edu.nps.moves.dis.StopFreezePdu;
+import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
 import edu.nps.moves.dis.Vector3Float;
 import edu.nps.moves.disutil.CoordinateConversions;
@@ -82,37 +84,62 @@ public class CustomEspduSender
       // hmm, do we have a target?
       if (targetId != -1)
       {
-        Point2D targetLoc = null;
+        Participant myTarget = null;
 
         // does this target exist
-        Iterator<Participant> kITer = states.values().iterator();
-        while (kITer.hasNext())
+        Participant[] parts = states.values().toArray(new Participant[]
+        {null});
+        for (int i = 0; i < parts.length; i++)
         {
-          Participant thisP = kITer.next();
+          final Participant thisP = parts[i];
+
+          // hey, don't look at ourselves...
+          if (thisP.id == id)
+          {
+            // skip to the next loop
+            continue;
+          }
+
+          // hmm, see if we're very close to this one
+          double dLon = thisP.longVal - longVal;
+          double dLat = thisP.latVal - latVal;
+          double range = Math.sqrt(dLon * dLon + dLat * dLat);
+
+          if (range < 0.01)
+          {
+            if (thisP.id == targetId)
+            {
+              sendDetonation(this, thisP.id, sampleId, states, lastTime);
+            }
+            else
+            {
+              sendCollision(this, thisP.id, sampleId, states, lastTime);
+            }
+          }
+
           if (thisP.id == targetId)
           {
-            // ok, target found. where is he?
-            targetLoc = new Point2D.Double(thisP.longVal, thisP.latVal);
-            break;
+            double bearing = Math.atan2(dLon, dLat);
+            courseRads = bearing;
+            myTarget = thisP;
+
+            // target lost, forget about it
+            // final String theMsg =
+            // "platform:" + id + " turned towards:" + targetId;
+            // sendMessage(exerciseId, lastTime, 12, sampleId, theMsg);
           }
+
         }
 
         // did we find it?
-        if (targetLoc != null)
+        if (myTarget != null)
         {
-          double dLon = targetLoc.getX() - longVal;
-          double dLat = targetLoc.getY() - latVal;
-          double bearing = Math.atan2(dLon, dLat);
-          courseRads = bearing;
-          
-          // target lost, forget about it
-          final String theMsg = "platform:" + id + " turned towards:" + targetId;
-          sendMessage(exerciseId, lastTime, 12, sampleId, theMsg);
         }
         else
         {
           // target lost, forget about it
-          final String theMsg = "target for:" + id + " was lost, was:" + targetId;
+          final String theMsg =
+              "target for:" + id + " was lost, was:" + targetId;
           sendMessage(exerciseId, lastTime, 12, sampleId, theMsg);
           System.out.println(theMsg);
           targetId = -1;
@@ -120,13 +147,16 @@ public class CustomEspduSender
 
       }
 
+      // ok, handle the movement
       double dLat = Math.cos(courseRads) * distStep;
       double dLon = Math.sin(courseRads) * distStep;
 
       longVal += dLon;
       latVal += dLat;
 
-      if ((idx % 10) == 0 && targetId == -1)
+      // see if we're going to do a random turn
+
+      if (Math.random() > 0.8 && targetId == -1)
       {
         final double newCourse = ((int) (Math.random() * 36d)) * 10d;
         courseRads = Math.toRadians(newCourse);
@@ -158,7 +188,6 @@ public class CustomEspduSender
     // declare the states
     final Map<Integer, Participant> states =
         new HashMap<Integer, Participant>();
-    final List<Participant> disposableVehicles = new ArrayList<Participant>();
 
     // sort out the runtime arguments
     long stepMillis = 500;
@@ -314,18 +343,6 @@ public class CustomEspduSender
         int eId = i + 1;// 1 + (int) (Math.random() * 20d);
         Participant newS = new Participant(eId, startX, startY, startZ);
         states.put(eId, newS);
-
-        // if this isnt' the first couple, it can be disposable
-        if (i > 2)
-        {
-          disposableVehicles.add(newS);
-
-          // hey, try to make it aim for something else
-          if (i > 4)
-          {
-            newS.targetId = eId - 2;
-          }
-        }
       }
 
       // generate correct number of messages
@@ -343,12 +360,13 @@ public class CustomEspduSender
 
         espdu.setTimestamp(lastTime);
 
-        // loop for each participants
-        Iterator<Integer> sIter = states.keySet().iterator();
-        while (sIter.hasNext())
+        // get an array of participants. we don't use an interator,
+        // to avoid concurrent modification
+        Participant[] parts = states.values().toArray(new Participant[]
+        {null});
+        for (int i = 0; i < parts.length; i++)
         {
-          final Integer thisId = (Integer) sIter.next();
-          final Participant thisS = states.get(thisId);
+          Participant thisS = parts[i];
 
           eid.setEntity(thisS.id);
           final double distStep = 0.01;
@@ -363,17 +381,6 @@ public class CustomEspduSender
           location.setX(disCoordinates[0]);
           location.setY(disCoordinates[1]);
           location.setZ(disCoordinates[2]);
-
-          // Optionally, we can do some rotation of the entity
-          /*
-           * Orientation orientation = espdu.getEntityOrientation(); float psi =
-           * orientation.getPsi(); psi = psi + idx; orientation.setPsi(psi);
-           * orientation.setTheta((float)(orientation.getTheta() + idx /2.0));
-           */
-
-          // You can set other ESPDU values here, such as the velocity,
-          // acceleration,
-          // and so on.
 
           // Marshal out the espdu object to a byte array, then send a datagram
           // packet with that data in it.
@@ -391,88 +398,26 @@ public class CustomEspduSender
           socket.send(packet);
 
           location = espdu.getEntityLocation();
-
-          System.out.print(".");
-        }
-
-        // put in a random detonation
-        if ((states.size() > 1) && (Math.random() >= 0.9)
-            && disposableVehicles.size() > 0 && states.size() > 0)
-        {
-          System.out.println("===== DETONATION =====");
-
-          // get a random firing platform
-          Participant firingPlatform = states.values().iterator().next();
-          Participant recipient = randomEntity(disposableVehicles);
-
-          // store the id of the firing platform
-          eid.setEntity(firingPlatform.id);
-
-          // and remove the recipient
-          states.remove(recipient.id);
-
-          // hmm, also remove the detonating platform
-          states.remove(firingPlatform.id);
-
-          // build up the PDU
-          DetonationPdu dp = new DetonationPdu();
-          dp.setExerciseID(espdu.getExerciseID());
-          dp.setFiringEntityID(eid);
-          dp.setTimestamp(lastTime);
-
-          // and the location
-          double disCoordinates[] =
-              CoordinateConversions.getXYZfromLatLonDegrees(recipient.latVal,
-                  recipient.longVal, 0.0);
-          Vector3Float location = new Vector3Float();
-          location.setX((float) disCoordinates[0]);
-          location.setY((float) disCoordinates[1]);
-          location.setZ((float) disCoordinates[2]);
-          dp.setLocationInEntityCoordinates(location);
-
-          Vector3Double wLoc = new Vector3Double();
-          wLoc.setX(recipient.longVal);
-          wLoc.setY(recipient.latVal);
-          wLoc.setZ(startZ);
-          dp.setLocationInWorldCoordinates(wLoc);
-
-          // Marshal out the espdu object to a byte array, then send a datagram
-          // packet with that data in it.
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          DataOutputStream dos = new DataOutputStream(baos);
-          dp.marshal(dos);
-
-          // The byte array here is the packet in DIS format. We put that into a
-          // datagram and send it.
-          byte[] data = baos.toByteArray();
-
-          DatagramPacket packet =
-              new DatagramPacket(data, data.length, destinationIp, PORT);
-
-          socket.send(packet);
-
-          System.out.println(": " + firingPlatform.id + " destroyed "
-              + recipient.id);
         }
 
         // put in a random event
         double thisR = Math.random();
         if ((states.size() > 1) && (thisR >= 0.6))
         {
-          System.out.println("===== EVENT ===== ");
-
-          // build up the PDU
-          EventReportPdu dp = new EventReportPdu();
-          dp.setExerciseID(espdu.getExerciseID());
-          dp.setTimestamp(lastTime);
-          dp.setEventType((long) (Math.random() * 50));
-
-          // produce random participant.
-          int partId = randomEntity(states.values()).id;
-          eid.setEntity(partId);
-          dp.setOriginatingEntityID(eid);
-
-          sendMessage(espdu.getExerciseID(), lastTime, 12, eid, "some message");
+          // System.out.println("===== EVENT ===== ");
+          //
+          // // build up the PDU
+          // EventReportPdu dp = new EventReportPdu();
+          // dp.setExerciseID(espdu.getExerciseID());
+          // dp.setTimestamp(lastTime);
+          // dp.setEventType((long) (Math.random() * 50));
+          //
+          // // produce random participant.
+          // int partId = randomEntity(states.values()).id;
+          // eid.setEntity(partId);
+          // dp.setOriginatingEntityID(eid);
+          //
+          // sendMessage(espdu.getExerciseID(), lastTime, 12, eid, "some message");
         }
 
         // put in a random launch
@@ -483,17 +428,19 @@ public class CustomEspduSender
 
           final int newId = (int) (1000 + (Math.random() * 1000d));
           Participant newS = new Participant(newId, startX, startY, startZ);
-          states.put(newId, newS);
+
+          // try to give the new vehicle a target
+          Participant targetId = randomEntity(states.values());
+          newS.targetId = targetId.id;
 
           // and remember it
-          disposableVehicles.add(newS);
           states.put(newId, newS);
 
           // also send out the "fired" message
           FirePdu fire = new FirePdu();
           fire.setExerciseID(espdu.getExerciseID());
           fire.setTimestamp(lastTime);
-          eid.setEntity(launchId);
+          eid.setEntity(newId);
           fire.setFiringEntityID(eid);
 
           // and the location
@@ -504,7 +451,8 @@ public class CustomEspduSender
           wLoc.setZ(startZ);
           fire.setLocationInWorldCoordinates(wLoc);
 
-          System.out.println(": launch of:" + newId + " from:" + launchId);
+          System.out.println(": launch of:" + newId + " from:" + launchId
+              + " aiming for:" + targetId.id);
 
         }
 
@@ -556,38 +504,33 @@ public class CustomEspduSender
     // produce random participant.
     dp.setOriginatingEntityID(eid);
 
-    
-
     // INSERTING TEXT STRING
     //
-    // final String msg = " Some event from entity " + partId;
-    // VariableDatum d = new VariableDatum();
-    // byte[] theBytes = msg.getBytes();
-    // List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
-    //
-    // for (int i = 0; i < theBytes.length; i++)
-    // {
-    // byte thisB = theBytes[i];
-    // OneByteChunk chunk = new OneByteChunk();
-    // chunk.setOtherParameters(new byte[]
-    // {thisB});
-    // chunks.add(chunk);
-    // }
-    // d.setVariableData(chunks);
-    // d.setVariableDatumLength(theBytes.length);
-    // d.setVariableDatumID(lastTime);
-    // List<VariableDatum> datums = new ArrayList<VariableDatum>();
-    // datums.add(d);
-    // dp.setVariableDatums(datums);
-    //
-    //
-    
+    VariableDatum d = new VariableDatum();
+    byte[] theBytes = msg.getBytes();
+    List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
+
+    for (int i = 0; i < theBytes.length; i++)
+    {
+      byte thisB = theBytes[i];
+      OneByteChunk chunk = new OneByteChunk();
+      chunk.setOtherParameters(new byte[]
+      {thisB});
+      chunks.add(chunk);
+    }
+    d.setVariableData(chunks);
+    d.setVariableDatumLength(theBytes.length);
+    d.setVariableDatumID(lastTime);
+    List<VariableDatum> datums = new ArrayList<VariableDatum>();
+    datums.add(d);
+    dp.setVariableDatums(datums);
+
     // Marshal out the espdu object to a byte array, then send a datagram
     // packet with that data in it.
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(baos);
     dp.marshal(dos);
-    
+
     // The byte array here is the packet in DIS format. We put that into a
     // datagram and send it.
     byte[] data = baos.toByteArray();
@@ -602,7 +545,6 @@ public class CustomEspduSender
     }
     catch (IOException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -622,6 +564,120 @@ public class CustomEspduSender
   public void terminate()
   {
     _terminate = true;
+  }
+
+  private void sendDetonation(Participant firingPlatform, int recipientId,
+      EntityID eid, Map<Integer, Participant> states, long lastTime)
+  {
+
+    // store the id of the firing platform
+    eid.setEntity(firingPlatform.id);
+
+    // and remove the recipient
+    states.remove(firingPlatform.id);
+
+    // hmm, also remove the detonating platform
+    states.remove(recipientId);
+
+    // build up the PDU
+    DetonationPdu dp = new DetonationPdu();
+    dp.setExerciseID(exerciseId);
+    dp.setFiringEntityID(eid);
+    dp.setTimestamp(lastTime);
+
+    // and the location
+    double disCoordinates[] =
+        CoordinateConversions.getXYZfromLatLonDegrees(firingPlatform.latVal,
+            firingPlatform.longVal, 0.0);
+    Vector3Float location = new Vector3Float();
+    location.setX((float) disCoordinates[0]);
+    location.setY((float) disCoordinates[1]);
+    location.setZ((float) disCoordinates[2]);
+    dp.setLocationInEntityCoordinates(location);
+
+    Vector3Double wLoc = new Vector3Double();
+    wLoc.setX(firingPlatform.longVal);
+    wLoc.setY(firingPlatform.latVal);
+    wLoc.setZ(0);
+    dp.setLocationInWorldCoordinates(wLoc);
+
+    // Marshal out the espdu object to a byte array, then send a datagram
+    // packet with that data in it.
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+    dp.marshal(dos);
+
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    byte[] data = baos.toByteArray();
+
+    DatagramPacket packet =
+        new DatagramPacket(data, data.length, destinationIp, PORT);
+
+    try
+    {
+      socket.send(packet);
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    System.out.println(": " + firingPlatform.id + " destroyed " + recipientId);
+  }
+
+  private void sendCollision(Participant movingPlatform, int recipientId,
+      EntityID movingId, Map<Integer, Participant> states, long lastTime)
+  {
+    EntityID victimE = new EntityID();
+    victimE.setApplication(movingId.getApplication());
+    victimE.setEntity(recipientId);
+    victimE.setSite(movingId.getSite());
+
+    // store the id of the firing platform
+    movingId.setEntity(movingPlatform.id);
+
+    // build up the PDU
+    CollisionPdu coll = new CollisionPdu();
+    coll.setExerciseID(exerciseId);
+    movingId.setEntity(recipientId);
+    coll.setCollidingEntityID(movingId);
+    coll.setTimestamp(lastTime);
+
+    // and the location
+    double disCoordinates[] =
+        CoordinateConversions.getXYZfromLatLonDegrees(movingPlatform.latVal,
+            movingPlatform.longVal, 0.0);
+    Vector3Float location = new Vector3Float();
+    location.setX((float) disCoordinates[0]);
+    location.setY((float) disCoordinates[1]);
+    location.setZ((float) disCoordinates[2]);
+    coll.setLocation(location);
+
+    // Marshal out the espdu object to a byte array, then send a datagram
+    // packet with that data in it.
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+    coll.marshal(dos);
+
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    byte[] data = baos.toByteArray();
+
+    DatagramPacket packet =
+        new DatagramPacket(data, data.length, destinationIp, PORT);
+
+    try
+    {
+      socket.send(packet);
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    System.out.println(": " + movingPlatform.id + " collided with "
+        + recipientId);
   }
 
 }

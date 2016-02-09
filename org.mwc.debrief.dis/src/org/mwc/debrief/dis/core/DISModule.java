@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mwc.debrief.dis.listeners.IDISCollisionListener;
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFireListener;
@@ -13,13 +14,16 @@ import org.mwc.debrief.dis.listeners.IDISScenarioListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
+import edu.nps.moves.dis.CollisionPdu;
 import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.FirePdu;
+import edu.nps.moves.dis.OneByteChunk;
 import edu.nps.moves.dis.Orientation;
 import edu.nps.moves.dis.Pdu;
 import edu.nps.moves.dis.StopFreezePdu;
+import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
 import edu.nps.moves.dis.Vector3Float;
 import edu.nps.moves.disutil.CoordinateConversions;
@@ -38,8 +42,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       new ArrayList<IDISScenarioListener>();
   private List<IDISStopListener> _stopListeners =
       new ArrayList<IDISStopListener>();
+  private List<IDISCollisionListener> _collisionListeners =
+      new ArrayList<IDISCollisionListener>();
   private boolean _newStart = false;
-  private List<IDISFireListener> _fireListeners = new ArrayList<IDISFireListener>();
+  private List<IDISFireListener> _fireListeners =
+      new ArrayList<IDISFireListener>();
 
   public DISModule()
   {
@@ -49,6 +56,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   public void addFixListener(IDISFixListener handler)
   {
     _fixListeners.add(handler);
+  }
+
+  @Override
+  public void addCollisionListener(IDISCollisionListener handler)
+  {
+    _collisionListeners.add(handler);
   }
 
   @Override
@@ -117,21 +130,21 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     // try to get the data
 
-    // List<VariableDatum> items = pdu.getVariableDatums();
-    // if (items.size() > 0)
-    // {
-    // VariableDatum val = items.get(0);
-    // List<OneByteChunk> chunks = val.getVariableData();
-    // byte[] bytes = new byte[chunks.size()];
-    // Iterator<OneByteChunk> iter = chunks.iterator();
-    // int ctr = 0;
-    // while (iter.hasNext())
-    // {
-    // OneByteChunk thisB = (OneByteChunk) iter.next();
-    // bytes[ctr++] = thisB.getOtherParameters()[0];
-    // }
-    // msg = new String(bytes);
-    // }
+     List<VariableDatum> items = pdu.getVariableDatums();
+     if (items.size() > 0)
+     {
+     VariableDatum val = items.get(0);
+      List<OneByteChunk> chunks = val.getVariableData();
+     byte[] bytes = new byte[chunks.size()];
+     Iterator<OneByteChunk> iter = chunks.iterator();
+     int ctr = 0;
+     while (iter.hasNext())
+     {
+     OneByteChunk thisB = (OneByteChunk) iter.next();
+     bytes[ctr++] = thisB.getOtherParameters()[0];
+     }
+     msg = new String(bytes);
+     }
 
     Iterator<IDISEventListener> eIter = _eventListeners.iterator();
     while (eIter.hasNext())
@@ -213,6 +226,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       handleDetonation((DetonationPdu) data);
       break;
     }
+    case 4:
+    {
+      handleCollision((CollisionPdu) data);
+      break;
+    }
     case 21:
     {
       handleEvent((EventReportPdu) data);
@@ -225,6 +243,26 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     }
     default:
       System.err.println("PDU type not handled:" + type);
+    }
+  }
+
+  private void handleCollision(CollisionPdu pdu)
+  {
+    short eid = pdu.getExerciseID();
+    Vector3Float eLoc = pdu.getLocation();
+    double[] locArr = new double[]
+    {eLoc.getX(), eLoc.getY(), eLoc.getZ()};
+    double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+    long time = pdu.getTimestamp();
+    int receipientId = pdu.getIssuingEntityID().getEntity();
+    int movingId = pdu.getCollidingEntityID().getEntity();
+
+    Iterator<IDISCollisionListener> dIter = _collisionListeners.iterator();
+    while (dIter.hasNext())
+    {
+      IDISCollisionListener thisD = dIter.next();
+      thisD.add(time, eid, movingId, receipientId, worldCoords[0],
+          worldCoords[1], worldCoords[2]);
     }
   }
 

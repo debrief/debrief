@@ -30,7 +30,7 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
   {
 
     final String firingName = "DIS_" + hisId;
-    final String message = "Detonation fired from:" + firingName;
+    final String message = "Detonation of platform:" + firingName;
 
     // create the text marker
     addNewItem(eid, DETONATIONS_LAYER, new ListenerHelper()
