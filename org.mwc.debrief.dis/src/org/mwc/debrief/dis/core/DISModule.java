@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
+import org.mwc.debrief.dis.listeners.IDISFireListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
@@ -15,6 +16,7 @@ import org.mwc.debrief.dis.providers.IPDUProvider;
 import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityStatePdu;
 import edu.nps.moves.dis.EventReportPdu;
+import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.Orientation;
 import edu.nps.moves.dis.Pdu;
 import edu.nps.moves.dis.StopFreezePdu;
@@ -37,6 +39,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private List<IDISStopListener> _stopListeners =
       new ArrayList<IDISStopListener>();
   private boolean _newStart = false;
+  private List<IDISFireListener> _fireListeners = new ArrayList<IDISFireListener>();
 
   public DISModule()
   {
@@ -52,6 +55,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   public void addEventListener(IDISEventListener handler)
   {
     _eventListeners.add(handler);
+  }
+
+  @Override
+  public void addFireListener(IDISFireListener handler)
+  {
+    _fireListeners.add(handler);
   }
 
   @Override
@@ -107,22 +116,22 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     String msg = "Empty";
 
     // try to get the data
-    
-//    List<VariableDatum> items = pdu.getVariableDatums();
-//    if (items.size() > 0)
-//    {
-//      VariableDatum val = items.get(0);
-//      List<OneByteChunk> chunks = val.getVariableData();
-//      byte[] bytes = new byte[chunks.size()];
-//      Iterator<OneByteChunk> iter = chunks.iterator();
-//      int ctr = 0;
-//      while (iter.hasNext())
-//      {
-//        OneByteChunk thisB = (OneByteChunk) iter.next();
-//        bytes[ctr++] = thisB.getOtherParameters()[0];
-//      }
-//      msg = new String(bytes);
-//    }
+
+    // List<VariableDatum> items = pdu.getVariableDatums();
+    // if (items.size() > 0)
+    // {
+    // VariableDatum val = items.get(0);
+    // List<OneByteChunk> chunks = val.getVariableData();
+    // byte[] bytes = new byte[chunks.size()];
+    // Iterator<OneByteChunk> iter = chunks.iterator();
+    // int ctr = 0;
+    // while (iter.hasNext())
+    // {
+    // OneByteChunk thisB = (OneByteChunk) iter.next();
+    // bytes[ctr++] = thisB.getOtherParameters()[0];
+    // }
+    // msg = new String(bytes);
+    // }
 
     Iterator<IDISEventListener> eIter = _eventListeners.iterator();
     while (eIter.hasNext())
@@ -194,6 +203,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       handleFix((EntityStatePdu) data);
       break;
     }
+    case 2:
+    {
+      handleFire((FirePdu) data);
+      break;
+    }
     case 3:
     {
       handleDetonation((DetonationPdu) data);
@@ -214,6 +228,21 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     }
   }
 
+  private void handleFire(FirePdu pdu)
+  {
+    short eid = pdu.getExerciseID();
+    Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
+    long time = pdu.getTimestamp();
+    int hisId = pdu.getFiringEntityID().getEntity();
+
+    Iterator<IDISFireListener> dIter = _fireListeners.iterator();
+    while (dIter.hasNext())
+    {
+      IDISFireListener thisD = dIter.next();
+      thisD.add(time, eid, hisId, wLoc.getY(), wLoc.getX(), wLoc.getZ());
+    }
+  }
+
   private void handleStop(StopFreezePdu pdu)
   {
     long time = pdu.getTimestamp();
@@ -223,8 +252,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     Iterator<IDISStopListener> dIter = _stopListeners.iterator();
     while (dIter.hasNext())
     {
-      IDISStopListener thisD =  dIter.next();
-      thisD.stop(time,  eid,  reason);
+      IDISStopListener thisD = dIter.next();
+      thisD.stop(time, eid, reason);
     }
   }
 
