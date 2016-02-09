@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
@@ -80,6 +81,16 @@ public class DisPrefs extends PreferencePage implements
     layout.marginHeight = 0;
     composite.setLayout(layout);
 
+    // put a DOS button at the top-left
+    Label iconLbl = new Label(composite, SWT.NONE);
+    iconLbl.setImage(AbstractUIPlugin
+        .imageDescriptorFromPlugin("org.mwc.debrief.dis", "icons/50px/dis_icon.png").createImage());
+    GridData gd3 = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+    iconLbl.setLayoutData(gd3);    
+    createLabel(composite, " ");
+    createLabel(composite, " ");
+
+    
     // put a help button at the top-right
     createLabel(composite, " ");
     createLabel(composite, " ");
@@ -163,6 +174,8 @@ public class DisPrefs extends PreferencePage implements
       }
 
     });
+
+    simulationPathText.setFocus();
 
     validate();
     

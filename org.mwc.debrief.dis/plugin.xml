@@ -17,7 +17,7 @@
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.dis.ui.views.DisListenerView"
-            icon="icons/document_chart.png"
+            icon="icons/16px/dis_icon.png"
             id="org.mwc.debrief.dis.views.DisListenerView"
             name="DIS Listener" restorable="true">
       </view>
