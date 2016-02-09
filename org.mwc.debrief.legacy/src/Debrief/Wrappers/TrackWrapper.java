@@ -26,9 +26,11 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -2406,26 +2408,69 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   }
 
-  private boolean paintFixes(final CanvasType dest)
+  /**
+   * paint this fix, overriding the label if necessary (since the user may wish to have 6-figure
+   * DTGs at the start & end of the track
+   * 
+   * @param dest
+   *          where we paint to
+   * @param thisF the fix we're painting
+   * @param isEndPoint whether point is one of the ends
+   */
+  private void paintIt(final CanvasType dest, final FixWrapper thisF, final boolean isEndPoint)
   {
+    // have a look at the last fix. we defer painting the fix label,
+    // because we want to know the id of the last visible fix, since
+    // we may need to paint it's label in 6 DTG
+
+    final boolean isVis = thisF.getLabelShowing();
+    final String fmt = thisF.getLabelFormat();
+    final String lblVal = thisF.getLabel();
+
+    // are we plotting DTG at ends?
+    if (isEndPoint)
+    {
+      // set the custom format for our end labels (6-fig DTG)
+      thisF.setLabelFormat("ddHHmm");
+      thisF.setLabelShowing(true);
+    }
+
+    // this next method just paints the fix. we've put the
+    // call into paintThisFix so we can override the painting
+    // in the CompositeTrackWrapper class
+    paintThisFix(dest, thisF.getLocation(), thisF);
+
+    // do we need to restore it?
+    if (isEndPoint)
+    {
+      thisF.setLabelFormat(fmt);
+      thisF.setLabelShowing(isVis);
+      thisF.setLabel(lblVal);
+    }
+  }
+
+  /** paint the fixes for this track
+   * 
+   * @param dest
+   * @return a collection containing the first & last visible fix
+   */
+  private List<FixWrapper> paintFixes(final CanvasType dest)
+  {
+    // collate a list of the start & end points
+    final List<FixWrapper> endPoints = new ArrayList<FixWrapper>();
+
     // we need an array to store the polyline of points in. Check it's big
     // enough
     checkPointsArray();
-
-    // keep track of if we have plotted any points (since
-    // we won't be plotting the name if none of the points are visible).
-    // this typically occurs when filtering is applied and a short
-    // track is completely outside the time period
-    boolean plotted_anything = false;
 
     // java.awt.Point lastP = null;
     Color lastCol = null;
     final int defaultlineStyle = getLineStyle();
 
-    boolean locatedTrack = false;
     WorldLocation lastLocation = null;
     FixWrapper lastFix = null;
 
+    // cycle through the segments
     final Enumeration<Editable> segments = _thePositions.elements();
     while (segments.hasMoreElements())
     {
@@ -2470,6 +2515,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
 
+        // have a look at the last fix. we defer painting the fix label,
+        // because we want to know the id of the last visible fix, since
+        // we may need to paint it's label in 6 DTG
+        if (getPositionsVisible() && lastFix != null && lastFix.getVisible())
+        {
+          // is this the first visible fix?
+          boolean isFirstVisibleFix = endPoints.size() == 1;
+
+          paintIt(dest, lastFix, getEndTimeLabels() && isFirstVisibleFix);
+        }
+
         // now there's a chance that our fix has forgotten it's
         // parent,
         // particularly if it's the victim of a
@@ -2485,13 +2541,32 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           paintSetOfPositions(dest, lastCol, thisLineStyle);
         }
 
+        // do our job of identifying the first & last date value
+        if (fw.getVisible())
+        {
+          // ok, see if this is the first one
+          if (endPoints.size() == 0)
+          {
+            endPoints.add(fw);
+          }
+          else
+          {
+            // have we already got an end value?
+            if (endPoints.size() == 2)
+            {
+              // yes, drop it
+              endPoints.remove(1);
+            }
+
+            // store a new end value
+            endPoints.add(fw);
+          }
+        }
+
         // Note: we're carrying on working with this position even
         // if it isn't visible,
         // since we need to use non-visible positions to build up a
         // DR track.
-
-        // ok, so we have plotted something
-        plotted_anything = true;
 
         // ok, are we in relative?
         if (isRelative)
@@ -2522,7 +2597,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               lastLocation = tmaLastLoc;
             }
           }
-          lastFix = fw;
           tmaLastDTG = thisTime;
           // dump the location into the fix
           fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
@@ -2532,6 +2606,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           // this is an absolute position
           lastLocation = fw.getLocation();
         }
+
+        // remember this fix, used for relative tracks
+        lastFix = fw;
 
         // ok, we only do this writing to screen if the actual
         // position is visible
@@ -2544,19 +2621,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // (i.e. has a point been returned)
         if (thisP == null)
         {
-          return false;
-        }
-
-        // so, we're looking at the first data point. Do
-        // we want to use this to locate the track name?
-        // or have we already sorted out the location
-        if (_LabelAtStart && !locatedTrack)
-        {
-          locatedTrack = true;
-          _theLabel.setLocation(new WorldLocation(lastLocation));
-          int theLoc =
-              LabelLocationPropertyEditor.oppositeFor(fw.getLabelLocation());
-          _theLabel.setRelativeLocation(theLoc);
+          return endPoints;
         }
 
         // are we
@@ -2605,7 +2670,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // start off the next line
             _myPts[_ptCtr++] = thisP.x;
             _myPts[_ptCtr++] = thisP.y;
-
           }
 
           /*
@@ -2619,62 +2683,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         }
 
-        if (_showPositions && fw.getVisible())
-        {
-          final boolean isVis = fw.getLabelShowing();
-          final String fmt = fw.getLabelFormat();
-          final String lblVal = fw.getLabel();
-
-          // hmm, is it the last fix?
-          boolean endFix =
-              fw.getDTG().equals(this.getStartDTG())
-                  || fw.getDTG().equals(this.getEndDTG());
-
-          // are we plotting DTG at ends?
-          if (getEndTimeLabels())
-          {
-            if (endFix)
-            {
-              // set the custom format for our end labels (6-fig DTG)
-              fw.setLabelFormat("ddHHmm");
-              fw.setLabelShowing(true);
-            }
-          }
-
-          // this next method just paints the fix. we've put the
-          // call into paintThisFix so we can override the painting
-          // in the CompositeTrackWrapper class
-          paintThisFix(dest, lastLocation, fw);
-
-          // do we need to restore it?
-          if (getEndTimeLabels())
-          {
-            if (endFix)
-            {
-              fw.setLabelFormat(fmt);
-              fw.setLabelShowing(isVis);
-              fw.setLabel(lblVal);
-            }
-          }
-
-          // see if we need to use the last label location to position
-          // the track name
-          // are we trying to put the label at the end of the track?
-          // have we found at least one location to plot?
-          if (fw.getDateTimeGroup().equals(this.getEndDTG()))
-          {
-            if (!_LabelAtStart)
-            {
-              _theLabel.setLocation(new WorldLocation(fw.getLocation()));
-              int loc =
-                  LabelLocationPropertyEditor
-                      .oppositeFor(fw.getLabelLocation());
-              _theLabel.setRelativeLocation(loc);
-            }
-          }
-
-        }
       }// while fixWrappers has more elements
+
+      // ok - paint the label for the last visible point
+      if (getPositionsVisible())
+      {
+        paintIt(dest, endPoints.get(1), getEndTimeLabels());
+      }
 
       // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
       //
@@ -2710,32 +2725,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // ok, just see if we have any pending polylines to paint
       paintSetOfPositions(dest, lastCol, thisLineStyle);
-
     }
 
-    return plotted_anything;
-
+    return endPoints;
   }
 
-  private void paintSingleTrackLabel(final CanvasType dest)
+  private void paintSingleTrackLabel(final CanvasType dest,
+      List<FixWrapper> endPoints)
   {
     // check that we have found a location for the label
     if (_theLabel.getLocation() == null)
       return;
-
-    // is the first track a DR track?
-    // NO - CHANGED: we only initialise the track font in italics
-    // for a DR track. Then we let the user change it
-    // final TrackSegment t1 = (TrackSegment) _thePositions.first();
-    //
-    // if (t1.getPlotRelative())
-    // {
-    // _theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
-    // }
-    // else if (_theLabel.getFont().isItalic())
-    // {
-    // _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
-    // }
 
     // check that we have set the name for the label
     if (_theLabel.getString() == null)
@@ -2761,9 +2761,27 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           labelColor = pos.getColor();
         }
       }
-
       _theLabel.setColor(labelColor);
     }
+
+    // ok, sort out the correct location
+    final FixWrapper hostFix;
+    if (getNameAtStart())
+    {
+      hostFix = endPoints.get(0);
+    }
+    else
+    {
+      hostFix = endPoints.get(1);
+    }
+
+    // sort out the location
+    _theLabel.setLocation(hostFix.getLocation());
+
+    // and the relative location
+    int theLoc =
+        LabelLocationPropertyEditor.oppositeFor(hostFix.getLabelLocation());
+    _theLabel.setRelativeLocation(theLoc);
 
     // and paint it
     _theLabel.paint(dest);
@@ -2892,25 +2910,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       } // through the sensors
     } // whether the sensor layer is visible
 
-    // now plot the sensor arcs
-    // if (_mySensorArcs.getVisible())
-    // {
-    // final Enumeration<Editable> iter = _mySensorArcs.elements();
-    // while (iter.hasMoreElements())
-    // {
-    // final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
-    // // just check that the sensor knows we're it's parent
-    // if (sw.getHost() == null)
-    // {
-    // sw.setHost(this);
-    // }
-    //
-    // // and do the paint
-    // sw.paint(dest);
-    //
-    // }
-    // }
-
     // /////////////////////////////////////////////
     // and now the track itself
     // /////////////////////////////////////////////
@@ -2925,18 +2924,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // ///////////////////////////////////////////
     // let the fixes draw themselves in
     // ///////////////////////////////////////////
-    final boolean plotted_anything = paintFixes(dest);
+    List<FixWrapper> endPoints = paintFixes(dest);
+    final boolean plotted_anything = endPoints.size() > 0;
 
     // and draw the track label
     // still, we only plot the track label if we have plotted any
     // points
-    if (_theLabel.getVisible() && plotted_anything)
+    if (getNameVisible() && plotted_anything)
     {
       // just see if we have multiple segments. if we do,
       // name them individually
       if (this._thePositions.size() <= 1)
       {
-        paintSingleTrackLabel(dest);
+        paintSingleTrackLabel(dest, endPoints);
       }
       else
       {
