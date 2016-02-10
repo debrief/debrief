@@ -317,7 +317,7 @@ public class PduGenerator
 
       final double startX = 50.1;
       final double startY = -1.87;
-      final double randomArea = 0.03;
+      final double randomArea = 0.06;
 
       // generate the inital states
       for (int i = 0; i < numParts; i++)

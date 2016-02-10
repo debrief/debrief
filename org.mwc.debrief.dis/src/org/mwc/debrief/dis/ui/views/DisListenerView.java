@@ -78,10 +78,10 @@ import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
 import MWC.GenericData.HiResDate;
 
-public class DisListenerView extends ViewPart
+public class DisListenerView extends ViewPart implements IDISStopListener
 {
 
-  public  static final String HELP_CONTEXT = "org.mwc.debrief.help.DISSupport";
+  public static final String HELP_CONTEXT = "org.mwc.debrief.help.DISSupport";
   private Button connectButton;
   private Button disconnectButton;
   private Button stopButton;
@@ -217,11 +217,14 @@ public class DisListenerView extends ViewPart
       }
     };
 
+    // listen for stop, so we can update the UI
+    module.addStopListener(this);
+
     // ok, Debrief fix listener
     module.addFixListener(new DebriefFixListener(context));
     module.addDetonationListener(new DebriefDetonationListener(context));
     module.addEventListener(new DebriefEventListener(context));
-    module.addFireListener(new DebriefFireListener(context));    
+    module.addFireListener(new DebriefFireListener(context));
     module.addCollisionListener(new DebriefCollisionListener(context));
     module.addStopListener(new IDISStopListener()
     {
@@ -236,7 +239,9 @@ public class DisListenerView extends ViewPart
           public void run()
           {
             // ok, popup message
-            MessageBox dialog = new MessageBox(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OK);
+            MessageBox dialog =
+                new MessageBox(PlatformUI.getWorkbench()
+                    .getActiveWorkbenchWindow().getShell(), SWT.OK);
             dialog.setText("DIS Interface");
             dialog.setMessage("The simulation has completed, with reason: "
                 + reason);
@@ -490,7 +495,7 @@ public class DisListenerView extends ViewPart
 
     // ok, we can go for it
     initModule();
-    
+
     // ok, sort out the help
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HELP_CONTEXT);
   }
@@ -529,15 +534,13 @@ public class DisListenerView extends ViewPart
   private void fillLocalPullDown(final IMenuManager manager)
   {
     manager.add(new Separator());
-    manager.add(CorePlugin.createOpenHelpAction(
-        HELP_CONTEXT, null, this));
+    manager.add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
   }
 
   private void fillLocalToolBar(final IToolBarManager manager)
   {
     manager.add(fitToDataAction);
-    manager.add(CorePlugin.createOpenHelpAction(
-        HELP_CONTEXT, null, this));
+    manager.add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
   }
 
   private Button createButton(Composite composite, String label)
@@ -575,6 +578,9 @@ public class DisListenerView extends ViewPart
       disconnectButton.setSelection(true);
       doDisconnect();
     }
+
+    // tell the perf graph that we've finished
+    _perfGraph.complete("Stop button");
   }
 
   private void doPlay()
@@ -609,6 +615,21 @@ public class DisListenerView extends ViewPart
     _netProvider.detach();
     connectButton.setEnabled(true);
     disconnectButton.setEnabled(false);
+  }
+
+  @Override
+  public void stop(long time, short eid, short reason)
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        // ok, fire stop
+        doStop();
+      }
+    });
   }
 
 }

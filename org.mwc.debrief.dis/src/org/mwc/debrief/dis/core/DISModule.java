@@ -294,6 +294,9 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       IDISStopListener thisD = dIter.next();
       thisD.stop(time, eid, reason);
     }
+    
+    // share the complete message
+    complete("Scenario complete");
   }
 
   @Override
