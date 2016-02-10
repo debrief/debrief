@@ -90,7 +90,7 @@ public class HeadlessDISLogger
     {
       @Override
       public void add(long time, short exerciseId, long id, double dLat,
-          double dLong, double depth, double courseDegs, double speedMS)
+          double dLong, double depth, double courseDegs, double speedMS, final int damage)
       {
         System.out.print(".");
         // System.out.println("STATE: time:" + time + " eid:" + exerciseId
@@ -198,12 +198,12 @@ public class HeadlessDISLogger
     public FixToFileListener(String root, boolean toFile, boolean toScreen)
     {
       super(root, toFile, toScreen, "fix.csv",
-          "time, id, dLat, dLong, depth, courseDegs, speedMS");
+          "time, id, dLat, dLong, depth, courseDegs, speedMS, damage");
     }
 
     @Override
     public void add(long time, short exerciseId, long id, double dLat,
-        double dLong, double depth, double courseDegs, double speedMS)
+        double dLong, double depth, double courseDegs, double speedMS, int damage)
     {
       // create the line
       StringBuffer out = new StringBuffer();
@@ -220,6 +220,8 @@ public class HeadlessDISLogger
       out.append(courseDegs);
       out.append(", ");
       out.append(speedMS);
+      out.append(", ");
+      out.append(damage);
       out.append(LINE_BREAK);
 
       // done, write it

@@ -33,9 +33,8 @@ import edu.nps.moves.disutil.CoordinateConversions;
  */
 public class PduGenerator
 {
-  
+
   private static final short STOP_PDU_TERMINATED = 2;
-  
 
   private short exerciseId;
 
@@ -45,6 +44,11 @@ public class PduGenerator
 
   private class Participant
   {
+    final static int NO_DAMAGE = 0;
+    final static int SLIGHT_DAMAGE = 1;
+    final static int MODERATE_DAMAGE = 2;
+    final static int DESTROYED = 3;
+
     private Participant(final int id, double oLat, double oLong, double range)
     {
       this.id = id;
@@ -63,6 +67,12 @@ public class PduGenerator
      * 
      */
     public int targetId = -1;
+
+    /**
+     * allow specification of the current appearance of this platform
+     * 
+     */
+    private int damage = NO_DAMAGE;
 
     public void update(Map<Integer, Participant> states, double distStep,
         int idx, long lastTime, EntityID sampleId, IPduSender sender)
@@ -96,10 +106,19 @@ public class PduGenerator
             if (thisP.id == targetId)
             {
               sendDetonation(this, thisP.id, sampleId, states, lastTime, sender);
+
+              // ok, change the appearance of the torpedo to destroyed
+              this.damage = DESTROYED;
+
+              // and the target to disabled
+              thisP.damage = MODERATE_DAMAGE;
             }
             else
             {
               sendCollision(this, thisP.id, sampleId, states, lastTime, sender);
+
+              this.damage = SLIGHT_DAMAGE;
+              thisP.damage = SLIGHT_DAMAGE;
             }
           }
 
@@ -160,8 +179,7 @@ public class PduGenerator
   {
     // initialise our random number generator
     genny = new Random(12);
-    
-    
+
     /** an entity state pdu */
     EntityStatePdu espdu = new EntityStatePdu();
     // DisTime disTime = DisTime.getInstance();
@@ -190,7 +208,6 @@ public class PduGenerator
     {
       numMessages = Integer.parseInt(args[2]);
     }
-
 
     // Initialize values in the Entity State PDU object. The exercise ID is
     // a way to differentiate between different virtual worlds on one network.
@@ -231,7 +248,7 @@ public class PduGenerator
     int randomHour = (int) (2 + genny.nextDouble() * 20);
     @SuppressWarnings("deprecation")
     long lastTime = new Date(2015, 1, 1, randomHour, 0).getTime();
-    
+
     // Loop through sending 100 ESPDUs
     try
     {
@@ -289,6 +306,9 @@ public class PduGenerator
           location.setY(disCoordinates[1]);
           location.setZ(disCoordinates[2]);
 
+          // also specify the target appearance
+          espdu.setEntityAppearance_damage(thisS.damage);
+
           // and send it
           sender.sendPdu(espdu);
 
@@ -325,7 +345,7 @@ public class PduGenerator
           wLoc.setY(launcher.latVal);
           wLoc.setZ(startZ);
           fire.setLocationInWorldCoordinates(wLoc);
-          
+
           // ok, send it out
           sender.sendPdu(fire);
 
@@ -356,7 +376,6 @@ public class PduGenerator
     }
 
   }
-
 
   private void sendMessage(short exerciseID, long lastTime, long eventType,
       EntityID eid, String msg, IPduSender sender)
@@ -391,7 +410,7 @@ public class PduGenerator
     List<VariableDatum> datums = new ArrayList<VariableDatum>();
     datums.add(d);
     dp.setVariableDatums(datums);
-    
+
     // and send it
     sender.sendPdu(dp);
   }
@@ -414,7 +433,8 @@ public class PduGenerator
   }
 
   private void sendDetonation(Participant firingPlatform, int recipientId,
-      EntityID eid, Map<Integer, Participant> states, long lastTime, IPduSender sender)
+      EntityID eid, Map<Integer, Participant> states, long lastTime,
+      IPduSender sender)
   {
 
     // store the id of the firing platform
@@ -447,7 +467,7 @@ public class PduGenerator
     wLoc.setY(firingPlatform.latVal);
     wLoc.setZ(0);
     dp.setLocationInWorldCoordinates(wLoc);
-    
+
     // and send it
     sender.sendPdu(dp);
 
@@ -455,7 +475,8 @@ public class PduGenerator
   }
 
   private void sendCollision(Participant movingPlatform, int recipientId,
-      EntityID movingId, Map<Integer, Participant> states, long lastTime, IPduSender sender)
+      EntityID movingId, Map<Integer, Participant> states, long lastTime,
+      IPduSender sender)
   {
     EntityID victimE = new EntityID();
     victimE.setApplication(movingId.getApplication());

@@ -117,7 +117,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
       thisF.add(time, eid, hisId, worldCoords[0], worldCoords[1],
-          worldCoords[2], orientation.getPhi(), velocity.getX());
+          worldCoords[2], orientation.getPhi(), velocity.getX(), pdu.getEntityAppearance_damage());
     }
   }
 

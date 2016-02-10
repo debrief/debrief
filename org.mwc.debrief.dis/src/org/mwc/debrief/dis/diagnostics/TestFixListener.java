@@ -35,7 +35,7 @@ public class TestFixListener implements IDISFixListener
 
 	@Override
 	public void add(long time, short exerciseId, long id, double dLat,
-			double dLong, double depth, double courseDegs, double speedMS)
+			double dLong, double depth, double courseDegs, double speedMS, final int damage)
 	{
 		TestFixListener.Item newI = new Item();
 		newI._id = id;

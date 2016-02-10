@@ -22,7 +22,7 @@ public class DebriefFixListener  extends DebriefCoreListener implements IDISFixL
 
   @Override
   public void add(final long time, short exerciseId, long id, final double dLat,
-      final double dLong, final double depth, final double courseDegs, final double speedMS)
+      final double dLong, final double depth, final double courseDegs, final double speedMS, final int damage)
   {
     final String theName = "DIS_" + id;
     
