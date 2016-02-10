@@ -2,7 +2,7 @@ package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
 
-import org.mwc.debrief.dis.listeners.IDISDetonationListener;
+import org.mwc.debrief.dis.listeners.IDISFireListener;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.LabelWrapper;
@@ -14,12 +14,13 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 
-public class DebriefDetonationListener  extends DebriefCoreListener implements IDISDetonationListener
+public class DebriefFireListener extends DebriefCoreListener implements
+    IDISFireListener
 {
 
-  final private String DETONATIONS_LAYER = "Detonations";
+  final private String MY_LAYER = "Launches";
 
-  public DebriefDetonationListener(IDISContext context)
+  public DebriefFireListener(IDISContext context)
   {
     super(context);
   }
@@ -30,17 +31,17 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
   {
 
     final String firingName = "DIS_" + hisId;
-    final String message = "Detonation of platform:" + firingName;
+    final String message = "Launch of new platform:" + firingName;
 
     // create the text marker
-    addNewItem(eid, DETONATIONS_LAYER, new ListenerHelper()
+    addNewItem(eid, MY_LAYER, new ListenerHelper()
     {
 
       @Override
       public Layer createLayer()
       {
         Layer newB = new BaseLayer();
-        newB.setName(DETONATIONS_LAYER);
+        newB.setName(MY_LAYER);
         return newB;
       }
 
@@ -67,7 +68,7 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(firingName, "DETONATION", new HiResDate(time),
+            new NarrativeEntry(firingName, "LAUNCH", new HiResDate(time),
                 message);
         Color theColor = colorFor(firingName);
         newE.setColor(theColor);

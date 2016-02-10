@@ -139,7 +139,9 @@ public class NetworkDISProvider implements IPDUProvider
         }
         else
         {
-          System.err.println("PDU not recognised");
+          int pduType = 0x000000FF & (int) packet.getData()[2]; // The pdu type is a one-byte, unsigned byte in the third byte position.
+
+          System.err.println("PDU not recognised, maybe:" + pduType);
         }
 
       } // end while

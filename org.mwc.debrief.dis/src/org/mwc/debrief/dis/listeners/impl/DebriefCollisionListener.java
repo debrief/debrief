@@ -2,7 +2,7 @@ package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
 
-import org.mwc.debrief.dis.listeners.IDISDetonationListener;
+import org.mwc.debrief.dis.listeners.IDISCollisionListener;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.LabelWrapper;
@@ -14,33 +14,34 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 
-public class DebriefDetonationListener  extends DebriefCoreListener implements IDISDetonationListener
+public class DebriefCollisionListener  extends DebriefCoreListener implements IDISCollisionListener
 {
 
-  final private String DETONATIONS_LAYER = "Detonations";
+  final private String MY_LAYER = "Collisions";
 
-  public DebriefDetonationListener(IDISContext context)
+  public DebriefCollisionListener(IDISContext context)
   {
     super(context);
   }
 
   @Override
-  public void add(final long time, short eid, int hisId, final double dLat,
-      final double dLon, final double depth)
+  public void add(final long time, short eid, int movingId, int recipientId,
+      final double dLat, final double dLon, final double depth)
   {
 
-    final String firingName = "DIS_" + hisId;
-    final String message = "Detonation of platform:" + firingName;
+    final String movingName = "DIS_" + movingId;
+    final String recipeintName = "DIS_" + recipientId;
+    final String message = "Collision between platform:" + movingName + " and " + recipeintName;
 
     // create the text marker
-    addNewItem(eid, DETONATIONS_LAYER, new ListenerHelper()
+    addNewItem(eid, MY_LAYER, new ListenerHelper()
     {
 
       @Override
       public Layer createLayer()
       {
         Layer newB = new BaseLayer();
-        newB.setName(DETONATIONS_LAYER);
+        newB.setName(MY_LAYER);
         return newB;
       }
 
@@ -48,7 +49,7 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       public Plottable createItem()
       {
         WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-        Color theColor = colorFor(firingName);
+        Color theColor = colorFor(movingName);
         return new LabelWrapper(message, newLoc, theColor);
       }
     });
@@ -67,9 +68,9 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(firingName, "DETONATION", new HiResDate(time),
+            new NarrativeEntry(movingName, "COLLISION", new HiResDate(time),
                 message);
-        Color theColor = colorFor(firingName);
+        Color theColor = colorFor(movingName);
         newE.setColor(theColor);
         return newE;
       }
