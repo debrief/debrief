@@ -33,6 +33,8 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   final private PerformanceQueue disQ = new PerformanceQueue(5000);
   final private PerformanceQueue screenQ = new PerformanceQueue(5000);
 
+  private Thread updateThread;
+
   /**
    * @param chartComposite
    */
@@ -61,64 +63,112 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   @Override
   public void logPDU(final Pdu pdu)
   {
-    doUpdate(SIM_NAME, disQ);
-  }
-  
-  public void screenUpdate()
-  {
-    doUpdate(SCREEN_NAME, screenQ);
+    // store the new time in the queue
+    disQ.add(new Date().getTime());
+
+    // run the graph, if we have to
+    startUpdates();
   }
 
-  private void doUpdate(final String name, final PerformanceQueue queue)
+  public void screenUpdate()
   {
-    Runnable doUpdate = new Runnable()
+    screenQ.add(new Date().getTime());
+
+    // run the graph, if we have to
+    startUpdates();
+  }
+
+  protected boolean _terminate = false;
+
+  private void startUpdates()
+  {
+    if (updateThread != null)
+    {
+      return;
+    }
+
+    _terminate = false;
+
+    final Runnable doUpdate = new Runnable()
     {
       @Override
       public void run()
       {
-        Display.getDefault().asyncExec(new Runnable()
+        Display.getDefault().syncExec(new Runnable()
         {
+
           @Override
           public void run()
           {
-            // store the new time in the queue
-            queue.add(new Date().getTime());
-
-            double freq = queue.freqAt(new Date().getTime()) * 1000d;
-            
+            // clear out the series
             TimeSeriesCollection data =
                 (TimeSeriesCollection) _chart.getChart().getXYPlot()
                     .getDataset();
+            data.removeAllSeries();
+          }
+        });
 
-            // do we know this series?
-            TimeSeries series = data.getSeries(name);
-            if (series == null)
+        while (!_terminate)
+        {
+          Display.getDefault().asyncExec(new Runnable()
+          {
+            private void doThisQueue(PerformanceQueue queue, String name)
             {
-              series = new TimeSeries(name);
-              data.addSeries(series);
+              // store the new time in the queue
+              queue.add(new Date().getTime());
+
+              double freq = queue.freqAt(new Date().getTime()) * 1000d;
+
+              TimeSeriesCollection data =
+                  (TimeSeriesCollection) _chart.getChart().getXYPlot()
+                      .getDataset();
+
+              // do we know this series?
+              TimeSeries series = data.getSeries(name);
+              if (series == null)
+              {
+                series = new TimeSeries(name);
+                data.addSeries(series);
+              }
+
+              if (!_chart.isDisposed())
+              {
+                series.addOrUpdate(new Second(new Date()), freq);
+              }
+
             }
 
-            series.addOrUpdate(new Second(new Date()), freq);
+            @Override
+            public void run()
+            {
+              if (_chart.isDisposed())
+              {
+                _terminate = true;
+              }
+              doThisQueue(disQ, SIM_NAME);
+              doThisQueue(screenQ, SCREEN_NAME);
 
-            // clear them out?
-            DateAxis tAxis =
-                (DateAxis) _chart.getChart().getXYPlot().getDomainAxis();
-            tAxis.setRange(new Date(new Date().getTime() - 20000), new Date());
+              // clear them out?
+              DateAxis tAxis =
+                  (DateAxis) _chart.getChart().getXYPlot().getDomainAxis();
+              tAxis
+                  .setRange(new Date(new Date().getTime() - 20000), new Date());
+            }
+
+          });
+          try
+          {
+            Thread.sleep(1000);
           }
-
-        });
-        try
-        {
-          Thread.sleep(1000);
-        }
-        catch (InterruptedException e)
-        {
-          e.printStackTrace();
+          catch (InterruptedException e)
+          {
+            e.printStackTrace();
+          }
         }
       }
     };
 
-    Thread updateThread = new Thread(doUpdate);
+    updateThread = new Thread(doUpdate);
     updateThread.setDaemon(true);
     updateThread.start();
   }
@@ -131,8 +181,8 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   @Override
   public void complete(String reason)
   {
-    // TODO Auto-generated method stub
-
+    _terminate = true;
+    updateThread = null;
   }
 
 }
