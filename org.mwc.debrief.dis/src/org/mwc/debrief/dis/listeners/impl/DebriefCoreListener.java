@@ -58,10 +58,11 @@ public class DebriefCoreListener
     Plottable createItem();
   }
 
-  protected Layer getLayer(short eid, String name, ListenerHelper helper)
+  protected Layer
+      getLayer(short exerciseId, String name, ListenerHelper helper)
   {
     // find the narratives layer
-    Layer nLayer = _context.findLayer(eid, name);
+    Layer nLayer = _context.findLayer(exerciseId, name);
     if (nLayer == null)
     {
       nLayer = helper.createLayer();
