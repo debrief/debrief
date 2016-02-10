@@ -23,6 +23,7 @@ import edu.nps.moves.dis.EntityType;
 import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.OneByteChunk;
+import edu.nps.moves.dis.Pdu;
 import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
@@ -382,20 +383,8 @@ public class CustomEspduSender
           location.setY(disCoordinates[1]);
           location.setZ(disCoordinates[2]);
 
-          // Marshal out the espdu object to a byte array, then send a datagram
-          // packet with that data in it.
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          DataOutputStream dos = new DataOutputStream(baos);
-          espdu.marshal(dos);
-
-          // The byte array here is the packet in DIS format. We put that into a
-          // datagram and send it.
-          byte[] data = baos.toByteArray();
-
-          DatagramPacket packet =
-              new DatagramPacket(data, data.length, destinationIp, PORT);
-
-          socket.send(packet);
+          // and send it
+          sendPdu(espdu);
 
           location = espdu.getEntityLocation();
         }
@@ -467,20 +456,8 @@ public class CustomEspduSender
       StopFreezePdu stopPdu = new StopFreezePdu();
       stopPdu.setReason(STOP_PDU_TERMINATED);
 
-      // Marshal out the espdu object to a byte array, then send a datagram
-      // packet with that data in it.
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      DataOutputStream dos = new DataOutputStream(baos);
-      stopPdu.marshal(dos);
-
-      // The byte array here is the packet in DIS format. We put that into a
-      // datagram and send it.
-      byte[] data = baos.toByteArray();
-
-      DatagramPacket packet =
-          new DatagramPacket(data, data.length, destinationIp, PORT);
-
-      socket.send(packet);
+      // and send it
+      sendPdu(stopPdu);
 
       System.out.println("COMPLETE SENT!");
     }
@@ -489,6 +466,24 @@ public class CustomEspduSender
       System.out.println(e);
     }
 
+  }
+
+  private void sendPdu(final Pdu pdu) throws IOException
+  {
+    // Marshal out the espdu object to a byte array, then send a datagram
+    // packet with that data in it.
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+    pdu.marshal(dos);
+
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    byte[] data = baos.toByteArray();
+
+    DatagramPacket packet =
+        new DatagramPacket(data, data.length, destinationIp, PORT);
+
+    socket.send(packet);
   }
 
   private void sendMessage(short exerciseID, long lastTime, long eventType,
@@ -524,27 +519,15 @@ public class CustomEspduSender
     List<VariableDatum> datums = new ArrayList<VariableDatum>();
     datums.add(d);
     dp.setVariableDatums(datums);
-
-    // Marshal out the espdu object to a byte array, then send a datagram
-    // packet with that data in it.
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    dp.marshal(dos);
-
-    // The byte array here is the packet in DIS format. We put that into a
-    // datagram and send it.
-    byte[] data = baos.toByteArray();
-
-    DatagramPacket packet =
-        new DatagramPacket(data, data.length, destinationIp, PORT);
-
+    
+    // and send it
     try
     {
-      socket.send(packet);
-      System.out.println(": event from " + eid.getEntity());
+      sendPdu(dp);
     }
     catch (IOException e)
     {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -600,26 +583,15 @@ public class CustomEspduSender
     wLoc.setY(firingPlatform.latVal);
     wLoc.setZ(0);
     dp.setLocationInWorldCoordinates(wLoc);
-
-    // Marshal out the espdu object to a byte array, then send a datagram
-    // packet with that data in it.
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    dp.marshal(dos);
-
-    // The byte array here is the packet in DIS format. We put that into a
-    // datagram and send it.
-    byte[] data = baos.toByteArray();
-
-    DatagramPacket packet =
-        new DatagramPacket(data, data.length, destinationIp, PORT);
-
+    
+    // and send it
     try
     {
-      socket.send(packet);
+      sendPdu(dp);
     }
     catch (IOException e)
     {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -654,25 +626,14 @@ public class CustomEspduSender
     location.setZ((float) disCoordinates[2]);
     coll.setLocation(location);
 
-    // Marshal out the espdu object to a byte array, then send a datagram
-    // packet with that data in it.
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    coll.marshal(dos);
-
-    // The byte array here is the packet in DIS format. We put that into a
-    // datagram and send it.
-    byte[] data = baos.toByteArray();
-
-    DatagramPacket packet =
-        new DatagramPacket(data, data.length, destinationIp, PORT);
-
+    // and send it
     try
     {
-      socket.send(packet);
+      sendPdu(coll);
     }
     catch (IOException e)
     {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
