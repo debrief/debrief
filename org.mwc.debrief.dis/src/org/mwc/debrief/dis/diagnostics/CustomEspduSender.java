@@ -38,7 +38,7 @@ import edu.nps.moves.disutil.CoordinateConversions;
 public class CustomEspduSender
 {
   private static final short STOP_PDU_TERMINATED = 2;
-
+  
   public enum NetworkMode
   {
     UNICAST, MULTICAST, BROADCAST
@@ -325,7 +325,7 @@ public class CustomEspduSender
     int randomHour = (int) (2 + Math.random() * 20);
     @SuppressWarnings("deprecation")
     long lastTime = new Date(2015, 1, 1, randomHour, 0).getTime();
-
+    
     // Loop through sending 100 ESPDUs
     try
     {
@@ -439,6 +439,9 @@ public class CustomEspduSender
           wLoc.setY(launcher.latVal);
           wLoc.setZ(startZ);
           fire.setLocationInWorldCoordinates(wLoc);
+          
+          // ok, send it out
+          sendPdu(fire);
 
           System.out.println(": launch of:" + newId + " from:" + launchId
               + " aiming for:" + targetId.id);
