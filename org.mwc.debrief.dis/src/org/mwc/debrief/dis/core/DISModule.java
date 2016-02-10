@@ -102,6 +102,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   {
     // unpack the data
     final short eid = pdu.getExerciseID();
+    final short force = pdu.getForceId();
     final long hisId = pdu.getEntityID().getEntity();
     final long time = pdu.getTimestamp();
     Vector3Double loc = pdu.getEntityLocation();
@@ -116,8 +117,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     while (fIter.hasNext())
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
-      thisF.add(time, eid, hisId, worldCoords[0], worldCoords[1],
-          worldCoords[2], orientation.getPhi(), velocity.getX(), pdu.getEntityAppearance_damage());
+      thisF.add(time, eid, hisId, force, worldCoords[0],
+          worldCoords[1], worldCoords[2], orientation.getPhi(), velocity.getX(), pdu.getEntityAppearance_damage());
     }
   }
 

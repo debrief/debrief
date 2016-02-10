@@ -2,6 +2,7 @@ package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
 
+import org.mwc.debrief.dis.diagnostics.PduGenerator;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
 import Debrief.Wrappers.FixWrapper;
@@ -12,7 +13,8 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
-public class DebriefFixListener  extends DebriefCoreListener implements IDISFixListener
+public class DebriefFixListener extends DebriefCoreListener implements
+    IDISFixListener
 {
 
   public DebriefFixListener(IDISContext context)
@@ -21,12 +23,15 @@ public class DebriefFixListener  extends DebriefCoreListener implements IDISFixL
   }
 
   @Override
-  public void add(final long time, short exerciseId, long id, final double dLat,
-      final double dLong, final double depth, final double courseDegs, final double speedMS, final int damage)
+  public void add(final long time, short exerciseId, long id,
+      final short force, final double dLat, final double dLong,
+      final double depth, final double courseDegs, final double speedMS,
+      final int damage)
   {
     final String theName = "DIS_" + id;
-    
-    super.addNewItem(exerciseId, theName, new ListenerHelper(){
+
+    super.addNewItem(exerciseId, theName, new ListenerHelper()
+    {
 
       @Override
       public Layer createLayer()
@@ -34,7 +39,23 @@ public class DebriefFixListener  extends DebriefCoreListener implements IDISFixL
         TrackWrapper track = new TrackWrapper();
         track.setName(theName);
 
-        Color newCol = colorFor(theName);
+        Color theCol = null;
+        switch (force)
+        {
+        case PduGenerator.RED:
+          theCol = Color.red;
+          break;
+        case PduGenerator.BLUE:
+          theCol = Color.blue;
+          break;
+        case PduGenerator.GREEN:
+          theCol = Color.green;
+          break;
+        default:
+          System.err.println("NO, NO FORCE FOUND");
+        }
+
+        Color newCol = theCol; // colorFor(theName);
         // ok, give it some color
         track.setColor(newCol);
 
@@ -50,6 +71,7 @@ public class DebriefFixListener  extends DebriefCoreListener implements IDISFixL
         FixWrapper fw = new FixWrapper(newF);
         fw.resetName();
         return fw;
-      }});
+      }
+    });
   }
 }
