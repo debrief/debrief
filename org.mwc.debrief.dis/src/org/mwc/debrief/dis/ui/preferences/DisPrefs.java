@@ -40,7 +40,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.DisActivator;
-import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
+import org.mwc.debrief.dis.diagnostics.PduGenerator;
+import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.ui.views.DisListenerView;
 
 public class DisPrefs extends PreferencePage implements
@@ -83,19 +84,19 @@ public class DisPrefs extends PreferencePage implements
 
     // put a DOS button at the top-left
     Label iconLbl = new Label(composite, SWT.NONE);
-    iconLbl.setImage(AbstractUIPlugin
-        .imageDescriptorFromPlugin("org.mwc.debrief.dis", "icons/50px/dis_icon.png").createImage());
+    iconLbl.setImage(AbstractUIPlugin.imageDescriptorFromPlugin(
+        "org.mwc.debrief.dis", "icons/50px/dis_icon.png").createImage());
     GridData gd3 = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-    iconLbl.setLayoutData(gd3);    
+    iconLbl.setLayoutData(gd3);
     createLabel(composite, " ");
     createLabel(composite, " ");
 
-    
     // put a help button at the top-right
     createLabel(composite, " ");
     createLabel(composite, " ");
-    final Action act = CorePlugin.createOpenHelpAction(
-        DisListenerView.HELP_CONTEXT, null, _myBench.getHelpSystem());
+    final Action act =
+        CorePlugin.createOpenHelpAction(DisListenerView.HELP_CONTEXT, null,
+            _myBench.getHelpSystem());
     Button helpBtn = new Button(composite, SWT.PUSH);
     helpBtn.addSelectionListener(new SelectionListener()
     {
@@ -104,18 +105,19 @@ public class DisPrefs extends PreferencePage implements
       {
         act.run();
       }
-      
+
       @Override
       public void widgetDefaultSelected(SelectionEvent e)
       {
       }
     });
-    helpBtn.setImage(CorePlugin.getImageDescriptor("icons/16/help.png").createImage());
+    helpBtn.setImage(CorePlugin.getImageDescriptor("icons/16/help.png")
+        .createImage());
     GridData gd2 = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-    helpBtn.setLayoutData(gd2);    
+    helpBtn.setLayoutData(gd2);
 
     // now the rest of the prefs
-    
+
     createLabel(composite, "Path to executable:");
     simulationPathText =
         createText(composite, DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
@@ -178,7 +180,7 @@ public class DisPrefs extends PreferencePage implements
     simulationPathText.setFocus();
 
     validate();
-    
+
     return composite;
   }
 
@@ -186,7 +188,7 @@ public class DisPrefs extends PreferencePage implements
   {
     // clear the message, to start with
     setErrorMessage(null);
-    
+
     String path = simulationPathText.getText();
     if (path != null && !path.isEmpty())
     {
@@ -250,7 +252,8 @@ public class DisPrefs extends PreferencePage implements
     createAlignedLabel(composite, text, SWT.FILL);
   }
 
-  private void createAlignedLabel(Composite composite, String text, int alignment)
+  private void createAlignedLabel(Composite composite, String text,
+      int alignment)
   {
     Label label = new Label(composite, SWT.NONE);
     GridData gd = new GridData(alignment, SWT.CENTER, false, false);
@@ -258,12 +261,11 @@ public class DisPrefs extends PreferencePage implements
     label.setText(text);
   }
 
-
   @Override
   protected void performDefaults()
   {
-    simulationPathText.setText(CustomEspduSender.DEFAULT_MULTICAST_GROUP); //$NON-NLS-1$
-    ipAddressText.setText("" + CustomEspduSender.PORT);
+    simulationPathText.setText(NetworkPduSender.DEFAULT_MULTICAST_GROUP); //$NON-NLS-1$
+    ipAddressText.setText("" + NetworkPduSender.PORT);
     portText.setText("");
     storePreferences();
     super.performDefaults();
