@@ -40,7 +40,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.DisActivator;
-import org.mwc.debrief.dis.diagnostics.PduGenerator;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.ui.views.DisListenerView;
 

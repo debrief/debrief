@@ -34,6 +34,12 @@ import edu.nps.moves.disutil.CoordinateConversions;
 public class PduGenerator
 {
 
+  /**
+   * random seed - necessary for reproducible results (for testing)
+   * 
+   */
+  private static final int RANDOM_SEED = 12;
+
   private static final short STOP_PDU_TERMINATED = 2;
 
   private short exerciseId;
@@ -42,25 +48,17 @@ public class PduGenerator
 
   private Random genny;
 
-  private class Participant
+  private Collection<Torpedo> torpedoes = new ArrayList<Torpedo>();
+  private Collection<Vessel> redParts = new ArrayList<Vessel>();
+  private Collection<Vessel> blueParts = new ArrayList<Vessel>();
+  private Collection<Vessel> greenParts = new ArrayList<Vessel>();
+
+  public static final short BLUE = 1;
+  public static final short RED = 2;
+  public static final short GREEN = 3;
+
+  private class Torpedo extends Vessel
   {
-    final static int NO_DAMAGE = 0;
-    final static int SLIGHT_DAMAGE = 1;
-    final static int MODERATE_DAMAGE = 2;
-    final static int DESTROYED = 3;
-
-    private Participant(final int id, double oLat, double oLong, double range)
-    {
-      this.id = id;
-      latVal = oLat + genny.nextDouble() * range;
-      longVal = oLong + genny.nextDouble() * range;
-      courseRads = Math.toRadians(((int) (genny.nextDouble() * 36d)) * 10d);
-    }
-
-    final int id;
-    double latVal;
-    double longVal;
-    double courseRads;
 
     /**
      * if this participant has a target that it aims for
@@ -68,26 +66,33 @@ public class PduGenerator
      */
     public int targetId = -1;
 
-    /**
-     * allow specification of the current appearance of this platform
-     * 
-     */
-    private int damage = NO_DAMAGE;
-
-    public void update(Map<Integer, Participant> states, double distStep,
-        int idx, long lastTime, EntityID sampleId, IPduSender sender)
+    private Torpedo(final int id, final short force, double oLat, double oLong,
+        int targetId)
     {
+      super(id, force, oLat, oLong, 0);
+
+      this.targetId = targetId;
+
+      // make it a bit quicker
+      distStep *= 1.3;
+    }
+
+    @Override
+    protected double getCourse(Map<Integer, Vessel> states, EntityID sampleId,
+        long lastTime, IPduSender sender)
+    {
+
       // hmm, do we have a target?
       if (targetId != -1)
       {
-        Participant myTarget = null;
+        Vessel myTarget = null;
 
         // does this target exist
-        Participant[] parts = states.values().toArray(new Participant[]
+        Vessel[] parts = states.values().toArray(new Vessel[]
         {null});
         for (int i = 0; i < parts.length; i++)
         {
-          final Participant thisP = parts[i];
+          final Vessel thisP = parts[i];
 
           // hey, don't look at ourselves...
           if (thisP.id == id)
@@ -148,9 +153,71 @@ public class PduGenerator
           sendMessage(exerciseId, lastTime, 12, sampleId, theMsg, sender);
           System.out.println(theMsg);
           targetId = -1;
+
+          // stop the speed
+          distStep = 0;
+
+          // ok, self destruct
+          this.damage = DESTROYED;
+
+          sendDetonation(this, -1, sampleId, states, lastTime, sender);
+
         }
 
       }
+      return courseRads;
+    }
+
+  }
+
+  private class Vessel
+  {
+    final static int NO_DAMAGE = 0;
+    final static int SLIGHT_DAMAGE = 1;
+    final static int MODERATE_DAMAGE = 2;
+    final static int DESTROYED = 3;
+
+    final int id;
+    protected double latVal;
+    protected double longVal;
+    protected double courseRads;
+
+    double distStep = 0.01;
+
+    /**
+     * allow specification of the current appearance of this platform
+     * 
+     */
+    protected int damage = NO_DAMAGE;
+    final public short force;
+
+    private Vessel(final int id, final short force, double oLat, double oLong,
+        double range)
+    {
+      this.id = id;
+      this.force = force;
+      latVal = oLat + genny.nextDouble() * range;
+      longVal = oLong + genny.nextDouble() * range;
+      courseRads = Math.toRadians(((int) (genny.nextDouble() * 36d)) * 10d);
+    }
+
+    protected double getCourse(Map<Integer, Vessel> states, EntityID sampleId,
+        long lastTime, IPduSender sender)
+    {
+      // see if we're going to do a random turn
+      if (genny.nextDouble() > 0.8)
+      {
+        final double newCourse = ((int) (genny.nextDouble() * 36d)) * 10d;
+        courseRads = Math.toRadians(newCourse);
+      }
+
+      return courseRads;
+    }
+
+    public void update(Map<Integer, Vessel> states, int idx, long lastTime,
+        EntityID sampleId, IPduSender sender)
+    {
+      courseRads = getCourse(states, sampleId, lastTime, sender);
 
       // ok, handle the movement
       double dLat = Math.cos(courseRads) * distStep;
@@ -158,14 +225,6 @@ public class PduGenerator
 
       longVal += dLon;
       latVal += dLat;
-
-      // see if we're going to do a random turn
-
-      if (genny.nextDouble() > 0.8 && targetId == -1)
-      {
-        final double newCourse = ((int) (genny.nextDouble() * 36d)) * 10d;
-        courseRads = Math.toRadians(newCourse);
-      }
     }
   }
 
@@ -178,15 +237,14 @@ public class PduGenerator
   public void run(IPduSender sender, String args[])
   {
     // initialise our random number generator
-    genny = new Random(12);
+    genny = new Random(RANDOM_SEED);
 
     /** an entity state pdu */
     EntityStatePdu espdu = new EntityStatePdu();
     // DisTime disTime = DisTime.getInstance();
 
     // declare the states
-    final Map<Integer, Participant> states =
-        new HashMap<Integer, Participant>();
+    final Map<Integer, Vessel> states = new HashMap<Integer, Vessel>();
 
     // sort out the runtime arguments
     long stepMillis = 500;
@@ -214,7 +272,7 @@ public class PduGenerator
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
 
-    exerciseId = (short) (genny.nextDouble() * 1000d);
+    exerciseId = (short) (Math.random() * 1000d);
 
     espdu.setExerciseID(exerciseId);
 
@@ -259,14 +317,32 @@ public class PduGenerator
 
       final double startX = 50.1;
       final double startY = -1.87;
-      final double startZ = 0.01;
+      final double randomArea = 0.03;
 
       // generate the inital states
       for (int i = 0; i < numParts; i++)
       {
+
+        // sort out affiliation
+        short force = (short) (genny.nextInt(3) + 1);
+
         int eId = i + 1;// 1 + (int) (Math.random() * 20d);
-        Participant newS = new Participant(eId, startX, startY, startZ);
+        Vessel newS = new Vessel(eId, force, startX, startY, randomArea);
         states.put(eId, newS);
+
+        switch (force)
+        {
+        case BLUE:
+          blueParts.add(newS);
+          break;
+        case RED:
+          redParts.add(newS);
+          break;
+        case GREEN:
+          greenParts.add(newS);
+          break;
+        }
+
       }
 
       // generate correct number of messages
@@ -286,50 +362,37 @@ public class PduGenerator
 
         // get an array of participants. we don't use an interator,
         // to avoid concurrent modification
-        Participant[] parts = states.values().toArray(new Participant[]
+        Vessel[] parts = states.values().toArray(new Vessel[]
         {null});
         for (int i = 0; i < parts.length; i++)
         {
-          Participant thisS = parts[i];
-
-          eid.setEntity(thisS.id);
-          final double distStep = 0.01;
+          Vessel thisS = parts[i];
 
           // get the subject to move forward
-          thisS.update(states, distStep, idx, lastTime, eid, sender);
+          thisS.update(states, idx, lastTime, eid, sender);
 
-          double disCoordinates[] =
-              CoordinateConversions.getXYZfromLatLonDegrees(thisS.latVal,
-                  thisS.longVal, 0.0);
-          Vector3Double location = espdu.getEntityLocation();
-          location.setX(disCoordinates[0]);
-          location.setY(disCoordinates[1]);
-          location.setZ(disCoordinates[2]);
-
-          // also specify the target appearance
-          espdu.setEntityAppearance_damage(thisS.damage);
-
-          // and send it
-          sender.sendPdu(espdu);
-
-          location = espdu.getEntityLocation();
+          // and send out an update
+          sendStatusUpdate(thisS, eid, espdu, sender);
         }
 
         // put in a random launch
-        if (genny.nextDouble() >= 0.92)
+        if (genny.nextDouble() >= 0.82 && torpedoes.size() < 2
+            && blueParts.size() > 0)
         {
           System.out.println("===== LAUNCH ===== ");
-          final int launchId = selectRandomEntity(states.values()).id;
-
-          final int newId = (int) (1000 + (genny.nextDouble() * 1000d));
-          Participant newS = new Participant(newId, startX, startY, startZ);
+          final Vessel launchPlatform = selectRandomEntity(redParts);
 
           // try to give the new vehicle a target
-          Participant targetId = selectRandomEntity(states.values());
-          newS.targetId = targetId.id;
+          Vessel targetId = selectRandomEntity(blueParts);
+
+          final int newId = (int) (1000 + (genny.nextDouble() * 1000d));
+          Torpedo torpedo =
+              new Torpedo(newId, RED, launchPlatform.latVal,
+                  launchPlatform.longVal, targetId.id);
 
           // and remember it
-          states.put(newId, newS);
+          states.put(newId, torpedo);
+          torpedoes.add(torpedo);
 
           // also send out the "fired" message
           FirePdu fire = new FirePdu();
@@ -339,19 +402,21 @@ public class PduGenerator
           fire.setFiringEntityID(eid);
 
           // and the location
-          Participant launcher = states.get(launchId);
+          Vessel launcher = states.get(launchPlatform.id);
           Vector3Double wLoc = new Vector3Double();
           wLoc.setX(launcher.longVal);
           wLoc.setY(launcher.latVal);
-          wLoc.setZ(startZ);
+          wLoc.setZ(randomArea);
           fire.setLocationInWorldCoordinates(wLoc);
 
           // ok, send it out
           sender.sendPdu(fire);
 
-          System.out.println(": launch of:" + newId + " from:" + launchId
-              + " aiming for:" + targetId.id);
+          System.out.println(": launch of:" + newId + " from:"
+              + launchPlatform.id + " aiming for:" + targetId.id);
 
+          // and send out an update
+          sendStatusUpdate(torpedo, eid, espdu, sender);
         }
 
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
@@ -368,6 +433,9 @@ public class PduGenerator
       // and send it
       sender.sendPdu(stopPdu);
 
+      // tell the sender to pack in
+      sender.close();
+
       System.out.println("COMPLETE SENT!");
     }
     catch (Exception e)
@@ -375,6 +443,29 @@ public class PduGenerator
       System.out.println(e);
     }
 
+  }
+
+  private void sendStatusUpdate(Vessel thisS, EntityID eid,
+      EntityStatePdu espdu, IPduSender sender)
+  {
+    // update the affiliation
+    espdu.setForceId(thisS.force);
+
+    eid.setEntity(thisS.id);
+
+    double disCoordinates[] =
+        CoordinateConversions.getXYZfromLatLonDegrees(thisS.latVal,
+            thisS.longVal, 0.0);
+    Vector3Double location = espdu.getEntityLocation();
+    location.setX(disCoordinates[0]);
+    location.setY(disCoordinates[1]);
+    location.setZ(disCoordinates[2]);
+
+    // also specify the target appearance
+    espdu.setEntityAppearance_damage(thisS.damage);
+
+    // and send it
+    sender.sendPdu(espdu);
   }
 
   private void sendMessage(short exerciseID, long lastTime, long eventType,
@@ -415,11 +506,11 @@ public class PduGenerator
     sender.sendPdu(dp);
   }
 
-  private Participant selectRandomEntity(Collection<Participant> collection)
+  private Vessel selectRandomEntity(Collection<Vessel> collection)
   {
     int index = (int) (genny.nextDouble() * (double) collection.size());
-    Iterator<Participant> sIter2 = collection.iterator();
-    Participant res = null;
+    Iterator<Vessel> sIter2 = collection.iterator();
+    Vessel res = null;
     for (int i = 0; i <= index; i++)
     {
       res = sIter2.next();
@@ -432,19 +523,55 @@ public class PduGenerator
     _terminate = true;
   }
 
-  private void sendDetonation(Participant firingPlatform, int recipientId,
-      EntityID eid, Map<Integer, Participant> states, long lastTime,
+  private void sendDetonation(Vessel firingPlatform, int recipientId,
+      EntityID eid, Map<Integer, Vessel> states, long lastTime,
       IPduSender sender)
   {
-
     // store the id of the firing platform
     eid.setEntity(firingPlatform.id);
 
-    // and remove the recipient
+    // remove it from the relevant list
+    switch (firingPlatform.force)
+    {
+    case BLUE:
+      System.err.println("blue should not detonate!");
+      blueParts.remove(firingPlatform);
+      break;
+    case RED:
+      redParts.remove(firingPlatform);
+      break;
+    case GREEN:
+      System.err.println("green should not detonate!");
+      greenParts.remove(firingPlatform);
+      break;
+    }
+
+    // and remove the firing platofrm
     states.remove(firingPlatform.id);
 
-    // hmm, also remove the detonating platform
-    states.remove(recipientId);
+    // get the destroyed platform
+    Vessel hisPlatform = states.get(recipientId);
+
+    if (hisPlatform != null)
+    {
+      switch (hisPlatform.force)
+      {
+      case BLUE:
+        blueParts.remove(hisPlatform);
+        break;
+      case RED:
+        System.err.println("red should not be destroyed");
+        redParts.remove(hisPlatform);
+        break;
+      case GREEN:
+        System.err.println("green should not be destroyed");
+        greenParts.remove(hisPlatform);
+        break;
+      }
+
+      // hmm, also remove the detonating platform
+      states.remove(recipientId);
+    }
 
     // build up the PDU
     DetonationPdu dp = new DetonationPdu();
@@ -474,8 +601,8 @@ public class PduGenerator
     System.out.println(": " + firingPlatform.id + " destroyed " + recipientId);
   }
 
-  private void sendCollision(Participant movingPlatform, int recipientId,
-      EntityID movingId, Map<Integer, Participant> states, long lastTime,
+  private void sendCollision(Vessel movingPlatform, int recipientId,
+      EntityID movingId, Map<Integer, Vessel> states, long lastTime,
       IPduSender sender)
   {
     EntityID victimE = new EntityID();

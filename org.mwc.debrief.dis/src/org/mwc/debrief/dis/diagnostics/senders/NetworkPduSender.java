@@ -8,7 +8,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Properties;
 
-
 import edu.nps.moves.dis.Pdu;
 
 public class NetworkPduSender implements IPduSender
@@ -18,19 +17,15 @@ public class NetworkPduSender implements IPduSender
     UNICAST, MULTICAST, BROADCAST
   };
 
-
-
   private MulticastSocket socket;
 
   private InetAddress destinationIp;
-  
+
   /** default multicast group we send on */
   public static final String DEFAULT_MULTICAST_GROUP = "239.1.2.3";
 
   /** Port we send on */
   public static final int PORT = 62040;
-
-
 
   /**
    * Possible system properties, passed in via -Dattr=val networkMode: unicast, broadcast, multicast
@@ -120,15 +115,11 @@ public class NetworkPduSender implements IPduSender
     }
   }
 
-  
-  
   @Override
   public String toString()
   {
     return destinationIp.toString();
   }
-
-
 
   @Override
   public void sendPdu(final Pdu pdu)
@@ -160,19 +151,7 @@ public class NetworkPduSender implements IPduSender
   @Override
   public void close()
   {
-    try
-    {
-      socket.leaveGroup(destinationIp);
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-    finally
-    {
-      socket.close();
-      socket = null;
-    }
-    
+    socket.close();
+    socket = null;
   }
 }
