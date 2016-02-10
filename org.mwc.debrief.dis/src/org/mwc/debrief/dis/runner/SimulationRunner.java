@@ -7,7 +7,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.mwc.debrief.dis.diagnostics.CustomEspduSender;
+import org.mwc.debrief.dis.diagnostics.PduGenerator;
+import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 
 public class SimulationRunner
@@ -35,13 +36,13 @@ public class SimulationRunner
       // FOR TESTING - FIRE OUR GENERATOR
       _simJob = new Job("Run simulation")
       {
-        final private CustomEspduSender sender = new CustomEspduSender();
+        final private PduGenerator sender = new PduGenerator();
 
         @Override
         protected IStatus run(IProgressMonitor monitor)
         {
           String[] cArgs = args.split(" ");
-          sender.run(cArgs);
+          sender.run(new NetworkPduSender(), cArgs);
           return Status.OK_STATUS;
         }
 

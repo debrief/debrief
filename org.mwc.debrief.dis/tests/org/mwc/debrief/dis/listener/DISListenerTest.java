@@ -1,7 +1,6 @@
 package org.mwc.debrief.dis.listener;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -10,9 +9,14 @@ import java.util.List;
 import org.junit.Test;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.diagnostics.PduGenerator;
 import org.mwc.debrief.dis.diagnostics.TestFixListener;
 import org.mwc.debrief.dis.diagnostics.TestFixListener.Item;
-import org.mwc.debrief.dis.diagnostics.TestPrefs;
+import org.mwc.debrief.dis.diagnostics.senders.PassThruPduSender;
+import org.mwc.debrief.dis.listeners.IDISCollisionListener;
+import org.mwc.debrief.dis.listeners.IDISEventListener;
+import org.mwc.debrief.dis.listeners.IDISFireListener;
+import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
@@ -22,7 +26,59 @@ import edu.nps.moves.dis.Pdu;
 
 public class DISListenerTest
 {
+  @Test
+  public void testCustomSender()
+  {
+    PduGenerator sender = new PduGenerator();
+    DISModule module = new DISModule();
+    PassThruPduSender pSender = new PassThruPduSender(module);
+    
+    final List<String> collMessages =new ArrayList<String>();
+    final List<String> fireMessages =new ArrayList<String>();
+    final List<String> fixMessages =new ArrayList<String>();
+    final List<String> eventMessages =new ArrayList<String>();
 
+    module.addCollisionListener(new IDISCollisionListener()
+    {
+      public void add(long time, short eid, int movingId, int recipientId,
+          double dLat, double dLon, double depth)
+      {
+        collMessages.add("collision at:" + time);
+      }
+    });
+    module.addFireListener(new IDISFireListener()
+    {
+      public void
+          add(long time, short eid, int hisId, double y, double x, double z)
+      {
+        fireMessages.add("fire at:" + time);
+      }
+    });
+    module.addFixListener(new IDISFixListener()
+    {
+      public void add(long time, short exerciseId, long id, double dLat,
+          double dLong, double depth, double courseDegs, double speedMS)
+      {
+        fireMessages.add("fix at:" + time);
+      }
+    });
+    module.addEventListener(new IDISEventListener()
+    {
+      public void add(long time, short exerciseId, long id, String message)
+      {
+        eventMessages.add("event at:" + time);
+      }
+    });
+    
+    sender.run(pSender, new String[]{"10", "6", "80"});
+    
+    // check some stuff happened
+    assertEquals("got collisions", 2, collMessages.size());
+    assertEquals("got firing", 10, fireMessages.size());
+    assertEquals("got fixes", 627, fixMessages.size());
+    assertEquals("got events", 10, eventMessages.size());
+  }
+  
   @Test
   public void testScenarioStateMonitoring()
   {

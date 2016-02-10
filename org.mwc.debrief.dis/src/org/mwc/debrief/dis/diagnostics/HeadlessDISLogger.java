@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
@@ -19,29 +20,26 @@ public class HeadlessDISLogger
 {
 
   final String LINE_BREAK = System.getProperty("line.separator");
-  
+
   private boolean _terminated = false;
-  
+
   public static void main(String[] args)
   {
-
     // start running
     new HeadlessDISLogger(args);
   }
-  
-  
 
   public HeadlessDISLogger(String[] args)
   {
-    
+
     // do we have a root?
     String root = System.getProperty("java.io.tmpdir");
 
     // do we have an IP address?
-    String address = CustomEspduSender.DEFAULT_MULTICAST_GROUP;
+    String address = NetworkPduSender.DEFAULT_MULTICAST_GROUP;
 
     // do we have a PORT?
-    int port = CustomEspduSender.PORT;
+    int port = NetworkPduSender.PORT;
 
     // TODO: retrieve the above params from the args
 
@@ -63,7 +61,8 @@ public class HeadlessDISLogger
       @Override
       public void stop(long time, short eid, short reason)
       {
-        System.out.println("STOP: time:" + time + " eid:" + eid + " reason:" + reason);
+        System.out.println("STOP: time:" + time + " eid:" + eid + " reason:"
+            + reason);
         _terminated = true;
       }
     });
@@ -94,18 +93,18 @@ public class HeadlessDISLogger
           double dLong, double depth, double courseDegs, double speedMS)
       {
         System.out.print(".");
-//        System.out.println("STATE: time:" + time + " eid:" + exerciseId
-//            + " entity:" + id + " dLat:" + dLat + " dLon:" + dLong + " depth:"
-//            + depth + " course:" + courseDegs + " speed" + speedMS);
+        // System.out.println("STATE: time:" + time + " eid:" + exerciseId
+        // + " entity:" + id + " dLat:" + dLat + " dLon:" + dLong + " depth:"
+        // + depth + " course:" + courseDegs + " speed" + speedMS);
       }
     });
 
     // tell the network provider to start
     provider.attach();
-    
-    
+
     // ok, run the ESPDU pusher
-    CustomEspduSender.main(new String[]{"100", "3", "100"});
+    PduGenerator.main(new String[]
+    {"100", "3", "100"});
 
     while (!_terminated)
     {
