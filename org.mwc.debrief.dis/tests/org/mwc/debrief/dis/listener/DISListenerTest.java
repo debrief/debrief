@@ -57,9 +57,9 @@ public class DISListenerTest
     module.addFixListener(new IDISFixListener()
     {
       public void add(long time, short exerciseId, long id, double dLat,
-          double dLong, double depth, double courseDegs, double speedMS)
+          double dLong, double depth, double courseDegs, double speedMS, final int damage)
       {
-        fireMessages.add("fix at:" + time);
+        fixMessages.add("fix at:" + time);
       }
     });
     module.addEventListener(new IDISEventListener()
@@ -75,8 +75,8 @@ public class DISListenerTest
     // check some stuff happened
     assertEquals("got collisions", 2, collMessages.size());
     assertEquals("got firing", 10, fireMessages.size());
-    assertEquals("got fixes", 627, fixMessages.size());
-    assertEquals("got events", 10, eventMessages.size());
+    assertEquals("got fixes", 617, fixMessages.size());
+    assertEquals("got events", 2, eventMessages.size());
   }
   
   @Test
