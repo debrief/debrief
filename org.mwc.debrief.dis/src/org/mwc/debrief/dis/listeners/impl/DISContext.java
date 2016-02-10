@@ -161,33 +161,57 @@ abstract public class DISContext implements IDISContext,
    */
   private IEditorPart getEditor(final boolean forceNew, final short exerciseId)
   {
-    if(_myEditor == null)
+    if (_myEditor == null)
     {
-      // we may have just opened. have a look at any existing editors
-      Display.getDefault().syncExec(new Runnable()
+      IWorkbenchWindow window =
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+      IWorkbenchPage page = window.getActivePage();
+      IEditorPart editor = page.getActiveEditor();
+      _myLayers = (Layers) editor.getAdapter(Layers.class);
+      if (_myLayers != null)
       {
-        @Override
-        public void run()
-        {
-          IWorkbenchWindow window =
-              PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-          IWorkbenchPage page = window.getActivePage();
-          IEditorPart editor = page.getActiveEditor();
-          _myLayers = (Layers) editor.getAdapter(Layers.class);
-          if(_myLayers != null)
-          {
-            // ok, it's suitable
-            _myEditor = editor;
-          }
-        }
-      });
+        // ok, it's suitable
+        _myEditor = editor;
 
+        // ok, start listening to it
+        ScreenUpdateProvider listener =
+            (ScreenUpdateProvider) _myEditor
+                .getAdapter(CanvasType.ScreenUpdateProvider.class);
+        if (listener != null)
+        {
+          listener.addScreenUpdateListener(this);
+        }
+      }
     }
-    
+
     if (forceNew || _myEditor == null)
     {
+      IEditorInput input = null;
+
+      // hmm, should we drop the old one?
+      if (_myEditor != null)
+      {
+        // ok, start listening to it
+        ScreenUpdateProvider listener =
+            (ScreenUpdateProvider) _myEditor
+                .getAdapter(CanvasType.ScreenUpdateProvider.class);
+        if (listener != null)
+        {
+          listener.removeScreenUpdateListener(this);
+        }
+
+        // we need to create a dupliate copy of the input
+        // TODO: create duplicate input, so it reads in the REP file
+
+        // and clear the pointer
+        _myEditor = null;
+      }
+
       // ok, we'll have to create one
-      IEditorInput input = new DISInput("DIS Exercise: " + exerciseId);
+      if (input == null)
+      {
+        input = new DISInput("DIS Exercise: " + exerciseId);
+      }
       String editorId = "org.mwc.debrief.TrackEditor";
       try
       {
@@ -195,6 +219,15 @@ abstract public class DISContext implements IDISContext,
             PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IWorkbenchPage page = window.getActivePage();
         _myEditor = page.openEditor(input, editorId);
+
+        // ok, start listening to it
+        ScreenUpdateProvider listener =
+            (ScreenUpdateProvider) _myEditor
+                .getAdapter(CanvasType.ScreenUpdateProvider.class);
+        if (listener != null)
+        {
+          listener.addScreenUpdateListener(this);
+        }
       }
       catch (PartInitException e)
       {
