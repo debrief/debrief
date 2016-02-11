@@ -240,4 +240,10 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 		final Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, text, e);
 		getLog().log(stat);
 	}
+
+  @Override
+  public void logStack(int status, String text)
+  {
+    logError(status, "Stack trace requestesd:" + text, null);
+  }
 }
