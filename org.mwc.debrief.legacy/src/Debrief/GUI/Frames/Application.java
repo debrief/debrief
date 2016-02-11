@@ -1038,4 +1038,15 @@ public abstract class Application implements ToolParent, ActionListener,
 		System.err.println("Error:" + text);
 	}
 
+	 /**
+   * @param status
+   * @param text
+   * @param e
+   */
+  public static void logStack2(final int status, String message)
+  {
+    if(_substituteParent != null)
+      _substituteParent.logStack(status, message);
+  }
+
 }

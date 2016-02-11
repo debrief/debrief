@@ -174,4 +174,10 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 			}});
 		return _selectedImportMode;
 	}
+
+  @Override
+  public void logStack(int status, String text)
+  {
+    CorePlugin.logError(status, text, null, true);
+  }
 }

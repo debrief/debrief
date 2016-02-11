@@ -1526,6 +1526,12 @@ public class ImportReplay extends PlainImporterBase
 
         }
 
+        @Override
+        public void logStack(int status, String text)
+        {
+          logError(status, "Stack requested:" + text, null);
+        }
+
         public Map<String, String> getPropertiesLike(final String pattern)
         {
           return null;

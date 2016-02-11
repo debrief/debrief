@@ -35,6 +35,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
@@ -1218,6 +1219,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
+    // TODO: DEBUG: REMOVE: remove this diagnostics message
+    Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
+    
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
