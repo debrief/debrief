@@ -46,6 +46,13 @@ public class LoggingService implements ErrorLogger
 
 	}
 
+
+  @Override
+  public void logStack(int status, String text)
+  {
+    logError(status, "Stack requested:" + text, null);
+  }
+
 	public static LoggingService INSTANCE()
 	{
 		if (_singleton == null)
