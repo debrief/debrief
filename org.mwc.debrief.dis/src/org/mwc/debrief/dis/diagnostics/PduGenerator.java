@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 
 import org.mwc.debrief.dis.diagnostics.senders.IPduSender;
@@ -230,6 +231,25 @@ public class PduGenerator
 
   public static void main(String args[])
   {
+
+    // get system properties, and put them into the args
+    // All system properties, passed in on the command line via
+    // -Dattribute=value
+    Properties systemProperties = System.getProperties();
+
+    // IP address we send to
+    String millis = systemProperties.getProperty("millis");
+
+    // Port we send to, and local port we open the socket on
+    String numParts = systemProperties.getProperty("participants");
+
+    // Network mode: unicast, multicast, broadcast
+    String numMessages = systemProperties.getProperty("messages");
+
+    // insert the properties into the args
+    args = new String[]
+    {millis, numParts, numMessages};
+
     PduGenerator sender = new PduGenerator();
     sender.run(new NetworkPduSender(), args);
   }

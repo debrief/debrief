@@ -61,13 +61,13 @@ public class NetworkPduSender implements IPduSender
     Properties systemProperties = System.getProperties();
 
     // IP address we send to
-    String destinationIpString = systemProperties.getProperty("destinationIp");
+    String destinationIpString = systemProperties.getProperty("group");
 
     // Port we send to, and local port we open the socket on
     String portString = systemProperties.getProperty("port");
 
     // Network mode: unicast, multicast, broadcast
-    String networkModeString = systemProperties.getProperty("networkMode");
+    String networkModeString = systemProperties.getProperty("mode");
     // unicast or multicast or broadcast
 
     // Set up a socket to send information
@@ -118,7 +118,7 @@ public class NetworkPduSender implements IPduSender
   @Override
   public String toString()
   {
-    return destinationIp.toString();
+    return destinationIp.toString() + " on " + PORT;
   }
 
   @Override

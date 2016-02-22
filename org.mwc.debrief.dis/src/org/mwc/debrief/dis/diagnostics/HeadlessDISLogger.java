@@ -3,6 +3,7 @@ package org.mwc.debrief.dis.diagnostics;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
@@ -41,9 +42,22 @@ public class HeadlessDISLogger
     // do we have a PORT?
     int port = NetworkPduSender.PORT;
 
-    // TODO: retrieve the above params from the args
+    // All system properties, passed in on the command line via
+    // -Dattribute=value
+    Properties systemProperties = System.getProperties();
+    // IP address we send to
+    String destinationIpString = systemProperties.getProperty("group");
+    // Port we send to, and local port we open the socket on
+    String portString = systemProperties.getProperty("port");    
 
-    // TODO: add support for outputting the expected args
+    if(destinationIpString != null)
+    {
+      address = destinationIpString;
+    }
+    if(portString != null)
+    {
+      port = Integer.parseInt(portString);
+    }
 
     // setup the output destinations
     boolean toFile = true;
@@ -51,7 +65,7 @@ public class HeadlessDISLogger
 
     IDISModule subject = new DISModule();
     IDISNetworkPrefs netPrefs = new CoreNetPrefs(address, port);
-    IPDUProvider provider = new NetworkDISProvider(netPrefs);
+    final IPDUProvider provider = new NetworkDISProvider(netPrefs);
     subject.setProvider(provider);
 
     // setup our loggers
@@ -63,7 +77,9 @@ public class HeadlessDISLogger
       {
         System.out.println("STOP: time:" + time + " eid:" + eid + " reason:"
             + reason);
+        provider.detach();
         _terminated = true;
+        System.exit(0);
       }
     });
     subject.addDetonationListener(new IDISDetonationListener()
@@ -102,10 +118,7 @@ public class HeadlessDISLogger
     // tell the network provider to start
     provider.attach();
 
-    // ok, run the ESPDU pusher
-    PduGenerator.main(new String[]
-    {"100", "3", "100"});
-
+    // get looping
     while (!_terminated)
     {
       // stay alive!

@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
@@ -32,6 +28,7 @@ public class NetworkDISProvider implements IPDUProvider
       new ArrayList<IDISGeneralPDUListener>();
   private boolean _running;
   private MulticastSocket _listenerSocket;
+  private Thread newJob;
 
   /**
    * Max size of a PDU in binary format that we can receive. This is actually somewhat
@@ -67,20 +64,16 @@ public class NetworkDISProvider implements IPDUProvider
   public void attach()
   {
 
-    Job job = new Job("Handle incoming")
-    {
+    Runnable runnable = new Runnable(){
+
       @Override
-      protected IStatus run(IProgressMonitor monitor)
+      public void run()
       {
         startListening();
-
-        // use this to open a Shell in the UI thread
-        return Status.OK_STATUS;
-      }
-
-    };
-    job.setUser(false);
-    job.schedule();
+      }};
+    newJob = new Thread(runnable);
+    newJob.start();
+    
   }
 
   /**
@@ -93,7 +86,11 @@ public class NetworkDISProvider implements IPDUProvider
     _running = false;
 
     // and force the socket to close
+    _listenerSocket.disconnect();
     _listenerSocket.close();
+    
+    // force the thread to close
+    newJob.stop();
   }
 
   /**
