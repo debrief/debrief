@@ -163,8 +163,17 @@ abstract public class DISContext implements IDISContext,
    */
   private IEditorPart getEditor(final boolean forceNew, final short exerciseId)
   {
-    if (_myEditor == null)
+    // flag for if we try to match existing editors when we open a new plot
+    final int matchState; 
+    
+    if (_myEditor != null)
     {
+      matchState = IWorkbenchPage.MATCH_NONE;
+    }
+    else
+    {
+      matchState = IWorkbenchPage.MATCH_INPUT;
+      
       IWorkbenchWindow window =
           PlatformUI.getWorkbench().getActiveWorkbenchWindow();
       IWorkbenchPage page = window.getActivePage();
@@ -186,8 +195,6 @@ abstract public class DISContext implements IDISContext,
       }
     }
 
-    int matchState = IWorkbenchPage.MATCH_ID;
-
     if (forceNew || _myEditor == null)
     {
       IEditorInput input = null;
@@ -207,7 +214,6 @@ abstract public class DISContext implements IDISContext,
         // note - we prevent editor matching if we already have an
         // editor input, so a new instance is created, we 
         // don't just re-activate the previous one
-        matchState = IWorkbenchPage.MATCH_NONE;
         IEditorInput thisInput = _myEditor.getEditorInput();
         if (thisInput instanceof IFileEditorInput)
         {
