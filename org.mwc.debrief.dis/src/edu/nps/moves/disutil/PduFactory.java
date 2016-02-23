@@ -21,13 +21,7 @@ public class PduFactory {
 
     /** whether we should use return flattened, "fast" espdus with fewer objects */
     private boolean useFastPdu = false;
-    
-    /** Release version of objects we should return. The DIS version has more features and is suitable for desktops. */
-    @SuppressWarnings("unused")
-    private Platform release = Platform.DESKTOP;
-    
-    public enum Platform{DESKTOP, MOBILE};
-    
+
     private Logger logger;
             
 
@@ -202,6 +196,21 @@ public class PduFactory {
                 aPdu.unmarshal(dis);
                 break;
 
+            case SIGNAL:
+                aPdu = new SignalPdu();
+                aPdu.unmarshal(dis);
+                break;
+
+            case TRANSMITTER:
+                aPdu = new TransmitterPdu();
+                aPdu.unmarshal(dis);
+                break;
+
+            case RECEIVER:
+                aPdu = new ReceiverPdu();
+                aPdu.unmarshal(dis);
+                break;
+
             default:
                 logger.log(Level.INFO, "PDU not implemented. Type = " + pduType + "\n");
                 if (pduTypeEnum != null) {
@@ -304,6 +313,18 @@ public class PduFactory {
 
             case ACTION_REQUEST:
                 aPdu = new ActionRequestPdu();
+                break;
+
+            case SIGNAL:
+                aPdu = new SignalPdu();
+                break;
+
+            case TRANSMITTER:
+                aPdu = new TransmitterPdu();
+                break;
+
+            case RECEIVER:
+                aPdu = new ReceiverPdu();
                 break;
 
             default:
