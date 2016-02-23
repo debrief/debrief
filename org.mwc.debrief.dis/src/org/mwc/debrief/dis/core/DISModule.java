@@ -111,6 +111,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
     Orientation orientation = pdu.getEntityOrientation();
     Vector3Float velocity = pdu.getEntityLinearVelocity();
+    
+    double speedMs = Math.sqrt(velocity.getX() * velocity.getX() + velocity.getY() * velocity.getY());
 
     // entity state
     Iterator<IDISFixListener> fIter = _fixListeners.iterator();
@@ -118,7 +120,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
       thisF.add(time, eid, hisId, force, worldCoords[0],
-          worldCoords[1], worldCoords[2], orientation.getPhi(), velocity.getX(), pdu.getEntityAppearance_damage());
+          worldCoords[1], worldCoords[2], orientation.getPhi(), speedMs, pdu.getEntityAppearance_damage());
     }
   }
 
