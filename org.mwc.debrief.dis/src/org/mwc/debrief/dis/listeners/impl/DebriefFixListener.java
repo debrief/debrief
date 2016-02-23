@@ -39,21 +39,7 @@ public class DebriefFixListener extends DebriefCoreListener implements
         TrackWrapper track = new TrackWrapper();
         track.setName(theName);
 
-        Color theCol = null;
-        switch (force)
-        {
-        case PduGenerator.RED:
-          theCol = Color.red;
-          break;
-        case PduGenerator.BLUE:
-          theCol = Color.blue;
-          break;
-        case PduGenerator.GREEN:
-          theCol = Color.green;
-          break;
-        default:
-          System.err.println("NO, NO FORCE FOUND");
-        }
+        Color theCol = colorFor(force);
 
         Color newCol = theCol; // colorFor(theName);
         // ok, give it some color
@@ -70,8 +56,39 @@ public class DebriefFixListener extends DebriefCoreListener implements
         Fix newF = new Fix(date, loc, courseDegs, speedMS);
         FixWrapper fw = new FixWrapper(newF);
         fw.resetName();
+
+        // darken the fix, if necessary
+        if (damage > 0)
+        {
+          Color col = colorFor(force);
+          for (int i = 0; i < damage; i++)
+          {
+            col = col.darker();
+          }
+          fw.setColor(col);
+        }
         return fw;
       }
     });
+  }
+
+  private Color colorFor(final short force)
+  {
+    Color theCol = null;
+    switch (force)
+    {
+    case PduGenerator.RED:
+      theCol = Color.red;
+      break;
+    case PduGenerator.BLUE:
+      theCol = Color.blue;
+      break;
+    case PduGenerator.GREEN:
+      theCol = Color.green;
+      break;
+    default:
+      System.err.println("NO, NO FORCE FOUND");
+    }
+    return theCol;
   }
 }
