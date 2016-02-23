@@ -1,15 +1,16 @@
 package org.mwc.debrief.dis.diagnostics;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Properties;
 
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.diagnostics.file.CollisionFileListener;
+import org.mwc.debrief.dis.diagnostics.file.DetonateFileListener;
+import org.mwc.debrief.dis.diagnostics.file.EventFileListener;
+import org.mwc.debrief.dis.diagnostics.file.FireFileListener;
+import org.mwc.debrief.dis.diagnostics.file.FixToFileListener;
+import org.mwc.debrief.dis.diagnostics.file.StopFileListener;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
-import org.mwc.debrief.dis.listeners.IDISDetonationListener;
-import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
@@ -19,8 +20,6 @@ import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
 public class HeadlessDISLogger
 {
-
-  final String LINE_BREAK = System.getProperty("line.separator");
 
   private boolean _terminated = false;
 
@@ -48,20 +47,32 @@ public class HeadlessDISLogger
     // IP address we send to
     String destinationIpString = systemProperties.getProperty("group");
     // Port we send to, and local port we open the socket on
-    String portString = systemProperties.getProperty("port");    
+    String portString = systemProperties.getProperty("port");
 
-    if(destinationIpString != null)
+    // Port we send to, and local port we open the socket on
+    String rootString = systemProperties.getProperty("root");
+
+    if (destinationIpString != null)
     {
       address = destinationIpString;
     }
-    if(portString != null)
+    if (portString != null)
     {
       port = Integer.parseInt(portString);
+    }
+    if (rootString != null)
+    {
+      root = rootString;
     }
 
     // setup the output destinations
     boolean toFile = true;
-    boolean toScreen = false;
+    boolean toScreen = true;
+
+    if (toFile)
+    {
+      System.out.println("Writing datafiles to:" + root);
+    }
 
     IDISModule subject = new DISModule();
     IDISNetworkPrefs netPrefs = new CoreNetPrefs(address, port);
@@ -69,49 +80,36 @@ public class HeadlessDISLogger
     subject.setProvider(provider);
 
     // setup our loggers
-    subject.addFixListener(new FixToFileListener(root, toFile, toScreen));
+    subject.addFixListener(new FixToFileListener(root, toFile, false));
+    subject.addStopListener(new StopFileListener(root, toFile, toScreen));
+    subject.addDetonationListener(new DetonateFileListener(root, toFile,
+        toScreen));
+    subject.addEventListener(new EventFileListener(root, toFile, toScreen));
+    subject.addFireListener(new FireFileListener(root, toFile, toScreen));
+    subject.addCollisionListener(new CollisionFileListener(root, toFile,
+        toScreen));
+
+    // output dot marker to screen, to demonstrate progress
+    subject.addFixListener(new IDISFixListener()
+    {
+      @Override
+      public void add(long time, short exerciseId, long id, short force,
+          double dLat, double dLong, double depth, double courseDegs,
+          double speedMS, final int damage)
+      {
+        System.out.print(".");
+      }
+    });
+
+    // listen out for stop, so we can shut down.
     subject.addStopListener(new IDISStopListener()
     {
       @Override
       public void stop(long time, short eid, short reason)
       {
-        System.out.println("STOP: time:" + time + " eid:" + eid + " reason:"
-            + reason);
         provider.detach();
         _terminated = true;
         System.exit(0);
-      }
-    });
-    subject.addDetonationListener(new IDISDetonationListener()
-    {
-      @Override
-      public void add(long time, short eid, int hisId, double dLat,
-          double dLon, double depth)
-      {
-        System.out.println("DETONATION: time:" + time + " eid:" + eid
-            + " hisID:" + hisId + " lat:" + dLat + " lon:" + dLon + " depth:"
-            + depth);
-      }
-    });
-    subject.addEventListener(new IDISEventListener()
-    {
-      @Override
-      public void add(long time, short exerciseId, long id, String msg)
-      {
-        System.out.println("EVENT: time: " + time + " eid:" + exerciseId
-            + " hisId:" + id + " msg:" + msg);
-      }
-    });
-    subject.addFixListener(new IDISFixListener()
-    {
-      @Override
-      public void add(long time, short exerciseId, long id, short force,
-          double dLat, double dLong, double depth, double courseDegs, double speedMS, final int damage)
-      {
-        System.out.print(".");
-        // System.out.println("STATE: time:" + time + " eid:" + exerciseId
-        // + " entity:" + id + " dLat:" + dLat + " dLon:" + dLong + " depth:"
-        // + depth + " course:" + courseDegs + " speed" + speedMS);
       }
     });
 
@@ -122,123 +120,6 @@ public class HeadlessDISLogger
     while (!_terminated)
     {
       // stay alive!
-    }
-
-  }
-
-  protected class CoreFileListener
-  {
-    final private String _path;
-    private FileWriter _outF;
-    final private boolean _toFile;
-    final private boolean _toScreen;
-    private String _filename;
-    private boolean _firstStep = true;
-    private String _header;
-
-    /**
-     * 
-     * @param root
-     *          the path for the output file
-     * @param toFile
-     *          whether to write to file
-     * @param toScreen
-     *          whether to write to standard output
-     */
-    private CoreFileListener(String root, boolean toFile, boolean toScreen,
-        String filename, String header)
-    {
-      _path = root;
-      _filename = filename;
-      _toFile = toFile;
-      _toScreen = toScreen;
-      _header = header;
-    }
-
-    protected void write(String output)
-    {
-      if (_toScreen)
-      {
-        // do we need the header?
-        if (_firstStep)
-        {
-          System.out.println(_header);
-        }
-
-        // ok, and the normal line
-        System.out.print(output);
-      }
-
-      if (_toFile)
-      {
-        // is our file created?
-        try
-        {
-          if (_outF == null)
-          {
-            // write the header
-            createOut(_filename, _header);
-          }
-
-          // and our output
-          _outF.write(output);
-
-          // flush - so we have as many lines in there as possible
-          _outF.flush();
-        }
-        catch (IOException e)
-        {
-          e.printStackTrace();
-        }
-      }
-    }
-
-    protected void createOut(String filename, String header) throws IOException
-    {
-      // ok, create it
-      _outF = new FileWriter(new File(_path, filename));
-
-      // and insert the header line
-      _outF.write(header);
-      _outF.write(LINE_BREAK);
-    }
-  }
-
-  protected class FixToFileListener extends CoreFileListener implements
-      IDISFixListener
-  {
-
-    public FixToFileListener(String root, boolean toFile, boolean toScreen)
-    {
-      super(root, toFile, toScreen, "fix.csv",
-          "time, id, dLat, dLong, depth, courseDegs, speedMS, damage");
-    }
-
-    @Override
-    public void add(long time, short exerciseId, long id, short force,
-        double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage)
-    {
-      // create the line
-      StringBuffer out = new StringBuffer();
-      out.append(time);
-      out.append(", ");
-      out.append(id);
-      out.append(", ");
-      out.append(dLat);
-      out.append(", ");
-      out.append(dLong);
-      out.append(", ");
-      out.append(depth);
-      out.append(", ");
-      out.append(courseDegs);
-      out.append(", ");
-      out.append(speedMS);
-      out.append(", ");
-      out.append(damage);
-      out.append(LINE_BREAK);
-
-      // done, write it
-      write(out.toString());
     }
 
   }
