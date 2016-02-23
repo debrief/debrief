@@ -88,9 +88,6 @@ public class NetworkDISProvider implements IPDUProvider
     // and force the socket to close
     _listenerSocket.disconnect();
     _listenerSocket.close();
-    
-    // force the thread to close
-    newJob.stop();
   }
 
   /**
