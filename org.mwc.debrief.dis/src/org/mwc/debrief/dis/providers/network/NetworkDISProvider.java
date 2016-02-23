@@ -63,12 +63,12 @@ public class NetworkDISProvider implements IPDUProvider
    */
   public void attach()
   {
-
     Runnable runnable = new Runnable(){
 
       @Override
       public void run()
       {
+        System.out.println("Listing for DIS messages on address:" + _myPrefs.getIPAddress() + " port:" + _myPrefs.getPort());
         startListening();
       }};
     newJob = new Thread(runnable);
