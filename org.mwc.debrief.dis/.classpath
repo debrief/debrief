@@ -5,10 +5,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="lib" path="libs/dis-enums_1.1.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate3.jar"/>
 	<classpathentry kind="lib" path="libs/srm_4.4.0.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-jpa-2.0-api-1.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-search-3.2.1.Final.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-validator-4.1.0.Final.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

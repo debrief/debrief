@@ -7,6 +7,8 @@ import java.util.List;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IWorkbenchPage;
@@ -161,8 +163,17 @@ abstract public class DISContext implements IDISContext,
    */
   private IEditorPart getEditor(final boolean forceNew, final short exerciseId)
   {
-    if (_myEditor == null)
+    // flag for if we try to match existing editors when we open a new plot
+    final int matchState; 
+    
+    if (_myEditor != null)
     {
+      matchState = IWorkbenchPage.MATCH_NONE;
+    }
+    else
+    {
+      matchState = IWorkbenchPage.MATCH_INPUT;
+      
       IWorkbenchWindow window =
           PlatformUI.getWorkbench().getActiveWorkbenchWindow();
       IWorkbenchPage page = window.getActivePage();
@@ -200,8 +211,16 @@ abstract public class DISContext implements IDISContext,
           listener.removeScreenUpdateListener(this);
         }
 
-        // we need to create a dupliate copy of the input
-        // TODO: create duplicate input, so it reads in the REP file
+        // note - we prevent editor matching if we already have an
+        // editor input, so a new instance is created, we 
+        // don't just re-activate the previous one
+        IEditorInput thisInput = _myEditor.getEditorInput();
+        if (thisInput instanceof IFileEditorInput)
+        {
+          IFileEditorInput fi = (IFileEditorInput) thisInput;
+          FileEditorInput newF = new FileEditorInput(fi.getFile());
+          input = newF;
+        }
 
         // and clear the pointer
         _myEditor = null;
@@ -218,7 +237,10 @@ abstract public class DISContext implements IDISContext,
         IWorkbenchWindow window =
             PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IWorkbenchPage page = window.getActivePage();
-        _myEditor = page.openEditor(input, editorId);
+
+        // note: we use MATCH_NONE so that we open a fresh instance of the current editor,
+        // and not just re-open the current one
+        _myEditor = page.openEditor(input, editorId, true, matchState);
 
         // ok, start listening to it
         ScreenUpdateProvider listener =
