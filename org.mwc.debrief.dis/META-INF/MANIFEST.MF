@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DIS Integration
 Bundle-SymbolicName: org.mwc.debrief.dis;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: org.mwc.debrief.dis.DisActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
@@ -18,11 +18,6 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
  org.mwc.debrief.dis.ui.preferences,
  org.mwc.debrief.dis.ui.views
-Bundle-ClassPath: libs/open-dis_4.15.jar,
- libs/dis-enums_1.1.jar,
- libs/hibernate-jpa-2.0-api-1.0.0.Final.jar,
- libs/hibernate-search-3.2.1.Final.jar,
- libs/hibernate-validator-4.1.0.Final.jar,
- libs/hibernate3.jar,
+Bundle-ClassPath: libs/dis-enums_1.1.jar,
  libs/srm_4.4.0.jar,
  .
