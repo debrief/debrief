@@ -21,6 +21,7 @@ import edu.nps.moves.dis.EntityType;
 import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.OneByteChunk;
+import edu.nps.moves.dis.Orientation;
 import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
@@ -183,6 +184,8 @@ public class PduGenerator
     protected double longVal;
     protected double courseRads;
 
+    private long previousTime = 0;
+
     double distStep = 0.01;
 
     /**
@@ -191,6 +194,7 @@ public class PduGenerator
      */
     protected int damage = NO_DAMAGE;
     final public short force;
+    protected double speedVal;
 
     private Vessel(final int id, final short force, double oLat, double oLong,
         double range)
@@ -226,6 +230,15 @@ public class PduGenerator
 
       longVal += dLon;
       latVal += dLat;
+
+      // remember the speed
+      if (previousTime != 0)
+      {
+        speedVal = distStep / (lastTime - previousTime);
+      }
+
+      // remember the previous time
+      previousTime = lastTime;
     }
   }
 
@@ -247,8 +260,11 @@ public class PduGenerator
     String numMessages = systemProperties.getProperty("messages");
 
     // insert the properties into the args
-    args = new String[]
-    {millis, numParts, numMessages};
+    if (millis != null)
+    {
+      args = new String[]
+      {millis, numParts, numMessages};
+    }
 
     PduGenerator sender = new PduGenerator();
     sender.run(new NetworkPduSender(), args);
@@ -332,8 +348,8 @@ public class PduGenerator
     {
       _terminate = false;
 
-      System.out.println("Sending " + numMessages + " ESPDU packets to "
-          + sender.toString());
+      System.out.println("Sending DIS messages for " + numMessages
+          + " simulation cycles to " + sender.toString());
 
       final double startX = 50.1;
       final double startY = -1.87;
@@ -448,6 +464,8 @@ public class PduGenerator
       // The byte array here is the packet in DIS format. We put that into a
       // datagram and send it.
       StopFreezePdu stopPdu = new StopFreezePdu();
+      stopPdu.setTimestamp(lastTime);
+      stopPdu.setExerciseID(espdu.getExerciseID());
       stopPdu.setReason(STOP_PDU_TERMINATED);
 
       // and send it
@@ -480,6 +498,15 @@ public class PduGenerator
     location.setX(disCoordinates[0]);
     location.setY(disCoordinates[1]);
     location.setZ(disCoordinates[2]);
+
+    // sort out the course & speed
+    Orientation orientation = espdu.getEntityOrientation();
+    orientation.setPhi((float) thisS.courseRads);
+
+    // turn the speed into the 3-vector components
+    Vector3Float velocity = espdu.getEntityLinearVelocity();
+    velocity.setX((float) thisS.speedVal);
+    espdu.setEntityLinearVelocity(velocity);
 
     // also specify the target appearance
     espdu.setEntityAppearance_damage(thisS.damage);
