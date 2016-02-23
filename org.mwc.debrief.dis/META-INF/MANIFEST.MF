@@ -7,6 +7,7 @@ Bundle-Activator: org.mwc.debrief.dis.DisActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
+ org.eclipse.core.resources,
  org.eclipse.ui.views,
  org.mwc.cmap.jfreechart;bundle-version="1.0.21",
  org.junit,
@@ -21,3 +22,5 @@ Export-Package: org.mwc.debrief.dis,
 Bundle-ClassPath: libs/dis-enums_1.1.jar,
  libs/srm_4.4.0.jar,
  .
+Import-Package: org.eclipse.ui,
+ org.eclipse.ui.part
