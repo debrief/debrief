@@ -67,13 +67,16 @@ public class PduGenerator
      * 
      */
     public int targetId = -1;
+    
+    final public int hostId;
 
-    private Torpedo(final int id, final short force, double oLat, double oLong,
+    private Torpedo(final int id, final int hostId, final short force, double oLat, double oLong,
         int targetId)
     {
       super(id, force, oLat, oLong, 0);
 
       this.targetId = targetId;
+      this.hostId = hostId;
 
       // make it a bit quicker
       distStep *= 1.3;
@@ -100,6 +103,12 @@ public class PduGenerator
           if (thisP.id == id)
           {
             // skip to the next loop
+            continue;
+          }
+          
+          // hey, don't look a launch platform
+          if(thisP.id == hostId)
+          {
             continue;
           }
 
@@ -423,7 +432,7 @@ public class PduGenerator
 
           final int newId = (int) (1000 + (genny.nextDouble() * 1000d));
           Torpedo torpedo =
-              new Torpedo(newId, RED, launchPlatform.latVal,
+              new Torpedo(newId, launchPlatform.id, RED, launchPlatform.latVal,
                   launchPlatform.longVal, targetId.id);
 
           // and remember it
@@ -593,32 +602,8 @@ public class PduGenerator
       break;
     }
 
-    // and remove the firing platofrm
+    // and remove the exploding platform
     states.remove(firingPlatform.id);
-
-    // get the destroyed platform
-    Vessel hisPlatform = states.get(recipientId);
-
-    if (hisPlatform != null)
-    {
-      switch (hisPlatform.force)
-      {
-      case BLUE:
-        blueParts.remove(hisPlatform);
-        break;
-      case RED:
-        System.err.println("red should not be destroyed");
-        redParts.remove(hisPlatform);
-        break;
-      case GREEN:
-        System.err.println("green should not be destroyed");
-        greenParts.remove(hisPlatform);
-        break;
-      }
-
-      // hmm, also remove the detonating platform
-      states.remove(recipientId);
-    }
 
     // build up the PDU
     DetonationPdu dp = new DetonationPdu();

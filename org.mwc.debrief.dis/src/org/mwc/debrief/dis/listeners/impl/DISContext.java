@@ -164,8 +164,8 @@ abstract public class DISContext implements IDISContext,
   private IEditorPart getEditor(final boolean forceNew, final short exerciseId)
   {
     // flag for if we try to match existing editors when we open a new plot
-    final int matchState; 
-    
+    final int matchState;
+
     if (_myEditor != null)
     {
       matchState = IWorkbenchPage.MATCH_NONE;
@@ -173,24 +173,29 @@ abstract public class DISContext implements IDISContext,
     else
     {
       matchState = IWorkbenchPage.MATCH_INPUT;
-      
-      IWorkbenchWindow window =
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-      IWorkbenchPage page = window.getActivePage();
-      IEditorPart editor = page.getActiveEditor();
-      _myLayers = (Layers) editor.getAdapter(Layers.class);
-      if (_myLayers != null)
-      {
-        // ok, it's suitable
-        _myEditor = editor;
 
-        // ok, start listening to it
-        ScreenUpdateProvider listener =
-            (ScreenUpdateProvider) _myEditor
-                .getAdapter(CanvasType.ScreenUpdateProvider.class);
-        if (listener != null)
+      final IWorkbenchWindow window =
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+      final IWorkbenchPage page = window.getActivePage();
+      final IEditorPart editor = page.getActiveEditor();
+
+      // do we have an editor?
+      if (editor != null)
+      {
+        _myLayers = (Layers) editor.getAdapter(Layers.class);
+        if (_myLayers != null)
         {
-          listener.addScreenUpdateListener(this);
+          // ok, it's suitable
+          _myEditor = editor;
+
+          // ok, start listening to it
+          ScreenUpdateProvider listener =
+              (ScreenUpdateProvider) _myEditor
+                  .getAdapter(CanvasType.ScreenUpdateProvider.class);
+          if (listener != null)
+          {
+            listener.addScreenUpdateListener(this);
+          }
         }
       }
     }
@@ -212,7 +217,7 @@ abstract public class DISContext implements IDISContext,
         }
 
         // note - we prevent editor matching if we already have an
-        // editor input, so a new instance is created, we 
+        // editor input, so a new instance is created, we
         // don't just re-activate the previous one
         IEditorInput thisInput = _myEditor.getEditorInput();
         if (thisInput instanceof IFileEditorInput)
