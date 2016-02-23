@@ -144,6 +144,7 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
               if (_chart.isDisposed())
               {
                 _terminate = true;
+                return;
               }
               doThisQueue(disQ, SIM_NAME);
               doThisQueue(screenQ, SCREEN_NAME);
