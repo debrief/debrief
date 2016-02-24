@@ -8208,7 +8208,6 @@ and entry type can be multi-word if surrounded by quotes (").
               <secondary>Dynamic Elements</secondary>
             </indexterm>The format for the different types of dynamic annotations is: <screen width="70">
             <markup>
-;;format
 ;;DYNAMIC_CIRCLE: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H YYY XX.XX 
 ;;DYNAMIC_POLYGON: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
 ;;DYNAMIC_RECTANGLE: @@@@@ YYMMDD HHMMSS "NAME"DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
@@ -8267,12 +8266,13 @@ and entry type can be multi-word if surrounded by quotes (").
             </indexterm>The format for the different types of dynamic track annotations is shown below.  Note that 
               each line may contain a series of definitions, and that the distance units are in yards.<screen width="70">
             <markup>
-;; format
 ;SENSORARC YYMMDD HHMMSS.SSS YYMMDD HHMMSS.SSS TRACKNAME SYMBOLOGY LEFT RIGHT INNER OUTER [LEFT RIGHT INNER OUTER] LABEL
 ;; (start time, end time, parent track, styling, min-max angles of the arc, inner-outer radiuses, collective label.
 ;; simple example
+
 ;SENSORARC 951212 062800 951212 063000 NELSON @@ -75 35 0 1000 "fwd dynamic"
 ;; dynamic example - so donut spreads outwards in time using 3 steps
+
 ;SENSORARC: 951212 053000 951212 054000 NELSON @A 0 360 500 1000 CZ_Ring
 ;SENSORARC: 951212 054000 951212 055000 NELSON @B 0 360 600 1100 CZ_Ring
 ;SENSORARC: 951212 055000 951212 060000 NELSON @C 0 360 700 1200 CZ_Ring
@@ -8307,9 +8307,8 @@ and entry type can be multi-word if surrounded by quotes (").
           <para><indexterm>
             <primary>Format Helpers</primary>
             <secondary>REP Format Helpers</secondary>
-          </indexterm>The format for the format helpers is shown below.<screen width="70">
+          </indexterm>The format for these helpers is shown below.<screen width="70">
             <markup>
-;; format
 ;FORMAT_FIX: 30_min_lab LABEL NULL NULL TRUE 1800000
 ;; 30_min_lab - name for this formatter (shown in outline view) 
 ;; LABEL - what we're applying to (SYMBOL, LABEL, ARROW)
@@ -8318,14 +8317,18 @@ and entry type can be multi-word if surrounded by quotes (").
 ;; TRUE - whether interval should fall on regular interval or start
 ;;        from first data point
 ;; 1800000 - interval (in millis) to apply formatting
+
 ;FORMAT_FIX: 10_min_sym SYMBOL NELSON NULL TRUE 600000 
 ;; show symbol on every 10 minute marker (00:00,00:10, 00:20, etc) 
 ;;    for track Nelson
+
 ;FORMAT_LAYER_HIDE: format_name layer_name
 ;; name for this formatter, name of the layer to hide 
+
 ;FORMAT_LAYER_HIDE: format_name layer_1_name "layer 2 name"
 ;; name for this formatter, name of the layers to hide
 ;;     quotes can be used if name contains spaces 
+
 ;FORMAT_TRACK_NAME_AT_END: format_name track_names
 ;; name for this formatter, list of track names for which the name 
 ;;     should be shown at the end, or empty to apply to all tracks
