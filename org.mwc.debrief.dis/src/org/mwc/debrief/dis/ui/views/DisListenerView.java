@@ -61,6 +61,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefCollisionListener;
@@ -75,6 +76,8 @@ import org.mwc.debrief.dis.runner.SimulationRunner;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 import org.mwc.debrief.dis.ui.preferences.DisPrefs;
+
+import edu.nps.moves.dis.Pdu;
 
 import MWC.GenericData.HiResDate;
 
@@ -147,7 +150,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
   private void setupListeners(IDISModule module)
   {
-    IDISContext context = new DISContext(_myPartMonitor)
+    final IDISContext context = new DISContext(_myPartMonitor)
     {
       ControllableTime ct = null;
 
@@ -219,6 +222,32 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
     // listen for stop, so we can update the UI
     module.addStopListener(this);
+
+    // handle the time updates
+    module.addGeneralPDUListener(new IDISGeneralPDUListener()
+    {
+      final long TIME_UNSET = -1;
+
+      long time = TIME_UNSET;
+
+      @Override
+      public void logPDU(Pdu pdu)
+      {
+        long newTime = pdu.getTimestamp();
+        if (newTime != time && time != TIME_UNSET)
+        {
+          context.setNewTime(time);
+        }
+        time = newTime;
+      }
+
+      @Override
+      public void complete(String reason)
+      {
+        // reset the time counter
+        time = TIME_UNSET;
+      }
+    });
 
     // ok, Debrief fix listener
     module.addFixListener(new DebriefFixListener(context));
