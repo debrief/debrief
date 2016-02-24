@@ -8208,7 +8208,6 @@ and entry type can be multi-word if surrounded by quotes (").
               <secondary>Dynamic Elements</secondary>
             </indexterm>The format for the different types of dynamic annotations is: <screen width="70">
             <markup>
-;;format
 ;;DYNAMIC_CIRCLE: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H YYY XX.XX 
 ;;DYNAMIC_POLYGON: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
 ;;DYNAMIC_RECTANGLE: @@@@@ YYMMDD HHMMSS "NAME"DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
@@ -8267,12 +8266,13 @@ and entry type can be multi-word if surrounded by quotes (").
             </indexterm>The format for the different types of dynamic track annotations is shown below.  Note that 
               each line may contain a series of definitions, and that the distance units are in yards.<screen width="70">
             <markup>
-;; format
 ;SENSORARC YYMMDD HHMMSS.SSS YYMMDD HHMMSS.SSS TRACKNAME SYMBOLOGY LEFT RIGHT INNER OUTER [LEFT RIGHT INNER OUTER] LABEL
 ;; (start time, end time, parent track, styling, min-max angles of the arc, inner-outer radiuses, collective label.
 ;; simple example
+
 ;SENSORARC 951212 062800 951212 063000 NELSON @@ -75 35 0 1000 "fwd dynamic"
 ;; dynamic example - so donut spreads outwards in time using 3 steps
+
 ;SENSORARC: 951212 053000 951212 054000 NELSON @A 0 360 500 1000 CZ_Ring
 ;SENSORARC: 951212 054000 951212 055000 NELSON @B 0 360 600 1100 CZ_Ring
 ;SENSORARC: 951212 055000 951212 060000 NELSON @C 0 360 700 1200 CZ_Ring
@@ -8282,6 +8282,62 @@ and entry type can be multi-word if surrounded by quotes (").
               shape being used for part or all of the track lifetime.</para></note>
             </para>
           </sect2>
+        <sect2 xml:id="replay_format_annotations">
+          <title>Formatting helpers</title>         
+          <para>
+            Entries can be included in REP files to help format data as it is loaded.  These commands can
+            specify the frequency at which labels/symbols are shown, or perform other presentation 
+            configuration, either on specific tracks/layers or for all data.
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/FormatExample.png" width="60%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+            <tip>
+              <para>You can use these helpers to create a set of default look &amp; feels for your plots.  Create a set of
+              label, symbol, arrow markers to suit your data, then store them in a REP file, called something like 
+              <filename>LONG_RANGE_FORMAT.REP</filename>.  Then, when conducting a new piece of analysis
+               of long range tracks, start by opening this REP file.  Now, when you drag in your tracks, they
+               will all get formatted according to your preferred styling.</para>
+            </tip>
+          </para>
+          
+          <para><indexterm>
+            <primary>Format Helpers</primary>
+            <secondary>REP Format Helpers</secondary>
+          </indexterm>The format for these helpers is shown below.<screen width="70">
+            <markup>
+;FORMAT_FIX: 30_min_lab LABEL NULL NULL TRUE 1800000
+;; 30_min_lab - name for this formatter (shown in outline view) 
+;; LABEL - what we're applying to (SYMBOL, LABEL, ARROW)
+;; NULL - track name we apply to (or null for all tracks)
+;; NULL - symbology we apply to (e.g. @A) (or null for all tracks) 
+;; TRUE - whether interval should fall on regular interval or start
+;;        from first data point
+;; 1800000 - interval (in millis) to apply formatting
+
+;FORMAT_FIX: 10_min_sym SYMBOL NELSON NULL TRUE 600000 
+;; show symbol on every 10 minute marker (00:00,00:10, 00:20, etc) 
+;;    for track Nelson
+
+;FORMAT_LAYER_HIDE: format_name layer_name
+;; name for this formatter, name of the layer to hide 
+
+;FORMAT_LAYER_HIDE: format_name layer_1_name "layer 2 name"
+;; name for this formatter, name of the layers to hide
+;;     quotes can be used if name contains spaces 
+
+;FORMAT_TRACK_NAME_AT_END: format_name track_names
+;; name for this formatter, list of track names for which the name 
+;;     should be shown at the end, or empty to apply to all tracks
+            </markup>
+            </screen>
+            <note><para>A NULL can be provided instead of one or more of the times.  This will result in the dynamic
+              shape being used for part or all of the track lifetime.</para></note>
+          </para>
+        </sect2>        
       </sect1>
 
       <sect1 xml:id="debrief_file_format">

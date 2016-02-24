@@ -2573,6 +2573,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 paintSetOfPositions(dest, lastCol, thisLineStyle);
               }
 
+              // error handling, just in case the array has been regenerated
+              if(_ptCtr > _myPts.length)
+              {
+                continue;
+              }
+              
               // add our position to the list - we'll output
               // the polyline at the end
               _myPts[_ptCtr++] = thisP.x;
