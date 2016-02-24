@@ -74,9 +74,6 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
         return newE;
       }
     });
-
-    // share the news about the new time
-    _context.setNewTime(time);
   }
 
 }

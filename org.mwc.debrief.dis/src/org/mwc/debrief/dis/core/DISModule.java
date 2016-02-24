@@ -111,16 +111,19 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
     Orientation orientation = pdu.getEntityOrientation();
     Vector3Float velocity = pdu.getEntityLinearVelocity();
-    
-    double speedMs = Math.sqrt(velocity.getX() * velocity.getX() + velocity.getY() * velocity.getY());
+
+    double speedMs =
+        Math.sqrt(velocity.getX() * velocity.getX() + velocity.getY()
+            * velocity.getY());
 
     // entity state
     Iterator<IDISFixListener> fIter = _fixListeners.iterator();
     while (fIter.hasNext())
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
-      thisF.add(time, eid, hisId, force, worldCoords[0],
-          worldCoords[1], worldCoords[2], orientation.getPhi(), speedMs, pdu.getEntityAppearance_damage());
+      thisF.add(time, eid, hisId, force, worldCoords[0], worldCoords[1],
+          worldCoords[2], orientation.getPhi(), speedMs, pdu
+              .getEntityAppearance_damage());
     }
   }
 
@@ -133,21 +136,21 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     // try to get the data
 
-     List<VariableDatum> items = pdu.getVariableDatums();
-     if (items.size() > 0)
-     {
-     VariableDatum val = items.get(0);
+    List<VariableDatum> items = pdu.getVariableDatums();
+    if (items.size() > 0)
+    {
+      VariableDatum val = items.get(0);
       List<OneByteChunk> chunks = val.getVariableData();
-     byte[] bytes = new byte[chunks.size()];
-     Iterator<OneByteChunk> iter = chunks.iterator();
-     int ctr = 0;
-     while (iter.hasNext())
-     {
-     OneByteChunk thisB = (OneByteChunk) iter.next();
-     bytes[ctr++] = thisB.getOtherParameters()[0];
-     }
-     msg = new String(bytes);
-     }
+      byte[] bytes = new byte[chunks.size()];
+      Iterator<OneByteChunk> iter = chunks.iterator();
+      int ctr = 0;
+      while (iter.hasNext())
+      {
+        OneByteChunk thisB = (OneByteChunk) iter.next();
+        bytes[ctr++] = thisB.getOtherParameters()[0];
+      }
+      msg = new String(bytes);
+    }
 
     Iterator<IDISEventListener> eIter = _eventListeners.iterator();
     while (eIter.hasNext())
@@ -210,7 +213,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       gPdu.logPDU(data);
     }
 
-    // check the type
+    // and now the specific listeners
     final short type = data.getPduType();
     switch (type)
     {
@@ -296,7 +299,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       IDISStopListener thisD = dIter.next();
       thisD.stop(time, eid, reason);
     }
-    
+
     // share the complete message
     complete("Scenario complete");
   }
