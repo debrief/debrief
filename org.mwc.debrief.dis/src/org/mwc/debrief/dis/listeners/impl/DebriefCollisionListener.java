@@ -75,9 +75,6 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
         return newE;
       }
     });
-
-    // share the news about the new time
-    _context.setNewTime(time);
   }
 
 }
