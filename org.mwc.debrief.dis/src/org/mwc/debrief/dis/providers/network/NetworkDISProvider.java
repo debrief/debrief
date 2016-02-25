@@ -63,17 +63,20 @@ public class NetworkDISProvider implements IPDUProvider
    */
   public void attach()
   {
-    Runnable runnable = new Runnable(){
+    Runnable runnable = new Runnable()
+    {
 
       @Override
       public void run()
       {
-        System.out.println("Listing for DIS messages on address:" + _myPrefs.getIPAddress() + " port:" + _myPrefs.getPort());
+        System.out.println("Listing for DIS messages on address:"
+            + _myPrefs.getIPAddress() + " port:" + _myPrefs.getPort());
         startListening();
-      }};
+      }
+    };
     newJob = new Thread(runnable);
     newJob.start();
-    
+
   }
 
   /**
@@ -86,7 +89,10 @@ public class NetworkDISProvider implements IPDUProvider
     _running = false;
 
     // and force the socket to close
-    _listenerSocket.disconnect();
+
+    // hmm, disconnect was hanging, poss because it's synchronised
+    // _listenerSocket.disconnect();
+
     _listenerSocket.close();
   }
 
@@ -133,7 +139,9 @@ public class NetworkDISProvider implements IPDUProvider
         }
         else
         {
-          int pduType = 0x000000FF & (int) packet.getData()[2]; // The pdu type is a one-byte, unsigned byte in the third byte position.
+          int pduType = 0x000000FF & (int) packet.getData()[2]; // The pdu type is a one-byte,
+                                                                // unsigned byte in the third byte
+                                                                // position.
 
           System.err.println("PDU not recognised, maybe:" + pduType);
         }
