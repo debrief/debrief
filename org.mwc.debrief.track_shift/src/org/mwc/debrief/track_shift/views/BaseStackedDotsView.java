@@ -648,6 +648,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		}
 	}
 
+	 
+
+  @Override
+  public void logStack(int status, String text)
+  {
+    CorePlugin.logError(status, text, null, true);
+  }
+
+	
 	/**
 	 * the track has been moved, update the dots
 	 */
@@ -1058,5 +1067,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		memento.putBoolean(SHOW_DOT_PLOT, _showDotPlot.isChecked());
 
 	}
+
 
 }

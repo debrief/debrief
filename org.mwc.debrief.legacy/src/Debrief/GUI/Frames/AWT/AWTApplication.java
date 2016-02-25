@@ -453,6 +453,14 @@ public final class AWTApplication extends Application {
   public final Session createSession(){
     return new AWTSession(this, getClipboard());
   }
+  
+
+  @Override
+  public void logStack(int status, String text)
+  {
+    logError(status, "Stack requested:" + text, null);
+  }
+
 }
 
 

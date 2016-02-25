@@ -293,6 +293,13 @@
 			type="xs:boolean" />
 		<xs:attribute name="Symbol" default="SQUARE" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+		<xs:attribute name="EndTimeLabels" default="true" type="xs:boolean">
+		   <xs:annotation>
+		     <xs:documentation>
+		     Whether to show a 6-figure DTG at the start &amp; end of the track
+		     </xs:documentation>
+		   </xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	
 	<xs:complexType name="composite_track">

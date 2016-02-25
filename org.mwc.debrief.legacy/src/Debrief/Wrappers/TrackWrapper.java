@@ -26,13 +26,16 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
@@ -59,6 +62,7 @@ import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
+import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
@@ -147,6 +151,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                     "whether to interpolate points between known data points",
                     SPATIAL),
                 expertProp("Color", "the track color", FORMAT),
+                displayExpertProp("EndTimeLabels", "Start/End time labels",
+                    "Whether to label track start/end with 6-figure DTG",
+                    FORMAT),
                 displayExpertProp("SymbolColor", "Symbol color",
                     "the color of the symbol (when used)", FORMAT),
                 displayExpertProp(
@@ -653,6 +660,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   private HiResDate _lastDataFrequency = new HiResDate(0,
       TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+
+  /**
+   * whether to show a time label at the start/end of the track
+   * 
+   */
+  private boolean _endTimeLabels = true;
 
   /**
    * the width of this track
@@ -1211,6 +1224,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
+    // TODO: DEBUG: REMOVE: remove this diagnostics message
+    Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
+    
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
@@ -1840,6 +1856,28 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   /**
+   * whether to show time labels at the start/end of the track
+   * 
+   * @return yes/no
+   */
+  public boolean getEndTimeLabels()
+  {
+    return _endTimeLabels;
+  }
+
+  /**
+   * whether to show time labels at the start/end of the track
+   * 
+   * @param endTimeLabels
+   *          yes/no
+   */
+  @FireReformatted
+  public void setEndTimeLabels(boolean endTimeLabels)
+  {
+    this._endTimeLabels = endTimeLabels;
+  }
+
+  /**
    * the relative location of the label
    * 
    * @return the relative location
@@ -2379,314 +2417,348 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   }
 
-  private boolean paintFixes(final CanvasType dest)
+  /**
+   * paint this fix, overriding the label if necessary (since the user may wish to have 6-figure
+   * DTGs at the start & end of the track
+   * 
+   * @param dest
+   *          where we paint to
+   * @param thisF the fix we're painting
+   * @param isEndPoint whether point is one of the ends
+   */
+  private void paintIt(final CanvasType dest, final FixWrapper thisF, final boolean isEndPoint)
   {
-    // keep track of if we have plotted any points (since
-    // we won't be plotting the name if none of the points are visible).
-    // this typically occurs when filtering is applied and a short
-    // track is completely outside the time period
-    boolean plotted_anything = false;
+    // have a look at the last fix. we defer painting the fix label,
+    // because we want to know the id of the last visible fix, since
+    // we may need to paint it's label in 6 DTG
 
-    if (!_paintingFixes)
+    final boolean isVis = thisF.getLabelShowing();
+    final String fmt = thisF.getLabelFormat();
+    final String lblVal = thisF.getLabel();
+
+    // are we plotting DTG at ends?
+    if (isEndPoint)
     {
-      _paintingFixes = true;
+      // set the custom format for our end labels (6-fig DTG)
+      thisF.setLabelFormat("ddHHmm");
+      thisF.setLabelShowing(true);
+    }
 
-      // we need an array to store the polyline of points in. Check it's big
-      // enough
-      checkPointsArray();
+    // this next method just paints the fix. we've put the
+    // call into paintThisFix so we can override the painting
+    // in the CompositeTrackWrapper class
+    paintThisFix(dest, thisF.getLocation(), thisF);
 
-      // java.awt.Point lastP = null;
-      Color lastCol = null;
-      final int defaultlineStyle = getLineStyle();
+    // do we need to restore it?
+    if (isEndPoint)
+    {
+      thisF.setLabelFormat(fmt);
+      thisF.setLabelShowing(isVis);
+      thisF.setLabel(lblVal);
+    }
+  }
 
-      boolean locatedTrack = false;
-      WorldLocation lastLocation = null;
-      FixWrapper lastFix = null;
 
-      final Enumeration<Editable> segments = _thePositions.elements();
-      while (segments.hasMoreElements())
+  /** paint the fixes for this track
+   * 
+   * @param dest
+   * @return a collection containing the first & last visible fix
+   */
+  private List<FixWrapper> paintFixes(final CanvasType dest)
+  {
+    // collate a list of the start & end points
+    final List<FixWrapper> endPoints = new ArrayList<FixWrapper>();
+
+    // we need an array to store the polyline of points in. Check it's big
+    // enough
+    checkPointsArray();
+
+    // java.awt.Point lastP = null;
+    Color lastCol = null;
+    final int defaultlineStyle = getLineStyle();
+
+    WorldLocation lastLocation = null;
+    FixWrapper lastFix = null;
+
+    // cycle through the segments
+    final Enumeration<Editable> segments = _thePositions.elements();
+    while (segments.hasMoreElements())
+    {
+      final TrackSegment seg = (TrackSegment) segments.nextElement();
+
+      // how shall we plot this segment?
+      final int thisLineStyle;
+
+      // is the parent using the default style?
+      if (defaultlineStyle == CanvasType.SOLID)
       {
-        final TrackSegment seg = (TrackSegment) segments.nextElement();
+        // yes, let's override it, if the segment wants to
+        thisLineStyle = seg.getLineStyle();
+      }
+      else
+      {
+        // no, we're using a custom style - don't override it.
+        thisLineStyle = defaultlineStyle;
+      }
 
-        // how shall we plot this segment?
-        final int thisLineStyle;
+      // SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
+      // RELATIVE MODE
+      final boolean isRelative = seg.getPlotRelative();
+      WorldLocation tmaLastLoc = null;
+      long tmaLastDTG = 0;
 
-        // is the parent using the default style?
-        if (defaultlineStyle == CanvasType.SOLID)
+      // if it's not a relative track, and it's not visible, we don't
+      // need to work with ut
+      if (!getVisible() && !isRelative)
+      {
+        continue;
+      }
+
+      // is this segment visible?
+      if (!seg.getVisible())
+      {
+        continue;
+      }
+
+      final Enumeration<Editable> fixWrappers = seg.elements();
+      while (fixWrappers.hasMoreElements())
+      {
+        final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
+
+        // have a look at the last fix. we defer painting the fix label,
+        // because we want to know the id of the last visible fix, since
+        // we may need to paint it's label in 6 DTG
+        if (getPositionsVisible() && lastFix != null && lastFix.getVisible())
         {
-          // yes, let's override it, if the segment wants to
-          thisLineStyle = seg.getLineStyle();
-        }
-        else
-        {
-          // no, we're using a custom style - don't override it.
-          thisLineStyle = defaultlineStyle;
+          // is this the first visible fix?
+          boolean isFirstVisibleFix = endPoints.size() == 1;
+
+          paintIt(dest, lastFix, getEndTimeLabels() && isFirstVisibleFix);
         }
 
-        // SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
-        // RELATIVE MODE
-        final boolean isRelative = seg.getPlotRelative();
-        WorldLocation tmaLastLoc = null;
-        long tmaLastDTG = 0;
-
+        // now there's a chance that our fix has forgotten it's
+        // parent,
+        // particularly if it's the victim of a
+        // copy/paste operation. Tell it about it's children
+        fw.setTrackWrapper(this);
+        
         // if it's not a relative track, and it's not visible, we don't
         // need to work with ut
         if (!getVisible() && !isRelative)
         {
           continue;
+        } 
+
+        // is this fix visible?
+        if (!fw.getVisible())
+        {
+          // nope. Don't join it to the last position.
+          // ok, if we've built up a polygon, we need to write it
+          // now
+          paintSetOfPositions(dest, lastCol, thisLineStyle);
         }
 
-        // is this segment visible?
-        if (!seg.getVisible())
+        // do our job of identifying the first & last date value
+        if (fw.getVisible())
         {
-          continue;
-        }
-
-        // final Enumeration<Editable> fixWrappers = seg.elements();
-        // while (fixWrappers.hasMoreElements())
-        // {
-        // final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
-
-        // get the data as an array - to avoid the concurrent modification
-        // problems we were getting when doing network monitoring (DIS support)
-        Editable[] existingWrapper = seg.getData().toArray(new Editable[]
-        {null});
-
-        for (int i = 0; i < existingWrapper.length; i++)
-        {
-          final FixWrapper fw = (FixWrapper) existingWrapper[i];
-
-          // now there's a chance that our fix has forgotten it's
-          // parent,
-          // particularly if it's the victim of a
-          // copy/paste operation. Tell it about it's children
-          fw.setTrackWrapper(this);
-
-          // is this fix visible?
-          if (!fw.getVisible())
+          // ok, see if this is the first one
+          if (endPoints.size() == 0)
           {
-            // nope. Don't join it to the last position.
-            // ok, if we've built up a polygon, we need to write it
-            // now
-            paintSetOfPositions(dest, lastCol, thisLineStyle);
-          }
-
-          // Note: we're carrying on working with this position even
-          // if it isn't visible,
-          // since we need to use non-visible positions to build up a
-          // DR track.
-
-          // ok, so we have plotted something
-          plotted_anything = true;
-
-          // ok, are we in relative?
-          if (isRelative)
-          {
-            final long thisTime = fw.getDateTimeGroup().getDate().getTime();
-
-            // ok, is this our first location?
-            if (tmaLastLoc == null)
-            {
-              tmaLastLoc = new WorldLocation(seg.getTrackStart());
-              lastLocation = tmaLastLoc;
-            }
-            else
-            {
-              // calculate a new vector
-              final long timeDelta = thisTime - tmaLastDTG;
-              if (lastFix != null)
-              {
-                final double speedKts = lastFix.getSpeed();
-                final double courseRads = lastFix.getCourse();
-                final double depthM = lastFix.getDepth();
-                // use the value of depth as read in from the
-                // file
-                tmaLastLoc.setDepth(depthM);
-                final WorldVector thisVec =
-                    seg.vectorFor(timeDelta, speedKts, courseRads);
-                tmaLastLoc.addToMe(thisVec);
-                lastLocation = tmaLastLoc;
-              }
-            }
-            lastFix = fw;
-            tmaLastDTG = thisTime;
-            // dump the location into the fix
-            fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+            endPoints.add(fw);
           }
           else
           {
-            // this is an absolute position
-            lastLocation = fw.getLocation();
-          }
-
-          // ok, we only do this writing to screen if the actual
-          // position is visible
-          if (!fw.getVisible())
-            continue;
-
-          final java.awt.Point thisP = dest.toScreen(lastLocation);
-
-          // just check that there's enough GUI to create the plot
-          // (i.e. has a point been returned)
-          if (thisP == null)
-          {
-            return false;
-          }
-
-          // so, we're looking at the first data point. Do
-          // we want to use this to locate the track name?
-          // or have we already sorted out the location
-          if (_LabelAtStart && !locatedTrack)
-          {
-            locatedTrack = true;
-            _theLabel.setLocation(new WorldLocation(lastLocation));
-          }
-
-          // are we
-          if (getLinkPositions()
-              && (getLineStyle() != LineStylePropertyEditor.UNCONNECTED))
-          {
-            // right, just check if we're a different colour to
-            // the previous one
-            final Color thisCol = fw.getColor();
-
-            // do we know the previous colour
-            if (lastCol == null)
+            // have we already got an end value?
+            if (endPoints.size() == 2)
             {
-              lastCol = thisCol;
+              // yes, drop it
+              endPoints.remove(1);
             }
 
-            // is this to be joined to the previous one?
-            if (fw.getLineShowing())
-            {
-              // so, grow the the polyline, unless we've got a
-              // colour change...
-              if (thisCol != lastCol)
-              {
-                // add our position to the list - so it
-                // finishes on us
-                _myPts[_ptCtr++] = thisP.x;
-                _myPts[_ptCtr++] = thisP.y;
-
-                // yup, better get rid of the previous
-                // polygon
-                paintSetOfPositions(dest, lastCol, thisLineStyle);
-              }
-
-              // error handling, just in case the array has been regenerated
-              if(_ptCtr > _myPts.length)
-              {
-                continue;
-              }
-              
-              // add our position to the list - we'll output
-              // the polyline at the end
-              _myPts[_ptCtr++] = thisP.x;
-              _myPts[_ptCtr++] = thisP.y;
-            }
-            else
-            {
-              // nope, output however much line we've got so
-              // far - since this
-              // line won't be joined to future points
-              paintSetOfPositions(dest, thisCol, thisLineStyle);
-
-              // start off the next line
-              _myPts[_ptCtr++] = thisP.x;
-              _myPts[_ptCtr++] = thisP.y;
-
-            }
-
-            /*
-             * set the colour of the track from now on to this colour, so that the "link" to the
-             * next fix is set to this colour if left unchanged
-             */
-            dest.setColor(fw.getColor());
-
-            // and remember the last colour
-            lastCol = thisCol;
-
+            // store a new end value
+            endPoints.add(fw);
           }
-
-          if (_showPositions && fw.getVisible())
-          {
-            // this next method just paints the fix. we've put the
-            // call into paintThisFix so we can override the painting
-            // in the CompositeTrackWrapper class
-            paintThisFix(dest, lastLocation, fw);
-          }
-
-        }// while fixWrappers has more elements
-
-        // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
-        //
-        if (seg instanceof CoreTMASegment)
-        {
-          CoreTMASegment tma = (CoreTMASegment) seg;
-
-          WorldLocation firstLoc = seg.first().getBounds().getCentre();
-          WorldLocation lastLoc = seg.last().getBounds().getCentre();
-          Font f = new Font("Sans Serif", Font.PLAIN, 11);
-          Color c = _theLabel.getColor();
-
-          // tell the segment it's being stretched
-          final String spdTxt =
-              MWC.Utilities.TextFormatting.GeneralFormat
-                  .formatOneDecimalPlace(tma.getSpeed().getValueIn(
-                      WorldSpeed.Kts));
-
-          // copied this text from RelativeTMASegment
-          double courseVal = tma.getCourse();
-          if (courseVal < 0)
-            courseVal += 360;
-
-          String textLabel =
-              "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
-
-          // ok, now plot it
-          CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-              lastLoc, 1.2, true);
-          textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
-          CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-              lastLoc, 1.2, false);
         }
 
-        // ok, just see if we have any pending polylines to paint
-        paintSetOfPositions(dest, lastCol, thisLineStyle);
+        // Note: we're carrying on working with this position even
+        // if it isn't visible,
+        // since we need to use non-visible positions to build up a
+        // DR track.
 
-      }
+        // ok, are we in relative?
+        if (isRelative)
+        {
+          final long thisTime = fw.getDateTimeGroup().getDate().getTime();
 
-      // are we trying to put the label at the end of the track?
-      // have we found at least one location to plot?
-      if (!_LabelAtStart && lastLocation != null)
+          // ok, is this our first location?
+          if (tmaLastLoc == null)
+          {
+            tmaLastLoc = new WorldLocation(seg.getTrackStart());
+            lastLocation = tmaLastLoc;
+          }
+          else
+          {
+            // calculate a new vector
+            final long timeDelta = thisTime - tmaLastDTG;
+            if (lastFix != null)
+            {
+              final double speedKts = lastFix.getSpeed();
+              final double courseRads = lastFix.getCourse();
+              final double depthM = lastFix.getDepth();
+              // use the value of depth as read in from the
+              // file
+              tmaLastLoc.setDepth(depthM);
+              final WorldVector thisVec =
+                  seg.vectorFor(timeDelta, speedKts, courseRads);
+              tmaLastLoc.addToMe(thisVec);
+              lastLocation = tmaLastLoc;
+            }
+          }
+          tmaLastDTG = thisTime;
+          // dump the location into the fix
+          fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+        }
+        else
+        {
+          // this is an absolute position
+          lastLocation = fw.getLocation();
+        }
+
+        // remember this fix, used for relative tracks
+        lastFix = fw;
+
+        // ok, we only do this writing to screen if the actual
+        // position is visible
+        if (!fw.getVisible())
+          continue;
+
+        final java.awt.Point thisP = dest.toScreen(lastLocation);
+
+        // just check that there's enough GUI to create the plot
+        // (i.e. has a point been returned)
+        if (thisP == null)
+        {
+          return endPoints;
+        }
+
+        // are we
+        if (getLinkPositions()
+            && (getLineStyle() != LineStylePropertyEditor.UNCONNECTED))
+        {
+          // right, just check if we're a different colour to
+          // the previous one
+          final Color thisCol = fw.getColor();
+
+          // do we know the previous colour
+          if (lastCol == null)
+          {
+            lastCol = thisCol;
+          }
+
+          // is this to be joined to the previous one?
+          if (fw.getLineShowing())
+          {
+            // so, grow the the polyline, unless we've got a
+            // colour change...
+            if (thisCol != lastCol)
+            {
+              // add our position to the list - so it
+              // finishes on us
+              _myPts[_ptCtr++] = thisP.x;
+              _myPts[_ptCtr++] = thisP.y;
+
+              // yup, better get rid of the previous
+              // polygon
+              paintSetOfPositions(dest, lastCol, thisLineStyle);
+            }
+            
+            // double check we haven't been modified
+            if(_ptCtr > _myPts.length)
+            {
+              continue;
+            }
+
+            // add our position to the list - we'll output
+            // the polyline at the end
+            _myPts[_ptCtr++] = thisP.x;
+            _myPts[_ptCtr++] = thisP.y;
+          }
+          else
+          {
+            // nope, output however much line we've got so
+            // far - since this
+            // line won't be joined to future points
+            paintSetOfPositions(dest, thisCol, thisLineStyle);
+
+            // start off the next line
+            _myPts[_ptCtr++] = thisP.x;
+            _myPts[_ptCtr++] = thisP.y;
+          }
+
+          /*
+           * set the colour of the track from now on to this colour, so that the "link" to the next
+           * fix is set to this colour if left unchanged
+           */
+          dest.setColor(fw.getColor());
+
+          // and remember the last colour
+          lastCol = thisCol;
+
+        }
+
+      }// while fixWrappers has more elements
+
+      // ok - paint the label for the last visible point
+      if (getPositionsVisible())
       {
-        _theLabel.setLocation(new WorldLocation(lastLocation));
+        paintIt(dest, endPoints.get(1), getEndTimeLabels());
       }
-      _paintingFixes = false;
+
+      // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
+      //
+      if (seg instanceof CoreTMASegment)
+      {
+        CoreTMASegment tma = (CoreTMASegment) seg;
+
+        WorldLocation firstLoc = seg.first().getBounds().getCentre();
+        WorldLocation lastLoc = seg.last().getBounds().getCentre();
+        Font f = new Font("Sans Serif", Font.PLAIN, 11);
+        Color c = _theLabel.getColor();
+
+        // tell the segment it's being stretched
+        final String spdTxt =
+            MWC.Utilities.TextFormatting.GeneralFormat
+                .formatOneDecimalPlace(tma.getSpeed()
+                    .getValueIn(WorldSpeed.Kts));
+
+        // copied this text from RelativeTMASegment
+        double courseVal = tma.getCourse();
+        if (courseVal < 0)
+          courseVal += 360;
+
+        String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
+
+        // ok, now plot it
+        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+            lastLoc, 1.2, true);
+        textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
+        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+            lastLoc, 1.2, false);
+      }
+
+      // ok, just see if we have any pending polylines to paint
+      paintSetOfPositions(dest, lastCol, thisLineStyle);
     }
-    return plotted_anything;
 
+    return endPoints;
   }
-
-  private void paintSingleTrackLabel(final CanvasType dest)
+  
+  private void paintSingleTrackLabel(final CanvasType dest,
+      List<FixWrapper> endPoints)
   {
     // check that we have found a location for the label
     if (_theLabel.getLocation() == null)
       return;
-
-    // is the first track a DR track?
-    // NO - CHANGED: we only initialise the track font in italics
-    // for a DR track. Then we let the user change it
-    // final TrackSegment t1 = (TrackSegment) _thePositions.first();
-    //
-    // if (t1.getPlotRelative())
-    // {
-    // _theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
-    // }
-    // else if (_theLabel.getFont().isItalic())
-    // {
-    // _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
-    // }
 
     // check that we have set the name for the label
     if (_theLabel.getString() == null)
@@ -2712,9 +2784,27 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           labelColor = pos.getColor();
         }
       }
-
       _theLabel.setColor(labelColor);
     }
+
+    // ok, sort out the correct location
+    final FixWrapper hostFix;
+    if (getNameAtStart())
+    {
+      hostFix = endPoints.get(0);
+    }
+    else
+    {
+      hostFix = endPoints.get(1);
+    }
+
+    // sort out the location
+    _theLabel.setLocation(hostFix.getLocation());
+
+    // and the relative location
+    int theLoc =
+        LabelLocationPropertyEditor.oppositeFor(hostFix.getLabelLocation());
+    _theLabel.setRelativeLocation(theLoc);
 
     // and paint it
     _theLabel.paint(dest);
@@ -2857,18 +2947,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // ///////////////////////////////////////////
     // let the fixes draw themselves in
     // ///////////////////////////////////////////
-    final boolean plotted_anything = paintFixes(dest);
+    List<FixWrapper> endPoints = paintFixes(dest);
+    final boolean plotted_anything = endPoints.size() > 0;
 
     // and draw the track label
     // still, we only plot the track label if we have plotted any
     // points
-    if (_theLabel.getVisible() && plotted_anything)
+    if (getNameVisible() && plotted_anything)
     {
       // just see if we have multiple segments. if we do,
       // name them individually
       if (this._thePositions.size() <= 1)
       {
-        paintSingleTrackLabel(dest);
+        paintSingleTrackLabel(dest, endPoints);
       }
       else
       {

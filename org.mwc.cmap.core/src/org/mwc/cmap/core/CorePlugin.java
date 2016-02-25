@@ -689,19 +689,29 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
    *          a low-level exception, or <code>null</code> if not applicable
    */
   public static void logError(final int severity, final String message,
-      final Throwable exception, boolean showStack)
+      Throwable exception, boolean showStack)
   {
     final String fullMessage;
     if (showStack)
     {
-      String stackListing = "Trace follows\n=================\n";
-      StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-      for (int i = 0; i < stack.length; i++)
+      if (exception == null)
       {
-        StackTraceElement ele = stack[i];
-        stackListing += ele.toString() + "\n";
+        exception =
+            new RuntimeException(
+                "Artificially generated, to get diagnostics stack");
+        fullMessage = message;
       }
-      fullMessage = message + "\n" + stackListing;
+      else
+      {
+        String stackListing = "Trace follows\n=================\n";
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        for (int i = 0; i < stack.length; i++)
+        {
+          StackTraceElement ele = stack[i];
+          stackListing += ele.toString() + "\n";
+        }
+        fullMessage = message + "\n" + stackListing;
+      }
     }
     else
     {
@@ -923,6 +933,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     return createOpenHelpAction(target, description, host.getViewSite()
         .getWorkbenchWindow().getWorkbench().getHelpSystem());
   }
+
 
   /**
    * make it easy to declare context sensitive help

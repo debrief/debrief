@@ -517,6 +517,13 @@ abstract public class CoreGUISwing extends CoreGUI implements
 		 */
 		private MWC.GUI.Dialogs.ApplicationProperties _appProps;
 
+
+	  @Override
+	  public void logStack(int status, String text)
+	  {
+	    logError(status, "Stack requested:" + text, null);
+	  }
+
 		public ASSETParent(final JFrame frame)
 		{
 			_frame = frame;

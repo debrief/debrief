@@ -55,4 +55,9 @@ public interface ErrorLogger {
 	 * @param e any relevant exceptin
 	 */
 	  public void logError(int status, String text, Exception e);
+	  
+	/** show the current call stack
+	 * 
+	 */
+	  public void logStack(int status, String text);
 }
