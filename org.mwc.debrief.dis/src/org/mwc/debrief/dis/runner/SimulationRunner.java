@@ -3,12 +3,6 @@ package org.mwc.debrief.dis.runner;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.mwc.debrief.dis.diagnostics.PduGenerator;
-import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 
 public class SimulationRunner
@@ -16,7 +10,6 @@ public class SimulationRunner
 
   final private DebriefDISSimulatorPrefs _prefs;
   private Process _process;
-  private Job _simJob;
 
   public SimulationRunner(DebriefDISSimulatorPrefs simPrefs)
   {
@@ -25,39 +18,10 @@ public class SimulationRunner
 
   public void run(final String args)
   {
-    final File exe = new File(_prefs.getExePath());
     final File input = new File(_prefs.getInputFile());
     final File parent = input.getParentFile();
 
-    if (!exe.exists())
-    {
-      System.err.println("Executable not found");
-
-      // FOR TESTING - FIRE OUR GENERATOR
-      _simJob = new Job("Run simulation")
-      {
-        final private PduGenerator sender = new PduGenerator();
-
-        @Override
-        protected IStatus run(IProgressMonitor monitor)
-        {
-          String[] cArgs = args.split(" ");
-          sender.run(new NetworkPduSender(), cArgs);
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        protected void canceling()
-        {
-          // terminate the data generator
-          sender.terminate();
-        }
-      };
-      _simJob.setUser(false);
-      _simJob.schedule();
-
-    }
-    else if (!input.exists())
+    if (!input.exists())
     {
       System.err.println("Input file not found");
     }
@@ -69,6 +33,7 @@ public class SimulationRunner
     {
       final String[] exeCmd = new String[]
       {_prefs.getExePath(), _prefs.getInputFile()};
+
       // fire up the processs
       try
       {
@@ -88,13 +53,6 @@ public class SimulationRunner
     {
       _process.destroy();
       _process = null;
-    }
-
-    // TESTING
-    if (_simJob != null)
-    {
-      _simJob.cancel();
-      _simJob = null;
     }
   }
 

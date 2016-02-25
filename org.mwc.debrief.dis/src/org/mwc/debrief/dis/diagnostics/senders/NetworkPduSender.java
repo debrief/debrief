@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Properties;
 
 import edu.nps.moves.dis.Pdu;
 
@@ -34,9 +33,14 @@ public class NetworkPduSender implements IPduSender
    * http://www.remotemonitoringsystems.ca/broadcast.php If in mcast mode, a join() will be done on
    * the mcast address. port: port used for both source and destination.
    * 
+   * @param portString
+   * @param destinationIpString
+   * @param networkModeString
+   * 
    * @param args
    */
-  public NetworkPduSender()
+  public NetworkPduSender(String destinationIpString, String portString,
+      String networkModeString)
   {
 
     // Default settings. These are used if no system properties are set.
@@ -55,20 +59,6 @@ public class NetworkPduSender implements IPduSender
       System.out.println(e + " Cannot create multicast address");
       System.exit(0);
     }
-
-    // All system properties, passed in on the command line via
-    // -Dattribute=value
-    Properties systemProperties = System.getProperties();
-
-    // IP address we send to
-    String destinationIpString = systemProperties.getProperty("group");
-
-    // Port we send to, and local port we open the socket on
-    String portString = systemProperties.getProperty("port");
-
-    // Network mode: unicast, multicast, broadcast
-    String networkModeString = systemProperties.getProperty("mode");
-    // unicast or multicast or broadcast
 
     // Set up a socket to send information
     try
