@@ -148,7 +148,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
   }
 
-  private void setupListeners(IDISModule module)
+  private void setupListeners(final IDISModule module)
   {
     final IDISContext context = new DISContext(_myPartMonitor)
     {
@@ -226,14 +226,14 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     // handle the time updates
     module.addGeneralPDUListener(new IDISGeneralPDUListener()
     {
-      final long TIME_UNSET = -1;
+      final long TIME_UNSET = module.convertTime(-1);
 
       long time = TIME_UNSET;
 
       @Override
       public void logPDU(Pdu pdu)
       {
-        long newTime = pdu.getTimestamp();
+        long newTime = module.convertTime(pdu.getTimestamp());
         if (newTime != time && time != TIME_UNSET)
         {
           context.setNewTime(time);

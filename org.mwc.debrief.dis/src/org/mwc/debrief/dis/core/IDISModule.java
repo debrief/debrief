@@ -34,4 +34,6 @@ public interface IDISModule
 
   void addCollisionListener(IDISCollisionListener handler);
 
+  long convertTime(long timestamp);
+
 }

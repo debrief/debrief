@@ -104,7 +104,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     final short eid = pdu.getExerciseID();
     final short force = pdu.getForceId();
     final long hisId = pdu.getEntityID().getEntity();
-    final long time = pdu.getTimestamp();
+    long time = convertTime(pdu.getTimestamp());
     Vector3Double loc = pdu.getEntityLocation();
     double[] locArr = new double[]
     {loc.getX(), loc.getY(), loc.getZ()};
@@ -130,7 +130,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private void handleEvent(EventReportPdu pdu)
   {
     short eid = pdu.getExerciseID();
-    long time = pdu.getTimestamp();
+    long time = convertTime(pdu.getTimestamp());
     int originator = pdu.getOriginatingEntityID().getEntity();
     String msg = "Empty";
 
@@ -259,7 +259,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     double[] locArr = new double[]
     {eLoc.getX(), eLoc.getY(), eLoc.getZ()};
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
-    long time = pdu.getTimestamp();
+    long time = convertTime(pdu.getTimestamp());
     int receipientId = pdu.getIssuingEntityID().getEntity();
     int movingId = pdu.getCollidingEntityID().getEntity();
 
@@ -276,7 +276,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   {
     short eid = pdu.getExerciseID();
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
-    long time = pdu.getTimestamp();
+    long time = convertTime(pdu.getTimestamp());
     int hisId = pdu.getFiringEntityID().getEntity();
 
     Iterator<IDISFireListener> dIter = _fireListeners.iterator();
@@ -289,7 +289,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
   private void handleStop(StopFreezePdu pdu)
   {
-    long time = pdu.getTimestamp();
+    long time = convertTime(pdu.getTimestamp());
     short eid = pdu.getExerciseID();
     short reason = pdu.getReason();
 
@@ -331,4 +331,14 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     _stopListeners.add(idisStopListener);
   }
 
+  /** encapsulate timestamp conversions
+   * 
+   * @param timeStamp
+   * @return
+   */
+  public long convertTime(long timeStamp)
+  {
+    return timeStamp * 60000;
+  }
+  
 }
