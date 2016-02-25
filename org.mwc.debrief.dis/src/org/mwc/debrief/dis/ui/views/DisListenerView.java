@@ -612,7 +612,11 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     _perfGraph.complete("Stop button");
   }
 
-  private void doPlay()
+  /**
+   * run the simulator, passing it the specified input file
+   * @param inputPath
+   */
+  public void doPlay(String inputPath)
   {
     // ok, start with a "connect", if we have to
     if (!connectButton.getSelection())
@@ -621,13 +625,18 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       doConnect();
     }
 
-    IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
-    String pText = store.getString(DisActivator.PATH_TO_INPUT_FILE);
-
-    _simulationRunner.run(pText);
+    _simulationRunner.run(inputPath);
 
     playButton.setEnabled(false);
     stopButton.setEnabled(true);
+    
+  }
+
+  private void doPlay()
+  {
+    IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
+    String pText = store.getString(DisActivator.PATH_TO_INPUT_FILE);
+    doPlay(pText);
   }
 
   private void doConnect()
