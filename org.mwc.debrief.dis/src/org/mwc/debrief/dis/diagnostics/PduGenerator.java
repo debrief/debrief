@@ -1,5 +1,7 @@
 package org.mwc.debrief.dis.diagnostics;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Scanner;
 
 import org.mwc.debrief.dis.diagnostics.senders.IPduSender;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
@@ -67,11 +70,11 @@ public class PduGenerator
      * 
      */
     public int targetId = -1;
-    
+
     final public int hostId;
 
-    private Torpedo(final int id, final int hostId, final short force, double oLat, double oLong,
-        int targetId)
+    private Torpedo(final int id, final int hostId, final short force,
+        double oLat, double oLong, int targetId)
     {
       super(id, force, oLat, oLong, 0);
 
@@ -105,9 +108,9 @@ public class PduGenerator
             // skip to the next loop
             continue;
           }
-          
+
           // hey, don't look a launch platform
-          if(thisP.id == hostId)
+          if (thisP.id == hostId)
           {
             continue;
           }
@@ -254,20 +257,79 @@ public class PduGenerator
   public static void main(String args[])
   {
 
-    // get system properties, and put them into the args
-    // All system properties, passed in on the command line via
-    // -Dattribute=value
-    Properties systemProperties = System.getProperties();
+    String millis = null;
+    String numParts = null;
+    String numMessages = null;
+    String destinationIpString = null;
+    String portString = null;
+    String networkModeString = null;
 
-    // IP address we send to
-    String millis = systemProperties.getProperty("millis");
+    // the input argument should be a file
+    if (args.length == 1)
+    {
+      String fName = args[0];
+      File iFile = new File(fName);
+      String inputData = null;
+      if (iFile.exists())
+      {
+        // ok, read it in
+        Scanner scanner;
+        try
+        {
+          scanner = new Scanner(iFile, "UTF-8");
+          inputData = scanner.useDelimiter("\\A").next();
+          scanner.close(); // Put this call in a finally block
+        }
+        catch (FileNotFoundException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
 
-    // Port we send to, and local port we open the socket on
-    String numParts = systemProperties.getProperty("participants");
+      // did we extract any data?
+      if (inputData != null)
+      {
+        // ok, parse it
+        String[] items = inputData.trim().split(" ");
+        if (items.length >= 6)
+        {
+          destinationIpString = items[0];
+          portString = items[1];
+          networkModeString = items[2];
+          millis = items[3];
+          numParts = items[4];
+          numMessages = items[5];
+        }
+      }
+    }
+    else
+    {
+      // try to get them from system properties instead
 
-    // Network mode: unicast, multicast, broadcast
-    String numMessages = systemProperties.getProperty("messages");
+      // get system properties, and put them into the args
+      // All system properties, passed in on the command line via
+      // -Dattribute=value
+      Properties systemProperties = System.getProperties();
 
+      // IP address we send to
+      destinationIpString = systemProperties.getProperty("group");
+
+      // Port we send to, and local port we open the socket on
+      portString = systemProperties.getProperty("port");
+
+      // Network mode: unicast, multicast, broadcast
+      networkModeString = systemProperties.getProperty("mode");
+
+      // IP address we send to
+      millis = systemProperties.getProperty("millis");
+
+      // Port we send to, and local port we open the socket on
+      numParts = systemProperties.getProperty("participants");
+
+      // Network mode: unicast, multicast, broadcast
+      numMessages = systemProperties.getProperty("messages");
+    }
     // insert the properties into the args
     if (millis != null)
     {
@@ -276,7 +338,8 @@ public class PduGenerator
     }
 
     PduGenerator sender = new PduGenerator();
-    sender.run(new NetworkPduSender(), args);
+    sender.run(new NetworkPduSender(destinationIpString, portString,
+        networkModeString), args);
   }
 
   public void run(IPduSender sender, String args[])
