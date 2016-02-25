@@ -107,6 +107,7 @@ public class HeadlessDISLogger
       @Override
       public void stop(long time, short eid, short reason)
       {
+        System.out.println("== STOP RECEIVED ==");
         provider.detach();
         _terminated = true;
         System.exit(0);

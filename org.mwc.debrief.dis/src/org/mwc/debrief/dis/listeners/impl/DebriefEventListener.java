@@ -24,10 +24,7 @@ public class DebriefEventListener extends DebriefCoreListener implements
   public void add(final long time, short eid, long id, final String message)
   {
     final String theName = "DIS_" + id;
-//    final String message = "Message from " + theName;
     
-    System.out.println("NEW EVENT!");
-
     // and the narrative entry
     addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
     {
