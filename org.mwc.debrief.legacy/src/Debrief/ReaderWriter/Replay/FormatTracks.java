@@ -65,7 +65,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -217,7 +216,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
    */
   public final void formatLayers(final List<Layer> newLayers)
   {
-    Application.logStack2(Application.WARNING, "Format tracks called, poss from Import Replay");
+//    Application.logStack2(Application.WARNING, "Format tracks called, poss from Import Replay");
     
     // have we received valid data?
     if (newLayers == null)
