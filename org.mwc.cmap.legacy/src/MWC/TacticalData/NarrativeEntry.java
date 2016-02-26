@@ -33,6 +33,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 {
 
 	public static final String DTG = "DTG";
+	public static final Color DEFAULT_COLOR = new Color(178,0,0);
 
 	// ///////////////////////////////////////////
 	// member variables
@@ -45,7 +46,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 
 	private transient NarrativeEntryInfo _myInfo;
 
-	private Color _color = Color.white;
+	private Color _color = DEFAULT_COLOR;
 
 	/**
      * 
