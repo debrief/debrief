@@ -936,6 +936,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // hey, sort out the positions
       sortOutRelativePositions();
     }
+    else if (point instanceof Layer)
+    {
+      final Layer layer = (Layer) point;
+      final Enumeration<Editable> items = layer.elements();
+      while (items.hasMoreElements())
+      {
+        final Editable thisE = (Editable) items.nextElement();
+        add(thisE);
+      }
+
+      // ok, it looks like it worked.
+      done = true;
+    }
 
     if (!done)
     {
@@ -1221,7 +1234,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // TODO: DEBUG: REMOVE: remove this diagnostics message
     Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
-    
+
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
@@ -2418,10 +2431,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * 
    * @param dest
    *          where we paint to
-   * @param thisF the fix we're painting
-   * @param isEndPoint whether point is one of the ends
+   * @param thisF
+   *          the fix we're painting
+   * @param isEndPoint
+   *          whether point is one of the ends
    */
-  private void paintIt(final CanvasType dest, final FixWrapper thisF, final boolean isEndPoint)
+  private void paintIt(final CanvasType dest, final FixWrapper thisF,
+      final boolean isEndPoint)
   {
     // have a look at the last fix. we defer painting the fix label,
     // because we want to know the id of the last visible fix, since
@@ -2453,7 +2469,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
-  /** paint the fixes for this track
+  /**
+   * paint the fixes for this track
    * 
    * @param dest
    * @return a collection containing the first & last visible fix
