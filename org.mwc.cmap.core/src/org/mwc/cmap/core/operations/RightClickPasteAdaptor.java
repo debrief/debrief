@@ -193,7 +193,7 @@ public class RightClickPasteAdaptor
 					}
 
 					// inform the listeners
-					_theLayers.fireExtended();
+					_theLayers.fireExtended(null, _theDestination);
 
 					// now clear the clipboard
 			//		_myClipboard.clearContents();
@@ -212,7 +212,7 @@ public class RightClickPasteAdaptor
 					}
 
 					// inform the listeners
-					_theLayers.fireExtended();
+					_theLayers.fireExtended(null, _theDestination);
 					
 					// put the contents back in the clipbard
 					final EditableTransfer transfer = EditableTransfer.getInstance();
@@ -280,23 +280,23 @@ public class RightClickPasteAdaptor
 					{
 						final Editable thisItem = _data[i];
 
+            // extract the layer
+            final Layer newLayer = (Layer) thisItem;
+
 						// copy in the new data
 						// do we have a destination layer?
 						if (_theDestination != null)
 						{
-							// extract the layer
-							final Layer newLayer = (Layer) thisItem;
 
 							// add it to the target layer
 							_theDestination.add(newLayer);
 						}
 						else
 						{
-							// extract the layer
-							final Layer newLayer = (Layer) thisItem;
-
 							// add it to the top level
 							_theLayers.addThisLayer(newLayer);
+							
+							// hmm, any special processing?
 						}
 
 					}
