@@ -182,7 +182,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			_track.setInterpolatePoints(false);
 
 			// sorted, do the update
-			_layers.fireExtended();
+			_layers.fireExtended(null, _track);
 
 			return Status.OK_STATUS;
 		}

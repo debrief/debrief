@@ -940,6 +940,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // hey, sort out the positions
       sortOutRelativePositions();
     }
+    else if (point instanceof Layer)
+    {
+      final Layer layer = (Layer) point;
+      final Enumeration<Editable> items = layer.elements();
+      while (items.hasMoreElements())
+      {
+        final Editable thisE = (Editable) items.nextElement();
+        add(thisE);
+      }
+
+      // ok, it looks like it worked.
+      done = true;
+    }
 
     if (!done)
     {
@@ -1224,7 +1237,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
     // TODO: DEBUG: REMOVE: remove this diagnostics message
- //   Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
+    // Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
 
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())

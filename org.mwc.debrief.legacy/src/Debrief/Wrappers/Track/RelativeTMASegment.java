@@ -163,11 +163,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * the layers we look at to find our host
 	 * 
 	 */
-	private transient final Layers _theLayers;
-
-	private SensorContactWrapper _firstSensorContact;
-
-	private SensorContactWrapper _lastSensorContact;
+	private transient Layers _theLayers;
 
 	/**
 	 * base constructor - sorts out the obvious
@@ -204,6 +200,22 @@ public class RelativeTMASegment extends CoreTMASegment
 		// now sort out the name
 		sortOutDate(null);
 
+	}
+	
+	public void updateLayers(final Layers layers)
+	{
+	  _theLayers = layers;
+	  
+	  // ok, we've moved.
+	  // We'd better re-generate our references
+	  
+	  // clear out existing pointers 
+	  _referenceTrack = null;
+	  _referenceSensor = null;
+	  
+	  // and re-generate them
+	  identifyReferenceTrack();
+	      
 	}
 
 	/**
@@ -315,11 +327,6 @@ public class RelativeTMASegment extends CoreTMASegment
 	 */
 	private void doThisFix(final SensorContactWrapper thisS)
 	{
-		// track the first & last visible sensor items
-		if (_firstSensorContact == null)
-			_firstSensorContact = thisS;
-		_lastSensorContact = thisS;
-
 		// and create a fix for this cut
 		final FixWrapper newFix = createPointFor(thisS);
 		newFix.setSymbolShowing(true);
@@ -480,11 +487,6 @@ public class RelativeTMASegment extends CoreTMASegment
 		return this.startDTG();
 	}
 
-	public SensorContactWrapper getFirstSensorContact()
-	{
-		return _firstSensorContact;
-	}
-
 	/**
 	 * the point on the host track that we're offset from
 	 * 
@@ -596,11 +598,6 @@ public class RelativeTMASegment extends CoreTMASegment
 		if (_myInfo == null)
 			_myInfo = new TMASegmentInfo(this);
 		return _myInfo;
-	}
-
-	public SensorContactWrapper getLastSensorContact()
-	{
-		return _lastSensorContact;
 	}
 
 	public WorldVector getOffset()
@@ -1066,12 +1063,6 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	}
 
-	public void setFirstSensorContact(
-			final SensorContactWrapper firstSensorContact)
-	{
-		_firstSensorContact = firstSensorContact;
-	}
-
 	/**
 	 * temporarily store the hostname, until we've finished loading and we can
 	 * sort it out for real.
@@ -1117,11 +1108,6 @@ public class RelativeTMASegment extends CoreTMASegment
 			// better trim what we've recived
 			_referenceSensorName = sensorName.trim();
 		}
-	}
-
-	public void setLastSensorContact(final SensorContactWrapper lastSensorContact)
-	{
-		_lastSensorContact = lastSensorContact;
 	}
 
 	public void setOffset(final WorldVector newOffset)
