@@ -35,7 +35,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
@@ -153,14 +152,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 expertProp("Color", "the track color", FORMAT),
                 displayExpertProp("EndTimeLabels", "Start/End time labels",
                     "Whether to label track start/end with 6-figure DTG",
-                    FORMAT),
+                    VISIBILITY),
                 displayExpertProp("SymbolColor", "Symbol color",
                     "the color of the symbol (when used)", FORMAT),
                 displayExpertProp(
                     "PlotArrayCentre",
                     "Plot array centre",
                     "highlight the sensor array centre when non-zero array length provided",
-                    FORMAT),
+                    VISIBILITY),
                 displayExpertProp("TrackFont", "Track font",
                     "the track label font", FORMAT),
                 displayExpertProp("NameVisible", "Name visible",
@@ -171,7 +170,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                     "whether to show the track name at the start (or end)",
                     VISIBILITY),
                 displayExpertProp("LinkPositions", "Link positions",
-                    "whether to join the track points", FORMAT),
+                    "whether to join the track points", VISIBILITY),
                 expertProp("Visible", "whether the track is visible",
                     VISIBILITY),
                 displayExpertLongProp("NameLocation", "Name location",
@@ -642,8 +641,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   private boolean _interpolatePoints = false;
 
-  /** flag used to ensure we don't call
-   * paintFixes() from two threads
+  /**
+   * flag used to ensure we don't call paintFixes() from two threads
    */
   transient boolean _paintingFixes = false;
 
@@ -1225,8 +1224,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
     // TODO: DEBUG: REMOVE: remove this diagnostics message
-    Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
-    
+ //   Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
+
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
@@ -2423,10 +2422,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * 
    * @param dest
    *          where we paint to
-   * @param thisF the fix we're painting
-   * @param isEndPoint whether point is one of the ends
+   * @param thisF
+   *          the fix we're painting
+   * @param isEndPoint
+   *          whether point is one of the ends
    */
-  private void paintIt(final CanvasType dest, final FixWrapper thisF, final boolean isEndPoint)
+  private void paintIt(final CanvasType dest, final FixWrapper thisF,
+      final boolean isEndPoint)
   {
     // have a look at the last fix. we defer painting the fix label,
     // because we want to know the id of the last visible fix, since
@@ -2458,8 +2460,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
-
-  /** paint the fixes for this track
+  /**
+   * paint the fixes for this track
    * 
    * @param dest
    * @return a collection containing the first & last visible fix
@@ -2541,13 +2543,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // particularly if it's the victim of a
         // copy/paste operation. Tell it about it's children
         fw.setTrackWrapper(this);
-        
+
         // if it's not a relative track, and it's not visible, we don't
         // need to work with ut
         if (!getVisible() && !isRelative)
         {
           continue;
-        } 
+        }
 
         // is this fix visible?
         if (!fw.getVisible())
@@ -2671,9 +2673,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               // polygon
               paintSetOfPositions(dest, lastCol, thisLineStyle);
             }
-            
+
             // double check we haven't been modified
-            if(_ptCtr > _myPts.length)
+            if (_ptCtr > _myPts.length)
             {
               continue;
             }
@@ -2711,7 +2713,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // ok - paint the label for the last visible point
       if (getPositionsVisible())
       {
-        paintIt(dest, endPoints.get(1), getEndTimeLabels());
+        // do we have end points?
+        if (endPoints.size() > 1)
+        {
+          paintIt(dest, endPoints.get(1), getEndTimeLabels());
+        }
       }
 
       // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
@@ -2752,7 +2758,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     return endPoints;
   }
-  
+
   private void paintSingleTrackLabel(final CanvasType dest,
       List<FixWrapper> endPoints)
   {
