@@ -75,7 +75,7 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 	
 	private HiResDate _origin;
 	
-	private boolean _fillBackground = false;
+	private boolean _fillBackground = true;
 	
 	private boolean _semiTransparent = false;
 	
@@ -554,10 +554,6 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 						prop("Color", "the Color to draw the time display", FORMAT),
 						displayProp("Background", "Background color",
 								"the Background color for the time display", FORMAT),
-						displayProp("FillBackground", "Fill Background",
-								"wether to fill background for the time display", FORMAT),
-						displayProp("SemiTransparent", "Semi transparent",
-								"wether to use semi transparent background for the time display", FORMAT),
 						prop("Name", "the Name for the time display", FORMAT),
 						prop("Font", "the Font for the time display", FORMAT),
 						prop("Prefix", "the Prefix label for the time display", FORMAT),
