@@ -1328,4 +1328,12 @@ public class RelativeTMASegment extends CoreTMASegment
 		}
 	}
 
+	/** provide access to the layers object (necessary in
+	 * support of moving tracks between layers)
+	 * @return
+	 */
+  public Layers getLayers()
+  {
+    return _theLayers;
+  }
 }
