@@ -122,23 +122,26 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		// get what's selected
 		final StructuredSelection sel = getSelection();
 		final EditableWrapper first = (EditableWrapper) sel.getFirstElement();
-		final Editable pl = first.getEditable();
+    if (first != null)
+    {
+      final Editable pl = first.getEditable();
 
-		// so, is this draggable?
-		if (pl instanceof BaseLayer)
-			res = true;
-		else if (pl instanceof ETOPOPainter)
-			res = false;
-		else if (pl instanceof TrackWrapper)
-			res = false;
-		else if (pl instanceof FixWrapper)
-			res = false;
-		else if (pl instanceof NarrativeWrapper)
-			res = false;
-		else if (pl instanceof NarrativeEntry)
-			res = false;
-		else if (pl instanceof TacticalDataWrapper)
-			res = false;
+      // so, is this draggable?
+      if (pl instanceof BaseLayer)
+        res = true;
+      else if (pl instanceof ETOPOPainter)
+        res = false;
+      else if (pl instanceof TrackWrapper)
+        res = false;
+      else if (pl instanceof FixWrapper)
+        res = false;
+      else if (pl instanceof NarrativeWrapper)
+        res = false;
+      else if (pl instanceof NarrativeEntry)
+        res = false;
+      else if (pl instanceof TacticalDataWrapper)
+        res = false;
+    }
 
 		event.doit = res;
 	}
