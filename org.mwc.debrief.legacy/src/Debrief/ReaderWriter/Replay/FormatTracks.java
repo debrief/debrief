@@ -216,7 +216,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
    */
   public final void formatLayers(final List<Layer> newLayers)
   {
-//    Application.logStack2(Application.WARNING, "Format tracks called, poss from Import Replay");
+   // Application.logStack2(Application.WARNING, "Format tracks called, poss from Import Replay");
     
     // have we received valid data?
     if (newLayers == null)

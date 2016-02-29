@@ -127,10 +127,12 @@ public class RightClickSupport
 			final boolean hideClipboardOperations)
 	{
 
-		// sort out the top level layer, if we have one
+		// sort out the top level layer, if we have a single one
+	  // Note: if we have more than one top level layer we don't populate the top
+	  // level layer - so the whole plot gets updated
 		Layer theTopLayer = null;
 		if (topLevelLayers != null)
-			if (topLevelLayers.length > 0)
+			if (topLevelLayers.length == 1)
 				theTopLayer = topLevelLayers[0];
 
 		// and now the edit-able bits
