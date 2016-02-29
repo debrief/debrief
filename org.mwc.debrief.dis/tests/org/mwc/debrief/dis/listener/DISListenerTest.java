@@ -64,7 +64,7 @@ public class DISListenerTest
     });
     module.addEventListener(new IDISEventListener()
     {
-      public void add(long time, short exerciseId, long id, String message)
+      public void add(long time, short exerciseId, long id, int eventType, String message)
       {
         eventMessages.add("event at:" + time);
       }

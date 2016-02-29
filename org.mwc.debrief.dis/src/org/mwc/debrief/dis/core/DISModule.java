@@ -1,8 +1,10 @@
 package org.mwc.debrief.dis.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.mwc.debrief.dis.listeners.IDISCollisionListener;
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
@@ -32,8 +34,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 {
   private List<IDISFixListener> _fixListeners =
       new ArrayList<IDISFixListener>();
-  private List<IDISEventListener> _eventListeners =
-      new ArrayList<IDISEventListener>();
+  private Map<Integer, List<IDISEventListener>> _eventListeners =
+      new HashMap<Integer, List<IDISEventListener>>();
   private List<IDISDetonationListener> _detonationListeners =
       new ArrayList<IDISDetonationListener>();
   private List<IDISGeneralPDUListener> _generalListeners =
@@ -67,7 +69,19 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   @Override
   public void addEventListener(IDISEventListener handler)
   {
-    _eventListeners.add(handler);
+    addEventListener(handler, null);
+  }
+
+  @Override
+  public void addEventListener(IDISEventListener handler, Integer eType)
+  {
+    List<IDISEventListener> matches = _eventListeners.get(null);
+    if (matches == null)
+    {
+      matches = new ArrayList<IDISEventListener>();
+      _eventListeners.put(null, matches);
+    }
+    matches.add(handler);
   }
 
   @Override
@@ -132,6 +146,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     short eid = pdu.getExerciseID();
     long time = convertTime(pdu.getTimestamp());
     int originator = pdu.getOriginatingEntityID().getEntity();
+    int eType = (int) pdu.getEventType();
     String msg = "Empty";
 
     // try to get the data
@@ -152,11 +167,28 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       msg = new String(bytes);
     }
 
-    Iterator<IDISEventListener> eIter = _eventListeners.iterator();
-    while (eIter.hasNext())
+    // first send out to general listeners
+    List<IDISEventListener> generalListeners = _eventListeners.get(null);
+    if (generalListeners != null)
     {
-      IDISEventListener thisE = (IDISEventListener) eIter.next();
-      thisE.add(time, eid, originator, msg);
+      Iterator<IDISEventListener> eIter = generalListeners.iterator();
+      while (eIter.hasNext())
+      {
+        IDISEventListener thisE = (IDISEventListener) eIter.next();
+        thisE.add(time, eid, originator, eType, msg);
+      }
+    }
+
+    // and now specific listeners
+    List<IDISEventListener> specificListeners = _eventListeners.get(eType);
+    if (specificListeners != null)
+    {
+      Iterator<IDISEventListener> eIter = specificListeners.iterator();
+      while (eIter.hasNext())
+      {
+        IDISEventListener thisE = (IDISEventListener) eIter.next();
+        thisE.add(time, eid, originator, eType, msg);
+      }
     }
 
   }
@@ -331,7 +363,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     _stopListeners.add(idisStopListener);
   }
 
-  /** encapsulate timestamp conversions
+  /**
+   * encapsulate timestamp conversions
    * 
    * @param timeStamp
    * @return
@@ -340,5 +373,5 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   {
     return timeStamp * 60000;
   }
-  
+
 }
