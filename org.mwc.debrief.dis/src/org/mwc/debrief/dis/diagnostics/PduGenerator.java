@@ -15,6 +15,7 @@ import java.util.Scanner;
 
 import org.mwc.debrief.dis.diagnostics.senders.IPduSender;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
+import org.mwc.debrief.dis.listeners.IDISEventListener;
 
 import edu.nps.moves.dis.CollisionPdu;
 import edu.nps.moves.dis.DetonationPdu;
@@ -72,6 +73,8 @@ public class PduGenerator
     public int targetId = -1;
 
     final public int hostId;
+    
+    Vessel myTarget = null;
 
     private Torpedo(final int id, final int hostId, final short force,
         double oLat, double oLong, int targetId)
@@ -93,8 +96,6 @@ public class PduGenerator
       // hmm, do we have a target?
       if (targetId != -1)
       {
-        Vessel myTarget = null;
-
         // does this target exist
         Vessel[] parts = states.values().toArray(new Vessel[]
         {null});
@@ -145,12 +146,17 @@ public class PduGenerator
           {
             double bearing = Math.atan2(dLon, dLat);
             courseRads = bearing;
+            
+            // hmm, do we already know about our target?
+            if(myTarget == null)
+            {
+              // nope, share the good news
+              final String msg = "New target found for:" + id;
+              sendMessage(exerciseId, lastTime, IDISEventListener.EVENT_TACTICS_CHANGE, sampleId,
+              msg, sender);
+            }
+            
             myTarget = thisP;
-
-            // target lost, forget about it
-            // final String theMsg =
-            // "platform:" + id + " turned towards:" + targetId;
-            // sendMessage(exerciseId, lastTime, 12, sampleId, theMsg);
           }
 
         }
@@ -164,7 +170,8 @@ public class PduGenerator
           // target lost, forget about it
           final String theMsg =
               "target for:" + id + " was lost, was:" + targetId;
-          sendMessage(exerciseId, lastTime, 12, sampleId, theMsg, sender);
+          sendMessage(exerciseId, lastTime, IDISEventListener.EVENT_TACTICS_CHANGE, sampleId,
+              theMsg, sender);
           System.out.println(theMsg);
           targetId = -1;
 

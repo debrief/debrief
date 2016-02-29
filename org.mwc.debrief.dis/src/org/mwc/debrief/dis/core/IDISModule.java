@@ -28,6 +28,13 @@ public interface IDISModule
 
   void addEventListener(IDISEventListener handler);
 
+  /** register an event listener who wants to know about
+   * a particular type of event
+   * @param handler
+   * @param eType type of event (or null for all)
+   */
+  void addEventListener(IDISEventListener handler, Integer eType);
+
   void addStopListener(IDISStopListener idisStopListener);
 
   void addFireListener(IDISFireListener handler);
