@@ -826,32 +826,47 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		_plotRelative = plotRelative;
 	}
 
-	@Override
-	public void setWrapper(final TrackWrapper wrapper)
-	{
+  @Override
+  public void setWrapper(final TrackWrapper wrapper)
+  {
 
-		// is it different?
-		if (wrapper == _myTrack)
-			return;
+    // is it different?
+    if (wrapper == _myTrack)
+      return;
 
-		// store the value
-		super.setWrapper(wrapper);
+    // ok, and clear the property change listeners, if necessary
+    if (_myTrack != null)
+    {
+      // work through our fixes
+      final Collection<Editable> items = getData();
+      for (final Iterator<Editable> iterator = items.iterator(); iterator
+          .hasNext();)
+      {
+        final FixWrapper fix = (FixWrapper) iterator.next();
+        // now clear this property listener
+        fix.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+            _myTrack.getLocationListener());
+      }
+    }
 
-		if (wrapper != null)
-		{
-			// update our segments
-			final Collection<Editable> items = getData();
-			for (final Iterator<Editable> iterator = items.iterator(); iterator
-					.hasNext();)
-			{
-				final FixWrapper fix = (FixWrapper) iterator.next();
-				fix.setTrackWrapper(_myTrack);
-				// and let the track wrapper listen to location changed events
-				fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-						wrapper.getLocationListener());
-			}
-		}
-	}
+    // store the value
+    super.setWrapper(wrapper);
+
+    if (wrapper != null)
+    {
+      // update our segments
+      final Collection<Editable> items = getData();
+      for (final Iterator<Editable> iterator = items.iterator(); iterator
+          .hasNext();)
+      {
+        final FixWrapper fix = (FixWrapper) iterator.next();
+        fix.setTrackWrapper(_myTrack);
+        // and let the track wrapper listen to location changed events
+        fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, wrapper
+            .getLocationListener());
+      }
+    }
+  }
 
 	@Override
 	public void shift(final WorldVector vector)

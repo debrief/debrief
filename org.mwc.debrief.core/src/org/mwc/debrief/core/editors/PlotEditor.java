@@ -482,7 +482,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       public void dataExtended(Layers theData, Plottable newItem, Layer parent)
       {
         // ok, have a look at the pasted track
-        if (parent instanceof TrackWrapper)
+        if (parent instanceof TrackWrapper && newItem == null)
         {
           TrackWrapper tw = (TrackWrapper) parent;
           SegmentList segs = tw.getSegments();
@@ -513,10 +513,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                   rel.updateLayers(_myLayers);
                 }
               }
-
             }
           }
-        }
+        }        
       }
     });
   }

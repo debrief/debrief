@@ -934,6 +934,36 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // hey, sort out the positions
       sortOutRelativePositions();
+
+      // special case - see if it's a relative TMA segment,
+      // we many need some more sorting
+      if (point instanceof RelativeTMASegment)
+      {
+        RelativeTMASegment rt = (RelativeTMASegment) point;
+
+        // ok, try to update the layers. get the layers for an
+        // existing segment
+        SegmentList sl = this.getSegments();
+        Enumeration<Editable> sEnum = sl.elements();
+        while (sEnum.hasMoreElements())
+        {
+          TrackSegment thisS = (TrackSegment) sEnum.nextElement();
+          if (thisS != rt)
+          {
+            // ok, it's not this one. try the layers
+            if (thisS instanceof RelativeTMASegment)
+            {
+              final RelativeTMASegment oldR = (RelativeTMASegment) thisS;
+              final Layers hisL = oldR.getLayers();
+              if (hisL != rt.getLayers())
+              {
+                rt.updateLayers(hisL);
+                break;
+              }
+            }
+          }
+        }
+      }
     }
     else if (point instanceof Layer)
     {
