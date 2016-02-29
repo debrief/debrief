@@ -2816,8 +2816,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     // ok, sort out the correct location
     final FixWrapper hostFix;
-    if (getNameAtStart())
+    if (getNameAtStart() || endPoints.size() == 1)
     {
+      // ok, we're choosing to use the start for the location. Or,
+      // we've only got one fix - in which case the end "is" the start
       hostFix = endPoints.get(0);
     }
     else
