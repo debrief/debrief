@@ -44,7 +44,7 @@ public class DebriefEventListener extends DebriefCoreListener implements
       res = "TACTICS_CHANGE";
       break;
     default:
-      res = "EVENT (OTHER)";
+      res = "EVENT (" + thisId + ")";
       break;
     }
     
