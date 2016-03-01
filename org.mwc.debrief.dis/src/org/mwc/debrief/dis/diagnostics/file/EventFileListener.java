@@ -8,7 +8,7 @@ public class EventFileListener extends CoreFileListener implements
 
   public EventFileListener(String root, boolean toFile, boolean toScreen)
   {
-    super(root, toFile, toScreen, "event", "time, id, message");
+    super(root, toFile, toScreen, "event", "time, eid, id, name, message");
   }
 
   @Override
@@ -19,6 +19,10 @@ public class EventFileListener extends CoreFileListener implements
     out.append(time);
     out.append(", ");
     out.append(exerciseId);
+    out.append(", ");
+    out.append(id);
+    out.append(", ");
+    out.append(hisName);
     out.append(", ");
     out.append(message);
     out.append(LINE_BREAK);
