@@ -16,6 +16,7 @@ import java.util.Scanner;
 import org.mwc.debrief.dis.diagnostics.senders.IPduSender;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
+import org.mwc.debrief.dis.listeners.IDISFixListener;
 
 import edu.nps.moves.dis.CollisionPdu;
 import edu.nps.moves.dis.DetonationPdu;
@@ -59,9 +60,6 @@ public class PduGenerator
   private Collection<Vessel> blueParts = new ArrayList<Vessel>();
   private Collection<Vessel> greenParts = new ArrayList<Vessel>();
 
-  public static final short BLUE = 1;
-  public static final short RED = 2;
-  public static final short GREEN = 3;
 
   private class Torpedo extends Vessel
   {
@@ -455,13 +453,13 @@ public class PduGenerator
 
         switch (force)
         {
-        case BLUE:
+        case IDISFixListener.BLUE:
           blueParts.add(newS);
           break;
-        case RED:
+        case IDISFixListener.RED:
           redParts.add(newS);
           break;
-        case GREEN:
+        case IDISFixListener.GREEN:
           greenParts.add(newS);
           break;
         }
@@ -512,7 +510,7 @@ public class PduGenerator
           final String newName = "TORP_" + newId;
           
           Torpedo torpedo =
-              new Torpedo(newId, newName, launchPlatform.id, RED, launchPlatform.latVal,
+              new Torpedo(newId, newName, launchPlatform.id, IDISFixListener.RED, launchPlatform.latVal,
                   launchPlatform.longVal, targetId.id);
 
           // share the news
@@ -684,14 +682,14 @@ public class PduGenerator
     // remove it from the relevant list
     switch (firingPlatform.force)
     {
-    case BLUE:
+    case IDISFixListener.BLUE:
       System.err.println("blue should not detonate!");
       blueParts.remove(firingPlatform);
       break;
-    case RED:
+    case IDISFixListener.RED:
       redParts.remove(firingPlatform);
       break;
-    case GREEN:
+    case IDISFixListener.GREEN:
       System.err.println("green should not detonate!");
       greenParts.remove(firingPlatform);
       break;

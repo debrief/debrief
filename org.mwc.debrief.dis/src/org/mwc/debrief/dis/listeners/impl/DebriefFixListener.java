@@ -2,7 +2,6 @@ package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
 
-import org.mwc.debrief.dis.diagnostics.PduGenerator;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
 import Debrief.Wrappers.FixWrapper;
@@ -85,17 +84,21 @@ public class DebriefFixListener extends DebriefCoreListener implements
     Color theCol = null;
     switch (force)
     {
-    case PduGenerator.RED:
+    case RED:
       theCol = Color.red;
       break;
-    case PduGenerator.BLUE:
+    case BLUE:
       theCol = Color.blue;
       break;
-    case PduGenerator.GREEN:
+    case GREEN:
       theCol = Color.green;
+      break;
+    case OTHER:
+      theCol = Color.orange;
       break;
     default:
       System.err.println("NO, NO FORCE FOUND");
+      theCol = Color.yellow;
     }
     return theCol;
   }
