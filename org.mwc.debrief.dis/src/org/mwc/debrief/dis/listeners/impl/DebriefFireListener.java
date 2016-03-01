@@ -18,7 +18,7 @@ public class DebriefFireListener extends DebriefCoreListener implements
     IDISFireListener
 {
 
-  final private String MY_LAYER = "Launches";
+  final private String MY_LAYER = "WPN RELEASE";
 
   public DebriefFireListener(IDISContext context)
   {
@@ -26,12 +26,19 @@ public class DebriefFireListener extends DebriefCoreListener implements
   }
 
   @Override
-  public void add(final long time, short eid, int hisId, final double dLat,
-      final double dLon, final double depth)
+  public void add(final long time, short eid, int hisId, String hisName, int tgtId, String tgtName,
+      final double dLat, final double dLon, final double depth)
   {
-
-    final String firingName = "DIS_" + hisId;
-    final String message = "Launch of new platform:" + firingName;
+    final String firingName;
+    if(hisName != null)
+    {
+      firingName = hisName;
+    }
+    else
+    {
+      firingName = "DIS_" + hisId;
+    }
+    final String message = "Launch of new weapon from:" + firingName + " at:" + tgtName;
 
     // create the text marker
     addNewItem(eid, MY_LAYER, new ListenerHelper()
@@ -68,7 +75,7 @@ public class DebriefFireListener extends DebriefCoreListener implements
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(firingName, "LAUNCH", new HiResDate(time),
+            new NarrativeEntry(firingName, MY_LAYER, new HiResDate(time),
                 message);
         Color theColor = colorFor(firingName);
         newE.setColor(theColor);

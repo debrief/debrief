@@ -25,8 +25,8 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
   }
 
   @Override
-  public void add(final long time, short eid, int movingId, int recipientId,
-      final double dLat, final double dLon, final double depth)
+  public void add(final long time, short eid, int movingId, String hisName,
+      int recipientId, final double dLat, final double dLon, final double depth)
   {
 
     final String movingName = "DIS_" + movingId;

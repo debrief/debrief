@@ -24,11 +24,19 @@ public class DebriefFixListener extends DebriefCoreListener implements
 
   @Override
   public void add(final long time, short exerciseId, long id,
-      final short force, final double dLat, final double dLong,
-      final double depth, final double courseDegs, final double speedMS,
-      final int damage)
+      String eName, final short force, final double dLat,
+      final double dLong, final double depth, final double courseDegs,
+      final double speedMS, final int damage)
   {
-    final String theName = "DIS_" + id;
+    final String theName;
+    if (eName != null)
+    {
+      theName = eName;
+    }
+    else
+    {
+      theName = "DIS_" + id;
+    }
 
     super.addNewItem(exerciseId, theName, new ListenerHelper()
     {

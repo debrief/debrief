@@ -73,13 +73,13 @@ public class PduGenerator
     public int targetId = -1;
 
     final public int hostId;
-    
+
     Vessel myTarget = null;
 
-    private Torpedo(final int id, final int hostId, final short force,
+    private Torpedo(final int id, final String name, final int hostId, final short force,
         double oLat, double oLong, int targetId)
     {
-      super(id, force, oLat, oLong, 0);
+      super(id, name, force, oLat, oLong, 0);
 
       this.targetId = targetId;
       this.hostId = hostId;
@@ -146,16 +146,16 @@ public class PduGenerator
           {
             double bearing = Math.atan2(dLon, dLat);
             courseRads = bearing;
-            
+
             // hmm, do we already know about our target?
-            if(myTarget == null)
+            if (myTarget == null)
             {
               // nope, share the good news
-              final String msg = "New target found for:" + id;
-              sendMessage(exerciseId, lastTime, IDISEventListener.EVENT_TACTICS_CHANGE, sampleId,
-              msg, sender);
+              final String msg = "Target located";
+              sendMessage(exerciseId, lastTime,
+                  IDISEventListener.EVENT_TACTICS_CHANGE, sampleId, msg, sender);
             }
-            
+
             myTarget = thisP;
           }
 
@@ -170,8 +170,8 @@ public class PduGenerator
           // target lost, forget about it
           final String theMsg =
               "target for:" + id + " was lost, was:" + targetId;
-          sendMessage(exerciseId, lastTime, IDISEventListener.EVENT_TACTICS_CHANGE, sampleId,
-              theMsg, sender);
+          sendMessage(exerciseId, lastTime,
+              IDISEventListener.EVENT_TACTICS_CHANGE, sampleId, theMsg, sender);
           System.out.println(theMsg);
           targetId = -1;
 
@@ -214,11 +214,13 @@ public class PduGenerator
     protected int damage = NO_DAMAGE;
     final public short force;
     protected double speedVal;
+    final String name;
 
-    private Vessel(final int id, final short force, double oLat, double oLong,
+    private Vessel(final int id, final String name, final short force, double oLat, double oLong,
         double range)
     {
       this.id = id;
+      this.name = name;
       this.force = force;
       latVal = oLat + genny.nextDouble() * range;
       longVal = oLong + genny.nextDouble() * range;
@@ -442,7 +444,13 @@ public class PduGenerator
         short force = (short) (genny.nextInt(3) + 1);
 
         int eId = i + 1;// 1 + (int) (Math.random() * 20d);
-        Vessel newS = new Vessel(eId, force, startX, startY, randomArea);
+        final String name = "PLATFORM_" + eId;
+        Vessel newS = new Vessel(eId, name, force, startX, startY, randomArea);
+        eid.setEntity(eId);
+        
+        // share the news
+        sendLaunch(exerciseId, lastTime, eid, newS.name, sender);
+        
         states.put(eId, newS);
 
         switch (force)
@@ -501,9 +509,15 @@ public class PduGenerator
           Vessel targetId = selectRandomEntity(blueParts);
 
           final int newId = (int) (1000 + (genny.nextDouble() * 1000d));
+          final String newName = "TORP_" + newId;
+          
           Torpedo torpedo =
-              new Torpedo(newId, launchPlatform.id, RED, launchPlatform.latVal,
+              new Torpedo(newId, newName, launchPlatform.id, RED, launchPlatform.latVal,
                   launchPlatform.longVal, targetId.id);
+
+          // share the news
+          eid.setEntity(newId);
+          sendLaunch(exerciseId, lastTime, eid, newName, sender);
 
           // and remember it
           states.put(newId, torpedo);
@@ -515,6 +529,9 @@ public class PduGenerator
           fire.setTimestamp(lastTime);
           eid.setEntity(newId);
           fire.setFiringEntityID(eid);
+          
+          eid.setEntity(targetId.id);
+          fire.setTargetEntityID(eid);
 
           // and the location
           Vessel launcher = states.get(launchPlatform.id);
@@ -592,6 +609,14 @@ public class PduGenerator
 
     // and send it
     sender.sendPdu(espdu);
+  }
+
+  private void sendLaunch(short exerciseID, long lastTime, EntityID eid,
+      String newName, IPduSender sender)
+  {
+    String msg = "NAME:" + newName.trim();
+    sendMessage(exerciseId, lastTime, IDISEventListener.EVENT_LAUNCH, eid, msg,
+        sender);
   }
 
   private void sendMessage(short exerciseID, long lastTime, long eventType,
