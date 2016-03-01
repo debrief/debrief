@@ -164,7 +164,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     // entity state
     String hisName = _entityNames.get((int)hisId);
-    
+
     Iterator<IDISFixListener> fIter = _fixListeners.iterator();
     while (fIter.hasNext())
     {
@@ -289,6 +289,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       gPdu.logPDU(data);
     }
 
+    // whether to track all messages, to learn about what is being sent
+//    if(data.getPduType() != 1)
+//    {
+//      System.out.println(data);
+//    }
+    
     // and now the specific listeners
     final short type = data.getPduType();
     switch (type)
