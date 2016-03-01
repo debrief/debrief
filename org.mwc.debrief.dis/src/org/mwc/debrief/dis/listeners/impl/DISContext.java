@@ -62,7 +62,7 @@ abstract public class DISContext implements IDISContext,
   private boolean updating = false;
 
   /**
-   * construcutor, handle some internal initialisation
+   * constructor, handle some internal initialisation
    * 
    */
   public DISContext(final PartMonitor pm)
@@ -176,6 +176,11 @@ abstract public class DISContext implements IDISContext,
 
       final IWorkbenchWindow window =
           PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+      if(window == null)
+      {
+        // handle case where application is closing
+        return null;
+      }
       final IWorkbenchPage page = window.getActivePage();
       final IEditorPart editor = page.getActiveEditor();
 

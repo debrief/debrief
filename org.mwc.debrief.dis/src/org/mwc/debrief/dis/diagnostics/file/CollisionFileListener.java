@@ -13,8 +13,8 @@ public class CollisionFileListener extends CoreFileListener implements
   }
 
   @Override
-  public void add(long time, short eid, int movingId, int recipientId,
-      double dLat, double dLon, double depth)
+  public void add(long time, short eid, int movingId, String hisName,
+      int recipientId, double dLat, double dLon, double depth)
   {
     // create the line
     StringBuffer out = new StringBuffer();

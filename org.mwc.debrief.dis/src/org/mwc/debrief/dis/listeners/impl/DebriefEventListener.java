@@ -52,9 +52,18 @@ public class DebriefEventListener extends DebriefCoreListener implements
   }
   
   @Override
-  public void add(final long time, short eid, long id, final int eType, final String message)
+  public void add(final long time, short eid, long id, String hisName, final int eType, final String message)
   {
-    final String theName = "DIS_" + id;
+    
+    final String theName;
+    if (hisName != null)
+    {
+      theName = hisName;
+    }
+    else
+    {
+      theName = "DIS_" + id;
+    }
     
     // and the narrative entry
     addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()

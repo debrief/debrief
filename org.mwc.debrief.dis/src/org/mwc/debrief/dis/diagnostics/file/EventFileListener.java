@@ -12,7 +12,7 @@ public class EventFileListener extends CoreFileListener implements
   }
 
   @Override
-  public void add(long time, short exerciseId, long id, int eventType, String message)
+  public void add(long time, short exerciseId, long id, String hisName, int eventType, String message)
   {
     // create the line
     StringBuffer out = new StringBuffer();

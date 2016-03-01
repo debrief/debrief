@@ -40,8 +40,8 @@ public class DISListenerTest
 
     module.addCollisionListener(new IDISCollisionListener()
     {
-      public void add(long time, short eid, int movingId, int recipientId,
-          double dLat, double dLon, double depth)
+      public void add(long time, short eid, int movingId, String hisName,
+          int recipientId, double dLat, double dLon, double depth)
       {
         collMessages.add("collision at:" + time);
       }
@@ -49,22 +49,22 @@ public class DISListenerTest
     module.addFireListener(new IDISFireListener()
     {
       public void
-          add(long time, short eid, int hisId, double y, double x, double z)
+          add(long time, short eid, int hisId, String hisName, int tgtId, String tgtName, double y, double x, double z)
       {
         fireMessages.add("fire at:" + time);
       }
     });
     module.addFixListener(new IDISFixListener()
     {
-      public void add(long time, short exerciseId, long id, short force,
-          double dLat, double dLong, double depth, double courseDegs, double speedMS, final int damage)
+      public void add(long time, short exerciseId, long id, String eName,
+          short force, double dLat, double dLong, double depth, double courseDegs, double speedMS, final int damage)
       {
         fixMessages.add("fix at:" + time);
       }
     });
     module.addEventListener(new IDISEventListener()
     {
-      public void add(long time, short exerciseId, long id, int eventType, String message)
+      public void add(long time, short exerciseId, long id, String hisName, int eventType, String message)
       {
         eventMessages.add("event at:" + time);
       }

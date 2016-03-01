@@ -8,13 +8,13 @@ public class FireFileListener extends CoreFileListener implements
 
   public FireFileListener(String root, boolean toFile, boolean toScreen)
   {
-    super(root, toFile, toScreen, "fire", "time, id, hisId, x, y, z");
+    super(root, toFile, toScreen, "fire", "time, exid, hisId, hisName, tgtId, tgtName, x, y, z");
   }
 
 
   @Override
   public void
-      add(long time, short eid, int hisId, double y, double x, double z)
+      add(long time, short eid, int hisId, String hisName, int tgtId, String tgtName, final double dLat, final double dLon, final double depth)
   {
     // create the line
     StringBuffer out = new StringBuffer();
@@ -24,11 +24,17 @@ public class FireFileListener extends CoreFileListener implements
     out.append(", ");
     out.append(hisId);
     out.append(", ");
-    out.append(x);
+    out.append(hisName);
     out.append(", ");
-    out.append(y);
+    out.append(tgtId);
     out.append(", ");
-    out.append(z);
+    out.append(tgtName);
+    out.append(", ");
+    out.append(dLat);
+    out.append(", ");
+    out.append(dLon);
+    out.append(", ");
+    out.append(depth);
     out.append(LINE_BREAK);
 
     // done, write it

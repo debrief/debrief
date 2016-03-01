@@ -12,8 +12,8 @@ public class DetonateFileListener extends CoreFileListener implements
   }
 
   @Override
-  public void add(long time, short eid, int hisId, double dLat, double dLon,
-      double depth)
+  public void add(long time, short eid, int hisId, String hisName, double dLat,
+      double dLon, double depth)
   {
     // create the line
     StringBuffer out = new StringBuffer();

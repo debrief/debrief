@@ -25,11 +25,19 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
   }
 
   @Override
-  public void add(final long time, short eid, int hisId, final double dLat,
-      final double dLon, final double depth)
+  public void add(final long time, short eid, int hisId, String hisName,
+      final double dLat, final double dLon, final double depth)
   {
-
-    final String firingName = "DIS_" + hisId;
+    final String firingName;
+    if(hisName != null)
+    {
+      firingName = hisName;
+    }
+    else
+    {
+      firingName = "DIS_" + hisId;
+    }
+    
     final String message = "Detonation of platform:" + firingName;
 
     // create the text marker
