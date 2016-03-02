@@ -5,19 +5,16 @@ import java.awt.Color;
 import org.mwc.debrief.dis.listeners.IDISCollisionListener;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 
 public class DebriefCollisionListener  extends DebriefCoreListener implements IDISCollisionListener
 {
 
-  final private String MY_LAYER = "Collisions";
+//  final private String MY_LAYER = "Collisions";
 
   public DebriefCollisionListener(IDISContext context)
   {
