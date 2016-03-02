@@ -1091,7 +1091,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
    * @author ian
    * 
    */
-  public interface INewItemListener
+  public interface INewItemListener extends ExcludeFromRightClickEdit
   {
     /**
      * a new layer, or a new item has been added
