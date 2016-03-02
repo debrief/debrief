@@ -77,9 +77,8 @@ import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
-import edu.nps.moves.dis.Pdu;
-
 import MWC.GenericData.HiResDate;
+import edu.nps.moves.dis.Pdu;
 
 public class DisListenerView extends ViewPart implements IDISStopListener
 {
@@ -100,6 +99,17 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   private NetworkDISProvider _netProvider;
   protected Thread _simThread;
   protected Job _simJob;
+  
+  
+  /** flag for if time is already being updated
+   * 
+   */
+  boolean uiUpdating = false;
+  
+  /** our context
+   * 
+   */
+  private IDISContext _context;
 
   /**
    * we need to access the setting of live updates from outside the UI thread, so store it here.
@@ -143,14 +153,8 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     // (below)
     _myPartMonitor =
         new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-
-    setupListeners(_disModule);
-
-  }
-
-  private void setupListeners(final IDISModule module)
-  {
-    final IDISContext context = new DISContext(_myPartMonitor)
+    
+    _context = new DISContext(_myPartMonitor)
     {
       ControllableTime ct = null;
 
@@ -220,6 +224,14 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       }
     };
 
+
+    setupListeners(_disModule);
+
+  }
+
+  private void setupListeners(final IDISModule module)
+  {
+
     // listen for stop, so we can update the UI
     module.addStopListener(this);
 
@@ -229,14 +241,28 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       final long TIME_UNSET = module.convertTime(-1);
 
       long time = TIME_UNSET;
-
+      
       @Override
       public void logPDU(Pdu pdu)
       {
         long newTime = module.convertTime(pdu.getTimestamp());
         if (newTime != time && time != TIME_UNSET)
         {
-          context.setNewTime(time);
+          // are we already updating?
+          if(!uiUpdating)
+          {
+            // nope, go for it.
+            uiUpdating = true;
+            Display.getDefault().asyncExec(new Runnable(){
+
+              @Override
+              public void run()
+              {
+                _context.setNewTime(time);
+                _context.fireUpdate(null, null);
+                uiUpdating = false;
+              }});
+          }
         }
         time = newTime;
       }
@@ -250,11 +276,11 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     });
 
     // ok, Debrief fix listener
-    module.addFixListener(new DebriefFixListener(context));
-    module.addDetonationListener(new DebriefDetonationListener(context));
-    module.addEventListener(new DebriefEventListener(context));
-    module.addFireListener(new DebriefFireListener(context));
-    module.addCollisionListener(new DebriefCollisionListener(context));
+    module.addFixListener(new DebriefFixListener(_context));
+    module.addDetonationListener(new DebriefDetonationListener(_context));
+    module.addEventListener(new DebriefEventListener(_context));
+    module.addFireListener(new DebriefFireListener(_context));
+    module.addCollisionListener(new DebriefCollisionListener(_context));
     module.addStopListener(new IDISStopListener()
     {
 
@@ -283,6 +309,8 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     });
 
   }
+  
+  
 
   @Override
   public void createPartControl(Composite parent)
@@ -501,6 +529,19 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       public void widgetSelected(SelectionEvent e)
       {
         _doLiveUpdates = liveUpdatesButton.getSelection();
+        
+        // if it's being unselected, do a refresh all
+        if (liveUpdatesButton.getSelection())
+        {
+          Display.getDefault().syncExec(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              _context.fireUpdate(null, null);
+            }
+          });
+        }
       }
 
     });
