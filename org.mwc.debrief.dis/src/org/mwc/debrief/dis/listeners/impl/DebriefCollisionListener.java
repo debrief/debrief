@@ -33,26 +33,28 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
     final String recipeintName = "DIS_" + recipientId;
     final String message = "Collision between platform:" + movingName + " and " + recipeintName;
 
-    // create the text marker
-    addNewItem(eid, MY_LAYER, new ListenerHelper()
-    {
-
-      @Override
-      public Layer createLayer()
-      {
-        Layer newB = new BaseLayer();
-        newB.setName(MY_LAYER);
-        return newB;
-      }
-
-      @Override
-      public Plottable createItem()
-      {
-        WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-        Color theColor = colorFor(movingName);
-        return new LabelWrapper(message, newLoc, theColor);
-      }
-    });
+    // no - don't create a text label, since we
+    // don't receive a location in the collision PDU
+    // // create the text marker
+    // addNewItem(eid, MY_LAYER, new ListenerHelper()
+    // {
+    //
+    // @Override
+    // public Layer createLayer()
+    // {
+    // Layer newB = new BaseLayer();
+    // newB.setName(MY_LAYER);
+    // return newB;
+    // }
+    //
+    // @Override
+    // public Plottable createItem()
+    // {
+    // WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
+    // Color theColor = colorFor(movingName);
+    // return new LabelWrapper(message, newLoc, theColor);
+    // }
+    // });
 
     // and the narrative entry
     addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
