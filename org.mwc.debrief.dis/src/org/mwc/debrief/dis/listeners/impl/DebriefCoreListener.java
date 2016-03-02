@@ -99,14 +99,6 @@ public class DebriefCoreListener
 
     final Layer finalLayer = destination;
 
-    if (_context.getLiveUpdates())
-    {
-      // provide null item, to prevent the Outline view trying to show it
-      Plottable nullItem = null;
-
-      _context.fireUpdate(nullItem, finalLayer);
-    }
-
     // should we try any formatting?
     Iterator<INewItemListener> iter = _context.getNewItemListeners();
     while (iter.hasNext())
