@@ -158,6 +158,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import junit.framework.Assert;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
@@ -179,7 +180,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * the actual list of plottables
 	 */
 	// private TreeSet<Editable> _thePlottables;
-	private final SortedSet<Editable> _thePlottables;
+	private final ConcurrentSkipListSet<Editable> _thePlottables;
 
 	// protected com.sun.java.util.collections.Hashset _thePlottables;
 	/**
@@ -202,8 +203,9 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	// //////////////////////////////////////////////////////////////
 	public Plottables()
 	{
-		_thePlottables = Collections.synchronizedSortedSet(new TreeSet<Editable>(
-				new CompareEditables()));
+		_thePlottables = new ConcurrentSkipListSet<>(new CompareEditables());
+//		Collections.synchronizedSortedSet(new TreeSet<Editable>(
+//				new CompareEditables()));
 		_visible = true;
 	}
 
