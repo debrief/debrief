@@ -442,7 +442,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		// double-check we're not already ste to this
 		if (theArea.equals(super.getDataArea()))
 		{
-			System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
+			// System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
 			return;
 		}
 
