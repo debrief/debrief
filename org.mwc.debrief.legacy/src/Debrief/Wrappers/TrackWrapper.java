@@ -642,11 +642,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   private boolean _interpolatePoints = false;
 
   /**
-   * flag used to ensure we don't call paintFixes() from two threads
-   */
-  transient boolean _paintingFixes = false;
-
-  /**
    * the end of the track to plot the label
    */
   private boolean _LabelAtStart = true;
@@ -1266,9 +1261,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
-    // TODO: DEBUG: REMOVE: remove this diagnostics message
-   // Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
-
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
@@ -2725,8 +2717,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
             // add our position to the list - we'll output
             // the polyline at the end
-            _myPts[_ptCtr++] = thisP.x;
-            _myPts[_ptCtr++] = thisP.y;
+            if (_ptCtr < _myPts.length)
+            {
+              _myPts[_ptCtr++] = thisP.x;
+              _myPts[_ptCtr++] = thisP.y;
+            }
           }
           else
           {
