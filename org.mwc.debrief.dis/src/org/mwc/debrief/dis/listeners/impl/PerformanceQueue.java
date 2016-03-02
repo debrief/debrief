@@ -1,18 +1,21 @@
 package org.mwc.debrief.dis.listeners.impl;
 
-import java.util.ArrayDeque;
+import java.util.Date;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import junit.framework.TestCase;
 
 public class PerformanceQueue
 {
   final Queue<Long> myQue;
+  final String myName;
   private long _period;
 
-  public PerformanceQueue(long period)
+  public PerformanceQueue(long period, String name)
   {
-    myQue = new ArrayDeque<Long>();
+    myQue = new ConcurrentLinkedQueue<Long>();
+    myName = name;
     _period = period;
   }
 
@@ -21,7 +24,7 @@ public class PerformanceQueue
 
     public void testStack()
     {
-      PerformanceQueue pq = new PerformanceQueue(3000);
+      PerformanceQueue pq = new PerformanceQueue(3000, "test");
       pq.add(1000);
       assertEquals("correct len", 1, pq.size());
       assertEquals("correct freq", 0.0, pq.freqAt(1000));
@@ -60,17 +63,25 @@ public class PerformanceQueue
   public double freqAt(long time)
   {
     final double res;
+
+    if (myQue.isEmpty())
+      return 0;
+
     // what's the elapsed period:
     long period = time - myQue.peek();
-    
-    if(period == 0)
+
+    if (period == 0)
     {
       res = 0;
     }
     else
     {
-      res = myQue.size() / (double)period;
+      res = myQue.size() / (double) period;
     }
+
+    // throw in a flush
+    flush(time);
+
     return res;
   }
 
@@ -81,12 +92,17 @@ public class PerformanceQueue
 
   public void add(long timeNow)
   {
-    long _startTime = timeNow - _period;
-
     myQue.add(timeNow);
 
+    flush(timeNow);
+  }
+
+  private void flush(long timeNow)
+  {
+    long _startTime = timeNow - _period;
+
     // remove any that are too old
-    while (myQue.peek() <= _startTime)
+    while (!myQue.isEmpty() && myQue.peek() <= _startTime)
     {
       myQue.remove();
     }

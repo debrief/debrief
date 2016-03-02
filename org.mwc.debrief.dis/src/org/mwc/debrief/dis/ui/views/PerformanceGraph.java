@@ -30,8 +30,8 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
 
   private final ChartComposite _chart;
 
-  final private PerformanceQueue disQ = new PerformanceQueue(5000);
-  final private PerformanceQueue screenQ = new PerformanceQueue(5000);
+  final private PerformanceQueue disQ = new PerformanceQueue(5000, "Model");
+  final private PerformanceQueue screenQ = new PerformanceQueue(5000, "Screen");
 
   private Thread updateThread;
 
@@ -115,7 +115,7 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
             private void doThisQueue(PerformanceQueue queue, String name)
             {
               // store the new time in the queue
-              queue.add(new Date().getTime());
+            //  queue.add(new Date().getTime());
 
               double freq = queue.freqAt(new Date().getTime()) * 1000d;
 
@@ -154,6 +154,12 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
                   (DateAxis) _chart.getChart().getXYPlot().getDomainAxis();
               tAxis
                   .setRange(new Date(new Date().getTime() - 20000), new Date());
+              
+              _chart.getChart().getXYPlot().getRangeAxis().setAutoRange(true);
+              
+              // set the y axis minimum
+              _chart.getChart().getXYPlot().getRangeAxis().setLowerBound(0);
+
             }
 
           });
