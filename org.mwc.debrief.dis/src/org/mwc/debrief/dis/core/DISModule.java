@@ -164,6 +164,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     // entity state
     String hisName = _entityNames.get((int)hisId);
+    
+//    if(hisId == 1)
+//    {
+//      System.out.println(new java.util.Date(time));
+//    }
 
     Iterator<IDISFixListener> fIter = _fixListeners.iterator();
     while (fIter.hasNext())
@@ -237,11 +242,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private void handleDetonation(DetonationPdu pdu)
   {
     short eid = pdu.getExerciseID();
-    Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
     @SuppressWarnings("unused")
+    Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
     double[] locArr = new double[]
-    {eLoc.getX(), eLoc.getY(), eLoc.getZ()};
+    {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
     long time = pdu.getTimestamp();
     int hisId = pdu.getFiringEntityID().getEntity();
@@ -290,9 +295,10 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     }
 
     // whether to track all messages, to learn about what is being sent
-//    if(data.getPduType() != 1)
+//    if(data.getPduType() == 1)
 //    {
-//      System.out.println(data);
+//      EntityStatePdu esp = (EntityStatePdu) data;      
+//      System.out.println(new java.util.Date(convertTime(esp.getTimestamp())));
 //    }
     
     // and now the specific listeners
@@ -431,7 +437,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
    */
   public long convertTime(long timeStamp)
   {
-    return timeStamp * 60000;
+    return convertThisTime(timeStamp);
   }
 
+  public static long convertThisTime(long timeStamp)
+  {
+    return timeStamp * 60000;
+  }
 }
