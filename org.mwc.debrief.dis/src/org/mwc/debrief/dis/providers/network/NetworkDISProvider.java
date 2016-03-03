@@ -93,7 +93,8 @@ public class NetworkDISProvider implements IPDUProvider
     // hmm, disconnect was hanging, poss because it's synchronised
     // _listenerSocket.disconnect();
 
-    _listenerSocket.close();
+    if (_listenerSocket != null)
+      _listenerSocket.close();
   }
 
   /**
