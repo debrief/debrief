@@ -24,14 +24,25 @@ import edu.nps.moves.dis.Pdu;
 public class PerformanceGraph implements IDISGeneralPDUListener,
     IDISScenarioListener
 {
+
   private static final String SCREEN_NAME = "Screen Updates";
 
   private static final String SIM_NAME = "Model Updates";
 
   private final ChartComposite _chart;
+  
+  /** the length of time we display on the graph
+   * 
+   */
+  private static final int GRAPH_PERIOD = 30000;
+  
+  /** the length of time we average for
+   * 
+   */
+  final private long avgPeriod = 3000;
 
-  final private PerformanceQueue disQ = new PerformanceQueue(5000, "Model");
-  final private PerformanceQueue screenQ = new PerformanceQueue(5000, "Screen");
+  final private PerformanceQueue disQ = new PerformanceQueue(avgPeriod, "Model");
+  final private PerformanceQueue screenQ = new PerformanceQueue(avgPeriod, "Screen");
 
   private Thread updateThread;
 
@@ -153,7 +164,7 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
               DateAxis tAxis =
                   (DateAxis) _chart.getChart().getXYPlot().getDomainAxis();
               tAxis
-                  .setRange(new Date(new Date().getTime() - 20000), new Date());
+                  .setRange(new Date(new Date().getTime() - GRAPH_PERIOD), new Date());
               
               _chart.getChart().getXYPlot().getRangeAxis().setAutoRange(true);
               
