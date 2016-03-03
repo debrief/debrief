@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -37,6 +36,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.MessageBox;
@@ -87,10 +87,11 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   public static final String HELP_CONTEXT = "org.mwc.debrief.help.DISSupport";
   private Button connectButton;
   private Button disconnectButton;
-  private Button stopButton;
-  // private Button pauseButton;
-  // private Button resumeButton;
   private Button playButton;
+  private Button pauseButton;
+  private Button stopButton;
+  // private Button resumeButton;
+  private Button launchButton;
   private ChartComposite chartComposite;
   private Text pathText;
   private Button newPlotButton;
@@ -130,6 +131,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   protected SimulationRunner _simulationRunner;
   private PerformanceGraph _perfGraph;
   private PartMonitor _myPartMonitor;
+  private Group controlButtons;
 
   private void initModule()
   {
@@ -385,17 +387,21 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     layout.marginHeight = 5;
     buttonComposite.setLayout(layout);
 
-    connectButton = createButton(buttonComposite, "Connect", 2);
-    connectButton.addSelectionListener(new SelectionAdapter()
+    launchButton = createButton(buttonComposite, "Launch");
+    launchButton.addSelectionListener(new SelectionAdapter()
     {
 
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        doConnect();
+
+        doLaunch();
       }
 
     });
+
+
+
     disconnectButton = createButton(buttonComposite, "Disconnect", 2);
     disconnectButton.addSelectionListener(new SelectionAdapter()
     {
@@ -407,53 +413,6 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       }
 
     });
-
-    final Link link = new Link(buttonComposite, SWT.NONE);
-    gd = new GridData(SWT.END, SWT.FILL, false, false);
-    gd.horizontalSpan = 2;
-    link.setLayoutData(gd);
-    link.setText("<a href=\"id\">Server Prefs</a>");
-    link.addSelectionListener(new SelectionAdapter()
-    {
-      public void widgetSelected(SelectionEvent e)
-      {
-        PreferenceDialog dialog =
-            PreferencesUtil.createPreferenceDialogOn(link.getShell(),
-                DisPrefs.ID, null, null);
-        dialog.open();
-      }
-    });
-    link.setToolTipText("Dis Preferences");
-
-    stopButton = createButton(buttonComposite, "Stop");
-    stopButton.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        doStop();
-      }
-
-    });
-
-    playButton = createButton(buttonComposite, "Play");
-    playButton.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-
-        doPlay();
-      }
-
-    });
-
-    stopButton.setEnabled(false);
-    // pauseButton.setEnabled(false);
-    // resumeButton.setEnabled(false);
-    disconnectButton.setEnabled(false);
 
     Label label = new Label(buttonComposite, SWT.NONE);
     gd = new GridData(SWT.FILL, SWT.FILL, false, false);
@@ -507,56 +466,108 @@ public class DisListenerView extends ViewPart implements IDISStopListener
           return;
         }
         pathText.setText(result);
+      }
+    });
+    
+    ///////////////////////////
+    // Control
+    ///////////////////////////    
+    Composite controlHolder = new Composite(composite, SWT.NONE);
+    gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+    controlHolder.setLayoutData(gd);
+    layout = new GridLayout(2, false);
+    layout.marginWidth = 5;
+    layout.marginHeight = 5;
+    controlHolder.setLayout(layout);
 
+    final String LISTEN_STRING = "Listen to DIS";
+    connectButton = createButton(controlHolder, LISTEN_STRING, 1, SWT.TOGGLE | SWT.BOLD);
+    connectButton.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+        if(connectButton.getSelection())
+        {
+          doConnect();
+          connectButton.setText("Listening");
+        }
+        else
+        {
+          doDisconnect();
+          connectButton.setText(LISTEN_STRING);
+        }
       }
 
     });
 
-    Composite chartWrapperComposite = new Composite(composite, SWT.BORDER);
-    gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-    chartWrapperComposite.setLayoutData(gd);
-    layout = new GridLayout(1, false);
-    chartWrapperComposite.setLayout(layout);
-
-    XYDataset dataset = new TimeSeriesCollection();
-    JFreeChart theChart =
-        ChartFactory.createTimeSeriesChart("Line Chart", "Time", "Hertz",
-            dataset);
-    chartComposite =
-        new ChartComposite(chartWrapperComposite, SWT.NONE, theChart, 400, 600,
-            300, 200, 1800, 1800, true, true, true, true, true, true)
-        {
-          @Override
-          public void mouseUp(MouseEvent event)
-          {
-            super.mouseUp(event);
-            JFreeChart c = getChart();
-            if (c != null)
-            {
-              c.setNotify(true); // force redraw
-            }
-          }
-        };
-
-    fixChartComposite();
-
-    gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-    chartComposite.setLayoutData(gd);
-    layout = new GridLayout(1, false);
-    chartComposite.setLayout(layout);
-    theChart.getLegend().setVisible(true);
-    theChart.getLegend().setPosition(RectangleEdge.BOTTOM);
-    theChart.getTitle().setVisible(false);
-
-    Composite checkboxComposite = new Composite(composite, SWT.NONE);
+    controlButtons = new Group(controlHolder, SWT.NONE);
+    controlButtons.setText("Control");
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-    checkboxComposite.setLayoutData(gd);
-    layout = new GridLayout(2, false);
+    controlButtons.setLayoutData(gd);
+    layout = new GridLayout(3, false);
     layout.marginWidth = 5;
     layout.marginHeight = 5;
-    checkboxComposite.setLayout(layout);
+    controlButtons.setLayout(layout);
+    
+    playButton = createButton(controlButtons, "Play");
+    playButton.addSelectionListener(new SelectionAdapter()
+    {
 
-    newPlotButton = new Button(checkboxComposite, SWT.CHECK);
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+
+        doPlay();
+      }
+
+    });
+    
+    pauseButton = createButton(controlButtons, "Pause");
+    pauseButton.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+
+        doPause();
+      }
+
+    });
+
+    stopButton = createButton(controlButtons, "Stop");
+    stopButton.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+        doStop();
+      }
+
+    });
+
+    playButton.setEnabled(false);
+    pauseButton.setEnabled(false);
+    stopButton.setEnabled(false);
+    disconnectButton.setEnabled(false);
+
+
+    ///////////////////////////
+    // SETTINGS
+    ///////////////////////////    
+    Group settingsPanel = new Group(composite, SWT.NONE);
+    settingsPanel.setText("Settings");
+    gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+    settingsPanel.setLayoutData(gd);
+    layout = new GridLayout(3, false);
+    layout.marginWidth = 5;
+    layout.marginHeight = 5;
+    settingsPanel.setLayout(layout);
+
+    newPlotButton = new Button(settingsPanel, SWT.CHECK);
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
     newPlotButton.setLayoutData(gd);
     newPlotButton.setText("New plot per replication");
@@ -571,7 +582,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     });
     newPlotButton.setSelection(_newPlotPerReplication);
 
-    liveUpdatesButton = new Button(checkboxComposite, SWT.CHECK);
+    liveUpdatesButton = new Button(settingsPanel, SWT.CHECK);
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
     liveUpdatesButton.setLayoutData(gd);
     liveUpdatesButton.setText("Live updates");
@@ -600,20 +611,64 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     });
     liveUpdatesButton.setSelection(_doLiveUpdates);
 
-    fitToDataAction = new org.eclipse.jface.action.Action()
+    final Link link = new Link(settingsPanel, SWT.NONE);
+    gd = new GridData(SWT.END, SWT.FILL, false, false);
+    gd.horizontalSpan = 1;
+    link.setLayoutData(gd);
+    link.setText("<a href=\"id\">Server Prefs</a>");
+    link.addSelectionListener(new SelectionAdapter()
     {
-      public void run()
+      public void widgetSelected(SelectionEvent e)
       {
-        _fitToDataValue = fitToDataAction.isChecked();
+        PreferenceDialog dialog =
+            PreferencesUtil.createPreferenceDialogOn(link.getShell(),
+                DisPrefs.ID, null, null);
+        dialog.open();
       }
-    };
-    fitToDataAction.setChecked(_fitToDataValue);
-    fitToDataAction.setText("Fit to data");
-    fitToDataAction
-        .setToolTipText("Zoom the selected plot out to show the full data");
-    fitToDataAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/fit_to_win.png"));
+    });
+    link.setToolTipText("Dis Preferences");
 
+
+    ///////////////////////////
+    // CHART
+    ///////////////////////////
+    Composite chartPanel = new Composite(composite, SWT.BORDER);
+    gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+    chartPanel.setLayoutData(gd);
+    layout = new GridLayout(1, false);
+    chartPanel.setLayout(layout);
+
+    XYDataset dataset = new TimeSeriesCollection();
+    JFreeChart theChart =
+        ChartFactory.createTimeSeriesChart("Line Chart", "Time", "Hertz",
+            dataset);
+    chartComposite =
+        new ChartComposite(chartPanel, SWT.NONE, theChart, 400, 600,
+            300, 200, 1800, 1800, true, true, true, true, true, true)
+        {
+          @Override
+          public void mouseUp(MouseEvent event)
+          {
+            super.mouseUp(event);
+            JFreeChart c = getChart();
+            if (c != null)
+            {
+              c.setNotify(true); // force redraw
+            }
+          }
+        };
+
+    fixChartComposite();
+
+    gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+    chartComposite.setLayoutData(gd);
+    layout = new GridLayout(1, false);
+    chartComposite.setLayout(layout);
+    theChart.getLegend().setVisible(true);
+    theChart.getLegend().setPosition(RectangleEdge.BOTTOM);
+    theChart.getTitle().setVisible(false);
+
+    // ok, and the location commands
     contributeToActionBars();
 
     // ok, we can go for it
@@ -649,20 +704,32 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
   private void contributeToActionBars()
   {
+
+    fitToDataAction = new org.eclipse.jface.action.Action()
+    {
+      public void run()
+      {
+        _fitToDataValue = fitToDataAction.isChecked();
+      }
+    };
+    fitToDataAction.setChecked(_fitToDataValue);
+    fitToDataAction.setText("Fit to data");
+    fitToDataAction
+        .setToolTipText("Zoom the selected plot out to show the full data");
+    fitToDataAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/fit_to_win.png"));
+    
     final IActionBars bars = getViewSite().getActionBars();
     fillLocalPullDown(bars.getMenuManager());
-    fillLocalToolBar(bars.getToolBarManager());
+    
+    bars.getToolBarManager().add(fitToDataAction);
+    bars.getToolBarManager().add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
+
   }
 
   private void fillLocalPullDown(final IMenuManager manager)
   {
     manager.add(new Separator());
-    manager.add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
-  }
-
-  private void fillLocalToolBar(final IToolBarManager manager)
-  {
-    manager.add(fitToDataAction);
     manager.add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
   }
 
@@ -672,14 +739,20 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   }
 
   private Button createButton(Composite composite, String label,
-      int horizontalSpan)
+      int horizontalSpan, int style)
   {
-    Button button = new Button(composite, SWT.PUSH);
+    Button button = new Button(composite, style);
     GridData gd = new GridData(SWT.FILL, SWT.FILL, false, false);
     gd.horizontalSpan = horizontalSpan;
     button.setLayoutData(gd);
     button.setText(label);
     return button;
+  }
+
+  private Button createButton(Composite composite, String label,
+      int horizontalSpan)
+  {
+    return createButton(composite, label, horizontalSpan, SWT.PUSH);
   }
 
   @Override
@@ -689,12 +762,12 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
   }
 
-  private void doStop()
+  private void doKill()
   {
     _simulationRunner.stop();
 
     stopButton.setEnabled(false);
-    playButton.setEnabled(true);
+    launchButton.setEnabled(true);
 
     if (!connectButton.getSelection())
     {
@@ -722,32 +795,61 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
     _simulationRunner.run(inputPath);
 
-    playButton.setEnabled(false);
+    launchButton.setEnabled(false);
     stopButton.setEnabled(true);
 
   }
 
-  private void doPlay()
+  private void doLaunch()
   {
     IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     String pText = store.getString(DisActivator.PATH_TO_INPUT_FILE);
     doPlay(pText);
   }
 
+  private void doPlay()
+  {
+    playButton.setEnabled(false);
+    pauseButton.setEnabled(true);
+    stopButton.setEnabled(true);
+  }
+
+  private void doPause()
+  {
+    playButton.setEnabled(true);
+    pauseButton.setEnabled(false);
+    stopButton.setEnabled(true);
+  }
+  
+  private void doStop()
+  {
+    playButton.setEnabled(true);
+    pauseButton.setEnabled(false);
+    stopButton.setEnabled(false);
+
+    // tell the perf graph that we've finished
+    _perfGraph.complete("Stop button");
+  }
+
+
   private void doConnect()
   {
     _netProvider.attach();
-    connectButton.setEnabled(false);
-    disconnectButton.setEnabled(true);
-
+    
+    playButton.setEnabled(true);
+    pauseButton.setEnabled(false);
+    stopButton.setEnabled(false);
+    
     System.out.println("CONNECTED");
   }
 
   private void doDisconnect()
   {
     _netProvider.detach();
-    connectButton.setEnabled(true);
-    disconnectButton.setEnabled(false);
+    
+    playButton.setEnabled(false);
+    pauseButton.setEnabled(false);
+    stopButton.setEnabled(false);
   }
 
   @Override
