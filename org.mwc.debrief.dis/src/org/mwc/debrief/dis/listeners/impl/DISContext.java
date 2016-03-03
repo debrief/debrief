@@ -56,12 +56,6 @@ abstract public class DISContext implements IDISContext,
   short _currentEx = -1;
 
   /**
-   * whether we are currently processing an update
-   * 
-   */
-  private boolean updating = false;
-
-  /**
    * constructor, handle some internal initialisation
    * 
    */
@@ -448,33 +442,7 @@ abstract public class DISContext implements IDISContext,
   @Override
   public void fireUpdate(final Plottable newItem, final Layer layer)
   {
-    if (updating)
-    {
-      // System.out.println("SKIP UPDATE");
-    }
-    else
-    {
-      updating = true;
-      // pass the new item to the extended method in order to display it in
-      // the layer manager
-      // newItem = fw;
-      Display.getDefault().syncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          _myLayers.fireExtended(newItem, layer);
-
-          // hmm, do we need to resize?
-          if (getFitToData())
-          {
-            fitToWindow();
-          }
-          updating = false;
-        }
-      });
-    }
+    _myLayers.fireExtended(newItem, layer);
   }
 
   /*
