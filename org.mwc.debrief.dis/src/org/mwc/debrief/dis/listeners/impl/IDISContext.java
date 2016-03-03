@@ -36,6 +36,12 @@ public interface IDISContext
    * @return
    */
   boolean getFitToData();
+  
+  /** resize the plot to view all data
+   * 
+   */
+  void zoomToFit();
+  
 
   /** move the display time forward
    * 
