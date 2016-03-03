@@ -242,12 +242,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private void handleDetonation(DetonationPdu pdu)
   {
     short eid = pdu.getExerciseID();
-    @SuppressWarnings("unused")
-    Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
+//    Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
-    double[] locArr = new double[]
-    {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
-    double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+//    double[] locArr = new double[]
+//    {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
+  //  double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+    double[] worldCoords = new double[]{wLoc.getY(), wLoc.getX(), wLoc.getZ()};
     long time = pdu.getTimestamp();
     int hisId = pdu.getFiringEntityID().getEntity();
     
@@ -343,10 +343,6 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private void handleCollision(CollisionPdu pdu)
   {
     short eid = pdu.getExerciseID();
-    Vector3Float eLoc = pdu.getLocation();
-    double[] locArr = new double[]
-    {eLoc.getX(), eLoc.getY(), eLoc.getZ()};
-    double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
     long time = convertTime(pdu.getTimestamp());
     int receipientId = pdu.getIssuingEntityID().getEntity();
     int movingId = pdu.getCollidingEntityID().getEntity();
@@ -358,8 +354,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     while (dIter.hasNext())
     {
       IDISCollisionListener thisD = dIter.next();
-      thisD.add(time, eid, movingId, hisName, receipientId,
-          worldCoords[0], worldCoords[1], worldCoords[2]);
+      thisD.add(time, eid, movingId, hisName, receipientId);
     }
   }
 

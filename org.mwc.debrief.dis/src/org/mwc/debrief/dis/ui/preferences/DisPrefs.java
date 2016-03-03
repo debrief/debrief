@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
@@ -88,11 +89,6 @@ public class DisPrefs extends PreferencePage implements
     GridData gd3 = new GridData(SWT.LEFT, SWT.CENTER, false, false);
     iconLbl.setLayoutData(gd3);
     createLabel(composite, " ");
-    createLabel(composite, " ");
-
-    // put a help button at the top-right
-    createLabel(composite, " ");
-    createLabel(composite, " ");
     final Action act =
         CorePlugin.createOpenHelpAction(DisListenerView.HELP_CONTEXT, null,
             _myBench.getHelpSystem());
@@ -116,12 +112,21 @@ public class DisPrefs extends PreferencePage implements
     helpBtn.setLayoutData(gd2);
 
     // now the rest of the prefs
+    Group localSettings = new Group(composite, SWT.NONE);
+    gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+    gd.horizontalSpan = 3;
+    localSettings.setLayoutData(gd);
+    localSettings.setText("Local executable");    
+    layout = new GridLayout(3, false);
+    layout.marginWidth = 0;
+    layout.marginHeight = 0;
+    localSettings.setLayout(layout);
 
-    createLabel(composite, "Path to executable:");
+    createLabel(localSettings, "Path to executable:");
     simulationPathText =
-        createText(composite, DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
+        createText(localSettings, DisActivator.PATH_TO_SIMULATION_EXECUTABLE, 150);
 
-    final Button simulationPathBrowse = new Button(composite, SWT.PUSH);
+    final Button simulationPathBrowse = new Button(localSettings, SWT.PUSH);
     simulationPathBrowse.setText("Browse...");
     simulationPathBrowse.addSelectionListener(new SelectionAdapter()
     {
@@ -148,33 +153,34 @@ public class DisPrefs extends PreferencePage implements
 
     });
 
-    Composite discoverComposite = new Composite(composite, SWT.NONE);
+    Group serverSettings = new Group(composite, SWT.NONE);
+    serverSettings.setText("Server settings");
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
     gd.horizontalSpan = 3;
-    discoverComposite.setLayoutData(gd);
+    serverSettings.setLayoutData(gd);
     layout = new GridLayout(3, false);
     layout.marginWidth = 0;
     layout.marginHeight = 0;
-    discoverComposite.setLayout(layout);
+    serverSettings.setLayout(layout);
 
-    createLabel(discoverComposite, "IP Address");
-    createLabel(discoverComposite, "Port");
-    createLabel(discoverComposite, "");
+    createLabel(serverSettings, "IP Address");
+    createLabel(serverSettings, "Port");
+    createLabel(serverSettings, "");
 
-    ipAddressText = createText(discoverComposite, DisActivator.IP_ADDRESS);
-    portText = createText(discoverComposite, DisActivator.PORT);
-    final Button discoverButton = new Button(discoverComposite, SWT.PUSH);
-    discoverButton.setText("Discover");
-    discoverButton.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        // FIXME discover
-      }
-
-    });
+    ipAddressText = createText(serverSettings, DisActivator.IP_ADDRESS, 100);
+    portText = createText(serverSettings, DisActivator.PORT, 100);
+//    final Button discoverButton = new Button(serverSettings, SWT.PUSH);
+//    discoverButton.setText("Discover");
+//    discoverButton.addSelectionListener(new SelectionAdapter()
+//    {
+//
+//      @Override
+//      public void widgetSelected(SelectionEvent e)
+//      {
+//        // FIXME discover
+//      }
+//
+//    });
 
     simulationPathText.setFocus();
 
@@ -225,11 +231,15 @@ public class DisPrefs extends PreferencePage implements
     }
   }
 
-  private Text createText(Composite composite, String prefs)
+  private Text createText(Composite composite, String prefs, Integer widthHint)
   {
     GridData gd;
     Text text = new Text(composite, SWT.SINGLE | SWT.BORDER);
     gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+    if(widthHint != null)
+    {
+      gd.widthHint = widthHint;
+    }
     text.setLayoutData(gd);
     IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     String value = store.getString(prefs);
