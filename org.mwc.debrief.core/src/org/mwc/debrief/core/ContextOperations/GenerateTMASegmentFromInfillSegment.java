@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.cmap.core.wizards.RangeBearingPage;
 import org.mwc.debrief.core.wizards.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.EnterSolutionPage.SolutionDataItem;
 import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
@@ -46,7 +45,6 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-import MWC.GenericData.WorldVector;
 
 /**
  * @author ian.mayo
@@ -244,12 +242,6 @@ public class GenerateTMASegmentFromInfillSegment implements
 								return;
 							}
 						}
-					}
-					else
-					{
-						CorePlugin.logError(Status.WARNING,
-								"We only allow positions from infill segments", null);
-						return;
 					}
 				}
 				else
