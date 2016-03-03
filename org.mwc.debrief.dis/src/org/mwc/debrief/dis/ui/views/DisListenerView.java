@@ -415,7 +415,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     layout.marginHeight = 5;
     localGroup.setLayout(layout);
 
-    launchButton = new Button(localGroup, SWT.TOGGLE);
+    launchButton = new Button(localGroup, SWT.NONE);
     gd = new GridData(SWT.FILL, SWT.FILL, false, false);
     gd.widthHint = col1Width;
     launchButton.setText(LAUNCH_STRING);
@@ -426,15 +426,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        if(launchButton.getSelection())
-        {
-          doLaunch();
-          launchButton.setText("Running");
-        }
-        else
-        {
-          doKill();
-        }
+        doLaunch();
       }
 
     });
@@ -776,22 +768,18 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     launchButton.setFocus();
   }
 
-  private void doKill()
-  {
-    _simulationRunner.stop();
-
-    if (!connectButton.getSelection())
-    {
-      connectButton.setSelection(true);
-      doDisconnect();
-    }
-
-    // tell the perf graph that we've finished
-    _perfGraph.complete("Stop button");
-    
-    launchButton.setText(LAUNCH_STRING);
-
-  }
+//  private void doKill()
+//  {
+//    _simulationRunner.stop();
+//
+//    doDisconnect();
+//
+//    // tell the perf graph that we've finished
+//    _perfGraph.complete("Stop button");
+//    
+//    launchButton.setText(LAUNCH_STRING);
+//
+//  }
 
   /**
    * run the simulator, passing it the specified input file
@@ -836,7 +824,6 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   {
     doStop();
     doDisconnect();
-    doKill();
     launchButton.setFocus();
   }
 
@@ -873,7 +860,11 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     pauseButton.setEnabled(false);
     stopButton.setEnabled(false);
     
+    connectButton.setSelection(false);
     connectButton.setText(LISTEN_STRING);
+    
+    // also, stop the graph updating
+    _perfGraph.complete("Disconnected");
   }
 
   @Override
