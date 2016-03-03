@@ -442,6 +442,6 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
   public static long convertThisTime(long timeStamp)
   {
-    return timeStamp * 60000;
+    return timeStamp;
   }
 }
