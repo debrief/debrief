@@ -77,6 +77,7 @@ import org.mwc.debrief.dis.ui.preferences.DebriefDISNetPrefs;
 import org.mwc.debrief.dis.ui.preferences.DebriefDISSimulatorPrefs;
 import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
+import MWC.GUI.CanvasType;
 import MWC.GenericData.HiResDate;
 import edu.nps.moves.dis.Pdu;
 
@@ -99,14 +100,15 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   private NetworkDISProvider _netProvider;
   protected Thread _simThread;
   protected Job _simJob;
-  
-  
-  /** flag for if time is already being updated
+
+  /**
+   * flag for if time is already being updated
    * 
    */
-  boolean uiUpdating = false;
-  
-  /** our context
+  boolean updatePending = false;
+
+  /**
+   * our context
    * 
    */
   private IDISContext _context;
@@ -153,7 +155,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     // (below)
     _myPartMonitor =
         new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-    
+
     _context = new DISContext(_myPartMonitor)
     {
       ControllableTime ct = null;
@@ -222,8 +224,42 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       {
         _perfGraph.screenUpdate();
       }
-    };
 
+      @Override
+      public void zoomToFit()
+      {
+        Runnable doUpdate = new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            final IWorkbench wb = PlatformUI.getWorkbench();
+            final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+            if (win != null)
+            {
+              final IWorkbenchPage page = win.getActivePage();
+              final IEditorPart editor = page.getActiveEditor();
+              if (editor != null)
+              {
+                CanvasType canvas = (CanvasType) editor.getAdapter(CanvasType.class);
+                canvas.rescale();
+              }
+            }
+          }
+        };
+        
+        // check we're in the UI thread
+        if(Display.getCurrent() != null && Thread.currentThread().equals(Display.getCurrent().getThread()))
+        {
+          doUpdate.run();
+        }
+        else
+        {
+          Display.getCurrent().asyncExec(doUpdate);
+        }
+        
+      }
+    };
 
     setupListeners(_disModule);
 
@@ -241,7 +277,8 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       final long TIME_UNSET = module.convertTime(-1);
 
       long time = TIME_UNSET;
-      
+      long lastTime = TIME_UNSET;
+
       @Override
       public void logPDU(Pdu pdu)
       {
@@ -249,19 +286,38 @@ public class DisListenerView extends ViewPart implements IDISStopListener
         if (newTime != time && time != TIME_UNSET)
         {
           // are we already updating?
-          if(!uiUpdating)
+          if (!updatePending)
           {
             // nope, go for it.
-            uiUpdating = true;
-            Display.getDefault().asyncExec(new Runnable(){
+            updatePending = true;
+            Display.getDefault().asyncExec(new Runnable()
+            {
 
               @Override
               public void run()
               {
-                _context.setNewTime(time);
-                _context.fireUpdate(null, null);
-                uiUpdating = false;
-              }});
+                if (_doLiveUpdates)
+                {
+                  // first the data model
+                  _context.fireUpdate(null, null);
+
+                  // now the time
+                  if (time > lastTime)
+                  {
+                    _context.setNewTime(time);
+                    
+                    // hey, should we fit to window?
+                    if(_fitToDataValue)
+                    {
+                      _context.zoomToFit();
+                    }
+                    
+                    lastTime = time;
+                  }
+                }
+                updatePending = false;
+              }
+            });
           }
         }
         time = newTime;
@@ -307,10 +363,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
         });
       }
     });
-
   }
-  
-  
 
   @Override
   public void createPartControl(Composite parent)
@@ -529,7 +582,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       public void widgetSelected(SelectionEvent e)
       {
         _doLiveUpdates = liveUpdatesButton.getSelection();
-        
+
         // if it's being unselected, do a refresh all
         if (liveUpdatesButton.getSelection())
         {
@@ -655,6 +708,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
   /**
    * run the simulator, passing it the specified input file
+   * 
    * @param inputPath
    */
   public void doPlay(String inputPath)
@@ -670,7 +724,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
     playButton.setEnabled(false);
     stopButton.setEnabled(true);
-    
+
   }
 
   private void doPlay()
