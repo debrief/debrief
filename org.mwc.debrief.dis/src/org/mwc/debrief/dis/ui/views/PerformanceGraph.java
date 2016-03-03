@@ -86,7 +86,10 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
     screenQ.add(new Date().getTime());
 
     // run the graph, if we have to
-    startUpdates();
+    
+    // no, don't. let's trigger updates based on model activity,
+    // else the graph will start redrawing as we resize the plot
+    // startUpdates();
   }
 
   protected boolean _terminate = false;
