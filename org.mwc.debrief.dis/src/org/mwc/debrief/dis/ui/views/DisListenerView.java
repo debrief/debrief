@@ -770,33 +770,10 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     manager.add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
   }
 
-  private Button createButton(Composite composite, String label)
-  {
-    return createButton(composite, label, 1);
-  }
-
-  private Button createButton(Composite composite, String label,
-      int horizontalSpan, int style)
-  {
-    Button button = new Button(composite, style);
-    GridData gd = new GridData(SWT.FILL, SWT.FILL, false, false);
-    gd.horizontalSpan = horizontalSpan;
-    button.setLayoutData(gd);
-    button.setText(label);
-    return button;
-  }
-
-  private Button createButton(Composite composite, String label,
-      int horizontalSpan)
-  {
-    return createButton(composite, label, horizontalSpan, SWT.PUSH);
-  }
-
   @Override
   public void setFocus()
   {
-    // TODO Auto-generated method stub
-
+    launchButton.setFocus();
   }
 
   private void doKill()
