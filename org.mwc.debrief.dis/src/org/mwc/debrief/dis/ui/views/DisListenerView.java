@@ -17,6 +17,7 @@ package org.mwc.debrief.dis.ui.views;
 import java.lang.reflect.Field;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -63,6 +64,7 @@ import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
+import org.mwc.debrief.dis.listeners.IDISStartResumeListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefCollisionListener;
@@ -71,6 +73,9 @@ import org.mwc.debrief.dis.listeners.impl.DebriefEventListener;
 import org.mwc.debrief.dis.listeners.impl.DebriefFireListener;
 import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
 import org.mwc.debrief.dis.listeners.impl.IDISContext;
+import org.mwc.debrief.dis.providers.DISFilters;
+import org.mwc.debrief.dis.providers.IPDUProvider;
+import org.mwc.debrief.dis.providers.network.IDISController;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 import org.mwc.debrief.dis.runner.SimulationRunner;
@@ -80,6 +85,7 @@ import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.HiResDate;
+import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.Pdu;
 
 public class DisListenerView extends ViewPart implements IDISStopListener
@@ -97,8 +103,8 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   private Button newPlotButton;
   private Button liveUpdatesButton;
   private Action fitToDataAction;
-  private DISModule _disModule;
-  private NetworkDISProvider _netProvider;
+  private IDISModule _disModule;
+  private IPDUProvider _netProvider;
   protected Thread _simThread;
   protected Job _simJob;
 
@@ -132,11 +138,12 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   private PerformanceGraph _perfGraph;
   private PartMonitor _myPartMonitor;
   private Group controlButtons;
-  
+
   final String LAUNCH_STRING = "Launch";
   final String LISTEN_STRING = "Listen";
+  private IDISController _disController;
+  private EntityID _ourID;
 
-  
   private void initModule()
   {
 
@@ -146,14 +153,16 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     IDISNetworkPrefs netPrefs = new DebriefDISNetPrefs();
 
     // get the network data source
-    _netProvider = new NetworkDISProvider(netPrefs);
+    NetworkDISProvider prov = new NetworkDISProvider(netPrefs);
+    _netProvider = prov;
+    _disController = prov;
 
     _disModule = new DISModule();
     _disModule.setProvider(_netProvider);
 
     _perfGraph = new PerformanceGraph(chartComposite);
     _disModule.addGeneralPDUListener(_perfGraph);
-    _disModule.addScenarioListener(_perfGraph);
+    // _disModule.addScenarioListener(_perfGraph);
 
     _simulationRunner = new SimulationRunner(_simPrefs);
 
@@ -344,37 +353,15 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     module.addDetonationListener(new DebriefDetonationListener(_context));
     module.addEventListener(new DebriefEventListener(_context));
     module.addFireListener(new DebriefFireListener(_context));
-    module.addCollisionListener(new DebriefCollisionListener(_context));
-    module.addStopListener(new IDISStopListener()
+    module.addStartResumeListener(new IDISStartResumeListener()
     {
-
       @Override
-      public void stop(long time, short eid, final short reason)
+      public void add(long time, short eid)
       {
-        Display.getDefault().syncExec(new Runnable()
-        {
-
-          @Override
-          public void run()
-          {
-            // update the UI
-            stopReceived();
-            
-            // ok, popup message
-            MessageBox dialog =
-                new MessageBox(PlatformUI.getWorkbench()
-                    .getActiveWorkbenchWindow().getShell(), SWT.OK);
-            dialog.setText("DIS Interface");
-            dialog.setMessage("The simulation has completed, with reason: "
-                + reason);
-
-            // open dialog
-            dialog.open();
-          }
-        });
-        
+        playHeard();
       }
     });
+    module.addCollisionListener(new DebriefCollisionListener(_context));
   }
 
   @Override
@@ -382,7 +369,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   {
     // height of the DIS icon, and the Listen button
     final int col1Width = 80;
-    
+
     Composite composite = new Composite(parent, SWT.NONE);
     GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
     composite.setLayoutData(gd);
@@ -403,7 +390,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     iconLbl.setImage(AbstractUIPlugin.imageDescriptorFromPlugin(
         "org.mwc.debrief.dis", "icons/50px/dis_icon.png").createImage());
     GridData gd3 = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-    gd3.widthHint=col1Width;
+    gd3.widthHint = col1Width;
     iconLbl.setLayoutData(gd3);
 
     Group localGroup = new Group(topRow, SWT.NONE);
@@ -432,7 +419,9 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     });
 
     Label label = new Label(localGroup, SWT.NONE);
-    gd = new GridData(GridData.HORIZONTAL_ALIGN_END, GridData.VERTICAL_ALIGN_CENTER, false, true);
+    gd =
+        new GridData(GridData.HORIZONTAL_ALIGN_END,
+            GridData.VERTICAL_ALIGN_CENTER, false, true);
     gd.verticalIndent = 6;
     label.setLayoutData(gd);
     label.setText("Control file:");
@@ -499,8 +488,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     layout.marginWidth = 5;
     layout.marginHeight = 5;
     controlHolder.setLayout(layout);
-    
-    
+
     connectButton = new Button(controlHolder, SWT.TOGGLE);
     connectButton.setText(LISTEN_STRING);
     gd = new GridData(SWT.FILL, SWT.FILL, false, false);
@@ -543,8 +531,9 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       @Override
       public void widgetSelected(SelectionEvent e)
       {
+        sendPlay();
 
-        doPlay();
+        // doPlay();
       }
 
     });
@@ -555,14 +544,12 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     pauseButton.setLayoutData(gd);
     pauseButton.addSelectionListener(new SelectionAdapter()
     {
-
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-
-        doPause();
+        _disController.sendPause();
+        // doPause();
       }
-
     });
 
     stopButton = new Button(controlButtons, SWT.NONE);
@@ -575,7 +562,8 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        doStop();
+        _disController.sendStop();
+        // doStop();
       }
 
     });
@@ -693,8 +681,11 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     layout = new GridLayout(1, false);
     chartComposite.setLayout(layout);
     theChart.getLegend().setVisible(true);
-    theChart.getLegend().setPosition(RectangleEdge.BOTTOM);
+    theChart.getLegend().setPosition(RectangleEdge.TOP);
     theChart.getTitle().setVisible(false);
+
+    // create our unique originating ID
+    createEntityID();
 
     // ok, and the location commands
     contributeToActionBars();
@@ -704,6 +695,15 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
     // ok, sort out the help
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HELP_CONTEXT);
+  }
+
+  private void createEntityID()
+  {
+    _ourID = new EntityID();
+    _ourID.setApplication((short) DisActivator.getDefault()
+        .getPreferenceStore().getInt(DisActivator.APP_ID));
+    _ourID.setSite((short) DisActivator.getDefault().getPreferenceStore()
+        .getInt(DisActivator.SITE_ID));
   }
 
   private void fixChartComposite()
@@ -768,18 +768,18 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     launchButton.setFocus();
   }
 
-//  private void doKill()
-//  {
-//    _simulationRunner.stop();
-//
-//    doDisconnect();
-//
-//    // tell the perf graph that we've finished
-//    _perfGraph.complete("Stop button");
-//    
-//    launchButton.setText(LAUNCH_STRING);
-//
-//  }
+  // private void doKill()
+  // {
+  // _simulationRunner.stop();
+  //
+  // doDisconnect();
+  //
+  // // tell the perf graph that we've finished
+  // _perfGraph.complete("Stop button");
+  //
+  // launchButton.setText(LAUNCH_STRING);
+  //
+  // }
 
   /**
    * run the simulator, passing it the specified input file
@@ -793,7 +793,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     {
       connectButton.setSelection(true);
       doConnect();
-      doPlay();
+      // doPlay();
     }
 
     _simulationRunner.run(inputPath);
@@ -820,14 +820,6 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     stopButton.setEnabled(true);
   }
 
-  protected void stopReceived()
-  {
-    doStop();
-    doDisconnect();
-    launchButton.setFocus();
-  }
-
-
   private void doStop()
   {
     playButton.setEnabled(true);
@@ -836,20 +828,46 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
     // tell the perf graph that we've finished
     _perfGraph.complete("Stop button");
+
+    // tell the context that it's complete
+    _context.scenarioComplete();
+
+    _perfGraph.complete("Stopped");
+  }
+
+  protected void stopReceived()
+  {
+    doStop();
+    doDisconnect();
+    launchButton.setFocus();
+  }
+
+  protected void pauseReceived()
+  {
+    doPause();
   }
 
   private void doConnect()
   {
-    _netProvider.attach();
+    // collate the prefs
+    final String app =
+        DisActivator.getDefault().getPreferenceStore().getString(
+            DisActivator.APP_FILTER);
+    final String site =
+        DisActivator.getDefault().getPreferenceStore().getString(
+            DisActivator.SITE_FILTER);
+    final String ex =
+        DisActivator.getDefault().getPreferenceStore().getString(
+            DisActivator.EXERCISE_FILTER);
+
+    final DISFilters filter = new DISFilters(app, site, ex);
+    _netProvider.attach(filter, _ourID);
 
     playButton.setEnabled(true);
     pauseButton.setEnabled(false);
     stopButton.setEnabled(false);
 
-    System.out.println("CONNECTED");
-    
     connectButton.setText("Listening");
-
   }
 
   private void doDisconnect()
@@ -859,16 +877,63 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     playButton.setEnabled(false);
     pauseButton.setEnabled(false);
     stopButton.setEnabled(false);
-    
+
     connectButton.setSelection(false);
     connectButton.setText(LISTEN_STRING);
-    
+
     // also, stop the graph updating
     _perfGraph.complete("Disconnected");
   }
 
   @Override
-  public void stop(long time, short eid, short reason)
+  public void stop(long time, final int appId, short eid, final short reason)
+  {
+    Display.getDefault().syncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        // check it wasn't us that send the message
+        if (appId == NetworkDISProvider.APPLICATION_ID)
+        {
+          // ignore - it's us sending it
+          return;
+        }
+
+        // hey, check the reason
+        switch (reason)
+        {
+        case IDISStopListener.PDU_FREEZE:
+          System.err.println("PAUSE");
+          pauseReceived();
+          break;
+        case IDISStopListener.PDU_STOP:
+          System.err.println("STOP");
+          // update the UI
+          stopReceived();
+
+          // ok, popup message
+          MessageBox dialog =
+              new MessageBox(PlatformUI.getWorkbench()
+                  .getActiveWorkbenchWindow().getShell(), SWT.OK);
+          dialog.setText("DIS Interface");
+          dialog.setMessage("The simulation has completed, with reason: "
+              + reason);
+
+          // open dialog
+          dialog.open();
+          break;
+        default:
+          CorePlugin.logError(Status.WARNING,
+              "Unknown DIS stop reason received:" + reason, null);
+        }
+
+      }
+    });
+  }
+
+  private void playHeard()
   {
     Display.getDefault().asyncExec(new Runnable()
     {
@@ -876,10 +941,15 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       @Override
       public void run()
       {
-        // ok, fire stop
-        doStop();
+        // ok, it's running - update the UI
+        doPlay();
       }
     });
+  }
+
+  private void sendPlay()
+  {
+    _disController.sendPlay();
   }
 
 }

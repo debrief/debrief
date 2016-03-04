@@ -2,6 +2,7 @@ package org.mwc.debrief.dis.diagnostics;
 
 import java.util.Properties;
 
+import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.diagnostics.file.CollisionFileListener;
@@ -18,10 +19,15 @@ import org.mwc.debrief.dis.providers.network.CoreNetPrefs;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
+import edu.nps.moves.dis.EntityID;
+
 public class HeadlessDISLogger
 {
 
+  private static final int SITE_ID = 778;
+  private static final int APPLICATION_ID = 777;
   private boolean _terminated = false;
+  private EntityID _ourID;
 
   public static void main(String[] args)
   {
@@ -32,6 +38,11 @@ public class HeadlessDISLogger
   public HeadlessDISLogger(String[] args)
   {
 
+    // setup the ID
+    _ourID = new EntityID();
+    _ourID.setApplication((short) APPLICATION_ID);
+    _ourID.setSite((short) SITE_ID);
+    
     // do we have a root?
     String root = System.getProperty("java.io.tmpdir");
 
@@ -105,7 +116,7 @@ public class HeadlessDISLogger
     subject.addStopListener(new IDISStopListener()
     {
       @Override
-      public void stop(long time, short eid, short reason)
+      public void stop(long time,int appId, short eid, short reason)
       {
         System.out.println("== STOP RECEIVED ==");
         provider.detach();
@@ -115,7 +126,7 @@ public class HeadlessDISLogger
     });
 
     // tell the network provider to start
-    provider.attach();
+    provider.attach(null, _ourID);
 
     // get looping
     while (!_terminated)
@@ -124,4 +135,5 @@ public class HeadlessDISLogger
     }
 
   }
+  
 }

@@ -7,6 +7,7 @@ import org.mwc.debrief.dis.listeners.IDISFireListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
+import org.mwc.debrief.dis.listeners.IDISStartResumeListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
@@ -42,5 +43,7 @@ public interface IDISModule
   void addCollisionListener(IDISCollisionListener handler);
 
   long convertTime(long timestamp);
+
+  void addStartResumeListener(IDISStartResumeListener handler);
 
 }

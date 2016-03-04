@@ -13,6 +13,7 @@ import org.mwc.debrief.dis.listeners.IDISFireListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
+import org.mwc.debrief.dis.listeners.IDISStartResumeListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
@@ -24,6 +25,7 @@ import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.OneByteChunk;
 import edu.nps.moves.dis.Orientation;
 import edu.nps.moves.dis.Pdu;
+import edu.nps.moves.dis.StartResumePdu;
 import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
@@ -46,23 +48,25 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       new ArrayList<IDISStopListener>();
   private List<IDISCollisionListener> _collisionListeners =
       new ArrayList<IDISCollisionListener>();
+  private List<IDISStartResumeListener> _startResumeListeners =
+      new ArrayList<IDISStartResumeListener>();
   private boolean _newStart = false;
   private List<IDISFireListener> _fireListeners =
       new ArrayList<IDISFireListener>();
 
   private Map<Integer, String> _entityNames = new HashMap<Integer, String>();
   final private IDISEventListener _nameListener;
-  
+
   public DISModule()
   {
     // SPECIAL PROCESSING - declare ourselves as the first event listener
     // so we can intercept launch events (and retrieve the name)
     _nameListener = new IDISEventListener()
     {
-      
+
       @Override
-      public void add(long time, short exerciseId, long senderId, String hisName,
-          int eventType, String message)
+      public void add(long time, short exerciseId, long senderId,
+          String hisName, int eventType, String message)
       {
         if (eventType == IDISEventListener.EVENT_LAUNCH)
         {
@@ -81,7 +85,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   {
     String res = null;
     String[] split = message.trim().split(":");
-    if(split.length == 2)
+    if (split.length == 2)
       res = split[1];
     return res;
   }
@@ -102,6 +106,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   public void addEventListener(IDISEventListener handler)
   {
     addEventListener(handler, null);
+  }
+
+  @Override
+  public void addStartResumeListener(IDISStartResumeListener handler)
+  {
+    _startResumeListeners.add(handler);
   }
 
   @Override
@@ -163,12 +173,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
             * velocity.getY());
 
     // entity state
-    String hisName = _entityNames.get((int)hisId);
-    
-//    if(hisId == 1)
-//    {
-//      System.out.println(new java.util.Date(time));
-//    }
+    String hisName = _entityNames.get((int) hisId);
+
+    // if(hisId == 1)
+    // {
+    // System.out.println(new java.util.Date(time));
+    // }
 
     Iterator<IDISFixListener> fIter = _fixListeners.iterator();
     while (fIter.hasNext())
@@ -211,7 +221,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     // now try to retrieve name
     String hisName = _entityNames.get(originator);
-    
+
     // first send out to specific listeners
     List<IDISEventListener> specificListeners = _eventListeners.get(eType);
     if (specificListeners != null)
@@ -236,21 +246,21 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       }
     }
 
-
   }
 
   private void handleDetonation(DetonationPdu pdu)
   {
     short eid = pdu.getExerciseID();
-//    Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
+    // Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
-//    double[] locArr = new double[]
-//    {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
-  //  double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
-    double[] worldCoords = new double[]{wLoc.getY(), wLoc.getX(), wLoc.getZ()};
+    // double[] locArr = new double[]
+    // {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
+    // double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+    double[] worldCoords = new double[]
+    {wLoc.getY(), wLoc.getX(), wLoc.getZ()};
     long time = pdu.getTimestamp();
     int hisId = pdu.getFiringEntityID().getEntity();
-    
+
     // sort out his name
     String hisName = _entityNames.get(hisId);
 
@@ -258,8 +268,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     while (dIter.hasNext())
     {
       IDISDetonationListener thisD = (IDISDetonationListener) dIter.next();
-      thisD.add(time, eid, hisId, hisName, worldCoords[0],
-          worldCoords[1], worldCoords[2]);
+      thisD.add(time, eid, hisId, hisName, worldCoords[0], worldCoords[1],
+          worldCoords[2]);
     }
 
   }
@@ -295,12 +305,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     }
 
     // whether to track all messages, to learn about what is being sent
-//    if(data.getPduType() == 1)
-//    {
-//      EntityStatePdu esp = (EntityStatePdu) data;      
-//      System.out.println(new java.util.Date(convertTime(esp.getTimestamp())));
-//    }
-    
+    // if(data.getPduType() == 1)
+    // {
+    // EntityStatePdu esp = (EntityStatePdu) data;
+    // System.out.println(new java.util.Date(convertTime(esp.getTimestamp())));
+    // }
+
     // and now the specific listeners
     final short type = data.getPduType();
     switch (type)
@@ -323,6 +333,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     case 4:
     {
       handleCollision((CollisionPdu) data);
+      break;
+    }
+    case 13:
+    {
+      handleStart((StartResumePdu) data);
       break;
     }
     case 21:
@@ -358,6 +373,19 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     }
   }
 
+  private void handleStart(StartResumePdu pdu)
+  {
+    short eid = pdu.getExerciseID();
+    long time = convertTime(pdu.getTimestamp());
+
+    Iterator<IDISStartResumeListener> dIter = _startResumeListeners.iterator();
+    while (dIter.hasNext())
+    {
+      IDISStartResumeListener thisD = dIter.next();
+      thisD.add(time, eid);
+    }
+  }
+
   private void handleFire(FirePdu pdu)
   {
     short eid = pdu.getExerciseID();
@@ -365,7 +393,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     long time = convertTime(pdu.getTimestamp());
     int hisId = pdu.getFiringEntityID().getEntity();
     int tgtId = pdu.getTargetEntityID().getEntity();
-    
+
     // sort out his name
     String hisName = _entityNames.get(hisId);
     String tgtName = _entityNames.get(tgtId);
@@ -374,7 +402,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     while (dIter.hasNext())
     {
       IDISFireListener thisD = dIter.next();
-      thisD.add(time, eid, hisId, hisName, tgtId, tgtName, wLoc.getY(), wLoc.getX(), wLoc.getZ());
+      thisD.add(time, eid, hisId, hisName, tgtId, tgtName, wLoc.getY(), wLoc
+          .getX(), wLoc.getZ());
     }
   }
 
@@ -383,16 +412,20 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     long time = convertTime(pdu.getTimestamp());
     short eid = pdu.getExerciseID();
     short reason = pdu.getReason();
+    int appId = pdu.getOriginatingEntityID().getApplication();
 
     Iterator<IDISStopListener> dIter = _stopListeners.iterator();
     while (dIter.hasNext())
     {
       IDISStopListener thisD = dIter.next();
-      thisD.stop(time, eid, reason);
+      thisD.stop(time, appId, eid, reason);
     }
 
     // share the complete message
-    complete("Scenario complete");
+    if (reason == IDISStopListener.PDU_STOP)
+    {
+      complete("Scenario complete");
+    }
   }
 
   @Override
@@ -413,7 +446,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
       git.complete(reason);
     }
-    
+
     // also wipe our locally cached data (entity names)
     _entityNames.clear();
   }

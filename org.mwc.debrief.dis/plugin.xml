@@ -12,6 +12,14 @@
         </page>
     </extension>
     
+	<extension
+         point="org.eclipse.core.runtime.preferences">
+         <scope name="DIS Preferences" class="org.mwc.debrief.dis.ui.preferences.DisPrefs"/>
+      <initializer
+            class="org.mwc.debrief.dis.ui.preferences.DisPrefsInitialiser">
+      </initializer>
+  	</extension>    
+    
     <extension
          point="org.eclipse.ui.views">
       <view
