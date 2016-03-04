@@ -285,7 +285,9 @@ final class SnailDrawSWTTrack
 							if (gw.getDTG().equals(trk.getStartDTG()))
 							{
 								titlePlotted = true;
-
+								
+								// set the correct font
+								dest.setFont(trk.getTrackFont());
 								
 								final String msg = trk.getName();
 
@@ -295,7 +297,7 @@ final class SnailDrawSWTTrack
 								copyPt.translate(5, 0);
 
 								dest.setColor(newCol);
-
+								
 								// and draw the text
 								dest.drawText(msg, screenP.x, screenP.y);
 
