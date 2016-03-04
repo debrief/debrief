@@ -52,7 +52,9 @@ public class PduGenerator
   private static final short STOP_PDU_TERMINATED = 2;
   private static final short STOP_PDU_FREEZE = 7;
 
-  private short exerciseId;
+  private static final short EXERCISE_ID = 20;
+  private static final short SITE_ID = 1000;
+  private static final short APP_ID = 3000;
 
   private boolean _terminate;
 
@@ -62,6 +64,8 @@ public class PduGenerator
   private Collection<Vessel> redParts = new ArrayList<Vessel>();
   private Collection<Vessel> blueParts = new ArrayList<Vessel>();
   private Collection<Vessel> greenParts = new ArrayList<Vessel>();
+
+  private EntityID eid;
 
 
   private class Torpedo extends Vessel
@@ -153,7 +157,7 @@ public class PduGenerator
             {
               // nope, share the good news
               final String msg = "Target located";
-              sendMessage(exerciseId, lastTime,
+              sendMessage(EXERCISE_ID, lastTime,
                   IDISEventListener.EVENT_TACTICS_CHANGE, sampleId, msg, sender);
             }
 
@@ -171,7 +175,7 @@ public class PduGenerator
           // target lost, forget about it
           final String theMsg =
               "target for:" + id + " was lost, was:" + targetId;
-          sendMessage(exerciseId, lastTime,
+          sendMessage(EXERCISE_ID, lastTime,
               IDISEventListener.EVENT_TACTICS_CHANGE, sampleId, theMsg, sender);
           System.out.println(theMsg);
           targetId = -1;
@@ -390,16 +394,14 @@ public class PduGenerator
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
 
-    exerciseId = (short) 2000;
-
-    espdu.setExerciseID(exerciseId);
 
     // The EID is the unique identifier for objects in the world. This
     // EID should match up with the ID for the object specified in the
     // VMRL/x3d/virtual world.
-    EntityID eid = espdu.getEntityID();
-    eid.setSite((short)0);
-    eid.setApplication((short)1);
+    eid = espdu.getEntityID();
+    eid.setSite(SITE_ID);
+    eid.setApplication(APP_ID);
+    espdu.setExerciseID(EXERCISE_ID);
 
     int entityId = 2;
 
@@ -450,7 +452,7 @@ public class PduGenerator
         eid.setEntity((short)eId);
         
         // share the news
-        sendLaunch(exerciseId, lastTime, eid, newS.name, sender);
+        sendLaunch(EXERCISE_ID, lastTime, eid, newS.name, sender);
         
         states.put(eId, newS);
 
@@ -521,7 +523,7 @@ public class PduGenerator
 
           // share the news
           eid.setEntity(newId);
-          sendLaunch(exerciseId, lastTime, eid, newName, sender);
+          sendLaunch(EXERCISE_ID, lastTime, eid, newName, sender);
 
           // and remember it
           states.put(newId, torpedo);
@@ -529,7 +531,7 @@ public class PduGenerator
 
           // also send out the "fired" message
           FirePdu fire = new FirePdu();
-          fire.setExerciseID(espdu.getExerciseID());
+          fire.setExerciseID(EXERCISE_ID);
           fire.setTimestamp(lastTime);
           eid.setEntity(newId);
           fire.setFiringEntityID(eid);
@@ -581,7 +583,8 @@ public class PduGenerator
     // datagram and send it.
     StartResumePdu stopPdu = new StartResumePdu();
     stopPdu.setTimestamp(lastTime);
-    stopPdu.setExerciseID(exId);
+    stopPdu.setExerciseID(EXERCISE_ID);
+    stopPdu.setOriginatingEntityID(eid);
     stopPdu.setRealWorldTime(new ClockTime());
 
     // and send it
@@ -595,7 +598,8 @@ public class PduGenerator
     // datagram and send it.
     StopFreezePdu stopPdu = new StopFreezePdu();
     stopPdu.setTimestamp(lastTime);
-    stopPdu.setExerciseID(exId);
+    stopPdu.setExerciseID(EXERCISE_ID);
+    stopPdu.setOriginatingEntityID(eid);
     stopPdu.setReason(STOP_PDU_TERMINATED);
 
     // and send it
@@ -610,7 +614,8 @@ public class PduGenerator
     // datagram and send it.
     StopFreezePdu stopPdu = new StopFreezePdu();
     stopPdu.setTimestamp(lastTime);
-    stopPdu.setExerciseID(exId);
+    stopPdu.setExerciseID(EXERCISE_ID);
+    stopPdu.setOriginatingEntityID(eid);
     stopPdu.setReason(STOP_PDU_FREEZE);
 
     // and send it
@@ -654,7 +659,7 @@ public class PduGenerator
       String newName, IPduSender sender)
   {
     String msg = "NAME:" + newName.trim();
-    sendMessage(exerciseId, lastTime, IDISEventListener.EVENT_LAUNCH, eid, msg,
+    sendMessage(EXERCISE_ID, lastTime, IDISEventListener.EVENT_LAUNCH, eid, msg,
         sender);
   }
 
@@ -664,7 +669,7 @@ public class PduGenerator
 
     // build up the PDU
     EventReportPdu dp = new EventReportPdu();
-    dp.setExerciseID(exerciseID);
+    dp.setExerciseID(EXERCISE_ID);
     dp.setTimestamp(lastTime);
     dp.setEventType(eventType);
 
@@ -741,7 +746,7 @@ public class PduGenerator
 
     // build up the PDU
     DetonationPdu dp = new DetonationPdu();
-    dp.setExerciseID(exerciseId);
+    dp.setExerciseID(EXERCISE_ID);
     dp.setFiringEntityID(eid);
     dp.setTimestamp(lastTime);
 
@@ -781,7 +786,7 @@ public class PduGenerator
 
     // build up the PDU
     CollisionPdu coll = new CollisionPdu();
-    coll.setExerciseID(exerciseId);
+    coll.setExerciseID(EXERCISE_ID);
     movingId.setEntity(recipientId);
     coll.setCollidingEntityID(movingId);
     coll.setTimestamp(lastTime);

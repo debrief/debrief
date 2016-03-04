@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
+import org.mwc.debrief.dis.providers.DISFilters;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
 import edu.nps.moves.dis.EntityID;
@@ -32,8 +33,9 @@ import edu.nps.moves.disutil.PduFactory;
  */
 public class NetworkDISProvider implements IPDUProvider, IDISController
 {
-  public static final short APPLICATION_ID = 30318;
-  public static final short SITE_ID = 1244;
+  public static final short APPLICATION_ID = 4321;
+  public static final short SITE_ID = 5432;
+  
   private final IDISNetworkPrefs _myPrefs;
   private List<IDISGeneralPDUListener> _gen =
       new ArrayList<IDISGeneralPDUListener>();
@@ -55,9 +57,6 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
   public NetworkDISProvider(IDISNetworkPrefs prefs)
   {
     _myPrefs = prefs;
-    _myID = new EntityID();
-    _myID.setSite(SITE_ID);
-    _myID.setApplication(APPLICATION_ID);
   }
 
   @Override
@@ -80,8 +79,10 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
    * start listening
    * 
    */
-  public void attach()
+  public void attach(final DISFilters filters, EntityID eid)
   {
+    _myID = eid;
+    
     Runnable runnable = new Runnable()
     {
 
@@ -101,7 +102,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
           _senderSocket = new MulticastSocket(_thePort);
 
           // and start listening
-          startListening();
+          startListening(filters);
         }
         catch (UnknownHostException ue)
         {
@@ -146,8 +147,10 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
   /**
    * start listening
    * 
+   * @param filters
+   * 
    */
-  private void startListening()
+  private void startListening(final DISFilters filters)
   {
     // set the running flag to true
     _running = true;
@@ -176,12 +179,17 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
           // store the current exercise details
           _curExercise = pdu.getExerciseID();
 
-          // share the good news
-          Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
-          while (gIter.hasNext())
+          // check if it matches our filter
+          if (filters == null || filters.accepts(pdu))
           {
-            IDISGeneralPDUListener git = (IDISGeneralPDUListener) gIter.next();
-            git.logPDU(pdu);
+            // share the good news
+            Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
+            while (gIter.hasNext())
+            {
+              IDISGeneralPDUListener git =
+                  (IDISGeneralPDUListener) gIter.next();
+              git.logPDU(pdu);
+            }
           }
         }
         else
