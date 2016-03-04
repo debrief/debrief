@@ -35,6 +35,16 @@ public class DisActivator extends AbstractUIPlugin
   public static final String IP_ADDRESS = "ipAddress";
   public static final String PORT = "port";
 
+  public static final String APP_FILTER = "appFilter";
+
+  public static final String SITE_FILTER = "siteFilter";
+
+  public static final String EXERCISE_FILTER = "exerciseFilter";
+
+  public static final String APP_ID = "appId";
+
+  public static final String SITE_ID = "siteId";
+
   // The shared instance
   private static DisActivator plugin;
 

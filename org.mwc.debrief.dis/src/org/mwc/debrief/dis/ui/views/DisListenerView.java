@@ -73,6 +73,8 @@ import org.mwc.debrief.dis.listeners.impl.DebriefEventListener;
 import org.mwc.debrief.dis.listeners.impl.DebriefFireListener;
 import org.mwc.debrief.dis.listeners.impl.DebriefFixListener;
 import org.mwc.debrief.dis.listeners.impl.IDISContext;
+import org.mwc.debrief.dis.providers.DISFilters;
+import org.mwc.debrief.dis.providers.IPDUProvider;
 import org.mwc.debrief.dis.providers.network.IDISController;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
@@ -83,6 +85,7 @@ import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.HiResDate;
+import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.Pdu;
 
 public class DisListenerView extends ViewPart implements IDISStopListener
@@ -101,7 +104,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   private Button liveUpdatesButton;
   private Action fitToDataAction;
   private IDISModule _disModule;
-  private NetworkDISProvider _netProvider;
+  private IPDUProvider _netProvider;
   protected Thread _simThread;
   protected Job _simJob;
 
@@ -139,6 +142,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   final String LAUNCH_STRING = "Launch";
   final String LISTEN_STRING = "Listen";
   private IDISController _disController;
+  private EntityID _ourID;
 
   private void initModule()
   {
@@ -149,8 +153,9 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     IDISNetworkPrefs netPrefs = new DebriefDISNetPrefs();
 
     // get the network data source
-    _netProvider = new NetworkDISProvider(netPrefs);
-    _disController = _netProvider;
+    NetworkDISProvider prov = new NetworkDISProvider(netPrefs);
+    _netProvider = prov;
+    _disController = prov;
 
     _disModule = new DISModule();
     _disModule.setProvider(_netProvider);
@@ -526,7 +531,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        _disController.sendPlay();
+        sendPlay();
 
         // doPlay();
       }
@@ -679,6 +684,9 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     theChart.getLegend().setPosition(RectangleEdge.TOP);
     theChart.getTitle().setVisible(false);
 
+    // create our unique originating ID
+    createEntityID();
+
     // ok, and the location commands
     contributeToActionBars();
 
@@ -687,6 +695,15 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
     // ok, sort out the help
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HELP_CONTEXT);
+  }
+
+  private void createEntityID()
+  {
+    _ourID = new EntityID();
+    _ourID.setApplication((short) DisActivator.getDefault()
+        .getPreferenceStore().getInt(DisActivator.APP_ID));
+    _ourID.setSite((short) DisActivator.getDefault().getPreferenceStore()
+        .getInt(DisActivator.SITE_ID));
   }
 
   private void fixChartComposite()
@@ -818,7 +835,6 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     _perfGraph.complete("Stopped");
   }
 
-
   protected void stopReceived()
   {
     doStop();
@@ -833,16 +849,25 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
   private void doConnect()
   {
-    _netProvider.attach();
+    // collate the prefs
+    final String app =
+        DisActivator.getDefault().getPreferenceStore().getString(
+            DisActivator.APP_FILTER);
+    final String site =
+        DisActivator.getDefault().getPreferenceStore().getString(
+            DisActivator.SITE_FILTER);
+    final String ex =
+        DisActivator.getDefault().getPreferenceStore().getString(
+            DisActivator.EXERCISE_FILTER);
+
+    final DISFilters filter = new DISFilters(app, site, ex);
+    _netProvider.attach(filter, _ourID);
 
     playButton.setEnabled(true);
     pauseButton.setEnabled(false);
     stopButton.setEnabled(false);
 
-    System.out.println("CONNECTED");
-
     connectButton.setText("Listening");
-
   }
 
   private void doDisconnect()
@@ -920,6 +945,11 @@ public class DisListenerView extends ViewPart implements IDISStopListener
         doPlay();
       }
     });
+  }
+
+  private void sendPlay()
+  {
+    _disController.sendPlay();
   }
 
 }

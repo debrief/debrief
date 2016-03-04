@@ -32,11 +32,11 @@ public class DISListenerTest
     PduGenerator sender = new PduGenerator();
     DISModule module = new DISModule();
     PassThruPduSender pSender = new PassThruPduSender(module);
-    
-    final List<String> collMessages =new ArrayList<String>();
-    final List<String> fireMessages =new ArrayList<String>();
-    final List<String> fixMessages =new ArrayList<String>();
-    final List<String> eventMessages =new ArrayList<String>();
+
+    final List<String> collMessages = new ArrayList<String>();
+    final List<String> fireMessages = new ArrayList<String>();
+    final List<String> fixMessages = new ArrayList<String>();
+    final List<String> eventMessages = new ArrayList<String>();
 
     module.addCollisionListener(new IDISCollisionListener()
     {
@@ -48,8 +48,8 @@ public class DISListenerTest
     });
     module.addFireListener(new IDISFireListener()
     {
-      public void
-          add(long time, short eid, int hisId, String hisName, int tgtId, String tgtName, double y, double x, double z)
+      public void add(long time, short eid, int hisId, String hisName,
+          int tgtId, String tgtName, double y, double x, double z)
       {
         fireMessages.add("fire at:" + time);
       }
@@ -57,28 +57,31 @@ public class DISListenerTest
     module.addFixListener(new IDISFixListener()
     {
       public void add(long time, short exerciseId, long id, String eName,
-          short force, double dLat, double dLong, double depth, double courseDegs, double speedMS, final int damage)
+          short force, double dLat, double dLong, double depth,
+          double courseDegs, double speedMS, final int damage)
       {
         fixMessages.add("fix at:" + time);
       }
     });
     module.addEventListener(new IDISEventListener()
     {
-      public void add(long time, short exerciseId, long id, String hisName, int eventType, String message)
+      public void add(long time, short exerciseId, long id, String hisName,
+          int eventType, String message)
       {
         eventMessages.add("event at:" + time);
       }
     });
-    
-    sender.run(pSender, new String[]{"10", "6", "80"});
-    
+
+    sender.run(pSender, new String[]
+    {"10", "6", "80"});
+
     // check some stuff happened
     assertEquals("got collisions", 2, collMessages.size());
     assertEquals("got firing", 10, fireMessages.size());
     assertEquals("got fixes", 617, fixMessages.size());
     assertEquals("got events", 2, eventMessages.size());
   }
-  
+
   @Test
   public void testScenarioStateMonitoring()
   {
@@ -105,7 +108,7 @@ public class DISListenerTest
       }
     });
 
-    provider.attach();
+    provider.attach(null, null);
 
     assertTrue("received restart", events.contains("restarted"));
     assertTrue("received complete", events.contains("complete"));
@@ -142,7 +145,7 @@ public class DISListenerTest
     });
 
     subject.setProvider(provider);
-    provider.attach();
+    provider.attach(null, null);
 
     assertEquals("got all PDUs", 15, events.size());
   }
@@ -157,7 +160,7 @@ public class DISListenerTest
     subject.addFixListener(fixL);
     subject.setProvider(provider);
 
-    provider.attach();
+    provider.attach(null, null);
 
     assertEquals("correct num tracks", 3, fixL.getData().keySet().size());
     assertEquals("correct num fixes", 10, fixL.getData().values().iterator()
