@@ -803,18 +803,6 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     stopButton.setEnabled(true);
   }
 
-  protected void stopReceived()
-  {
-    doStop();
-    doDisconnect();
-    launchButton.setFocus();
-  }
-
-  protected void pauseReceived()
-  {
-    doPause();
-  }
-
   private void doStop()
   {
     playButton.setEnabled(true);
@@ -828,6 +816,19 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     _context.scenarioComplete();
 
     _perfGraph.complete("Stopped");
+  }
+
+
+  protected void stopReceived()
+  {
+    doStop();
+    doDisconnect();
+    launchButton.setFocus();
+  }
+
+  protected void pauseReceived()
+  {
+    doPause();
   }
 
   private void doConnect()
