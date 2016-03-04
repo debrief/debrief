@@ -52,9 +52,11 @@ public class DisPrefs extends PreferencePage implements
   private Text ipAddressText;
   private Text portText;
   private IWorkbench _myBench;
+  private Text siteFilterText;
+  private Text appFilterText;
+  private Text exText;
   private Text siteText;
   private Text appText;
-  private Text exText;
   private static final Pattern IP_ADDRESS_PATTERN =
       Pattern
           .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
@@ -187,6 +189,35 @@ public class DisPrefs extends PreferencePage implements
     portText = createText(serverSettings, DisActivator.PORT, 100, true);
 
     // //////////////////////////////
+    // IDENTITY
+    // /////////////////////////////
+
+    Group identitySettings = new Group(composite, SWT.NONE);
+    identitySettings.setText("Identity settings");
+    gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+    gd.horizontalSpan = 3;
+    identitySettings.setLayoutData(gd);
+    layout = new GridLayout(3, false);
+    layout.marginWidth = 5;
+    layout.marginHeight = 5;
+    identitySettings.setLayout(layout);
+
+    Label lbl2 = new Label(identitySettings, SWT.WRAP);
+    gd = new GridData(SWT.HORIZONTAL, SWT.TOP, true, false, 1, 1);
+    gd.verticalSpan = 2;
+    gd.widthHint = 250;
+    lbl2.setLayoutData(gd);
+    lbl2.setText("Use the following boxes to specify our ID for DIS sending");
+    getShell().layout(true, true);
+
+    createLabel(identitySettings, "Site");
+    createLabel(identitySettings, "Application");
+
+    siteText =
+        createText(identitySettings, DisActivator.SITE_ID, 80, false);
+    appText = createText(identitySettings, DisActivator.APP_ID, 80, false);
+
+    // //////////////////////////////
     // FILTER
     // /////////////////////////////
 
@@ -212,8 +243,10 @@ public class DisPrefs extends PreferencePage implements
     createLabel(filterSettings, "Application");
     createLabel(filterSettings, "Exercise");
 
-    siteText = createText(filterSettings, DisActivator.SITE_FILTER, 80, false);
-    appText = createText(filterSettings, DisActivator.APP_FILTER, 80, false);
+    siteFilterText =
+        createText(filterSettings, DisActivator.SITE_FILTER, 80, false);
+    appFilterText =
+        createText(filterSettings, DisActivator.APP_FILTER, 80, false);
     exText =
         createText(filterSettings, DisActivator.EXERCISE_FILTER, 80, false);
 
@@ -243,7 +276,7 @@ public class DisPrefs extends PreferencePage implements
       }
     }
     String portString = portText.getText();
-    checkInt(portString, "Invalid port", true, false);
+    checkInt(portString, "Invalid port", true, false, true);
     String ipAddress = ipAddressText.getText();
     if (ipAddress != null && !ipAddress.isEmpty())
     {
@@ -253,27 +286,48 @@ public class DisPrefs extends PreferencePage implements
         return;
       }
     }
-    String siteVal = siteText.getText();
-    if(!checkInt(siteVal, "Invalid site id", false, true))
+    String siteVal = siteFilterText.getText();
+    if (!checkInt(siteVal, "Invalid site filter", false, true, true))
     {
       return;
     }
-    String appVal = appText.getText();
-    if(!checkInt(appVal, "Invalid application id", false, true))
+    String appVal = appFilterText.getText();
+    if (!checkInt(appVal, "Invalid application filter", false, true, true))
     {
       return;
     }
     String exVal = exText.getText();
-    if(!checkInt(exVal, "Invalid exercise id", false, true))
+    if (!checkInt(exVal, "Invalid exercise filter", false, true, true))
+    {
+      return;
+    }
+    String siteId = siteText.getText();
+    if (!checkInt(siteId, "Invalid site id", false, true, false))
+    {
+      return;
+    }
+    String appId = appText.getText();
+    if (!checkInt(appId, "Invalid application id", false, true, false))
     {
       return;
     }
 
   }
 
-  private boolean checkInt(String string, String errorMsg, boolean checkPort, boolean checkShort)
+  private boolean checkInt(String string, String errorMsg, boolean checkPort,
+      boolean checkShort, boolean allowEmpty)
   {
-    if (string != null && !string.isEmpty())
+    if (!allowEmpty && (string == null || string.length() == 0))
+    {
+      setErrorMessage(errorMsg + " (value required)");
+      return false;
+    }
+    if(allowEmpty && (string == null || string.length() == 0))
+    {
+      return true;
+    }
+
+    if (string != null)
     {
       int val = 0;
       try
@@ -283,29 +337,28 @@ public class DisPrefs extends PreferencePage implements
       catch (NumberFormatException e)
       {
         // ignore; port is 0 (invalid)
-        setErrorMessage(errorMsg + "(should be number)");
+        setErrorMessage(errorMsg + " (should be number)");
         return false;
       }
       if (checkPort)
       {
         if (val < 1 || val > 65535)
         {
-          setErrorMessage(errorMsg + "(invalid port address)");
+          setErrorMessage(errorMsg + " (invalid port address)");
           return false;
         }
       }
-      if(checkShort)
+      if (checkShort)
       {
-        if(val < Short.MIN_VALUE || val > Short.MAX_VALUE)
+        if (val < Short.MIN_VALUE || val > Short.MAX_VALUE)
         {
-          setErrorMessage(errorMsg + "(out of range)");
+          setErrorMessage(errorMsg + " (out of range)");
           return false;
         }
       }
     }
     return true;
   }
-  
 
   private Text createText(Composite composite, String prefs, Integer widthHint,
       boolean fillHoriz)
@@ -353,9 +406,11 @@ public class DisPrefs extends PreferencePage implements
     simulationPathText.setText(NetworkPduSender.DEFAULT_MULTICAST_GROUP); //$NON-NLS-1$
     ipAddressText.setText("" + NetworkPduSender.PORT);
     portText.setText("");
-    appText.setText("");
-    siteText.setText("");
+    appFilterText.setText("");
+    siteFilterText.setText("");
     exText.setText("");
+    appText.setText("901");
+    siteText.setText("902");
     storePreferences();
     super.performDefaults();
   }
@@ -374,9 +429,11 @@ public class DisPrefs extends PreferencePage implements
     store.setValue(DisActivator.PATH_TO_SIMULATION_EXECUTABLE, value);
     store.setValue(DisActivator.IP_ADDRESS, ipAddressText.getText());
     store.setValue(DisActivator.PORT, portText.getText());
-    store.setValue(DisActivator.APP_FILTER, appText.getText());
-    store.setValue(DisActivator.SITE_FILTER, siteText.getText());
+    store.setValue(DisActivator.APP_FILTER, appFilterText.getText());
+    store.setValue(DisActivator.SITE_FILTER, siteFilterText.getText());
     store.setValue(DisActivator.EXERCISE_FILTER, exText.getText());
+    store.setValue(DisActivator.SITE_ID, siteText.getText());
+    store.setValue(DisActivator.APP_ID, appText.getText());
   }
 
 }
