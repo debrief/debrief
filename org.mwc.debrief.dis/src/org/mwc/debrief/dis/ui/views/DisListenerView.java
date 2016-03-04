@@ -531,7 +531,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        _disController.sendPlay();
+        sendPlay();
 
         // doPlay();
       }
@@ -850,27 +850,24 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   private void doConnect()
   {
     // collate the prefs
-    String app =
+    final String app =
         DisActivator.getDefault().getPreferenceStore().getString(
             DisActivator.APP_FILTER);
-    String site =
+    final String site =
         DisActivator.getDefault().getPreferenceStore().getString(
             DisActivator.SITE_FILTER);
-    String ex =
+    final String ex =
         DisActivator.getDefault().getPreferenceStore().getString(
             DisActivator.EXERCISE_FILTER);
 
-    DISFilters filter = new DISFilters(app, site, ex);
+    final DISFilters filter = new DISFilters(app, site, ex);
     _netProvider.attach(filter, _ourID);
 
     playButton.setEnabled(true);
     pauseButton.setEnabled(false);
     stopButton.setEnabled(false);
 
-    System.out.println("CONNECTED");
-
     connectButton.setText("Listening");
-
   }
 
   private void doDisconnect()
@@ -948,6 +945,11 @@ public class DisListenerView extends ViewPart implements IDISStopListener
         doPlay();
       }
     });
+  }
+
+  private void sendPlay()
+  {
+    _disController.sendPlay();
   }
 
 }
