@@ -63,6 +63,7 @@ import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
+import org.mwc.debrief.dis.listeners.IDISStartResumeListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.listeners.impl.DISContext;
 import org.mwc.debrief.dis.listeners.impl.DebriefCollisionListener;
@@ -344,6 +345,14 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     module.addDetonationListener(new DebriefDetonationListener(_context));
     module.addEventListener(new DebriefEventListener(_context));
     module.addFireListener(new DebriefFireListener(_context));
+    module.addStartResumeListener(new IDISStartResumeListener()
+    {
+      @Override
+      public void add(long time, short eid)
+      {
+        playHeard();        
+      }
+    });
     module.addCollisionListener(new DebriefCollisionListener(_context));
     module.addStopListener(new IDISStopListener()
     {
@@ -693,7 +702,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     layout = new GridLayout(1, false);
     chartComposite.setLayout(layout);
     theChart.getLegend().setVisible(true);
-    theChart.getLegend().setPosition(RectangleEdge.BOTTOM);
+    theChart.getLegend().setPosition(RectangleEdge.TOP);
     theChart.getTitle().setVisible(false);
 
     // ok, and the location commands
@@ -793,7 +802,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     {
       connectButton.setSelection(true);
       doConnect();
-      doPlay();
+    //  doPlay();
     }
 
     _simulationRunner.run(inputPath);
@@ -836,6 +845,9 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
     // tell the perf graph that we've finished
     _perfGraph.complete("Stop button");
+    
+    // tell the context that it's complete
+    _context.scenarioComplete();
   }
 
   private void doConnect()
@@ -878,6 +890,20 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       {
         // ok, fire stop
         doStop();
+      }
+    });
+  }
+
+  private void playHeard()
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        // ok, it's running - update the UI
+        doPlay();
       }
     });
   }

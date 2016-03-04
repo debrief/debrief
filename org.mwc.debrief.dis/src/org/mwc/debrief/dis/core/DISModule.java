@@ -13,6 +13,7 @@ import org.mwc.debrief.dis.listeners.IDISFireListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
+import org.mwc.debrief.dis.listeners.IDISStartResumeListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
@@ -24,6 +25,7 @@ import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.OneByteChunk;
 import edu.nps.moves.dis.Orientation;
 import edu.nps.moves.dis.Pdu;
+import edu.nps.moves.dis.StartResumePdu;
 import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
@@ -46,6 +48,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       new ArrayList<IDISStopListener>();
   private List<IDISCollisionListener> _collisionListeners =
       new ArrayList<IDISCollisionListener>();
+  private List<IDISStartResumeListener> _startResumeListeners =
+      new ArrayList<IDISStartResumeListener>();
   private boolean _newStart = false;
   private List<IDISFireListener> _fireListeners =
       new ArrayList<IDISFireListener>();
@@ -102,6 +106,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   public void addEventListener(IDISEventListener handler)
   {
     addEventListener(handler, null);
+  }
+
+  @Override
+  public void addStartResumeListener(IDISStartResumeListener handler)
+  {
+    _startResumeListeners.add(handler);
   }
 
   @Override
@@ -325,6 +335,11 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       handleCollision((CollisionPdu) data);
       break;
     }
+    case 13:
+    {
+      handleStart((StartResumePdu) data);
+      break;
+    }
     case 21:
     {
       handleEvent((EventReportPdu) data);
@@ -355,6 +370,19 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     {
       IDISCollisionListener thisD = dIter.next();
       thisD.add(time, eid, movingId, hisName, receipientId);
+    }
+  }
+
+  private void handleStart(StartResumePdu pdu)
+  {
+    short eid = pdu.getExerciseID();
+    long time = convertTime(pdu.getTimestamp());
+
+    Iterator<IDISStartResumeListener> dIter = _startResumeListeners.iterator();
+    while (dIter.hasNext())
+    {
+      IDISStartResumeListener thisD = dIter.next();
+      thisD.add(time, eid);
     }
   }
 

@@ -72,4 +72,9 @@ public interface IDISContext
    */
   Iterator<INewItemListener> getNewItemListeners();
 
+  /** mark the scenario complete. Any new data will go into a new layer
+   * 
+   */
+  void scenarioComplete();
+  
 }

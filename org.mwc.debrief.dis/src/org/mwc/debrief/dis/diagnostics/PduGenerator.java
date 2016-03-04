@@ -18,6 +18,7 @@ import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
+import edu.nps.moves.dis.ClockTime;
 import edu.nps.moves.dis.CollisionPdu;
 import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityID;
@@ -27,6 +28,7 @@ import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.OneByteChunk;
 import edu.nps.moves.dis.Orientation;
+import edu.nps.moves.dis.StartResumePdu;
 import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.dis.VariableDatum;
 import edu.nps.moves.dis.Vector3Double;
@@ -48,6 +50,7 @@ public class PduGenerator
   private static final int RANDOM_SEED = 12;
 
   private static final short STOP_PDU_TERMINATED = 2;
+  private static final short STOP_PDU_FREEZE = 7;
 
   private short exerciseId;
 
@@ -387,7 +390,7 @@ public class PduGenerator
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
 
-    exerciseId = (short) (Math.random() * 1000d);
+    exerciseId = (short) 2000;
 
     espdu.setExerciseID(exerciseId);
 
@@ -465,6 +468,9 @@ public class PduGenerator
         }
 
       }
+
+      // ok, start
+      sendStart(sender, espdu.getExerciseID(), lastTime);
 
       // generate correct number of messages
       for (int idx = 0; idx < numMessages; idx++)
@@ -554,16 +560,7 @@ public class PduGenerator
         Thread.sleep(stepMillis);
       }
 
-      // ok, data complete. send stop PDU
-      // The byte array here is the packet in DIS format. We put that into a
-      // datagram and send it.
-      StopFreezePdu stopPdu = new StopFreezePdu();
-      stopPdu.setTimestamp(lastTime);
-      stopPdu.setExerciseID(espdu.getExerciseID());
-      stopPdu.setReason(STOP_PDU_TERMINATED);
-
-      // and send it
-      sender.sendPdu(stopPdu);
+      sendStop(sender, espdu.getExerciseID(), lastTime);
 
       // tell the sender to pack in
       sender.close();
@@ -576,6 +573,50 @@ public class PduGenerator
     }
 
   }
+
+  private void sendStart(IPduSender sender, short exId, long lastTime)
+  {
+    // ok, data complete. send stop PDU
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    StartResumePdu stopPdu = new StartResumePdu();
+    stopPdu.setTimestamp(lastTime);
+    stopPdu.setExerciseID(exId);
+    stopPdu.setRealWorldTime(new ClockTime());
+
+    // and send it
+    sender.sendPdu(stopPdu);
+  }
+
+  private void sendStop(IPduSender sender, short exId, long lastTime)
+  {
+    // ok, data complete. send stop PDU
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    StopFreezePdu stopPdu = new StopFreezePdu();
+    stopPdu.setTimestamp(lastTime);
+    stopPdu.setExerciseID(exId);
+    stopPdu.setReason(STOP_PDU_TERMINATED);
+
+    // and send it
+    sender.sendPdu(stopPdu);
+  }
+
+  @SuppressWarnings("unused")
+  private void sendFreeze(IPduSender sender, short exId, long lastTime)
+  {
+    // ok, data complete. send stop PDU
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    StopFreezePdu stopPdu = new StopFreezePdu();
+    stopPdu.setTimestamp(lastTime);
+    stopPdu.setExerciseID(exId);
+    stopPdu.setReason(STOP_PDU_FREEZE);
+
+    // and send it
+    sender.sendPdu(stopPdu);
+  }
+
 
   private void sendStatusUpdate(Vessel thisS, EntityID eid,
       EntityStatePdu espdu, IPduSender sender)

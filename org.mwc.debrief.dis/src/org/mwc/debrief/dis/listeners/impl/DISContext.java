@@ -55,6 +55,11 @@ abstract public class DISContext implements IDISContext,
    */
   short _currentEx = -1;
 
+  /** flag for if this scenario is complete - so we don't add new data
+   * 
+   */
+  private boolean _scenarioComplete;
+
   /**
    * constructor, handle some internal initialisation
    * 
@@ -131,6 +136,22 @@ abstract public class DISContext implements IDISContext,
 
   protected void listenTo(IEditorPart editor)
   {
+    // do we need to stop listening to an editor
+    if(_myEditor != null)
+    {
+      // we want to know about screen updates, to
+      // keep track of rendering performance
+      Object suProvider =
+          _myEditor.getAdapter(CanvasType.ScreenUpdateProvider.class);
+      if (suProvider != null)
+      {
+        ScreenUpdateProvider matched =
+            (CanvasType.ScreenUpdateProvider) suProvider;
+        matched.removeScreenUpdateListener(this);
+      }
+      
+    }
+    
     if (editor != null)
     {
       // we want to know about screen updates, to
@@ -278,8 +299,15 @@ abstract public class DISContext implements IDISContext,
    */
   private Layers getLayersFor(final short exerciseId)
   {
+    
     // check if this is our existing exercise
     if (_currentEx != exerciseId)
+    {
+      // nope. stop adding data to the current exercise
+      _scenarioComplete = true;
+    }
+    
+    if(_scenarioComplete)
     {
       // ok, new exercise - do we need a new plot?
       if (getUseNewPlot())
@@ -294,7 +322,6 @@ abstract public class DISContext implements IDISContext,
             // create a new plot
             getEditor(true, exerciseId);
           }
-
         });
       }
       else
@@ -316,7 +343,9 @@ abstract public class DISContext implements IDISContext,
       // and remember the exercise id
       _currentEx = exerciseId;
     }
-
+    
+    _scenarioComplete = false;
+    
     // have we managed to find some layers?
     if (_myLayers == null)
     {
@@ -490,4 +519,13 @@ abstract public class DISContext implements IDISContext,
       thisI.reset();
     }
   }
+
+  @Override
+  public void scenarioComplete()
+  {
+    // ok, remember the fact that the current scenario has completed
+    _scenarioComplete = true;
+  }
+  
+  
 }
