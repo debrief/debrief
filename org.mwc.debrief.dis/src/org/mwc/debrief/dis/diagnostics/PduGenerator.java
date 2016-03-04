@@ -77,7 +77,7 @@ public class PduGenerator
 
     Vessel myTarget = null;
 
-    private Torpedo(final int id, final String name, final int hostId, final short force,
+    private Torpedo(final short id, final String name, final short hostId, final short force,
         double oLat, double oLong, int targetId)
     {
       super(id, name, force, oLat, oLong, 0);
@@ -90,7 +90,7 @@ public class PduGenerator
     }
 
     @Override
-    protected double getCourse(Map<Integer, Vessel> states, EntityID sampleId,
+    protected double getCourse(Map<Short, Vessel> states, EntityID sampleId,
         long lastTime, IPduSender sender)
     {
 
@@ -199,7 +199,7 @@ public class PduGenerator
     final static int MODERATE_DAMAGE = 2;
     final static int DESTROYED = 3;
 
-    final int id;
+    final short id;
     protected double latVal;
     protected double longVal;
     protected double courseRads;
@@ -217,7 +217,7 @@ public class PduGenerator
     protected double speedVal;
     final String name;
 
-    private Vessel(final int id, final String name, final short force, double oLat, double oLong,
+    private Vessel(final short id, final String name, final short force, double oLat, double oLong,
         double range)
     {
       this.id = id;
@@ -228,7 +228,7 @@ public class PduGenerator
       courseRads = Math.toRadians(((int) (genny.nextDouble() * 36d)) * 10d);
     }
 
-    protected double getCourse(Map<Integer, Vessel> states, EntityID sampleId,
+    protected double getCourse(Map<Short, Vessel> states, EntityID sampleId,
         long lastTime, IPduSender sender)
     {
       // see if we're going to do a random turn
@@ -241,7 +241,7 @@ public class PduGenerator
       return courseRads;
     }
 
-    public void update(Map<Integer, Vessel> states, int idx, long lastTime,
+    public void update(Map<Short, Vessel> states, int idx, long lastTime,
         EntityID sampleId, IPduSender sender)
     {
       courseRads = getCourse(states, sampleId, lastTime, sender);
@@ -362,7 +362,7 @@ public class PduGenerator
     // DisTime disTime = DisTime.getInstance();
 
     // declare the states
-    final Map<Integer, Vessel> states = new HashMap<Integer, Vessel>();
+    final Map<Short, Vessel> states = new HashMap<Short, Vessel>();
 
     // sort out the runtime arguments
     long stepMillis = 500;
@@ -398,12 +398,12 @@ public class PduGenerator
     // EID should match up with the ID for the object specified in the
     // VMRL/x3d/virtual world.
     EntityID eid = espdu.getEntityID();
-    eid.setSite(0);
-    eid.setApplication(1);
+    eid.setSite((short)0);
+    eid.setApplication((short)1);
 
     int entityId = 2;
 
-    eid.setEntity(entityId);
+    eid.setEntity((short)entityId);
 
     // Set the entity type. SISO has a big list of enumerations, so that by
     // specifying various numbers we can say this is an M1A2 American tank,
@@ -444,10 +444,10 @@ public class PduGenerator
         // sort out affiliation
         short force = (short) (genny.nextInt(3) + 1);
 
-        int eId = i + 1;// 1 + (int) (Math.random() * 20d);
+        short eId = (short) (i + 1);// 1 + (int) (Math.random() * 20d);
         final String name = "PLATFORM_" + eId;
         Vessel newS = new Vessel(eId, name, force, startX, startY, randomArea);
-        eid.setEntity(eId);
+        eid.setEntity((short)eId);
         
         // share the news
         sendLaunch(exerciseId, lastTime, eid, newS.name, sender);
@@ -512,7 +512,7 @@ public class PduGenerator
           // try to give the new vehicle a target
           Vessel targetId = selectRandomEntity(blueParts);
 
-          final int newId = (int) (1000 + (genny.nextDouble() * 1000d));
+          final short newId =  (short) (1000 + (genny.nextDouble() * 1000d));
           final String newName = "TORP_" + newId;
           
           Torpedo torpedo =
@@ -714,7 +714,7 @@ public class PduGenerator
   }
 
   private void sendDetonation(Vessel firingPlatform, int recipientId,
-      EntityID eid, Map<Integer, Vessel> states, long lastTime,
+      EntityID eid, Map<Short, Vessel> states, long lastTime,
       IPduSender sender)
   {
     // store the id of the firing platform
@@ -767,8 +767,8 @@ public class PduGenerator
     System.out.println(": " + firingPlatform.id + " destroyed " + recipientId);
   }
 
-  private void sendCollision(Vessel movingPlatform, int recipientId,
-      EntityID movingId, Map<Integer, Vessel> states, long lastTime,
+  private void sendCollision(Vessel movingPlatform, short recipientId,
+      EntityID movingId, Map<Short, Vessel> states, long lastTime,
       IPduSender sender)
   {
     EntityID victimE = new EntityID();

@@ -70,7 +70,7 @@ public class DummyDataProvider implements IPDUProvider
 
 				// and pre-populate it
 				EntityID eId = new EntityID();
-				eId.setEntity(hisId);
+				eId.setEntity((short)hisId);
 				lastLoc.setEntityID(eId);
 				lastLoc
 						.setTimestamp(1000 + ((long) (Math.random() * 1000) / 100 * 100));

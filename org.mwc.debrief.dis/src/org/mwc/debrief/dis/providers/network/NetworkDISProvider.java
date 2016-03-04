@@ -32,8 +32,8 @@ import edu.nps.moves.disutil.PduFactory;
  */
 public class NetworkDISProvider implements IPDUProvider, IDISController
 {
-  public static final int APPLICATION_ID = 230318;
-  public static final int SITE_ID = 1244;
+  public static final short APPLICATION_ID = 30318;
+  public static final short SITE_ID = 1244;
   private final IDISNetworkPrefs _myPrefs;
   private List<IDISGeneralPDUListener> _gen =
       new ArrayList<IDISGeneralPDUListener>();
