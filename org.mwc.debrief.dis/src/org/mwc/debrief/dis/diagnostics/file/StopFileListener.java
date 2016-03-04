@@ -12,7 +12,7 @@ public class StopFileListener extends CoreFileListener implements
   }
 
   @Override
-  public void stop(long time, short eid, short reason)
+  public void stop(long time, int appId, short eid, short reason)
   {
     // create the line
     StringBuffer out = new StringBuffer();

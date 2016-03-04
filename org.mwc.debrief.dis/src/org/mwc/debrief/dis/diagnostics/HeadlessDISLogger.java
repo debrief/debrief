@@ -105,7 +105,7 @@ public class HeadlessDISLogger
     subject.addStopListener(new IDISStopListener()
     {
       @Override
-      public void stop(long time, short eid, short reason)
+      public void stop(long time,int appId, short eid, short reason)
       {
         System.out.println("== STOP RECEIVED ==");
         provider.detach();

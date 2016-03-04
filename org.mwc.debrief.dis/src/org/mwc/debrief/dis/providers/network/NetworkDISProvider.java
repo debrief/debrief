@@ -1,18 +1,27 @@
 package org.mwc.debrief.dis.providers.network;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
+import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 
+import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.Pdu;
+import edu.nps.moves.dis.StartResumePdu;
+import edu.nps.moves.dis.StopFreezePdu;
 import edu.nps.moves.disutil.PduFactory;
 
 /**
@@ -21,14 +30,21 @@ import edu.nps.moves.disutil.PduFactory;
  * @author Ian
  * 
  */
-public class NetworkDISProvider implements IPDUProvider
+public class NetworkDISProvider implements IPDUProvider, IDISController
 {
+  public static final int APPLICATION_ID = 230318;
+  public static final int SITE_ID = 1244;
   private final IDISNetworkPrefs _myPrefs;
   private List<IDISGeneralPDUListener> _gen =
       new ArrayList<IDISGeneralPDUListener>();
   private boolean _running;
   private MulticastSocket _listenerSocket;
   private Thread newJob;
+  private short _curExercise;
+  private EntityID _myID;
+  private int _thePort;
+  private MulticastSocket _senderSocket;
+  protected InetAddress _theAddress;
 
   /**
    * Max size of a PDU in binary format that we can receive. This is actually somewhat
@@ -39,6 +55,9 @@ public class NetworkDISProvider implements IPDUProvider
   public NetworkDISProvider(IDISNetworkPrefs prefs)
   {
     _myPrefs = prefs;
+    _myID = new EntityID();
+    _myID.setSite(SITE_ID);
+    _myID.setApplication(APPLICATION_ID);
   }
 
   @Override
@@ -71,7 +90,31 @@ public class NetworkDISProvider implements IPDUProvider
       {
         System.out.println("Listing for DIS messages on address:"
             + _myPrefs.getIPAddress() + " port:" + _myPrefs.getPort());
-        startListening();
+
+        // Specify the socket to receive data
+        _thePort = _myPrefs.getPort();
+        try
+        {
+          _theAddress = InetAddress.getByName(_myPrefs.getIPAddress());
+
+          // Set up a socket to send information
+          _senderSocket = new MulticastSocket(_thePort);
+
+          // and start listening
+          startListening();
+        }
+        catch (UnknownHostException ue)
+        {
+          CorePlugin.logError(Status.ERROR, "DIS couldn't connect to host", ue);
+        }
+        catch (SocketException se)
+        {
+          CorePlugin.logError(Status.ERROR, "DIS socket exception", se);
+        }
+        catch (IOException e)
+        {
+          CorePlugin.logError(Status.ERROR, "DIS create multicast", e);
+        }
       }
     };
     newJob = new Thread(runnable);
@@ -95,6 +138,9 @@ public class NetworkDISProvider implements IPDUProvider
 
     if (_listenerSocket != null)
       _listenerSocket.close();
+
+    if (_senderSocket != null)
+      _senderSocket.close();
   }
 
   /**
@@ -108,15 +154,12 @@ public class NetworkDISProvider implements IPDUProvider
 
     _listenerSocket = null;
     DatagramPacket packet;
-    InetAddress address = null;
     PduFactory pduFactory = new PduFactory();
 
     try
     {
-      // Specify the socket to receive data
-      _listenerSocket = new MulticastSocket(_myPrefs.getPort());
-      address = InetAddress.getByName(_myPrefs.getIPAddress());
-      _listenerSocket.joinGroup(address);
+      _listenerSocket = new MulticastSocket(_thePort);
+      _listenerSocket.joinGroup(_theAddress);
 
       // Loop infinitely, receiving datagrams
       while (_running)
@@ -130,6 +173,9 @@ public class NetworkDISProvider implements IPDUProvider
 
         if (pdu != null)
         {
+          // store the current exercise details
+          _curExercise = pdu.getExerciseID();
+
           // share the good news
           Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
           while (gIter.hasNext())
@@ -144,7 +190,7 @@ public class NetworkDISProvider implements IPDUProvider
                                                                 // unsigned byte in the third byte
                                                                 // position.
 
-          System.err.println("PDU not recognised, maybe:" + pduType);
+          System.err.println("PDU not recognised, type:" + pduType);
         }
 
       } // end while
@@ -157,7 +203,7 @@ public class NetworkDISProvider implements IPDUProvider
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      CorePlugin.logError(Status.ERROR, "DIS Listening Exception", e);
     }
     finally
     {
@@ -166,9 +212,9 @@ public class NetworkDISProvider implements IPDUProvider
         // ok, we've finished
         try
         {
-          if (address != null)
+          if (_theAddress != null)
           {
-            _listenerSocket.leaveGroup(address);
+            _listenerSocket.leaveGroup(_theAddress);
           }
         }
         catch (IOException e)
@@ -183,19 +229,61 @@ public class NetworkDISProvider implements IPDUProvider
     }
   }
 
-  //
-  // public static void main(String[] args)
-  // {
-  //
-  // IDISPreferences prefs = new TestPrefs(true, "file.txt");
-  // IDISModule subject = new DISModule(prefs);
-  // IDISNetworkPrefs netPrefs = new CoreNetPrefs(
-  // EspduSender.DEFAULT_MULTICAST_GROUP, EspduSender.PORT);
-  // IPDUProvider provider = new NetworkDISProvider(netPrefs);
-  // subject.setProvider(provider);
-  //
-  // // tell the network provider to start
-  // provider.attach();
-  // }
+  @Override
+  public void sendPause()
+  {
+    // create the Pause PDU
+    StopFreezePdu stop = new StopFreezePdu();
+    stop.setExerciseID(_curExercise);
+    stop.setOriginatingEntityID(_myID);
+    stop.setReason(IDISStopListener.PDU_FREEZE);
+    sendPDU(stop);
+  }
 
+  @Override
+  public void sendStop()
+  {
+    // create the Pause PDU
+    StopFreezePdu stop = new StopFreezePdu();
+    stop.setExerciseID(_curExercise);
+    stop.setOriginatingEntityID(_myID);
+    stop.setReason(IDISStopListener.PDU_STOP);
+    sendPDU(stop);
+  }
+
+  @Override
+  public void sendPlay()
+  {
+    // create the Pause PDU
+    StartResumePdu play = new StartResumePdu();
+    play.setOriginatingEntityID(_myID);
+    play.setExerciseID(_curExercise);
+
+    sendPDU(play);
+  }
+
+  private void sendPDU(Pdu pdu)
+  {
+    // Marshal out the espdu object to a byte array, then send a datagram
+    // packet with that data in it.
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+    pdu.marshal(dos);
+
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    byte[] data = baos.toByteArray();
+
+    DatagramPacket packet =
+        new DatagramPacket(data, data.length, _theAddress, _thePort);
+
+    try
+    {
+      _senderSocket.send(packet);
+    }
+    catch (IOException e)
+    {
+      CorePlugin.logError(Status.ERROR, "DIS couldn't send PDU", e);
+    }
+  }
 }
