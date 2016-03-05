@@ -6704,6 +6704,76 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
       </sect1>
     </chapter>
+    
+    
+    <chapter xml:id="dis_support">
+      <title>Support for DIS Protocol</title>
+      
+      <sect1 xml:id="dis_intro">
+        <title>Introduction</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>Distributed Interactive Simulation</secondary>
+        </indexterm>
+        
+        <para>
+          One group of users employ Debrief for the analysis of scenario results from a headless simulation
+          engine.  The simulation engine produces results data in a range of output formats.  Historically
+          the users had to convert an existing output format to Debrief <code>.rep</code> format, but in the late 2000s 
+          direct support for Debrief was added.
+        </para>
+        <para>
+          In 2015 this body of users recognised the utility of using Debrief as a live simulation monitor, 
+          to bring these benefits:
+          <itemizedlist>
+            <listitem><para>Verify scenario participants behave as predicted before committing to lengthy
+              Monte Carlo block of simulation runs</para></listitem>
+            <listitem><para>Develop the behaviour of one or more scenario participants in a 
+              programming-like CODE-RUN-DEBUG cycle</para></listitem>
+          </itemizedlist>
+          The <glossterm linkend="g_DIS">DIS</glossterm>
+          standard was adopted for
+          network communications between Debrief and the headless simulation engine:
+          <uri xlink:href="https://en.wikipedia.org/wiki/Distributed_Interactive_Simulation">
+            </uri>.
+        </para>
+        <para>You can find System documentation for the DIS integration later in this document (<xref linkend="dis_ref"/>)</para>
+      </sect1>
+      <sect1 xml:id="dis_config">
+        <title>Configuring DIS</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>DIS Preferences</secondary>
+        </indexterm>
+        
+        <para>.
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="figures/DISPrefs.png"/>
+            </imageobject>
+          </mediaobject></para>
+      </sect1>
+      <sect1 xml:id="dis_usage">
+        <title>Monitoring a DIS simulation</title>
+        <para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="figures/DISView.png"/>
+            </imageobject>
+          </mediaobject>
+        </para>
+      </sect1>
+      <sect1 xml:id="dis_tips">
+        <title>DIS Tips &amp; Tricks</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>Tips &amp; Tricks</secondary>
+        </indexterm>
+        <para>
+        </para>
+        <sect2><title>Running Debrief&apos;s DIS simulator</title><para></para></sect2>
+      </sect1>
+    </chapter>
   </part>
 
   <!-- ********************************************************************** -->
@@ -8196,7 +8266,6 @@ and entry type can be multi-word if surrounded by quotes (").
               <secondary>Dynamic Elements</secondary>
             </indexterm>The format for the different types of dynamic annotations is: <screen width="70">
             <markup>
-;;format
 ;;DYNAMIC_CIRCLE: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H YYY XX.XX 
 ;;DYNAMIC_POLYGON: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
 ;;DYNAMIC_RECTANGLE: @@@@@ YYMMDD HHMMSS "NAME"DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
@@ -8255,12 +8324,13 @@ and entry type can be multi-word if surrounded by quotes (").
             </indexterm>The format for the different types of dynamic track annotations is shown below.  Note that 
               each line may contain a series of definitions, and that the distance units are in yards.<screen width="70">
             <markup>
-;; format
 ;SENSORARC YYMMDD HHMMSS.SSS YYMMDD HHMMSS.SSS TRACKNAME SYMBOLOGY LEFT RIGHT INNER OUTER [LEFT RIGHT INNER OUTER] LABEL
 ;; (start time, end time, parent track, styling, min-max angles of the arc, inner-outer radiuses, collective label.
 ;; simple example
+
 ;SENSORARC 951212 062800 951212 063000 NELSON @@ -75 35 0 1000 "fwd dynamic"
 ;; dynamic example - so donut spreads outwards in time using 3 steps
+
 ;SENSORARC: 951212 053000 951212 054000 NELSON @A 0 360 500 1000 CZ_Ring
 ;SENSORARC: 951212 054000 951212 055000 NELSON @B 0 360 600 1100 CZ_Ring
 ;SENSORARC: 951212 055000 951212 060000 NELSON @C 0 360 700 1200 CZ_Ring
@@ -8270,6 +8340,62 @@ and entry type can be multi-word if surrounded by quotes (").
               shape being used for part or all of the track lifetime.</para></note>
             </para>
           </sect2>
+        <sect2 xml:id="replay_format_annotations">
+          <title>Formatting helpers</title>         
+          <para>
+            Entries can be included in REP files to help format data as it is loaded.  These commands can
+            specify the frequency at which labels/symbols are shown, or perform other presentation 
+            configuration, either on specific tracks/layers or for all data.
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/FormatExample.png" width="60%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+            <tip>
+              <para>You can use these helpers to create a set of default look &amp; feels for your plots.  Create a set of
+              label, symbol, arrow markers to suit your data, then store them in a REP file, called something like 
+              <filename>LONG_RANGE_FORMAT.REP</filename>.  Then, when conducting a new piece of analysis
+               of long range tracks, start by opening this REP file.  Now, when you drag in your tracks, they
+               will all get formatted according to your preferred styling.</para>
+            </tip>
+          </para>
+          
+          <para><indexterm>
+            <primary>Format Helpers</primary>
+            <secondary>REP Format Helpers</secondary>
+          </indexterm>The format for these helpers is shown below.<screen width="70">
+            <markup>
+;FORMAT_FIX: 30_min_lab LABEL NULL NULL TRUE 1800000
+;; 30_min_lab - name for this formatter (shown in outline view) 
+;; LABEL - what we're applying to (SYMBOL, LABEL, ARROW)
+;; NULL - track name we apply to (or null for all tracks)
+;; NULL - symbology we apply to (e.g. @A) (or null for all tracks) 
+;; TRUE - whether interval should fall on regular interval or start
+;;        from first data point
+;; 1800000 - interval (in millis) to apply formatting
+
+;FORMAT_FIX: 10_min_sym SYMBOL NELSON NULL TRUE 600000 
+;; show symbol on every 10 minute marker (00:00,00:10, 00:20, etc) 
+;;    for track Nelson
+
+;FORMAT_LAYER_HIDE: format_name layer_name
+;; name for this formatter, name of the layer to hide 
+
+;FORMAT_LAYER_HIDE: format_name layer_1_name "layer 2 name"
+;; name for this formatter, name of the layers to hide
+;;     quotes can be used if name contains spaces 
+
+;FORMAT_TRACK_NAME_AT_END: format_name track_names
+;; name for this formatter, list of track names for which the name 
+;;     should be shown at the end, or empty to apply to all tracks
+            </markup>
+            </screen>
+            <note><para>A NULL can be provided instead of one or more of the times.  This will result in the dynamic
+              shape being used for part or all of the track lifetime.</para></note>
+          </para>
+        </sect2>        
       </sect1>
 
       <sect1 xml:id="debrief_file_format">
@@ -10933,6 +11059,212 @@ end</screen>
         </section>
       </section>
     </chapter>
+    <chapter xml:id="dis_ref">
+      <title>System Documentation for DIS integration</title>
+      <indexterm>
+        <primary>DIS</primary>
+        <secondary>System documentation</secondary>
+      </indexterm>
+      <sect1>
+        <title>Introduction</title>  
+        <para>Debrief is able to integrate with network simulators that adhere to the DIS protocol.  Debrief
+        is able to receive a set of DIS messages (see <xref linkend="dis_messages"></xref>).  Debrief
+          is also able to send StartResume and StopFreeze messages along the link.</para>
+        <sect2>
+          <title>DIS Standard</title>
+          <indexterm>
+            <primary>DIS</primary>
+            <secondary>Protocol version</secondary>
+          </indexterm>          
+          <para>Debrief supports version 6 of the DIS standard (Version 6 - IEEE 1278.1a-1998
+            (amendment to IEEE 1278.1-1995)), as implemented by the Open Source OpenDis project: <uri
+              xlink:href="https://github.com/open-dis/open-dis-java"
+              >https://github.com/open-dis/open-dis-java</uri><code/>. </para>
+          <para>In practice, the version of OpenDis used will be updated to the most recent release each
+            time the code in Debrief&apos; DIS plugin receives maintenance attention.</para>
+        </sect2>
+        <sect2><title>Adding support for further DIS message types</title>
+          <indexterm>
+            <primary>DIS</primary>
+            <secondary>Supporting new message types</secondary>
+          </indexterm>          
+        <para>The following steps should be taken to support new DIS message types:
+            <orderedlist>
+              <listitem>
+                <para>Introduce a new listener interface for the new message (similar to
+                    <code>IDISFireListener)</code></para>
+              </listitem>
+              <listitem>
+                <para>Extend <code>DISModule</code> to allow listeners for the message to be
+                  managed</para>
+              </listitem>
+              <listitem>
+                <para>Extend <code>DISModule</code> to introduce a new handler method for this
+                  message (similar to <code>handleFire</code>)</para>
+              </listitem>
+              <listitem>
+                <para>Extend the <code>logPDU</code> method of <code>DISModule</code> listen for this
+                  message, and pass it to the handler</para>
+              </listitem>
+              <listitem>
+                <para>Introduce a new file listener for the event (like
+                    <code>FireFileListener</code>), and add it to
+                  <code>HeadlessDISLogger</code></para>
+              </listitem>
+              <listitem>
+                <para>Introduce a new Debrief listener for the event (like
+                    <code>DebriefFireListener</code>), and add it to
+                  <code>DISListenerView</code></para>
+              </listitem>
+              <listitem>
+                <para>Extend the list of messages supported (<xref linkend="dis_messages"/></para>
+              </listitem>
+            </orderedlist></para></sect2>
+      </sect1>
+      <sect1 xml:id="dis_messages">
+        <title>Messages supported</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>Messages supported</secondary>
+        </indexterm>
+        <para>
+          <table xml:id="dis_messages_list">
+            <title>DIS Messages Supported</title>
+            <tgroup cols="3">
+              <colspec colname="col1" colnum="1" colwidth="1.0*"/>              
+              <colspec colname="col2" colnum="2" colwidth="1.1*"/>
+              <colspec colname="col3" colnum="3" colwidth="2.2*"/>
+              <thead>
+                <row>
+                  <entry>Message</entry>                  
+                  <entry>Fields</entry>
+                  <entry>Representation in Debrief</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>Entity State</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Entity Id</para></listitem>
+                    <listitem><para>Location</para></listitem>
+                    <listitem><para>Orientation</para></listitem>
+                    <listitem><para>Velocity</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Retrieve the vessel name from the <code>Launch</code> message lookup table, create
+                  a track for this fix (if necessary), and add this fix to that track</entry>
+                </row>
+                <row>
+                  <entry>Collision</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Issuing Entity</para></listitem>
+                    <listitem><para>Colliding Entity</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Create a narrative entry for this event, assigned against the Issuing Entity</entry>
+                </row>
+                <row>
+                  <entry>Detonation</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Entity Id</para></listitem>
+                    <listitem><para>Location</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Create both a narrative entry for this event, assigned against the Issuing Entity.
+                  Also create a text label at the relevant location, placed in the <code>Detonations</code> layer</entry>
+                </row>
+                <row>
+                  <entry>Fire</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Firing Entity Id</para></listitem>
+                    <listitem><para>Target Entity Id</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Create both a narrative entry for this event, assigned against the Issuing Entity.
+                    Also create a text label at the relevant location, placed in the <code>WPN Release</code> layer</entry>
+                </row>
+                <row>
+                  <entry>Event Report</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Originator Id</para></listitem>
+                    <listitem><para>Event Type</para></listitem>
+                    <listitem><para>Variable Datums</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>The Event Report PDU is used as a handler for textual content
+                  across a range of simulation events.  See the list of event report types
+                  below (<xref linkend="dis_event_types"/>)</entry>
+                </row>
+                <row>
+                  <entry>Start / Resume</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Time</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Update the Debrief <guilabel>DIS Listener View</guilabel> to acknowledge
+                    that the simulator is running (e.g. enable the <guilabel>Pause</guilabel> and 
+                    <guilabel>Stop</guilabel> buttons</entry>
+                </row>
+                <row>
+                  <entry>Stop / Freeze</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Time</para></listitem>
+                    <listitem><para>Reason</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Update the Debrief <guilabel>DIS Listener View</guilabel> to acknowledge
+                    that the simulator has either stopped or paused (by inspecing the value 
+                  of the <code>Reason</code> field)</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+          <table xml:id="dis_event_types">
+            <title>DIS Event Report messages</title>
+            <tgroup cols="5">
+              <colspec colname="col1" colnum="1" colwidth="1.2*"/>              
+              <colspec colname="col2" colnum="2" colwidth="0.7*"/>
+              <colspec colname="col3" colnum="3" colwidth="1.8*"/>
+              <colspec colname="col4" colnum="4" colwidth="1.2*"/>
+              <colspec colname="col5" colnum="5" colwidth="1.8*"/>
+              <thead>
+                <row>
+                  <entry>Type</entry>                  
+                  <entry>Event Type</entry>                  
+                  <entry>Sample</entry>
+                  <entry>Parsing</entry>
+                  <entry>Representation in Debrief</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>Comms</entry>
+                  <entry>10001</entry>
+                  <entry>[Pending]</entry>
+                  <entry>[Pending]</entry>
+                  <entry>Narrative entry</entry>
+                </row>
+                <row>
+                  <entry>Launch</entry>
+                  <entry>10002</entry>
+                  <entry><code>NAME:FF23</code></entry>
+                  <entry>Use colon as delimiter</entry>
+                  <entry>Collate lookup table, to translate EntityId to entity name</entry>
+                </row>
+                <row>
+                  <entry>New Track</entry>
+                  <entry>10003</entry>
+                  <entry>[Pending]</entry>
+                  <entry>[Pending]</entry>
+                  <entry>Narrative entry</entry>
+                </row>
+                <row>
+                  <entry>Tactics Change</entry>
+                  <entry>10004</entry>
+                  <entry><code>XXXX from YYYY</code></entry>
+                  <entry>Verbatim</entry>
+                  <entry>Narrative entry</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+        </para>
+      </sect1>
+    </chapter>
+    
   </part>
   <!-- ********************************************************************** -->
   
@@ -11207,12 +11539,23 @@ range = Range to target from ownship (yds)</markup>
         <glossterm>Dead reckoning</glossterm>
 
         <glossdef>
-          <para>Dead reckoning (DR) is the process of estimating one&apos;s current position based upon a
-            previously determined position, or fix, and advancing that position based upon known or
-            estimated speeds over elapsed time, and course. Debrief plots tracks in DR mode by
-            plotting the positions as a series of course/speed legs from an origin. Debrief plots
+          <para>Dead reckoning (DR) is the process of estimating one&apos;s current position based
+            upon a previously determined position, or fix, and advancing that position based upon
+            known or estimated speeds over elapsed time, and course. Debrief plots tracks in DR mode
+            by plotting the positions as a series of course/speed legs from an origin. Debrief plots
             lats/longs unchanged when in <glossterm linkend="g_OverTheGround">Over the
               Ground</glossterm> mode.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry xml:id="g_DIS">
+        <glossterm>DIS Standard</glossterm>
+
+        <glossdef>
+          <para>Distributed Interactive Simulation (DIS) is an IEEE standard for conducting
+            real-time platform-level wargaming across multiple host computers and is used worldwide,
+            especially by military organizations but also by other agencies such as those involved
+            in space exploration and medicine.</para>
         </glossdef>
       </glossentry>
 
@@ -11227,23 +11570,23 @@ range = Range to target from ownship (yds)</markup>
         </glossdef>
       </glossentry>
 
+      <glossentry xml:id="g_dtg">
+        <glossterm>DTG</glossterm>
+
+        <glossdef>
+          <para>Acronym representing Date Time Group</para>
+        </glossdef>
+      </glossentry>
+
       <glossentry xml:id="g_earth_model">
         <glossterm>Earth Model</glossterm>
 
         <glossdef>
           <para>The Earth Model used by the application is modular and interchangeable. In the
             initial release of the application the calculations use the Rhumb-Line Formulae, as
-            described in &apos;Admiralty Manual of Navigation, Volume 2, 1973&apos;. Short-distance sailing is
-            defined as "the following of a rhumb-line track for a distance not greater than
-            600"</para>
-        </glossdef>
-      </glossentry>
-
-      <glossentry xml:id="g_dtg">
-        <glossterm>DTG</glossterm>
-
-        <glossdef>
-          <para>Acronym representing Date Time Group</para>
+            described in &apos;Admiralty Manual of Navigation, Volume 2, 1973&apos;. Short-distance
+            sailing is defined as "the following of a rhumb-line track for a distance not greater
+            than 600"</para>
         </glossdef>
       </glossentry>
 
@@ -11258,8 +11601,8 @@ range = Range to target from ownship (yds)</markup>
         <glossterm>GitHub</glossterm>
         <glossdef>
           <para><link xlink:href="http://github.com">GitHub.com</link> is a web-site providing a
-            range of software development capabilities.  Its name comes from its use of the
-              <emphasis>Git</emphasis> software version control system.  <emphasis>Git</emphasis>
+            range of software development capabilities. Its name comes from its use of the
+              <emphasis>Git</emphasis> software version control system. <emphasis>Git</emphasis>
             allows multiple developers to work simultaneously on a project, preventing conflicts and
             helping to merge divergent development paths.</para>
         </glossdef>
@@ -11280,7 +11623,8 @@ range = Range to target from ownship (yds)</markup>
 
         <glossdef>
           <para>A collection of objected plotted on the <application>Debrief</application> Plot.
-            Each layer can be switched on and off individually using the Outline View (see <xref linkend="layer_mgr"/>). When written to a plot-file, each layer is stored separately -
+            Each layer can be switched on and off individually using the Outline View (see <xref
+              linkend="layer_mgr"/>). When written to a plot-file, each layer is stored separately -
             making it quite easy to copy individual layers out of a plot-file using a text-editor
             and collating them into a new file. (An example of this would be drawing exercise areas
             into one session, then moving them all into one layer, save the file to disk, copy this
@@ -11295,9 +11639,10 @@ range = Range to target from ownship (yds)</markup>
         <glossdef>
           <para>[Extracts taken from MWC 2000 Flyer]</para>
 
-          <para>Under CinCFleet, the Maritime Warfare Centre (MWC) is a &apos;one-stop shop&apos; for the
-            evolution and dissemination of maritime/joint doctrine and concepts through teaching,
-            tactical development, operational analysis, force development and wargaming.</para>
+          <para>Under CinCFleet, the Maritime Warfare Centre (MWC) is a &apos;one-stop shop&apos;
+            for the evolution and dissemination of maritime/joint doctrine and concepts through
+            teaching, tactical development, operational analysis, force development and
+            wargaming.</para>
 
           <para>It also provides the focus for the development and practice of operational level
             warfighting, planning and decision making.</para>
@@ -11318,19 +11663,18 @@ range = Range to target from ownship (yds)</markup>
             that the message have a DTG attached and that it may be represented in text form.</para>
         </glossdef>
       </glossentry>
-      
+
       <glossentry xml:id="g_ne">
         <glossterm>Natural Earth</glossterm>
-        
+
         <glossdef>
-          <para>In 2015 support for Natural Earth data was added to Debrief. Natural Earth
-            is a public domain, freely available dataset of Vector and Raster data. To support
-            Debrief analysts a customized version of Natural Earth has been produced that is 
-            compliant with the Mercator Projection, and styled suitably for the maritime domain.
-          </para>
+          <para>In 2015 support for Natural Earth data was added to Debrief. Natural Earth is a
+            public domain, freely available dataset of Vector and Raster data. To support Debrief
+            analysts a customized version of Natural Earth has been produced that is compliant with
+            the Mercator Projection, and styled suitably for the maritime domain. </para>
         </glossdef>
       </glossentry>
-      
+
       <glossentry xml:id="g_OverTheGround">
         <glossterm>Over the ground</glossterm>
 
@@ -11395,8 +11739,8 @@ range = Range to target from ownship (yds)</markup>
         <glossterm>Plot</glossterm>
 
         <glossdef>
-          <para>A graphic <emphasis>God&apos;s-eye</emphasis> representation of the current dataset. By
-            default the plot has a black background but this may be altered by the user.</para>
+          <para>A graphic <emphasis>God&apos;s-eye</emphasis> representation of the current dataset.
+            By default the plot has a black background but this may be altered by the user.</para>
         </glossdef>
       </glossentry>
 
@@ -11425,8 +11769,8 @@ range = Range to target from ownship (yds)</markup>
                 <para>The settings of any controls used in Debrief (time on the Tote,
                   primary/secondary tracks, etc)</para>
               </listitem>
-            </itemizedlist> Plot-Files end with an <filename>DPF</filename> suffix and may be viewed in
-              <application>Internet Explorer</application> or edited using
+            </itemizedlist> Plot-Files end with an <filename>DPF</filename> suffix and may be viewed
+            in <application>Internet Explorer</application> or edited using
               <application>Notepad</application>.</para>
         </glossdef>
       </glossentry>
@@ -11577,7 +11921,8 @@ brg = Bearing to target from ownship (degs)
         <glossdef>
           <para>A series of positions recorded for a particular vehicle (ship, submarine, helo,
             etc). A track has its own characteristics such as colour, label and symbol frequency,
-            and the symbol used to represent it when the symbol highlighter is in use (see <xref linkend="symbol_sets"/>).</para>
+            and the symbol used to represent it when the symbol highlighter is in use (see <xref
+              linkend="symbol_sets"/>).</para>
         </glossdef>
       </glossentry>
 
@@ -11600,7 +11945,8 @@ brg = Bearing to target from ownship (degs)
           <para>The Vector Product Format is the format of vectored data which may be viewed by
               <application>Debrief</application>. The main type of VPF data is the Vector Map Level
             0, an unclassified global database which includes coastlines, national borders and depth
-            contours. Its supplier ( <link xlink:href="http://www.nima.mil" xmlns:xlink="http://www.w3.org/1999/xlink">WWW.NIMA.MIL</link>) describes it as:
+            contours. Its supplier ( <link xlink:href="http://www.nima.mil"
+              xmlns:xlink="http://www.w3.org/1999/xlink">WWW.NIMA.MIL</link>) describes it as:
               <quote>The Vector Product Format (VPF) is a standard format, structure, and
               organization for large geographic databases that are based on a georelational data
               model and are intended for direct use. </quote></para>
@@ -11611,7 +11957,8 @@ brg = Bearing to target from ownship (degs)
         <glossterm>XML</glossterm>
 
         <glossdef>
-          <para>The eXtensible Markup Language, as recommend by the World Wide Web consortium.</para>
+          <para>The eXtensible Markup Language, as recommend by the World Wide Web
+            consortium.</para>
         </glossdef>
       </glossentry>
     </glossary>

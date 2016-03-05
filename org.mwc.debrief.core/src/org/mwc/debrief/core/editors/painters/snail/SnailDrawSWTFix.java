@@ -102,8 +102,15 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 																	 final HiResDate dtg,
                                    final java.awt.Color backColor)
 	{
+	  
     Rectangle thisR = null;
 
+    // special handling for if we have null DTG (such as at start of processing)
+    if(dtg == null)
+    {
+      return thisR;
+    }
+    
  //   dest.setXORMode(backColor);
 
     // get a pointer to the fix

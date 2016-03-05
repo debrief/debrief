@@ -62,6 +62,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -559,6 +560,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     // lastly, set the title (if we have one)
     this.setPartName(input.getName());
+        
+    // hmm, does this input have an icon?
+    ImageDescriptor icon = input.getImageDescriptor();
+    if(icon != null)
+    {
+      this.setTitleImage(icon.createImage());
+    }    
   }
 
   /**
@@ -956,8 +964,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private void initialiseFileLoaders()
   {
     // hey - sort out our plot readers
@@ -1377,8 +1385,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         {
 
           /**
-					 * 
-					 */
+           * 
+           */
           private static final long serialVersionUID = 1L;
 
           public void parentFireSelectionChanged(final ISelection selected)
@@ -1411,8 +1419,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
 
       /**
-			 * 
-			 */
+       * 
+       */
       private static final long serialVersionUID = 1L;
 
       /**
@@ -1959,8 +1967,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   @Override
   protected void layersExtended()
   {

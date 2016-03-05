@@ -152,14 +152,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 expertProp("Color", "the track color", FORMAT),
                 displayExpertProp("EndTimeLabels", "Start/End time labels",
                     "Whether to label track start/end with 6-figure DTG",
-                    FORMAT),
+                    VISIBILITY),
                 displayExpertProp("SymbolColor", "Symbol color",
                     "the color of the symbol (when used)", FORMAT),
                 displayExpertProp(
                     "PlotArrayCentre",
                     "Plot array centre",
                     "highlight the sensor array centre when non-zero array length provided",
-                    FORMAT),
+                    VISIBILITY),
                 displayExpertProp("TrackFont", "Track font",
                     "the track label font", FORMAT),
                 displayExpertProp("NameVisible", "Name visible",
@@ -170,7 +170,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                     "whether to show the track name at the start (or end)",
                     VISIBILITY),
                 displayExpertProp("LinkPositions", "Link positions",
-                    "whether to join the track points", FORMAT),
+                    "whether to join the track points", VISIBILITY),
                 expertProp("Visible", "whether the track is visible",
                     VISIBILITY),
                 displayExpertLongProp("NameLocation", "Name location",
@@ -1261,9 +1261,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
-    // TODO: DEBUG: REMOVE: remove this diagnostics message
-   // Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
-
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
@@ -2582,6 +2579,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // copy/paste operation. Tell it about it's children
         fw.setTrackWrapper(this);
 
+        // if it's not a relative track, and it's not visible, we don't
+        // need to work with ut
+        if (!getVisible() && !isRelative)
+        {
+          continue;
+        }
+
         // is this fix visible?
         if (!fw.getVisible())
         {
@@ -2705,10 +2709,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               paintSetOfPositions(dest, lastCol, thisLineStyle);
             }
 
+            // double check we haven't been modified
+            if (_ptCtr > _myPts.length)
+            {
+              continue;
+            }
+
             // add our position to the list - we'll output
             // the polyline at the end
-            _myPts[_ptCtr++] = thisP.x;
-            _myPts[_ptCtr++] = thisP.y;
+            if (_ptCtr < _myPts.length)
+            {
+              _myPts[_ptCtr++] = thisP.x;
+              _myPts[_ptCtr++] = thisP.y;
+            }
           }
           else
           {
@@ -2738,7 +2751,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // ok - paint the label for the last visible point
       if (getPositionsVisible())
       {
-        paintIt(dest, endPoints.get(1), getEndTimeLabels());
+        // do we have end points?
+        if (endPoints.size() > 1)
+        {
+          paintIt(dest, endPoints.get(1), getEndTimeLabels());
+        }
       }
 
       // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL

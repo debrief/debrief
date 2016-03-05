@@ -6,20 +6,28 @@
 		point="org.eclipse.ui.preferencePages">
         <page
         	category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
-        	class="org.mwc.debrief.dis.preferences.DisPrefs"
+        	class="org.mwc.debrief.dis.ui.preferences.DisPrefs"
             id="org.mwc.debrief.dis.preferences.DisPrefs"
             name="DIS Preferences">
         </page>
     </extension>
     
+	<extension
+         point="org.eclipse.core.runtime.preferences">
+         <scope name="DIS Preferences" class="org.mwc.debrief.dis.ui.preferences.DisPrefs"/>
+      <initializer
+            class="org.mwc.debrief.dis.ui.preferences.DisPrefsInitialiser">
+      </initializer>
+  	</extension>    
+    
     <extension
          point="org.eclipse.ui.views">
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.debrief.dis.views.DisListenerView"
-            icon="icons/document_chart.png"
+            class="org.mwc.debrief.dis.ui.views.DisListenerView"
+            icon="icons/16px/dis_icon.png"
             id="org.mwc.debrief.dis.views.DisListenerView"
-            name="DIS Listener" restorable="false">
+            name="DIS Listener" restorable="true">
       </view>
    </extension>
     

@@ -2,18 +2,25 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DIS Integration
 Bundle-SymbolicName: org.mwc.debrief.dis;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.2
 Bundle-Activator: org.mwc.debrief.dis.DisActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.cmap.core,
- org.mwc.cmap.legacy,
- org.mwc.debrief.legacy,
+ org.eclipse.core.resources,
  org.eclipse.ui.views,
- org.mwc.cmap.plotViewer
+ org.mwc.cmap.jfreechart;bundle-version="1.0.21",
+ org.junit,
+ org.mwc.cmap.legacy;bundle-version="1.0.204",
+ org.mwc.debrief.legacy;bundle-version="1.0.298",
+ org.mwc.cmap.core;bundle-version="1.0.189"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
- org.mwc.debrief.dis.preferences,
- org.mwc.debrief.dis.views
+ org.mwc.debrief.dis.ui.preferences,
+ org.mwc.debrief.dis.ui.views
+Bundle-ClassPath: libs/dis-enums_1.1.jar,
+ libs/srm_4.4.0.jar,
+ .
+Import-Package: org.eclipse.ui,
+ org.eclipse.ui.part

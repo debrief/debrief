@@ -459,6 +459,8 @@ public class ImportReplay extends PlainImporterBase
       _theImporters.addElement(new ImportPeriodText());
       _theImporters.addElement(new ImportTimeText());
       _theImporters.addElement(new ImportFixFormatter());
+      _theImporters.addElement(new ImportNameAtEndFormatter());
+      _theImporters.addElement(new ImportHideLayerFormatter());
       _theImporters.addElement(new ImportLabel());
       _theImporters.addElement(new ImportWheel());
       _theImporters.addElement(new ImportBearing());
@@ -1075,7 +1077,7 @@ public class ImportReplay extends PlainImporterBase
       // check stream is valid
       if (is.available() > 0)
       {
-        
+
         // clear the output list
         _newLayers.clear();
 

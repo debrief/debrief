@@ -822,7 +822,7 @@
             <property name="introBrandingImageText"
                 value="Debrief, from the Maritime Warfare Centre"/>
             <property name="aboutImage" value="icons/DebriefNGlogoSmall.png"/>
-            <property name="windowImages" value="icons/icon.png"/>
+            <property name="windowImages" value="icons/icon.png,icons/48/icon_48.png"/>
             <property name="startupForegroundColor" value="000000"/>
             <property name="startupMessageRect" value="0,0,0,0"/>
             <property name="startupProgressRect" value="0,0,0,0"/>

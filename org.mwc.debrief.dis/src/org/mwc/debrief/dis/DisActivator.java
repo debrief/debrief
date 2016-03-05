@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.dis;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -28,8 +30,20 @@ public class DisActivator extends AbstractUIPlugin
 
   public static final String PATH_TO_SIMULATION_EXECUTABLE =
       "pathToSimulationExecutable";
+  public static final String PATH_TO_INPUT_FILE =
+      "pathToSimulationInput";
   public static final String IP_ADDRESS = "ipAddress";
   public static final String PORT = "port";
+
+  public static final String APP_FILTER = "appFilter";
+
+  public static final String SITE_FILTER = "siteFilter";
+
+  public static final String EXERCISE_FILTER = "exerciseFilter";
+
+  public static final String APP_ID = "appId";
+
+  public static final String SITE_ID = "siteId";
 
   // The shared instance
   private static DisActivator plugin;
@@ -73,4 +87,9 @@ public class DisActivator extends AbstractUIPlugin
     return plugin;
   }
 
+  public static void log (Throwable t)
+  {
+    IStatus status = new Status(IStatus.WARNING, PLUGIN_ID, t.getMessage(), t);
+    getDefault().getLog().log(status);
+  }
 }
