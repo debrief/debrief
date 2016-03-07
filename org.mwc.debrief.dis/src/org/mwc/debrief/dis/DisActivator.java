@@ -87,6 +87,12 @@ public class DisActivator extends AbstractUIPlugin
     return plugin;
   }
 
+  public static void log (int statusVal, String message, Throwable t)
+  {
+    IStatus status = new Status(statusVal, PLUGIN_ID, message, t);
+    getDefault().getLog().log(status);
+  }
+
   public static void log (Throwable t)
   {
     IStatus status = new Status(IStatus.WARNING, PLUGIN_ID, t.getMessage(), t);
