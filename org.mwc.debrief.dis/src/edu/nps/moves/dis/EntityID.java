@@ -17,13 +17,13 @@ import edu.nps.moves.disutil.*;
 public class EntityID extends Object implements Serializable
 {
    /** The site ID */
-   protected short  site;
+   protected int  site;
 
    /** The application ID */
-   protected short  application;
+   protected int  application;
 
    /** the entity ID */
-   protected short  entity;
+   protected int  entity;
 
 
 /** Constructor */
@@ -43,27 +43,27 @@ public int getMarshalledSize()
 }
 
 
-public void setSite(short pSite)
+public void setSite(int pSite)
 { site = pSite;
 }
 
-public short getSite()
+public int getSite()
 { return site; 
 }
 
-public void setApplication(short pApplication)
+public void setApplication(int pApplication)
 { application = pApplication;
 }
 
-public short getApplication()
+public int getApplication()
 { return application; 
 }
 
-public void setEntity(short pEntity)
+public void setEntity(int pEntity)
 { entity = pEntity;
 }
 
-public short getEntity()
+public int getEntity()
 { return entity; 
 }
 
@@ -72,9 +72,9 @@ public void marshal(DataOutputStream dos)
 {
     try 
     {
-       dos.writeShort( (short)site);
-       dos.writeShort( (short)application);
-       dos.writeShort( (short)entity);
+       dos.writeShort( (int)site);
+       dos.writeShort( (int)application);
+       dos.writeShort( (int)entity);
     } // end try 
     catch(Exception e)
     { 
@@ -85,9 +85,9 @@ public void unmarshal(DataInputStream dis)
 {
     try 
     {
-       site = (short)dis.readUnsignedShort();
-       application = (short)dis.readUnsignedShort();
-       entity = (short)dis.readUnsignedShort();
+       site = (int)dis.readUnsignedShort();
+       application = (int)dis.readUnsignedShort();
+       entity = (int)dis.readUnsignedShort();
     } // end try 
    catch(Exception e)
     { 
