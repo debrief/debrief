@@ -6745,23 +6745,168 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <primary>DIS</primary>
           <secondary>DIS Preferences</secondary>
         </indexterm>
-        
-        <para>.
+        <para>
+          Access the DIS preferences page either from the <guimenu>Window / Preferences / Maritime Analysis</guimenu> DIS preferences page,
+          or by clicking on the <guibutton>Server prefs</guibutton> link on the <guilabel>DIS Listener View</guilabel>.
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="figures/DISPrefs.png"/>
+              <imagedata align="center" fileref="figures/DISPrefs.png" width="60%"/>
             </imageobject>
-          </mediaobject></para>
+          </mediaobject>          
+        </para>
+        <sect2 xml:id="dis_net_config">
+          <title>Network configuration</title>
+          <para>Debrief uses DIS to talk to simulators running on the current machine, or on another
+            machine on the network.  This network communications requires some configuration - to tell
+            Debrief what to listen to.  Two specific values are used:<variablelist>
+              <varlistentry>
+                <term>IP Address</term>
+                <listitem>
+                  <para>The 4-block Network address for the multicast group being used for DIS
+                    messaging</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Port</term>
+                <listitem>
+                  <para>The number of the port on that address which is being used for DIS
+                    messaging</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </sect2>
+        <sect2 xml:id="dis_exe_config">
+          <title>Configuring the launch of an external simulator</title>
+          <para>Some DIS simulators run as complex combinations of services &amp; applications. Other simulators
+            are contained in simple standalone executables.  It is possible to launch such an executable
+            directly from Debrief<variablelist>
+              <varlistentry>
+                <term>Path to executable</term>
+                <listitem>
+                  <para>The application (or script) used to trigger a simulation run</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </sect2>
+        <sect2 xml:id="dis_debrief_config">
+          <title>Giving Debrief an identity</title>
+          <para>In an environment where a networked simulation has multiple participants, it can become necessary to
+            specify identify particular participants (so their messages could be, for example, ignored).  
+            Two particular values are used for this configuration<variablelist>
+            <varlistentry>
+              <term>Site</term>
+              <listitem>
+                <para>This value is unique to the site (location) where Debrief is being run from.  The value isn&apos;t derived
+                from a formal table, but is by local agreement</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Application</term>
+              <listitem>
+                <para>This value is unique to the Debrief application.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          </para>
+        </sect2>
+        <sect2 xml:id="dis_filter_config">
+          <title>Filtering DIS traffic</title>
+          <para>It is possible for multiple DIS simulations to simultaneously run on a single network.  
+            Common-sense would suggest that 
+            these multiple sumulations should use unique network address and port, but this isn't mandatory.  
+            If multiple simulations are being run on the same network address and port, it is possible 
+            to control which simulations Debrief listens to:<variablelist>
+              <varlistentry>
+                <term>Site</term>
+                <listitem>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages from
+                  the specified site</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Application</term>
+                <listitem>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages from
+                    the specified application</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Exercise</term>
+                <listitem>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages from
+                    the specified DIS exercise</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </sect2>
       </sect1>
       <sect1 xml:id="dis_usage">
         <title>Monitoring a DIS simulation</title>
-        <para>
-          <mediaobject>
+        <para> Interaction with DIS scenarios is performed from the <guimenu>DIS Listener
+            View</guimenu>. <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="figures/DISView.png"/>
+              <imagedata align="center" fileref="figures/DISView.png" width="60%"/>
             </imageobject>
           </mediaobject>
+          At the top of the panel are two small icons. The first has a toggle behaviour, and when ticked
+          Debrief will auto-resize at each step, to ensure all loaded data remains visible.  The second icon
+          access the help for Debrief&apos;s DIS integration.
         </para>
+        <sect2>
+          <title>Running a local simulator</title>
+          <para> If you have specified the path to an executable in the <guimenu>Server
+              preferences</guimenu> (see <xref linkend="dis_exe_config"/>), then you can use the
+              <guimenu>Local simulator</guimenu> box to (optionally) specify the location of the
+            input file to be passed to the executable. Click on the <guibutton>...</guibutton>
+            button to open a file browser. </para>
+          <para> Once a control file has been specified, you can click on the
+              <guibutton>Launch</guibutton> button to start the simulator executable, passing the
+            input file to it. After launching Debrief will automatically start listening on the
+            correct network port. </para>
+        </sect2>
+        <sect2>
+          <title>Interacting with a DIS simulation</title>
+          <para>The large listen button is used to toggle whether Debrief is listening for DIS
+            messages.</para>
+          <para>If Debrief receives sufficient network status messages from the simulator, Debrief
+            will enable the <guibutton>Play</guibutton>, <guibutton>Pause</guibutton>,
+              <guibutton>Stop</guibutton>. After <guibutton>Stop</guibutton> has been pressed, and
+            new DIS messages received will be put into a new plot (existing data will be wiped).
+          </para>
+        </sect2>
+        <sect2>
+          <title>Other settings</title>
+          <para> Two other minor options are provided. If <guibutton>New plot per
+              replication</guibutton> is ticked, when Debrief recognises that data for an new
+            simulation run is being received, Debrief will open a fresh plot to contain the data. <note>
+              <para>If the current plot is based on a <filename>.REP</filename> input file, Debrief
+                will base the fresh plot on that same input file. This practice can be used to
+                design a set of background annotations (such as exercise area, scale, bathy
+                backdrop) - which gets used for all plots.</para>
+            </note>
+          </para>
+          <para>If the simulator is running very quickly, and it looks like the UI is getting
+            swamped with updates, the <guibutton>Live updates</guibutton> checkbox can be cleared,
+            which will let Debrief continue to receive and store DIS messages, but Debrief will not
+            bother updating the user interface (the Outline view or the Plot Editor).</para>
+          <para>Lastly, the <guibutton>Server prefs</guibutton> link can be used to open the 
+          preferences page for Debrief DIS communications.</para>
+        </sect2>
+        <sect2><title>Performance graph</title>
+          <para>
+            At the foot of the <guibutton>DIS Listener View</guibutton> is a performance graph.  When
+            a simulation is being listened to, this graph updates once per second. It shows two lines. One is the 
+            frequency at which simulation messages are being received, and the second is the frequency of screen updates.
+            As more data is received, and shown on the plot, the frequency of screen updates will slow down.
+          </para>
+          <para>
+            Inspection of this graph can give the analyst an indication of whether the simulator is running, how
+            quickly it is running, and how Debrief is handling the volume of loaded data.
+          </para>
+        </sect2>
       </sect1>
       <sect1 xml:id="dis_tips">
         <title>DIS Tips &amp; Tricks</title>
@@ -6769,9 +6914,35 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <primary>DIS</primary>
           <secondary>Tips &amp; Tricks</secondary>
         </indexterm>
-        <para>
-        </para>
-        <sect2><title>Running Debrief&apos;s DIS simulator</title><para></para></sect2>
+        <sect2><title>Specifying format parameters in advance</title>
+              <para>
+                In early 2016 Debrief received the ability to provide format instructions in a REP file, as in the
+                following example. 
+                <programlisting>
+;FORMAT_FIX: 10_min_sym SYMBOL NULL NULL TRUE 600000 
+;FORMAT_FIX: 30_min_lab LABEL NULL NULL TRUE 1800000 
+;FORMAT_FIX: 15_sec_arr ARROW NELSON NULL TRUE 900000 
+;FORMAT_TRACK_NAME_AT_END: name_at_end
+;FORMAT_LAYER_HIDE: hide_dis_6  DIS_6
+              </programlisting>
+                Use of these instructions will save effort re-applying formatting to each new model run.
+              </para>
+        </sect2>
+        <sect2><title>Running Debrief&apos;s DIS simulator</title>
+          <para>
+            To aid development of the new DIS integration capability, a very simple simulator
+            was developed that was capable of sending out messages in DIS format.  This tool 
+            has now been included in Debrief, to help users get started with (or just play) with
+            Debrief&apos;s DIS integration.
+          </para>
+          <para>
+            The simple simulator can be started using the script file that is contained in the 
+            <filename>Sample Data / Other formats</filename> folder.  Just assign the 
+            <filename>sender.sh</filename> or <filename>sender.bat</filename> as the 
+            executable in the <guimenu>Server preferences</guimenu> page, and use
+            <filename>control.inp</filename> as the simulation input file.
+          </para>
+        </sect2>
       </sect1>
     </chapter>
   </part>
