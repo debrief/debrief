@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
+import org.eclipse.core.runtime.Status;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.diagnostics.senders.IPduSender;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
@@ -306,11 +307,11 @@ public class PduGenerator
         }
         catch (FileNotFoundException e)
         {
-          DisActivator.log(e);
+          DisActivator.log(Status.ERROR, "Reading in input file", e);
         }
         catch (IOException e)
         {
-          DisActivator.log(e);
+          DisActivator.log(Status.ERROR, "Reading in input file", e);
         }
         finally
         {
@@ -322,7 +323,7 @@ public class PduGenerator
             }
             catch (IOException e)
             {
-              DisActivator.log(e);
+              DisActivator.log(Status.ERROR, "Reading in input file", e);
             }
             reader = null;
           }
