@@ -1,7 +1,10 @@
 package org.mwc.debrief.dis.diagnostics;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,8 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Scanner;
 
+import org.eclipse.core.runtime.IStatus;
+import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.diagnostics.senders.IPduSender;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
@@ -43,31 +47,6 @@ import edu.nps.moves.disutil.CoordinateConversions;
 public class PduGenerator
 {
 
-  /**
-   * random seed - necessary for reproducible results (for testing)
-   * 
-   */
-  private static final int RANDOM_SEED = 12;
-
-  private static final short STOP_PDU_TERMINATED = 2;
-  private static final short STOP_PDU_FREEZE = 7;
-
-  private static final short EXERCISE_ID = 20;
-  private static final short SITE_ID = 1000;
-  private static final short APP_ID = 3000;
-
-  private boolean _terminate;
-
-  private Random genny;
-
-  private Collection<Torpedo> torpedoes = new ArrayList<Torpedo>();
-  private Collection<Vessel> redParts = new ArrayList<Vessel>();
-  private Collection<Vessel> blueParts = new ArrayList<Vessel>();
-  private Collection<Vessel> greenParts = new ArrayList<Vessel>();
-
-  private EntityID eid;
-
-
   private class Torpedo extends Vessel
   {
 
@@ -81,8 +60,9 @@ public class PduGenerator
 
     Vessel myTarget = null;
 
-    private Torpedo(final short id, final String name, final short hostId, final short force,
-        double oLat, double oLong, int targetId)
+    private Torpedo(final short id, final String name, final short hostId,
+        final short force, final double oLat, final double oLong,
+        final int targetId)
     {
       super(id, name, force, oLat, oLong, 0);
 
@@ -94,15 +74,15 @@ public class PduGenerator
     }
 
     @Override
-    protected double getCourse(Map<Short, Vessel> states, EntityID sampleId,
-        long lastTime, IPduSender sender)
+    protected double getCourse(final Map<Short, Vessel> states,
+        final EntityID sampleId, final long lastTime, final IPduSender sender)
     {
 
       // hmm, do we have a target?
       if (targetId != -1)
       {
         // does this target exist
-        Vessel[] parts = states.values().toArray(new Vessel[]
+        final Vessel[] parts = states.values().toArray(new Vessel[]
         {null});
         for (int i = 0; i < parts.length; i++)
         {
@@ -122,9 +102,9 @@ public class PduGenerator
           }
 
           // hmm, see if we're very close to this one
-          double dLon = thisP.longVal - longVal;
-          double dLat = thisP.latVal - latVal;
-          double range = Math.sqrt(dLon * dLon + dLat * dLat);
+          final double dLon = thisP.longVal - longVal;
+          final double dLat = thisP.latVal - latVal;
+          final double range = Math.sqrt(dLon * dLon + dLat * dLat);
 
           if (range < 0.01)
           {
@@ -149,7 +129,7 @@ public class PduGenerator
 
           if (thisP.id == targetId)
           {
-            double bearing = Math.atan2(dLon, dLat);
+            final double bearing = Math.atan2(dLon, dLat);
             courseRads = bearing;
 
             // hmm, do we already know about our target?
@@ -221,8 +201,8 @@ public class PduGenerator
     protected double speedVal;
     final String name;
 
-    private Vessel(final short id, final String name, final short force, double oLat, double oLong,
-        double range)
+    private Vessel(final short id, final String name, final short force,
+        final double oLat, final double oLong, final double range)
     {
       this.id = id;
       this.name = name;
@@ -232,8 +212,8 @@ public class PduGenerator
       courseRads = Math.toRadians(((int) (genny.nextDouble() * 36d)) * 10d);
     }
 
-    protected double getCourse(Map<Short, Vessel> states, EntityID sampleId,
-        long lastTime, IPduSender sender)
+    protected double getCourse(final Map<Short, Vessel> states,
+        final EntityID sampleId, final long lastTime, final IPduSender sender)
     {
       // see if we're going to do a random turn
       if (genny.nextDouble() > 0.8)
@@ -245,14 +225,14 @@ public class PduGenerator
       return courseRads;
     }
 
-    public void update(Map<Short, Vessel> states, int idx, long lastTime,
-        EntityID sampleId, IPduSender sender)
+    public void update(final Map<Short, Vessel> states, final int idx,
+        final long lastTime, final EntityID sampleId, final IPduSender sender)
     {
       courseRads = getCourse(states, sampleId, lastTime, sender);
 
       // ok, handle the movement
-      double dLat = Math.cos(courseRads) * distStep;
-      double dLon = Math.sin(courseRads) * distStep;
+      final double dLat = Math.cos(courseRads) * distStep;
+      final double dLon = Math.sin(courseRads) * distStep;
 
       longVal += dLon;
       latVal += dLat;
@@ -268,6 +248,20 @@ public class PduGenerator
     }
   }
 
+  /**
+   * random seed - necessary for reproducible results (for testing)
+   * 
+   */
+  private static final int RANDOM_SEED = 12;
+
+  private static final short STOP_PDU_TERMINATED = 2;
+  private static final short STOP_PDU_FREEZE = 7;
+  private static final short EXERCISE_ID = 20;
+
+  private static final short SITE_ID = 1000;
+
+  private static final short APP_ID = 3000;
+
   public static void main(String args[])
   {
 
@@ -281,23 +275,49 @@ public class PduGenerator
     // the input argument should be a file
     if (args.length == 1)
     {
-      String fName = args[0];
-      File iFile = new File(fName);
+      final String fName = args[0];
+      final File iFile = new File(fName);
       String inputData = null;
       if (iFile.exists())
       {
-        // ok, read it in
-        Scanner scanner;
+        BufferedReader reader = null;
         try
         {
-          scanner = new Scanner(iFile, "UTF-8");
-          inputData = scanner.useDelimiter("\\A").next();
-          scanner.close(); // Put this call in a finally block
+
+          reader = new BufferedReader(new FileReader(iFile));
+          String s;
+          while ((s = reader.readLine()) != null)
+          {
+            if (s.startsWith("//"))
+              continue;
+            else
+            {
+              inputData = s;
+            }
+          }
         }
-        catch (FileNotFoundException e)
+        catch (final FileNotFoundException e)
         {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          DisActivator.log(IStatus.ERROR, "Reading in input file", e);
+        }
+        catch (final IOException e)
+        {
+          DisActivator.log(IStatus.ERROR, "Reading in input file", e);
+        }
+        finally
+        {
+          if (reader != null)
+          {
+            try
+            {
+              reader.close();
+            }
+            catch (final IOException e)
+            {
+              DisActivator.log(IStatus.ERROR, "Reading in input file", e);
+            }
+            reader = null;
+          }
         }
       }
 
@@ -305,7 +325,7 @@ public class PduGenerator
       if (inputData != null)
       {
         // ok, parse it
-        String[] items = inputData.trim().split(" ");
+        final String[] items = inputData.trim().split(" ");
         if (items.length >= 6)
         {
           destinationIpString = items[0];
@@ -324,7 +344,7 @@ public class PduGenerator
       // get system properties, and put them into the args
       // All system properties, passed in on the command line via
       // -Dattribute=value
-      Properties systemProperties = System.getProperties();
+      final Properties systemProperties = System.getProperties();
 
       // IP address we send to
       destinationIpString = systemProperties.getProperty("group");
@@ -351,18 +371,30 @@ public class PduGenerator
       {millis, numParts, numMessages};
     }
 
-    PduGenerator sender = new PduGenerator();
+    final PduGenerator sender = new PduGenerator();
     sender.run(new NetworkPduSender(destinationIpString, portString,
         networkModeString), args);
   }
 
-  public void run(IPduSender sender, String args[])
+  private boolean _terminate;
+  private Random genny;
+  private final Collection<Torpedo> torpedoes = new ArrayList<Torpedo>();
+
+  private final Collection<Vessel> redParts = new ArrayList<Vessel>();
+
+  private final Collection<Vessel> blueParts = new ArrayList<Vessel>();
+
+  private final Collection<Vessel> greenParts = new ArrayList<Vessel>();
+
+  private EntityID eid;
+
+  public void run(final IPduSender sender, final String args[])
   {
     // initialise our random number generator
     genny = new Random(RANDOM_SEED);
 
     /** an entity state pdu */
-    EntityStatePdu espdu = new EntityStatePdu();
+    final EntityStatePdu espdu = new EntityStatePdu();
     // DisTime disTime = DisTime.getInstance();
 
     // declare the states
@@ -394,7 +426,6 @@ public class PduGenerator
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
 
-
     // The EID is the unique identifier for objects in the world. This
     // EID should match up with the ID for the object specified in the
     // VMRL/x3d/virtual world.
@@ -403,9 +434,9 @@ public class PduGenerator
     eid.setApplication(APP_ID);
     espdu.setExerciseID(EXERCISE_ID);
 
-    int entityId = 2;
+    final int entityId = 2;
 
-    eid.setEntity((short)entityId);
+    eid.setEntity((short) entityId);
 
     // Set the entity type. SISO has a big list of enumerations, so that by
     // specifying various numbers we can say this is an M1A2 American tank,
@@ -413,7 +444,7 @@ public class PduGenerator
     // separate project elsehwhere in this project that implements DIS
     // enumerations in C++ and Java, but to keep things simple we just use
     // numbers here.
-    EntityType entityType = espdu.getEntityType();
+    final EntityType entityType = espdu.getEntityType();
     entityType.setEntityKind((short) 1); // Platform (vs lifeform, munition,
                                          // sensor, etc.)
     entityType.setCountry(225); // USA
@@ -423,7 +454,7 @@ public class PduGenerator
     entityType.setSubcategory((short) 1); // M1 Abrams
     entityType.setSpec((short) 3); // M1A2 Abrams
 
-    int randomHour = (int) (2 + genny.nextDouble() * 20);
+    final int randomHour = (int) (2 + genny.nextDouble() * 20);
     @SuppressWarnings("deprecation")
     long lastTime = new Date(2015, 1, 1, randomHour, 0).getTime();
 
@@ -444,16 +475,17 @@ public class PduGenerator
       {
 
         // sort out affiliation
-        short force = (short) (genny.nextInt(3) + 1);
+        final short force = (short) (genny.nextInt(3) + 1);
 
-        short eId = (short) (i + 1);// 1 + (int) (Math.random() * 20d);
+        final short eId = (short) (i + 1);// 1 + (int) (Math.random() * 20d);
         final String name = "PLATFORM_" + eId;
-        Vessel newS = new Vessel(eId, name, force, startX, startY, randomArea);
-        eid.setEntity((short)eId);
-        
+        final Vessel newS =
+            new Vessel(eId, name, force, startX, startY, randomArea);
+        eid.setEntity(eId);
+
         // share the news
         sendLaunch(EXERCISE_ID, lastTime, eid, newS.name, sender);
-        
+
         states.put(eId, newS);
 
         switch (force)
@@ -491,11 +523,11 @@ public class PduGenerator
 
         // get an array of participants. we don't use an interator,
         // to avoid concurrent modification
-        Vessel[] parts = states.values().toArray(new Vessel[]
+        final Vessel[] parts = states.values().toArray(new Vessel[]
         {null});
         for (int i = 0; i < parts.length; i++)
         {
-          Vessel thisS = parts[i];
+          final Vessel thisS = parts[i];
 
           // get the subject to move forward
           thisS.update(states, idx, lastTime, eid, sender);
@@ -512,13 +544,14 @@ public class PduGenerator
           final Vessel launchPlatform = selectRandomEntity(redParts);
 
           // try to give the new vehicle a target
-          Vessel targetId = selectRandomEntity(blueParts);
+          final Vessel targetId = selectRandomEntity(blueParts);
 
-          final short newId =  (short) (1000 + (genny.nextDouble() * 1000d));
+          final short newId = (short) (1000 + (genny.nextDouble() * 1000d));
           final String newName = "TORP_" + newId;
-          
-          Torpedo torpedo =
-              new Torpedo(newId, newName, launchPlatform.id, IDISFixListener.RED, launchPlatform.latVal,
+
+          final Torpedo torpedo =
+              new Torpedo(newId, newName, launchPlatform.id,
+                  IDISFixListener.RED, launchPlatform.latVal,
                   launchPlatform.longVal, targetId.id);
 
           // share the news
@@ -530,18 +563,18 @@ public class PduGenerator
           torpedoes.add(torpedo);
 
           // also send out the "fired" message
-          FirePdu fire = new FirePdu();
+          final FirePdu fire = new FirePdu();
           fire.setExerciseID(EXERCISE_ID);
           fire.setTimestamp(lastTime);
           eid.setEntity(newId);
           fire.setFiringEntityID(eid);
-          
+
           eid.setEntity(targetId.id);
           fire.setTargetEntityID(eid);
 
           // and the location
-          Vessel launcher = states.get(launchPlatform.id);
-          Vector3Double wLoc = new Vector3Double();
+          final Vessel launcher = states.get(launchPlatform.id);
+          final Vector3Double wLoc = new Vector3Double();
           wLoc.setX(launcher.longVal);
           wLoc.setY(launcher.latVal);
           wLoc.setZ(randomArea);
@@ -569,142 +602,17 @@ public class PduGenerator
 
       System.out.println("COMPLETE SENT!");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       System.out.println(e);
     }
 
   }
 
-  private void sendStart(IPduSender sender, short exId, long lastTime)
+  private Vessel selectRandomEntity(final Collection<Vessel> collection)
   {
-    // ok, data complete. send stop PDU
-    // The byte array here is the packet in DIS format. We put that into a
-    // datagram and send it.
-    StartResumePdu stopPdu = new StartResumePdu();
-    stopPdu.setTimestamp(lastTime);
-    stopPdu.setExerciseID(EXERCISE_ID);
-    stopPdu.setOriginatingEntityID(eid);
-    stopPdu.setRealWorldTime(new ClockTime());
-
-    // and send it
-    sender.sendPdu(stopPdu);
-  }
-
-  private void sendStop(IPduSender sender, short exId, long lastTime)
-  {
-    // ok, data complete. send stop PDU
-    // The byte array here is the packet in DIS format. We put that into a
-    // datagram and send it.
-    StopFreezePdu stopPdu = new StopFreezePdu();
-    stopPdu.setTimestamp(lastTime);
-    stopPdu.setExerciseID(EXERCISE_ID);
-    stopPdu.setOriginatingEntityID(eid);
-    stopPdu.setReason(STOP_PDU_TERMINATED);
-
-    // and send it
-    sender.sendPdu(stopPdu);
-  }
-
-  @SuppressWarnings("unused")
-  private void sendFreeze(IPduSender sender, short exId, long lastTime)
-  {
-    // ok, data complete. send stop PDU
-    // The byte array here is the packet in DIS format. We put that into a
-    // datagram and send it.
-    StopFreezePdu stopPdu = new StopFreezePdu();
-    stopPdu.setTimestamp(lastTime);
-    stopPdu.setExerciseID(EXERCISE_ID);
-    stopPdu.setOriginatingEntityID(eid);
-    stopPdu.setReason(STOP_PDU_FREEZE);
-
-    // and send it
-    sender.sendPdu(stopPdu);
-  }
-
-
-  private void sendStatusUpdate(Vessel thisS, EntityID eid,
-      EntityStatePdu espdu, IPduSender sender)
-  {
-    // update the affiliation
-    espdu.setForceId(thisS.force);
-
-    eid.setEntity(thisS.id);
-
-    double disCoordinates[] =
-        CoordinateConversions.getXYZfromLatLonDegrees(thisS.latVal,
-            thisS.longVal, 0.0);
-    Vector3Double location = espdu.getEntityLocation();
-    location.setX(disCoordinates[0]);
-    location.setY(disCoordinates[1]);
-    location.setZ(disCoordinates[2]);
-
-    // sort out the course & speed
-    Orientation orientation = espdu.getEntityOrientation();
-    orientation.setPhi((float) thisS.courseRads);
-
-    // turn the speed into the 3-vector components
-    Vector3Float velocity = espdu.getEntityLinearVelocity();
-    velocity.setX((float) thisS.speedVal);
-    espdu.setEntityLinearVelocity(velocity);
-
-    // also specify the target appearance
-    espdu.setEntityAppearance_damage(thisS.damage);
-
-    // and send it
-    sender.sendPdu(espdu);
-  }
-
-  private void sendLaunch(short exerciseID, long lastTime, EntityID eid,
-      String newName, IPduSender sender)
-  {
-    String msg = "NAME:" + newName.trim();
-    sendMessage(EXERCISE_ID, lastTime, IDISEventListener.EVENT_LAUNCH, eid, msg,
-        sender);
-  }
-
-  private void sendMessage(short exerciseID, long lastTime, long eventType,
-      EntityID eid, String msg, IPduSender sender)
-  {
-
-    // build up the PDU
-    EventReportPdu dp = new EventReportPdu();
-    dp.setExerciseID(EXERCISE_ID);
-    dp.setTimestamp(lastTime);
-    dp.setEventType(eventType);
-
-    // produce random participant.
-    dp.setOriginatingEntityID(eid);
-
-    // INSERTING TEXT STRING
-    //
-    VariableDatum d = new VariableDatum();
-    byte[] theBytes = msg.getBytes();
-    List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
-
-    for (int i = 0; i < theBytes.length; i++)
-    {
-      byte thisB = theBytes[i];
-      OneByteChunk chunk = new OneByteChunk();
-      chunk.setOtherParameters(new byte[]
-      {thisB});
-      chunks.add(chunk);
-    }
-    d.setVariableData(chunks);
-    d.setVariableDatumLength(theBytes.length);
-    d.setVariableDatumID(lastTime);
-    List<VariableDatum> datums = new ArrayList<VariableDatum>();
-    datums.add(d);
-    dp.setVariableDatums(datums);
-
-    // and send it
-    sender.sendPdu(dp);
-  }
-
-  private Vessel selectRandomEntity(Collection<Vessel> collection)
-  {
-    int index = (int) (genny.nextDouble() * (double) collection.size());
-    Iterator<Vessel> sIter2 = collection.iterator();
+    final int index = (int) (genny.nextDouble() * collection.size());
+    final Iterator<Vessel> sIter2 = collection.iterator();
     Vessel res = null;
     for (int i = 0; i <= index; i++)
     {
@@ -713,14 +621,47 @@ public class PduGenerator
     return res;
   }
 
-  public void terminate()
+  private void sendCollision(final Vessel movingPlatform,
+      final short recipientId, final EntityID movingId,
+      final Map<Short, Vessel> states, final long lastTime,
+      final IPduSender sender)
   {
-    _terminate = true;
+    final EntityID victimE = new EntityID();
+    victimE.setApplication(movingId.getApplication());
+    victimE.setEntity(recipientId);
+    victimE.setSite(movingId.getSite());
+
+    // store the id of the firing platform
+    movingId.setEntity(movingPlatform.id);
+
+    // build up the PDU
+    final CollisionPdu coll = new CollisionPdu();
+    coll.setExerciseID(EXERCISE_ID);
+    movingId.setEntity(recipientId);
+    coll.setCollidingEntityID(movingId);
+    coll.setTimestamp(lastTime);
+
+    // and the location
+    final double disCoordinates[] =
+        CoordinateConversions.getXYZfromLatLonDegrees(movingPlatform.latVal,
+            movingPlatform.longVal, 0.0);
+    final Vector3Float location = new Vector3Float();
+    location.setX((float) disCoordinates[0]);
+    location.setY((float) disCoordinates[1]);
+    location.setZ((float) disCoordinates[2]);
+    coll.setLocation(location);
+
+    // and send it
+    sender.sendPdu(coll);
+
+    System.out.println(": " + movingPlatform.id + " collided with "
+        + recipientId);
   }
 
-  private void sendDetonation(Vessel firingPlatform, int recipientId,
-      EntityID eid, Map<Short, Vessel> states, long lastTime,
-      IPduSender sender)
+  private void sendDetonation(final Vessel firingPlatform,
+      final int recipientId, final EntityID eid,
+      final Map<Short, Vessel> states, final long lastTime,
+      final IPduSender sender)
   {
     // store the id of the firing platform
     eid.setEntity(firingPlatform.id);
@@ -745,22 +686,22 @@ public class PduGenerator
     states.remove(firingPlatform.id);
 
     // build up the PDU
-    DetonationPdu dp = new DetonationPdu();
+    final DetonationPdu dp = new DetonationPdu();
     dp.setExerciseID(EXERCISE_ID);
     dp.setFiringEntityID(eid);
     dp.setTimestamp(lastTime);
 
     // and the location
-    double disCoordinates[] =
+    final double disCoordinates[] =
         CoordinateConversions.getXYZfromLatLonDegrees(firingPlatform.latVal,
             firingPlatform.longVal, 0.0);
-    Vector3Float location = new Vector3Float();
+    final Vector3Float location = new Vector3Float();
     location.setX((float) disCoordinates[0]);
     location.setY((float) disCoordinates[1]);
     location.setZ((float) disCoordinates[2]);
     dp.setLocationInEntityCoordinates(location);
 
-    Vector3Double wLoc = new Vector3Double();
+    final Vector3Double wLoc = new Vector3Double();
     wLoc.setX(firingPlatform.longVal);
     wLoc.setY(firingPlatform.latVal);
     wLoc.setZ(0);
@@ -772,40 +713,137 @@ public class PduGenerator
     System.out.println(": " + firingPlatform.id + " destroyed " + recipientId);
   }
 
-  private void sendCollision(Vessel movingPlatform, short recipientId,
-      EntityID movingId, Map<Short, Vessel> states, long lastTime,
-      IPduSender sender)
+  @SuppressWarnings("unused")
+  private void sendFreeze(final IPduSender sender, final short exId,
+      final long lastTime)
   {
-    EntityID victimE = new EntityID();
-    victimE.setApplication(movingId.getApplication());
-    victimE.setEntity(recipientId);
-    victimE.setSite(movingId.getSite());
-
-    // store the id of the firing platform
-    movingId.setEntity(movingPlatform.id);
-
-    // build up the PDU
-    CollisionPdu coll = new CollisionPdu();
-    coll.setExerciseID(EXERCISE_ID);
-    movingId.setEntity(recipientId);
-    coll.setCollidingEntityID(movingId);
-    coll.setTimestamp(lastTime);
-
-    // and the location
-    double disCoordinates[] =
-        CoordinateConversions.getXYZfromLatLonDegrees(movingPlatform.latVal,
-            movingPlatform.longVal, 0.0);
-    Vector3Float location = new Vector3Float();
-    location.setX((float) disCoordinates[0]);
-    location.setY((float) disCoordinates[1]);
-    location.setZ((float) disCoordinates[2]);
-    coll.setLocation(location);
+    // ok, data complete. send stop PDU
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    final StopFreezePdu stopPdu = new StopFreezePdu();
+    stopPdu.setTimestamp(lastTime);
+    stopPdu.setExerciseID(EXERCISE_ID);
+    stopPdu.setOriginatingEntityID(eid);
+    stopPdu.setReason(STOP_PDU_FREEZE);
 
     // and send it
-    sender.sendPdu(coll);
+    sender.sendPdu(stopPdu);
+  }
 
-    System.out.println(": " + movingPlatform.id + " collided with "
-        + recipientId);
+  private void sendLaunch(final short exerciseID, final long lastTime,
+      final EntityID eid, final String newName, final IPduSender sender)
+  {
+    final String msg = "NAME:" + newName.trim();
+    sendMessage(EXERCISE_ID, lastTime, IDISEventListener.EVENT_LAUNCH, eid,
+        msg, sender);
+  }
+
+  private void sendMessage(final short exerciseID, final long lastTime,
+      final long eventType, final EntityID eid, final String msg,
+      final IPduSender sender)
+  {
+
+    // build up the PDU
+    final EventReportPdu dp = new EventReportPdu();
+    dp.setExerciseID(EXERCISE_ID);
+    dp.setTimestamp(lastTime);
+    dp.setEventType(eventType);
+
+    // produce random participant.
+    dp.setOriginatingEntityID(eid);
+
+    // INSERTING TEXT STRING
+    //
+    final VariableDatum d = new VariableDatum();
+    final byte[] theBytes = msg.getBytes();
+    final List<OneByteChunk> chunks = new ArrayList<OneByteChunk>();
+
+    for (int i = 0; i < theBytes.length; i++)
+    {
+      final byte thisB = theBytes[i];
+      final OneByteChunk chunk = new OneByteChunk();
+      chunk.setOtherParameters(new byte[]
+      {thisB});
+      chunks.add(chunk);
+    }
+    d.setVariableData(chunks);
+    d.setVariableDatumLength(theBytes.length);
+    d.setVariableDatumID(lastTime);
+    final List<VariableDatum> datums = new ArrayList<VariableDatum>();
+    datums.add(d);
+    dp.setVariableDatums(datums);
+
+    // and send it
+    sender.sendPdu(dp);
+  }
+
+  private void sendStart(final IPduSender sender, final short exId,
+      final long lastTime)
+  {
+    // ok, data complete. send stop PDU
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    final StartResumePdu stopPdu = new StartResumePdu();
+    stopPdu.setTimestamp(lastTime);
+    stopPdu.setExerciseID(EXERCISE_ID);
+    stopPdu.setOriginatingEntityID(eid);
+    stopPdu.setRealWorldTime(new ClockTime());
+
+    // and send it
+    sender.sendPdu(stopPdu);
+  }
+
+  private void sendStatusUpdate(final Vessel thisS, final EntityID eid,
+      final EntityStatePdu espdu, final IPduSender sender)
+  {
+    // update the affiliation
+    espdu.setForceId(thisS.force);
+
+    eid.setEntity(thisS.id);
+
+    final double disCoordinates[] =
+        CoordinateConversions.getXYZfromLatLonDegrees(thisS.latVal,
+            thisS.longVal, 0.0);
+    final Vector3Double location = espdu.getEntityLocation();
+    location.setX(disCoordinates[0]);
+    location.setY(disCoordinates[1]);
+    location.setZ(disCoordinates[2]);
+
+    // sort out the course & speed
+    final Orientation orientation = espdu.getEntityOrientation();
+    orientation.setPhi((float) thisS.courseRads);
+
+    // turn the speed into the 3-vector components
+    final Vector3Float velocity = espdu.getEntityLinearVelocity();
+    velocity.setX((float) thisS.speedVal);
+    espdu.setEntityLinearVelocity(velocity);
+
+    // also specify the target appearance
+    espdu.setEntityAppearance_damage(thisS.damage);
+
+    // and send it
+    sender.sendPdu(espdu);
+  }
+
+  private void sendStop(final IPduSender sender, final short exId,
+      final long lastTime)
+  {
+    // ok, data complete. send stop PDU
+    // The byte array here is the packet in DIS format. We put that into a
+    // datagram and send it.
+    final StopFreezePdu stopPdu = new StopFreezePdu();
+    stopPdu.setTimestamp(lastTime);
+    stopPdu.setExerciseID(EXERCISE_ID);
+    stopPdu.setOriginatingEntityID(eid);
+    stopPdu.setReason(STOP_PDU_TERMINATED);
+
+    // and send it
+    sender.sendPdu(stopPdu);
+  }
+
+  public void terminate()
+  {
+    _terminate = true;
   }
 
 }
