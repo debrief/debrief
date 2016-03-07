@@ -78,8 +78,6 @@
 		<topic href="html/legacy/dis_tips.html" label="Tips &amp; tricks for analysing DIS scenarios"/>
 		<topic href="html/legacy/dis_ref.html" label="System documentation for DIS integration"/>
 	</context>	
-	
-		
 	<context id="LengthPrefs">
 		<description>Stores and manipulates a set of agreed sensor offset distances</description>
 		<topic href="html/legacy/sensor_data.html#LENGTH_PREFS" label="Explanation of Sensor offsets"/>

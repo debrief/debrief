@@ -11069,7 +11069,8 @@ end</screen>
         <title>Introduction</title>  
         <para>Debrief is able to integrate with network simulators that adhere to the DIS protocol.  Debrief
         is able to receive a set of DIS messages (see <xref linkend="dis_messages"></xref>).  Debrief
-          is also able to send StartResume and StopFreeze messages along the link.</para>
+          is also able to send StartResume and StopFreeze messages along the link. User support is 
+        provided both in the form of a Debrief tutorial, and here in the user guide (see <xref linkend="dis_support"/>).</para>
         <sect2>
           <title>DIS Standard</title>
           <indexterm>
