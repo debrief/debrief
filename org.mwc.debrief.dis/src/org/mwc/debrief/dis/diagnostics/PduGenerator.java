@@ -1,7 +1,10 @@
 package org.mwc.debrief.dis.diagnostics;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Scanner;
 
+import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.diagnostics.senders.IPduSender;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
@@ -67,7 +70,6 @@ public class PduGenerator
 
   private EntityID eid;
 
-
   private class Torpedo extends Vessel
   {
 
@@ -81,8 +83,8 @@ public class PduGenerator
 
     Vessel myTarget = null;
 
-    private Torpedo(final short id, final String name, final short hostId, final short force,
-        double oLat, double oLong, int targetId)
+    private Torpedo(final short id, final String name, final short hostId,
+        final short force, double oLat, double oLong, int targetId)
     {
       super(id, name, force, oLat, oLong, 0);
 
@@ -221,8 +223,8 @@ public class PduGenerator
     protected double speedVal;
     final String name;
 
-    private Vessel(final short id, final String name, final short force, double oLat, double oLong,
-        double range)
+    private Vessel(final short id, final String name, final short force,
+        double oLat, double oLong, double range)
     {
       this.id = id;
       this.name = name;
@@ -286,18 +288,44 @@ public class PduGenerator
       String inputData = null;
       if (iFile.exists())
       {
-        // ok, read it in
-        Scanner scanner;
+        BufferedReader reader = null;
         try
         {
-          scanner = new Scanner(iFile, "UTF-8");
-          inputData = scanner.useDelimiter("\\A").next();
-          scanner.close(); // Put this call in a finally block
+
+          reader = new BufferedReader(new FileReader(iFile));
+          String s;
+          while ((s = reader.readLine()) != null)
+          {
+            if (s.startsWith("//"))
+              continue;
+            else
+            {
+              inputData = s;
+            }
+          }
         }
         catch (FileNotFoundException e)
         {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          DisActivator.log(e);
+        }
+        catch (IOException e)
+        {
+          DisActivator.log(e);
+        }
+        finally
+        {
+          if (reader != null)
+          {
+            try
+            {
+              reader.close();
+            }
+            catch (IOException e)
+            {
+              DisActivator.log(e);
+            }
+            reader = null;
+          }
         }
       }
 
@@ -394,7 +422,6 @@ public class PduGenerator
     // Note that some values (such as the PDU type and PDU family) are set
     // automatically when you create the ESPDU.
 
-
     // The EID is the unique identifier for objects in the world. This
     // EID should match up with the ID for the object specified in the
     // VMRL/x3d/virtual world.
@@ -405,7 +432,7 @@ public class PduGenerator
 
     int entityId = 2;
 
-    eid.setEntity((short)entityId);
+    eid.setEntity((short) entityId);
 
     // Set the entity type. SISO has a big list of enumerations, so that by
     // specifying various numbers we can say this is an M1A2 American tank,
@@ -449,11 +476,11 @@ public class PduGenerator
         short eId = (short) (i + 1);// 1 + (int) (Math.random() * 20d);
         final String name = "PLATFORM_" + eId;
         Vessel newS = new Vessel(eId, name, force, startX, startY, randomArea);
-        eid.setEntity((short)eId);
-        
+        eid.setEntity((short) eId);
+
         // share the news
         sendLaunch(EXERCISE_ID, lastTime, eid, newS.name, sender);
-        
+
         states.put(eId, newS);
 
         switch (force)
@@ -514,11 +541,12 @@ public class PduGenerator
           // try to give the new vehicle a target
           Vessel targetId = selectRandomEntity(blueParts);
 
-          final short newId =  (short) (1000 + (genny.nextDouble() * 1000d));
+          final short newId = (short) (1000 + (genny.nextDouble() * 1000d));
           final String newName = "TORP_" + newId;
-          
+
           Torpedo torpedo =
-              new Torpedo(newId, newName, launchPlatform.id, IDISFixListener.RED, launchPlatform.latVal,
+              new Torpedo(newId, newName, launchPlatform.id,
+                  IDISFixListener.RED, launchPlatform.latVal,
                   launchPlatform.longVal, targetId.id);
 
           // share the news
@@ -535,7 +563,7 @@ public class PduGenerator
           fire.setTimestamp(lastTime);
           eid.setEntity(newId);
           fire.setFiringEntityID(eid);
-          
+
           eid.setEntity(targetId.id);
           fire.setTargetEntityID(eid);
 
@@ -622,7 +650,6 @@ public class PduGenerator
     sender.sendPdu(stopPdu);
   }
 
-
   private void sendStatusUpdate(Vessel thisS, EntityID eid,
       EntityStatePdu espdu, IPduSender sender)
   {
@@ -659,8 +686,8 @@ public class PduGenerator
       String newName, IPduSender sender)
   {
     String msg = "NAME:" + newName.trim();
-    sendMessage(EXERCISE_ID, lastTime, IDISEventListener.EVENT_LAUNCH, eid, msg,
-        sender);
+    sendMessage(EXERCISE_ID, lastTime, IDISEventListener.EVENT_LAUNCH, eid,
+        msg, sender);
   }
 
   private void sendMessage(short exerciseID, long lastTime, long eventType,
@@ -718,9 +745,9 @@ public class PduGenerator
     _terminate = true;
   }
 
-  private void sendDetonation(Vessel firingPlatform, int recipientId,
-      EntityID eid, Map<Short, Vessel> states, long lastTime,
-      IPduSender sender)
+  private void
+      sendDetonation(Vessel firingPlatform, int recipientId, EntityID eid,
+          Map<Short, Vessel> states, long lastTime, IPduSender sender)
   {
     // store the id of the firing platform
     eid.setEntity(firingPlatform.id);
