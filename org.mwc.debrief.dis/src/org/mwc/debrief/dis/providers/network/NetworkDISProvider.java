@@ -237,15 +237,21 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
     }
   }
 
+  private void configureThisPdu(Pdu pdu)
+  {
+    pdu.setProtocolVersion((short) 6);
+  }
+  
   @Override
   public void sendPause()
   {
     // create the Pause PDU
-    StopFreezePdu stop = new StopFreezePdu();
-    stop.setExerciseID(_curExercise);
-    stop.setOriginatingEntityID(_myID);
-    stop.setReason(IDISStopListener.PDU_FREEZE);
-    sendPDU(stop);
+    StopFreezePdu pause = new StopFreezePdu();
+    configureThisPdu(pause);
+    pause.setExerciseID(_curExercise);    
+    pause.setOriginatingEntityID(_myID);
+    pause.setReason(IDISStopListener.PDU_FREEZE);
+    sendPDU(pause);
   }
 
   @Override
@@ -253,6 +259,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
   {
     // create the Pause PDU
     StopFreezePdu stop = new StopFreezePdu();
+    configureThisPdu(stop);
     stop.setExerciseID(_curExercise);
     stop.setOriginatingEntityID(_myID);
     stop.setReason(IDISStopListener.PDU_STOP);
@@ -264,6 +271,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
   {
     // create the Pause PDU
     StartResumePdu play = new StartResumePdu();
+    configureThisPdu(play);
     play.setOriginatingEntityID(_myID);
     play.setExerciseID(_curExercise);
 
