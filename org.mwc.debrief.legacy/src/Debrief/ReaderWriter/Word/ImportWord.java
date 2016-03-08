@@ -9,6 +9,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
@@ -18,10 +20,15 @@ import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeEntry;
 
 public class ImportWord
 {
@@ -77,6 +84,10 @@ public class ImportWord
         case "FCS":
         {
           // add a narrative entry
+          NarrativeWrapper nw = getNarrativeLayer();
+          String hisTrack = trackFor(thisN.platform);
+          NarrativeEntry ne = new NarrativeEntry(hisTrack, new HiResDate(thisN.dtg), thisN.text);
+          nw.add(ne);
 
           // create track for this
           break;
@@ -96,8 +107,55 @@ public class ImportWord
         Application.logError2(1, "Failed whilst parsing Word Document,at line:"
             + x, e);
       }
-
     }
+  }
+
+  Map<String, String> nameMatches = new HashMap<String, String>();
+  
+  private String trackFor(String name)
+  {
+    String platform = name.trim();
+    String match = nameMatches.get(platform);
+    if(match == null)
+    {
+      // search the layers
+      Layer theL = _layers.findLayer(platform);
+      if(theL != null)
+      {
+        match = theL.getName();
+        nameMatches.put(platform, match);
+      }
+      else
+      {
+        // try trimming 
+        if(platform.startsWith("HMS"))
+        {
+          String subStr = platform.substring(4).trim();
+          match = trackFor(subStr);
+        }
+        else if (platform.startsWith("Hms"))
+        {
+          String subStr = platform.substring(4).trim();
+          match = trackFor(subStr);
+        }
+      }
+    }
+    
+    return match;
+  }
+
+  private NarrativeWrapper getNarrativeLayer()
+  {
+    NarrativeWrapper nw =
+        (NarrativeWrapper) _layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+
+    if (nw == null)
+    {
+      nw = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      _layers.addThisLayer(nw);
+    }
+
+    return nw;
   }
 
   private static class NarrEntry
@@ -146,6 +204,21 @@ public class ImportWord
       testImport("src/2003_2007.doc", 6);
     }
 
+    public void testNameHandler()
+    {
+      Layers layers = new Layers();
+      TrackWrapper track = new TrackWrapper();
+      track.setName("Nelson");
+      layers.addThisLayer(track);
+      ImportWord iw = new ImportWord(layers);
+      String match = iw.trackFor("HMS Boat");
+      assertNull("not found match", match);
+      match = iw.trackFor("HMS Nelson");
+      assertNotNull("found match", match);
+      match = iw.trackFor("Hms Nelson");
+      assertNotNull("found match", match);
+    }
+    
     private void testImport(final String testFile, final int len)
         throws Exception
     {
