@@ -120,6 +120,7 @@ Export-Package:
    MWC.TacticalData,
    Debrief.Wrappers,
    MWC.GUI",
+ Debrief.ReaderWriter.Word,
  Debrief.ReaderWriter.XML;
   uses:="Debrief.GUI.Views,
    MWC.GenericData,
