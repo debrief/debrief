@@ -14,7 +14,8 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 
-public class DebriefDetonationListener  extends DebriefCoreListener implements IDISDetonationListener
+public class DebriefDetonationListener extends DebriefCoreListener implements
+    IDISDetonationListener
 {
 
   final private String DETONATIONS_LAYER = "Detonations";
@@ -25,20 +26,11 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
   }
 
   @Override
-  public void add(final long time, short eid, int hisId, String hisName,
+  public void add(final long time, short eid, int hisId, final String hisName,
       final double dLat, final double dLon, final double depth)
   {
-    final String firingName;
-    if(hisName != null)
-    {
-      firingName = hisName;
-    }
-    else
-    {
-      firingName = "DIS_" + hisId;
-    }
-    
-    final String message = "Detonation of platform:" + firingName;
+
+    final String message = "Detonation of platform:" + hisName;
 
     // create the text marker
     addNewItem(eid, DETONATIONS_LAYER, new ListenerHelper()
@@ -56,7 +48,7 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       public Plottable createItem()
       {
         WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-        Color theColor = colorFor(firingName);
+        Color theColor = colorFor(hisName);
         return new LabelWrapper(message, newLoc, theColor);
       }
     });
@@ -75,9 +67,9 @@ public class DebriefDetonationListener  extends DebriefCoreListener implements I
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(firingName, "DETONATION", new HiResDate(time),
+            new NarrativeEntry(hisName, "DETONATION", new HiResDate(time),
                 message);
-        Color theColor = colorFor(firingName);
+        Color theColor = colorFor(hisName);
         newE.setColor(theColor);
         return newE;
       }

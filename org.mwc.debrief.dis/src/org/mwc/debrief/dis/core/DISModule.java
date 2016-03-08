@@ -74,7 +74,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
           {
             // ok, extract the message
             String name = extractNameFor(message);
-            _entityNames.put((int) senderId, name);
+
+            // did we manage it?
+            if (name != null)
+            {
+              _entityNames.put((int) senderId, name);
+            }
           }
         }
       }
@@ -88,6 +93,24 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     if (split.length == 2)
       res = split[1];
     return res;
+  }
+
+  /**
+   * retrieve the name for this entity id, or generate a default one
+   * 
+   * @param id
+   *          the id we're looking against
+   * @return its name (or a generated one)
+   */
+  private String nameFor(long id)
+  {
+    String name = _entityNames.get(id);
+    if (name == null)
+    {
+      name = "DIS_" + id;
+    }
+
+    return name;
   }
 
   @Override
@@ -173,7 +196,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
             * velocity.getY());
 
     // entity state
-    String hisName = _entityNames.get((int) hisId);
+    String hisName = nameFor(hisId);
 
     // if(hisId == 1)
     // {
@@ -220,7 +243,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     _nameListener.add(time, eid, originator, null, eType, msg);
 
     // now try to retrieve name
-    String hisName = _entityNames.get(originator);
+    String hisName = nameFor(originator);
 
     // first send out to specific listeners
     List<IDISEventListener> specificListeners = _eventListeners.get(eType);
@@ -261,7 +284,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
     double[] worldArr = new double[]
-    {wLoc.getY(), wLoc.getX(), wLoc.getZ()};
+    {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(worldArr);
 
     long time = pdu.getTimestamp();
@@ -270,7 +293,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     double[] coordsToUse = worldCoords;
 
     // sort out his name
-    String hisName = _entityNames.get(hisId);
+    String hisName = nameFor(hisId);
 
     Iterator<IDISDetonationListener> dIter = _detonationListeners.iterator();
     while (dIter.hasNext())
@@ -371,13 +394,14 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     int movingId = pdu.getCollidingEntityID().getEntity();
 
     // sort out his name
-    String hisName = _entityNames.get(movingId);
+    String movingName = nameFor(movingId);
+    String recipientName = nameFor(receipientId);
 
     Iterator<IDISCollisionListener> dIter = _collisionListeners.iterator();
     while (dIter.hasNext())
     {
       IDISCollisionListener thisD = dIter.next();
-      thisD.add(time, eid, movingId, hisName, receipientId);
+      thisD.add(time, eid, movingId, movingName, receipientId, recipientName);
     }
   }
 
@@ -385,12 +409,13 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   {
     short eid = pdu.getExerciseID();
     long time = convertTime(pdu.getTimestamp());
+    long replicationId = pdu.getRequestID();
 
     Iterator<IDISStartResumeListener> dIter = _startResumeListeners.iterator();
     while (dIter.hasNext())
     {
       IDISStartResumeListener thisD = dIter.next();
-      thisD.add(time, eid);
+      thisD.add(time, eid, replicationId);
     }
   }
 
@@ -403,8 +428,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     int tgtId = pdu.getTargetEntityID().getEntity();
 
     // sort out his name
-    String hisName = _entityNames.get(hisId);
-    String tgtName = _entityNames.get(tgtId);
+    String hisName = nameFor(hisId);
+    String tgtName = nameFor(tgtId);
 
     Iterator<IDISFireListener> dIter = _fireListeners.iterator();
     while (dIter.hasNext())

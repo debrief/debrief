@@ -22,13 +22,10 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
   }
 
   @Override
-  public void add(final long time, short eid, int movingId, String hisName,
-      int recipientId)
+  public void add(final long time, short eid, int movingId, final String movingName,
+      int recipientId, final String recipientName)
   {
-
-    final String movingName = "DIS_" + movingId;
-    final String recipeintName = "DIS_" + recipientId;
-    final String message = "Collision between platform:" + movingName + " and " + recipeintName;
+    final String message = "Collision between platform:" + movingName + " and " + recipientName;
 
     // no - don't create a text label, since we
     // don't receive a location in the collision PDU

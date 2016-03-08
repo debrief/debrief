@@ -76,5 +76,11 @@ public interface IDISContext
    * 
    */
   void scenarioComplete();
+
+  /** record the counter for the new replication
+   * 
+   * @param replicationCounter
+   */
+  void setReplicationId(long replicationCounter);
   
 }

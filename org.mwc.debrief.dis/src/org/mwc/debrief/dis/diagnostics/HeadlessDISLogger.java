@@ -9,6 +9,7 @@ import org.mwc.debrief.dis.diagnostics.file.DetonateFileListener;
 import org.mwc.debrief.dis.diagnostics.file.EventFileListener;
 import org.mwc.debrief.dis.diagnostics.file.FireFileListener;
 import org.mwc.debrief.dis.diagnostics.file.FixToFileListener;
+import org.mwc.debrief.dis.diagnostics.file.StartFileListener;
 import org.mwc.debrief.dis.diagnostics.file.StopFileListener;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
@@ -51,6 +52,9 @@ public class HeadlessDISLogger
     // do we have a PORT?
     int port = NetworkPduSender.PORT;
 
+    // write to screen?
+    boolean toScreen = true;
+
     // All system properties, passed in on the command line via
     // -Dattribute=value
     Properties systemProperties = System.getProperties();
@@ -61,6 +65,9 @@ public class HeadlessDISLogger
 
     // Port we send to, and local port we open the socket on
     String rootString = systemProperties.getProperty("root");
+    
+    // whether to write progress to screen
+    String toScreenStr = systemProperties.getProperty("screen");
 
     if (destinationIpString != null)
     {
@@ -74,10 +81,14 @@ public class HeadlessDISLogger
     {
       root = rootString;
     }
+    if(toScreenStr != null)
+    {
+      toScreen = Boolean.valueOf(toScreenStr);
+    }
+    
 
     // setup the output destinations
     boolean toFile = true;
-    boolean toScreen = true;
 
     if (toFile)
     {
@@ -98,6 +109,8 @@ public class HeadlessDISLogger
     subject.addFireListener(new FireFileListener(root, toFile, toScreen));
     subject.addCollisionListener(new CollisionFileListener(root, toFile,
         toScreen));
+    
+    subject.addStartResumeListener(new StartFileListener(root, toFile, toScreen));
 
     // output dot marker to screen, to demonstrate progress
     subject.addFixListener(new IDISFixListener()
@@ -107,7 +120,7 @@ public class HeadlessDISLogger
           short force, double dLat, double dLong, double depth,
           double courseDegs, double speedMS, final int damage)
       {
-        System.out.print(".");
+    //    System.out.print(".");
       }
     });
 
