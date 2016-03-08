@@ -8,7 +8,7 @@ public class DetonateFileListener extends CoreFileListener implements
 
   public DetonateFileListener(String root, boolean toFile, boolean toScreen)
   {
-    super(root, toFile, toScreen, "detonate", "time, id, hisID, hisName, dLat, dLon, depth");
+    super(root, toFile, toScreen, "detonate", "time, id, hisID, hisName, Lat, Lon, depth");
   }
 
   @Override
