@@ -274,15 +274,23 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private void handleDetonation(DetonationPdu pdu)
   {
     short eid = pdu.getExerciseID();
-    // Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
+    
+    // we get two sets of coordinates in a detonation. Track both sets
+    Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
+    double[] locArr = new double[]
+    {eLoc.getX(), eLoc.getY(), eLoc.getZ()};
+    @SuppressWarnings("unused")
+    double[] eWorldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
-    // double[] locArr = new double[]
-    // {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
-    // double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
-    double[] worldCoords = new double[]
+    double[] worldArr = new double[]
     {wLoc.getY(), wLoc.getX(), wLoc.getZ()};
+    double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(worldArr);
+
     long time = pdu.getTimestamp();
     int hisId = pdu.getFiringEntityID().getEntity();
+
+    double[] coordsToUse = worldCoords;
 
     // sort out his name
     String hisName = nameFor(hisId);
@@ -291,8 +299,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     while (dIter.hasNext())
     {
       IDISDetonationListener thisD = (IDISDetonationListener) dIter.next();
-      thisD.add(time, eid, hisId, hisName, worldCoords[0], worldCoords[1],
-          worldCoords[2]);
+      thisD.add(time, eid, hisId, hisName, coordsToUse[0], coordsToUse[1],
+          coordsToUse[2]);
     }
 
   }
