@@ -284,7 +284,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     Vector3Double wLoc = pdu.getLocationInWorldCoordinates();
     double[] worldArr = new double[]
-    {wLoc.getY(), wLoc.getX(), wLoc.getZ()};
+    {wLoc.getX(), wLoc.getY(), wLoc.getZ()};
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(worldArr);
 
     long time = pdu.getTimestamp();
