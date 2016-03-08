@@ -88,7 +88,7 @@ import MWC.GenericData.HiResDate;
 import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.Pdu;
 
-public class DisListenerView extends ViewPart implements IDISStopListener
+public class DisListenerView extends ViewPart
 {
 
   public static final String HELP_CONTEXT = "org.mwc.debrief.help.DISSupport";
@@ -282,11 +282,67 @@ public class DisListenerView extends ViewPart implements IDISStopListener
 
   }
 
+
+  private void handleStopMessage(long time, final int appId, short eid, final short reason)
+  {
+    Display.getDefault().syncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        // check it wasn't us that send the message
+        if (appId == NetworkDISProvider.APPLICATION_ID)
+        {
+          // ignore - it's us sending it
+          return;
+        }
+
+        // hey, check the reason
+        switch (reason)
+        {
+        case IDISStopListener.PDU_FREEZE:
+          System.err.println("PAUSE");
+          pauseReceived();
+          break;
+        case IDISStopListener.PDU_STOP:
+          System.err.println("STOP");
+          // update the UI
+          stopReceived();
+
+          // ok, popup message
+          MessageBox dialog =
+              new MessageBox(PlatformUI.getWorkbench()
+                  .getActiveWorkbenchWindow().getShell(), SWT.OK);
+          dialog.setText("DIS Interface");
+          dialog.setMessage("The simulation has completed, with reason: "
+              + reason);
+
+          // open dialog
+          dialog.open();
+          break;
+        default:
+          CorePlugin.logError(Status.WARNING,
+              "Unknown DIS stop reason received:" + reason, null);
+        }
+
+      }
+    });
+  }
+  
   private void setupListeners(final IDISModule module)
   {
 
     // listen for stop, so we can update the UI
-    module.addStopListener(this);
+    module.addStopListener(new IDISStopListener()
+    {
+      
+      @Override
+      public void stop(long time, int appId, short eid, short reason)
+      {
+        handleStopMessage(time, appId, eid, reason);
+      }
+    });
 
     // handle the time updates
     module.addGeneralPDUListener(new IDISGeneralPDUListener()
@@ -359,6 +415,9 @@ public class DisListenerView extends ViewPart implements IDISStopListener
       public void add(long time, short eid, long replication)
       {
         playHeard();
+        
+        // also, tell the context about the new replication id
+        _context.setReplicationId(replication);
       }
     });
     module.addCollisionListener(new DebriefCollisionListener(_context));
@@ -838,8 +897,12 @@ public class DisListenerView extends ViewPart implements IDISStopListener
   protected void stopReceived()
   {
     doStop();
-    doDisconnect();
-    launchButton.setFocus();
+    
+    // no, don't disconnect, since we may get another replication
+    // doDisconnect();
+    
+    // no, don't jump to launch - we may still be running
+    // launchButton.setFocus();
   }
 
   protected void pauseReceived()
@@ -885,53 +948,6 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     _perfGraph.complete("Disconnected");
   }
 
-  @Override
-  public void stop(long time, final int appId, short eid, final short reason)
-  {
-    Display.getDefault().syncExec(new Runnable()
-    {
-
-      @Override
-      public void run()
-      {
-        // check it wasn't us that send the message
-        if (appId == NetworkDISProvider.APPLICATION_ID)
-        {
-          // ignore - it's us sending it
-          return;
-        }
-
-        // hey, check the reason
-        switch (reason)
-        {
-        case IDISStopListener.PDU_FREEZE:
-          System.err.println("PAUSE");
-          pauseReceived();
-          break;
-        case IDISStopListener.PDU_STOP:
-          System.err.println("STOP");
-          // update the UI
-          stopReceived();
-
-          // ok, popup message
-          MessageBox dialog =
-              new MessageBox(PlatformUI.getWorkbench()
-                  .getActiveWorkbenchWindow().getShell(), SWT.OK);
-          dialog.setText("DIS Interface");
-          dialog.setMessage("The simulation has completed, with reason: "
-              + reason);
-
-          // open dialog
-          dialog.open();
-          break;
-        default:
-          CorePlugin.logError(Status.WARNING,
-              "Unknown DIS stop reason received:" + reason, null);
-        }
-
-      }
-    });
-  }
 
   private void playHeard()
   {

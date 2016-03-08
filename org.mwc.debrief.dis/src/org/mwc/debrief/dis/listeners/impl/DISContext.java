@@ -55,10 +55,19 @@ abstract public class DISContext implements IDISContext,
    */
   short _currentEx = -1;
 
-  /** flag for if this scenario is complete - so we don't add new data
+  /**
+   * the replication that we're currently watching
+   * 
+   */
+  long _replicationCounter = -1;
+
+  /**
+   * flag for if this scenario is complete - so we don't add new data
    * 
    */
   private boolean _scenarioComplete;
+
+  private long _currentReplication;
 
   /**
    * constructor, handle some internal initialisation
@@ -137,7 +146,7 @@ abstract public class DISContext implements IDISContext,
   protected void listenTo(IEditorPart editor)
   {
     // do we need to stop listening to an editor
-    if(_myEditor != null)
+    if (_myEditor != null)
     {
       // we want to know about screen updates, to
       // keep track of rendering performance
@@ -149,9 +158,9 @@ abstract public class DISContext implements IDISContext,
             (CanvasType.ScreenUpdateProvider) suProvider;
         matched.removeScreenUpdateListener(this);
       }
-      
+
     }
-    
+
     if (editor != null)
     {
       // we want to know about screen updates, to
@@ -191,7 +200,7 @@ abstract public class DISContext implements IDISContext,
 
       final IWorkbenchWindow window =
           PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-      if(window == null)
+      if (window == null)
       {
         // handle case where application is closing
         return null;
@@ -297,17 +306,18 @@ abstract public class DISContext implements IDISContext,
    *          the exercise that's being played
    * @return the layers object for this exercise
    */
-  private Layers getLayersFor(final short exerciseId)
+  private Layers getLayersFor(final short exerciseId,
+      final long replicationCounter)
   {
-    
+
     // check if this is our existing exercise
-    if (_currentEx != exerciseId)
+    if (_currentEx != exerciseId || _replicationCounter != replicationCounter)
     {
       // nope. stop adding data to the current exercise
       _scenarioComplete = true;
     }
-    
-    if(_scenarioComplete)
+
+    if (_scenarioComplete)
     {
       // ok, new exercise - do we need a new plot?
       if (getUseNewPlot())
@@ -342,10 +352,11 @@ abstract public class DISContext implements IDISContext,
 
       // and remember the exercise id
       _currentEx = exerciseId;
+      _replicationCounter = replicationCounter;
     }
-    
+
     _scenarioComplete = false;
-    
+
     // have we managed to find some layers?
     if (_myLayers == null)
     {
@@ -474,6 +485,12 @@ abstract public class DISContext implements IDISContext,
     _myLayers.fireExtended(newItem, layer);
   }
 
+  @Override
+  public void setReplicationId(long replicationCounter)
+  {
+    _currentReplication = replicationCounter;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -487,7 +504,7 @@ abstract public class DISContext implements IDISContext,
     /*
      * get the layers, creating a new plot if necessary
      */
-    Layers tgt = getLayersFor(exerciseId);
+    Layers tgt = getLayersFor(exerciseId, _currentReplication);
 
     if (tgt != null)
     {
@@ -526,6 +543,5 @@ abstract public class DISContext implements IDISContext,
     // ok, remember the fact that the current scenario has completed
     _scenarioComplete = true;
   }
-  
-  
+
 }
