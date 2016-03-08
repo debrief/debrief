@@ -356,7 +356,7 @@ public class DisListenerView extends ViewPart implements IDISStopListener
     module.addStartResumeListener(new IDISStartResumeListener()
     {
       @Override
-      public void add(long time, short eid)
+      public void add(long time, short eid, long replication)
       {
         playHeard();
       }

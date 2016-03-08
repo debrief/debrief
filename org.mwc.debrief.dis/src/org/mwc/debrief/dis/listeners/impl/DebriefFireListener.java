@@ -26,19 +26,12 @@ public class DebriefFireListener extends DebriefCoreListener implements
   }
 
   @Override
-  public void add(final long time, short eid, int hisId, String hisName, int tgtId, String tgtName,
-      final double dLat, final double dLon, final double depth)
+  public void add(final long time, short eid, int hisId, final String hisName,
+      int tgtId, final String tgtName, final double dLat, final double dLon,
+      final double depth)
   {
-    final String firingName;
-    if(hisName != null)
-    {
-      firingName = hisName;
-    }
-    else
-    {
-      firingName = "DIS_" + hisId;
-    }
-    final String message = "Launch of new weapon from:" + firingName + " at:" + tgtName;
+    final String message =
+        "Launch of new weapon from:" + hisName + " at:" + tgtName;
 
     // create the text marker
     addNewItem(eid, MY_LAYER, new ListenerHelper()
@@ -56,7 +49,7 @@ public class DebriefFireListener extends DebriefCoreListener implements
       public Plottable createItem()
       {
         WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-        Color theColor = colorFor(firingName);
+        Color theColor = colorFor(hisName);
         return new LabelWrapper(message, newLoc, theColor);
       }
     });
@@ -75,9 +68,9 @@ public class DebriefFireListener extends DebriefCoreListener implements
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(firingName, MY_LAYER, new HiResDate(time),
+            new NarrativeEntry(hisName, MY_LAYER, new HiResDate(time),
                 message);
-        Color theColor = colorFor(firingName);
+        Color theColor = colorFor(hisName);
         newE.setColor(theColor);
         return newE;
       }
