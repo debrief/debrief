@@ -7,9 +7,12 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -33,16 +36,28 @@ import MWC.TacticalData.NarrativeEntry;
 public class ImportWord
 {
 
+  private static List<String> SkipNames = null;
+
   /**
    * where we write our data
    * 
    */
-  @SuppressWarnings("unused")
   private final Layers _layers;
 
   public ImportWord(final Layers target)
   {
     _layers = target;
+
+    if (SkipNames == null)
+    {
+      SkipNames = new ArrayList<String>();
+      SkipNames.add("HMS");
+      SkipNames.add("Hms");
+      SkipNames.add("USS");
+      SkipNames.add("RNAS");
+      SkipNames.add("HNLMS");
+    }
+
   }
 
   public void importThis(final String fName, final InputStream is)
@@ -85,8 +100,9 @@ public class ImportWord
         {
           // add a narrative entry
           NarrativeWrapper nw = getNarrativeLayer();
-          String hisTrack = trackFor(thisN.platform);
-          NarrativeEntry ne = new NarrativeEntry(hisTrack, new HiResDate(thisN.dtg), thisN.text);
+          String hisTrack = trackFor(thisN.platform, thisN.platform);
+          NarrativeEntry ne =
+              new NarrativeEntry(hisTrack, new HiResDate(thisN.dtg), thisN.text);
           nw.add(ne);
 
           // create track for this
@@ -111,36 +127,36 @@ public class ImportWord
   }
 
   Map<String, String> nameMatches = new HashMap<String, String>();
-  
-  private String trackFor(String name)
+
+  private String trackFor(String originalName, String name)
   {
     String platform = name.trim();
     String match = nameMatches.get(platform);
-    if(match == null)
+    if (match == null)
     {
       // search the layers
       Layer theL = _layers.findLayer(platform);
-      if(theL != null)
+      if (theL != null)
       {
         match = theL.getName();
-        nameMatches.put(platform, match);
+        nameMatches.put(originalName, match);
       }
       else
       {
-        // try trimming 
-        if(platform.startsWith("HMS"))
+        // try skipping then names
+        Iterator<String> nameIter = SkipNames.iterator();
+        while (nameIter.hasNext() && match == null)
         {
-          String subStr = platform.substring(4).trim();
-          match = trackFor(subStr);
-        }
-        else if (platform.startsWith("Hms"))
-        {
-          String subStr = platform.substring(4).trim();
-          match = trackFor(subStr);
+          String thisSkip = (String) nameIter.next();
+          if (platform.startsWith(thisSkip))
+          {
+            String subStr = platform.substring(thisSkip.length()).trim();
+            match = trackFor(originalName, subStr);
+          }
         }
       }
     }
-    
+
     return match;
   }
 
@@ -178,8 +194,8 @@ public class ImportWord
         String monStr = parts[ctr++];
         String dayStr = parts[ctr++];
         String timeStr = parts[ctr++];
-        type = parts[ctr++];
-        platform = parts[ctr++];
+        type = parts[ctr++].trim();
+        platform = parts[ctr++].trim();
 
         @SuppressWarnings("deprecation")
         Date datePart =
@@ -211,14 +227,19 @@ public class ImportWord
       track.setName("Nelson");
       layers.addThisLayer(track);
       ImportWord iw = new ImportWord(layers);
-      String match = iw.trackFor("HMS Boat");
+      String match = iw.trackFor("HMS Boat", "HMS Boat");
       assertNull("not found match", match);
-      match = iw.trackFor("HMS Nelson");
+      match = iw.trackFor("HMS Nelson", "HMS Nelson");
       assertNotNull("found match", match);
-      match = iw.trackFor("Hms Nelson");
+      match = iw.trackFor("Hms Nelson", "Hms Nelson");
       assertNotNull("found match", match);
+      match = iw.trackFor("RNAS Nelson", "RNAS Nelson");
+      assertNotNull("found match", match);
+
+      // check we've created new entries
+      assertEquals("name matches", 3, iw.nameMatches.size());
     }
-    
+
     private void testImport(final String testFile, final int len)
         throws Exception
     {
