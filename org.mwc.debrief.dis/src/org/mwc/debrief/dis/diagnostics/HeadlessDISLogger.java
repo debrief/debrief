@@ -2,7 +2,6 @@ package org.mwc.debrief.dis.diagnostics;
 
 import java.util.Properties;
 
-import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.diagnostics.file.CollisionFileListener;
