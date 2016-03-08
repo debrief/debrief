@@ -282,8 +282,8 @@ public class DisListenerView extends ViewPart
 
   }
 
-
-  private void handleStopMessage(long time, final int appId, short eid, final short reason)
+  private void handleStopMessage(long time, final int appId, short eid,
+      final short reason)
   {
     Display.getDefault().syncExec(new Runnable()
     {
@@ -310,16 +310,24 @@ public class DisListenerView extends ViewPart
           // update the UI
           stopReceived();
 
-          // ok, popup message
-          MessageBox dialog =
-              new MessageBox(PlatformUI.getWorkbench()
-                  .getActiveWorkbenchWindow().getShell(), SWT.OK);
-          dialog.setText("DIS Interface");
-          dialog.setMessage("The simulation has completed, with reason: "
-              + reason);
+          // check it wasn't from us
+          short ourAppId =
+              (short) DisActivator.getDefault().getPreferenceStore().getInt(
+                  DisActivator.APP_ID);
 
-          // open dialog
-          dialog.open();
+          if (appId != ourAppId)
+          {
+            // ok, popup message
+            MessageBox dialog =
+                new MessageBox(PlatformUI.getWorkbench()
+                    .getActiveWorkbenchWindow().getShell(), SWT.OK);
+            dialog.setText("DIS Interface");
+            dialog.setMessage("The simulation has completed, with reason: "
+                + reason);
+
+            // open dialog
+            dialog.open();
+          }
           break;
         default:
           CorePlugin.logError(Status.WARNING,
@@ -329,14 +337,14 @@ public class DisListenerView extends ViewPart
       }
     });
   }
-  
+
   private void setupListeners(final IDISModule module)
   {
 
     // listen for stop, so we can update the UI
     module.addStopListener(new IDISStopListener()
     {
-      
+
       @Override
       public void stop(long time, int appId, short eid, short reason)
       {
@@ -415,7 +423,7 @@ public class DisListenerView extends ViewPart
       public void add(long time, short eid, long replication)
       {
         playHeard();
-        
+
         // also, tell the context about the new replication id
         _context.setReplicationId(replication);
       }
@@ -897,10 +905,10 @@ public class DisListenerView extends ViewPart
   protected void stopReceived()
   {
     doStop();
-    
+
     // no, don't disconnect, since we may get another replication
     // doDisconnect();
-    
+
     // no, don't jump to launch - we may still be running
     // launchButton.setFocus();
   }
@@ -947,7 +955,6 @@ public class DisListenerView extends ViewPart
     // also, stop the graph updating
     _perfGraph.complete("Disconnected");
   }
-
 
   private void playHeard()
   {
