@@ -2,7 +2,6 @@ package org.mwc.debrief.dis.diagnostics;
 
 import java.util.Properties;
 
-import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
 import org.mwc.debrief.dis.diagnostics.file.CollisionFileListener;
@@ -10,6 +9,7 @@ import org.mwc.debrief.dis.diagnostics.file.DetonateFileListener;
 import org.mwc.debrief.dis.diagnostics.file.EventFileListener;
 import org.mwc.debrief.dis.diagnostics.file.FireFileListener;
 import org.mwc.debrief.dis.diagnostics.file.FixToFileListener;
+import org.mwc.debrief.dis.diagnostics.file.StartFileListener;
 import org.mwc.debrief.dis.diagnostics.file.StopFileListener;
 import org.mwc.debrief.dis.diagnostics.senders.NetworkPduSender;
 import org.mwc.debrief.dis.listeners.IDISFixListener;
@@ -99,6 +99,8 @@ public class HeadlessDISLogger
     subject.addFireListener(new FireFileListener(root, toFile, toScreen));
     subject.addCollisionListener(new CollisionFileListener(root, toFile,
         toScreen));
+    
+    subject.addStartResumeListener(new StartFileListener(root, toFile, toScreen));
 
     // output dot marker to screen, to demonstrate progress
     subject.addFixListener(new IDISFixListener()
@@ -108,7 +110,7 @@ public class HeadlessDISLogger
           short force, double dLat, double dLong, double depth,
           double courseDegs, double speedMS, final int damage)
       {
-        System.out.print(".");
+    //    System.out.print(".");
       }
     });
 
