@@ -52,6 +52,9 @@ public class HeadlessDISLogger
     // do we have a PORT?
     int port = NetworkPduSender.PORT;
 
+    // write to screen?
+    boolean toScreen = true;
+
     // All system properties, passed in on the command line via
     // -Dattribute=value
     Properties systemProperties = System.getProperties();
@@ -62,6 +65,9 @@ public class HeadlessDISLogger
 
     // Port we send to, and local port we open the socket on
     String rootString = systemProperties.getProperty("root");
+    
+    // whether to write progress to screen
+    String toScreenStr = systemProperties.getProperty("screen");
 
     if (destinationIpString != null)
     {
@@ -75,10 +81,14 @@ public class HeadlessDISLogger
     {
       root = rootString;
     }
+    if(toScreenStr != null)
+    {
+      toScreen = Boolean.valueOf(toScreenStr);
+    }
+    
 
     // setup the output destinations
     boolean toFile = true;
-    boolean toScreen = true;
 
     if (toFile)
     {
