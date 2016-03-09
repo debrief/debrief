@@ -95,7 +95,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
    */
   public final Object readThisLine(final String theLine)
   {
-
+ 
     // get a stream from the string
     final StringTokenizer st = new StringTokenizer(theLine);
 
@@ -103,7 +103,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
     String formatName;
     String trackName;
     String symbology;
-    boolean regularTimes;
+    boolean regularTimes; 
     int interval;
     String attributeType;
 
@@ -221,7 +221,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
       assertTrue("active", res.getVisible());
       assertNotNull("has name", res.getName());
       assertEquals("has correct attr", 1, res.getAttributeType());
-      assertEquals("has correct freq", 600000, res.getInterval());
+      assertEquals("has correct freq", 600000, res.getInterval().getDate().getTime());
       assertTrue("regular intervals", res.getRegularIntervals());
 
       res =
@@ -233,7 +233,7 @@ final class ImportFixFormatter extends AbstractPlainLineImporter
       assertTrue("active", res.getVisible());
       assertNotNull("has name", res.getName());
       assertEquals("has correct attr", 0, res.getAttributeType());
-      assertEquals("has correct freq", 100000, res.getInterval());
+      assertEquals("has correct freq", 100000, res.getInterval().getDate().getTime());
       assertFalse("regular intervals", res.getRegularIntervals());
 
       res =
