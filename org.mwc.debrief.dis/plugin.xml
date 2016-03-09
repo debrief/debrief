@@ -40,6 +40,15 @@
                label="Run In Simulator"
                style="push"
                tooltip="Run In Simulator">
+            <visibleWhen checkEnabled="false">
+   				<with variable="activeMenuSelection">
+      				<iterate ifEmpty="false">
+         				<adapt type="org.eclipse.core.resources.IResource">
+              			<test property="org.eclipse.core.resources.extension" value="inp" />
+         				</adapt>
+      				</iterate>
+   				</with>
+			</visibleWhen>
          </command>
        </menuContribution>
     </extension>
