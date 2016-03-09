@@ -95,42 +95,42 @@ public class ImportWord
       }
 
       // ok, get the narrative type
-      NarrEntry thisN;
-      try
+      NarrEntry thisN = NarrEntry.create(text, x);
+
+      if (thisN == null)
       {
-        thisN = new NarrEntry(text);
-
-        switch (thisN.type)
-        {
-        case "FCS":
-        {
-          // add a narrative entry
-          addEntry(thisN);
-
-          // create track for this
-          addFCS(thisN);
-
-          // ok, take note that we've added something
-          dataAdded = true;
-
-          break;
-        }
-        default:
-        {
-          // add a narrative entry
-          addEntry(thisN);
-
-          // ok, take note that we've added something
-          dataAdded = true;
-
-          break;
-        }
-        }
+        logError("Unable to parse line:" + text, null);
+        continue;
       }
-      catch (ParseException e)
+
+      switch (thisN.type)
       {
-        Application.logError2(1, "Failed whilst parsing Word Document,at line:"
-            + x, e);
+      case "FCS":
+      {
+        // add a narrative entry
+        addEntry(thisN);
+
+        // create track for this
+        addFCS(thisN);
+
+        // ok, take note that we've added something
+        dataAdded = true;
+
+        break;
+      }
+      default:
+      {
+        // ok, just add a narrative entry for anything not recognised
+        
+        // add a narrative entry
+        addEntry(thisN);
+
+        // ok, take note that we've added something
+        dataAdded = true;
+
+        break;
+
+      }
       }
     }
 
@@ -179,14 +179,19 @@ public class ImportWord
       }
       else
       {
-        logError("Host fix not present for FCS at:" + thisN.dtg.getDate());
+        logError("Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
       }
     }
   }
 
-  public void logError(String msg)
+  public static void logThisError(String msg, Exception e)
   {
-    Application.logError2(Application.WARNING, msg, null);
+    Application.logError2(Application.WARNING, msg, e);
+  }
+
+  public void logError(String msg, Exception e)
+  {
+    logThisError(msg, e);
   }
 
   private void addEntry(NarrEntry thisN)
@@ -292,6 +297,27 @@ public class ImportWord
     String platform;
     String text;
 
+    static public NarrEntry create(String msg, int lineNum)
+    {
+      NarrEntry res = null;
+      try
+      {
+        res = new NarrEntry(msg);
+        
+        // just check it's valid
+        boolean valid = (res.dtg != null) && (res.type != null) && (res.platform != null) && (res.text != null);
+        if(!valid)
+          res = null;
+      }
+      catch (ParseException e)
+      {
+        logThisError("Failed whilst parsing Word Document, at line:" + lineNum,
+            e);
+      }
+
+      return res;
+    }
+
     public NarrEntry(String entry) throws ParseException
     {
       DateFormat dateF = new SimpleDateFormat("HH:mm:ss");
@@ -326,7 +352,8 @@ public class ImportWord
 
   public static class TestImportAIS extends TestCase
   {
-    private final static String doc_path = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/narrative.doc";
+    private final static String doc_path =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/narrative.doc";
 
     public void testNameHandler()
     {
@@ -411,7 +438,7 @@ public class ImportWord
       {
 
         @Override
-        public void logError(String msg)
+        public void logError(String msg, Exception e)
         {
           tstMessages.add(msg);
         }
@@ -460,7 +487,7 @@ public class ImportWord
       {
 
         @Override
-        public void logError(String msg)
+        public void logError(String msg, Exception e)
         {
           tstMessages.add(msg);
         }
@@ -471,7 +498,7 @@ public class ImportWord
       // hmmm, how many tracks
       assertEquals("got new tracks", 4, tLayers.size());
 
-      assertEquals("received messages", 0, tstMessages.size());
+      assertEquals("received messages", 2, tstMessages.size());
     }
 
   }
