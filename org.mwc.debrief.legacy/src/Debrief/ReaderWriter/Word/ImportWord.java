@@ -226,6 +226,9 @@ public class ImportWord
       TrackWrapper track = new TrackWrapper();
       track.setName("Nelson");
       layers.addThisLayer(track);
+      TrackWrapper track2 = new TrackWrapper();
+      track2.setName("Iron Duck");
+      layers.addThisLayer(track2);
       ImportWord iw = new ImportWord(layers);
       String match = iw.trackFor("HMS Boat", "HMS Boat");
       assertNull("not found match", match);
@@ -238,6 +241,14 @@ public class ImportWord
 
       // check we've created new entries
       assertEquals("name matches", 3, iw.nameMatches.size());
+      
+      // and the two word name
+      match = iw.trackFor("Hms Iron Duck", "Hms Iron Duck");
+      assertNotNull("found match", match);
+
+      // check we've created new entries
+      assertEquals("name matches", 4, iw.nameMatches.size());
+
     }
 
     private void testImport(final String testFile, final int len)
