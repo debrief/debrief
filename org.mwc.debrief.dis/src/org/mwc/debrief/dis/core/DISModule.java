@@ -198,17 +198,12 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     // entity state
     String hisName = nameFor(hisId);
 
-    // if(hisId == 1)
-    // {
-    // System.out.println(new java.util.Date(time));
-    // }
-
     Iterator<IDISFixListener> fIter = _fixListeners.iterator();
     while (fIter.hasNext())
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
       thisF.add(time, eid, hisId, hisName, force, worldCoords[0],
-          worldCoords[1], worldCoords[2], orientation.getPhi(), speedMs, pdu
+          worldCoords[1], -worldCoords[2], orientation.getPhi(), speedMs, pdu
               .getEntityAppearance_damage());
     }
   }
@@ -300,7 +295,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     {
       IDISDetonationListener thisD = (IDISDetonationListener) dIter.next();
       thisD.add(time, eid, hisId, hisName, coordsToUse[0], coordsToUse[1],
-          coordsToUse[2]);
+          -coordsToUse[2]);
     }
 
   }
