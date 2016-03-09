@@ -32,7 +32,7 @@ public class SimulationRunner
     else
     {
       final String[] exeCmd = new String[]
-      {_prefs.getExePath(), _prefs.getInputFile()};
+      {_prefs.getExePath(), inFile};
 
       // fire up the processs
       try

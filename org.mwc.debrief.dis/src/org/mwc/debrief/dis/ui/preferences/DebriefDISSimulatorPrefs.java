@@ -20,12 +20,4 @@ public class DebriefDISSimulatorPrefs implements IDISSimulatorPrefs
     IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     return store.getString(DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
   }
-
-  @Override
-  public String getInputFile()
-  {
-    IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
-    return store.getString(DisActivator.PATH_TO_INPUT_FILE);
-  }
-
 }
