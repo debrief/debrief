@@ -482,7 +482,14 @@ abstract public class DISContext implements IDISContext,
   @Override
   public void fireUpdate(final Plottable newItem, final Layer layer)
   {
+    if(_myLayers != null)
+    {
     _myLayers.fireExtended(newItem, layer);
+    }
+    else
+    {
+      System.err.println("Not updating, no layers object");
+    }
   }
 
   @Override
