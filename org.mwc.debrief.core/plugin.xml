@@ -38,6 +38,12 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile"
             > </contentTypeBinding>
         </editor>
+        <editor
+              class="org.eclipse.ui.editors.text.TextEditor"
+              id="org.mwc.debrief.INPTextEditor"
+              name="DIS Simulator Input File">
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.INPFile"/>
+        </editor>        
     </extension>
 
     <extension point="org.eclipse.core.contenttype.contentTypes">
@@ -59,6 +65,9 @@
         <content-type base-type="org.eclipse.core.runtime.text"
             id="org.mwc.debrief.contenttype.ReplaySensorFile" file-extensions="dsf"
             name="Debrief Sensor File" priority="normal"> </content-type>
+        <content-type base-type="org.eclipse.core.runtime.text"
+            id="org.mwc.debrief.contenttype.INPFile" file-extensions="inp"
+            name="DIS Simulation input file" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.WorldImageFile" file-extensions="tif"
             name="World Image (Electronic Chart) File" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.KMZTrackArchive" file-extensions="kmz"
