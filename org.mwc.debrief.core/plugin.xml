@@ -38,12 +38,6 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile"
             > </contentTypeBinding>
         </editor>
-        <editor
-              class="org.eclipse.ui.editors.text.TextEditor"
-              id="org.mwc.debrief.INPTextEditor"
-              name="DIS Simulator Input File">
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.INPFile"/>
-        </editor>        
     </extension>
 
     <extension point="org.eclipse.core.contenttype.contentTypes">
