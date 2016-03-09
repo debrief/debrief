@@ -3,7 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.debrief.legacy;singleton:=true
 Bundle-Version: 1.0.302
-Bundle-ClassPath: debrief_legacy.jar
+Bundle-ClassPath: debrief_legacy.jar,
+ libs/poi-3.14-20160307.jar,
+ libs/poi-scratchpad-3.14-20160307.jar
 Bundle-Vendor: MWC
 Export-Package: 
  Debrief.GUI,
@@ -120,6 +122,7 @@ Export-Package:
    MWC.TacticalData,
    Debrief.Wrappers,
    MWC.GUI",
+ Debrief.ReaderWriter.Word,
  Debrief.ReaderWriter.XML;
   uses:="Debrief.GUI.Views,
    MWC.GenericData,

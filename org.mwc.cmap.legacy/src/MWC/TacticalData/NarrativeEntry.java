@@ -45,7 +45,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 
 	private transient NarrativeEntryInfo _myInfo;
 
-	private Color _color = Color.white;
+	private Color _color = Color.DARK_GRAY;
 
 	/**
      * 
