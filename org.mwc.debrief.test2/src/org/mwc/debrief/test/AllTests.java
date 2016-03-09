@@ -17,7 +17,6 @@ package org.mwc.debrief.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-
 @Suite.SuiteClasses({
 	  
 	Debrief.GUI.Tote.Painters.Highlighters.RangeHighlighter.testMe.class,
@@ -25,7 +24,6 @@ import org.junit.runners.Suite;
   Debrief.GUI.Tote.Painters.PainterManager.testMe.class,
   Debrief.GUI.Tote.Painters.RelativePainter.testMe.class,
   Debrief.GUI.Tote.Painters.SnailDrawFix.testMe.class,
-  Debrief.GUI.Tote.Painters.SnailPainter.testMe.class,
   Debrief.GUI.Tote.Painters.SnailPainter.testMe.class,
   Debrief.GUI.Tote.Painters.TotePainter.testMe.class,
   Debrief.GUI.Tote.StepControl.testMe.class,
@@ -44,6 +42,7 @@ import org.junit.runners.Suite;
   Debrief.ReaderWriter.Replay.ImportTMA_RngBrg.testImportTMA_RngBrg.class,
   Debrief.ReaderWriter.XML.Shapes.LabelHandler.testMe.class,
   Debrief.ReaderWriter.XML.Tactical.TMAContactHandler.testIt.class,
+  Debrief.ReaderWriter.Word.ImportWord.TestImportAIS.class,
   Debrief.Tools.FilterOperations.ReformatFixes.testListOfProperties.class,
   Debrief.Tools.Palette.BuoyPatterns.ArcBuilder.testMe.class,
   Debrief.Tools.Palette.BuoyPatterns.BarrierBuilder.testMe.class,

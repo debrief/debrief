@@ -66,8 +66,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
-import MWC.GUI.Layers.DataListener2;
-import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -147,19 +145,35 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   public NViewerView()
   {
-    _layerListener = new DataListener2()
+    _layerListener = new DataListener()
     {
 
       @Override
       public void dataModified(final Layers theData, final Layer changedLayer)
       {
         if (changedLayer == _myRollingNarrative)
-          setInput(_myRollingNarrative);
+        {
+          uiUpdate();
+        }
+      }
+
+      private void uiUpdate()
+      {
+        Display.getDefault().syncExec(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            setInput(_myRollingNarrative);
+          }
+        });
       }
 
       @Override
       public void dataExtended(final Layers theData)
       {
+
       }
 
       @Override
@@ -167,26 +181,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           dataReformatted(final Layers theData, final Layer changedLayer)
       {
         if (changedLayer == _myRollingNarrative)
-          setInput(_myRollingNarrative);
+        {
+          uiUpdate();
+        }
         refreshColor(changedLayer);
       }
 
-      @Override
-      public void dataExtended(Layers theData, Plottable newItem, final Layer parent)
-      {
-        if (parent instanceof IRollingNarrativeProvider)
-        {
-          Display.getDefault().syncExec(new Runnable(){
-
-            @Override
-            public void run()
-            {
-              setInput((IRollingNarrativeProvider) parent);
-            }});
-        }
-      }
     };
-
   }
 
   private boolean internalEquals(Color color1, Color color2)
@@ -474,7 +475,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
 
     if (newNarr != _myRollingNarrative)
-    {
       if (_myRollingNarrative != null)
       {
 
@@ -486,20 +486,11 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
       }
 
-      // store the new one
-      _myRollingNarrative = newNarr;
-
-      // ok, start lisetening to the new one
-      _myRollingNarrative.addNarrativeListener(
-          IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-
-    }
-
     // check it has some data
-    final NarrativeEntry[] entries =
-        _myRollingNarrative.getNarrativeHistory(new String[]
-        {});
+    final NarrativeEntry[] entries = newNarr.getNarrativeHistory(new String[]
+    {});
 
+    _myRollingNarrative = newNarr;
     if (entries.length > 0)
       myViewer.setInput(_myRollingNarrative);
     else
@@ -536,6 +527,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         }
       };
     }
+    // and start listening to it..
+    _myRollingNarrative.addNarrativeListener(
+        IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
   }
 
   /**
