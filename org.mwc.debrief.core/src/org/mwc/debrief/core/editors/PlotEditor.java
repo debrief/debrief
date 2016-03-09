@@ -487,36 +487,39 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         {
           TrackWrapper tw = (TrackWrapper) parent;
           SegmentList segs = tw.getSegments();
-          Enumeration<Editable> iter = segs.elements();
-          while (iter.hasMoreElements())
+          if (segs != null)
           {
-            Editable editable = (Editable) iter.nextElement();
-            if (editable instanceof RelativeTMASegment)
+            Enumeration<Editable> iter = segs.elements();
+            while (iter.hasMoreElements())
             {
-              RelativeTMASegment rel = (RelativeTMASegment) editable;
-              WatchableList host = rel.getReferenceTrack();
-              String hostName = host.getName();
+              Editable editable = (Editable) iter.nextElement();
+              if (editable instanceof RelativeTMASegment)
+              {
+                RelativeTMASegment rel = (RelativeTMASegment) editable;
+                WatchableList host = rel.getReferenceTrack();
+                String hostName = host.getName();
 
-              // see if we already have a host of this name
-              Layer possHost = _myLayers.findLayer(hostName);
-              if (possHost == null)
-              {
-                // ABORT - WE DON'T HAVE THIS TRACK
-              }
-              else
-              {
-                if (possHost instanceof TrackWrapper && possHost != host)
+                // see if we already have a host of this name
+                Layer possHost = _myLayers.findLayer(hostName);
+                if (possHost == null)
                 {
-                  // ok, we've got a track with the right name, but it's another
-                  // object, so we've probably moved to another plot.
+                  // ABORT - WE DON'T HAVE THIS TRACK
+                }
+                else
+                {
+                  if (possHost instanceof TrackWrapper && possHost != host)
+                  {
+                    // ok, we've got a track with the right name, but it's another
+                    // object, so we've probably moved to another plot.
 
-                  // try to move the references to this track
-                  rel.updateLayers(_myLayers);
+                    // try to move the references to this track
+                    rel.updateLayers(_myLayers);
+                  }
                 }
               }
             }
           }
-        }        
+        }
       }
     });
   }
@@ -560,13 +563,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     // lastly, set the title (if we have one)
     this.setPartName(input.getName());
-        
+
     // hmm, does this input have an icon?
     ImageDescriptor icon = input.getImageDescriptor();
-    if(icon != null)
+    if (icon != null)
     {
       this.setTitleImage(icon.createImage());
-    }    
+    }
   }
 
   /**

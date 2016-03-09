@@ -59,6 +59,9 @@
         <content-type base-type="org.eclipse.core.runtime.text"
             id="org.mwc.debrief.contenttype.ReplaySensorFile" file-extensions="dsf"
             name="Debrief Sensor File" priority="normal"> </content-type>
+        <content-type base-type="org.eclipse.core.runtime.text"
+            id="org.mwc.debrief.contenttype.INPFile" file-extensions="inp"
+            name="DIS Simulation input file" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.WorldImageFile" file-extensions="tif"
             name="World Image (Electronic Chart) File" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.KMZTrackArchive" file-extensions="kmz"

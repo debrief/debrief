@@ -690,22 +690,14 @@ public class PduGenerator
     dp.setExerciseID(EXERCISE_ID);
     dp.setFiringEntityID(eid);
     dp.setTimestamp(lastTime);
-
-    // and the location
+    
     final double disCoordinates[] =
         CoordinateConversions.getXYZfromLatLonDegrees(firingPlatform.latVal,
             firingPlatform.longVal, 0.0);
-    final Vector3Float location = new Vector3Float();
-    location.setX((float) disCoordinates[0]);
-    location.setY((float) disCoordinates[1]);
-    location.setZ((float) disCoordinates[2]);
-    dp.setLocationInEntityCoordinates(location);
-
-    final Vector3Double wLoc = new Vector3Double();
-    wLoc.setX(firingPlatform.longVal);
-    wLoc.setY(firingPlatform.latVal);
-    wLoc.setZ(0);
-    dp.setLocationInWorldCoordinates(wLoc);
+    final Vector3Double location = dp.getLocationInWorldCoordinates();
+    location.setX(disCoordinates[0]);
+    location.setY(disCoordinates[1]);
+    location.setZ(disCoordinates[2]);
 
     // and send it
     sender.sendPdu(dp);

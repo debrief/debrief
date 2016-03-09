@@ -16,6 +16,7 @@ package org.mwc.debrief.dis.ui.views;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -25,6 +26,11 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -49,6 +55,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jfree.chart.ChartFactory;
@@ -92,6 +99,7 @@ public class DisListenerView extends ViewPart
 {
 
   public static final String HELP_CONTEXT = "org.mwc.debrief.help.DISSupport";
+
   private Button connectButton;
   private Button playButton;
   private Button pauseButton;
@@ -762,6 +770,47 @@ public class DisListenerView extends ViewPart
 
     // ok, sort out the help
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HELP_CONTEXT);
+
+    addDropSupport();
+  }
+
+  private void addDropSupport()
+  {
+    int operations =
+        DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK | DND.DROP_DEFAULT;
+    DropTarget target = new DropTarget(pathText, operations);
+
+    Transfer[] types = new Transfer[]
+    {ResourceTransfer.getInstance()};
+    target.setTransfer(types);
+    target.addDropListener(new DropTargetAdapter()
+    {
+      @Override
+      public void drop(DropTargetEvent event)
+      {
+        super.drop(event);
+        Object data = event.data;
+        IResource resource = null;
+        if (data.getClass().isArray() && ((Object[]) data).length > 0)
+        {
+          resource = (IResource) ((Object[]) data)[0];
+        }
+        else if (data instanceof IResource)
+        {
+          resource = (IResource) data;
+        }
+
+        if (resource != null)
+        {
+          String fileExtension = resource.getFileExtension();
+          if (fileExtension.equals("inp"))
+          {
+            pathText.setText(resource.getLocation().toOSString());
+          }
+        }
+        event.detail = 1;
+      }
+    });
   }
 
   private void createEntityID()
