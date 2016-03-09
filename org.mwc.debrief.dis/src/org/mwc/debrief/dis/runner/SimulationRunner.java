@@ -16,9 +16,9 @@ public class SimulationRunner
     _prefs = simPrefs;
   }
 
-  public void run(final String args)
+  public void run(final String inFile)
   {
-    final File input = new File(_prefs.getInputFile());
+    final File input = new File(inFile);
     final File parent = input.getParentFile();
 
     if (!input.exists())
