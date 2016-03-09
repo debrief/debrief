@@ -30,5 +30,25 @@
             name="DIS Listener" restorable="true">
       </view>
    </extension>
-    
+    <extension
+          point="org.eclipse.ui.menus">
+       <menuContribution
+             allPopups="true"
+             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="org.mwc.debrief.dis.runinsimulator"
+               label="Run In Simulator"
+               style="push"
+               tooltip="Run In Simulator">
+         </command>
+       </menuContribution>
+    </extension>
+    <extension
+          point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.debrief.dis.action.DISRunInSimulatorHandler"
+             id="org.mwc.debrief.dis.runinsimulator"
+             name="Run In Simulator">
+       </command>
+    </extension>
 </plugin>
