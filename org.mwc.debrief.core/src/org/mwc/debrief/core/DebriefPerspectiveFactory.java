@@ -50,7 +50,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		midLeft.addView(IPageLayout.ID_PROP_SHEET);		
 		midLeft.addView(CorePlugin.TOTE);
 		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
-		midLeft.addView(CorePlugin.DIS_LISTENER_VIEW);
+		midLeft.addPlaceholder(CorePlugin.DIS_LISTENER_VIEW);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
 		
 		// Bottom left: Outline view and Property Sheet view
