@@ -89,7 +89,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
       @Override
       public void run()
       {
-        System.out.println("Listing for DIS messages on address:"
+        System.out.println("Listening for DIS messages on address:"
             + _myPrefs.getIPAddress() + " port:" + _myPrefs.getPort());
 
         // Specify the socket to receive data
