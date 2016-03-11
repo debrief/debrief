@@ -298,9 +298,19 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and inform anybody who happens to be listening
 			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
-		}
-
-	}
+			
+      // also tell the listeners
+      if (_myListeners != null)
+      {
+        for (final Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
+            .hasNext();)
+        {
+          final INarrativeListener thisL = iter.next();
+          thisL.newEntry((NarrativeEntry) editable);
+        }
+      }
+    }
+  }
 
 	public final void append(final MWC.GUI.Layer layer)
 	{

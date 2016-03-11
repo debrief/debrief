@@ -93,7 +93,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   IRollingNarrativeProvider _myRollingNarrative;
 
-  protected INarrativeListener _myRollingNarrListener;
+  final protected INarrativeListener _myRollingNarrListener;
 
   /**
    * whether to clip text to the visible size
@@ -188,6 +188,43 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       }
 
     };
+
+    // check if we have our rolling narrative listener
+    _myRollingNarrListener = new INarrativeListener()
+    {
+
+      private void updated()
+      {
+        if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
+          myViewer.setInput(_myRollingNarrative);
+        else
+          myViewer.setInput(null);
+      }
+
+      public void newEntry(final NarrativeEntry entry)
+      {
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            updated();
+          }
+        });
+      }
+
+      public void entryRemoved(final NarrativeEntry entry)
+      {
+        // update our list...
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            updated();
+          }
+        });
+      }
+    };
+
   }
 
   private boolean internalEquals(Color color1, Color color2)
@@ -475,9 +512,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
 
     if (newNarr != _myRollingNarrative)
+    {
       if (_myRollingNarrative != null)
       {
-
         // clear what's displayed
         myViewer.setInput(null);
 
@@ -486,50 +523,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
       }
 
-    // check it has some data
-    final NarrativeEntry[] entries = newNarr.getNarrativeHistory(new String[]
-    {});
+      // ok remember the new provider
+      _myRollingNarrative = newNarr;
 
-    _myRollingNarrative = newNarr;
-    if (entries.length > 0)
-      myViewer.setInput(_myRollingNarrative);
-    else
-      myViewer.setInput(null);
-
-    // check if we have our rolling narrative listener
-    if (_myRollingNarrListener == null)
-    {
-      _myRollingNarrListener = new INarrativeListener()
-      {
-        public void newEntry(final NarrativeEntry entry)
-        {
-          Display.getDefault().asyncExec(new Runnable()
-          {
-            public void run()
-            {
-              // ok, sort it - get the view to refresh itself
-              setInput(_myRollingNarrative);
-            }
-          });
-        }
-
-        public void entryRemoved(final NarrativeEntry entry)
-        {
-          // update our list...
-          Display.getDefault().asyncExec(new Runnable()
-          {
-            public void run()
-            {
-              // ok, sort it - get the view to refresh itself
-              setInput(_myRollingNarrative);
-            }
-          });
-        }
-      };
+      // ok, register as a listener
+      _myRollingNarrative.addNarrativeListener(
+          IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
     }
-    // and start listening to it..
-    _myRollingNarrative.addNarrativeListener(
-        IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
   }
 
   /**
