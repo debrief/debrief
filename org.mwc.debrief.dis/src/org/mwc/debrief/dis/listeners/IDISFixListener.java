@@ -12,5 +12,5 @@ public interface IDISFixListener
   final short GREEN = 3;
   
   void add(long time, short exerciseId, long id, String eName, short force,
-      double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage);
+      boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage);
 }
