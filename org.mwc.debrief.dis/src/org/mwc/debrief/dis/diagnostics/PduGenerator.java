@@ -402,8 +402,8 @@ public class PduGenerator
 
     // sort out the runtime arguments
     long stepMillis = 500;
-    long numParts = 1;
-    int numMessages = 1000;
+    long numParts = 5;
+    int numMessages = 30;
 
     // try to extract the step millis from the args
     if (args.length >= 1 && args[0].length() > 1)
