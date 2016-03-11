@@ -34,6 +34,7 @@ import edu.nps.moves.disutil.CoordinateConversions;
 
 public class DISModule implements IDISModule, IDISGeneralPDUListener
 {
+  private static final int ESTIMATED_KIND = 1;
   private List<IDISFixListener> _fixListeners =
       new ArrayList<IDISFixListener>();
   private Map<Integer, List<IDISEventListener>> _eventListeners =
@@ -88,10 +89,18 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
   protected String extractNameFor(String message)
   {
+    // Entity 1 called SubmarineSouth has been created or launched.
+    final String called = "called ";
+    final String has = "has been";
+
     String res = null;
-    String[] split = message.trim().split(":");
-    if (split.length == 2)
-      res = split[1];
+
+    if(message.contains(called) && message.contains(has))
+    {
+      int nameStart = message.indexOf(called) + called.length();
+      int nameEnd = message.indexOf(has)-1;
+      res = message.substring(nameStart, nameEnd);
+    }
     return res;
   }
 
@@ -104,7 +113,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
    */
   private String nameFor(long id)
   {
-    String name = _entityNames.get(id);
+    String name = _entityNames.get((Integer)(int)id);
     if (name == null)
     {
       name = "DIS_" + id;
@@ -183,6 +192,9 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     final short eid = pdu.getExerciseID();
     final short force = pdu.getForceId();
     final long hisId = pdu.getEntityID().getEntity();
+    
+    boolean isEstimated = pdu.getEntityType().getEntityKind() == ESTIMATED_KIND;
+    
     long time = convertTime(pdu.getTimestamp());
     Vector3Double loc = pdu.getEntityLocation();
     double[] locArr = new double[]
@@ -202,8 +214,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     while (fIter.hasNext())
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
-      thisF.add(time, eid, hisId, hisName, force, worldCoords[0],
-          worldCoords[1], -worldCoords[2], orientation.getPhi(), speedMs, pdu
+      thisF.add(time, eid, hisId, hisName, force, isEstimated,
+          worldCoords[0], worldCoords[1], -worldCoords[2], orientation.getPhi(), speedMs, pdu
               .getEntityAppearance_damage());
     }
   }
@@ -214,24 +226,44 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     long time = convertTime(pdu.getTimestamp());
     int originator = pdu.getOriginatingEntityID().getEntity();
     int eType = (int) pdu.getEventType();
-    String msg = "Empty";
+    String msg = "";
 
     // try to get the data
-
     List<VariableDatum> items = pdu.getVariableDatums();
-    if (items.size() > 0)
+    for (int i = 0; i < items.size(); i++)
     {
-      VariableDatum val = items.get(0);
+      VariableDatum val = items.get(i);
       List<OneByteChunk> chunks = val.getVariableData();
-      byte[] bytes = new byte[chunks.size()];
+      final int thisLen = (int) val.getVariableDatumLength();
+      byte[] bytes = new byte[thisLen];
       Iterator<OneByteChunk> iter = chunks.iterator();
       int ctr = 0;
-      while (iter.hasNext())
+      for (int l = 0; l < thisLen; l++)
       {
         OneByteChunk thisB = (OneByteChunk) iter.next();
-        bytes[ctr++] = thisB.getOtherParameters()[0];
+        final byte thisByte = thisB.getOtherParameters()[0];
+        
+//        if (eType == 10004)
+//        {
+//          System.out.println("byte:" + thisByte + " str:" + new String(new byte[]{thisByte}));
+//        }
+        
+        if (thisByte > 10)
+        {
+          bytes[ctr++] = thisByte;
+        }
+        else if(thisByte == 1 || thisByte == 9) 
+        {
+          bytes[ctr++] = 32;
+        }
       }
-      msg = new String(bytes);
+      String newS = new String(bytes);
+      msg += newS;
+    }
+
+    if (msg.length() == 0)
+    {
+      msg = "Unset";
     }
 
     // sort out his name
@@ -239,7 +271,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     // now try to retrieve name
     String hisName = nameFor(originator);
-
+    
     // first send out to specific listeners
     List<IDISEventListener> specificListeners = _eventListeners.get(eType);
     if (specificListeners != null)
@@ -269,7 +301,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
   private void handleDetonation(DetonationPdu pdu)
   {
     short eid = pdu.getExerciseID();
-    
+
     // we get two sets of coordinates in a detonation. Track both sets
     Vector3Float eLoc = pdu.getLocationInEntityCoordinates();
     double[] locArr = new double[]
