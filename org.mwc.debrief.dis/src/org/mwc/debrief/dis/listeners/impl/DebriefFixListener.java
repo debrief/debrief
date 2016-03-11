@@ -23,9 +23,9 @@ public class DebriefFixListener extends DebriefCoreListener implements
 
   @Override
   public void add(final long time, short exerciseId, long id,
-      final String theName, final short force, final double dLat,
-      final double dLong, final double depth, final double courseDegs,
-      final double speedMS, final int damage)
+      final String theName, final short force, final boolean isHighlighted,
+      final double dLat, final double dLong, final double depth,
+      final double courseDegs, final double speedMS, final int damage)
   {
     super.addNewItem(exerciseId, theName, new ListenerHelper()
     {
@@ -52,6 +52,16 @@ public class DebriefFixListener extends DebriefCoreListener implements
         HiResDate date = new HiResDate(time);
         Fix newF = new Fix(date, loc, courseDegs, speedMS);
         FixWrapper fw = new FixWrapper(newF);
+        
+        if(isHighlighted)
+        {
+          fw.setLineShowing(true);
+        }
+        else
+        {
+          fw.setLineShowing(false);
+        }
+        
         fw.resetName();
 
         // darken the fix, if necessary
