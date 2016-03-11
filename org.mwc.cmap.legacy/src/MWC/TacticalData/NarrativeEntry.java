@@ -173,7 +173,17 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 		final NarrativeEntry other = (NarrativeEntry) o;
 		int result = _DTG.compareTo(other._DTG);
 		if (result == 0)
-			result = 1;
+		{
+		  result = getTrackName().compareTo(other.getTrackName());
+		  if(result == 0)
+		  {
+	      result = getType().compareTo(other.getType());
+	      if(result == 0)
+	      {
+	        result = getEntry().compareTo(other.getEntry());
+	      }
+		  }
+		}
 		return result;
 	}
 
@@ -263,7 +273,13 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
             return true;
         if (!(obj instanceof NarrativeEntry))
             return false;
-        return super.equals(obj);
+        
+        NarrativeEntry other = (NarrativeEntry) obj;
+        return (other.getSource().equals(getSource())) &&
+               (other.getType().equals(getType())) &&
+               (other.getDTG().equals(getDTG())) &&
+               (other.getEntry().equals(getEntry()));
+        
 	}
 
 
