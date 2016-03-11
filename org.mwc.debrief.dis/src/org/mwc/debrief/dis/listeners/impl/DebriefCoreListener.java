@@ -3,6 +3,7 @@ package org.mwc.debrief.dis.listeners.impl;
 import java.awt.Color;
 import java.util.Iterator;
 
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.INewItemListener;
@@ -28,11 +29,26 @@ public class DebriefCoreListener
    * @param name
    * @return
    */
-  protected Color colorFor(String name)
+  protected Color colorFor(short exerciseId, String name)
   {
-    // ok, get the hashmap
-    int index = Math.abs(name.hashCode()) % defaultColors.length;
-    return defaultColors[index];
+    Color res;
+    
+    Layer layer = _context.findLayer(exerciseId, name);
+    
+    if(layer != null && layer instanceof TrackWrapper)
+    {
+      TrackWrapper track = (TrackWrapper) layer;
+      res = track.getColor();
+    }
+    else
+    {
+      // ok, get the hashmap
+      int index = Math.abs(name.hashCode()) % defaultColors.length;
+      res = defaultColors[index];
+    }
+    
+    return res;
+    
   }
 
   /**

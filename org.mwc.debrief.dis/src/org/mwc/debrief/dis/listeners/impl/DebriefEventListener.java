@@ -52,7 +52,7 @@ public class DebriefEventListener extends DebriefCoreListener implements
   }
   
   @Override
-  public void add(final long time, short eid, long id, final String hisName, final int eType, final String message)
+  public void add(final long time, final short eid, long id, final String hisName, final int eType, final String message)
   {
     // and the narrative entry
     addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
@@ -70,7 +70,7 @@ public class DebriefEventListener extends DebriefCoreListener implements
         NarrativeEntry newE =
             new NarrativeEntry(hisName, eventTypeFor(eType), new HiResDate(time),
                 message);
-        Color theColor = colorFor(hisName);
+        Color theColor = colorFor(eid, hisName);
         newE.setColor(theColor);
         return newE;
       }

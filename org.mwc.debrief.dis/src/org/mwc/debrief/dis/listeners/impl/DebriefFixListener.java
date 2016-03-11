@@ -53,14 +53,14 @@ public class DebriefFixListener extends DebriefCoreListener implements
         Fix newF = new Fix(date, loc, courseDegs, speedMS);
         FixWrapper fw = new FixWrapper(newF);
         
-        if(isHighlighted)
-        {
-          fw.setLineShowing(true);
-        }
-        else
-        {
-          fw.setLineShowing(false);
-        }
+//        if(isHighlighted)
+//        {
+//          fw.setLineShowing(true);
+//        }
+//        else
+//        {
+//          fw.setLineShowing(false);
+//        }
         
         fw.resetName();
 
