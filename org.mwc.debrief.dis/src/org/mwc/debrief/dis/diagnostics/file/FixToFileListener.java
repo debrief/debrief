@@ -9,12 +9,12 @@ public class FixToFileListener extends CoreFileListener implements
   public FixToFileListener(String root, boolean toFile, boolean toScreen)
   {
     super(root, toFile, toScreen, "fix",
-        "time, id, name,force, isHighlighted, dLat, dLong, depth, courseDegs, speedMS, damage");
+        "time, id, name,force, kind, domain, category, isHighlighted, dLat, dLong, depth, courseDegs, speedMS, damage");
   }
 
   @Override
   public void add(long time, short exerciseId, long id, String eName,
-      short force, boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage)
+      short force, short kind, short domain, short category, boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage)
   {
     // create the line
     StringBuffer out = new StringBuffer();
@@ -25,6 +25,12 @@ public class FixToFileListener extends CoreFileListener implements
     out.append(eName);
     out.append(", ");
     out.append(force);
+    out.append(", ");
+    out.append(kind);
+    out.append(", ");
+    out.append(domain);
+    out.append(", ");
+    out.append(category);
     out.append(", ");
     out.append(isHighlighted);
     out.append(", ");

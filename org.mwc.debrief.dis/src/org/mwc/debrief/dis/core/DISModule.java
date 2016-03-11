@@ -20,6 +20,7 @@ import org.mwc.debrief.dis.providers.IPDUProvider;
 import edu.nps.moves.dis.CollisionPdu;
 import edu.nps.moves.dis.DetonationPdu;
 import edu.nps.moves.dis.EntityStatePdu;
+import edu.nps.moves.dis.EntityType;
 import edu.nps.moves.dis.EventReportPdu;
 import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.OneByteChunk;
@@ -95,10 +96,10 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     String res = null;
 
-    if(message.contains(called) && message.contains(has))
+    if (message.contains(called) && message.contains(has))
     {
       int nameStart = message.indexOf(called) + called.length();
-      int nameEnd = message.indexOf(has)-1;
+      int nameEnd = message.indexOf(has) - 1;
       res = message.substring(nameStart, nameEnd);
     }
     return res;
@@ -113,7 +114,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
    */
   private String nameFor(long id)
   {
-    String name = _entityNames.get((Integer)(int)id);
+    String name = _entityNames.get((Integer) (int) id);
     if (name == null)
     {
       name = "DIS_" + id;
@@ -192,9 +193,9 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     final short eid = pdu.getExerciseID();
     final short force = pdu.getForceId();
     final long hisId = pdu.getEntityID().getEntity();
-    
+
     boolean isEstimated = pdu.getEntityType().getEntityKind() == ESTIMATED_KIND;
-    
+
     long time = convertTime(pdu.getTimestamp());
     Vector3Double loc = pdu.getEntityLocation();
     double[] locArr = new double[]
@@ -206,17 +207,22 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     double speedMs =
         Math.sqrt(velocity.getX() * velocity.getX() + velocity.getY()
             * velocity.getY());
-
+    
     // entity state
     String hisName = nameFor(hisId);
+
+    EntityType cat = pdu.getEntityType();
+    short kind = cat.getEntityKind();
+    short domain = cat.getDomain();
+    short category = cat.getCategory();
 
     Iterator<IDISFixListener> fIter = _fixListeners.iterator();
     while (fIter.hasNext())
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
-      thisF.add(time, eid, hisId, hisName, force, isEstimated,
-          worldCoords[0], worldCoords[1], -worldCoords[2], orientation.getPhi(), speedMs, pdu
-              .getEntityAppearance_damage());
+      thisF.add(time, eid, hisId, hisName, force, kind, domain, category,
+          isEstimated, worldCoords[0], worldCoords[1], -worldCoords[2],
+          orientation.getPhi(), speedMs, pdu.getEntityAppearance_damage());
     }
   }
 
@@ -242,17 +248,17 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       {
         OneByteChunk thisB = (OneByteChunk) iter.next();
         final byte thisByte = thisB.getOtherParameters()[0];
-        
-//        if (eType == 10004)
-//        {
-//          System.out.println("byte:" + thisByte + " str:" + new String(new byte[]{thisByte}));
-//        }
-        
+
+        // if (eType == 10004)
+        // {
+        // System.out.println("byte:" + thisByte + " str:" + new String(new byte[]{thisByte}));
+        // }
+
         if (thisByte > 10)
         {
           bytes[ctr++] = thisByte;
         }
-        else if(thisByte == 1 || thisByte == 9) 
+        else if (thisByte == 1 || thisByte == 9)
         {
           bytes[ctr++] = 32;
         }
@@ -271,7 +277,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
 
     // now try to retrieve name
     String hisName = nameFor(originator);
-    
+
     // first send out to specific listeners
     List<IDISEventListener> specificListeners = _eventListeners.get(eType);
     if (specificListeners != null)

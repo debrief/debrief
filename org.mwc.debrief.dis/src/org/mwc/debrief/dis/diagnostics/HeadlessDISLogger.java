@@ -117,8 +117,8 @@ public class HeadlessDISLogger
     {
       @Override
       public void add(long time, short exerciseId, long id, String eName,
-          short force, boolean isHighlighted, double dLat, double dLong,
-          double depth, double courseDegs, double speedMS, final int damage)
+          short force, short kind, short domain, short category,
+          boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, final int damage)
       {
     //    System.out.print(".");
       }

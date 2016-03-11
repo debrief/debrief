@@ -8,7 +8,9 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
@@ -23,9 +25,9 @@ public class DebriefFixListener extends DebriefCoreListener implements
 
   @Override
   public void add(final long time, short exerciseId, long id,
-      final String theName, final short force, final boolean isHighlighted,
-      final double dLat, final double dLong, final double depth,
-      final double courseDegs, final double speedMS, final int damage)
+      final String theName, final short force, final short kind,
+      final short domain, final short category, final boolean isHighlighted,
+      final double dLat, final double dLong, final double depth, final double courseRads, final double speedMS, final int damage)
   {
     super.addNewItem(exerciseId, theName, new ListenerHelper()
     {
@@ -41,6 +43,28 @@ public class DebriefFixListener extends DebriefCoreListener implements
         Color newCol = theCol; // colorFor(theName);
         // ok, give it some color
         track.setColor(newCol);
+        track.setSymbolColor(newCol);
+
+        // see if we can exploit the domain
+        if (kind == 1)
+        {
+          if (domain == 4)
+          {
+            track.setSymbolType(SymbolFactory.SCALED_SUBMARINE);
+            track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
+            track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
+          }
+          else if (domain == 0)
+          {
+            track.setSymbolType(SymbolFactory.SCALED_FRIGATE);
+            track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
+            track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
+          }
+        }
+        else if (kind == 2)
+        {
+          track.setSymbolType(SymbolFactory.TORPEDO);
+        }
 
         return track;
       }
@@ -50,7 +74,7 @@ public class DebriefFixListener extends DebriefCoreListener implements
       {
         WorldLocation loc = new WorldLocation(dLat, dLong, depth);
         HiResDate date = new HiResDate(time);
-        Fix newF = new Fix(date, loc, courseDegs, speedMS);
+        Fix newF = new Fix(date, loc, courseRads, speedMS);
         FixWrapper fw = new FixWrapper(newF);
         
 //        if(isHighlighted)
