@@ -152,12 +152,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import junit.framework.Assert;
@@ -576,19 +574,17 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	public int compareTo(final Plottable arg0)
 	{
 		final Plottable other = (Plottable) arg0;
-		return getName().compareTo(other.getName());
 
-		// final int res;
-		// Plottable other = (Plottable) arg0;
-		// int myCode = hashCode();
-		// int otherCode = other.hashCode();
-		// if(myCode < otherCode)
-		// res = -1;
-		// else if(myCode > otherCode)
-		// res = 1;
-		// else
-		// res = 0;
-		// return res;
+		// start by comparing name
+		int res = getName().compareTo(other.getName());
+		
+		// use hashcode as fallback
+		if(res == 0)
+		{
+		  res = Integer.compare(this.hashCode(), other.hashCode());
+		}
+		
+		return res;
 	}
 
 	/**
