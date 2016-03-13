@@ -7,10 +7,25 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import org.mwc.debrief.dis.listeners.IDISStopListener;
+import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
+
 import edu.nps.moves.dis.Pdu;
+import edu.nps.moves.dis.SimulationManagementFamilyPdu;
+import edu.nps.moves.dis.StopFreezePdu;
+import edu.nps.moves.disutil.PduFactory;
 
 public class NetworkPduSender implements IPduSender
 {
+  public static interface IDISStatusListener
+  {
+    void doStop(int appId, short exId);
+
+    void doPlay(int appId, short exId);
+
+    void doPause(int appId, short exId);
+  }
+
   public enum NetworkMode
   {
     UNICAST, MULTICAST, BROADCAST
@@ -26,6 +41,10 @@ public class NetworkPduSender implements IPduSender
   /** Port we send on */
   public static final int PORT = 62040;
 
+  private IDISStatusListener _statusListener = null;
+
+  private boolean _running = true;
+
   /**
    * Possible system properties, passed in via -Dattr=val networkMode: unicast, broadcast, multicast
    * destinationIp: where to send the packet. If in multicast mode, this can be mcast. To determine
@@ -40,8 +59,10 @@ public class NetworkPduSender implements IPduSender
    * @param args
    */
   public NetworkPduSender(String destinationIpString, String portString,
-      String networkModeString)
+      String networkModeString, IDISStatusListener statusListener)
   {
+
+    _statusListener = statusListener;
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
@@ -94,8 +115,63 @@ public class NetworkPduSender implements IPduSender
 
           socket.joinGroup(destinationIp);
 
+          // also listen on the port
+          _running = true;
+          PduFactory pduFactory = new PduFactory();
+
+          while (_running)
+          {
+            byte buffer[] = new byte[NetworkDISProvider.MAX_PDU_SIZE];
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+            socket.receive(packet);
+
+            Pdu pdu = pduFactory.createPdu(packet.getData());
+
+            if (pdu != null)
+            {
+              if (pdu instanceof SimulationManagementFamilyPdu)
+              {
+                SimulationManagementFamilyPdu simP =
+                    (SimulationManagementFamilyPdu) pdu;
+                int appId = simP.getOriginatingEntityID().getApplication();
+                short exId = simP.getExerciseID();
+                switch (pdu.getPduType())
+                {
+                case 13:
+                {
+                  // start resume
+                  if (_statusListener != null)
+                  {
+                    _statusListener.doPlay(appId, exId);
+                  }
+                  break;
+                }
+                case 14:
+                {
+                  if (_statusListener != null)
+                  {
+                    // stop pause
+                    StopFreezePdu stopper = (StopFreezePdu) simP;
+                    short reason = stopper.getReason();
+                    if (reason == IDISStopListener.PDU_FREEZE)
+                    {
+                      _statusListener.doPause(appId, exId);
+                    }
+                    else
+                    {
+                      _statusListener.doStop(appId, exId);
+                    }
+                    break;
+                  }
+                }
+                }
+              }
+            } 
+          }
         }
-      } // end networkModeString
+      }
+
     }
     catch (Exception e)
     {
@@ -141,6 +217,8 @@ public class NetworkPduSender implements IPduSender
   @Override
   public void close()
   {
+    _running = false;
+
     socket.close();
     socket = null;
   }

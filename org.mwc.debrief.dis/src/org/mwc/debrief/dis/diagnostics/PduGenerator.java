@@ -44,7 +44,7 @@ import edu.nps.moves.disutil.CoordinateConversions;
  * 
  * @author DMcG
  */
-public class PduGenerator
+public class PduGenerator implements NetworkPduSender.IDISStatusListener
 {
 
   private class Torpedo extends Vessel
@@ -371,12 +371,14 @@ public class PduGenerator
       {millis, numParts, numMessages};
     }
 
-    final PduGenerator sender = new PduGenerator();
-    sender.run(new NetworkPduSender(destinationIpString, portString,
-        networkModeString), args);
+    final PduGenerator generator = new PduGenerator();
+    NetworkPduSender netSender = new NetworkPduSender(destinationIpString, portString,
+        networkModeString, generator);
+    generator.run(netSender, args);
   }
 
   private boolean _terminate;
+  private boolean _pause = false;
   private Random genny;
   private final Collection<Torpedo> torpedoes = new ArrayList<Torpedo>();
 
@@ -506,14 +508,22 @@ public class PduGenerator
       // ok, start
       sendStart(sender, espdu.getExerciseID(), lastTime);
 
-      // generate correct number of messages
-      for (int idx = 0; idx < numMessages; idx++)
-      {
+      int idx = 0;
 
-        // just check if we're being terminated early
-        if (_terminate)
+      // generate correct number of messages
+      while (idx++ < numMessages && !_terminate)
+      {
+        // just check if we're being paused
+        if (_pause)
         {
-          break;
+          Thread.sleep(100);
+        }
+        
+        // have we been killed?
+        if(_terminate)
+        {
+          // skip this cycle, come back in at the top
+          continue;
         }
 
         // increment time
@@ -690,7 +700,7 @@ public class PduGenerator
     dp.setExerciseID(EXERCISE_ID);
     dp.setFiringEntityID(eid);
     dp.setTimestamp(lastTime);
-    
+
     final double disCoordinates[] =
         CoordinateConversions.getXYZfromLatLonDegrees(firingPlatform.latVal,
             firingPlatform.longVal, 0.0);
@@ -836,6 +846,30 @@ public class PduGenerator
   public void terminate()
   {
     _terminate = true;
+  }
+
+  @Override
+  public void doStop(int appId, short exId)
+  {
+    if (appId != APP_ID && exId == EXERCISE_ID)
+    {
+      _pause = false;
+      _terminate = true;
+    }
+  }
+
+  @Override
+  public void doPlay(int appId, short exId)
+  {
+    if (appId != APP_ID && exId == EXERCISE_ID)
+      _pause = false;
+  }
+
+  @Override
+  public void doPause(int appId, short exId)
+  {
+    if (appId != APP_ID && exId == EXERCISE_ID)
+      _pause = true;
   }
 
 }
