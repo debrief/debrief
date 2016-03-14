@@ -53,6 +53,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ResourceTransfer;
@@ -310,11 +311,9 @@ public class DisListenerView extends ViewPart
         switch (reason)
         {
         case IDISStopListener.PDU_FREEZE:
-          System.err.println("PAUSE");
           pauseReceived();
           break;
         case IDISStopListener.PDU_STOP:
-          System.err.println("STOP");
           // update the UI
           stopReceived();
 
@@ -870,6 +869,25 @@ public class DisListenerView extends ViewPart
     bars.getToolBarManager().add(
         CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
 
+    // also provide access to the console view
+    Action showConsole = new Action(){
+      public void run()
+      {
+        try
+        {
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+          .getActivePage().showView("org.eclipse.ui.console.ConsoleView");
+        }
+        catch (PartInitException e)
+        {
+          DisActivator.log(Status.ERROR, "While showing console view", e);
+        }
+      }
+    };
+    showConsole.setText("Show console");
+    showConsole.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/list.png"));
+    bars.getToolBarManager().add(showConsole);
   }
 
   private void fillLocalPullDown(final IMenuManager manager)
