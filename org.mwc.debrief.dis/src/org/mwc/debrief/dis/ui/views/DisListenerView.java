@@ -55,6 +55,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
@@ -876,7 +877,7 @@ public class DisListenerView extends ViewPart
         try
         {
           PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-          .getActivePage().showView("org.eclipse.ui.console.ConsoleView");
+          .getActivePage().showView(IConsoleConstants.ID_CONSOLE_VIEW);
         }
         catch (PartInitException e)
         {
@@ -886,8 +887,9 @@ public class DisListenerView extends ViewPart
     };
     showConsole.setText("Show console");
     showConsole.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/list.png"));
+        .getImageDescriptor("icons/16/console.png"));
     bars.getToolBarManager().add(showConsole);
+    bars.getMenuManager().add(showConsole);
   }
 
   private void fillLocalPullDown(final IMenuManager manager)
