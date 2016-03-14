@@ -1,6 +1,8 @@
 package org.mwc.debrief.dis.diagnostics.senders;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,8 +14,8 @@ import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
 import edu.nps.moves.dis.Pdu;
 import edu.nps.moves.dis.SimulationManagementFamilyPdu;
+import edu.nps.moves.dis.StartResumePdu;
 import edu.nps.moves.dis.StopFreezePdu;
-import edu.nps.moves.disutil.PduFactory;
 
 public class NetworkPduSender implements IPduSender
 {
@@ -146,7 +148,6 @@ public class NetworkPduSender implements IPduSender
 
         // also listen on the port
         _running = true;
-        PduFactory pduFactory = new PduFactory();
 
         while (_running)
         {
@@ -158,10 +159,42 @@ public class NetworkPduSender implements IPduSender
           {
             socket.receive(packet);
 
-            Pdu pdu = pduFactory.createPdu(packet.getData());
+            byte[] data = packet.getData();
 
+            ////////////////////////////////
+            //
+            // note: we aren't using the PDU factory to create the PDU, so we can
+            //  avoid the dependency on the dis-enums jar = it complicates the scripts
+            //
+            ////////////////////////////////
+            
+            // Promote a signed byte to an int, then do a bitwise AND to wipe out everthing but the 
+            // first eight bits. This effectively lets us read this as an unsigned byte
+            int pduType = 0x000000FF & (int) data[2]; // The pdu type is a one-byte, unsigned byte in the third byte position.
+
+            DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
+            Pdu pdu = null;
+            
+            switch(pduType)
+            {
+            case 13:
+            { 
+              pdu = new StartResumePdu();
+              break;
+            }
+            case 14:
+            {
+              pdu = new StopFreezePdu();
+            } 
+            }
+            
+            ////////////////////////////////
+            
             if (pdu != null)
             {
+              pdu.unmarshal(dis);
+              
+              
               if (pdu instanceof SimulationManagementFamilyPdu)
               {
                 SimulationManagementFamilyPdu simP =
