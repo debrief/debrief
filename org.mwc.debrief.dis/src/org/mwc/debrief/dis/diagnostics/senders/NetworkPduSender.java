@@ -17,7 +17,13 @@ import edu.nps.moves.disutil.PduFactory;
 
 public class NetworkPduSender implements IPduSender
 {
-  public static interface IDISStatusListener
+  
+  /** interface for objects that are interested in listening to DIS control messages
+   * 
+   * @author ian
+   *
+   */
+  public static interface IDISControlMessageListener
   {
     void doStop(int appId, short exId);
 
@@ -41,7 +47,7 @@ public class NetworkPduSender implements IPduSender
   /** Port we send on */
   public static final int PORT = 62040;
 
-  private IDISStatusListener _statusListener = null;
+  private IDISControlMessageListener _controlListener = null;
 
   private boolean _running = true;
 
@@ -59,10 +65,10 @@ public class NetworkPduSender implements IPduSender
    * @param args
    */
   public NetworkPduSender(String destinationIpString, String portString,
-      String networkModeString, IDISStatusListener statusListener)
+      String networkModeString, IDISControlMessageListener statusListener)
   {
 
-    _statusListener = statusListener;
+    _controlListener = statusListener;
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
@@ -115,60 +121,8 @@ public class NetworkPduSender implements IPduSender
 
           socket.joinGroup(destinationIp);
 
-          // also listen on the port
-          _running = true;
-          PduFactory pduFactory = new PduFactory();
+          doListening();
 
-          while (_running)
-          {
-            byte buffer[] = new byte[NetworkDISProvider.MAX_PDU_SIZE];
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-            socket.receive(packet);
-
-            Pdu pdu = pduFactory.createPdu(packet.getData());
-
-            if (pdu != null)
-            {
-              if (pdu instanceof SimulationManagementFamilyPdu)
-              {
-                SimulationManagementFamilyPdu simP =
-                    (SimulationManagementFamilyPdu) pdu;
-                int appId = simP.getOriginatingEntityID().getApplication();
-                short exId = simP.getExerciseID();
-                switch (pdu.getPduType())
-                {
-                case 13:
-                {
-                  // start resume
-                  if (_statusListener != null)
-                  {
-                    _statusListener.doPlay(appId, exId);
-                  }
-                  break;
-                }
-                case 14:
-                {
-                  if (_statusListener != null)
-                  {
-                    // stop pause
-                    StopFreezePdu stopper = (StopFreezePdu) simP;
-                    short reason = stopper.getReason();
-                    if (reason == IDISStopListener.PDU_FREEZE)
-                    {
-                      _statusListener.doPause(appId, exId);
-                    }
-                    else
-                    {
-                      _statusListener.doStop(appId, exId);
-                    }
-                    break;
-                  }
-                }
-                }
-              }
-            } 
-          }
         }
       }
 
@@ -179,6 +133,86 @@ public class NetworkPduSender implements IPduSender
       System.out.println(e);
       System.exit(-1);
     }
+  }
+
+  private void doListening()
+  {
+    Runnable doListen = new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+
+        // also listen on the port
+        _running = true;
+        PduFactory pduFactory = new PduFactory();
+
+        while (_running)
+        {
+          byte buffer[] = new byte[NetworkDISProvider.MAX_PDU_SIZE];
+          DatagramPacket packet =
+              new DatagramPacket(buffer, buffer.length);
+
+          try
+          {
+            socket.receive(packet);
+
+            Pdu pdu = pduFactory.createPdu(packet.getData());
+
+            if (pdu != null)
+            {
+              if (pdu instanceof SimulationManagementFamilyPdu)
+              {
+                SimulationManagementFamilyPdu simP =
+                    (SimulationManagementFamilyPdu) pdu;
+                int appId =
+                    simP.getOriginatingEntityID().getApplication();
+                short exId = simP.getExerciseID();
+                
+                switch (pdu.getPduType())
+                {
+                case 13:
+                {
+                  // start resume
+                  if (_controlListener != null)
+                  {
+                    _controlListener.doPlay(appId, exId);
+                  }
+                  break;
+                }
+                case 14:
+                {
+                  if (_controlListener != null)
+                  {
+                    // stop pause
+                    StopFreezePdu stopper = (StopFreezePdu) simP;
+                    short reason = stopper.getReason();
+                    if (reason == IDISStopListener.PDU_FREEZE)
+                    {
+                      _controlListener.doPause(appId, exId);
+                    }
+                    else
+                    {
+                      _controlListener.doStop(appId, exId);
+                    }
+                    break;
+                  }
+                }
+                }
+              }
+            }
+          }
+          catch (IOException ex)
+          {
+            _running = false;
+          }
+        }
+      }
+    };
+    
+    Thread runner = new Thread(doListen);
+    runner.start();
   }
 
   @Override
