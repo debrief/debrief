@@ -49,18 +49,21 @@ public class SimulationRunner
       // fire up the processs
       try
       {
-
         // get ready to write to the console
         if (disConsole == null)
         {
-          disConsole =
-              new MessageConsole("DIS Output", DisActivator
-                  .imageDescriptorFromPlugin("org.mwc.debrief.dis",
-                      "icons/16px/dis_icon.png"));
-          ConsolePlugin.getDefault().getConsoleManager().addConsoles(
-              new IConsole[]
-              {disConsole});
-          msgStream = disConsole.newMessageStream();
+          try
+          {
+            disConsole = new MessageConsole("DIS Output", null);
+            ConsolePlugin.getDefault().getConsoleManager().addConsoles(
+                new IConsole[]
+                {disConsole});
+            msgStream = disConsole.newMessageStream();
+          }
+          catch (NoClassDefFoundError de)
+          {
+            DisActivator.log(Status.WARNING, "Could not find console UI", de);
+          }
         }
         else
         {
@@ -87,8 +90,14 @@ public class SimulationRunner
                 line = iReader.readLine();
                 if (line != null)
                 {
-                  System.err.println(line);
-                  msgStream.println(line);
+                  if (msgStream != null)
+                  {
+                    msgStream.println(line);
+                  }
+                  else
+                  {
+                    System.err.println(line);
+                  }
                 }
 
                 // has it completed?
