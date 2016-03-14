@@ -89,10 +89,13 @@ public class DebriefCoreListener
 
       // share the news
       Iterator<INewItemListener> iter = _context.getNewItemListeners();
-      while (iter.hasNext())
+      if(iter != null)
       {
-        Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-        newI.newItem(nLayer, null, null);
+        while (iter.hasNext())
+        {
+          Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
+          newI.newItem(nLayer, null, null);
+        }
       }
     }
     return nLayer;
@@ -117,10 +120,13 @@ public class DebriefCoreListener
 
     // should we try any formatting?
     Iterator<INewItemListener> iter = _context.getNewItemListeners();
-    while (iter.hasNext())
+    if (iter != null)
     {
-      Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-      newI.newItem(finalLayer, item, null);
+      while (iter.hasNext())
+      {
+        Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
+        newI.newItem(finalLayer, item, null);
+      }
     }
 
   }
