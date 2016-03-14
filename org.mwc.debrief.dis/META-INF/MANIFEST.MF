@@ -5,16 +5,17 @@ Bundle-SymbolicName: org.mwc.debrief.dis;singleton:=true
 Bundle-Version: 1.0.6
 Bundle-Activator: org.mwc.debrief.dis.DisActivator
 Bundle-Vendor: MWC
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.eclipse.core.resources,
- org.eclipse.ui.views,
- org.mwc.cmap.jfreechart;bundle-version="1.0.21",
+Require-Bundle: org.mwc.cmap.jfreechart;bundle-version="1.0.21",
  org.junit,
  org.mwc.cmap.legacy;bundle-version="1.0.204",
  org.mwc.debrief.legacy;bundle-version="1.0.298",
  org.mwc.cmap.core;bundle-version="1.0.189",
- org.eclipse.ui.console;bundle-version="3.5.100"
+ org.eclipse.swt;bundle-version="3.8.1",
+ org.eclipse.jface;bundle-version="3.8.0",
+ org.eclipse.core.runtime;bundle-version="3.8.0",
+ org.eclipse.core.resources;bundle-version="3.8.1",
+ org.eclipse.ui.console;bundle-version="3.5.100",
+ org.eclipse.ui;bundle-version="3.8.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
