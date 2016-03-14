@@ -44,7 +44,7 @@ import edu.nps.moves.disutil.CoordinateConversions;
  * 
  * @author DMcG
  */
-public class PduGenerator implements NetworkPduSender.IDISStatusListener
+public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
 {
 
   private class Torpedo extends Vessel
@@ -514,8 +514,9 @@ public class PduGenerator implements NetworkPduSender.IDISStatusListener
       while (idx++ < numMessages && !_terminate)
       {
         // just check if we're being paused
-        if (_pause)
+        while (_pause)
         {
+          // yep, hang around a little
           Thread.sleep(100);
         }
         
@@ -843,18 +844,16 @@ public class PduGenerator implements NetworkPduSender.IDISStatusListener
     sender.sendPdu(stopPdu);
   }
 
-  public void terminate()
-  {
-    _terminate = true;
-  }
-
   @Override
   public void doStop(int appId, short exId)
   {
     if (appId != APP_ID && exId == EXERCISE_ID)
     {
+      // start by ensuring we're not in paused state
       _pause = false;
-      _terminate = true;
+      
+      // and now terminate
+      _terminate = true;      
     }
   }
 
@@ -862,14 +861,18 @@ public class PduGenerator implements NetworkPduSender.IDISStatusListener
   public void doPlay(int appId, short exId)
   {
     if (appId != APP_ID && exId == EXERCISE_ID)
+    {
       _pause = false;
+    }
   }
 
   @Override
   public void doPause(int appId, short exId)
   {
     if (appId != APP_ID && exId == EXERCISE_ID)
+    {
       _pause = true;
+    }
   }
 
 }
