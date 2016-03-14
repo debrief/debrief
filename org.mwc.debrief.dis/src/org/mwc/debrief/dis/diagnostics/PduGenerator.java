@@ -526,6 +526,9 @@ public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
           // skip this cycle, come back in at the top
           continue;
         }
+        
+        // mark the step forward
+        System.out.print(".");
 
         // increment time
         lastTime += 5 * 60 * 1000;
