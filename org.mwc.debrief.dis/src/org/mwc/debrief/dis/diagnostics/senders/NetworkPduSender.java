@@ -1,16 +1,39 @@
 package org.mwc.debrief.dis.diagnostics.senders;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import org.mwc.debrief.dis.listeners.IDISStopListener;
+import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
+
 import edu.nps.moves.dis.Pdu;
+import edu.nps.moves.dis.SimulationManagementFamilyPdu;
+import edu.nps.moves.dis.StartResumePdu;
+import edu.nps.moves.dis.StopFreezePdu;
 
 public class NetworkPduSender implements IPduSender
 {
+  
+  /** interface for objects that are interested in listening to DIS control messages
+   * 
+   * @author ian
+   *
+   */
+  public static interface IDISControlMessageListener
+  {
+    void doStop(int appId, short exId);
+
+    void doPlay(int appId, short exId);
+
+    void doPause(int appId, short exId);
+  }
+
   public enum NetworkMode
   {
     UNICAST, MULTICAST, BROADCAST
@@ -26,6 +49,10 @@ public class NetworkPduSender implements IPduSender
   /** Port we send on */
   public static final int PORT = 62040;
 
+  private IDISControlMessageListener _controlListener = null;
+
+  private boolean _running = true;
+
   /**
    * Possible system properties, passed in via -Dattr=val networkMode: unicast, broadcast, multicast
    * destinationIp: where to send the packet. If in multicast mode, this can be mcast. To determine
@@ -40,8 +67,10 @@ public class NetworkPduSender implements IPduSender
    * @param args
    */
   public NetworkPduSender(String destinationIpString, String portString,
-      String networkModeString)
+      String networkModeString, IDISControlMessageListener statusListener)
   {
+
+    _controlListener = statusListener;
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
@@ -94,8 +123,11 @@ public class NetworkPduSender implements IPduSender
 
           socket.joinGroup(destinationIp);
 
+          doListening();
+
         }
-      } // end networkModeString
+      }
+
     }
     catch (Exception e)
     {
@@ -103,6 +135,117 @@ public class NetworkPduSender implements IPduSender
       System.out.println(e);
       System.exit(-1);
     }
+  }
+
+  private void doListening()
+  {
+    Runnable doListen = new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+
+        // also listen on the port
+        _running = true;
+
+        while (_running)
+        {
+          byte buffer[] = new byte[NetworkDISProvider.MAX_PDU_SIZE];
+          DatagramPacket packet =
+              new DatagramPacket(buffer, buffer.length);
+
+          try
+          {
+            socket.receive(packet);
+
+            byte[] data = packet.getData();
+
+            ////////////////////////////////
+            //
+            // note: we aren't using the PDU factory to create the PDU, so we can
+            //  avoid the dependency on the dis-enums jar = it complicates the scripts
+            //
+            ////////////////////////////////
+            
+            // Promote a signed byte to an int, then do a bitwise AND to wipe out everthing but the 
+            // first eight bits. This effectively lets us read this as an unsigned byte
+            int pduType = 0x000000FF & (int) data[2]; // The pdu type is a one-byte, unsigned byte in the third byte position.
+
+            DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
+            Pdu pdu = null;
+            
+            switch(pduType)
+            {
+            case 13:
+            { 
+              pdu = new StartResumePdu();
+              break;
+            }
+            case 14:
+            {
+              pdu = new StopFreezePdu();
+            } 
+            }
+            
+            ////////////////////////////////
+            
+            if (pdu != null)
+            {
+              pdu.unmarshal(dis);
+              
+              
+              if (pdu instanceof SimulationManagementFamilyPdu)
+              {
+                SimulationManagementFamilyPdu simP =
+                    (SimulationManagementFamilyPdu) pdu;
+                int appId =
+                    simP.getOriginatingEntityID().getApplication();
+                short exId = simP.getExerciseID();
+                
+                switch (pdu.getPduType())
+                {
+                case 13:
+                {
+                  // start resume
+                  if (_controlListener != null)
+                  {
+                    _controlListener.doPlay(appId, exId);
+                  }
+                  break;
+                }
+                case 14:
+                {
+                  if (_controlListener != null)
+                  {
+                    // stop pause
+                    StopFreezePdu stopper = (StopFreezePdu) simP;
+                    short reason = stopper.getReason();
+                    if (reason == IDISStopListener.PDU_FREEZE)
+                    {
+                      _controlListener.doPause(appId, exId);
+                    }
+                    else
+                    {
+                      _controlListener.doStop(appId, exId);
+                    }
+                    break;
+                  }
+                }
+                }
+              }
+            }
+          }
+          catch (IOException ex)
+          {
+            _running = false;
+          }
+        }
+      }
+    };
+    
+    Thread runner = new Thread(doListen);
+    runner.start();
   }
 
   @Override
@@ -141,6 +284,8 @@ public class NetworkPduSender implements IPduSender
   @Override
   public void close()
   {
+    _running = false;
+
     socket.close();
     socket = null;
   }
