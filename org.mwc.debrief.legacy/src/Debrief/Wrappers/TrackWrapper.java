@@ -2754,7 +2754,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // do we have end points?
         if (endPoints.size() > 1)
         {
-          paintIt(dest, endPoints.get(1), getEndTimeLabels());
+          // ok, just double-check that the locations aren't the same
+          if(endPoints.get(0).getLocation().equals(endPoints.get(1).getLocation()))
+          {
+            // don't bother rendering the second location, since 
+            // they will overwrite each other
+          }
+          else
+          {
+            paintIt(dest, endPoints.get(1), getEndTimeLabels());
+          }
         }
       }
 
