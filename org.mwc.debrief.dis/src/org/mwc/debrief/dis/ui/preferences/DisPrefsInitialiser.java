@@ -21,6 +21,7 @@ public class DisPrefsInitialiser extends AbstractPreferenceInitializer
     store.setDefault(DisActivator.APP_ID, 778);
     store.setDefault(DisActivator.IP_ADDRESS, "239.1.2.3");
     store.setDefault(DisActivator.PORT, 62040);
+    store.setDefault(DisActivator.FIT_TO_DATA, false);
   }
 
 }
