@@ -70,12 +70,13 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       public void add(long time, short exerciseId, long senderId,
           String hisName, int eventType, String message)
       {
-        if (eventType == IDISEventListener.EVENT_LAUNCH)
+        if (eventType == IDISEventListener.EVENT_LAUNCH
+            || eventType == IDISEventListener.EVENT_NEW_TARGET_TRACK)
         {
           if (_entityNames.get(senderId) == null)
           {
             // ok, extract the message
-            String name = extractNameFor(message);
+            String name = extractNameFor(message, eventType);
 
             // did we manage it?
             if (name != null)
@@ -88,20 +89,36 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     };
   }
 
-  protected String extractNameFor(String message)
+  protected String extractNameFor(String message, int eventType)
   {
-    // Entity 1 called SubmarineSouth has been created or launched.
-    final String called = "called ";
-    final String has = "has been";
-
     String res = null;
 
-    if (message.contains(called) && message.contains(has))
+    switch (eventType)
     {
-      int nameStart = message.indexOf(called) + called.length();
-      int nameEnd = message.indexOf(has) - 1;
-      res = message.substring(nameStart, nameEnd);
+    case IDISEventListener.EVENT_LAUNCH:
+      // Entity 1 called SubmarineSouth has been created or launched.
+      final String called = "called ";
+      final String has = "has been";
+
+      if (message.contains(called) && message.contains(has))
+      {
+        int nameStart = message.indexOf(called) + called.length();
+        int nameEnd = message.indexOf(has) - 1;
+        res = message.substring(nameStart, nameEnd);
+      }
+      break;
+    case IDISEventListener.EVENT_NEW_TARGET_TRACK:
+      // DETECTION E4-5
+      final String detection = " DETECTION ";
+
+      if (message.contains(detection))
+      {
+        int nameStart = message.indexOf(detection) + detection.length() + 1;
+        res = message.substring(nameStart).trim();
+      }
+      break;
     }
+
     return res;
   }
 
