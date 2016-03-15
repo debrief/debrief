@@ -8,7 +8,7 @@ public class StartFileListener extends CoreFileListener implements
 
   public StartFileListener(String root, boolean toFile, boolean toScreen)
   {
-    super(root, toFile, toScreen, "start resume", "time, ex id, replication");
+    super(root, toFile, toScreen, "start resume", "time, exerciseId, replication");
   }
 
   @Override

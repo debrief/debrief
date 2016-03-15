@@ -9,7 +9,7 @@ public class CollisionFileListener extends CoreFileListener implements
   public CollisionFileListener(String root, boolean toFile, boolean toScreen)
   {
     super(root, toFile, toScreen, "collision",
-        "time, id, movingId, name, recipientId, recipientName");
+        "time, exerciseId, movingId, name, recipientId, recipientName");
   }
 
   @Override
