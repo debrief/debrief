@@ -417,6 +417,7 @@ public class DisListenerView extends ViewPart
       {
         // reset the time counter
         time = TIME_UNSET;
+        lastTime = TIME_UNSET;
       }
     });
 
