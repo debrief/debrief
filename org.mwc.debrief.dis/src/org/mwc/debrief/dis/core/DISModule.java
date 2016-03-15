@@ -222,7 +222,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       IDISFixListener thisF = (IDISFixListener) fIter.next();
       thisF.add(time, eid, hisId, hisName, force, kind, domain, category,
           isEstimated, worldCoords[0], worldCoords[1], -worldCoords[2],
-          orientation.getPhi(), speedMs, pdu.getEntityAppearance_damage());
+          orientation.getPsi(), speedMs, pdu.getEntityAppearance_damage());
     }
   }
 
@@ -248,11 +248,6 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       {
         OneByteChunk thisB = (OneByteChunk) iter.next();
         final byte thisByte = thisB.getOtherParameters()[0];
-
-        // if (eType == 10004)
-        // {
-        // System.out.println("byte:" + thisByte + " str:" + new String(new byte[]{thisByte}));
-        // }
 
         if (thisByte > 10)
         {

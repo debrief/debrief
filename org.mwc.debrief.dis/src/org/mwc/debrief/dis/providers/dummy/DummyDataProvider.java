@@ -86,8 +86,8 @@ public class DummyDataProvider implements IPDUProvider
         lastLoc.setEntityOrientation(theO);
 
         Vector3Float linearVel = new Vector3Float();
-        linearVel.setX((float) Math.cos(theO.getPhi()));
-        linearVel.setY((float) Math.sin(theO.getPhi()));
+        linearVel.setX((float) Math.cos(theO.getPsi()));
+        linearVel.setY((float) Math.sin(theO.getPsi()));
         lastLoc.setEntityLinearVelocity(linearVel);
 
       }
