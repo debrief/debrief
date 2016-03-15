@@ -11314,6 +11314,17 @@ end</screen>
               </listitem>
             </orderedlist></para></sect2>
       </sect1>
+      <sect1>
+        <title>Command line options<indexterm>
+            <primary>DIS</primary>
+            <secondary>Command line paremeters</secondary>
+          </indexterm></title>
+        <para>Some organisations may wish to specify the DIS IP Address &amp; Port values in the
+          command line when starting Debrief.  This allows a parent process/simulator to start
+          Debrief preconfigured with the correcft network parameters.</para>
+        <para>Set these values by using these settings on the command line: <code> -Dport=2345
+            -DipAddress=23.44.55.66</code>. </para>
+      </sect1>
       <sect1 xml:id="dis_messages">
         <title>Messages supported</title>
         <indexterm>
