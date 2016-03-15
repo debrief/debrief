@@ -20,7 +20,7 @@
           <orgname/>
           <orgdiv><inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/DeepBlueC.png"/>
+                <imagedata fileref="figures/DeepBlueC.png" width="400"/>
               </imageobject>
             </inlinemediaobject></orgdiv>
           <orgdiv><inlinemediaobject>
@@ -6737,7 +6737,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <uri xlink:href="https://en.wikipedia.org/wiki/Distributed_Interactive_Simulation">
             </uri>.
         </para>
-        <para>You can find System documentation for the DIS integration later in this document (<xref linkend="dis_ref"/>)</para>
+        <para>You can find System documentation for the DIS integration later in this 
+          document (<xref linkend="dis_ref"/>)</para>
       </sect1>
       <sect1 xml:id="dis_config">
         <title>Configuring DIS</title>
@@ -6850,11 +6851,11 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <imageobject>
               <imagedata align="center" fileref="figures/DISView.png" width="60%"/>
             </imageobject>
-          </mediaobject>
-          At the top of the panel are two small icons. The first has a toggle behaviour, and when ticked
-          Debrief will auto-resize at each step, to ensure all loaded data remains visible.  The second icon
-          access the help for Debrief&apos;s DIS integration.
-        </para>
+          </mediaobject> At the top of the panel are two small icons. The first has a toggle
+          behaviour, and when ticked Debrief will auto-resize at each step, to ensure all loaded
+          data remains visible. The second icon opens the Console view (to keep track of messages
+          returned by the launched simulator - see more at <xref linkend="dis_console"/>), and the final one accesses the help for
+          Debrief&apos;s DIS integration. </para>
         <sect2>
           <title>Running a local simulator</title>
           <para> If you have specified the path to an executable in the <guimenu>Server
@@ -6865,7 +6866,16 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <para> Once a control file has been specified, you can click on the
               <guibutton>Launch</guibutton> button to start the simulator executable, passing the
             input file to it. After launching Debrief will automatically start listening on the
-            correct network port. </para>
+            correct network port. <tip>
+              <para>A quick way of setting the input file is to drag one from the
+                  <guimenu>Navigator</guimenu> view oneo the path.  This will update the input file
+                path to the one dragged in.</para>
+              <para>An even quicker way of running a different input file is to right-click on a
+                  <filename>*.inp</filename> file in the <guimenu>Navigator</guimenu> view and
+                select <guimenu>Run in simulator</guimenu>.  This will launch the simulator, passing
+                it that control file.  Do this if you have lots of different input files in your
+                workspace.</para>
+            </tip></para>
         </sect2>
         <sect2>
           <title>Interacting with a DIS simulation</title>
@@ -6942,6 +6952,17 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             executable in the <guimenu>Server preferences</guimenu> page, and use
             <filename>control.inp</filename> as the simulation input file.
           </para>
+        </sect2>
+        <sect2 xml:id="dis_console">
+          <title>Track the simulator using the Console</title>
+          <para>If you simulator outputs message to the command line, you may be used to always
+            running the simulator from a command prompt - so that you can track any error / status
+            message returned. But, you can use the Show Console button in the DIS Listener View to
+            open the console, as shown below.<mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="figures/DisConsoleUI.png" width="60%"/>
+              </imageobject>
+            </mediaobject></para>
         </sect2>
       </sect1>
     </chapter>
@@ -11292,6 +11313,17 @@ end</screen>
                 <para>Extend the list of messages supported (<xref linkend="dis_messages"/></para>
               </listitem>
             </orderedlist></para></sect2>
+      </sect1>
+      <sect1>
+        <title>Command line options<indexterm>
+            <primary>DIS</primary>
+            <secondary>Command line paremeters</secondary>
+          </indexterm></title>
+        <para>Some organisations may wish to specify the DIS IP Address &amp; Port values in the
+          command line when starting Debrief.  This allows a parent process/simulator to start
+          Debrief preconfigured with the correcft network parameters.</para>
+        <para>Set these values by using these settings on the command line: <code> -Dport=2345
+            -DipAddress=23.44.55.66</code>. </para>
       </sect1>
       <sect1 xml:id="dis_messages">
         <title>Messages supported</title>

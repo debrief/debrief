@@ -879,8 +879,6 @@ public class DisListenerView extends ViewPart
     fillLocalPullDown(bars.getMenuManager());
 
     bars.getToolBarManager().add(fitToDataAction);
-    bars.getToolBarManager().add(
-        CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
 
     // also provide access to the console view
     Action showConsole = new Action(){
@@ -902,6 +900,10 @@ public class DisListenerView extends ViewPart
         .getImageDescriptor("icons/16/console.png"));
     bars.getToolBarManager().add(showConsole);
     bars.getMenuManager().add(showConsole);
+    
+    bars.getToolBarManager().add(
+        CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
+
   }
 
   private void fillLocalPullDown(final IMenuManager manager)
