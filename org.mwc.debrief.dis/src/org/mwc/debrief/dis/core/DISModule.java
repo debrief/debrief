@@ -207,7 +207,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     double speedMs =
         Math.sqrt(velocity.getX() * velocity.getX() + velocity.getY()
             * velocity.getY());
-    
+
     // entity state
     String hisName = nameFor(hisId);
 
@@ -263,7 +263,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
           bytes[ctr++] = 32;
         }
       }
-      String newS = new String(bytes);
+      String newS = new String(bytes).trim();
+
       msg += newS;
     }
 
