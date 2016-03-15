@@ -43,6 +43,9 @@ public class DebriefEventListener extends DebriefCoreListener implements
     case (int) IDISEventListener.EVENT_TACTICS_CHANGE:
       res = "TACTICS_CHANGE";
       break;
+    case (int) IDISEventListener.EVENT_NEW_TARGET_TRACK:
+      res = "NEW TARGET TRACK";
+      break;
     default:
       res = "EVENT (" + thisId + ")";
       break;
