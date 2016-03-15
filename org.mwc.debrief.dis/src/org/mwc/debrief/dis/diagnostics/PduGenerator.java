@@ -615,7 +615,7 @@ public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
       // tell the sender to pack in
       sender.close();
 
-      System.out.println("COMPLETE SENT!");
+      System.out.println("SIMULATION COMPLETE. Terminating.");
     }
     catch (final Exception e)
     {
