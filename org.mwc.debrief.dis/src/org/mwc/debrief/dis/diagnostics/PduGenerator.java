@@ -465,7 +465,8 @@ public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
     {
       _terminate = false;
 
-      System.out.println("Sending DIS messages for " + numMessages
+      System.out.println("|| Debrief DIS Simulator Engine ||");
+      System.out.println("Sending messages for " + numMessages
           + " simulation cycles to " + sender.toString());
 
       final double startX = 50.1;
