@@ -14,7 +14,7 @@ public class FixToFileListener extends CoreFileListener implements
 
   @Override
   public void add(long time, short exerciseId, long id, String eName,
-      short force, short kind, short domain, short category, boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage)
+      short force, short kind, short domain, short category, boolean isHighlighted, double dLat, double dLong, double depth, double courseRads, double speedMS, int damage)
   {
     // create the line
     StringBuffer out = new StringBuffer();
@@ -40,7 +40,7 @@ public class FixToFileListener extends CoreFileListener implements
     out.append(", ");
     out.append(depth);
     out.append(", ");
-    out.append(courseDegs);
+    out.append(Math.toDegrees(courseRads));
     out.append(", ");
     out.append(speedMS);
     out.append(", ");
