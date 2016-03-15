@@ -8,7 +8,7 @@ public class StopFileListener extends CoreFileListener implements
 
   public StopFileListener(String root, boolean toFile, boolean toScreen)
   {
-    super(root, toFile, toScreen, "stop", "time, id, reason");
+    super(root, toFile, toScreen, "stop", "time, exerciseId, reason");
   }
 
   @Override
