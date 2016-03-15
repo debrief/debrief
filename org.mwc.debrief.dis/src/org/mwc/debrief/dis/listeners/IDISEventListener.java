@@ -7,6 +7,7 @@ public interface IDISEventListener
   public final int EVENT_LAUNCH = 10002;
   public final int EVENT_NEW_TRACK = 10003;
   public final int EVENT_TACTICS_CHANGE = 10004;
+  public final int EVENT_NEW_TARGET_TRACK = 10005;
 
   /**
    * 
