@@ -529,6 +529,11 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       // ok, register as a listener
       _myRollingNarrative.addNarrativeListener(
           IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+      
+      // ok - show the narrative.  We can't rely on
+      // listening to the rolling narrative, since we 
+      // may be switching back to a previous plot.
+      myViewer.setInput(_myRollingNarrative);
     }
   }
 
