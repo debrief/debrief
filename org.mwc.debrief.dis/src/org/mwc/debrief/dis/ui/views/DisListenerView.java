@@ -142,7 +142,7 @@ public class DisListenerView extends ViewPart
   /**
    * we need to access the setting of fit to data from outside the UI thread, so store it here.
    */
-  private boolean _fitToDataValue = false;
+  private boolean _fitToDataValue;
   private DebriefDISSimulatorPrefs _simPrefs;
   protected SimulationRunner _simulationRunner;
   private PerformanceGraph _perfGraph;
@@ -855,6 +855,11 @@ public class DisListenerView extends ViewPart
       public void run()
       {
         _fitToDataValue = fitToDataAction.isChecked();
+        
+        // and store the value
+        IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
+        store.setValue(DisActivator.FIT_TO_DATA, _fitToDataValue);
+        
       }
     };
     fitToDataAction.setChecked(_fitToDataValue);
@@ -863,6 +868,12 @@ public class DisListenerView extends ViewPart
         .setToolTipText("Zoom the selected plot out to show the full data");
     fitToDataAction.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/fit_to_win.png"));
+    
+    // use the saved setting of this control
+    IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
+    _fitToDataValue = store.getBoolean(DisActivator.FIT_TO_DATA);
+    fitToDataAction.setChecked(_fitToDataValue);
+    
 
     final IActionBars bars = getViewSite().getActionBars();
     fillLocalPullDown(bars.getMenuManager());
