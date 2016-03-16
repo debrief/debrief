@@ -53,6 +53,8 @@ public class NetworkPduSender implements IPduSender
 
   private boolean _running = true;
 
+  private int port;
+
   /**
    * Possible system properties, passed in via -Dattr=val networkMode: unicast, broadcast, multicast
    * destinationIp: where to send the packet. If in multicast mode, this can be mcast. To determine
@@ -74,7 +76,7 @@ public class NetworkPduSender implements IPduSender
 
     // Default settings. These are used if no system properties are set.
     // If system properties are passed in, these are over ridden.
-    int port = PORT;
+    port = PORT;
     @SuppressWarnings("unused")
     NetworkMode mode = NetworkMode.MULTICAST;
     destinationIp = null;
@@ -251,7 +253,7 @@ public class NetworkPduSender implements IPduSender
   @Override
   public String toString()
   {
-    return destinationIp.toString() + " on " + PORT;
+    return destinationIp.toString() + " on " + port;
   }
 
   @Override
