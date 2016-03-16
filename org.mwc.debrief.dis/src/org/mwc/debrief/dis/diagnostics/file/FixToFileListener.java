@@ -16,6 +16,12 @@ public class FixToFileListener extends CoreFileListener implements
   public void add(long time, short exerciseId, long id, String eName,
       short force, short kind, short domain, short category, boolean isHighlighted, double dLat, double dLong, double depth, double courseRads, double speedMS, int damage)
   {
+    double courseDegs = Math.toDegrees(courseRads);
+    while(courseDegs < 0)
+    {
+      courseDegs += 360;
+    }
+    
     // create the line
     StringBuffer out = new StringBuffer();
     out.append(time);
@@ -42,7 +48,7 @@ public class FixToFileListener extends CoreFileListener implements
     out.append(", ");
     out.append(depth);
     out.append(", ");
-    out.append(Math.toDegrees(courseRads));
+    out.append(courseDegs);
     out.append(", ");
     out.append(speedMS);
     out.append(", ");
