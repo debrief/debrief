@@ -911,12 +911,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
     if (_followTime.isChecked())
     {
-      if (_amUpdating)
-      {
-        // don't worry, we'll be finished soon
-        System.err.println("already doing update");
-      }
-      else
+      if (!_amUpdating)
       {
         // ok, remember that we're updating
         _amUpdating = true;
@@ -931,6 +926,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             {
               // ok, tell the model to move to the relevant item
               myViewer.setDTG(dtg);
+              
+              // clear the updating lock
+              _amUpdating = false;
             }
           });
         }
