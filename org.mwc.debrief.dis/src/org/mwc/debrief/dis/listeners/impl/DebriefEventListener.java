@@ -25,7 +25,7 @@ public class DebriefEventListener extends DebriefCoreListener implements
    * @param id
    * @return
    */
-  protected String eventTypeFor(final int thisId)
+  public static String eventTypeFor(final int thisId)
   {
     final String res;
     
