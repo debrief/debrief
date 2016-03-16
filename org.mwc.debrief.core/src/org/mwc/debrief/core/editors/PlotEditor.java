@@ -393,10 +393,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
           else
           {
-            CorePlugin.logError(Status.ERROR,
+            CorePlugin.logError(Status.WARNING,
                 "data source for PlotEditor not of expected type:" + input,
                 null);
-            System.err.println("Not expected file type:" + input);
+            setPartName(input.toString());
           }
         }
       }

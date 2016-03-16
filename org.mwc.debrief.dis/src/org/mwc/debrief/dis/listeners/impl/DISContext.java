@@ -383,6 +383,11 @@ abstract public class DISContext implements IDISContext,
       _name = name;
     }
 
+    public String toString()
+    {
+      return _name;
+    }
+    
     @SuppressWarnings("rawtypes")
     @Override
     public Object getAdapter(Class adapter)
