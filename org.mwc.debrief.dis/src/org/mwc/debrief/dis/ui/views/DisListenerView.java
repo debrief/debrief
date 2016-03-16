@@ -285,7 +285,10 @@ public class DisListenerView extends ViewPart
               {
                 CanvasType canvas =
                     (CanvasType) editor.getAdapter(CanvasType.class);
-                canvas.rescale();
+                if(canvas != null)
+                {
+                  canvas.rescale();
+                }
               }
             }
           }
