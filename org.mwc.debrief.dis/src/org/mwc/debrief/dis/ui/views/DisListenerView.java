@@ -330,8 +330,7 @@ public class DisListenerView extends ViewPart
                 new MessageBox(PlatformUI.getWorkbench()
                     .getActiveWorkbenchWindow().getShell(), SWT.OK);
             dialog.setText("DIS Interface");
-            dialog.setMessage("The simulation has completed."
-                + reason);
+            dialog.setMessage("The simulation has completed.");
 
             // open dialog
             dialog.open();
