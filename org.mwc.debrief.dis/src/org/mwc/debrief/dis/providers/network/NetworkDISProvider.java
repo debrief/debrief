@@ -35,7 +35,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
 {
   public static final short APPLICATION_ID = 4321;
   public static final short SITE_ID = 5432;
-  
+
   private final IDISNetworkPrefs _myPrefs;
   private List<IDISGeneralPDUListener> _gen =
       new ArrayList<IDISGeneralPDUListener>();
@@ -82,18 +82,19 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
   public void attach(final DISFilters filters, EntityID eid)
   {
     _myID = eid;
-    
+
     Runnable runnable = new Runnable()
     {
 
       @Override
       public void run()
       {
-        final String msg = "Listening for DIS messages on address:"
-            + _myPrefs.getIPAddress() + " port:" + _myPrefs.getPort();
+        final String msg =
+            "Listening for DIS messages on address:" + _myPrefs.getIPAddress()
+                + " port:" + _myPrefs.getPort();
         System.out.println(msg);
-        
-        CorePlugin.logError(Status.INFO, msg,  null);
+
+        CorePlugin.logError(Status.INFO, msg, null);
 
         // Specify the socket to receive data
         _thePort = _myPrefs.getPort();
@@ -164,48 +165,59 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
 
     try
     {
-      _listenerSocket = new MulticastSocket(_thePort);
-      _listenerSocket.joinGroup(_theAddress);
-
-      // Loop infinitely, receiving datagrams
-      while (_running)
+      try
       {
-        byte buffer[] = new byte[MAX_PDU_SIZE];
-        packet = new DatagramPacket(buffer, buffer.length);
 
-        _listenerSocket.receive(packet);
+        _listenerSocket = new MulticastSocket(_thePort);
+        _listenerSocket.joinGroup(_theAddress);
+      }
+      catch (SocketException se)
+      {
+        CorePlugin.logError(Status.ERROR, "Failed to connect socket", se);
+      }
 
-        Pdu pdu = pduFactory.createPdu(packet.getData());
-
-        if (pdu != null)
+      // did it work?
+      if (_listenerSocket != null)
+      {
+        // Loop infinitely, receiving datagrams
+        while (_running)
         {
-          // store the current exercise details
-          _curExercise = pdu.getExerciseID();
+          byte buffer[] = new byte[MAX_PDU_SIZE];
+          packet = new DatagramPacket(buffer, buffer.length);
 
-          // check if it matches our filter
-          if (filters == null || filters.accepts(pdu))
+          _listenerSocket.receive(packet);
+
+          Pdu pdu = pduFactory.createPdu(packet.getData());
+
+          if (pdu != null)
           {
-            // share the good news
-            Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
-            while (gIter.hasNext())
+            // store the current exercise details
+            _curExercise = pdu.getExerciseID();
+
+            // check if it matches our filter
+            if (filters == null || filters.accepts(pdu))
             {
-              IDISGeneralPDUListener git =
-                  (IDISGeneralPDUListener) gIter.next();
-              git.logPDU(pdu);
+              // share the good news
+              Iterator<IDISGeneralPDUListener> gIter = _gen.iterator();
+              while (gIter.hasNext())
+              {
+                IDISGeneralPDUListener git =
+                    (IDISGeneralPDUListener) gIter.next();
+                git.logPDU(pdu);
+              }
             }
           }
-        }
-        else
-        {
-          int pduType = 0x000000FF & (int) packet.getData()[2]; // The pdu type is a one-byte,
-                                                                // unsigned byte in the third byte
-                                                                // position.
+          else
+          {
+            int pduType = 0x000000FF & (int) packet.getData()[2]; // The pdu type is a one-byte,
+                                                                  // unsigned byte in the third byte
+                                                                  // position.
 
-          System.err.println("PDU not recognised, type:" + pduType);
-        }
+            System.err.println("PDU not recognised, type:" + pduType);
+          }
 
-      } // end while
-
+        } // end while
+      } // listener created
     } // End try
     catch (SocketException se)
     {
@@ -244,14 +256,14 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
   {
     pdu.setProtocolVersion((short) 6);
   }
-  
+
   @Override
   public void sendPause()
   {
     // create the Pause PDU
     StopFreezePdu pause = new StopFreezePdu();
     configureThisPdu(pause);
-    pause.setExerciseID(_curExercise);    
+    pause.setExerciseID(_curExercise);
     pause.setOriginatingEntityID(_myID);
     pause.setReason(IDISStopListener.PDU_FREEZE);
     sendPDU(pause);
