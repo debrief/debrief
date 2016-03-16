@@ -423,6 +423,30 @@ public class DisListenerView extends ViewPart
       @Override
       public void complete(String reason)
       {
+        // fire in one last update
+        // note: this is necessary because we only normally
+        // fire an update when we get a new time value
+        // (to reduce the update frequency)
+        // But, after the last time value, by definition
+        // we don't get another. So, we'll fire it automatically
+        Display.getDefault().syncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            // hey, should we fit to window?
+            if (_fitToDataValue)
+            {
+              _context.zoomToFit();
+            }
+            else
+            {
+              // ok, force update
+              _context.fireUpdate(null, null);
+            }
+          };
+        });
+
         // reset the time counter
         time = TIME_UNSET;
         lastTime = TIME_UNSET;
