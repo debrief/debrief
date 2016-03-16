@@ -2,6 +2,7 @@ package org.mwc.debrief.dis.listeners.impl;
 
 import java.awt.Color;
 
+import org.mwc.debrief.dis.diagnostics.file.EventFileListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -20,39 +21,6 @@ public class DebriefEventListener extends DebriefCoreListener implements
     super(context);
   }
 
-  /** produce a narrative data type for this event id
-   * 
-   * @param id
-   * @return
-   */
-  public static String eventTypeFor(final int thisId)
-  {
-    final String res;
-    
-    switch(thisId)
-    {
-    case (int) IDISEventListener.EVENT_COMMS:
-      res = "COMMS";
-      break;
-    case (int) IDISEventListener.EVENT_LAUNCH:
-      res = "LAUNCH";
-      break;
-    case (int) IDISEventListener.EVENT_NEW_TRACK:
-      res = "NEW TRACK";
-      break;
-    case (int) IDISEventListener.EVENT_TACTICS_CHANGE:
-      res = "TACTICS_CHANGE";
-      break;
-    case (int) IDISEventListener.EVENT_NEW_TARGET_TRACK:
-      res = "NEW TARGET TRACK";
-      break;
-    default:
-      res = "EVENT (" + thisId + ")";
-      break;
-    }
-    
-    return res;
-  }
   
   @Override
   public void add(final long time, final short eid, long id, final String hisName, final int eType, final String message)
@@ -71,7 +39,7 @@ public class DebriefEventListener extends DebriefCoreListener implements
       public Plottable createItem()
       {
         NarrativeEntry newE =
-            new NarrativeEntry(hisName, eventTypeFor(eType), new HiResDate(time),
+            new NarrativeEntry(hisName, EventFileListener.eventTypeFor(eType), new HiResDate(time),
                 message);
         Color theColor = colorFor(eid, hisName);
         newE.setColor(theColor);
