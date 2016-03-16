@@ -8,7 +8,7 @@ public class FireFileListener extends CoreFileListener implements
 
   public FireFileListener(String root, boolean toFile, boolean toScreen)
   {
-    super(root, toFile, toScreen, "fire", "time, exerciseId, hisId, hisName, tgtId, tgtName, x, y, z");
+    super(root, toFile, toScreen, "fire", "time, exerciseId,  entityId, entityName, tgtId, tgtName, x, y, z");
   }
 
 
