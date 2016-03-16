@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.Status;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
 import org.mwc.debrief.dis.providers.DISFilters;
@@ -33,6 +31,31 @@ import edu.nps.moves.disutil.PduFactory;
  */
 public class NetworkDISProvider implements IPDUProvider, IDISController
 {
+  
+  public static interface LogInterface
+  {
+    /** Status type severity (bit mask, value 1) indicating this status is informational only.
+     * @see #getSeverity()
+     * @see #matches(int)
+     */
+    final int INFO = 0x01;
+
+    /** Status type severity (bit mask, value 2) indicating this status represents a warning.
+     * @see #getSeverity()
+     * @see #matches(int)
+     */
+    final int WARNING = 0x02;
+
+    /** Status type severity (bit mask, value 4) indicating this status represents an error.
+     * @see #getSeverity()
+     * @see #matches(int)
+     */
+     final int ERROR = 0x04;
+
+    public void log(int status, String msg, Exception e);
+    
+  }
+  
   public static final short APPLICATION_ID = 4321;
   public static final short SITE_ID = 5432;
 
@@ -47,6 +70,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
   private int _thePort;
   private MulticastSocket _senderSocket;
   protected InetAddress _theAddress;
+  private final LogInterface _logger;
 
   /**
    * Max size of a PDU in binary format that we can receive. This is actually somewhat
@@ -54,9 +78,10 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
    */
   public static final int MAX_PDU_SIZE = 8192;
 
-  public NetworkDISProvider(IDISNetworkPrefs prefs)
+  public NetworkDISProvider(IDISNetworkPrefs prefs, LogInterface logger)
   {
     _myPrefs = prefs;
+    _logger = logger;
   }
 
   @Override
@@ -94,7 +119,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
                 + " port:" + _myPrefs.getPort();
         System.out.println(msg);
 
-        CorePlugin.logError(Status.INFO, msg, null);
+        _logger.log(LogInterface.INFO, msg, null);
 
         // Specify the socket to receive data
         _thePort = _myPrefs.getPort();
@@ -110,15 +135,15 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
         }
         catch (UnknownHostException ue)
         {
-          CorePlugin.logError(Status.ERROR, "DIS couldn't connect to host", ue);
+          _logger.log(LogInterface.ERROR, "DIS couldn't connect to host", ue);
         }
         catch (SocketException se)
         {
-          CorePlugin.logError(Status.ERROR, "DIS socket exception", se);
+          _logger.log(LogInterface.ERROR, "DIS socket exception", se);
         }
         catch (IOException e)
         {
-          CorePlugin.logError(Status.ERROR, "DIS create multicast", e);
+          _logger.log(LogInterface.ERROR, "DIS create multicast", e);
         }
       }
     };
@@ -173,7 +198,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
       }
       catch (SocketException se)
       {
-        CorePlugin.logError(Status.ERROR, "Failed to connect socket", se);
+        _logger.log(LogInterface.ERROR, "Failed to connect socket", se);
       }
 
       // did it work?
@@ -226,7 +251,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
     }
     catch (Exception e)
     {
-      CorePlugin.logError(Status.ERROR, "DIS Listening Exception", e);
+      _logger.log(LogInterface.ERROR, "DIS Listening Exception", e);
     }
     finally
     {
@@ -314,7 +339,7 @@ public class NetworkDISProvider implements IPDUProvider, IDISController
     }
     catch (IOException e)
     {
-      CorePlugin.logError(Status.ERROR, "DIS couldn't send PDU", e);
+      _logger.log(LogInterface.ERROR, "DIS couldn't send PDU", e);
     }
   }
 }

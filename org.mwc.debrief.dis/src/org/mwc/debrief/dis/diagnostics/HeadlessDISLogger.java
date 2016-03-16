@@ -42,7 +42,7 @@ public class HeadlessDISLogger
     _ourID = new EntityID();
     _ourID.setApplication((short) APPLICATION_ID);
     _ourID.setSite((short) SITE_ID);
-    
+
     // do we have a root?
     String root = System.getProperty("java.io.tmpdir");
 
@@ -65,7 +65,7 @@ public class HeadlessDISLogger
 
     // Port we send to, and local port we open the socket on
     String rootString = systemProperties.getProperty("root");
-    
+
     // whether to write progress to screen
     String toScreenStr = systemProperties.getProperty("screen");
 
@@ -81,11 +81,10 @@ public class HeadlessDISLogger
     {
       root = rootString;
     }
-    if(toScreenStr != null)
+    if (toScreenStr != null)
     {
       toScreen = Boolean.valueOf(toScreenStr);
     }
-    
 
     // setup the output destinations
     boolean toFile = true;
@@ -97,7 +96,20 @@ public class HeadlessDISLogger
 
     IDISModule subject = new DISModule();
     IDISNetworkPrefs netPrefs = new CoreNetPrefs(address, port);
-    final IPDUProvider provider = new NetworkDISProvider(netPrefs);
+    final IPDUProvider provider =
+        new NetworkDISProvider(netPrefs, new NetworkDISProvider.LogInterface()
+        {
+
+          @Override
+          public void log(int status, String msg, Exception e)
+          {
+            System.out.println("Logging:" + msg);
+            if(e != null)
+            {
+              e.printStackTrace();
+            }
+          }
+        });
     subject.setProvider(provider);
 
     // setup our loggers
@@ -109,8 +121,9 @@ public class HeadlessDISLogger
     subject.addFireListener(new FireFileListener(root, toFile, toScreen));
     subject.addCollisionListener(new CollisionFileListener(root, toFile,
         toScreen));
-    
-    subject.addStartResumeListener(new StartFileListener(root, toFile, toScreen));
+
+    subject
+        .addStartResumeListener(new StartFileListener(root, toFile, toScreen));
 
     // output dot marker to screen, to demonstrate progress
     subject.addFixListener(new IDISFixListener()
@@ -118,9 +131,10 @@ public class HeadlessDISLogger
       @Override
       public void add(long time, short exerciseId, long id, String eName,
           short force, short kind, short domain, short category,
-          boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, final int damage)
+          boolean isHighlighted, double dLat, double dLong, double depth,
+          double courseDegs, double speedMS, final int damage)
       {
-    //    System.out.print(".");
+        // System.out.print(".");
       }
     });
 
@@ -128,7 +142,7 @@ public class HeadlessDISLogger
     subject.addStopListener(new IDISStopListener()
     {
       @Override
-      public void stop(long time,int appId, short eid, short reason)
+      public void stop(long time, int appId, short eid, short reason)
       {
         System.out.println("== STOP RECEIVED ==");
         provider.detach();
@@ -147,5 +161,5 @@ public class HeadlessDISLogger
     }
 
   }
-  
+
 }

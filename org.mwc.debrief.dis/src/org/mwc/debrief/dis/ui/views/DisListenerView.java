@@ -163,7 +163,16 @@ public class DisListenerView extends ViewPart
     IDISNetworkPrefs netPrefs = new DebriefDISNetPrefs();
 
     // get the network data source
-    NetworkDISProvider prov = new NetworkDISProvider(netPrefs);
+    NetworkDISProvider prov =
+        new NetworkDISProvider(netPrefs, new NetworkDISProvider.LogInterface()
+        {
+
+          @Override
+          public void log(int status, String msg, Exception e)
+          {
+            DisActivator.log(status, msg, e);
+          }
+        });
     _netProvider = prov;
     _disController = prov;
 
@@ -854,11 +863,11 @@ public class DisListenerView extends ViewPart
       public void run()
       {
         _fitToDataValue = fitToDataAction.isChecked();
-        
+
         // and store the value
         IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
         store.setValue(DisActivator.FIT_TO_DATA, _fitToDataValue);
-        
+
       }
     };
     fitToDataAction.setChecked(_fitToDataValue);
@@ -867,12 +876,11 @@ public class DisListenerView extends ViewPart
         .setToolTipText("Zoom the selected plot out to show the full data");
     fitToDataAction.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/fit_to_win.png"));
-    
+
     // use the saved setting of this control
     IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     _fitToDataValue = store.getBoolean(DisActivator.FIT_TO_DATA);
     fitToDataAction.setChecked(_fitToDataValue);
-    
 
     final IActionBars bars = getViewSite().getActionBars();
     fillLocalPullDown(bars.getMenuManager());
@@ -880,13 +888,14 @@ public class DisListenerView extends ViewPart
     bars.getToolBarManager().add(fitToDataAction);
 
     // also provide access to the console view
-    Action showConsole = new Action(){
+    Action showConsole = new Action()
+    {
       public void run()
       {
         try
         {
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-          .getActivePage().showView(IConsoleConstants.ID_CONSOLE_VIEW);
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+              .showView(IConsoleConstants.ID_CONSOLE_VIEW);
         }
         catch (PartInitException e)
         {
@@ -899,7 +908,7 @@ public class DisListenerView extends ViewPart
         .getImageDescriptor("icons/16/console.png"));
     bars.getToolBarManager().add(showConsole);
     bars.getMenuManager().add(showConsole);
-    
+
     bars.getToolBarManager().add(
         CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
 

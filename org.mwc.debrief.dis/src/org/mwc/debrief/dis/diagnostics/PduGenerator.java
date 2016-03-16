@@ -44,7 +44,8 @@ import edu.nps.moves.disutil.CoordinateConversions;
  * 
  * @author DMcG
  */
-public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
+public class PduGenerator implements
+    NetworkPduSender.IDISControlMessageListener
 {
 
   private class Torpedo extends Vessel
@@ -372,8 +373,9 @@ public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
     }
 
     final PduGenerator generator = new PduGenerator();
-    NetworkPduSender netSender = new NetworkPduSender(destinationIpString, portString,
-        networkModeString, generator);
+    NetworkPduSender netSender =
+        new NetworkPduSender(destinationIpString, portString,
+            networkModeString, generator);
     generator.run(netSender, args);
   }
 
@@ -520,14 +522,14 @@ public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
           // yep, hang around a little
           Thread.sleep(100);
         }
-        
+
         // have we been killed?
-        if(_terminate)
+        if (_terminate)
         {
           // skip this cycle, come back in at the top
           continue;
         }
-        
+
         // mark the step forward
         System.out.print(".");
 
@@ -855,9 +857,9 @@ public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
     {
       // start by ensuring we're not in paused state
       _pause = false;
-      
+
       // and now terminate
-      _terminate = true;      
+      _terminate = true;
     }
   }
 
