@@ -8,6 +8,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -109,16 +110,16 @@ public class DebriefFixListener extends DebriefCoreListener implements
     switch (force)
     {
     case RED:
-      theCol = Color.red;
+      theCol = DebriefColors.RED;
       break;
     case BLUE:
-      theCol = Color.blue;
+      theCol = DebriefColors.BLUE;
       break;
     case GREEN:
-      theCol = Color.green;
+      theCol = DebriefColors.GREEN;
       break;
     case OTHER:
-      theCol = Color.orange;
+      theCol = DebriefColors.ORANGE;
       break;
     default:
       System.err.println("NO, NO FORCE FOUND");

@@ -8,14 +8,15 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DebriefColors;
 
 public class DebriefCoreListener
 {
   protected final java.awt.Color[] defaultColors = new java.awt.Color[]
-  {java.awt.Color.red, java.awt.Color.green, java.awt.Color.blue,
-      java.awt.Color.cyan, java.awt.Color.magenta, java.awt.Color.orange,
-      java.awt.Color.pink};
-
+  {DebriefColors.RED, DebriefColors.GREEN, DebriefColors.BLUE,
+      DebriefColors.CYAN, DebriefColors.MAGENTA, DebriefColors.ORANGE,
+      DebriefColors.PINK};
+  
   protected final IDISContext _context;
 
   public DebriefCoreListener(IDISContext context)
