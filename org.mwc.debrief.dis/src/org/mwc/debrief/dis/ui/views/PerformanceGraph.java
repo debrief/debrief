@@ -30,19 +30,23 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
   private static final String SIM_NAME = "Model Updates";
 
   private final ChartComposite _chart;
-  
-  /** the length of time we display on the graph
+
+  /**
+   * the length of time we display on the graph
    * 
    */
   private static final int GRAPH_PERIOD = 30000;
-  
-  /** the length of time we average for
+
+  /**
+   * the length of time we average for
    * 
    */
   final private long avgPeriod = 3000;
 
-  final private PerformanceQueue disQ = new PerformanceQueue(avgPeriod, "Model");
-  final private PerformanceQueue screenQ = new PerformanceQueue(avgPeriod, "Screen");
+  final private PerformanceQueue disQ =
+      new PerformanceQueue(avgPeriod, "Model");
+  final private PerformanceQueue screenQ = new PerformanceQueue(avgPeriod,
+      "Screen");
 
   private Thread updateThread;
 
@@ -86,7 +90,7 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
     screenQ.add(new Date().getTime());
 
     // run the graph, if we have to
-    
+
     // no, don't. let's trigger updates based on model activity,
     // else the graph will start redrawing as we resize the plot
     // startUpdates();
@@ -108,9 +112,8 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
       @Override
       public void run()
       {
-        Display.getDefault().syncExec(new Runnable()
+        final Runnable theR = new Runnable()
         {
-
           @Override
           public void run()
           {
@@ -120,16 +123,24 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
                     .getDataset();
             data.removeAllSeries();
           }
-        });
+        };
+        if (Display.getCurrent() != null)
+        {
+          theR.run();
+        }
+        else
+        {
+          Display.getDefault().syncExec(theR);
+        }
 
         while (!_terminate)
         {
-          Display.getDefault().asyncExec(new Runnable()
+          final Runnable theR2 = new Runnable()
           {
             private void doThisQueue(PerformanceQueue queue, String name)
             {
               // store the new time in the queue
-            //  queue.add(new Date().getTime());
+              // queue.add(new Date().getTime());
 
               double freq = queue.freqAt(new Date().getTime()) * 1000d;
 
@@ -166,17 +177,25 @@ public class PerformanceGraph implements IDISGeneralPDUListener,
               // clear them out?
               DateAxis tAxis =
                   (DateAxis) _chart.getChart().getXYPlot().getDomainAxis();
-              tAxis
-                  .setRange(new Date(new Date().getTime() - GRAPH_PERIOD), new Date());
-              
+              tAxis.setRange(new Date(new Date().getTime() - GRAPH_PERIOD),
+                  new Date());
+
               _chart.getChart().getXYPlot().getRangeAxis().setAutoRange(true);
-              
+
               // set the y axis minimum
               _chart.getChart().getXYPlot().getRangeAxis().setLowerBound(0);
 
             }
 
-          });
+          };
+          if (Display.getCurrent() != null)
+          {
+            theR2.run();
+          }
+          else
+          {
+            Display.getDefault().syncExec(theR2);
+          }
           try
           {
             Thread.sleep(1000);

@@ -220,7 +220,7 @@ public class DisListenerView extends ViewPart
           // tell the plot editor about the newtime
           if (ct == null)
           {
-            Display.getDefault().syncExec(new Runnable()
+            final Runnable theR = new Runnable()
             {
               @Override
               public void run()
@@ -239,7 +239,15 @@ public class DisListenerView extends ViewPart
                   }
                 }
               }
-            });
+            };
+            if(Display.getCurrent() != null)
+            {
+              theR.run();
+            }
+            else
+            {
+              Display.getDefault().asyncExec(theR);
+            }
           }
 
           if (ct != null)
@@ -304,7 +312,7 @@ public class DisListenerView extends ViewPart
   private void handleStopMessage(long time, final int appId, short eid,
       final short reason)
   {
-    Display.getDefault().syncExec(new Runnable()
+    final Runnable theR = new Runnable()
     {
 
       @Override
@@ -351,7 +359,15 @@ public class DisListenerView extends ViewPart
         }
 
       }
-    });
+    };
+    if(Display.getCurrent() != null)
+    {
+      theR.run();
+    }
+    else
+    {
+      Display.getDefault().syncExec(theR);
+    }
   }
 
   private void setupListeners(final IDISModule module)
@@ -387,7 +403,7 @@ public class DisListenerView extends ViewPart
           {
             // nope, go for it.
             updatePending = true;
-            Display.getDefault().asyncExec(new Runnable()
+            final Runnable theR = new Runnable()
             {
 
               @Override
@@ -414,7 +430,15 @@ public class DisListenerView extends ViewPart
                 }
                 updatePending = false;
               }
-            });
+            };
+            if(Display.getCurrent() != null)
+            {
+              theR.run();
+            }
+            else
+            {
+              Display.getDefault().asyncExec(theR);
+            }
           }
         }
         time = newTime;
@@ -429,7 +453,7 @@ public class DisListenerView extends ViewPart
         // (to reduce the update frequency)
         // But, after the last time value, by definition
         // we don't get another. So, we'll fire it automatically
-        Display.getDefault().syncExec(new Runnable()
+        final Runnable theR = new Runnable()
         {
           @Override
           public void run()
@@ -445,7 +469,15 @@ public class DisListenerView extends ViewPart
               _context.fireUpdate(null, null);
             }
           };
-        });
+        };
+        if(Display.getCurrent() != null)
+        {
+          theR.run();
+        }
+        else
+        {
+          Display.getDefault().asyncExec(theR);
+        }
 
         // reset the time counter
         time = TIME_UNSET;
@@ -722,14 +754,22 @@ public class DisListenerView extends ViewPart
         // if it's being unselected, do a refresh all
         if (liveUpdatesButton.getSelection())
         {
-          Display.getDefault().syncExec(new Runnable()
+          final Runnable theR = new Runnable()
           {
             @Override
             public void run()
             {
               _context.fireUpdate(null, null);
             }
-          });
+          };
+          if(Display.getCurrent() != null)
+          {
+            theR.run();
+          }
+          else
+          {
+            Display.getDefault().asyncExec(theR);
+          }
         }
       }
 
@@ -1073,7 +1113,7 @@ public class DisListenerView extends ViewPart
 
   private void playHeard()
   {
-    Display.getDefault().asyncExec(new Runnable()
+    final Runnable theR = new Runnable()
     {
 
       @Override
@@ -1082,7 +1122,15 @@ public class DisListenerView extends ViewPart
         // ok, it's running - update the UI
         doPlay();
       }
-    });
+    };
+    if(Display.getCurrent() != null)
+    {
+      theR.run();
+    }
+    else
+    {
+      Display.getDefault().asyncExec(theR);
+    }
   }
 
   private void sendPlay()

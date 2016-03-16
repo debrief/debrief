@@ -115,7 +115,7 @@ abstract public class DISContext implements IDISContext,
   @Override
   public void addThisLayer(final Layer layer)
   {
-    Display.getDefault().syncExec(new Runnable()
+    final Runnable theR = new Runnable()
     {
       @Override
       public void run()
@@ -129,7 +129,15 @@ abstract public class DISContext implements IDISContext,
           _myLayers.addThisLayerDoNotResize(layer);
         }
       }
-    });
+    };
+    if(Display.getCurrent() != null)
+    {
+      theR.run();
+    }
+    else
+    {
+      Display.getDefault().syncExec(theR);
+    }
   }
 
   protected void stopListeningTo(IEditorPart editor)
@@ -323,21 +331,28 @@ abstract public class DISContext implements IDISContext,
       if (getUseNewPlot())
       {
         // ok, create a new plot
-        Display.getDefault().syncExec(new Runnable()
+        final Runnable theR = new Runnable()
         {
-
           @Override
           public void run()
           {
             // create a new plot
             getEditor(true, exerciseId);
           }
-        });
+        };
+        if(Display.getCurrent() != null)
+        {
+          theR.run();
+        }
+        else
+        {
+          Display.getDefault().syncExec(theR);
+        }
       }
       else
       {
         // no, we can re-use the old one
-        Display.getDefault().syncExec(new Runnable()
+        final Runnable theR = new Runnable()
         {
           @Override
           public void run()
@@ -347,7 +362,15 @@ abstract public class DISContext implements IDISContext,
               clearLayers();
             }
           }
-        });
+        };
+        if(Display.getCurrent() != null)
+        {
+          theR.run();
+        }
+        else
+        {
+          Display.getDefault().syncExec(theR);
+        }
       }
 
       // and remember the exercise id
@@ -360,7 +383,7 @@ abstract public class DISContext implements IDISContext,
     // have we managed to find some layers?
     if (_myLayers == null)
     {
-      Display.getDefault().syncExec(new Runnable()
+      final Runnable theR = new Runnable()
       {
         @Override
         public void run()
@@ -368,7 +391,15 @@ abstract public class DISContext implements IDISContext,
           // create a new plot
           getEditor(false, exerciseId);
         }
-      });
+      };
+      if(Display.getCurrent() != null)
+      {
+        theR.run();
+      }
+      else
+      {
+        Display.getDefault().syncExec(theR);
+      }
     }
     return _myLayers;
   }
@@ -442,7 +473,7 @@ abstract public class DISContext implements IDISContext,
    */
   protected void fitToWindow()
   {
-    Display.getDefault().syncExec(new Runnable()
+    final Runnable theR = new Runnable()
     {
       @Override
       public void run()
@@ -459,7 +490,15 @@ abstract public class DISContext implements IDISContext,
           icv.rescale();
         }
       }
-    });
+    };
+    if(Display.getCurrent() != null)
+    {
+      theR.run();
+    }
+    else
+    {
+      Display.getDefault().syncExec(theR);
+    }
   }
 
   @Override
