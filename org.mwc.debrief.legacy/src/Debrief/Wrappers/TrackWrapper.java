@@ -2831,12 +2831,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     _theLabel.setLocation(hostFix.getLocation());
 
     // and the relative location
-    int theLoc =
-        LabelLocationPropertyEditor.oppositeFor(hostFix.getLabelLocation());
-    _theLabel.setRelativeLocation(theLoc);
+    // hmm, if we're plotting date labels at the ends,
+    // shift the track name so that it's opposite
+    Integer oldLoc = null;
+    if (this.getEndTimeLabels())
+    {
+      oldLoc = _theLabel.getRelativeLocation();
+      final int theLoc =
+          LabelLocationPropertyEditor.oppositeFor(hostFix.getLabelLocation());
+      _theLabel.setRelativeLocation(theLoc);
+    }
 
     // and paint it
     _theLabel.paint(dest);
+    
+    // ok, restore the user-favourite location
+    if(oldLoc != null)
+    {
+      _theLabel.setRelativeLocation(oldLoc);
+    }
   }
 
   private void paintMultipleSegmentLabel(final CanvasType dest)
