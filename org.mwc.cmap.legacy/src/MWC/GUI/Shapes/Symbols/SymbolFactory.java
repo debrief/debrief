@@ -141,6 +141,8 @@ public final class SymbolFactory
 
   public static final String SQUARE = "Square";
 
+  public static final String CIRCLE = "Circle";
+
   public static final String CROSS = "Cross";
 
 	//////////////////////////////////////////////////
@@ -416,6 +418,7 @@ public final class SymbolFactory
       _theVesselIds.put(SQUARE, "J");
       _theVesselIds.put(DATUM, "K");
       _theVesselIds.put(REFERENCE_POSITION, "L");
+      _theVesselIds.put(CIRCLE, "Q");
       
 
       // and another (A SSET related entry)
