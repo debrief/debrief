@@ -438,6 +438,13 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     long time = convertTime(pdu.getTimestamp());
     int receipientId = pdu.getIssuingEntityID().getEntity();
     int movingId = pdu.getCollidingEntityID().getEntity();
+    
+    // sort out the location
+    Vector3Float loc = pdu.getLocation();
+    double[] locArr = new double[]
+    {loc.getX(), loc.getY(), loc.getZ()};
+    double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
+
 
     // sort out his name
     String movingName = nameFor(movingId);
@@ -447,7 +454,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     while (dIter.hasNext())
     {
       IDISCollisionListener thisD = dIter.next();
-      thisD.add(time, eid, movingId, movingName, receipientId, recipientName);
+      thisD.add(time, eid, movingId, movingName, receipientId, recipientName, worldCoords[0], worldCoords[1], -worldCoords[2]);
     }
   }
 

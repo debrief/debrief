@@ -41,7 +41,7 @@ public class DISListenerTest
     module.addCollisionListener(new IDISCollisionListener()
     {
       public void add(long time, short eid, int movingId, String movingName,
-          int recipientId, String recipientName)
+          int recipientId, String recipientName, double dLat, double dLong, double depthM)
       {
         collMessages.add("collision at:" + time);
       }
