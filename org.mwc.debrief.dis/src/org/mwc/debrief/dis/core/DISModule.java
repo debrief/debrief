@@ -438,23 +438,34 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     long time = convertTime(pdu.getTimestamp());
     int receipientId = pdu.getIssuingEntityID().getEntity();
     int movingId = pdu.getCollidingEntityID().getEntity();
-    
+
     // sort out the location
     Vector3Float loc = pdu.getLocation();
     double[] locArr = new double[]
     {loc.getX(), loc.getY(), loc.getZ()};
     double[] worldCoords = CoordinateConversions.xyzToLatLonDegrees(locArr);
 
-
     // sort out his name
     String movingName = nameFor(movingId);
     String recipientName = nameFor(receipientId);
+
+    // special cases - if we have an ID of -1 it's the environment
+    final String envTarget = "Environment";
+    if (movingId == -1)
+    {
+      movingName = envTarget;
+    }
+    if (receipientId == -1)
+    {
+      recipientName = envTarget;
+    }
 
     Iterator<IDISCollisionListener> dIter = _collisionListeners.iterator();
     while (dIter.hasNext())
     {
       IDISCollisionListener thisD = dIter.next();
-      thisD.add(time, eid, movingId, movingName, receipientId, recipientName, worldCoords[0], worldCoords[1], -worldCoords[2]);
+      thisD.add(time, eid, movingId, movingName, receipientId, recipientName,
+          worldCoords[0], worldCoords[1], -worldCoords[2]);
     }
   }
 
