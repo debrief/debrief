@@ -71,6 +71,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
           String hisName, int eventType, String message)
       {
         if (eventType == IDISEventListener.EVENT_LAUNCH
+            || eventType == IDISEventListener.EVENT_NEW_TRACK
             || eventType == IDISEventListener.EVENT_NEW_TARGET_TRACK)
         {
           if (_entityNames.get(senderId) == null)
@@ -108,6 +109,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
       }
       break;
     case IDISEventListener.EVENT_NEW_TARGET_TRACK:
+    case IDISEventListener.EVENT_NEW_TRACK:
       // DETECTION E4-5
       final String detection = " DETECTION ";
 
