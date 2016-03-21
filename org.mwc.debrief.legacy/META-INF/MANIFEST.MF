@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.debrief.legacy;singleton:=true
-Bundle-Version: 1.0.303
+Bundle-Version: 1.0.304
 Bundle-ClassPath: debrief_legacy.jar,
  libs/poi-3.14-20160307.jar,
  libs/poi-scratchpad-3.14-20160307.jar
