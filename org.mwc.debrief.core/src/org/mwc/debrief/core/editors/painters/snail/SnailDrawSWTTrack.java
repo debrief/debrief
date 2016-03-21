@@ -30,9 +30,10 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldDistance.ArrayLength;
+import MWC.GenericData.WorldLocation;
 
 /**
  * class to draw a 'back-track' of points backwards from the current datapoint
@@ -140,7 +141,7 @@ final class SnailDrawSWTTrack
 	// member functions
 	// ////////////////////////////////
 	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
-			final CanvasType dest, final Watchable watch, final SnailHighlighter parent, final HiResDate dtg,
+			final CanvasType dest, final Watchable watch, final SnailHighlighter parent, HiResDate dtg,
 			final Color backColor)
 	{
 		// represent this area as a rectangle
@@ -151,18 +152,35 @@ final class SnailDrawSWTTrack
 				Duration.MICROSECONDS);
 
 		// get the fix and the track
-		final FixWrapper theFix = (FixWrapper) watch;
+		FixWrapper theFix = (FixWrapper) watch;
 		final TrackWrapper trk = theFix.getTrackWrapper();
 		
 		// does this object return a track?
 		if(trk == null)
 			return thisR;
 
+    // trim to visible period if its a track
+    TimePeriod visP = trk.getVisiblePeriod();
+    if (!visP.contains(dtg))
+    {
+      // ok, before or after?
+      if (visP.getStartDTG().greaterThan(dtg))
+      {
+        dtg = visP.getStartDTG();
+        theFix = (FixWrapper) trk.getNearestTo(dtg)[0];
+      }
+      else if (visP.getEndDTG().lessThan(dtg))
+      {
+        dtg = visP.getEndDTG();
+        theFix = (FixWrapper) trk.getNearestTo(dtg)[0];
+      }
+    }		
+		
 		// declare the Vector of track points we are using
 		final Collection<Editable> dotPoints;
 
 		// do we have these points already?
-		final Collection<Editable> myList = _fixLists.get(theFix);
+		 Collection<Editable> myList = _fixLists.get(theFix);
 
 		// did we find it?
 		if (myList != null)

@@ -27,6 +27,8 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
@@ -81,7 +83,7 @@ public interface SWTPlotHighlighter extends Editable {
 		 */
 		public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
 				final CanvasType dest, final MWC.GenericData.WatchableList list,
-				final MWC.GenericData.Watchable watch, final boolean isPrimary) {
+				MWC.GenericData.Watchable watch, final boolean isPrimary) {
 			// check that our graphics context is still valid -
 			// we can't, so we will just have to trap any exceptions it raises
 			try {
@@ -99,6 +101,37 @@ public interface SWTPlotHighlighter extends Editable {
 				}
 
 				Rectangle _areaCovered = null;
+				
+				// special case = check we're not trying to
+				// plot a fix that isn't yet visible
+        if (watch instanceof FixWrapper) 
+        {
+          FixWrapper fw = (FixWrapper) watch;
+          TrackWrapper tw = fw.getTrackWrapper();
+          if (tw != null)
+          {
+            
+            HiResDate dtg = fw.getTime();
+            
+            // trim to visible period if its a track
+            TimePeriod visP = tw.getVisiblePeriod();
+            if (!visP.contains(dtg))
+            {
+              // ok, before or after?
+              if (visP.getStartDTG().greaterThan(dtg))
+              {
+                dtg = visP.getStartDTG();
+                watch = (FixWrapper) tw.getNearestTo(dtg)[0];
+              }
+              else if (visP.getEndDTG().lessThan(dtg))
+              {
+                dtg = visP.getEndDTG();
+                watch = (FixWrapper) tw.getNearestTo(dtg)[0];
+              }
+            }   
+          }
+        }
+				
 
 				// set the highlight colour
 				dest.setColor(_myColor);
@@ -127,10 +160,13 @@ public interface SWTPlotHighlighter extends Editable {
 
 				// just see if we've got sensor data, so we can plot the array
 				// centre
-				if (watch instanceof FixWrapper) {
-					final FixWrapper fw = (FixWrapper) watch;
-					final TrackWrapper tw = fw.getTrackWrapper();
-					if ((tw != null) && (tw.getPlotArrayCentre())) {
+        if (watch instanceof FixWrapper) {
+          FixWrapper fw = (FixWrapper) watch;
+          TrackWrapper tw = fw.getTrackWrapper();
+          
+          if(tw != null && tw.getPlotArrayCentre())
+          {
+
 						final Enumeration<Editable> enumer = tw.getSensors()
 								.elements();
 						while (enumer.hasMoreElements()) {

@@ -4348,4 +4348,38 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
     // _locationListener);
   }
+
+  public TimePeriod getVisiblePeriod()
+  {
+    TimePeriod res = null;
+    Enumeration<Editable> pos = getPositions();
+    while (pos.hasMoreElements())
+    {
+      FixWrapper editable = (FixWrapper) pos.nextElement();
+      if (editable.getVisible())
+      {
+        HiResDate thisT = editable.getTime();
+        if (res == null)
+        {
+          res = new TimePeriod.BaseTimePeriod(thisT, thisT);
+        }
+        else
+        {
+          res.extend(thisT);
+        }
+      }
+    }
+    return res;
+  }
+
+  public boolean isVisibleAt(HiResDate dtg)
+  {
+    TimePeriod period = getVisiblePeriod();
+    boolean res = false;
+    if (period != null)
+    {
+      res = period.contains(dtg);
+    }
+    return res;
+  }
 }

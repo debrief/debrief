@@ -41,6 +41,7 @@ import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTSymbolHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
@@ -48,6 +49,7 @@ import MWC.GUI.Properties.FractionPropertyEditor;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
@@ -99,15 +101,31 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 																	 final WatchableList list,
 																	 final Watchable watch,
 																	 final SnailHighlighter parent,
-																	 final HiResDate dtg,
+																	 HiResDate dtg,
                                    final java.awt.Color backColor)
 	{
     Rectangle thisR = null;
 
- //   dest.setXORMode(backColor);
-
     // get a pointer to the fix
-		final FixWrapper fix = (FixWrapper)watch;
+		FixWrapper fix = (FixWrapper)watch;
+		final TrackWrapper trk = fix.getTrackWrapper();
+		
+    // trim to visible period if its a track
+    TimePeriod visP = trk.getVisiblePeriod();
+    if (!visP.contains(dtg))
+    {
+      // ok, before or after?
+      if (visP.getStartDTG().greaterThan(dtg))
+      {
+        dtg = visP.getStartDTG();
+        fix = (FixWrapper) trk.getNearestTo(dtg)[0];
+      }
+      else if (visP.getEndDTG().lessThan(dtg))
+      {
+        dtg = visP.getEndDTG();
+        fix = (FixWrapper) trk.getNearestTo(dtg)[0];
+      }
+    }   
 
 		// get the colour of the track
 		final Color col = fix.getColor();
@@ -121,10 +139,10 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
     if(thisHighlighter instanceof SWTSymbolHighlighter)
     {
       // just plot away!
-      thisHighlighter.highlightIt(proj, dest, list, watch, false);
+      thisHighlighter.highlightIt(proj, dest, list, fix, false);
 
       // work out the area covered
-      final WorldArea wa = watch.getBounds();
+      final WorldArea wa = fix.getBounds();
       final WorldLocation tl = wa.getTopLeft();
       final WorldLocation br = wa.getBottomRight();
       final Point pTL = new Point(proj.toScreen(tl));
@@ -139,7 +157,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
       // plot the pointy vector thingy
 
       // get the current area of the watchable
-      final WorldArea wa = watch.getBounds();
+      final WorldArea wa = fix.getBounds();
       // convert to screen coordinates
       final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
       final Point br = new Point(proj.toScreen(wa.getBottomRight()));
@@ -168,8 +186,8 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
    //   fix.paintMe(cad);
 
       // and now plot the vector
-      final double crse = watch.getCourse();
-      final double spd = watch.getSpeed();
+      final double crse = fix.getCourse();
+      final double spd = fix.getSpeed();
 
       //
       final int dx = (int)(Math.sin(crse) * mySize * spd * _vectorStretch);
@@ -199,7 +217,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		// draw the trailing dots
 		final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj,
 																											 dest,
-																											 watch,
+																											 fix,
 																											 parent,
 																											 dtg,
                                                        backColor);
