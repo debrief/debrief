@@ -3785,7 +3785,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           // does this fix have it's own origin?
           final WorldLocation sensorOrigin = scw.getOrigin();
 
-          if (sensorOrigin != null)
+          if (sensorOrigin == null)
+          {
+            // ok - get it to recalculate it
+            scw.clearCalculatedOrigin();
+            WorldLocation newO = scw.getCalculatedOrigin(this);
+            
+            // we don't use the newO - we're just
+            // triggering an update
+          }
+          else
           {
             // create new object to contain the updated location
             final WorldLocation newSensorLocation =
