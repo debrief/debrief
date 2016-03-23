@@ -3730,7 +3730,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * move the whole of the track be the provided offset
    */
-  public final void shiftTrack(final Enumeration<Editable> theEnum,
+  public final boolean shiftTrack(final Enumeration<Editable> theEnum,
       final WorldVector offset)
   {
     Enumeration<Editable> enumA = theEnum;
@@ -3806,13 +3806,53 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         handledData = true;
 
       } // whether this is a sensor wrapper
+      else if(thisO instanceof BaseLayer)
+      {
+        // ok, loop through it
+        BaseLayer bl = (BaseLayer) thisO;
+        handledData = shiftTrack(bl.elements(), offset);
+      }
+      else if (thisO instanceof TMAWrapper)
+      {
+        final TMAWrapper sw = (TMAWrapper) thisO;
+        final Enumeration<Editable> enumS = sw.elements();
+        while (enumS.hasMoreElements())
+        {
+          final TMAContactWrapper scw =
+              (TMAContactWrapper) enumS.nextElement();
+          
+          // does this fix have it's own origin?
+          final WorldLocation sensorOrigin = scw.getOrigin();
+
+          if (sensorOrigin != null)
+          {
+            // create new object to contain the updated location
+            final WorldLocation newSensorLocation =
+                new WorldLocation(sensorOrigin);
+            newSensorLocation.addToMe(offset);
+
+            // so the contact did have an origin, change it
+            scw.setOrigin(newSensorLocation);
+          }
+        } // looping through the contacts
+
+        // ok - job well done
+        handledData = true;
+
+      } // whether this is a sensor wrapper
     } // looping through this track
 
     // ok, did we handle the data?
-    if (!handledData)
+    if (handledData)
+    {
+      firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this._theLabel.getLocation());
+    }
+    else
     {
       System.err.println("TrackWrapper problem; not able to shift:" + enumA);
-    }
+    }  
+    
+    return handledData;
   }
 
   /**
