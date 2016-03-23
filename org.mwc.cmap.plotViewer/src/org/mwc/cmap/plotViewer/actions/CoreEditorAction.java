@@ -236,12 +236,19 @@ abstract public class CoreEditorAction extends AbstractHandler implements IEdito
 		return null;
 	}
 	
-	public Shell getShell()
-	{
-		final IWorkbench wb = PlatformUI.getWorkbench();
-		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		Shell shell = win.getShell();
-		return shell;
-	}
+  public Shell getShell()
+  {
+    Shell shell = null;
+
+    final IWorkbench wb = PlatformUI.getWorkbench();
+    final IWorkbenchWindow[] windows = wb.getWorkbenchWindows();
+    if (windows.length > 0)
+    {
+      final IWorkbenchWindow win = windows[0];
+      shell = win.getShell();
+    }
+
+    return shell;
+  }
 
 }
