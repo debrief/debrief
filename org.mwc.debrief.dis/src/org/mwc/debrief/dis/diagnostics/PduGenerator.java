@@ -390,6 +390,9 @@ public class PduGenerator implements
 
   private final Collection<Vessel> greenParts = new ArrayList<Vessel>();
 
+  // declare the participants
+  final Map<Short, Vessel> participants = new HashMap<Short, Vessel>();
+
   private EntityID eid;
 
   public void run(final IPduSender sender, final String args[])
@@ -401,12 +404,9 @@ public class PduGenerator implements
     final EntityStatePdu espdu = new EntityStatePdu();
     // DisTime disTime = DisTime.getInstance();
 
-    // declare the states
-    final Map<Short, Vessel> states = new HashMap<Short, Vessel>();
-
     // sort out the runtime arguments
     long stepMillis = 500;
-    long numParts = 5;
+    long numParts = 12;
     int numMessages = 30;
 
     // try to extract the step millis from the args
@@ -491,7 +491,7 @@ public class PduGenerator implements
         // share the news
         sendLaunch(EXERCISE_ID, lastTime, eid, newS.name, sender);
 
-        states.put(eId, newS);
+        participants.put(eId, newS);
 
         switch (force)
         {
@@ -538,16 +538,16 @@ public class PduGenerator implements
 
         espdu.setTimestamp(lastTime);
 
-        // get an array of participants. we don't use an interator,
+        // get an array of participants. we don't use an iterator,
         // to avoid concurrent modification
-        final Vessel[] parts = states.values().toArray(new Vessel[]
+        final Vessel[] parts = participants.values().toArray(new Vessel[]
         {null});
         for (int i = 0; i < parts.length; i++)
         {
           final Vessel thisS = parts[i];
 
           // get the subject to move forward
-          thisS.update(states, idx, lastTime, eid, sender);
+          thisS.update(participants, idx, lastTime, eid, sender);
 
           // and send out an update
           sendStatusUpdate(thisS, eid, espdu, sender);
@@ -576,7 +576,7 @@ public class PduGenerator implements
           sendLaunch(EXERCISE_ID, lastTime, eid, newName, sender);
 
           // and remember it
-          states.put(newId, torpedo);
+          participants.put(newId, torpedo);
           torpedoes.add(torpedo);
 
           // also send out the "fired" message
@@ -590,7 +590,7 @@ public class PduGenerator implements
           fire.setTargetEntityID(eid);
 
           // and the location
-          final Vessel launcher = states.get(launchPlatform.id);
+          final Vessel launcher = participants.get(launchPlatform.id);
           final Vector3Double wLoc = new Vector3Double();
           wLoc.setX(launcher.longVal);
           wLoc.setY(launcher.latVal);
@@ -606,6 +606,11 @@ public class PduGenerator implements
           // and send out an update
           sendStatusUpdate(torpedo, eid, espdu, sender);
         }
+//        else
+//        {
+//          System.out.println("Torpedoes:" + torpedoes.size());
+//          System.out.println("Blue:" + blueParts.size());
+//        }
 
         // Send every 1 sec. Otherwise this will be all over in a fraction of a
         // second.
@@ -670,9 +675,21 @@ public class PduGenerator implements
 
     // and send it
     sender.sendPdu(coll);
-
+    
     System.out.println(": " + movingPlatform.id + " collided with "
         + recipientId);
+    
+    // if it was a torpedo, remove it
+    if(recipientId >= 1000)
+    {
+      states.remove(recipientId);
+      torpedoes.remove(participants.get(recipientId));
+    }
+    if(movingPlatform.id >= 1000)
+    {
+      states.remove(movingPlatform.id);
+      torpedoes.remove(movingPlatform);
+    }  
   }
 
   private void sendDetonation(final Vessel firingPlatform,
@@ -700,7 +717,7 @@ public class PduGenerator implements
     }
 
     // and remove the exploding platform
-    states.remove(firingPlatform.id);
+    // states.remove(firingPlatform.id);
 
     // build up the PDU
     final DetonationPdu dp = new DetonationPdu();
@@ -720,6 +737,21 @@ public class PduGenerator implements
     sender.sendPdu(dp);
 
     System.out.println(": " + firingPlatform.id + " destroyed " + recipientId);
+
+    // ok, tell the participants to do one last update
+    if (firingPlatform != null)
+    {
+      states.remove(firingPlatform.id);
+      torpedoes.remove(firingPlatform);
+    }
+    if (recipientId != -1)
+    {
+      Vessel recip = participants.get(recipientId);
+      if (recip != null)
+      {
+        states.remove(recip);
+      }
+    }
   }
 
   @SuppressWarnings("unused")
