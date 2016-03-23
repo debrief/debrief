@@ -2641,16 +2641,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               final double speedKts = lastFix.getSpeed();
               final double courseRads = lastFix.getCourse();
               final double depthM = fw.getDepth();
-              // use the value of depth as read in from the
-              // file
-              tmaLastLoc.setDepth(depthM);
               final WorldVector thisVec =
                   seg.vectorFor(timeDelta, speedKts, courseRads);
               tmaLastLoc.addToMe(thisVec);
+              
+              // use the value of depth as read in from the
+              // file
+              tmaLastLoc.setDepth(depthM);
+
+              // and remember, for the next cycle
               lastLocation = tmaLastLoc;
             }
           }
           tmaLastDTG = thisTime;
+          
           // dump the location into the fix
           fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
         }
