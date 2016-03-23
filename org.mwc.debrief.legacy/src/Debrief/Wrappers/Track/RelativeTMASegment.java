@@ -184,7 +184,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	public RelativeTMASegment(final double courseDegs, final WorldSpeed speed,
 			final WorldVector offset, final Layers theLayers)
 	{
-		super(courseDegs, speed);
+		super(courseDegs, speed, TrackSegment.RELATIVE);
 		_theLayers = theLayers;
 		_offset = offset;
 		

@@ -82,16 +82,15 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	 * 
 	 * @param courseDegs
 	 * @param speed
+	 * @param plotRelative 
 	 * @param offset
 	 * @param theLayers
 	 */
-	public CoreTMASegment(final double courseDegs, final WorldSpeed speed)
+	public CoreTMASegment(final double courseDegs, final WorldSpeed speed, final boolean plotRelative)
 	{
+	  super(plotRelative);
 		_courseDegs = courseDegs;
 		_speed = speed;
-
-		// tell the parent that we're a relative track
-		setPlotRelative(true);
 	}
 
 	/**

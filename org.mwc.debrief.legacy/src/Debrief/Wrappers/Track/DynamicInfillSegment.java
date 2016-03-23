@@ -171,6 +171,9 @@ public class DynamicInfillSegment extends TrackSegment
 	 */
 	public DynamicInfillSegment(final String beforeName, final String afterName)
 	{
+    // we have to be in absolute mode, due to the way we use spline positions
+	  super(TrackSegment.ABSOLUTE);
+	  
 		_beforeName = beforeName;
 		_afterName = afterName;
 
@@ -197,9 +200,6 @@ public class DynamicInfillSegment extends TrackSegment
 		};
 
 		_myParent = Trace.getParent();
-
-		// we have to be in absolute mode, due to the way we use spline positions
-		super.setPlotRelative(false);
 	}
 
 	/**

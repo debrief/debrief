@@ -553,13 +553,11 @@ public class ImportReplay extends PlainImporterBase
       }
       else if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
       {
-        initialLayer = new TrackSegment();
-        initialLayer.setPlotRelative(false);
+        initialLayer = new TrackSegment(TrackSegment.ABSOLUTE);
       }
       else if (importMode.equals(ImportReplay.IMPORT_AS_DR))
       {
-        initialLayer = new TrackSegment();
-        initialLayer.setPlotRelative(true);
+        initialLayer = new TrackSegment(TrackSegment.RELATIVE);
       }
 
       // now create the wrapper

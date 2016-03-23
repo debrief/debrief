@@ -504,7 +504,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           if (obj instanceof SegmentList)
           {
             final SegmentList sl = (SegmentList) obj;
-            TrackSegment newT = new TrackSegment();
+            TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
             duplicateFixes(sl, newT);
             newTrack.add(newT);
           }
@@ -513,7 +513,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             TrackSegment ts = (TrackSegment) obj;
 
             // ok, duplicate the fixes in this segment
-            TrackSegment newT = new TrackSegment();
+            TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
             duplicateFixes(ts, newT);
 
             // and add it to the new track
@@ -526,7 +526,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         TrackSegment ts = (TrackSegment) thisL;
 
         // ok, duplicate the fixes in this segment
-        TrackSegment newT = new TrackSegment();
+        TrackSegment newT = new TrackSegment(ts.getPlotRelative());
         duplicateFixes(ts, newT);
 
         // and add it to the new track
@@ -535,7 +535,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       else if (thisL instanceof SegmentList)
       {
         SegmentList sl = (SegmentList) thisL;
-        TrackSegment newT = new TrackSegment();
+        
+        // it's absolute, since merged tracks are always
+        // absolute
+        TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
 
         // ok, duplicate the fixes in this segment
         duplicateFixes(sl, newT);
@@ -4350,7 +4353,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (_thePositions.size() == 0)
     {
       // nope, add one
-      final TrackSegment firstSegment = new TrackSegment();
+      final TrackSegment firstSegment = new TrackSegment(TrackSegment.ABSOLUTE);
       firstSegment.setName("Positions");
       _thePositions.addSegment(firstSegment);
     }

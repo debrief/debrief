@@ -56,8 +56,7 @@ abstract public class TrackSegmentHandler extends CoreTrackSegmentHandler
 	@Override
 	protected TrackSegment createTrack()
 	{
-		final TrackSegment res = new TrackSegment();
-		res.setPlotRelative(_relativeMode);
+		final TrackSegment res = new TrackSegment(_relativeMode);
 		
 		// reset the relative mode flag
 		_relativeMode = false;

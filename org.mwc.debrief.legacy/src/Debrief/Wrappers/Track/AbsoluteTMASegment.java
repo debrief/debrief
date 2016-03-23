@@ -116,7 +116,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			final HiResDate startTime, final HiResDate endTime)
 	{
 		// start off with the obvious bits
-		super(relevantSegment._courseDegs, relevantSegment._speed);
+		super(relevantSegment._courseDegs, relevantSegment._speed, false);
 		_origin = relevantSegment._origin;
 		_startTime = startTime;
 		_endTime = endTime;
@@ -139,7 +139,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	public AbsoluteTMASegment(final double courseDegs, final WorldSpeed speed,
 			final WorldLocation origin, final HiResDate startTime, final HiResDate endTime)
 	{
-		super(courseDegs, speed);
+		super(courseDegs, speed, TrackSegment.ABSOLUTE);
 		_origin = origin;
 		_startTime = startTime;
 		_endTime = endTime;

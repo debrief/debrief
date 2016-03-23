@@ -86,7 +86,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	private TrackSegment getDummyList()
 	{
-		final TrackSegment ts0 = new TrackSegment();
+		final TrackSegment ts0 = new TrackSegment(TrackSegment.ABSOLUTE);
 		final FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
 				new WorldLocation(1, -1, 3), 1, 2));
 		final FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(20000),
@@ -373,21 +373,21 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testDecimate()
 	{
-		final TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts1.addFix(createFix(0 * 1000000l, 32, 33));
 		ts1.addFix(createFix(1 * 1000000l, 32, 33));
 		ts1.addFix(createFix(2 * 1000000l, 32, 33));
 		ts1.addFix(createFix(3 * 1000000l, 32, 33));
 		ts1.addFix(createFix(4 * 1000000l, 32, 33));
 
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(5 * 1000000l, 32, 33));
 		ts2.addFix(createFix(6 * 1000000l, 32, 33));
 		ts2.addFix(createFix(7 * 1000000l, 32, 33));
 		ts2.addFix(createFix(8 * 1000000l, 32, 33));
 		ts2.addFix(createFix(9 * 1000000l, 32, 33));
 
-		final TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts3.addFix(createFix(10 * 1000000l, 32, 33));
 		ts3.addFix(createFix(11 * 1000000l, 32, 33));
 		ts3.addFix(createFix(12 * 1000000l, 32, 33));
@@ -422,21 +422,21 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testDecimatePositionsAndData()
 	{
-		final TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts1.addFix(createFix(0 * 60000, 32, 33));
 		ts1.addFix(createFix(1 * 60000, 32, 33));
 		ts1.addFix(createFix(2 * 60000, 32, 33));
 		ts1.addFix(createFix(3 * 60000, 32, 33));
 		ts1.addFix(createFix(4 * 60000, 32, 33));
 
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(5 * 60000, 32, 33));
 		ts2.addFix(createFix(6 * 60000, 32, 33));
 		ts2.addFix(createFix(7 * 60000, 32, 33));
 		ts2.addFix(createFix(8 * 60000, 32, 33));
 		ts2.addFix(createFix(9 * 60000, 32, 33));
 
-		final TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts3.addFix(createFix(10 * 60000, 32, 33));
 		ts3.addFix(createFix(11 * 60000, 32, 33));
 		ts3.addFix(createFix(12 * 60000, 32, 33));
@@ -594,7 +594,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testFixAsVector()
 	{
-		final TrackSegment ts = new TrackSegment();
+		final TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
 		final long period = 1000 * 60 * 60;
 		final double speedKts = 60;
 		WorldVector res = ts.vectorFor(period, speedKts, 0);
@@ -650,8 +650,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testGenInfill()
 	{
-		final TrackSegment ts1 = new TrackSegment();
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 
 		ts1.addFix(createFix(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
 		ts1.addFix(createFix(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
@@ -679,8 +679,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testGenInfillSpeed()
 	{
-		final TrackSegment ts1 = new TrackSegment();
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 
 		ts1.addFix(createFix(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
 		ts1.addFix(createFix(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
@@ -980,19 +980,19 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		final TrackWrapper tw = new TrackWrapper();
 
-		final TrackSegment ts0 = new TrackSegment();
+		final TrackSegment ts0 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts0.addFix(createFix(10000, 1, 1, 20, 30));
 		ts0.addFix(createFix(11000, 1, 1, 20, 30));
 		ts0.addFix(createFix(12000, 1, 1, 20, 30));
 		ts0.addFix(createFix(13000, 1, 1, 20, 30));
 
-		final TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts1.addFix(createFix(14000, 1, 1, 20, 30));
 		ts1.addFix(createFix(15000, 1, 1, 20, 30));
 		ts1.addFix(createFix(16000, 1, 1, 20, 30));
 		ts1.addFix(createFix(17000, 1, 1, 20, 30));
 
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(18000, 1, 1, 20, 30));
 		ts2.addFix(createFix(19000, 1, 1, 20, 30));
 		ts2.addFix(createFix(20000, 1, 1, 20, 30));
@@ -1428,7 +1428,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackGroup1()
 	{
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(310000, 32, 33));
 		ts2.addFix(createFix(311000, 32, 33));
 		ts2.addFix(createFix(312000, 32, 33));
@@ -1472,14 +1472,14 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackGroupOrder()
 	{
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(310000, 32, 33));
 		ts2.addFix(createFix(311000, 32, 33));
 		ts2.addFix(createFix(312000, 32, 33));
 		ts2.addFix(createFix(313000, 32, 33));
 		ts2.addFix(createFix(314000, 32, 33));
 
-		final TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts3.addFix(createFix(410000, 32, 33));
 		ts3.addFix(createFix(411000, 32, 33));
 		ts3.addFix(createFix(412000, 32, 33));
@@ -1516,7 +1516,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackMerge1()
 	{
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.setName("ts2");
 		ts2.addFix(createFix(910000, 32, 33));
 		ts2.addFix(createFix(911000, 32, 33));
@@ -1555,7 +1555,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackMerge2()
 	{
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(910000, 32, 33));
 		ts2.addFix(createFix(911000, 32, 33));
 		ts2.addFix(createFix(912000, 32, 33));
@@ -1589,7 +1589,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackMerge3()
 	{
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(310000, 32, 33));
 		ts2.addFix(createFix(311000, 32, 33));
 		ts2.addFix(createFix(312000, 32, 33));
@@ -1631,21 +1631,21 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackMergeAllSegments()
 	{
-		final TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts1.addFix(createFix(110000, 32, 33));
 		ts1.addFix(createFix(111000, 32, 33));
 		ts1.addFix(createFix(112000, 32, 33));
 		ts1.addFix(createFix(113000, 32, 33));
 		ts1.addFix(createFix(114000, 32, 33));
 
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(210000, 32, 33));
 		ts2.addFix(createFix(211000, 32, 33));
 		ts2.addFix(createFix(212000, 32, 33));
 		ts2.addFix(createFix(213000, 32, 33));
 		ts2.addFix(createFix(214000, 32, 33));
 
-		final TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts3.addFix(createFix(910000, 32, 33));
 		ts3.addFix(createFix(911000, 32, 33));
 		ts3.addFix(createFix(912000, 32, 33));
@@ -1680,7 +1680,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackStartEnd()
 	{
-		final TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts2.addFix(createFix(910000, 32, 33));
 		ts2.addFix(createFix(911000, 32, 33));
 		ts2.addFix(createFix(912000, 32, 33));
@@ -2357,7 +2357,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	{
 		final TrackSegment ts0 = getDummyList();
 
-		final TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
 		final FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(150000),
 				new WorldLocation(3, 4, 3), 1, 2));
 		final FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(160000),
