@@ -2640,7 +2640,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             {
               final double speedKts = lastFix.getSpeed();
               final double courseRads = lastFix.getCourse();
-              final double depthM = lastFix.getDepth();
+              final double depthM = fw.getDepth();
               // use the value of depth as read in from the
               // file
               tmaLastLoc.setDepth(depthM);
