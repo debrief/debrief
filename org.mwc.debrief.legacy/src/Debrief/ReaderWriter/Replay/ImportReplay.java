@@ -1122,10 +1122,13 @@ public class ImportReplay extends PlainImporterBase
         Iterator<TrackWrapper> tIter = _existingTracksThatMoved.iterator();
         while (tIter.hasNext())
         {
-          TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
+          TrackWrapper track = (TrackWrapper) tIter.next();
           
           // tell it that it has changed
-          trackWrapper.shift(new WorldVector(0,0,0));
+          track.sortOutRelativePositions();
+
+          // and get the components to update
+          track.shift(new WorldVector(0,0,0));
         }
 
         final long end = System.currentTimeMillis();

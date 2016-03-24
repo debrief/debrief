@@ -742,6 +742,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * working ZERO location value, to reduce number of working values
    */
   final private WorldLocation _zeroLocation = new WorldLocation(0, 0, 0);
+  
+  /** flag for if there is a pending update to track 
+   * - particularly if it's a relative one
+   */
+  private boolean _relativeUpdatePending = false;
 
   // //////////////////////////////////////
   // member functions
@@ -982,7 +987,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       done = true;
     }
 
-    if (!done)
+    if (done)
+    {
+      // ok, we've made a change, remember that we may need to update relative
+      // segments
+      _relativeUpdatePending = true;
+    }
+    else
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
           "Sorry it is not possible to add:" + point.getName() + " to "
@@ -999,6 +1010,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public void append(final Layer other)
   {
+    boolean modified = false;
+    
     // is it a track?
     if ((other instanceof TrackWrapper) || (other instanceof TrackSegment))
     {
@@ -1010,10 +1023,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (nextItem instanceof Layer)
         {
           append((Layer) nextItem);
+          modified = true;
         }
         else
         {
           add(nextItem);
+          modified = true;
         }
       }
     }
@@ -1021,6 +1036,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       // nope, just add it to us.
       add(other);
+      modified = true;
+    }
+    
+    if(modified)
+    {
+      _relativeUpdatePending = true;
     }
   }
 
@@ -1139,6 +1160,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     // and put the keepers back in
     _thePositions.addSegment(keeper);
+    
+    // and remember we need an update
+    _relativeUpdatePending = true;
   }
 
   /**
@@ -1264,9 +1288,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
-    // TODO: DEBUG: REMOVE: remove this diagnostics message
-   // Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
-
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
@@ -2516,12 +2537,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // enough
     checkPointsArray();
 
-    // java.awt.Point lastP = null;
+    // we draw tracks as polylines. But we can't do that
+    // if the color/style changes. So, we have to track their values
     Color lastCol = null;
     final int defaultlineStyle = getLineStyle();
 
-    WorldLocation lastLocation = null;
     FixWrapper lastFix = null;
+    
+    // update DR positions (if necessary)
+    if(_relativeUpdatePending)
+    {
+      _relativeUpdatePending = false;
+      sortOutRelativePositions();
+    }
 
     // cycle through the segments
     final Enumeration<Editable> segments = _thePositions.elements();
@@ -2544,22 +2572,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         thisLineStyle = defaultlineStyle;
       }
 
-      // SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
-      // RELATIVE MODE
-      final boolean isRelative = seg.getPlotRelative();
-      WorldLocation tmaLastLoc = null;
-      long tmaLastDTG = 0;
-
-      // if it's not a relative track, and it's not visible, we don't
-      // need to work with ut
-      if (!getVisible() && !isRelative)
-      {
-        continue;
-      }
-
       // is this segment visible?
       if (!seg.getVisible())
       {
+        // nope, jump to the next
         continue;
       }
 
@@ -2585,15 +2601,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // copy/paste operation. Tell it about it's children
         fw.setTrackWrapper(this);
 
-        // is this fix visible?
-        if (!fw.getVisible())
-        {
-          // nope. Don't join it to the last position.
-          // ok, if we've built up a polygon, we need to write it
-          // now
-          paintSetOfPositions(dest, lastCol, thisLineStyle);
-        }
-
         // do our job of identifying the first & last date value
         if (fw.getVisible())
         {
@@ -2615,53 +2622,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             endPoints.add(fw);
           }
         }
-
-        // Note: we're carrying on working with this position even
-        // if it isn't visible,
-        // since we need to use non-visible positions to build up a
-        // DR track.
-
-        // ok, are we in relative?
-        if (isRelative)
-        {
-          final long thisTime = fw.getDateTimeGroup().getDate().getTime();
-
-          // ok, is this our first location?
-          if (tmaLastLoc == null)
-          {
-            tmaLastLoc = new WorldLocation(seg.getTrackStart());
-            lastLocation = tmaLastLoc;
-          }
-          else
-          {
-            // calculate a new vector
-            final long timeDelta = thisTime - tmaLastDTG;
-            if (lastFix != null)
-            {
-              final double speedKts = lastFix.getSpeed();
-              final double courseRads = lastFix.getCourse();
-              final double depthM = fw.getDepth();
-              final WorldVector thisVec =
-                  seg.vectorFor(timeDelta, speedKts, courseRads);
-              tmaLastLoc.addToMe(thisVec);
-              
-              // use the value of depth as read in from the
-              // file
-              tmaLastLoc.setDepth(depthM);
-
-              // and remember, for the next cycle
-              lastLocation = tmaLastLoc;
-            }
-          }
-          tmaLastDTG = thisTime;
-          
-          // dump the location into the fix
-          fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-        }
         else
         {
-          // this is an absolute position
-          lastLocation = fw.getLocation();
+          // nope. Don't join it to the last position.
+          // ok, if we've built up a polygon, we need to write it
+          // now
+          paintSetOfPositions(dest, lastCol, thisLineStyle);
         }
 
         // remember this fix, used for relative tracks
@@ -2672,7 +2638,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (!fw.getVisible())
           continue;
 
-        final java.awt.Point thisP = dest.toScreen(lastLocation);
+        final java.awt.Point thisP = dest.toScreen(fw.getLocation());
 
         // just check that there's enough GUI to create the plot
         // (i.e. has a point been returned)
@@ -2748,38 +2714,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         paintIt(dest, endPoints.get(1), getEndTimeLabels());
       }
 
-      // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
-      //
-      if (seg instanceof CoreTMASegment)
-      {
-        CoreTMASegment tma = (CoreTMASegment) seg;
-
-        WorldLocation firstLoc = seg.first().getBounds().getCentre();
-        WorldLocation lastLoc = seg.last().getBounds().getCentre();
-        Font f = new Font("Sans Serif", Font.PLAIN, 11);
-        Color c = _theLabel.getColor();
-
-        // tell the segment it's being stretched
-        final String spdTxt =
-            MWC.Utilities.TextFormatting.GeneralFormat
-                .formatOneDecimalPlace(tma.getSpeed()
-                    .getValueIn(WorldSpeed.Kts));
-
-        // copied this text from RelativeTMASegment
-        double courseVal = tma.getCourse();
-        if (courseVal < 0)
-          courseVal += 360;
-
-        String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
-
-        // ok, now plot it
-        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-            lastLoc, 1.2, true);
-        textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
-        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-            lastLoc, 1.2, false);
-      }
-
+     
       // ok, just see if we have any pending polylines to paint
       paintSetOfPositions(dest, lastCol, thisLineStyle);
     }
@@ -3017,28 +2952,72 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
 
     } // if the label is visible
-
-    // paint vector label
-    if (plotted_anything)
-    {
-      paintVectorLabel(dest);
-    }
+    
+    // lastly - paint any TMA or planning segment labels
+    paintVectorLabels(dest);
+//
+//    // paint vector label
+//    if (plotted_anything)
+//    {
+//      paintVectorLabel(dest);
+//    }
   }
 
-  private void paintVectorLabel(final CanvasType dest)
+  /**
+   * draw vector labels for any TMA tracks
+   * 
+   * @param dest
+   */
+  private void paintVectorLabels(CanvasType dest)
   {
-    if (getVisible())
+
+    // cycle through the segments
+    final Enumeration<Editable> segments = _thePositions.elements();
+    while (segments.hasMoreElements())
     {
-      final Enumeration<Editable> posis = _thePositions.elements();
-      while (posis.hasMoreElements())
+      final TrackSegment seg = (TrackSegment) segments.nextElement();
+
+      // is this segment visible?
+      if (!seg.getVisible())
       {
-        final TrackSegment thisE = (TrackSegment) posis.nextElement();
-        // paint only visible planning segments
-        if ((thisE instanceof PlanningSegment) && thisE.getVisible())
-        {
-          PlanningSegment ps = (PlanningSegment) thisE;
-          ps.paintLabel(dest);
-        }
+        // nope, jump to the next
+        continue;
+      }
+
+      // paint only visible planning segments
+      if (seg instanceof PlanningSegment)
+      {
+        PlanningSegment ps = (PlanningSegment) seg;
+        ps.paintLabel(dest);
+      }
+      else if (seg instanceof CoreTMASegment)
+      {
+        CoreTMASegment tma = (CoreTMASegment) seg;
+
+        WorldLocation firstLoc = seg.first().getBounds().getCentre();
+        WorldLocation lastLoc = seg.last().getBounds().getCentre();
+        Font f = new Font("Sans Serif", Font.PLAIN, 11);
+        Color c = _theLabel.getColor();
+
+        // tell the segment it's being stretched
+        final String spdTxt =
+            MWC.Utilities.TextFormatting.GeneralFormat
+                .formatOneDecimalPlace(tma.getSpeed()
+                    .getValueIn(WorldSpeed.Kts));
+
+        // copied this text from RelativeTMASegment
+        double courseVal = tma.getCourse();
+        if (courseVal < 0)
+          courseVal += 360;
+
+        String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
+
+        // ok, now plot it
+        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+            lastLoc, 1.2, true);
+        textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
+        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+            lastLoc, 1.2, false);
       }
     }
   }
@@ -3133,6 +3112,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void removeElement(final Editable point)
   {
+    boolean modified = false;
+    
     // just see if it's a sensor which is trying to be removed
     if (point instanceof SensorWrapper)
     {
@@ -3141,6 +3122,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // tell the sensor wrapper to forget about us
       final TacticalDataWrapper sw = (TacticalDataWrapper) point;
       sw.setHost(null);
+      
+      // remember that we've made a change
+      modified = true;
     }
     else if (point instanceof TMAWrapper)
     {
@@ -3149,6 +3133,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // tell the sensor wrapper to forget about us
       final TacticalDataWrapper sw = (TacticalDataWrapper) point;
       sw.setHost(null);
+      
+      // remember that we've made a change
+      modified = true;
     }
     else if (point instanceof SensorContactWrapper)
     {
@@ -3159,6 +3146,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final SensorWrapper sw = (SensorWrapper) iter.nextElement();
         // try to remove it from this one...
         sw.removeElement(point);
+        
+        // remember that we've made a change
+        modified = true;
       }
     }
     else if (point instanceof DynamicTrackShapeWrapper)
@@ -3171,6 +3161,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             (DynamicTrackShapeSetWrapper) iter.nextElement();
         // try to remove it from this one...
         sw.removeElement(point);
+        
+        // remember that we've made a change
+        modified = true;
       }
     }
     else if (point instanceof TrackSegment)
@@ -3180,6 +3173,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // and clear the parent item
       final TrackSegment ts = (TrackSegment) point;
       ts.setWrapper(null);
+      
+      // remember that we've made a change
+      modified = true;
     }
     else if (point == _mySensors)
     {
@@ -3198,7 +3194,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // and empty them out
       _mySensors.removeAllElements();
-
+      
+      // remember that we've made a change
+      modified = true;
     }
     else if (point == _myDynamicShapes)
     {
@@ -3218,7 +3216,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // and empty them out
       _myDynamicShapes.removeAllElements();
-
+      
+      
+      // remember that we've made a change
+      modified = true;
     }
     else if (point == _mySolutions)
     {
@@ -3238,8 +3239,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // and empty them out
       _mySolutions.removeAllElements();
 
+      
+      // remember that we've made a change
+      modified = true;
     }
-
     else
     {
       // loop through the segments
@@ -3254,10 +3257,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           final FixWrapper fw = (FixWrapper) point;
           fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
               _locationListener);
+          
+          // remember that we've made a change
+          modified = true;
         }
       }
     }
 
+    if(modified)
+    {
+      _relativeUpdatePending = true;
+    }
+    
   }
 
   // ////////////////////////////////////////////////////
@@ -3614,6 +3625,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
 
     }
+    
+    // remember we may need to regenerate positions
+    _relativeUpdatePending = true;
   }
 
   public final void setSymbolColor(final Color col)
@@ -3740,10 +3754,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final boolean shiftTrack(final Enumeration<Editable> theEnum,
       final WorldVector offset)
   {
-    Enumeration<Editable> enumA = theEnum;
+    // remember that we may need to update relative semgents
+    _relativeUpdatePending = true;
+
     // keep track of if the track contains something that doesn't get
     // dragged
     boolean handledData = false;
+
+    // work through the elements
+    Enumeration<Editable> enumA = theEnum;
 
     if (enumA == null)
     {
@@ -3789,6 +3808,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           {
             // ok - get it to recalculate it
             scw.clearCalculatedOrigin();
+            
+            @SuppressWarnings("unused")
             WorldLocation newO = scw.getCalculatedOrigin(this);
             
             // we don't use the newO - we're just
@@ -3888,14 +3909,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       WorldLocation tmaLastLoc = null;
       long tmaLastDTG = 0;
 
-      // if it's not a relative track, and it's not visible, we don't
-      // need to
-      // work with ut
-      if (!isRelative)
-      {
-        continue;
-      }
-
       final Enumeration<Editable> fixWrappers = seg.elements();
       while (fixWrappers.hasMoreElements())
       {
@@ -3924,7 +3937,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             {
               final double speedKts = lastFix.getSpeed();
               final double courseRads = lastFix.getCourse();
-              final double depthM = lastFix.getDepth();
+              final double depthM = fw.getDepth();
               // use the value of depth as read in from the file
               tmaLastLoc.setDepth(depthM);
               final WorldVector thisVec =
@@ -4160,6 +4173,69 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     return visible;
   }
+  
+//  /** is this is a relative track, re-calculate the 
+//   * track positions
+//   */
+//  public void updatePositions()
+//  {
+//    if(_relativeUpdatePending)
+//    {
+//      _relativeUpdatePending = false;
+//      // cycle through the segments
+//      final Enumeration<Editable> segments = _thePositions.elements();
+//      while (segments.hasMoreElements())
+//      {
+//        final TrackSegment seg = (TrackSegment) segments.nextElement();
+//
+//        // SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
+//        // RELATIVE MODE
+//        final boolean isRelative = seg.getPlotRelative();
+//        WorldLocation tmaLastLoc = null;
+//        long tmaLastDTG = 0;
+//
+//        final Enumeration<Editable> fixWrappers = seg.elements();
+//        while (fixWrappers.hasMoreElements())
+//        {
+//          final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
+//
+//          // ok, are we in relative?
+//          if (isRelative)
+//          {
+//            final long thisTime = fw.getDateTimeGroup().getDate().getTime();
+//
+//            // ok, is this our first location?
+//            if (tmaLastLoc == null)
+//            {
+//              tmaLastLoc = new WorldLocation(seg.getTrackStart());
+//            }
+//            else
+//            {
+//              // calculate a new vector
+//              final long timeDelta = thisTime - tmaLastDTG;
+//              if (lastFix != null)
+//              {
+//                final double speedKts = lastFix.getSpeed();
+//                final double courseRads = lastFix.getCourse();
+//                final double depthM = fw.getDepth();
+//                final WorldVector thisVec =
+//                    seg.vectorFor(timeDelta, speedKts, courseRads);
+//                tmaLastLoc.addToMe(thisVec);
+//
+//                // use the value of depth as read in from the
+//                // file
+//                tmaLastLoc.setDepth(depthM);
+//              }
+//            }
+//            tmaLastDTG = thisTime;
+//
+//            // dump the location into the fix
+//            fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+//          }
+//        }
+//      }
+//    }
+//  }
 
   /**
    * Calculates Course & Speed for the track.
@@ -4203,6 +4279,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         prevFw = currFw;
       }
     }
+    
+    // if it's a DR track this will probably change things
+    _relativeUpdatePending = true;
 
   }
 
