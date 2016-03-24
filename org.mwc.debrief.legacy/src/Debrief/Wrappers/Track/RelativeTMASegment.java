@@ -727,7 +727,7 @@ public class RelativeTMASegment extends CoreTMASegment
   }
 
 	private void recalcPositions()
-	{
+	{	  
 		final Collection<Editable> items = getData();
 
 		// ok - draw that line!

@@ -355,10 +355,8 @@ public class DynamicInfillSegment extends TrackSegment
 			if (this.size() == 0)
 			{
 				// ok, tell the track to sort out the relative tracks
+			  // this will trigger our own reconstruct
 				this.getWrapper().sortOutRelativePositions();
-
-				// and regenerate our positions
-				reconstruct();
 			}
 		}
 
@@ -374,10 +372,14 @@ public class DynamicInfillSegment extends TrackSegment
 	 * recalculate our set of positions
 	 * 
 	 */
-	protected void reconstruct()
+	public void reconstruct()
 	{
 		// ok, clear ourselves out
 		this.removeAllElements();
+		
+		// check we know our data
+		if(_before == null || _after == null)
+		  return;
 
 		// now the num to use
 		final int oneUse = Math.min(2, _before.size());

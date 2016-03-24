@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Wed Mar 23 17:42:17 GMT 2016" Name="Debrief Plot" PlotId="1289308489415">
-<details Text="Saved with Debrief version dated Wed Mar 23 16:09:32 GMT 2016"/>
+<plot xmlns="http://www.debrief.info/plot" Created="Thu Mar 24 17:49:47 GMT 2016" Name="Debrief Plot" PlotId="1289308489415">
+<details Text="Saved with Debrief version dated Thu Mar 24 17:47:17 GMT 2016"/>
 <session>
 <layers>
 <track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="NONSUCH" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="true" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
@@ -3680,53 +3680,6 @@
 <Range Units="degs" Value="0.0314796"/>
 </Offset>
 </RelativeTMASegment>
-<DynamicInfillSegment AfterLeg="220448.18" BeforeLeg="220415.22" LineStyle="Dotted" Name="infill_1404_1" Visible="true">
-<fix ArrowShowing="false" Course="228.969" Dtg="090722 042548" Label="0425" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.433" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9850070" Long="29.9369415"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="232.762" Dtg="090722 042824" Label="0428" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.925" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9824177" Long="29.9335221"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="235.329" Dtg="090722 043100" Label="0431" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.275" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9798399" Long="29.9297810"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="237.049" Dtg="090722 043336" Label="0433" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.470" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9772981" Long="29.9258448"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="238.123" Dtg="090722 043612" Label="0436" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.505" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9748169" Long="29.9218399"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="238.645" Dtg="090722 043848" Label="0438" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.376" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9724209" Long="29.9178929"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="238.622" Dtg="090722 044124" Label="0441" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.079" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9701348" Long="29.9141302"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="237.966" Dtg="090722 044400" Label="0444" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.617" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9679831" Long="29.9106784"/>
-</centre>
-</fix>
-<fix ArrowShowing="false" Course="236.436" Dtg="090722 044636" Label="0446" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.990" SymbolShowing="true" Visible="true">
-<centre>
-<shortLocation Depth="30.980" Lat="4.9659905" Long="29.9076639"/>
-</centre>
-</fix>
-</DynamicInfillSegment>
 <RelativeTMASegment BaseFrequency="0.000" CourseDegs="232.179" HostSensor="" HostTrack="NONSUCH" LineStyle="Solid" Name="220448.18" Visible="true">
 <fix ArrowShowing="false" Course="232.179" Dtg="090722 044818" Label="0448" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="3.952" SymbolShowing="true" Visible="true">
 <centre>
@@ -3893,6 +3846,53 @@
 <Range Units="degs" Value="0.0292376"/>
 </Offset>
 </RelativeTMASegment>
+<DynamicInfillSegment AfterLeg="220448.18" BeforeLeg="220415.22" LineStyle="Dotted" Name="infill_1404_1" Visible="true">
+<fix ArrowShowing="false" Course="228.969" Dtg="090722 042548" Label="0425" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.433" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9850070" Long="29.9369415"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="232.762" Dtg="090722 042824" Label="0428" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.925" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9824177" Long="29.9335221"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="235.329" Dtg="090722 043100" Label="0431" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.274" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9798399" Long="29.9297810"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="237.049" Dtg="090722 043336" Label="0433" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.470" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9772981" Long="29.9258448"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="238.123" Dtg="090722 043612" Label="0436" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.505" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9748169" Long="29.9218400"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="238.645" Dtg="090722 043848" Label="0438" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.376" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9724209" Long="29.9178930"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="238.622" Dtg="090722 044124" Label="0441" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.079" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9701348" Long="29.9141303"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="237.966" Dtg="090722 044400" Label="0444" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.617" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9679831" Long="29.9106785"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="236.436" Dtg="090722 044636" Label="0446" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.990" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="30.980" Lat="4.9659905" Long="29.9076640"/>
+</centre>
+</fix>
+</DynamicInfillSegment>
 <SegmentList/>
 </track>
 <layer LineThickness="0" Name="labels" Visible="true">
@@ -3903,6 +3903,13 @@
 <shortLocation Depth="0.000" Lat="5.0058834" Long="29.9738537"/>
 </centre>
 </textlabel>
+<textlabel Label="ellipse origin" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="Reference Position" SymbolVisible="true" Visible="true">
+<colour Value="YELLOW"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="4.9732777" Long="29.9669421"/>
+</centre>
+</textlabel>
 <textlabel Label="first green cut" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="Reference Position" SymbolVisible="true" Visible="true">
 <colour Value="YELLOW"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -3910,11 +3917,11 @@
 <shortLocation Depth="0.000" Lat="4.9783613" Long="29.9755715"/>
 </centre>
 </textlabel>
-<textlabel Label="ellipse origin" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="Reference Position" SymbolVisible="true" Visible="true">
+<textlabel Label="start of red track" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="Reference Position" SymbolVisible="true" Visible="true">
 <colour Value="YELLOW"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="4.9732777" Long="29.9669421"/>
+<shortLocation Depth="0.000" Lat="4.9952665" Long="29.9474860"/>
 </centre>
 </textlabel>
 </layer>

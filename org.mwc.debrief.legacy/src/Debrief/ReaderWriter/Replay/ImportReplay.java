@@ -300,7 +300,6 @@ import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldVector;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
