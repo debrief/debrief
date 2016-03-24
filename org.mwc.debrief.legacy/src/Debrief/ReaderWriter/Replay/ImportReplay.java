@@ -1126,9 +1126,6 @@ public class ImportReplay extends PlainImporterBase
           
           // tell it that it has changed
           track.sortOutRelativePositions();
-
-          // and get the components to update
-          track.shift(new WorldVector(0,0,0));
         }
 
         final long end = System.currentTimeMillis();
