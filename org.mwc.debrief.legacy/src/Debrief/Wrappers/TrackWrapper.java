@@ -40,6 +40,7 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.SplittableLayer;
@@ -60,6 +61,8 @@ import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
+import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
@@ -504,7 +507,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           if (obj instanceof SegmentList)
           {
             final SegmentList sl = (SegmentList) obj;
-            TrackSegment newT = new TrackSegment();
+            TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
             duplicateFixes(sl, newT);
             newTrack.add(newT);
           }
@@ -513,7 +516,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             TrackSegment ts = (TrackSegment) obj;
 
             // ok, duplicate the fixes in this segment
-            TrackSegment newT = new TrackSegment();
+            TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
             duplicateFixes(ts, newT);
 
             // and add it to the new track
@@ -526,7 +529,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         TrackSegment ts = (TrackSegment) thisL;
 
         // ok, duplicate the fixes in this segment
-        TrackSegment newT = new TrackSegment();
+        TrackSegment newT = new TrackSegment(ts.getPlotRelative());
         duplicateFixes(ts, newT);
 
         // and add it to the new track
@@ -535,7 +538,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       else if (thisL instanceof SegmentList)
       {
         SegmentList sl = (SegmentList) thisL;
-        TrackSegment newT = new TrackSegment();
+
+        // it's absolute, since merged tracks are always
+        // absolute
+        TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
 
         // ok, duplicate the fixes in this segment
         duplicateFixes(sl, newT);
@@ -740,6 +746,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   final private WorldLocation _zeroLocation = new WorldLocation(0, 0, 0);
 
+  /**
+   * flag for if there is a pending update to track - particularly if it's a relative one
+   */
+  private boolean _relativeUpdatePending = false;
+
   // //////////////////////////////////////
   // member functions
   // //////////////////////////////////////
@@ -764,6 +775,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   transient private WorldArea _myWorldArea;
 
   transient private final PropertyChangeListener _locationListener;
+
+  transient private PropertyChangeListener _childTrackMovedListener;
 
   // //////////////////////////////////////
   // constructors
@@ -790,6 +803,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       public void propertyChange(final PropertyChangeEvent arg0)
       {
         fixMoved();
+      }
+    };
+    _childTrackMovedListener = new PropertyChangeListener()
+    {
+      
+      @Override
+      public void propertyChange(PropertyChangeEvent evt)
+      {
+        // child track move. remember that we need to recalculate & redraw
+        setRelativePending();
       }
     };
 
@@ -825,14 +848,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public void add(final MWC.GUI.Editable point)
   {
-    boolean done = false;
     // see what type of object this is
     if (point instanceof FixWrapper)
     {
       final FixWrapper fw = (FixWrapper) point;
       fw.setTrackWrapper(this);
       addFix(fw);
-      done = true;
     }
     // is this a sensor?
     else if (point instanceof SensorWrapper)
@@ -874,10 +895,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // a different
       // parent track name - so override it here)
       swr.setTrackName(this.getName());
-
-      // indicate success
-      done = true;
-
     }
     // is this a dynamic shape?
     else if (point instanceof DynamicTrackShapeSetWrapper)
@@ -899,9 +916,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // tell the sensor about us
         swr.setHost(this);
-
-        // indicate success
-        done = true;
       }
     }
     // is this a TMA solution track?
@@ -920,17 +934,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // a different
       // parent track name - so override it here)
       twr.setTrackName(this.getName());
-
-      // indicate success
-      done = true;
-
     }
     else if (point instanceof TrackSegment)
     {
       final TrackSegment seg = (TrackSegment) point;
       seg.setWrapper(this);
       _thePositions.addSegment((TrackSegment) point);
-      done = true;
 
       // hey, sort out the positions
       sortOutRelativePositions();
@@ -963,6 +972,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             }
           }
         }
+        
+        // we also need to listen for a child moving
+        rt.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _childTrackMovedListener);
       }
     }
     else if (point instanceof Layer)
@@ -974,12 +986,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final Editable thisE = (Editable) items.nextElement();
         add(thisE);
       }
-
-      // ok, it looks like it worked.
-      done = true;
     }
-
-    if (!done)
+    else
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
           "Sorry it is not possible to add:" + point.getName() + " to "
@@ -996,6 +1004,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public void append(final Layer other)
   {
+    boolean modified = false;
+
     // is it a track?
     if ((other instanceof TrackWrapper) || (other instanceof TrackSegment))
     {
@@ -1007,10 +1017,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (nextItem instanceof Layer)
         {
           append((Layer) nextItem);
+          modified = true;
         }
         else
         {
           add(nextItem);
+          modified = true;
         }
       }
     }
@@ -1018,6 +1030,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       // nope, just add it to us.
       add(other);
+      modified = true;
+    }
+
+    if (modified)
+    {
+      setRelativePending();
     }
   }
 
@@ -1032,11 +1050,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     final Enumeration<Editable> it = getPositions();
     while (it.hasMoreElements())
     {
-      final Object val = it.nextElement();
+      final Editable val = it.nextElement();
       if (val instanceof PlainWrapper)
       {
         final PlainWrapper pw = (PlainWrapper) val;
         pw.closeMe();
+      }
+      else if(val instanceof TrackSegment)
+      {
+        final TrackSegment ts = (TrackSegment) val;
+        
+        // and clear the parent item
+        ts.setWrapper(null);
+
+        // we also need to stop listen for a child moving
+        ts.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _childTrackMovedListener);
       }
     }
 
@@ -1136,6 +1164,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     // and put the keepers back in
     _thePositions.addSegment(keeper);
+
+    // and remember we need an update
+    setRelativePending();
   }
 
   /**
@@ -1261,9 +1292,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
-    // TODO: DEBUG: REMOVE: remove this diagnostics message
-   // Application.logStack2(Application.WARNING, "DEBUG: Filtering track");
-
     final Enumeration<Editable> fixWrappers = getPositions();
     while (fixWrappers.hasMoreElements())
     {
@@ -2498,6 +2526,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
+  private void setRelativePending()
+  {
+    _relativeUpdatePending = true;
+  }
+
   /**
    * paint the fixes for this track
    * 
@@ -2513,12 +2546,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // enough
     checkPointsArray();
 
-    // java.awt.Point lastP = null;
+    // we draw tracks as polylines. But we can't do that
+    // if the color/style changes. So, we have to track their values
     Color lastCol = null;
     final int defaultlineStyle = getLineStyle();
 
-    WorldLocation lastLocation = null;
     FixWrapper lastFix = null;
+
+    // update DR positions (if necessary)
+    if (_relativeUpdatePending)
+    {
+      // ok, generate the points on the relative track
+      sortOutRelativePositions();
+
+      // and clear the flag
+      _relativeUpdatePending = false;
+    }
 
     // cycle through the segments
     final Enumeration<Editable> segments = _thePositions.elements();
@@ -2541,22 +2584,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         thisLineStyle = defaultlineStyle;
       }
 
-      // SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
-      // RELATIVE MODE
-      final boolean isRelative = seg.getPlotRelative();
-      WorldLocation tmaLastLoc = null;
-      long tmaLastDTG = 0;
-
-      // if it's not a relative track, and it's not visible, we don't
-      // need to work with ut
-      if (!getVisible() && !isRelative)
-      {
-        continue;
-      }
-
       // is this segment visible?
       if (!seg.getVisible())
       {
+        // nope, jump to the next
         continue;
       }
 
@@ -2582,15 +2613,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // copy/paste operation. Tell it about it's children
         fw.setTrackWrapper(this);
 
-        // is this fix visible?
-        if (!fw.getVisible())
-        {
-          // nope. Don't join it to the last position.
-          // ok, if we've built up a polygon, we need to write it
-          // now
-          paintSetOfPositions(dest, lastCol, thisLineStyle);
-        }
-
         // do our job of identifying the first & last date value
         if (fw.getVisible())
         {
@@ -2612,49 +2634,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             endPoints.add(fw);
           }
         }
-
-        // Note: we're carrying on working with this position even
-        // if it isn't visible,
-        // since we need to use non-visible positions to build up a
-        // DR track.
-
-        // ok, are we in relative?
-        if (isRelative)
-        {
-          final long thisTime = fw.getDateTimeGroup().getDate().getTime();
-
-          // ok, is this our first location?
-          if (tmaLastLoc == null)
-          {
-            tmaLastLoc = new WorldLocation(seg.getTrackStart());
-            lastLocation = tmaLastLoc;
-          }
-          else
-          {
-            // calculate a new vector
-            final long timeDelta = thisTime - tmaLastDTG;
-            if (lastFix != null)
-            {
-              final double speedKts = lastFix.getSpeed();
-              final double courseRads = lastFix.getCourse();
-              final double depthM = lastFix.getDepth();
-              // use the value of depth as read in from the
-              // file
-              tmaLastLoc.setDepth(depthM);
-              final WorldVector thisVec =
-                  seg.vectorFor(timeDelta, speedKts, courseRads);
-              tmaLastLoc.addToMe(thisVec);
-              lastLocation = tmaLastLoc;
-            }
-          }
-          tmaLastDTG = thisTime;
-          // dump the location into the fix
-          fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-        }
         else
         {
-          // this is an absolute position
-          lastLocation = fw.getLocation();
+          // nope. Don't join it to the last position.
+          // ok, if we've built up a polygon, we need to write it
+          // now
+          paintSetOfPositions(dest, lastCol, thisLineStyle);
         }
 
         // remember this fix, used for relative tracks
@@ -2665,7 +2650,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (!fw.getVisible())
           continue;
 
-        final java.awt.Point thisP = dest.toScreen(lastLocation);
+        final java.awt.Point thisP = dest.toScreen(fw.getLocation());
 
         // just check that there's enough GUI to create the plot
         // (i.e. has a point been returned)
@@ -2741,38 +2726,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         paintIt(dest, endPoints.get(1), getEndTimeLabels());
       }
 
-      // SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
-      //
-      if (seg instanceof CoreTMASegment)
-      {
-        CoreTMASegment tma = (CoreTMASegment) seg;
-
-        WorldLocation firstLoc = seg.first().getBounds().getCentre();
-        WorldLocation lastLoc = seg.last().getBounds().getCentre();
-        Font f = new Font("Sans Serif", Font.PLAIN, 11);
-        Color c = _theLabel.getColor();
-
-        // tell the segment it's being stretched
-        final String spdTxt =
-            MWC.Utilities.TextFormatting.GeneralFormat
-                .formatOneDecimalPlace(tma.getSpeed()
-                    .getValueIn(WorldSpeed.Kts));
-
-        // copied this text from RelativeTMASegment
-        double courseVal = tma.getCourse();
-        if (courseVal < 0)
-          courseVal += 360;
-
-        String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
-
-        // ok, now plot it
-        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-            lastLoc, 1.2, true);
-        textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
-        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-            lastLoc, 1.2, false);
-      }
-
       // ok, just see if we have any pending polylines to paint
       paintSetOfPositions(dest, lastCol, thisLineStyle);
     }
@@ -2844,9 +2797,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     // and paint it
     _theLabel.paint(dest);
-    
+
     // ok, restore the user-favourite location
-    if(oldLoc != null)
+    if (oldLoc != null)
     {
       _theLabel.setRelativeLocation(oldLoc);
     }
@@ -3011,27 +2964,65 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     } // if the label is visible
 
-    // paint vector label
-    if (plotted_anything)
-    {
-      paintVectorLabel(dest);
-    }
+    // lastly - paint any TMA or planning segment labels
+    paintVectorLabels(dest);
   }
 
-  private void paintVectorLabel(final CanvasType dest)
+  /**
+   * draw vector labels for any TMA tracks
+   * 
+   * @param dest
+   */
+  private void paintVectorLabels(CanvasType dest)
   {
-    if (getVisible())
+
+    // cycle through the segments
+    final Enumeration<Editable> segments = _thePositions.elements();
+    while (segments.hasMoreElements())
     {
-      final Enumeration<Editable> posis = _thePositions.elements();
-      while (posis.hasMoreElements())
+      final TrackSegment seg = (TrackSegment) segments.nextElement();
+
+      // is this segment visible?
+      if (!seg.getVisible())
       {
-        final TrackSegment thisE = (TrackSegment) posis.nextElement();
-        // paint only visible planning segments
-        if ((thisE instanceof PlanningSegment) && thisE.getVisible())
-        {
-          PlanningSegment ps = (PlanningSegment) thisE;
-          ps.paintLabel(dest);
-        }
+        // nope, jump to the next
+        continue;
+      }
+
+      // paint only visible planning segments
+      if (seg instanceof PlanningSegment)
+      {
+        PlanningSegment ps = (PlanningSegment) seg;
+        ps.paintLabel(dest);
+      }
+      else if (seg instanceof CoreTMASegment)
+      {
+        CoreTMASegment tma = (CoreTMASegment) seg;
+
+        WorldLocation firstLoc = seg.first().getBounds().getCentre();
+        WorldLocation lastLoc = seg.last().getBounds().getCentre();
+        Font f = new Font("Sans Serif", Font.PLAIN, 11);
+        Color c = _theLabel.getColor();
+
+        // tell the segment it's being stretched
+        final String spdTxt =
+            MWC.Utilities.TextFormatting.GeneralFormat
+                .formatOneDecimalPlace(tma.getSpeed()
+                    .getValueIn(WorldSpeed.Kts));
+
+        // copied this text from RelativeTMASegment
+        double courseVal = tma.getCourse();
+        if (courseVal < 0)
+          courseVal += 360;
+
+        String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
+
+        // ok, now plot it
+        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+            lastLoc, 1.2, true);
+        textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
+        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+            lastLoc, 1.2, false);
       }
     }
   }
@@ -3126,6 +3117,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void removeElement(final Editable point)
   {
+    boolean modified = false;
+
     // just see if it's a sensor which is trying to be removed
     if (point instanceof SensorWrapper)
     {
@@ -3134,6 +3127,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // tell the sensor wrapper to forget about us
       final TacticalDataWrapper sw = (TacticalDataWrapper) point;
       sw.setHost(null);
+
+      // remember that we've made a change
+      modified = true;
     }
     else if (point instanceof TMAWrapper)
     {
@@ -3142,6 +3138,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // tell the sensor wrapper to forget about us
       final TacticalDataWrapper sw = (TacticalDataWrapper) point;
       sw.setHost(null);
+
+      // remember that we've made a change
+      modified = true;
     }
     else if (point instanceof SensorContactWrapper)
     {
@@ -3152,6 +3151,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final SensorWrapper sw = (SensorWrapper) iter.nextElement();
         // try to remove it from this one...
         sw.removeElement(point);
+
+        // remember that we've made a change
+        modified = true;
       }
     }
     else if (point instanceof DynamicTrackShapeWrapper)
@@ -3164,6 +3166,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             (DynamicTrackShapeSetWrapper) iter.nextElement();
         // try to remove it from this one...
         sw.removeElement(point);
+
+        // remember that we've made a change
+        modified = true;
       }
     }
     else if (point instanceof TrackSegment)
@@ -3173,6 +3178,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // and clear the parent item
       final TrackSegment ts = (TrackSegment) point;
       ts.setWrapper(null);
+
+      // we also need to stop listen for a child moving
+      ts.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _childTrackMovedListener);
+      
+      // remember that we've made a change
+      modified = true;
     }
     else if (point == _mySensors)
     {
@@ -3192,6 +3203,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // and empty them out
       _mySensors.removeAllElements();
 
+      // remember that we've made a change
+      modified = true;
     }
     else if (point == _myDynamicShapes)
     {
@@ -3212,6 +3225,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // and empty them out
       _myDynamicShapes.removeAllElements();
 
+      // remember that we've made a change
+      modified = true;
     }
     else if (point == _mySolutions)
     {
@@ -3231,8 +3246,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // and empty them out
       _mySolutions.removeAllElements();
 
+      // remember that we've made a change
+      modified = true;
     }
-
     else
     {
       // loop through the segments
@@ -3247,8 +3263,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           final FixWrapper fw = (FixWrapper) point;
           fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
               _locationListener);
+
+          // remember that we've made a change
+          modified = true;
         }
       }
+    }
+
+    if (modified)
+    {
+      setRelativePending();
     }
 
   }
@@ -3607,6 +3631,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
 
     }
+
+    // remember we may need to regenerate positions
+    setRelativePending();
   }
 
   public final void setSymbolColor(final Color col)
@@ -3724,48 +3751,90 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public void shift(final WorldVector vector)
   {
-    this.shiftTrack(elements(), vector);
+    boolean handled = false;
+    
+    // check it contains a range
+    if (vector.getRange() > 0d)
+    {
+      // ok, move any tracks
+      final Enumeration<Editable> enumA = elements();
+      while (enumA.hasMoreElements())
+      {
+        final Object thisO = enumA.nextElement();
+        if (thisO instanceof TrackSegment)
+        {
+          final TrackSegment seg = (TrackSegment) thisO;
+          seg.shift(vector);
+        }
+        else if (thisO instanceof SegmentList)
+        {
+          final SegmentList list = (SegmentList) thisO;
+          final Collection<Editable> items = list.getData();
+          for (final Iterator<Editable> iterator = items.iterator(); iterator
+              .hasNext();)
+          {
+            final TrackSegment segment = (TrackSegment) iterator.next();
+            segment.shift(vector);
+          }
+        }
+      }
+      
+      handled = true;
+      
+      // ok, get the legs to re-generate themselves
+      sortOutRelativePositions();
+    }
+
+    // now update the other children - some 
+    // are sensitive to ownship track
+    this.updateDependents(elements(), vector);
+
+    // did we move any dependents
+    if(handled)
+    {
+      firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this._theLabel
+          .getLocation());
+    }
+
   }
 
   /**
    * move the whole of the track be the provided offset
    */
-  public final void shiftTrack(final Enumeration<Editable> theEnum,
+  private final boolean updateDependents(final Enumeration<Editable> theEnum,
       final WorldVector offset)
   {
-    Enumeration<Editable> enumA = theEnum;
     // keep track of if the track contains something that doesn't get
     // dragged
     boolean handledData = false;
 
-    if (enumA == null)
+    // work through the elements
+    while (theEnum.hasMoreElements())
     {
-      enumA = elements();
-    }
-
-    while (enumA.hasMoreElements())
-    {
-      final Object thisO = enumA.nextElement();
-      if (thisO instanceof TrackSegment)
+      final Object thisO = theEnum.nextElement();
+      if (thisO instanceof DynamicInfillSegment)
       {
-        final TrackSegment seg = (TrackSegment) thisO;
-        seg.shift(offset);
-
+        DynamicInfillSegment dd = (DynamicInfillSegment) thisO;
+        dd.reconstruct();
+        
         // ok - job well done
         handledData = true;
-
+      }
+      else if (thisO instanceof TrackSegment)
+      {
+        // special case = we handle this higher
+        // up the call chain, since tracks
+        // have to move before any dependent children
+        
+        // ok - job well done
+        handledData = true;
       }
       else if (thisO instanceof SegmentList)
       {
         final SegmentList list = (SegmentList) thisO;
         final Collection<Editable> items = list.getData();
-        for (final Iterator<Editable> iterator = items.iterator(); iterator
-            .hasNext();)
-        {
-          final TrackSegment segment = (TrackSegment) iterator.next();
-          segment.shift(offset);
-        }
-        handledData = true;
+        IteratorWrapper enumer = new Plottables.IteratorWrapper(items.iterator());
+        handledData = updateDependents(enumer, offset);
       }
       else if (thisO instanceof SensorWrapper)
       {
@@ -3775,6 +3844,44 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         {
           final SensorContactWrapper scw =
               (SensorContactWrapper) enumS.nextElement();
+          // does this fix have it's own origin?
+          final WorldLocation sensorOrigin = scw.getOrigin();
+
+          if (sensorOrigin == null)
+          {
+            // ok - get it to recalculate it
+            scw.clearCalculatedOrigin();
+
+            @SuppressWarnings("unused")
+            WorldLocation newO = scw.getCalculatedOrigin(this);
+
+            // we don't use the newO - we're just
+            // triggering an update
+          }
+          else
+          {
+            // create new object to contain the updated location
+            final WorldLocation newSensorLocation =
+                new WorldLocation(sensorOrigin);
+            newSensorLocation.addToMe(offset);
+
+            // so the contact did have an origin, change it
+            scw.setOrigin(newSensorLocation);
+          }
+        } // looping through the contacts
+
+        // ok - job well done
+        handledData = true;
+
+      } // whether this is a sensor wrapper
+      else if (thisO instanceof TMAWrapper)
+      {
+        final TMAWrapper sw = (TMAWrapper) thisO;
+        final Enumeration<Editable> enumS = sw.elements();
+        while (enumS.hasMoreElements())
+        {
+          final TMAContactWrapper scw = (TMAContactWrapper) enumS.nextElement();
+
           // does this fix have it's own origin?
           final WorldLocation sensorOrigin = scw.getOrigin();
 
@@ -3793,26 +3900,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // ok - job well done
         handledData = true;
 
-      } // whether this is a sensor wrapper
-      else if (thisO instanceof TrackSegment)
+      } // whether this is a TMA wrapper
+      else if (thisO instanceof BaseLayer)
       {
-        final TrackSegment tw = (TrackSegment) thisO;
-        final Enumeration<Editable> enumS = tw.elements();
-
-        // fire recursively, smart-arse.
-        shiftTrack(enumS, offset);
-
-        // ok - job well done
-        handledData = true;
-
-      } // whether this is a sensor wrapper
+        // ok, loop through it
+        BaseLayer bl = (BaseLayer) thisO;
+        handledData = updateDependents(bl.elements(), offset);
+      }
     } // looping through this track
 
     // ok, did we handle the data?
     if (!handledData)
     {
-      System.err.println("TrackWrapper problem; not able to shift:" + enumA);
+      System.err.println("TrackWrapper problem; not able to shift:" + theEnum);
     }
+
+    return handledData;
   }
 
   /**
@@ -3821,6 +3924,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public void sortOutRelativePositions()
   {
+    boolean moved = false;
+
     final Enumeration<Editable> segments = _thePositions.elements();
     while (segments.hasMoreElements())
     {
@@ -3831,14 +3936,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final boolean isRelative = seg.getPlotRelative();
       WorldLocation tmaLastLoc = null;
       long tmaLastDTG = 0;
-
-      // if it's not a relative track, and it's not visible, we don't
-      // need to
-      // work with ut
-      if (!isRelative)
-      {
-        continue;
-      }
 
       final Enumeration<Editable> fixWrappers = seg.elements();
       while (fixWrappers.hasMoreElements())
@@ -3868,7 +3965,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             {
               final double speedKts = lastFix.getSpeed();
               final double courseRads = lastFix.getCourse();
-              final double depthM = lastFix.getDepth();
+              final double depthM = fw.getDepth();
               // use the value of depth as read in from the file
               tmaLastLoc.setDepth(depthM);
               final WorldVector thisVec =
@@ -3879,10 +3976,31 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           lastFix = fw;
           tmaLastDTG = thisTime;
 
+          // have we found any movement yet?
+          if (!moved)
+          {
+            // see if this represents a change
+            if (!fw.getLocation().equals(tmaLastLoc))
+            {
+              moved = true;
+            }
+          }
+
           // dump the location into the fix
           fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
         }
       }
+    }
+
+    // did we do anything?
+    if (moved)
+    {
+      // get the child components to update,
+      // - including sending out a "moved" message
+      updateDependents(elements(), new WorldVector(0, 0, 0));
+      
+      // also share the good news
+      firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System.currentTimeMillis());
     }
   }
 
@@ -4148,6 +4266,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
     }
 
+    // if it's a DR track this will probably change things
+    setRelativePending();
+
   }
 
   public void trimTo(TimePeriod period)
@@ -4310,7 +4431,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (_thePositions.size() == 0)
     {
       // nope, add one
-      final TrackSegment firstSegment = new TrackSegment();
+      final TrackSegment firstSegment = new TrackSegment(TrackSegment.ABSOLUTE);
       firstSegment.setName("Positions");
       _thePositions.addSegment(firstSegment);
     }

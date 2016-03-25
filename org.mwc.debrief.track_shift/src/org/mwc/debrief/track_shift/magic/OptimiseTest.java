@@ -66,7 +66,7 @@ public class OptimiseTest
 			Vector<DraggableItem> resList = new Vector<DraggableItem>();
 			TrackWrapper theTrack = new TrackWrapper();
 			items.add(new EditableWrapper(theTrack));
-			items.add(new EditableWrapper(new TrackSegment()));
+			items.add(new EditableWrapper(new TrackSegment(TrackSegment.ABSOLUTE)));
 			IStructuredSelection sel = new StructuredSelection(items);
 
 			assertEquals("data in there", 2, sel.size());
@@ -90,7 +90,7 @@ public class OptimiseTest
 			items = new Vector<EditableWrapper>();
 			resList = new Vector<DraggableItem>();
 			theTrack = new TrackWrapper();
-			items.add(new EditableWrapper(new TrackSegment()));
+			items.add(new EditableWrapper(new TrackSegment(TrackSegment.ABSOLUTE)));
 			items.add(new EditableWrapper(theTrack));
 			sel = new StructuredSelection(items);
 
@@ -104,8 +104,8 @@ public class OptimiseTest
 			items = new Vector<EditableWrapper>();
 			resList = new Vector<DraggableItem>();
 			theTrack = new TrackWrapper();
-			items.add(new EditableWrapper(new TrackSegment()));
-			items.add(new EditableWrapper(new TrackSegment()));
+			items.add(new EditableWrapper(new TrackSegment(TrackSegment.ABSOLUTE)));
+			items.add(new EditableWrapper(new TrackSegment(TrackSegment.ABSOLUTE)));
 			sel = new StructuredSelection(items);
 
 			assertEquals("data in there", 2, sel.size());

@@ -233,6 +233,9 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 */
 	public PlanningSegment(final PlanningSegment other)
 	{
+	  // make it absolute, which planning semgntns are
+	  super(TrackSegment.ABSOLUTE);
+	  
 		_calcModel = other._calcModel;
 		_created = System.nanoTime();
 		_myCourseDegs = other._myCourseDegs;
@@ -249,6 +252,9 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 			final WorldSpeed worldSpeed, final WorldDistance worldDistance,
 			final Color color)
 	{
+	   // make it absolute, which planning semgntns are
+    super(TrackSegment.ABSOLUTE);
+	  
 		this.setName(name);
 		this.setCourse(courseDegs);
 		this.setSpeedSilent(worldSpeed);

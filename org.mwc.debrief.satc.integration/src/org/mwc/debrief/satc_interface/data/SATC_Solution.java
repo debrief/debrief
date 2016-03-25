@@ -1482,7 +1482,8 @@ public class SATC_Solution extends BaseLayer implements
 				}
 				else
 				{
-					ts = new TrackSegment();
+				  // make the segment absolute, which SATC tracks are
+					ts = new TrackSegment(TrackSegment.ABSOLUTE);
 
 					// ok, loop through the states
 					final Iterator<State> iter = thisLeg.getStates().iterator();

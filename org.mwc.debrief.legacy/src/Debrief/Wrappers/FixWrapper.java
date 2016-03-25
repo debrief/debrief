@@ -599,11 +599,14 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   @FireReformatted
   public void setColor(final Color theColor)
   {
-    // let the parent do the business
-    super.setColor(theColor);
-
-    // and update the color of the location wrapper
-    _theLocationWrapper.setColor(getColor());
+    if(theColor != null && !theColor.equals(getColor()))
+    {
+      // let the parent do the business
+      super.setColor(theColor);
+  
+      // and update the color of the location wrapper
+      _theLocationWrapper.setColor(getColor());
+    }
   }
 
   /**
@@ -617,7 +620,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   {
 
     // take a copy of the color
-    final Color safeColor = _theLocationWrapper.getColor();
+    final Color safeColor = getColor();
 
     // use the provided color
     _theLocationWrapper.setColor(theColor);
