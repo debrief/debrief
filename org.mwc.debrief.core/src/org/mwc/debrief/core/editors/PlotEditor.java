@@ -153,6 +153,7 @@ import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.PlainProjection;
@@ -479,43 +480,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
 
       @Override
-      public void dataExtended(Layers theData, Plottable newItem, Layer parent)
+      public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
       {
-        // ok, have a look at the pasted track
-        if (parent instanceof TrackWrapper && newItem == null)
-        {
-          TrackWrapper tw = (TrackWrapper) parent;
-          SegmentList segs = tw.getSegments();
-          Enumeration<Editable> iter = segs.elements();
-          while (iter.hasMoreElements())
-          {
-            Editable editable = (Editable) iter.nextElement();
-            if (editable instanceof RelativeTMASegment)
-            {
-              RelativeTMASegment rel = (RelativeTMASegment) editable;
-              WatchableList host = rel.getReferenceTrack();
-              String hostName = host.getName();
-
-              // see if we already have a host of this name
-              Layer possHost = _myLayers.findLayer(hostName);
-              if (possHost == null)
-              {
-                // ABORT - WE DON'T HAVE THIS TRACK
-              }
-              else
-              {
-                if (possHost instanceof TrackWrapper && possHost != host)
-                {
-                  // ok, we've got a track with the right name, but it's another
-                  // object, so we've probably moved to another plot.
-
-                  // try to move the references to this track
-                  rel.updateLayers(_myLayers);
-                }
-              }
-            }
-          }
-        }        
+        reconnectSegments(newItem, parent);        
       }
     });
   }
@@ -2016,5 +1983,61 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
     });
 
+  }
+
+  private void reconnectSegments(final Plottable newItem, final Layer parent)
+  {
+    // ok, have a look at the pasted track
+    if (parent != null && parent instanceof TrackWrapper && newItem == null)
+    {
+      TrackWrapper tw = (TrackWrapper) parent;
+      SegmentList segs = tw.getSegments();
+      Enumeration<Editable> iter = segs.elements();
+      boolean layersChanged = false;
+
+      while (iter.hasMoreElements())
+      {
+        Editable editable = (Editable) iter.nextElement();
+
+        // RelativeTMASegment implements the correct interface
+        // to let us do this common processing
+        if (editable instanceof RelativeTMASegment)
+        {
+          RelativeTMASegment needer = (RelativeTMASegment) editable;
+          boolean thisChanged = needer.getLayers() != _myLayers;
+          if (thisChanged)
+          {
+            needer.setLayers(_myLayers);
+          }
+
+          layersChanged = layersChanged || thisChanged;
+        }
+      }
+
+      // ok, have we processed a layer change
+      if (layersChanged)
+      {
+        // yes. ok, loop through and update any dynamic infills
+        segs = tw.getSegments();
+        iter = segs.elements();
+
+        while (iter.hasMoreElements())
+        {
+          Editable editable = (Editable) iter.nextElement();
+          if (editable instanceof DynamicInfillSegment)
+          {
+            DynamicInfillSegment ds = (DynamicInfillSegment) editable;
+            
+            ds.clear();
+
+            //
+            @SuppressWarnings("unused")
+            boolean wasted = ds.getVisible();
+          }
+        }
+
+      }
+      
+    }
   }
 }
