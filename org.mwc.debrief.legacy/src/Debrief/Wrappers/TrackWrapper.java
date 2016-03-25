@@ -776,7 +776,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   transient private final PropertyChangeListener _locationListener;
 
-  private PropertyChangeListener _childTrackMovedListener;
+  transient private PropertyChangeListener _childTrackMovedListener;
 
   // //////////////////////////////////////
   // constructors
@@ -1050,11 +1050,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     final Enumeration<Editable> it = getPositions();
     while (it.hasMoreElements())
     {
-      final Object val = it.nextElement();
+      final Editable val = it.nextElement();
       if (val instanceof PlainWrapper)
       {
         final PlainWrapper pw = (PlainWrapper) val;
         pw.closeMe();
+      }
+      else if(val instanceof TrackSegment)
+      {
+        final TrackSegment ts = (TrackSegment) val;
+        
+        // and clear the parent item
+        ts.setWrapper(null);
+
+        // we also need to stop listen for a child moving
+        ts.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _childTrackMovedListener);
       }
     }
 

@@ -171,7 +171,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	/** we listen out for the parent track moving,
 	 * here's our listener
 	 */
-  final private PropertyChangeListener _refTrackMovedListener;
+  private transient PropertyChangeListener _refTrackMovedListener;
 
 	/**
 	 * base constructor - sorts out the obvious
