@@ -695,34 +695,43 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	 */
 	private void identifyReferenceTrack()
 	{
-		TrackWrapper theTrack = (TrackWrapper) _theLayers.findLayer(_referenceTrackName);
-		
-		// ok, store it (including clearing any previous one)
-		setTrack(theTrack);
+    TrackWrapper theTrack =
+        (TrackWrapper) _theLayers.findLayer(_referenceTrackName);
+
+    if (theTrack == null)
+    {
+      Application.logError2(ErrorLogger.ERROR,
+          "Unable to find host track named:" + _referenceTrackName, null);
+    }
+
+    // ok, store it (including clearing any previous one)
+    setTrack(theTrack);
 	}
 
   private void setTrack(TrackWrapper newTrack)
   {
     checkMoveListener();
-    
+
     // do we have an existing one?
-    if(_referenceTrack != null)
+    if (_referenceTrack != null)
     {
-      _referenceTrack.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
+      _referenceTrack.removePropertyChangeListener(
+          PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
       _referenceTrack = null;
     }
-    
-    if(_referenceSensor != null)
+
+    if (_referenceSensor != null)
     {
-      _referenceSensor.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
+      _referenceSensor.removePropertyChangeListener(
+          PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
       _referenceSensor = null;
     }
-    
+
     // hmm, also try to find the sensor
     if (newTrack != null)
     {
       _referenceTrack = newTrack;
-      
+
       Enumeration<Editable> sensors = _referenceTrack.getSensors().elements();
       while (sensors.hasMoreElements())
       {
@@ -730,16 +739,24 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
         if (sensor.getName().equals(_referenceSensorName))
         {
           _referenceSensor = sensor;
-          
-          
+
           // and listen to it
-          _referenceSensor.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
+          _referenceSensor.addPropertyChangeListener(
+              PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
           break;
         }
       }
-      
+
+      // did it work?
+      if (_referenceSensor == null)
+      {
+        Application.logError2(ErrorLogger.ERROR,
+            "Unable to find host sensor named:" + _referenceSensorName, null);
+      }
+
       // we should also listen for the reference track moving
-      _referenceTrack.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
+      _referenceTrack.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+          _refTrackMovedListener);
     }
   }
 
