@@ -298,7 +298,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     public void setColor(final java.awt.Color theColor)
     {
         // do we need to change?
-        if(theColor != null && !theColor.equals(_theColor))
+        if(theColor != _theColor)
         {
           // store the old colour
           final Color oldCol = _theColor;

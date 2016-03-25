@@ -1176,7 +1176,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
 		final WorldVector vector = new WorldVector(0, 1, 0);
 		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(
-				12, WorldSpeed.Kts), vector, null)
+				12, WorldSpeed.Kts), vector, null, null, null)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -1226,7 +1226,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
 		final WorldVector vector = new WorldVector(0, 1, 0);
 		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(
-				12, WorldSpeed.Kts), vector, null)
+				12, WorldSpeed.Kts), vector, null, null, null)
 		{
 			private static final long serialVersionUID = 1L;
 
