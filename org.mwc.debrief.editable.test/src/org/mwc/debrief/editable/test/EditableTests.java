@@ -450,7 +450,7 @@ public class EditableTests extends TestCase
 			speed = new WorldSpeed(5, WorldSpeed.Kts);
 			course = 33;
 			final WorldVector offset = new WorldVector(12, 12, 0);
-			editable = new RelativeTMASegment(course, speed, offset, null);
+			editable = new RelativeTMASegment(course, speed, offset, null, null,null);
 			break;
 		case "Debrief.Wrappers.Track.PlanningSegment":
 			speed = new WorldSpeed(5, WorldSpeed.Kts);
