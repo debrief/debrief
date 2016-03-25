@@ -33,6 +33,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
@@ -50,7 +51,7 @@ import MWC.TacticalData.Fix;
  * @author Ian Mayo
  * 
  */
-public class RelativeTMASegment extends CoreTMASegment
+public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAboutLayers
 {
 	/**
 	 * class containing editable details of a track
@@ -302,18 +303,16 @@ public class RelativeTMASegment extends CoreTMASegment
     }
   }
 	
-	public void updateLayers(final Layers layers)
+	public void setLayers(final Layers layers)
 	{
-	  _theLayers = layers;
-	  
-	  // ok, we've moved.
-	  // We'd better re-generate our references
-	  
-	  // clear out existing pointers 
-	  setTrack(null);
-	  
-	  // and re-generate them
-	  identifyReferenceTrack();
+	  if(layers != _theLayers)
+	  {
+      _theLayers = layers;
+
+      // ok, we've moved.
+      // We'd better re-generate our references
+      identifyReferenceTrack();
+	  }
 	}
 
 
