@@ -948,7 +948,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // we many need some more sorting
       if (point instanceof RelativeTMASegment)
       {
-        RelativeTMASegment rt = (RelativeTMASegment) point;
+        RelativeTMASegment newRelativeSegment = (RelativeTMASegment) point;
 
         // ok, try to update the layers. get the layers for an
         // existing segment
@@ -956,25 +956,27 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         Enumeration<Editable> sEnum = sl.elements();
         while (sEnum.hasMoreElements())
         {
-          TrackSegment thisS = (TrackSegment) sEnum.nextElement();
-          if (thisS != rt)
+          TrackSegment mySegment = (TrackSegment) sEnum.nextElement();
+          if (mySegment != newRelativeSegment)
           {
             // ok, it's not this one. try the layers
-            if (thisS instanceof RelativeTMASegment)
+            if (mySegment instanceof RelativeTMASegment)
             {
-              final RelativeTMASegment oldR = (RelativeTMASegment) thisS;
-              final Layers hisL = oldR.getLayers();
-              if (hisL != rt.getLayers())
+              final RelativeTMASegment myRelativeSegnent =
+                  (RelativeTMASegment) mySegment;
+              final Layers myExistingLayers = myRelativeSegnent.getLayers();
+              if (myExistingLayers != newRelativeSegment.getLayers())
               {
-                rt.updateLayers(hisL);
+                newRelativeSegment.setLayers(myExistingLayers);
                 break;
               }
             }
           }
         }
-        
+
         // we also need to listen for a child moving
-        rt.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _childTrackMovedListener);
+        newRelativeSegment.addPropertyChangeListener(CoreTMASegment.ADJUSTED,
+            _childTrackMovedListener);
       }
     }
     else if (point instanceof Layer)
