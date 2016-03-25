@@ -4223,69 +4223,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return visible;
   }
 
-  // /** is this is a relative track, re-calculate the
-  // * track positions
-  // */
-  // public void updatePositions()
-  // {
-  // if(_relativeUpdatePending)
-  // {
-  // _relativeUpdatePending = false;
-  // // cycle through the segments
-  // final Enumeration<Editable> segments = _thePositions.elements();
-  // while (segments.hasMoreElements())
-  // {
-  // final TrackSegment seg = (TrackSegment) segments.nextElement();
-  //
-  // // SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
-  // // RELATIVE MODE
-  // final boolean isRelative = seg.getPlotRelative();
-  // WorldLocation tmaLastLoc = null;
-  // long tmaLastDTG = 0;
-  //
-  // final Enumeration<Editable> fixWrappers = seg.elements();
-  // while (fixWrappers.hasMoreElements())
-  // {
-  // final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
-  //
-  // // ok, are we in relative?
-  // if (isRelative)
-  // {
-  // final long thisTime = fw.getDateTimeGroup().getDate().getTime();
-  //
-  // // ok, is this our first location?
-  // if (tmaLastLoc == null)
-  // {
-  // tmaLastLoc = new WorldLocation(seg.getTrackStart());
-  // }
-  // else
-  // {
-  // // calculate a new vector
-  // final long timeDelta = thisTime - tmaLastDTG;
-  // if (lastFix != null)
-  // {
-  // final double speedKts = lastFix.getSpeed();
-  // final double courseRads = lastFix.getCourse();
-  // final double depthM = fw.getDepth();
-  // final WorldVector thisVec =
-  // seg.vectorFor(timeDelta, speedKts, courseRads);
-  // tmaLastLoc.addToMe(thisVec);
-  //
-  // // use the value of depth as read in from the
-  // // file
-  // tmaLastLoc.setDepth(depthM);
-  // }
-  // }
-  // tmaLastDTG = thisTime;
-  //
-  // // dump the location into the fix
-  // fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-  // }
-  // }
-  // }
-  // }
-  // }
-
   /**
    * Calculates Course & Speed for the track.
    */
