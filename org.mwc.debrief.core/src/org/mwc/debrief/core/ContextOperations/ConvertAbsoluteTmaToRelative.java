@@ -20,13 +20,17 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
@@ -45,6 +49,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
@@ -63,38 +68,39 @@ public class ConvertAbsoluteTmaToRelative implements
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
     @SuppressWarnings(
-    {"deprecation", "unused"})
+    {"deprecation"})
     private TrackWrapper getLongerTrack()
     {
       final TrackWrapper tw = new TrackWrapper();
+      tw.setName("Some Name");
+
+      TrackSegment ts = new TrackSegment(false);
 
       final WorldLocation loc_1 = new WorldLocation(0.00000001, 0.000000001, 0);
       WorldLocation lastLoc = loc_1;
 
       for (int i = 0; i < 50; i++)
       {
+
         long thisTime = new Date(2016, 1, 14, 12, i, 0).getTime();
         final FixWrapper fw =
             new FixWrapper(new Fix(new HiResDate(thisTime), lastLoc
                 .add(getVector(25, 0)),
                 MWC.Algorithms.Conversions.Degs2Rads(0), 110));
         fw.setLabel("fw1");
-        tw.addFix(fw);
+        ts.addFix(fw);
 
         lastLoc = new WorldLocation(fw.getLocation());
       }
+
+      tw.add(ts);
 
       final SensorWrapper swa = new SensorWrapper("title one");
       tw.add(swa);
       swa.setSensorOffset(new ArrayLength(-400));
 
-      for (int i = 0; i < 50; i += 3)
+      for (int i = 0; i < 500; i += 3)
       {
         long thisTime = new Date(2016, 1, 14, 12, i, 30).getTime();
         final SensorContactWrapper scwa1 =
@@ -105,110 +111,223 @@ public class ConvertAbsoluteTmaToRelative implements
 
       return tw;
     }
-
-    public void testSplitWithOffset() throws ExecutionException
+    
+    private static class TestOperation extends AbstractOperation
     {
-      // TrackWrapper tw = getLongerTrack();
-      //
-      // assertNotNull(tw);
-      //
-      // // get the sensor data
-      // SensorWrapper sw = (SensorWrapper) tw.getSensors().elements().nextElement();
-      //
-      // assertNotNull(sw);
-      //
-      // // create a list of cuts (to simulate the selection)
-      // SensorContactWrapper[] items = new SensorContactWrapper[sw.size()];
-      // Enumeration<Editable> numer = sw.elements();
-      // int ctr=0;
-      // while (numer.hasMoreElements())
-      // {
-      // SensorContactWrapper cut = (SensorContactWrapper) numer.nextElement();
-      // items[ctr++] = cut;
-      // }
-      //
-      // Layers theLayers = new Layers();
-      // WorldVector worldOffset= new WorldVector(Math.PI, 0.002, 0);
-      // double tgtCourse = 0;
-      // WorldSpeed tgtSpeed = new WorldSpeed(3, WorldSpeed.Kts);
-      //
-      // // ok, generate the target track
-      // CMAPOperation op = new ConvertToRelative(items, theLayers, worldOffset, tgtCourse,
-      // tgtSpeed);
-      //
-      // // and run it
-      // op.execute(null, null);
-      //
-      // assertEquals("has new data", 1, theLayers.size());
-      //
-      // TrackWrapper sol = (TrackWrapper) theLayers.elementAt(0);
-      // assertNotNull("new layer not found", sol);
-      //
-      // // ok, now try to split it
-      // assertEquals("only has one segment", 1, sol.getSegments().size());
-      //
-      // RelativeTMASegment seg = (RelativeTMASegment) sol.getSegments().elements().nextElement();
-      //
-      // assertNotNull("new seg not found", seg);
-      //
-      // // ok, and we split it.
-      // int ctr2 = 0;
-      // FixWrapper beforeF = null;
-      // FixWrapper afterF = null;
-      // Enumeration<Editable> eF = seg.elements();
-      // while (eF.hasMoreElements())
-      // {
-      // FixWrapper fix = (FixWrapper) eF.nextElement();
-      // ctr2++;
-      // if(ctr2 > seg.size() / 2)
-      // {
-      // if(beforeF == null)
-      // {
-      // beforeF = fix;
-      // }
-      // else
-      // {
-      // afterF = fix;
-      // break;
-      // }
-      // }
-      // }
-      //
-      // assertNotNull("fix not found", beforeF);
-      //
-      // // ok, what's the time offset
-      // WorldLocation afterBeforeSplit = afterF.getLocation();
-      //
-      // // ok, time to split
-      // SubjectAction[] actions = beforeF.getInfo().getUndoableActions();
-      // SubjectAction doSplit = actions[1];
-      // doSplit.execute(beforeF);
-      //
-      // // ok, have another look
-      // assertEquals("now has two segments", 2, sol.getSegments().size());
-      // Enumeration<Editable> aNum = sol.getSegments().elements();
-      // aNum.nextElement();
-      // TrackSegment afterSeg = (TrackSegment) aNum.nextElement();
-      // WorldLocation locAfterSplit = afterSeg.getTrackStart();
-      //
-      // assertEquals("origin remains valid", afterBeforeSplit, locAfterSplit);
-      //
-      // // hey, try the undo
-      // doSplit.undo(beforeF);
-      //
-      // assertEquals("now has one segment again", 1, sol.getSegments().size());
-      //
-      // // hey, try the undo
-      // doSplit.execute(beforeF);
-      // assertEquals("now has two segments", 2, sol.getSegments().size());
-      //
-      // aNum = sol.getSegments().elements();
-      // aNum.nextElement();
-      // afterSeg = (TrackSegment) aNum.nextElement();
-      // locAfterSplit = afterSeg.getTrackStart();
-      // assertEquals("origin remains valid, after undo/redo", afterBeforeSplit, locAfterSplit);
-      //
 
+      final private Layers _theLayers;
+      final private List<SuitableSegment> _suitableSements;
+
+      public TestOperation(String label, Layers theLayers, List<SuitableSegment> suitableSegments)
+      {
+        super(label);
+        _theLayers = theLayers;
+        _suitableSements = suitableSegments;
+      }
+
+      @Override
+      public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+          throws ExecutionException
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+          throws ExecutionException
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+          throws ExecutionException
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+    }
+
+    List<IAction> actions = new ArrayList<IAction>();
+    
+    @SuppressWarnings("deprecation")
+    public void testApplicable() throws ExecutionException
+    {
+      actions.clear();
+
+      TrackWrapper tw = getLongerTrack();
+      final SensorWrapper sw = new SensorWrapper("name");
+      final SensorWrapper sw2 = new SensorWrapper("un-name");
+      tw.add(sw);
+      tw.add(sw2);
+
+      ConvertAbsoluteTmaToRelative op = new ConvertAbsoluteTmaToRelative(){
+
+        @Override
+        protected IUndoableOperation getOperation(Layers theLayers,
+            List<SuitableSegment> suitableSegments)
+        {
+          return new TestOperation("Label", theLayers, suitableSegments);
+        }
+      };
+
+      final MenuManager menu = new MenuManager("some name")
+      {
+
+        @Override
+        public void add(IAction action)
+        {
+          super.add(action);
+          actions.add(action);
+        }
+      };
+
+      Layers theLayers = new Layers();
+      theLayers.addThisLayer(tw);
+      Editable[] subjects = new Editable[]
+      {tw, sw};
+      op.generate(menu, theLayers, null, subjects);
+
+      assertEquals("no items added", 0, actions.size());
+
+      WorldSpeed a1Speed = new WorldSpeed(12, WorldSpeed.Kts);
+
+      WorldLocation a1Origin = new WorldLocation(12, 12, 0);
+      HiResDate a1Start =
+          new HiResDate(new Date(2016, 1, 14, 12, 30, 0).getTime());
+      HiResDate a1end =
+          new HiResDate(new Date(2016, 1, 14, 12, 40, 0).getTime());
+      AbsoluteTMASegment a1 =
+          new AbsoluteTMASegment(12, a1Speed, a1Origin, a1Start, a1end);
+      a1.setWrapper(tw);
+
+      subjects = new Editable[]
+      {a1};
+
+      actions.clear();
+
+      op.generate(menu, theLayers, null, subjects);
+
+      assertEquals("no items added", 0, actions.size());
+
+      // ok, remove the track segment
+      tw.removeElement(tw.getSegments().first());
+
+      // check it worked
+      assertEquals("empty segs", 0, tw.getSegments().size());
+
+      WorldVector theOffset = new WorldVector(12, 0.002, 0);
+      // ok, add a relative segment before it
+      final RelativeTMASegment r1 =
+          new RelativeTMASegment(13, a1Speed, theOffset, theLayers, tw
+              .getName(), "other sensor");
+
+      long thisTime = new Date(2016, 1, 14, 12, 22, 0).getTime();
+      FixWrapper fw =
+          new FixWrapper(new Fix(new HiResDate(thisTime), a1Origin
+              .add(getVector(25, 50)), MWC.Algorithms.Conversions.Degs2Rads(0),
+              110));
+      fw.setLabel("fw1");
+      r1.addFix(fw);
+
+      thisTime = new Date(2016, 1, 14, 12, 24, 0).getTime();
+      fw =
+          new FixWrapper(new Fix(new HiResDate(thisTime), a1Origin
+              .add(getVector(23, 200)),
+              MWC.Algorithms.Conversions.Degs2Rads(0), 110));
+      fw.setLabel("fw2");
+      r1.addFix(fw);
+      r1.setLayers(theLayers);
+
+      tw.add(r1);
+
+      actions.clear();
+      op.generate(menu, theLayers, null, subjects);
+      assertEquals("no items added", 0, actions.size());
+
+      // now correct the sensor name
+      final RelativeTMASegment r2 =
+          new RelativeTMASegment(13, a1Speed, theOffset, theLayers, tw
+              .getName(), sw.getName());
+      Enumeration<Editable> enumer = r1.elements();
+      while (enumer.hasMoreElements())
+      {
+        Editable editable = (Editable) enumer.nextElement();
+        r2.add(editable);
+      }
+      r2.setLayers(theLayers);
+
+      tw.removeElement(r1);
+      tw.add(r2);
+
+      System.out.println("r1 ends at:" + r2.getDTG_End() + " a1 starts at:"
+          + a1.getDTG_Start());
+
+      actions.clear();
+      op.generate(menu, theLayers, null, subjects);
+      assertEquals("generated an action items added", 1, actions.size());
+
+      // - add later track
+      // ok, add a relative segment before it
+      final RelativeTMASegment r3 =
+          new RelativeTMASegment(13, a1Speed, theOffset, theLayers, tw
+              .getName(), sw2.getName());
+
+      thisTime = new Date(2016, 1, 14, 12, 50, 0).getTime();
+      fw =
+          new FixWrapper(new Fix(new HiResDate(thisTime), a1Origin
+              .add(getVector(25, 50)), MWC.Algorithms.Conversions.Degs2Rads(0),
+              110));
+      fw.setLabel("fw1");
+      r3.addFix(fw);
+
+      thisTime = new Date(2016, 1, 14, 12, 59, 0).getTime();
+      fw =
+          new FixWrapper(new Fix(new HiResDate(thisTime), a1Origin
+              .add(getVector(23, 200)),
+              MWC.Algorithms.Conversions.Degs2Rads(0), 110));
+      fw.setLabel("fw2");
+      r3.addFix(fw);
+      r3.setLayers(theLayers);
+
+      tw.add(r3);
+
+      actions.clear();
+      op.generate(menu, theLayers, null, subjects);
+      assertEquals("no items added", 0, actions.size());
+      
+      tw.removeElement(r3);
+
+      // - add later track
+      // ok, add a relative segment before it
+      final RelativeTMASegment r4 =
+          new RelativeTMASegment(13, a1Speed, theOffset, theLayers, tw
+              .getName(), sw.getName());
+
+      thisTime = new Date(2016, 1, 14, 12, 50, 0).getTime();
+      fw =
+          new FixWrapper(new Fix(new HiResDate(thisTime), a1Origin
+              .add(getVector(25, 50)), MWC.Algorithms.Conversions.Degs2Rads(0),
+              110));
+      fw.setLabel("fw1");
+      r4.addFix(fw);
+
+      thisTime = new Date(2016, 1, 14, 12, 59, 0).getTime();
+      fw =
+          new FixWrapper(new Fix(new HiResDate(thisTime), a1Origin
+              .add(getVector(23, 200)),
+              MWC.Algorithms.Conversions.Degs2Rads(0), 110));
+      fw.setLabel("fw2");
+      r4.addFix(fw);
+      r3.setLayers(theLayers);
+      tw.add(r4);
+
+      actions.clear();
+      op.generate(menu, theLayers, null, subjects);
+      assertEquals("items added", 1, actions.size());
     }
 
     /**
@@ -404,7 +523,7 @@ public class ConvertAbsoluteTmaToRelative implements
         // now check for peer relative segments
         RelativeTMASegment before = null;
         RelativeTMASegment after = null;
-        Enumeration<Editable> segs = commonParent.getPositions();
+        Enumeration<Editable> segs = commonParent.getSegments().elements();
         while (segs.hasMoreElements())
         {
           TrackSegment thisSeg = (TrackSegment) segs.nextElement();
@@ -422,7 +541,7 @@ public class ConvertAbsoluteTmaToRelative implements
             // ready to look for after?
             if (before != null)
             {
-              if (thisSeg.startDTG().lessThan(thisA.getDTG_End()))
+              if (thisSeg.startDTG().greaterThan(thisA.getDTG_End()))
               {
                 after = thisRel;
               }
@@ -430,11 +549,29 @@ public class ConvertAbsoluteTmaToRelative implements
           }
         }
 
-        if (before != null || after != null)
+        if (before == null && after == null)
         {
-          SensorWrapper beforeS = before.getReferenceSensor();
-          SensorWrapper afterS = after.getReferenceSensor();
-          if (beforeS != null && afterS != null && beforeS != afterS)
+          System.err.println("Track doesn't have any relative tracks");
+          return;
+        }
+        else if (before != null || after != null)
+        {
+          SensorWrapper beforeS = null;
+          SensorWrapper afterS = null;
+          if(before != null)
+            beforeS = before.getReferenceSensor();
+          if(after != null)
+            afterS = after.getReferenceSensor();
+          
+          if(beforeS == null && afterS == null)
+          {
+            System.err.println("Can't find relative track sensors");
+
+            // TODO: popup dialog
+            return;
+          }
+          
+          else if (beforeS != null && afterS != null && beforeS != afterS)
           {
             System.err.println("They're not from the same host");
 
@@ -472,13 +609,12 @@ public class ConvertAbsoluteTmaToRelative implements
         }
 
         // ok, generate it
-        final ConvertToRelative action =
-            new ConvertToRelative(theLayers, suitableSegments);
+        final IUndoableOperation action =
+            getOperation(theLayers, suitableSegments);
 
         Action doIt =
             new Action("Convert " + phrase + " from absolute to relative")
             {
-
               @Override
               public void run()
               {
@@ -491,6 +627,20 @@ public class ConvertAbsoluteTmaToRelative implements
       }
     }
 
+  }
+
+  /** move the operation generation to a method, so it can be
+   * overwritten (in testing)
+   *
+   * 
+   * @param theLayers
+   * @param suitableSegments
+   * @return
+   */
+  protected IUndoableOperation getOperation(Layers theLayers,
+      List<SuitableSegment> suitableSegments)
+  {
+    return new ConvertToRelative(theLayers, suitableSegments);
   }
 
   /**
