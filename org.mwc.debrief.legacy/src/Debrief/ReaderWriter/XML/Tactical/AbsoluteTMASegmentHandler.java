@@ -63,7 +63,16 @@ abstract public class AbsoluteTMASegmentHandler extends CoreTMASegmentHandler
 	}
 
 
-	public static void exportThisTMASegment(final org.w3c.dom.Document doc, final Element trk,
+  @Override
+  protected void finishInitialisation(TrackSegment segment)
+  {
+    AbsoluteTMASegment rel = (AbsoluteTMASegment) segment;
+    rel.sortOutDate(null);
+    
+    super.finishInitialisation(segment);
+  }	
+
+  public static void exportThisTMASegment(final org.w3c.dom.Document doc, final Element trk,
 			final AbsoluteTMASegment seg)
 	{
 		
