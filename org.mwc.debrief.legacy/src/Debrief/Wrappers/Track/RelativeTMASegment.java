@@ -215,7 +215,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate(null);
+		sortOutDateLabel(null);
 
 	}
 	
@@ -276,6 +276,29 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
   }
   
 
+
+  public RelativeTMASegment(final SensorWrapper sensor,
+      final WorldVector offset, final WorldSpeed speed, final double course,
+      final Collection<Editable> dataPoints, final Layers layers,
+      final TrackWrapper track, final HiResDate startTime,
+      final HiResDate endTime)
+  {
+    this(course, speed, offset, layers, sensor.getHost().getName(), sensor
+        .getName());
+
+    // ok, now generate the points
+    setTrack(sensor.getHost());
+
+    for (Iterator<Editable> iterator = dataPoints.iterator(); iterator
+        .hasNext();)
+    {
+      FixWrapper thisF = (FixWrapper) iterator.next();
+      FixWrapper newF =
+          createFixAt(thisF.getDateTimeGroup().getDate().getTime());
+      newF.setSymbolShowing(true);
+      addFixSilent(newF);
+    }
+  }
 
   /** create the movement listener, if we need to.  We need
    * to be able to regenerate the listener for instances where

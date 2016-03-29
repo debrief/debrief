@@ -263,7 +263,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate(null);
+		sortOutDateLabel(null);
 	}
 
 	@Override
@@ -281,7 +281,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		this.addFixSilent(fix);
 
 		// override the name, just in case this point is earlier
-		sortOutDate(null);
+		sortOutDateLabel(null);
 	}
 
 	public void addFixSilent(final FixWrapper fix)
@@ -511,7 +511,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					// yes, calculate a new one
 
 					// lastly, reset the track name
-					rel.sortOutDate(startDTG);
+					rel.sortOutDateLabel(startDTG);
 
 					// and change the track name
 					rel._myTrack.setName(rel.getName());
@@ -922,13 +922,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	public void sortOutDate(final HiResDate startDTG)
+	public void sortOutDateLabel(final HiResDate startDTG)
 	{
 		HiResDate theStartDTG = startDTG;
 		if (getData().size() > 0)
 		{
 			if (theStartDTG == null)
+			{
 				theStartDTG = startDTG();
+			}
 
 			setName(FormatRNDateTime.toString(theStartDTG.getDate().getTime()));
 		}
