@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
+import junit.framework.TestCase;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -89,10 +90,6 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
-						displayExpertProp("HostName", "Host name",
-								"Name of the track from which range/bearing measured", OFFSET),
-						displayExpertProp("SensorName", "Sensor name",
-								"Name of the sensor from which range/bearing measured", OFFSET),
 						displayExpertProp("OffsetRange", "Offset range",
 								"Distance to start point on host track", OFFSET),
 						displayExpertProp("OffsetBearing", "Offset bearing",
@@ -105,6 +102,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 			}
 			catch (final IntrospectionException e)
 			{
+			  Application.logError2(Application.ERROR, "Failed to create properties for RelativeTMASegment", e);
 				return super.getPropertyDescriptors();
 			}
 
@@ -588,16 +586,16 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 					TrackWrapper host = _referenceSensor.getHost();
 					if (host != null)
 					{
-						items = host.getNearestTo(startDTG());
-						if (items.length > 0)
+            FixWrapper hostFix =
+                host.getBacktraceTo(startDTG(), _referenceSensor
+                    .getSensorOffset(), _referenceSensor.getWormInHole());
+						if(hostFix != null)
 						{
-							hostLocation = items[0];
+						  hostLocation = hostFix;
 						}
 						else
 						{
-							// ok, just get the first location
-							items = host.getNearestTo(host.getStartDTG());
-							hostLocation = items[0];
+						  hostLocation = null;
 						}
 					}
 					else
@@ -1417,5 +1415,18 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
   public Layers getLayers()
   {
     return _theLayers;
+  }
+  
+  
+  public static class TestMe extends TestCase
+  {
+    public final void testMyParams()
+    {
+      RelativeTMASegment rs =
+          new RelativeTMASegment(0, new WorldSpeed(12, WorldSpeed.Kts),
+              new WorldVector(1d, 1d, 0d), null, null, null);
+      editableTesterSupport.testParams(rs, this);
+      rs = null;
+    }
   }
 }
