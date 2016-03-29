@@ -967,7 +967,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 											_onlyVisible.isChecked(), _holder, logger, getType(),
 											_needBrg, _needFreq);
 
-									updateStackedDots(false);
+									updateStackedDots(true);
 
 								}
 							};
