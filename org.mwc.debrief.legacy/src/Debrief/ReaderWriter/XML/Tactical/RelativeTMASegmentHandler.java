@@ -100,15 +100,6 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 		return res;
 	}
 
-	@Override
-  protected void finishInitialisation(TrackSegment segment)
-  {
-	  RelativeTMASegment rel = (RelativeTMASegment) segment;
-	  rel.sortOutDate(null);
-	  
-    super.finishInitialisation(segment);
-  }
-
   public static void exportThisTMASegment(final org.w3c.dom.Document doc,
 			final Element trk, final RelativeTMASegment seg)
 	{
