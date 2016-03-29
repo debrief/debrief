@@ -125,7 +125,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate(null);
+		sortOutDateLabel(null);
 
 	}
 
@@ -155,7 +155,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		}
 
 		// now sort out the name
-		sortOutDate(null);
+		sortOutDateLabel(null);
 	}
 
 	/**
@@ -282,17 +282,27 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		fireAdjusted();
 	}
 
+	public void setDTG_Start_Silent(final HiResDate date)
+	{
+    _startTime = date;	  
+	}
+	
 	public void setDTG_Start(final HiResDate timeStart)
 	{
-		_startTime = timeStart;
+	  setDTG_Start_Silent(timeStart);
 
 		// and update our data
 		createDataFrom(_startTime, _endTime);
 	}
+	
+  public void setDTG_End_Silent(final HiResDate date)
+  {
+    _endTime = date;    
+  }
 
 	public void setDTG_End(final HiResDate timeEnd)
 	{
-		_endTime = timeEnd;
+	  setDTG_End_Silent(timeEnd);
 
 		// and update our data
 		createDataFrom(_startTime, _endTime);

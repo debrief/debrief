@@ -100,7 +100,7 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 		return res;
 	}
 
-	public static void exportThisTMASegment(final org.w3c.dom.Document doc,
+  public static void exportThisTMASegment(final org.w3c.dom.Document doc,
 			final Element trk, final RelativeTMASegment seg)
 	{
 

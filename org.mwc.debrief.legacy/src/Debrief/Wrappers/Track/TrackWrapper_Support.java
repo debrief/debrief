@@ -374,7 +374,7 @@ public class TrackWrapper_Support
       {
         // aah, currently, it's name's probably wrong sort out it's date
         final TrackSegment first = (TrackSegment) getData().iterator().next();
-        first.sortOutDate(null);
+        first.sortOutDateLabel(null);
       }
 
       super.add(segment);
