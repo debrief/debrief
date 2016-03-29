@@ -46,6 +46,7 @@ import org.mwc.debrief.core.ContextOperations.InterpolateTrack;
 import org.mwc.debrief.core.ContextOperations.MergeContacts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts;
+import org.mwc.debrief.core.ContextOperations.ShowCutsForThisSensor;
 import org.mwc.debrief.core.ContextOperations.TrimTrack;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.preferences.PrefsPage;
@@ -218,6 +219,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		RightClickSupport.addRightClickGenerator(new MergeTracks());
 		RightClickSupport.addRightClickGenerator(new MergeContacts());
 		RightClickSupport.addRightClickGenerator(new ConvertAbsoluteTmaToRelative());
+    RightClickSupport.addRightClickGenerator(new ShowCutsForThisSensor());
     RightClickSupport.addRightClickGenerator(new GenerateTMASegmentFromCuts());
 		RightClickSupport.addRightClickGenerator(new GenerateTMASegmentFromOwnshipPositions());
 		RightClickSupport.addRightClickGenerator(new GenerateTMASegmentFromInfillSegment());
