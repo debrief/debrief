@@ -453,7 +453,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@Override
-	protected void sortOutDate(final HiResDate startDTG)
+	public void sortOutDateLabel(final HiResDate startDTG)
 	{
 		// ignore - we want to keep the layer name
 	}

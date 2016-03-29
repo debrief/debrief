@@ -387,7 +387,7 @@ public class DynamicInfillSegment extends TrackSegment
 		return super.getVisible();
 	}
 	
-	protected void sortOutDate(final HiResDate startDTG)
+	public void sortOutDateLabel(final HiResDate startDTG)
 	{
 		// skip - we'll use the infill name
 	}

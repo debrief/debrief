@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -83,7 +84,7 @@ public class ConvertAbsoluteTmaToRelative implements
     }
   }
 
-  private static class ConvertToRelative extends CMAPOperation
+  private static class ConvertToRelativeOperation extends CMAPOperation
   {
 
     private final Layers _layers;
@@ -91,7 +92,7 @@ public class ConvertAbsoluteTmaToRelative implements
     private List<RelativeTMASegment> _replacements;
     private TrackWrapper _commonParent;
 
-    public ConvertToRelative(Layers theLayers,
+    public ConvertToRelativeOperation(Layers theLayers,
         List<SuitableSegment> suitableSegments, TrackWrapper commonParent)
     {
       super("Convert absolute segment(s) to relative");
@@ -112,11 +113,14 @@ public class ConvertAbsoluteTmaToRelative implements
       final WorldLocation sOrigin = absSegment.getTrackStart();
 
       final WorldVector offset = sOrigin.subtract(tOrigin);
-
+      
       // create the relative segment
+      final HiResDate startTime = absSegment.getDTG_Start();
+      final HiResDate endTime = absSegment.getDTG_End();
+      final Collection<Editable> dataPoints = absSegment.getData();
       RelativeTMASegment rSeg =
           new RelativeTMASegment(sensor, offset, absSegment.getSpeed(),
-              absSegment.getCourse(), layers);
+              absSegment.getCourse(), dataPoints, layers, track, startTime, endTime);
 
       return rSeg;
     }
@@ -141,6 +145,7 @@ public class ConvertAbsoluteTmaToRelative implements
 
         RelativeTMASegment rSeg =
             createSegment(_layers, seg, track, absSegment, sensor);
+        rSeg.setName(absSegment.getName());
 
         // remember the relative segment
         if(_replacements == null)
@@ -445,7 +450,7 @@ public class ConvertAbsoluteTmaToRelative implements
   protected IUndoableOperation getOperation(Layers theLayers,
       List<SuitableSegment> suitableSegments, TrackWrapper commonParent)
   {
-    return new ConvertToRelative(theLayers, suitableSegments, commonParent);
+    return new ConvertToRelativeOperation(theLayers, suitableSegments, commonParent);
   }
 
   /**
