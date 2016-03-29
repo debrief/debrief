@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Mon Mar 28 15:38:30 GMT 2016" Name="Debrief Plot" PlotId="1289308489415">
-<details Text="Saved with Debrief version dated Mon Mar 28 15:18:49 GMT 2016"/>
+<plot xmlns="http://www.debrief.info/plot" Created="Tue Mar 29 15:49:36 GMT 2016" Name="Debrief Plot" PlotId="1289308489415">
+<details Text="Saved with Debrief version dated Tue Mar 29 15:39:43 GMT 2016"/>
 <session>
 <layers>
 <track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="NONSUCH" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="true" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="true" Size="9"/>
-<sensor LineThickness="1" Name="SENSOR_A_1" TrackName="NONSUCH" Visible="true" WormInHole="false">
+<sensor LineThickness="1" Name="SENSOR_A_1" TrackName="NONSUCH" Visible="false" WormInHole="false">
 <colour Value="BLUE"/>
 <Offset Units="m" Value="-300.0000000"/>
 <sensor_contact AmbiguousBearing="59.300" Bearing="300.800" Dtg="090722 041522" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0415" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
@@ -5171,43 +5171,43 @@
 <fix ArrowShowing="false" Course="229.180" Dtg="090722 044937" Label="0449" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.007" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9652869" Long="29.9059459"/>
+<shortLocation Depth="30.980" Lat="4.9652868" Long="29.9059459"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="229.180" Dtg="090722 045049" Label="0450" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.007" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9644139" Long="29.9049314"/>
+<shortLocation Depth="30.980" Lat="4.9644137" Long="29.9049313"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="229.180" Dtg="090722 045201" Label="0452" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.007" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9635409" Long="29.9039169"/>
+<shortLocation Depth="30.980" Lat="4.9635406" Long="29.9039167"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="229.180" Dtg="090722 045313" Label="0453" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.007" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9626678" Long="29.9029024"/>
+<shortLocation Depth="30.980" Lat="4.9626675" Long="29.9029021"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="229.180" Dtg="090722 045444" Label="0454" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.007" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9615644" Long="29.9016202"/>
+<shortLocation Depth="30.980" Lat="4.9615640" Long="29.9016197"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="229.180" Dtg="090722 045556" Label="0455" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.007" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9606914" Long="29.9006057"/>
+<shortLocation Depth="30.980" Lat="4.9606909" Long="29.9006051"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="229.180" Dtg="090722 045704" Label="0457" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.007" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9598669" Long="29.8996476"/>
+<shortLocation Depth="30.980" Lat="4.9598663" Long="29.8996469"/>
 </centre>
 </fix>
 <Speed Units="kts" Value="4.007"/>
@@ -5267,67 +5267,67 @@
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 051535" Label="0515" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9439654" Long="29.8820003"/>
+<shortLocation Depth="30.980" Lat="4.9439655" Long="29.8820003"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 051639" Label="0516" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9433744" Long="29.8813692"/>
+<shortLocation Depth="30.980" Lat="4.9433746" Long="29.8813693"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 051811" Label="0518" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9425248" Long="29.8804619"/>
+<shortLocation Depth="30.980" Lat="4.9425251" Long="29.8804622"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 051911" Label="0519" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9419708" Long="29.8798703"/>
+<shortLocation Depth="30.980" Lat="4.9419711" Long="29.8798706"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 052030" Label="0520" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9412412" Long="29.8790913"/>
+<shortLocation Depth="30.980" Lat="4.9412417" Long="29.8790916"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 052130" Label="0521" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9406872" Long="29.8784996"/>
+<shortLocation Depth="30.980" Lat="4.9406877" Long="29.8785000"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 052222" Label="0522" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9402070" Long="29.8779868"/>
+<shortLocation Depth="30.980" Lat="4.9402075" Long="29.8779873"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 052318" Label="0523" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9396899" Long="29.8774346"/>
+<shortLocation Depth="30.980" Lat="4.9396905" Long="29.8774352"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 052417" Label="0524" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9391450" Long="29.8768528"/>
+<shortLocation Depth="30.980" Lat="4.9391457" Long="29.8768534"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 052505" Label="0525" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9387018" Long="29.8763795"/>
+<shortLocation Depth="30.980" Lat="4.9387025" Long="29.8763802"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="226.773" Dtg="090722 052549" Label="0525" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.912" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9382955" Long="29.8759456"/>
+<shortLocation Depth="30.980" Lat="4.9382962" Long="29.8759463"/>
 </centre>
 </fix>
 <Speed Units="kts" Value="2.912"/>
@@ -5337,13 +5337,44 @@
 </RelativeTMASegment>
 <SegmentList/>
 </track>
+<layer LineThickness="0" Name="lines" Visible="true">
+<line ArrowAtEnd="false" Label="New line" LabelLocation="Left" LabelVisible="true" LineThickness="2" ShowAutoCalc="false" Visible="true">
+<colour CustomBlue="150" CustomGreen="150" CustomRed="150" Value="custom"/>
+<fontcolour CustomBlue="150" CustomGreen="150" CustomRed="150" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="4.9561537" Long="29.8916569"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="4.9478410" Long="29.8847449"/>
+</br>
+</line>
+<vector ArrowAtEnd="true" Bearing="-58.451" Label="2911m -58 degs" LabelLocation="Left" LabelVisible="true" LineThickness="2" Visible="true">
+<colour CustomBlue="150" CustomGreen="150" CustomRed="150" Value="custom"/>
+<fontcolour CustomBlue="150" CustomGreen="150" CustomRed="150" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="4.9425229" Long="29.9140686"/>
+</tl>
+<Distance Units="degs" Value="0.0259061"/>
+</vector>
+<vector ArrowAtEnd="false" Bearing="-51.161" Label="2740m -51 degs" LabelLocation="Left" LabelVisible="true" LineThickness="2" Visible="true">
+<colour CustomBlue="150" CustomGreen="150" CustomRed="150" Value="custom"/>
+<fontcolour CustomBlue="150" CustomGreen="150" CustomRed="150" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="4.9406915" Long="29.9110550"/>
+</tl>
+<Distance Units="degs" Value="0.0246192"/>
+</vector>
+</layer>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="4.9894564" Long="29.8509447"/>
+<shortLocation Depth="0.000" Lat="4.9587138" Long="29.8895810"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="4.9192136" Long="29.9422842"/>
+<shortLocation Depth="0.000" Lat="4.9350279" Long="29.9252965"/>
 </br>
 </projection>
 <gui>
@@ -5363,7 +5394,7 @@
 <property Name="Arc_Finish" Value="180"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="090722 044025"/>
+<property Name="CurrentTime" Value="090722 050638.345"/>
 <property Name="NumRings" Value="3"/>
 <property Name="Toolbox_Start_Time" Value="090722 035548.345"/>
 <property Name="PointSize" Value="5"/>
