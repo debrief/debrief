@@ -9,15 +9,15 @@ import java.util.List;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -29,6 +29,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
+import MWC.GenericData.WorldArea;
 
 abstract public class DISContext implements IDISContext,
     CanvasType.ScreenUpdateListener
@@ -38,6 +39,11 @@ abstract public class DISContext implements IDISContext,
    * 
    */
   private IEditorPart _myEditor = null;
+  
+  /** flag for if we have a new editor
+   * 
+   */
+  private boolean _unBoundedEditor = false;
 
   /**
    * the current layers object (for the current exercise)
@@ -140,6 +146,12 @@ abstract public class DISContext implements IDISContext,
     }
   }
 
+  private void storeEditor(IEditorPart editor)
+  {
+    _myEditor = editor;
+    _unBoundedEditor = true;
+  }
+  
   protected void stopListeningTo(IEditorPart editor)
   {
     // ok, stop listening to updates
@@ -147,7 +159,7 @@ abstract public class DISContext implements IDISContext,
     se.removeScreenUpdateListener(this);
 
     // clear some pointers
-    _myEditor = null;
+    storeEditor(null);
     _myLayers = null;
   }
 
@@ -183,7 +195,7 @@ abstract public class DISContext implements IDISContext,
       }
 
       // ok, remember this editor
-      _myEditor = editor;
+      storeEditor(editor);
     }
   }
 
@@ -223,7 +235,7 @@ abstract public class DISContext implements IDISContext,
         if (_myLayers != null)
         {
           // ok, it's suitable
-          _myEditor = editor;
+          storeEditor(editor);
 
           // ok, start listening to it
           ScreenUpdateProvider listener =
@@ -265,7 +277,7 @@ abstract public class DISContext implements IDISContext,
         }
 
         // and clear the pointer
-        _myEditor = null;
+        storeEditor(null);
       }
 
       // ok, we'll have to create one
@@ -282,7 +294,7 @@ abstract public class DISContext implements IDISContext,
 
         // note: we use MATCH_NONE so that we open a fresh instance of the current editor,
         // and not just re-open the current one
-        _myEditor = page.openEditor(input, editorId, true, matchState);
+        storeEditor(page.openEditor(input, editorId, true, matchState));
 
         // ok, start listening to it
         ScreenUpdateProvider listener =
@@ -553,9 +565,30 @@ abstract public class DISContext implements IDISContext,
   @Override
   public void fireUpdate(final Plottable newItem, final Layer layer)
   {
-    if(_myLayers != null)
+    if (_myLayers != null)
     {
-    _myLayers.fireExtended(newItem, layer);
+      _myLayers.fireExtended(newItem, layer);
+      
+      // just check we have a non-null area
+      if (_unBoundedEditor && _myEditor != null && _myLayers.size() > 0)
+      {
+        IControllableViewport ic =
+            (IControllableViewport) _myEditor
+                .getAdapter(IControllableViewport.class);
+        if (ic != null)
+        {
+          final WorldArea area = ic.getViewport();
+          if(area.equals(Layers.getDebriefOrigin()))
+          {
+            WorldArea myArea = _myLayers.getRawBounds();
+            if(myArea != null)
+            {
+              fitToWindow();
+              _unBoundedEditor = false;
+            }
+          }
+        }
+      }
     }
     else
     {
