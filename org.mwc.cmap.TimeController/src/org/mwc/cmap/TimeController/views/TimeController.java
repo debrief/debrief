@@ -860,14 +860,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							// and our range selector - first the outer
 							// ranges
 							_dtgRangeSlider.updateOuterRanges(newPeriod);
-
+							
 							// ok - we no longer reset the range limits on a data change,
 							// since it's proving inconvenient to have to reset the sliders
 							// after some data is dropped in.
+							
+							// hey - we're setting them again now, since they go screwy with
+							// high throughput DIS data
 
 							// ok, now the user ranges...
-							// _dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
-							// newPeriod.getEndDTG());
+              _dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
+                  newPeriod.getEndDTG());
 						}
 					});
 				}
