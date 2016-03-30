@@ -6,10 +6,15 @@ public class FixToFileListener extends CoreFileListener implements
     IDISFixListener
 {
 
-  public FixToFileListener(String root, boolean toFile, boolean toScreen)
+  public FixToFileListener(String root, boolean toFile, boolean toScreen, LoggingFileWriter writer)
   {
-    super(root, toFile, toScreen, "fix",
-        "time, exerciseId, entityId, entityName,force, kind, domain, category, isHighlighted, dLat, dLong, depth, courseDegs, speedMS, damage");
+    super(
+        root,
+        toFile,
+        toScreen,
+        "fix",
+        "time, exerciseId, entityId, entityName,force, kind, domain, category, isHighlighted, dLat, dLong, depth, courseDegs, speedMS, damage",
+        writer);
   }
 
   @Override

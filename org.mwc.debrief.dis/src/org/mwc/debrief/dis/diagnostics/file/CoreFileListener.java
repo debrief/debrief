@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class CoreFileListener
+class CoreFileListener implements LoggingFileWriter
 {
   /**
    * 
@@ -13,8 +13,9 @@ class CoreFileListener
   private FileWriter _outF;
   final private boolean _toFile;
   final private boolean _toScreen;
-  private String _dataType;
-  private String _header;
+  final private String _dataType;
+  final private String _header;
+  final private LoggingFileWriter _writer;
 
   final String LINE_BREAK = System.getProperty("line.separator");
   final String SUFFIX = ".csv";
@@ -27,20 +28,40 @@ class CoreFileListener
    *          whether to write to file
    * @param toScreen
    *          whether to write to standard output
-   * @param headlessDISLogger
-   *          TODO
+   * @param dataType
+   * @param header
+   * @param writer
+   * the object that will do the writing (or null to write to file)
    */
   CoreFileListener(String root, boolean toFile, boolean toScreen,
-      String dataType, String header)
+      String dataType, String header, LoggingFileWriter writer)
   {
     _path = root;
     _dataType = dataType;
     _toFile = toFile;
     _toScreen = toScreen;
     _header = header;
+    
+    // has a writer been supplied?
+    if(writer == null)
+    {
+      // nope, we'll do it ourselves
+      _writer = this;
+    }
+    else
+    {
+      // yes, well let him do the work
+      _writer = writer;
+    }
   }
 
-  protected void write(String output)
+  public void write(String output)
+  {
+    _writer.writeThis(_dataType, _header, output);
+  }
+
+  @Override
+  public void writeThis(final String dType, String header, String output)
   {
     if (_toScreen)
     {
