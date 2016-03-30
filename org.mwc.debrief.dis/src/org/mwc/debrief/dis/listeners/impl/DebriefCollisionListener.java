@@ -5,16 +5,19 @@ import java.awt.Color;
 import org.mwc.debrief.dis.listeners.IDISCollisionListener;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 
 public class DebriefCollisionListener  extends DebriefCoreListener implements IDISCollisionListener
 {
 
-//  final private String MY_LAYER = "Collisions";
+  final private String COLLISIONS_LAYER = "Collisions";
 
   public DebriefCollisionListener(IDISContext context)
   {
@@ -23,7 +26,7 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
 
   @Override
   public void add(final long time, final short eid, int movingId, final String movingName,
-      int recipientId, final String recipientName)
+      int recipientId, final String recipientName, final double dLat, final double dLong, final double depthM)
   {
     final String message = "Collision between platform:" + movingName + " and " + recipientName;
 
@@ -48,6 +51,30 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
         return newE;
       }
     });
+    
+    // create the text marker
+    addNewItem(eid, COLLISIONS_LAYER, new ListenerHelper()
+    {
+
+      @Override
+      public Layer createLayer()
+      {
+        Layer newB = new BaseLayer();
+        newB.setName(COLLISIONS_LAYER);
+        return newB;
+      }
+
+      @Override
+      public Plottable createItem()
+      {
+        WorldLocation newLoc = new WorldLocation(dLat, dLong, depthM);
+        Color theColor = colorFor(eid, movingName);
+        return new LabelWrapper(message, newLoc, theColor);
+      }
+    });
+
+    
+    
   }
 
 }
