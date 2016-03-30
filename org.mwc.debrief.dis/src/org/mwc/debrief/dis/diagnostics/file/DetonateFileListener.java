@@ -6,9 +6,9 @@ public class DetonateFileListener extends CoreFileListener implements
     IDISDetonationListener
 {
 
-  public DetonateFileListener(String root, boolean toFile, boolean toScreen)
+  public DetonateFileListener(String root, boolean toFile, boolean toScreen, LoggingFileWriter writer)
   {
-    super(root, toFile, toScreen, "detonate", "time, exerciseId, entityId, entityName, Lat, Lon, depth");
+    super(root, toFile, toScreen, "detonate", "time, exerciseId, entityId, entityName, Lat, Lon, depth", writer);
   }
 
   @Override

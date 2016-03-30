@@ -6,9 +6,9 @@ public class FireFileListener extends CoreFileListener implements
     IDISFireListener
 {
 
-  public FireFileListener(String root, boolean toFile, boolean toScreen)
+  public FireFileListener(String root, boolean toFile, boolean toScreen, LoggingFileWriter writer)
   {
-    super(root, toFile, toScreen, "fire", "time, exerciseId,  entityId, entityName, tgtId, tgtName, x, y, z");
+    super(root, toFile, toScreen, "fire", "time, exerciseId,  entityId, entityName, tgtId, tgtName, x, y, z", writer);
   }
 
 
