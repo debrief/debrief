@@ -71,6 +71,14 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.diagnostics.file.CollisionFileListener;
+import org.mwc.debrief.dis.diagnostics.file.DetonateFileListener;
+import org.mwc.debrief.dis.diagnostics.file.EventFileListener;
+import org.mwc.debrief.dis.diagnostics.file.FireFileListener;
+import org.mwc.debrief.dis.diagnostics.file.FixToFileListener;
+import org.mwc.debrief.dis.diagnostics.file.LoggingFileWriter;
+import org.mwc.debrief.dis.diagnostics.file.StartFileListener;
+import org.mwc.debrief.dis.diagnostics.file.StopFileListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISStartResumeListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
@@ -362,7 +370,16 @@ public class DisListenerView extends ViewPart
               phrase = "runs";
             else
               phrase = "run";
-            dialog.setMessage("The simulation has completed after " + numRuns + " " + phrase);
+            
+            final String suffix;
+            if(_logMessagesToStore)
+            {
+              suffix = "\nPlease note: all DIS messages are\ncurrently being logged to file";
+            }
+            else
+              suffix = "";
+            
+            dialog.setMessage("The simulation has completed after " + numRuns + " " + phrase + suffix);
 
             // open dialog
             dialog.open();
@@ -517,6 +534,29 @@ public class DisListenerView extends ViewPart
       }
     });
     module.addCollisionListener(new DebriefCollisionListener(_context));
+    
+    final LoggingFileWriter logWriter = new LoggingFileWriter()
+    {
+      @Override
+      public void writeThis(final String dType, String header, String output)
+      {
+        if(_logMessagesToStore)
+        {
+          DisActivator.log(Status.INFO, dType + "\n" + header + "\n" + output, null);
+        }
+      }
+    };
+    
+    // and now the logging listeners
+    module.addFixListener(new FixToFileListener("", true, false, logWriter));
+    module.addStopListener(new StopFileListener("", true, false, logWriter));
+    module.addDetonationListener(new DetonateFileListener("", true, false, logWriter));
+    module.addEventListener(new EventFileListener("", true, false, logWriter));
+    module.addFireListener(new FireFileListener("", true, false, logWriter));
+    module.addCollisionListener(new CollisionFileListener("", true, false, logWriter));
+    module
+        .addStartResumeListener(new StartFileListener("", true, false, logWriter));
+    
   }
 
   @Override
