@@ -113,17 +113,17 @@ public class HeadlessDISLogger
     subject.setProvider(provider);
 
     // setup our loggers
-    subject.addFixListener(new FixToFileListener(root, toFile, false));
-    subject.addStopListener(new StopFileListener(root, toFile, toScreen));
+    subject.addFixListener(new FixToFileListener(root, toFile, false, null));
+    subject.addStopListener(new StopFileListener(root, toFile, toScreen, null));
     subject.addDetonationListener(new DetonateFileListener(root, toFile,
-        toScreen));
-    subject.addEventListener(new EventFileListener(root, toFile, toScreen));
-    subject.addFireListener(new FireFileListener(root, toFile, toScreen));
+        toScreen, null));
+    subject.addEventListener(new EventFileListener(root, toFile, toScreen, null));
+    subject.addFireListener(new FireFileListener(root, toFile, toScreen, null));
     subject.addCollisionListener(new CollisionFileListener(root, toFile,
-        toScreen));
+        toScreen, null));
 
     subject
-        .addStartResumeListener(new StartFileListener(root, toFile, toScreen));
+        .addStartResumeListener(new StartFileListener(root, toFile, toScreen, null));
 
     // output dot marker to screen, to demonstrate progress
     subject.addFixListener(new IDISFixListener()
