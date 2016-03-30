@@ -67,6 +67,8 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.RectangleEdge;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
@@ -101,6 +103,7 @@ import org.mwc.debrief.dis.ui.preferences.DisPrefs;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import edu.nps.moves.dis.EntityID;
 import edu.nps.moves.dis.Pdu;
 
@@ -203,6 +206,7 @@ public class DisListenerView extends ViewPart
     _context = new DISContext(_myPartMonitor)
     {
       ControllableTime ct = null;
+      TimeProvider tp = null;
 
       @Override
       public boolean getLiveUpdates()
@@ -246,6 +250,7 @@ public class DisListenerView extends ViewPart
                     ct =
                         (ControllableTime) editor
                             .getAdapter(ControllableTime.class);
+                   tp = (TimeProvider) editor.getAdapter(TimeProvider.class);
                   }
                 }
               }
@@ -263,6 +268,22 @@ public class DisListenerView extends ViewPart
           if (ct != null)
           {
             ct.setTime(this, new HiResDate(time), true);
+            
+            if(tp != null)
+            {
+              if (tp instanceof TimeManager)
+              {
+                TimeManager tm = (TimeManager) tp;
+                final TimePeriod curPeriod = tm.getPeriod();
+                if (curPeriod != null)
+                {
+                  TimePeriod newPeriod =
+                      new TimePeriod.BaseTimePeriod(curPeriod.getStartDTG(),
+                          new HiResDate(time));
+                  tm.setPeriod(this, newPeriod);
+                }
+              }
+            }
           }
           else
           {
