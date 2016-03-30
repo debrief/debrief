@@ -102,6 +102,11 @@ abstract public class CoreTrackSegmentHandler extends
 
 	abstract protected TrackSegment createTrack();
 	
+	protected void finishInitialisation(TrackSegment segment)
+	{
+	  
+	}
+	
 	public final void elementClosed()
 	{
 		TrackSegment segment = createTrack();
@@ -114,6 +119,9 @@ abstract public class CoreTrackSegmentHandler extends
 			final FixWrapper fix = (FixWrapper) iterator.next();
 			segment.addFixSilent(fix);
 		}
+		
+		finishInitialisation(segment);
+		
 		addSegment(segment);
 		segment = null;
 	}

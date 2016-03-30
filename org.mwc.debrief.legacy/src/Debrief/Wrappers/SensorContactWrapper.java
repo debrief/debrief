@@ -597,6 +597,16 @@ public final class SensorContactWrapper extends
 					+ this.getLabel());
 			return;
 		}
+		
+		// check that the parent track is visible at this time
+		if(track instanceof TrackWrapper)
+		{
+		  TrackWrapper tw = (TrackWrapper) track;
+		  if(!tw.isVisibleAt(this.getDTG()))
+		  {
+		    return;
+		  }
+		}
 
 		// do we need an origin
 		final WorldLocation origin = getCalculatedOrigin(track);

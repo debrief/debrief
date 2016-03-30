@@ -251,7 +251,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     public void firePropertyChange(final String propertyChanged, final Object oldValue,
 				final Object newValue)
 		{
-    	_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
+      getSupport().firePropertyChange(propertyChanged, oldValue, newValue);
 		}
 
 		/* (non-Javadoc)
@@ -297,14 +297,18 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     @FireReformatted
     public void setColor(final java.awt.Color theColor)
     {
-        // store the old colour
-        final Color oldCol = _theColor;
-
-        // update the value
-        setColorQuiet(theColor);
-
-        // and inform the listeners
-        getSupport().firePropertyChange(COLOR_CHANGED, oldCol, theColor);
+        // do we need to change?
+        if(theColor != _theColor)
+        {
+          // store the old colour
+          final Color oldCol = _theColor;
+          
+          // update the value
+          setColorQuiet(theColor);
+  
+          // and inform the listeners
+          getSupport().firePropertyChange(COLOR_CHANGED, oldCol, theColor);
+        }
     }
     
     protected void setColorQuiet(final Color theColor)

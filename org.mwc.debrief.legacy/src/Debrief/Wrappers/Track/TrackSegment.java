@@ -99,7 +99,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		private TrackSegment getDummyList()
 		{
-			final TrackSegment ts0 = new TrackSegment();
+			final TrackSegment ts0 = new TrackSegment(false);
 			final FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
 					new WorldLocation(1, -1, 3), 1, 2));
 			final FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(20000),
@@ -206,7 +206,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * whether to determine this track's positions using DR calculations
 	 * 
 	 */
-	boolean _plotRelative;
+	final boolean _plotRelative;
 
 	private transient WorldVector _vecTempLastVector = null;
 
@@ -219,10 +219,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	private int _lineStyle = CanvasType.SOLID;
 
 	public static final String TMA_LEADER = "TMA_";
+	
+	public static final boolean RELATIVE = true;
+	public static final boolean ABSOLUTE = false;
 
-	public TrackSegment()
+	public TrackSegment(final boolean plotRelative)
 	{
-		// no-op constructor
+	  _plotRelative = plotRelative;
 	}
 
 	/**
@@ -233,6 +236,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	public TrackSegment(final CoreTMASegment tma)
 	{
+	  this(tma.getPlotRelative());
+	  
 		setName(tma.getName());
 		setVisible(tma.getVisible());
 		setWrapper(tma.getWrapper());
@@ -253,10 +258,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	public TrackSegment(final SortedSet<Editable> theItems)
 	{
+	  this(false);
+	  
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate(null);
+		sortOutDateLabel(null);
 	}
 
 	@Override
@@ -274,7 +281,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		this.addFixSilent(fix);
 
 		// override the name, just in case this point is earlier
-		sortOutDate(null);
+		sortOutDateLabel(null);
 	}
 
 	public void addFixSilent(final FixWrapper fix)
@@ -504,7 +511,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					// yes, calculate a new one
 
 					// lastly, reset the track name
-					rel.sortOutDate(startDTG);
+					rel.sortOutDateLabel(startDTG);
 
 					// and change the track name
 					rel._myTrack.setName(rel.getName());
@@ -821,11 +828,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		_lineStyle = lineStyle;
 	}
 
-	public void setPlotRelative(final boolean plotRelative)
-	{
-		_plotRelative = plotRelative;
-	}
-
   @Override
   public void setWrapper(final TrackWrapper wrapper)
   {
@@ -920,13 +922,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	protected void sortOutDate(final HiResDate startDTG)
+	public void sortOutDateLabel(final HiResDate startDTG)
 	{
 		HiResDate theStartDTG = startDTG;
 		if (getData().size() > 0)
 		{
 			if (theStartDTG == null)
+			{
 				theStartDTG = startDTG();
+			}
 
 			setName(FormatRNDateTime.toString(theStartDTG.getDate().getTime()));
 		}

@@ -263,6 +263,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -356,6 +357,11 @@ public class ImportReplay extends PlainImporterBase
    */
   private HashMap<TrackWrapper, Vector<SensorWrapper>> _pendingSensors =
       new HashMap<TrackWrapper, Vector<SensorWrapper>>();
+  
+  /** a list of any exiting tracks that got modified (so we can tell people they've moved
+   * at the end of hte operation 
+   */
+  private List<TrackWrapper> _existingTracksThatMoved = new ArrayList<TrackWrapper>();
 
   /**
    * the property name we use for importing tracks (DR/ATG)
@@ -509,7 +515,15 @@ public class ImportReplay extends PlainImporterBase
     TrackWrapper trkWrapper = (TrackWrapper) getLayerFor(theTrack);
 
     // have we found the layer?
-    if (trkWrapper == null)
+    if(trkWrapper != null)
+    {
+      // ok, remember that we've changed this track
+      if(!_existingTracksThatMoved.contains(trkWrapper))
+      {
+        _existingTracksThatMoved.add(trkWrapper);
+      }
+    }
+    else
     {
       // ok, see if we're importing it as DR or ATG (or ask the audience)
       String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
@@ -540,13 +554,11 @@ public class ImportReplay extends PlainImporterBase
       }
       else if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
       {
-        initialLayer = new TrackSegment();
-        initialLayer.setPlotRelative(false);
+        initialLayer = new TrackSegment(TrackSegment.ABSOLUTE);
       }
       else if (importMode.equals(ImportReplay.IMPORT_AS_DR))
       {
-        initialLayer = new TrackSegment();
-        initialLayer.setPlotRelative(true);
+        initialLayer = new TrackSegment(TrackSegment.RELATIVE);
       }
 
       // now create the wrapper
@@ -1080,6 +1092,7 @@ public class ImportReplay extends PlainImporterBase
 
         // clear the output list
         _newLayers.clear();
+        _existingTracksThatMoved.clear();
 
         thisLine = br.readLine();
 
@@ -1104,6 +1117,16 @@ public class ImportReplay extends PlainImporterBase
         for (int k = 0; k < _myFormatters.length; k++)
         {
           _myFormatters[k].formatLayers(_newLayers);
+        }
+        
+        // see if we've modified any existing tracks
+        Iterator<TrackWrapper> tIter = _existingTracksThatMoved.iterator();
+        while (tIter.hasNext())
+        {
+          TrackWrapper track = (TrackWrapper) tIter.next();
+          
+          // tell it that it has changed
+          track.sortOutRelativePositions();
         }
 
         final long end = System.currentTimeMillis();

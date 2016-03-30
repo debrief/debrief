@@ -130,10 +130,9 @@ public class ImportSATC
 					myTrack = new TrackWrapper();
 					myTrack.setName(trackName);
 					myTrack.setColor(Color.blue);
-					TrackSegment initialLayer = new TrackSegment();
+					TrackSegment initialLayer = new TrackSegment(TrackSegment.ABSOLUTE);
 
 					// create a DR track segment
-					initialLayer.setPlotRelative(false);
 					myTrack.add(initialLayer);
 
 					// and store the new track

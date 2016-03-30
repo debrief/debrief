@@ -9,6 +9,7 @@ import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
@@ -139,19 +140,19 @@ public class DynamicInfillSegment extends TrackSegment
 	 * our internal class that listens to tracks moving
 	 * 
 	 */
-	private transient final PropertyChangeListener _moveListener;
+	private transient PropertyChangeListener _moveListener;
 
 	/**
 	 * our internal class that listens to tracks moving
 	 * 
 	 */
-	private transient final PropertyChangeListener _wrapperListener;
+	private transient PropertyChangeListener _wrapperListener;
 
 	/**
 	 * a utility logger
 	 * 
 	 */
-	private transient final ErrorLogger _myParent;
+	private transient ErrorLogger _myParent;
 
 	/**
 	 * for XML restore, we only have the name of the previous track. Store it.
@@ -171,36 +172,49 @@ public class DynamicInfillSegment extends TrackSegment
 	 */
 	public DynamicInfillSegment(final String beforeName, final String afterName)
 	{
+    // we have to be in absolute mode, due to the way we use spline positions
+	  super(TrackSegment.ABSOLUTE);
+	  
 		_beforeName = beforeName;
 		_afterName = afterName;
 
-		_moveListener = new PropertyChangeListener()
-		{
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt)
-			{
-				// note, we used to call "recalculate" here. But, sometimes our
-				// precedent
-				// data doesn't know it's new location until after a paint event.
-				// so, we'll defer generating the points until they're required
-				reconstruct();
-			}
-		};
-
-		_wrapperListener = new PropertyChangeListener()
-		{
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt)
-			{
-				wrapperChange();
-			}
-		};
+		checkListeners();
 
 		_myParent = Trace.getParent();
-
-		// we have to be in absolute mode, due to the way we use spline positions
-		super.setPlotRelative(false);
 	}
+
+  private void checkListeners()
+  {
+    if (_moveListener == null)
+    {
+      _moveListener = new PropertyChangeListener()
+      {
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
+        {
+          // note, we used to call "recalculate" here. But, sometimes our
+          // precedent
+          // data doesn't know it's new location until after a paint event.
+          // so, we'll defer generating the points until they're required
+          reconstruct();
+        }
+      };
+    }
+    ;
+
+    if (_wrapperListener == null)
+    {
+      _wrapperListener = new PropertyChangeListener()
+      {
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
+        {
+          wrapperChange();
+        }
+      };
+    }
+    ;
+  }
 
 	/**
 	 * create an infill track segment between the two supplied tracks
@@ -217,10 +231,13 @@ public class DynamicInfillSegment extends TrackSegment
 		configure(before, after);
 	}
 
-	private void clear()
+	public void clear()
 	{
 		stopWatching(_before);
 		stopWatching(_after);
+
+    _before = null;
+    _after = null;
 	}
 
 	/**
@@ -251,8 +268,6 @@ public class DynamicInfillSegment extends TrackSegment
 		// ditch the listeners
 		clear();
 
-		_before = null;
-		_after = null;
 	}
 
 	/**
@@ -276,6 +291,13 @@ public class DynamicInfillSegment extends TrackSegment
 				break;
 			}
 		}
+
+    if (res == null)
+    {
+      Application.logError2(ErrorLogger.ERROR,
+          "Unable to find host segnent named:" + name, null);
+    }  
+		
 		return res;
 	}
 
@@ -320,6 +342,8 @@ public class DynamicInfillSegment extends TrackSegment
 	@Override
 	public boolean getVisible()
 	{
+	  checkListeners();
+	  
 		// ok, do we know our tracks?
 		if (_before == null)
 		{
@@ -355,17 +379,15 @@ public class DynamicInfillSegment extends TrackSegment
 			if (this.size() == 0)
 			{
 				// ok, tell the track to sort out the relative tracks
+			  // this will trigger our own reconstruct
 				this.getWrapper().sortOutRelativePositions();
-
-				// and regenerate our positions
-				reconstruct();
 			}
 		}
 
 		return super.getVisible();
 	}
 	
-	protected void sortOutDate(final HiResDate startDTG)
+	public void sortOutDateLabel(final HiResDate startDTG)
 	{
 		// skip - we'll use the infill name
 	}
@@ -374,10 +396,14 @@ public class DynamicInfillSegment extends TrackSegment
 	 * recalculate our set of positions
 	 * 
 	 */
-	protected void reconstruct()
+	public void reconstruct()
 	{
 		// ok, clear ourselves out
 		this.removeAllElements();
+		
+		// check we know our data
+		if(_before == null || _after == null)
+		  return;
 
 		// now the num to use
 		final int oneUse = Math.min(2, _before.size());
@@ -534,6 +560,8 @@ public class DynamicInfillSegment extends TrackSegment
 
 	private void startWatching(final TrackSegment segment)
 	{
+	  checkListeners();
+	  
 		segment.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
 		segment.addPropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
 				_wrapperListener);
@@ -553,6 +581,8 @@ public class DynamicInfillSegment extends TrackSegment
 
 	private void stopWatching(final TrackSegment segment)
 	{
+    checkListeners();
+    
 		if (segment != null)
 		{
 			segment.removePropertyChangeListener(CoreTMASegment.ADJUSTED,

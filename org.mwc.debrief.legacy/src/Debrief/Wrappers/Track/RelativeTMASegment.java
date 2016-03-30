@@ -15,6 +15,8 @@
 package Debrief.Wrappers.Track;
 
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -22,6 +24,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
+import junit.framework.TestCase;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -30,8 +33,9 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.FireExtended;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.NeedsToKnowAboutLayers;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -48,7 +52,7 @@ import MWC.TacticalData.Fix;
  * @author Ian Mayo
  * 
  */
-public class RelativeTMASegment extends CoreTMASegment
+public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAboutLayers
 {
 	/**
 	 * class containing editable details of a track
@@ -86,10 +90,6 @@ public class RelativeTMASegment extends CoreTMASegment
 						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
-						displayExpertProp("HostName", "Host name",
-								"Name of the track from which range/bearing measured", OFFSET),
-						displayExpertProp("SensorName", "Sensor name",
-								"Name of the sensor from which range/bearing measured", OFFSET),
 						displayExpertProp("OffsetRange", "Offset range",
 								"Distance to start point on host track", OFFSET),
 						displayExpertProp("OffsetBearing", "Offset bearing",
@@ -102,6 +102,7 @@ public class RelativeTMASegment extends CoreTMASegment
 			}
 			catch (final IntrospectionException e)
 			{
+			  Application.logError2(Application.ERROR, "Failed to create properties for RelativeTMASegment", e);
 				return super.getPropertyDescriptors();
 			}
 
@@ -127,13 +128,13 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * 
 	 * @return
 	 */
-	private String _referenceTrackName;
+	private final String _referenceTrackName;
 
 	/**
 	 * name of the sensor we're going to use as our origin
 	 * 
 	 */
-	private String _referenceSensorName;
+	private final String _referenceSensorName;
 
 	/**
 	 * the offset we apply to the origin
@@ -164,6 +165,11 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * 
 	 */
 	private transient Layers _theLayers;
+	
+	/** we listen out for the parent track moving,
+	 * here's our listener
+	 */
+  private transient PropertyChangeListener _refTrackMovedListener;
 
 	/**
 	 * base constructor - sorts out the obvious
@@ -172,109 +178,164 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * @param speed
 	 * @param offset
 	 * @param theLayers
+	 * @param trackName 
+	 * @param sensorName 
 	 */
 	public RelativeTMASegment(final double courseDegs, final WorldSpeed speed,
-			final WorldVector offset, final Layers theLayers)
+			final WorldVector offset, final Layers theLayers, String trackName, String sensorName)
 	{
-		super(courseDegs, speed);
+		super(courseDegs, speed, TrackSegment.RELATIVE);
+    _referenceTrackName = trackName;
+		_referenceSensorName = sensorName;
 		_theLayers = theLayers;
 		_offset = offset;
+		
+		checkMoveListener();
 	}
 
+	/** kind of copy constructor. take the settings from the segment,
+	 * but store the supplied cuts
+	 * @param relevantSegment
+	 * @param theItems
+	 * @param theOffset
+	 */
 	public RelativeTMASegment(final RelativeTMASegment relevantSegment,
 			final SortedSet<Editable> theItems, final WorldVector theOffset)
 	{
 		// start off with the obvious bits
 		this(relevantSegment._courseDegs, relevantSegment._speed, theOffset,
-				relevantSegment._theLayers);
+				relevantSegment._theLayers, relevantSegment._referenceTrackName, relevantSegment._referenceSensorName);
 
 		// now the other bits
-		this._referenceTrack = relevantSegment._referenceTrack;
-		this._referenceSensor = relevantSegment._referenceSensor;
-		this._referenceTrackName = relevantSegment._referenceTrackName;
-		this._referenceSensorName = relevantSegment._referenceSensorName;
+		setTrack(relevantSegment._referenceTrack);
 
 		// lastly, insert the fixes
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate(null);
+		sortOutDateLabel(null);
 
 	}
 	
-	public void updateLayers(final Layers layers)
+
+  /**
+   * build up a solution from the supplied sensor data
+   * 
+   * @param observations
+   *          create a single position for the DTG of each solution
+   * @param offset
+   *          the range/brg from the host's position at the DTG of the first
+   *          observation
+   * @param speed
+   *          the initial target speed estimate
+   * @param courseDegs
+   *          the initial target course estimate
+   */
+  public RelativeTMASegment(final SensorContactWrapper[] observations,
+      final WorldVector offset, final WorldSpeed speed,
+      final double courseDegs, final Layers theLayers)
+  {
+    this(courseDegs, speed, offset, theLayers, observations[0].getSensor().getHost().getName(),
+        observations[0].getSensor().getName());
+
+    // sort out the origin
+    final SensorContactWrapper scw = observations[0];
+
+    // set the track (which will also set the sensor, from the name);
+    setTrack(scw.getSensor().getHost());
+
+    // create the points
+    createPointsFrom(observations);
+  }
+
+  /**
+   * build up a solution from the supplied sensor data
+   * 
+   * @param observations
+   *          create a single position for the DTG of each solution
+   * @param offset
+   *          the range/brg from the host's position at the DTG of the first
+   *          observation
+   * @param speed
+   *          the initial target speed estimate
+   * @param courseDegs
+   *          the initial target course estimate
+   */
+  public RelativeTMASegment(final SensorWrapper sw, final WorldVector offset,
+      final WorldSpeed speed, final double courseDegs, final Layers theLayers)
+  {
+    this(courseDegs, speed, offset, theLayers, sw.getHost().getName(), sw.getName());
+
+    // sort out the origin
+    setTrack(sw.getHost());
+
+    // create the points
+    createPointsFrom(sw);
+  }
+  
+
+
+  public RelativeTMASegment(final SensorWrapper sensor,
+      final WorldVector offset, final WorldSpeed speed, final double course,
+      final Collection<Editable> dataPoints, final Layers layers,
+      final TrackWrapper track, final HiResDate startTime,
+      final HiResDate endTime)
+  {
+    this(course, speed, offset, layers, sensor.getHost().getName(), sensor
+        .getName());
+
+    // ok, now generate the points
+    setTrack(sensor.getHost());
+
+    for (Iterator<Editable> iterator = dataPoints.iterator(); iterator
+        .hasNext();)
+    {
+      FixWrapper thisF = (FixWrapper) iterator.next();
+      FixWrapper newF =
+          createFixAt(thisF.getDateTimeGroup().getDate().getTime());
+      newF.setSymbolShowing(true);
+      addFixSilent(newF);
+    }
+  }
+
+  /** create the movement listener, if we need to.  We need
+   * to be able to regenerate the listener for instances where
+   * the segment has been copy/pated between plots
+   */
+  private void checkMoveListener()
+  {
+    if (_refTrackMovedListener == null)
+    {
+      _refTrackMovedListener = new PropertyChangeListener()
+      {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+          // ok, our reference track has moved. recalculate ourselves
+          recalcPositions();
+
+          // also tell anybody that's interested that we've moved
+          // (especially dynamic infill segments)
+          firePropertyChange(CoreTMASegment.ADJUSTED, null, System
+              .currentTimeMillis());
+        }
+      };
+    }
+  }
+	
+	public void setLayers(final Layers layers)
 	{
-	  _theLayers = layers;
-	  
-	  // ok, we've moved.
-	  // We'd better re-generate our references
-	  
-	  // clear out existing pointers 
-	  _referenceTrack = null;
-	  _referenceSensor = null;
-	  
-	  // and re-generate them
-	  identifyReferenceTrack();
-	      
+	  if(layers != _theLayers)
+	  {
+      _theLayers = layers;
+
+      // ok, we've moved.
+      // We'd better re-generate our references
+      identifyReferenceTrack();
+	  }
 	}
 
-	/**
-	 * build up a solution from the supplied sensor data
-	 * 
-	 * @param observations
-	 *          create a single position for the DTG of each solution
-	 * @param offset
-	 *          the range/brg from the host's position at the DTG of the first
-	 *          observation
-	 * @param speed
-	 *          the initial target speed estimate
-	 * @param courseDegs
-	 *          the initial target course estimate
-	 */
-	public RelativeTMASegment(final SensorContactWrapper[] observations,
-			final WorldVector offset, final WorldSpeed speed,
-			final double courseDegs, final Layers theLayers)
-	{
-		this(courseDegs, speed, offset, theLayers);
-
-		// sort out the origin
-		final SensorContactWrapper scw = observations[0];
-		_referenceTrack = scw.getSensor().getHost();
-		_referenceTrackName = _referenceTrack.getName();
-		_referenceSensor = scw.getSensor();
-		_referenceSensorName = _referenceSensor.getName();
-
-		// create the points
-		createPointsFrom(observations);
-	}
-
-	/**
-	 * build up a solution from the supplied sensor data
-	 * 
-	 * @param observations
-	 *          create a single position for the DTG of each solution
-	 * @param offset
-	 *          the range/brg from the host's position at the DTG of the first
-	 *          observation
-	 * @param speed
-	 *          the initial target speed estimate
-	 * @param courseDegs
-	 *          the initial target course estimate
-	 */
-	public RelativeTMASegment(final SensorWrapper sw, final WorldVector offset,
-			final WorldSpeed speed, final double courseDegs, final Layers theLayers)
-	{
-		this(courseDegs, speed, offset, theLayers);
-
-		// sort out the origin
-		_referenceTrack = sw.getHost();
-		_referenceSensor = sw;
-		_referenceTrackName = _referenceTrack.getName();
-		_referenceSensorName = sw.getName();
-
-		// create the points
-		createPointsFrom(sw);
-	}
 
 	/**
 	 * create a fix at the specified dtg
@@ -525,16 +586,16 @@ public class RelativeTMASegment extends CoreTMASegment
 					TrackWrapper host = _referenceSensor.getHost();
 					if (host != null)
 					{
-						items = host.getNearestTo(startDTG());
-						if (items.length > 0)
+            FixWrapper hostFix =
+                host.getBacktraceTo(startDTG(), _referenceSensor
+                    .getSensorOffset(), _referenceSensor.getWormInHole());
+						if(hostFix != null)
 						{
-							hostLocation = items[0];
+						  hostLocation = hostFix;
 						}
 						else
 						{
-							// ok, just get the first location
-							items = host.getNearestTo(host.getStartDTG());
-							hostLocation = items[0];
+						  hostLocation = null;
 						}
 					}
 					else
@@ -570,20 +631,12 @@ public class RelativeTMASegment extends CoreTMASegment
 				_referenceTrack.setInterpolatePoints(oldInterpSetting);
 			}
 		}
+		
 		return res;
 	}
 
 	public String getHostName()
 	{
-		// just check we have some data
-		if (_referenceTrackName == null)
-		{
-			if (_referenceTrack == null)
-				identifyReferenceTrack();
-
-			_referenceTrackName = _referenceTrack.getName();
-		}
-
 		return _referenceTrackName;
 	}
 
@@ -641,7 +694,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		return _referenceTrack;
 	}
 
-	/**
+  /**
 	 * get the start of this tma segment
 	 * 
 	 * @return
@@ -663,26 +716,73 @@ public class RelativeTMASegment extends CoreTMASegment
 	 */
 	private void identifyReferenceTrack()
 	{
-		_referenceTrack = (TrackWrapper) _theLayers.findLayer(_referenceTrackName);
+    TrackWrapper theTrack =
+        (TrackWrapper) _theLayers.findLayer(_referenceTrackName);
 
-		// hmm, also try to find the sensor
-		if (_referenceTrack != null)
-		{
-			Enumeration<Editable> sensors = _referenceTrack.getSensors().elements();
-			while (sensors.hasMoreElements())
-			{
-				SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
-				if (sensor.getName().equals(_referenceSensorName))
-				{
-					_referenceSensor = sensor;
-					break;
-				}
-			}
-		}
+    if (theTrack == null)
+    {
+      Application.logError2(ErrorLogger.ERROR,
+          "Unable to find host track named:" + _referenceTrackName, null);
+    }
+
+    // ok, store it (including clearing any previous one)
+    setTrack(theTrack);
 	}
 
+  private void setTrack(TrackWrapper newTrack)
+  {
+    checkMoveListener();
+
+    // do we have an existing one?
+    if (_referenceTrack != null)
+    {
+      _referenceTrack.removePropertyChangeListener(
+          PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
+      _referenceTrack = null;
+    }
+
+    if (_referenceSensor != null)
+    {
+      _referenceSensor.removePropertyChangeListener(
+          PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
+      _referenceSensor = null;
+    }
+
+    // hmm, also try to find the sensor
+    if (newTrack != null)
+    {
+      _referenceTrack = newTrack;
+
+      Enumeration<Editable> sensors = _referenceTrack.getSensors().elements();
+      while (sensors.hasMoreElements())
+      {
+        SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+        if (sensor.getName().equals(_referenceSensorName))
+        {
+          _referenceSensor = sensor;
+
+          // and listen to it
+          _referenceSensor.addPropertyChangeListener(
+              PlainWrapper.LOCATION_CHANGED, _refTrackMovedListener);
+          break;
+        }
+      }
+
+      // did it work?
+      if (_referenceSensor == null)
+      {
+        Application.logError2(ErrorLogger.ERROR,
+            "Unable to find host sensor named:" + _referenceSensorName, null);
+      }
+
+      // we should also listen for the reference track moving
+      _referenceTrack.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+          _refTrackMovedListener);
+    }
+  }
+
 	private void recalcPositions()
-	{
+	{	  
 		final Collection<Editable> items = getData();
 
 		// ok - draw that line!
@@ -1034,9 +1134,6 @@ public class RelativeTMASegment extends CoreTMASegment
 			// find the current last point
 			final FixWrapper theLoc = (FixWrapper) this.first();
 
-			// TODO: problem when we extend the start, sometimes we don't have a
-			// parent cut to refer to
-
 			// note: we don't want one large leap. So, insert a few points
 			long oldStartT = startDTG().getDate().getTime();
 			long newStartT = newStart.getDate().getTime();
@@ -1063,52 +1160,35 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	}
 
-	/**
-	 * temporarily store the hostname, until we've finished loading and we can
-	 * sort it out for real.
-	 * 
-	 * @param hostName
-	 */
-	public void setHostName(final String hostName)
-	{
-		// better trim what we've recived
-		final String name = hostName.trim();
-
-		// have we got meaningful data?
-		if (name.length() > 0)
-		{
-			// right, see if we can find it
-			if (_theLayers != null)
-			{
-				final Layer tgt = _theLayers.findLayer(name);
-				if (tgt != null)
-				{
-					// clear the reference item we're currently looking at
-					_referenceTrack = null;
-
-					// now remember the new name
-					_referenceTrackName = hostName;
-				}
-			}
-
-		}
-
-	}
-
-	/**
-	 * temporarily store the sensor name, until we've finished loading and we can
-	 * sort it out for real.
-	 * 
-	 * @param sensorName
-	 */
-	public void setSensorName(final String sensorName)
-	{
-		if (sensorName != null)
-		{
-			// better trim what we've recived
-			_referenceSensorName = sensorName.trim();
-		}
-	}
+//	/**
+//	 * temporarily store the hostname, until we've finished loading and we can
+//	 * sort it out for real.
+//	 * 
+//	 * @param hostName
+//	 */
+//	public void setHostName(final String hostName)
+//	{
+//		// better trim what we've recived
+//		final String name = hostName.trim();
+//
+//		// have we got meaningful data?
+//		if (name.length() > 0)
+//		{
+//			// right, see if we can find it
+//			if (_theLayers != null)
+//			{
+//				final Layer tgt = _theLayers.findLayer(name);
+//				if (tgt != null)
+//				{
+//				  // clear any existing track
+//				  setTrack(null);
+//
+//					// now remember the new name
+//					_referenceTrackName = hostName;
+//				}
+//			}
+//		}
+//	}
 
 	public void setOffset(final WorldVector newOffset)
 	{
@@ -1335,5 +1415,18 @@ public class RelativeTMASegment extends CoreTMASegment
   public Layers getLayers()
   {
     return _theLayers;
+  }
+  
+  
+  public static class TestMe extends TestCase
+  {
+    public final void testMyParams()
+    {
+      RelativeTMASegment rs =
+          new RelativeTMASegment(0, new WorldSpeed(12, WorldSpeed.Kts),
+              new WorldVector(1d, 1d, 0d), null, null, null);
+      editableTesterSupport.testParams(rs, this);
+      rs = null;
+    }
   }
 }
