@@ -27,8 +27,9 @@ public class DebriefFixListener extends DebriefCoreListener implements
   @Override
   public void add(final long time, short exerciseId, long id,
       final String theName, final short force, final short kind,
-      final short domain, final short category, final boolean isHighlighted,
-      final double dLat, final double dLong, final double depth, final double courseRads, final double speedMS, final int damage)
+      final short domain, final short category, final boolean isOSAT,
+      final double dLat, final double dLong, final double depth,
+      final double courseRads, final double speedMS, final int damage)
   {
     super.addNewItem(exerciseId, theName, new ListenerHelper()
     {
@@ -47,26 +48,28 @@ public class DebriefFixListener extends DebriefCoreListener implements
         track.setSymbolColor(newCol);
 
         // see if we can exploit the domain
-        if (kind == 1)
+        if (domain == 4)
         {
-          if (domain == 4)
-          {
-            track.setSymbolType(SymbolFactory.SCALED_SUBMARINE);
-            track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
-            track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
-          }
-          else if (domain == 0)
-          {
-            track.setSymbolType(SymbolFactory.SCALED_FRIGATE);
-            track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
-            track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
-          }
+          track.setSymbolType(SymbolFactory.SCALED_SUBMARINE);
+          track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
+          track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
         }
-        else if (kind == 2)
+        else if (domain == 0)
+        {
+          track.setSymbolType(SymbolFactory.SCALED_FRIGATE);
+          track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
+          track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
+        }
+
+        if (kind == 2)
         {
           track.setSymbolType(SymbolFactory.TORPEDO);
         }
-
+        else if(kind == IDISFixListener.OSAT_TRACK || kind == IDISFixListener.NON_OSAT_TRACK)
+        {
+          // ok, this is OSAT track
+          track.setSymbolType(SymbolFactory.DATUM);
+        }
         return track;
       }
 
@@ -77,28 +80,35 @@ public class DebriefFixListener extends DebriefCoreListener implements
         HiResDate date = new HiResDate(time);
         Fix newF = new Fix(date, loc, courseRads, speedMS);
         FixWrapper fw = new FixWrapper(newF);
-        
-//        if(isHighlighted)
-//        {
-//          fw.setLineShowing(true);
-//        }
-//        else
-//        {
-//          fw.setLineShowing(false);
-//        }
-        
+
         fw.resetName();
 
-        // darken the fix, if necessary
-        if (damage > 0)
+        Color col = colorFor(force);
+
+        // see if it's a track 
+        if (kind == IDISFixListener.OSAT_TRACK
+            || kind == IDISFixListener.NON_OSAT_TRACK)
         {
-          Color col = colorFor(force);
-          for (int i = 0; i < damage; i++)
+          // ok, and is it the OSAT track?
+          if (!isOSAT)
           {
-            col = col.darker();
+            fw.setColor(col.brighter());
           }
-          fw.setColor(col);
         }
+        else
+        {
+          // shade according to appearance
+          // darken the fix, if necessary
+          if (damage > 0)
+          {
+            for (int i = 0; i < damage; i++)
+            {
+              col = col.darker();
+            }
+            fw.setColor(col);
+          }
+        }
+        
         return fw;
       }
     });
