@@ -25,9 +25,31 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
   }
 
   @Override
-  public void add(final long time, final short eid, int movingId, final String movingName,
-      int recipientId, final String recipientName, final double dLat, final double dLong, final double depthM)
+  public void add(final long time, final short eid, int movingId, final String rawMovingName,
+      int recipientId, final String rawRecipientName, final double dLat, final double dLong, final double depthM)
   {
+    final String recipientName;
+    
+    // special handling - and ID of -1 means the environment
+    if(recipientId == -1)
+    {
+      recipientName = "Environment";
+    }
+    else
+    {
+      recipientName = rawRecipientName;
+    }
+    
+    final String movingName;
+    if(movingId == -1)
+    {
+      movingName = "Environment";
+    }
+    else
+    {
+      movingName = rawMovingName;
+    }
+    
     final String message = "Collision between platform:" + movingName + " and " + recipientName;
 
     // and the narrative entry
