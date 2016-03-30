@@ -8,11 +8,11 @@ public class StopFileListener extends CoreFileListener implements
 
   public StopFileListener(String root, boolean toFile, boolean toScreen)
   {
-    super(root, toFile, toScreen, "stop", "time, exerciseId, reason");
+    super(root, toFile, toScreen, "stop", "time, exerciseId, reason, numRuns");
   }
 
   @Override
-  public void stop(long time, int appId, short eid, short reason)
+  public void stop(long time, int appId, short eid, short reason, long numRuns)
   {
     // create the line
     StringBuffer out = new StringBuffer();
@@ -21,6 +21,8 @@ public class StopFileListener extends CoreFileListener implements
     out.append(eid);
     out.append(", ");
     out.append(reason);
+    out.append(", ");
+    out.append(numRuns);
     out.append(LINE_BREAK);
 
     // done, write it

@@ -313,7 +313,7 @@ public class DisListenerView extends ViewPart
   }
 
   private void handleStopMessage(long time, final int appId, short eid,
-      final short reason)
+      final short reason, final long numRuns)
   {
     final Runnable theR = new Runnable()
     {
@@ -331,6 +331,11 @@ public class DisListenerView extends ViewPart
         // hey, check the reason
         switch (reason)
         {
+        case IDISStopListener.PDU_ITERATION_COMPLETE:
+          
+          // tell the context that it's complete
+          _context.scenarioComplete();
+          break;
         case IDISStopListener.PDU_FREEZE:
           pauseReceived();
           break;
@@ -350,7 +355,12 @@ public class DisListenerView extends ViewPart
                 new MessageBox(PlatformUI.getWorkbench()
                     .getActiveWorkbenchWindow().getShell(), SWT.OK);
             dialog.setText("DIS Interface");
-            dialog.setMessage("The simulation has completed.");
+            final String phrase;
+            if(numRuns > 1)
+              phrase = "runs";
+            else
+              phrase = "run";
+            dialog.setMessage("The simulation has completed after " + numRuns + " " + phrase);
 
             // open dialog
             dialog.open();
@@ -381,9 +391,9 @@ public class DisListenerView extends ViewPart
     {
 
       @Override
-      public void stop(long time, int appId, short eid, short reason)
+      public void stop(long time, int appId, short eid, short reason, long numRuns)
       {
-        handleStopMessage(time, appId, eid, reason);
+        handleStopMessage(time, appId, eid, reason, numRuns);
       }
     });
 
@@ -848,6 +858,11 @@ public class DisListenerView extends ViewPart
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HELP_CONTEXT);
 
     addDropSupport();
+    
+    // ok, the user is opening the DIS view. Obviously they want to connect
+    connectButton.setSelection(true);
+    doConnect();
+    
   }
 
   private void addDropSupport()

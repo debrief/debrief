@@ -1,5 +1,7 @@
 package org.mwc.debrief.dis.listeners.impl;
 
+import interfaces.INameablePart;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -66,8 +68,6 @@ abstract public class DISContext implements IDISContext,
    * 
    */
   private boolean _scenarioComplete;
-
-  private long _currentReplication;
 
   /**
    * constructor, handle some internal initialisation
@@ -271,7 +271,7 @@ abstract public class DISContext implements IDISContext,
       // ok, we'll have to create one
       if (input == null)
       {
-        input = new DISInput("DIS Exercise: " + exerciseId);
+        input = new DISInput(getName(exerciseId, _replicationCounter));
       }
       String editorId = "org.mwc.debrief.TrackEditor";
       try
@@ -302,7 +302,7 @@ abstract public class DISContext implements IDISContext,
       // and get the new layers object
       _myLayers = (Layers) _myEditor.getAdapter(Layers.class);
     }
-
+    
     // ok, done.
     return _myEditor;
   }
@@ -317,7 +317,6 @@ abstract public class DISContext implements IDISContext,
   private Layers getLayersFor(final short exerciseId,
       final long replicationCounter)
   {
-
     // check if this is our existing exercise
     if (_currentEx != exerciseId || _replicationCounter != replicationCounter)
     {
@@ -360,6 +359,8 @@ abstract public class DISContext implements IDISContext,
             if (_myLayers != null)
             {
               clearLayers();
+              
+              updateExName();
             }
           }
         };
@@ -376,6 +377,7 @@ abstract public class DISContext implements IDISContext,
       // and remember the exercise id
       _currentEx = exerciseId;
       _replicationCounter = replicationCounter;
+
     }
 
     _scenarioComplete = false;
@@ -400,10 +402,35 @@ abstract public class DISContext implements IDISContext,
       {
         Display.getDefault().syncExec(theR);
       }
+      
+      updateExName();
     }
     return _myLayers;
   }
 
+  
+  
+  protected void updateExName()
+  {
+    // ok, put the replication id into the page title
+    final String titleName = getName(_currentEx, _replicationCounter);
+    
+    if (_myEditor != null)
+    {
+      INameablePart np =
+          (INameablePart) _myEditor.getAdapter(INameablePart.class);
+      if (np != null)
+      {
+        np.setName(titleName);
+      }
+    }
+  }
+
+  private String getName(short exerciseId, long replicationCounter)
+  {
+    return "DIS Exercise:" + exerciseId + " Rep:" + replicationCounter;
+  }
+  
   public class DISInput implements IEditorInput
   {
 
@@ -539,7 +566,7 @@ abstract public class DISContext implements IDISContext,
   @Override
   public void setReplicationId(long replicationCounter)
   {
-    _currentReplication = replicationCounter;
+    _replicationCounter = replicationCounter;
   }
 
   /*
@@ -555,7 +582,7 @@ abstract public class DISContext implements IDISContext,
     /*
      * get the layers, creating a new plot if necessary
      */
-    Layers tgt = getLayersFor(exerciseId, _currentReplication);
+    Layers tgt = getLayersFor(exerciseId, _replicationCounter);
 
     if (tgt != null)
     {
