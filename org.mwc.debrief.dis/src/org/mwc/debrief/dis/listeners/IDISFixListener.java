@@ -10,7 +10,13 @@ public interface IDISFixListener
   final short BLUE = 1;
   final short RED = 2;
   final short GREEN = 3;
+
+  /** KIND marker for OSAT track
+   * 
+   */
+  final int NON_OSAT_TRACK = 101;
+  final int OSAT_TRACK = 102;
   
   void add(long time, short exerciseId, long id, String eName, short force,
-      short kind, short domain, short category, boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage);
+      short kind, short domain, short category, boolean isOSAT, double dLat, double dLong, double depth, double courseDegs, double speedMS, int damage);
 }

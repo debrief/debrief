@@ -35,7 +35,6 @@ import edu.nps.moves.disutil.CoordinateConversions;
 
 public class DISModule implements IDISModule, IDISGeneralPDUListener
 {
-  private static final int ESTIMATED_KIND = 1;
   private List<IDISFixListener> _fixListeners =
       new ArrayList<IDISFixListener>();
   private Map<Integer, List<IDISEventListener>> _eventListeners =
@@ -217,7 +216,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     final short force = pdu.getForceId();
     final long hisId = pdu.getEntityID().getEntity();
 
-    boolean isEstimated = pdu.getEntityType().getEntityKind() == ESTIMATED_KIND;
+    boolean isOSAT = pdu.getEntityType().getEntityKind() == IDISFixListener.OSAT_TRACK;
 
     long time = convertTime(pdu.getTimestamp());
     Vector3Double loc = pdu.getEntityLocation();
@@ -244,7 +243,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     {
       IDISFixListener thisF = (IDISFixListener) fIter.next();
       thisF.add(time, eid, hisId, hisName, force, kind, domain, category,
-          isEstimated, worldCoords[0], worldCoords[1], -worldCoords[2],
+          isOSAT, worldCoords[0], worldCoords[1], -worldCoords[2],
           orientation.getPsi(), speedMs, pdu.getEntityAppearance_damage());
     }
   }
