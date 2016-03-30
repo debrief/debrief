@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -113,6 +112,7 @@ public class DisListenerView extends ViewPart
   private Button newPlotButton;
   private Button liveUpdatesButton;
   private Action fitToDataAction;
+  private Action logMessagesAction;
   private IDISModule _disModule;
   private IPDUProvider _netProvider;
   protected Thread _simThread;
@@ -153,6 +153,8 @@ public class DisListenerView extends ViewPart
   final String LISTEN_STRING = "Listen";
   private IDISController _disController;
   private EntityID _ourID;
+
+  protected boolean _logMessagesToStore;
 
   private void initModule()
   {
@@ -939,7 +941,6 @@ public class DisListenerView extends ViewPart
 
   private void contributeToActionBars()
   {
-
     fitToDataAction = new org.eclipse.jface.action.Action()
     {
       public void run()
@@ -958,16 +959,32 @@ public class DisListenerView extends ViewPart
         .setToolTipText("Zoom the selected plot out to show the full data");
     fitToDataAction.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/fit_to_win.png"));
-
+    
     // use the saved setting of this control
     IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     _fitToDataValue = store.getBoolean(DisActivator.FIT_TO_DATA);
     fitToDataAction.setChecked(_fitToDataValue);
+    
+    // LOGGING MESSAGE TO STORE
+    logMessagesAction = new org.eclipse.jface.action.Action()
+    {
+      public void run()
+      {
+        // and store the value
+        _logMessagesToStore = logMessagesAction.isChecked();
+        IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
+        store.setValue(DisActivator.LOG_DIS, _logMessagesToStore);
+      }
+    };
+    logMessagesAction.setText("Log Messages");
+    logMessagesAction
+        .setToolTipText("Log DIS Message in System Log");
+    logMessagesAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/list.png"));
 
-    final IActionBars bars = getViewSite().getActionBars();
-    fillLocalPullDown(bars.getMenuManager());
-
-    bars.getToolBarManager().add(fitToDataAction);
+    // use the saved setting of this control
+    _logMessagesToStore = store.getBoolean(DisActivator.LOG_DIS);
+    logMessagesAction.setChecked(_logMessagesToStore);
 
     // also provide access to the console view
     Action showConsole = new Action()
@@ -988,18 +1005,20 @@ public class DisListenerView extends ViewPart
     showConsole.setText("Show console");
     showConsole.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/console.png"));
-    bars.getToolBarManager().add(showConsole);
+    
+    final IActionBars bars = getViewSite().getActionBars();
+    
+    // menu first
+    bars.getMenuManager().add(new Separator());
+    bars.getMenuManager().add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
+    bars.getMenuManager().add(logMessagesAction);
     bars.getMenuManager().add(showConsole);
-
+    
+    // now toolbar
+    bars.getToolBarManager().add(fitToDataAction);
+    bars.getToolBarManager().add(showConsole);
     bars.getToolBarManager().add(
         CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
-
-  }
-
-  private void fillLocalPullDown(final IMenuManager manager)
-  {
-    manager.add(new Separator());
-    manager.add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
   }
 
   @Override
