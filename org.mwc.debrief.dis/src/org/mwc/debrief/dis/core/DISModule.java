@@ -96,6 +96,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     switch (eventType)
     {
     case IDISEventListener.EVENT_LAUNCH:
+    {
       // Entity 1 called SubmarineSouth has been created or launched.
       final String called = "called ";
       final String has = "has been";
@@ -107,7 +108,9 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
         res = message.substring(nameStart, nameEnd);
       }
       break;
+    }
     case IDISEventListener.EVENT_NEW_TARGET_TRACK:
+    {
       // DETECTION E4-5
       final String detection = " DETECTION ";
 
@@ -117,6 +120,20 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
         res = message.substring(nameStart).trim();
       }
       break;
+
+    }
+    case IDISEventListener.EVENT_NEW_TRACK:
+    {
+      // DETECTION E4-5
+      final String detection = " DETECTION ";
+
+      if (message.contains(detection))
+      {
+        int nameStart = message.indexOf(detection) + detection.length() + 1;
+        res = message.substring(nameStart).trim();
+      }
+      break;
+    }
     }
 
     return res;
