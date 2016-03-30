@@ -5,6 +5,7 @@ public interface IDISStopListener
 
   public static final short PDU_FREEZE = 1;
   public static final short PDU_STOP = 2;
+  public static final short PDU_ITERATION_COMPLETE = 7;
 
   /**
    * the scenario has stopped

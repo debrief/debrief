@@ -331,6 +331,11 @@ public class DisListenerView extends ViewPart
         // hey, check the reason
         switch (reason)
         {
+        case IDISStopListener.PDU_ITERATION_COMPLETE:
+          
+          // tell the context that it's complete
+          _context.scenarioComplete();
+          break;
         case IDISStopListener.PDU_FREEZE:
           pauseReceived();
           break;
@@ -848,6 +853,11 @@ public class DisListenerView extends ViewPart
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HELP_CONTEXT);
 
     addDropSupport();
+    
+    // ok, the user is opening the DIS view. Obviously they want to connect
+    connectButton.setSelection(true);
+    doConnect();
+    
   }
 
   private void addDropSupport()

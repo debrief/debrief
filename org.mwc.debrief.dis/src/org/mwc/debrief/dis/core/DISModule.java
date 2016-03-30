@@ -525,7 +525,8 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     }
 
     // share the complete message
-    if (reason == IDISStopListener.PDU_STOP)
+    if (reason == IDISStopListener.PDU_STOP
+        || reason == IDISStopListener.PDU_ITERATION_COMPLETE)
     {
       complete("Scenario complete");
     }
