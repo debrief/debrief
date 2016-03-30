@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.plotViewer.editors;
 
+import interfaces.INameablePart;
+
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -126,7 +128,8 @@ import MWC.GenericData.WorldLocation;
 
 public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
-		IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider
+		IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider,
+		INameablePart
 {
 
 	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
@@ -1037,8 +1040,34 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{
 		System.out.println("Files dropped");
 	}
+	
+	
 
-	public void setFocus()
+  @Override
+  public void setName(final String name)
+  {
+    final Runnable runner = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        setPartName(name);
+      }
+    };
+    
+    // are we in the display thread?
+    if (Display.getCurrent() == null)
+    {
+      // no - do update in correct thread
+      Display.getDefault().asyncExec(runner);
+    }
+    else
+    {
+      runner.run();
+    }
+  }
+
+  public void setFocus()
 	{
 		// just put some kind of blank object into the properties window
 		// putBackdropIntoProperties();
@@ -1084,6 +1113,10 @@ public abstract class CorePlotEditor extends EditorPart implements
       res = this;
     }
     else if (IEditorPart.class.equals(adapter))
+    {
+      res = this;
+    }
+    else if (adapter == INameablePart.class)
     {
       res = this;
     }
