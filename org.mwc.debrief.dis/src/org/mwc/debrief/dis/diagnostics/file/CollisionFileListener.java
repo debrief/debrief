@@ -9,12 +9,12 @@ public class CollisionFileListener extends CoreFileListener implements
   public CollisionFileListener(String root, boolean toFile, boolean toScreen)
   {
     super(root, toFile, toScreen, "collision",
-        "time, exerciseId, movingId, name, recipientId, recipientName");
+        "time, exerciseId, movingId, name, recipientId, recipientName, dLat, dLong, depthM");
   }
 
   @Override
   public void add(long time, short eid, int movingId, String movingName,
-      int recipientId, String recipientName)
+      int recipientId, String recipientName, double dLat, double dLong, double depthM)
   {
     // create the line
     StringBuffer out = new StringBuffer();
@@ -29,6 +29,12 @@ public class CollisionFileListener extends CoreFileListener implements
     out.append(recipientId);
     out.append(", ");
     out.append(recipientName);
+    out.append(", ");
+    out.append(dLat);
+    out.append(", ");
+    out.append(dLong);
+    out.append(", ");
+    out.append(depthM);
     out.append(LINE_BREAK);
 
     // done, write it
