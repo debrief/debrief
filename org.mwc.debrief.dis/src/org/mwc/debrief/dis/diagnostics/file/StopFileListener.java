@@ -6,9 +6,9 @@ public class StopFileListener extends CoreFileListener implements
     IDISStopListener
 {
 
-  public StopFileListener(String root, boolean toFile, boolean toScreen)
+  public StopFileListener(String root, boolean toFile, boolean toScreen, LoggingFileWriter writer)
   {
-    super(root, toFile, toScreen, "stop", "time, exerciseId, reason, numRuns");
+    super(root, toFile, toScreen, "stop", "time, exerciseId, reason, numRuns", writer);
   }
 
   @Override

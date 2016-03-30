@@ -6,10 +6,10 @@ public class CollisionFileListener extends CoreFileListener implements
     IDISCollisionListener
 {
 
-  public CollisionFileListener(String root, boolean toFile, boolean toScreen)
+  public CollisionFileListener(String root, boolean toFile, boolean toScreen, LoggingFileWriter writer)
   {
     super(root, toFile, toScreen, "collision",
-        "time, exerciseId, movingId, name, recipientId, recipientName, dLat, dLong, depthM");
+        "time, exerciseId, movingId, name, recipientId, recipientName, dLat, dLong, depthM", writer);
   }
 
   @Override

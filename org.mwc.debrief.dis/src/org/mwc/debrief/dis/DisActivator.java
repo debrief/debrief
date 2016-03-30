@@ -37,6 +37,8 @@ public class DisActivator extends AbstractUIPlugin
 
   public static final String FIT_TO_DATA = "fitToData";
 
+  public static final String LOG_DIS = "logDISMessages";
+
   public static final String APP_FILTER = "appFilter";
 
   public static final String SITE_FILTER = "siteFilter";

@@ -6,9 +6,9 @@ public class StartFileListener extends CoreFileListener implements
     IDISStartResumeListener
 {
 
-  public StartFileListener(String root, boolean toFile, boolean toScreen)
+  public StartFileListener(String root, boolean toFile, boolean toScreen, LoggingFileWriter writer)
   {
-    super(root, toFile, toScreen, "start resume", "time, exerciseId, replication");
+    super(root, toFile, toScreen, "start resume", "time, exerciseId, replication", writer);
   }
 
   @Override

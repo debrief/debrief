@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -72,6 +71,14 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
+import org.mwc.debrief.dis.diagnostics.file.CollisionFileListener;
+import org.mwc.debrief.dis.diagnostics.file.DetonateFileListener;
+import org.mwc.debrief.dis.diagnostics.file.EventFileListener;
+import org.mwc.debrief.dis.diagnostics.file.FireFileListener;
+import org.mwc.debrief.dis.diagnostics.file.FixToFileListener;
+import org.mwc.debrief.dis.diagnostics.file.LoggingFileWriter;
+import org.mwc.debrief.dis.diagnostics.file.StartFileListener;
+import org.mwc.debrief.dis.diagnostics.file.StopFileListener;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISStartResumeListener;
 import org.mwc.debrief.dis.listeners.IDISStopListener;
@@ -113,6 +120,7 @@ public class DisListenerView extends ViewPart
   private Button newPlotButton;
   private Button liveUpdatesButton;
   private Action fitToDataAction;
+  private Action logMessagesAction;
   private IDISModule _disModule;
   private IPDUProvider _netProvider;
   protected Thread _simThread;
@@ -153,6 +161,8 @@ public class DisListenerView extends ViewPart
   final String LISTEN_STRING = "Listen";
   private IDISController _disController;
   private EntityID _ourID;
+
+  protected boolean _logMessagesToStore;
 
   private void initModule()
   {
@@ -360,7 +370,16 @@ public class DisListenerView extends ViewPart
               phrase = "runs";
             else
               phrase = "run";
-            dialog.setMessage("The simulation has completed after " + numRuns + " " + phrase);
+            
+            final String suffix;
+            if(_logMessagesToStore)
+            {
+              suffix = "\nPlease note: all DIS messages are\ncurrently being logged to file";
+            }
+            else
+              suffix = "";
+            
+            dialog.setMessage("The simulation has completed after " + numRuns + " " + phrase + suffix);
 
             // open dialog
             dialog.open();
@@ -515,6 +534,29 @@ public class DisListenerView extends ViewPart
       }
     });
     module.addCollisionListener(new DebriefCollisionListener(_context));
+    
+    final LoggingFileWriter logWriter = new LoggingFileWriter()
+    {
+      @Override
+      public void writeThis(final String dType, String header, String output)
+      {
+        if(_logMessagesToStore)
+        {
+          DisActivator.log(Status.INFO, dType + "\n" + header + "\n" + output, null);
+        }
+      }
+    };
+    
+    // and now the logging listeners
+    module.addFixListener(new FixToFileListener("", true, false, logWriter));
+    module.addStopListener(new StopFileListener("", true, false, logWriter));
+    module.addDetonationListener(new DetonateFileListener("", true, false, logWriter));
+    module.addEventListener(new EventFileListener("", true, false, logWriter));
+    module.addFireListener(new FireFileListener("", true, false, logWriter));
+    module.addCollisionListener(new CollisionFileListener("", true, false, logWriter));
+    module
+        .addStartResumeListener(new StartFileListener("", true, false, logWriter));
+    
   }
 
   @Override
@@ -939,7 +981,6 @@ public class DisListenerView extends ViewPart
 
   private void contributeToActionBars()
   {
-
     fitToDataAction = new org.eclipse.jface.action.Action()
     {
       public void run()
@@ -958,16 +999,32 @@ public class DisListenerView extends ViewPart
         .setToolTipText("Zoom the selected plot out to show the full data");
     fitToDataAction.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/fit_to_win.png"));
-
+    
     // use the saved setting of this control
     IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
     _fitToDataValue = store.getBoolean(DisActivator.FIT_TO_DATA);
     fitToDataAction.setChecked(_fitToDataValue);
+    
+    // LOGGING MESSAGE TO STORE
+    logMessagesAction = new org.eclipse.jface.action.Action()
+    {
+      public void run()
+      {
+        // and store the value
+        _logMessagesToStore = logMessagesAction.isChecked();
+        IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
+        store.setValue(DisActivator.LOG_DIS, _logMessagesToStore);
+      }
+    };
+    logMessagesAction.setText("Log Messages");
+    logMessagesAction
+        .setToolTipText("Log DIS Message in System Log");
+    logMessagesAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/list.png"));
 
-    final IActionBars bars = getViewSite().getActionBars();
-    fillLocalPullDown(bars.getMenuManager());
-
-    bars.getToolBarManager().add(fitToDataAction);
+    // use the saved setting of this control
+    _logMessagesToStore = store.getBoolean(DisActivator.LOG_DIS);
+    logMessagesAction.setChecked(_logMessagesToStore);
 
     // also provide access to the console view
     Action showConsole = new Action()
@@ -988,18 +1045,20 @@ public class DisListenerView extends ViewPart
     showConsole.setText("Show console");
     showConsole.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/console.png"));
-    bars.getToolBarManager().add(showConsole);
+    
+    final IActionBars bars = getViewSite().getActionBars();
+    
+    // menu first
+    bars.getMenuManager().add(new Separator());
+    bars.getMenuManager().add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
+    bars.getMenuManager().add(logMessagesAction);
     bars.getMenuManager().add(showConsole);
-
+    
+    // now toolbar
+    bars.getToolBarManager().add(fitToDataAction);
+    bars.getToolBarManager().add(showConsole);
     bars.getToolBarManager().add(
         CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
-
-  }
-
-  private void fillLocalPullDown(final IMenuManager manager)
-  {
-    manager.add(new Separator());
-    manager.add(CorePlugin.createOpenHelpAction(HELP_CONTEXT, null, this));
   }
 
   @Override

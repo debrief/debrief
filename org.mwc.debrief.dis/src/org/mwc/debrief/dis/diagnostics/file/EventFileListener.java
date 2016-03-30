@@ -6,9 +6,15 @@ public class EventFileListener extends CoreFileListener implements
     IDISEventListener
 {
 
-  public EventFileListener(String root, boolean toFile, boolean toScreen)
+  public EventFileListener(String root, boolean toFile, boolean toScreen, LoggingFileWriter writer)
   {
-    super(root, toFile, toScreen, "event", "time, exerciseId, entityId, entityName, eventType, eventName, message");
+    super(
+        root,
+        toFile,
+        toScreen,
+        "event",
+        "time, exerciseId, entityId, entityName, eventType, eventName, message",
+        writer);
   }
 
   @Override
