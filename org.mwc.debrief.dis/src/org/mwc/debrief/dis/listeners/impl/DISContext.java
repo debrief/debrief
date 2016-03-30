@@ -271,7 +271,7 @@ abstract public class DISContext implements IDISContext,
       // ok, we'll have to create one
       if (input == null)
       {
-        input = new DISInput("DIS Exercise: " + exerciseId);
+        input = new DISInput(getName(exerciseId, _replicationCounter));
       }
       String editorId = "org.mwc.debrief.TrackEditor";
       try
@@ -408,10 +408,12 @@ abstract public class DISContext implements IDISContext,
     return _myLayers;
   }
 
+  
+  
   protected void updateExName()
   {
     // ok, put the replication id into the page title
-    final String titleName = "DIS Exercise:" + _currentEx + " Rep:" + _replicationCounter;
+    final String titleName = getName(_currentEx, _replicationCounter);
     
     if (_myEditor != null)
     {
@@ -422,6 +424,11 @@ abstract public class DISContext implements IDISContext,
         np.setName(titleName);
       }
     }
+  }
+
+  private String getName(short exerciseId, long replicationCounter)
+  {
+    return "DIS Exercise:" + exerciseId + " Rep:" + replicationCounter;
   }
   
   public class DISInput implements IEditorInput
