@@ -367,10 +367,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
     _newItemListeners = new ArrayList<INewItemListener>();
   }
 
-  /**
-   * get the bounds of this set of layers (return our SPECIAL area in absence of bounds)
-   */
-  public WorldArea getBounds()
+  public WorldArea getRawBounds()
   {
     WorldArea res = null;
 
@@ -388,6 +385,16 @@ public class Layers implements Serializable, Plottable, PlottablesType
       }
     }
 
+    return res;
+  }
+  
+  /**
+   * get the bounds of this set of layers (return our SPECIAL area in absence of bounds)
+   */
+  public WorldArea getBounds()
+  {
+    WorldArea res = getRawBounds();
+    
     // did we find anything?
     if (res == null)
     {
