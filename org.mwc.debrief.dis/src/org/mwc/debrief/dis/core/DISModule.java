@@ -480,7 +480,7 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     short eid = pdu.getExerciseID();
     long time = convertTime(pdu.getTimestamp());
     long replicationId = pdu.getRequestID();
-
+    
     Iterator<IDISStartResumeListener> dIter = _startResumeListeners.iterator();
     while (dIter.hasNext())
     {
@@ -516,12 +516,13 @@ public class DISModule implements IDISModule, IDISGeneralPDUListener
     short eid = pdu.getExerciseID();
     short reason = pdu.getReason();
     int appId = pdu.getOriginatingEntityID().getApplication();
+    long numRuns = pdu.getRequestID();
 
     Iterator<IDISStopListener> dIter = _stopListeners.iterator();
     while (dIter.hasNext())
     {
       IDISStopListener thisD = dIter.next();
-      thisD.stop(time, appId, eid, reason);
+      thisD.stop(time, appId, eid, reason, numRuns);
     }
 
     // share the complete message

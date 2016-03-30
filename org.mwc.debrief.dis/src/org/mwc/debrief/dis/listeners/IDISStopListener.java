@@ -14,7 +14,8 @@ public interface IDISStopListener
    * @param appId TODO
    * @param eid
    * @param reason
+   * @param numRuns TODO
    */
-  void stop(long time, int appId, short eid, short reason);
+  void stop(long time, int appId, short eid, short reason, long numRuns);
 
 }
