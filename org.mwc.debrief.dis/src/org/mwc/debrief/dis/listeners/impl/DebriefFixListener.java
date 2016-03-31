@@ -54,11 +54,15 @@ public class DebriefFixListener extends DebriefCoreListener implements
           track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
           track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
         }
-        else if (domain == 0)
+        else if (domain == 3)
         {
           track.setSymbolType(SymbolFactory.SCALED_FRIGATE);
           track.setSymbolLength(new WorldDistance(100, WorldDistance.METRES));
           track.setSymbolWidth(new WorldDistance(20, WorldDistance.METRES));
+        }
+        else if (domain == 0)
+        {
+          track.setSymbolType(SymbolFactory.CIRCLE);
         }
 
         if (kind == 2)
