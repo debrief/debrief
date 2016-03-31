@@ -11451,8 +11451,8 @@ end</screen>
                 <row>
                   <entry>Comms</entry>
                   <entry>10001</entry>
-                  <entry>[Pending]</entry>
-                  <entry>[Pending]</entry>
+                  <entry>muteTime=0 txFreq=1804 ....</entry>
+                  <entry>Verbatim</entry>
                   <entry>Narrative entry</entry>
                 </row>
                 <row>
@@ -11463,11 +11463,11 @@ end</screen>
                   <entry>Collate lookup table, to translate EntityId to entity name</entry>
                 </row>
                 <row>
-                  <entry>New Track</entry>
+                  <entry>New TMA Track</entry>
                   <entry>10003</entry>
-                  <entry>[Pending]</entry>
-                  <entry>[Pending]</entry>
-                  <entry>Narrative entry</entry>
+                  <entry>DETECTION E3-3</entry>
+                  <entry>E3-3</entry>
+                  <entry>Collate lookup table, to translate EntityId to entity name</entry>
                 </row>
                 <row>
                   <entry>Tactics Change</entry>
@@ -11476,9 +11476,64 @@ end</screen>
                   <entry>Verbatim</entry>
                   <entry>Narrative entry</entry>
                 </row>
+                <row>
+                  <entry>New TMA Track (where subject is OSAT)</entry>
+                  <entry>10005</entry>
+                  <entry>DETECTION E3-2</entry>
+                  <entry>E3-2</entry>
+                  <entry>Collate lookup table, to translate EntityId to entity name</entry>
+                </row>
               </tbody>
             </tgroup>
           </table>
+        </para>
+      </sect1>
+      <sect1>
+        <title>Other DIS specifics</title>
+        <para>
+          <variablelist>
+            <varlistentry>
+              <term>Kind</term>
+              <listitem>
+                <para>A value of 1 denotes Platform, 2 denotes Munitions (Torpedo symbol), 101 the
+                  TMA track of interest (OSAT) and 102 other TMA tracks.  Periods where a TMA track
+                  is denoted OSAT have fixes highlighted in a lighter shade (yellow)</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Domain</term>
+              <listitem>
+                <para>0 for Other (sonar buoys), 3 for Surface (Frigate symbol), 4 for Sub-surface
+                  (submarine symbol), 6 for Torpedo</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Force</term>
+              <listitem>
+                <para>0 for Other (Orange), 1 for Friendly (Blue), 2 for Opposing (Red), 3 for
+                  Neutral (Green)</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Stop Reason</term>
+              <listitem>
+                <para>1 for Freeze (Pause), 2 for Stop (all complete), 7 for Iteration
+                  complete</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Stop PDU Request ID</term>
+              <listitem>
+                <para>The total number of iterations performed</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Start PDU Request ID</term>
+              <listitem>
+                <para>The id number of this iteration</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
         </para>
       </sect1>
     </chapter>
