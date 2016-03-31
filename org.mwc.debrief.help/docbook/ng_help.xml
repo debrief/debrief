@@ -6902,8 +6902,17 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             swamped with updates, the <guibutton>Live updates</guibutton> checkbox can be cleared,
             which will let Debrief continue to receive and store DIS messages, but Debrief will not
             bother updating the user interface (the Outline view or the Plot Editor).</para>
-          <para>Lastly, the <guibutton>Server prefs</guibutton> link can be used to open the 
-          preferences page for Debrief DIS communications.</para>
+          <para>The <guibutton>Server prefs</guibutton> link can be used to open the preferences
+            page for Debrief DIS communications.</para>
+          <para>On the <guilabel>DIS Listener</guilabel> view&apos;s drop-down menu is a
+              <guilabel>Log Messages</guilabel> toggle button. When this is selected, Debrief will
+            log all messages to the Debrief system log. This log can be accessed via the
+              <guilabel>Window / Show View / Error Log</guilabel> menu option. The
+              <filename>.log</filename> file is chunked into 1Mb files, and is stored in the hidden
+              <filename>.DebriefNG/.metadata</filename> folder within your home directory. To remind
+            the user about this logging (with its associated performance and disk usage penalty),
+            the <guilabel>Scenario Complete</guilabel> popup dialog includes a reminder that logging
+            is active, when relevant.</para>
         </sect2>
         <sect2><title>Performance graph</title>
           <para>
@@ -11328,13 +11337,13 @@ end</screen>
               </listitem>
             </orderedlist></para></sect2>
       </sect1>
-      <sect1>
+      <sect1 xml:id="dis_command_line">
         <title>Command line options<indexterm>
             <primary>DIS</primary>
             <secondary>Command line paremeters</secondary>
           </indexterm></title>
         <para>Some organisations may wish to specify the DIS IP Address &amp; Port values in the
-          command line when starting Debrief.  This allows a parent process/simulator to start
+          command line when starting Debrief. This allows a parent process/simulator to start
           Debrief preconfigured with the correcft network parameters.</para>
         <para>Set these values by using these settings on the command line: <code> -Dport=2345
             -DipAddress=23.44.55.66</code>. </para>
@@ -11488,7 +11497,7 @@ end</screen>
           </table>
         </para>
       </sect1>
-      <sect1>
+      <sect1 xml:id="other_dis_specifics">
         <title>Other DIS specifics</title>
         <para>
           <variablelist>
@@ -11496,7 +11505,7 @@ end</screen>
               <term>Kind</term>
               <listitem>
                 <para>A value of 1 denotes Platform, 2 denotes Munitions (Torpedo symbol), 101 the
-                  TMA track of interest (OSAT) and 102 other TMA tracks.  Periods where a TMA track
+                  TMA track of interest (OSAT) and 102 other TMA tracks. Periods where a TMA track
                   is denoted OSAT have fixes highlighted in a lighter shade (yellow)</para>
               </listitem>
             </varlistentry>

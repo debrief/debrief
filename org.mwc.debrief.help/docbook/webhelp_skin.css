@@ -16,6 +16,20 @@ h2.title, .title.topictitle1, .title.sectiontitle, .title.topictitle2 {
 .programlisting {
   background-color: rgb(238, 238, 238);
 }
+.guilabel {
+    background-color: rgb(218, 218, 217);
+    padding: 2px;
+}
+.guibutton {
+    background-color: rgb(128, 128, 128);
+    color: rgb(238, 238, 238);
+    padding: 2px;
+    font-weight: 600;
+}
+.filename {
+    font-weight: 600;
+}
+
 #header .tab.selectedTab, #header #space, #splitterContainer #leftPane, #splitterContainer .splitbarV {
   background-color: rgb(255, 255, 255);
 }
