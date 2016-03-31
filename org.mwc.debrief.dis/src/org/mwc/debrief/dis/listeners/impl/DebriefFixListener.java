@@ -90,7 +90,7 @@ public class DebriefFixListener extends DebriefCoreListener implements
             || kind == IDISFixListener.NON_OSAT_TRACK)
         {
           // ok, and is it the OSAT track?
-          if (!isOSAT)
+          if (isOSAT)
           {
             fw.setColor(col.brighter());
           }
