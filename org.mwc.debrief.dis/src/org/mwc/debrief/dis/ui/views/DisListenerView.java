@@ -353,12 +353,21 @@ public class DisListenerView extends ViewPart
       @Override
       public void run()
       {
+        short ourAppId =
+            (short) DisActivator.getDefault().getPreferenceStore().getInt(
+                DisActivator.APP_ID);
+
         // check it wasn't us that send the message
-        if (appId == NetworkDISProvider.APPLICATION_ID)
+        if (appId == NetworkDISProvider.APPLICATION_ID || appId == ourAppId)
         {
           // ignore - it's us sending it
           return;
         }
+        
+        // tell the perf graph that we've finished
+        _perfGraph.complete("Stop button");
+        
+        _context.scenarioComplete();
 
         // hey, check the reason
         switch (reason)
@@ -366,7 +375,7 @@ public class DisListenerView extends ViewPart
         case IDISStopListener.PDU_ITERATION_COMPLETE:
           
           // tell the context that it's complete
-          _context.scenarioComplete();
+        //  _context.scenarioComplete();
           break;
         case IDISStopListener.PDU_FREEZE:
           pauseReceived();
@@ -376,9 +385,7 @@ public class DisListenerView extends ViewPart
           stopReceived();
 
           // check it wasn't from us
-          short ourAppId =
-              (short) DisActivator.getDefault().getPreferenceStore().getInt(
-                  DisActivator.APP_ID);
+          ;
 
           if (appId != ourAppId)
           {
@@ -1134,42 +1141,18 @@ public class DisListenerView extends ViewPart
     stopButton.setEnabled(true);
   }
 
-  private void doPause()
-  {
-    playButton.setEnabled(true);
-    pauseButton.setEnabled(false);
-    stopButton.setEnabled(true);
-  }
-
-  private void doStop()
+  protected void stopReceived()
   {
     playButton.setEnabled(true);
     pauseButton.setEnabled(false);
     stopButton.setEnabled(false);
-
-    // tell the perf graph that we've finished
-    _perfGraph.complete("Stop button");
-
-    // tell the context that it's complete
-    _context.scenarioComplete();
-
-    _perfGraph.complete("Stopped");
-  }
-
-  protected void stopReceived()
-  {
-    doStop();
-
-    // no, don't disconnect, since we may get another replication
-    // doDisconnect();
-
-    // no, don't jump to launch - we may still be running
-    // launchButton.setFocus();
   }
 
   protected void pauseReceived()
   {
-    doPause();
+    playButton.setEnabled(true);
+    pauseButton.setEnabled(false);
+    stopButton.setEnabled(true);
   }
 
   private void doConnect()
