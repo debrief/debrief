@@ -69,6 +69,10 @@ public class DebriefFixListener extends DebriefCoreListener implements
         {
           track.setSymbolType(SymbolFactory.TORPEDO);
         }
+        else if(kind == 8)
+        {
+          track.setSymbolType(SymbolFactory.DATUM);
+        }
         else if(kind == IDISFixListener.OSAT_TRACK || kind == IDISFixListener.NON_OSAT_TRACK)
         {
           // ok, this is OSAT track

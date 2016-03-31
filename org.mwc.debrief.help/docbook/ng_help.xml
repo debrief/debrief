@@ -11507,7 +11507,7 @@ end</screen>
             <varlistentry>
               <term>Kind</term>
               <listitem>
-                <para>A value of 1 denotes Platform, 2 denotes Munitions (Torpedo symbol), 101 the
+                <para>A value of 1 denotes Platform, 2 denotes Munitions (Torpedo symbol), 8 for countermeasures, 101 the
                   TMA track of interest (OSAT) and 102 other TMA tracks. Periods where a TMA track
                   is denoted OSAT have fixes highlighted in a lighter shade (orange)</para>
               </listitem>
