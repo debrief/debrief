@@ -95,7 +95,7 @@ public class DisPrefs extends PreferencePage implements
     iconLbl.setLayoutData(gd3);
     createLabel(composite, " ");
     final Action act =
-        CorePlugin.createOpenHelpAction(DisListenerView.HELP_CONTEXT, null,
+        CorePlugin.createOpenHelpAction(DisListenerView.CONFIG_CONTEXT, null,
             _myBench.getHelpSystem());
     Button helpBtn = new Button(composite, SWT.PUSH);
     helpBtn.addSelectionListener(new SelectionListener()

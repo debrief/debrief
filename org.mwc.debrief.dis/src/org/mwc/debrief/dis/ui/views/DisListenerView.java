@@ -111,6 +111,7 @@ public class DisListenerView extends ViewPart
 {
 
   public static final String HELP_CONTEXT = "org.mwc.debrief.help.DISSupport";
+  public static final String CONFIG_CONTEXT = "org.mwc.debrief.help.DISConfig";
 
   private Button connectButton;
   private Button playButton;

@@ -6904,16 +6904,19 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             bother updating the user interface (the Outline view or the Plot Editor).</para>
           <para>The <guibutton>Server prefs</guibutton> link can be used to open the preferences
             page for Debrief DIS communications.</para>
-          <para>On the <guilabel>DIS Listener</guilabel> view&apos;s drop-down menu is a
-              <guilabel>Log Messages</guilabel> toggle button. When this is selected, Debrief will
-            log all messages to the Debrief system log. This log can be accessed via the
-              <guilabel>Window / Show View / Error Log</guilabel> menu option. The
-              <filename>.log</filename> file is chunked into 1Mb files, and is stored in the hidden
-              <filename>.DebriefNG/.metadata</filename> folder within your home directory. To remind
-            the user about this logging (with its associated performance and disk usage penalty),
-            the <guilabel>Scenario Complete</guilabel> popup dialog includes a reminder that logging
-            is active, when relevant.</para>
         </sect2>
+        <sect2 xml:id="logging">
+          <title>Logging DIS messages</title>
+           <para>On the <guilabel>DIS Listener</guilabel> view&apos;s drop-down menu is a
+             <guilabel>Log Messages</guilabel> toggle button. When this is selected, Debrief will
+             log all messages to the Debrief system log. This log can be accessed via the
+             <guilabel>Window / Show View / Error Log</guilabel> menu option. The
+             <filename>.log</filename> file is chunked into 1Mb files, and is stored in the hidden
+             <filename>.DebriefNG/.metadata</filename> folder within your home directory. To remind
+             the user about this logging (with its associated performance and disk usage penalty),
+             the <guilabel>Scenario Complete</guilabel> popup dialog includes a reminder that logging
+             is active, when relevant.</para>
+         </sect2>
         <sect2><title>Performance graph</title>
           <para>
             At the foot of the <guibutton>DIS Listener View</guibutton> is a performance graph.  When
@@ -11506,7 +11509,7 @@ end</screen>
               <listitem>
                 <para>A value of 1 denotes Platform, 2 denotes Munitions (Torpedo symbol), 101 the
                   TMA track of interest (OSAT) and 102 other TMA tracks. Periods where a TMA track
-                  is denoted OSAT have fixes highlighted in a lighter shade (yellow)</para>
+                  is denoted OSAT have fixes highlighted in a lighter shade (orange)</para>
               </listitem>
             </varlistentry>
             <varlistentry>
