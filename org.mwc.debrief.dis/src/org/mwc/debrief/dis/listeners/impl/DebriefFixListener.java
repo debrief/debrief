@@ -96,7 +96,7 @@ public class DebriefFixListener extends DebriefCoreListener implements
           // ok, and is it the OSAT track?
           if (isOSAT)
           {
-            fw.setColor(col.brighter());
+            fw.setColor(DebriefColors.ORANGE);
           }
         }
         else
@@ -133,7 +133,7 @@ public class DebriefFixListener extends DebriefCoreListener implements
       theCol = DebriefColors.GREEN;
       break;
     case OTHER:
-      theCol = DebriefColors.ORANGE;
+      theCol = DebriefColors.YELLOW;
       break;
     default:
       System.err.println("NO, NO FORCE FOUND");
