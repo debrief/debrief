@@ -522,7 +522,10 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
   public final void setTrackWrapper(final TrackWrapper theTrack)
   {
-    _trackWrapper = theTrack;
+    if(_trackWrapper != theTrack)
+    {
+      _trackWrapper = theTrack;
+    }
   }
 
   public final TrackWrapper getTrackWrapper()
