@@ -368,9 +368,8 @@ public class DisListenerView extends ViewPart
         switch (reason)
         {
         case IDISStopListener.PDU_ITERATION_COMPLETE:
-          
           // tell the context that it's complete
-        //  _context.scenarioComplete();
+          _context.scenarioComplete();
           break;
         case IDISStopListener.PDU_FREEZE:
           pauseReceived();
