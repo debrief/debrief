@@ -364,11 +364,6 @@ public class DisListenerView extends ViewPart
           return;
         }
         
-        // tell the perf graph that we've finished
-        _perfGraph.complete("Stop button");
-        
-        _context.scenarioComplete();
-
         // hey, check the reason
         switch (reason)
         {
@@ -384,11 +379,15 @@ public class DisListenerView extends ViewPart
           // update the UI
           stopReceived();
 
-          // check it wasn't from us
-          ;
+          // tell the perf graph that we've finished
+          _perfGraph.complete("Stop button");
 
+          // check it wasn't from us
           if (appId != ourAppId)
           {
+            // ok, remember its complete
+            _context.scenarioComplete();
+            
             // ok, popup message
             MessageBox dialog =
                 new MessageBox(PlatformUI.getWorkbench()
