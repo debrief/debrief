@@ -311,6 +311,10 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
       // ok, we've moved.
       // We'd better re-generate our references
+      
+      // DEBUG: track change to rel TMA
+      Application.logStack2(Application.INFO, "RelativeTMASegment - Setting layers");
+      
       identifyReferenceTrack();
 	  }
 	}
@@ -539,6 +543,11 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		// have we sorted out our reference track yet?
 		if (_referenceTrack == null)
 		{
+		  
+      // DEBUG: track change to rel TMA
+      Application.logStack2(Application.INFO,
+          "RelativeTMASegment - get host location about to identify reference track");
+
 			identifyReferenceTrack();
 		}
 
@@ -657,7 +666,14 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	{
 		// do we know it?
 		if (_referenceTrack == null)
+		{
+      
+      // DEBUG: track change to rel TMA
+      Application.logStack2(Application.INFO,
+          "RelativeTMASegment - get host location about to identify reference track");
+
 			identifyReferenceTrack();
+		}
 
 		// fingers crossed it's sorted.
 		return _referenceSensor;
@@ -667,7 +683,13 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	{
 		// do we know it?
 		if (_referenceTrack == null)
+		{
+      // DEBUG: track change to rel TMA
+      Application.logStack2(Application.INFO,
+          "RelativeTMASegment - get host location about to identify reference track");
+
 			identifyReferenceTrack();
+		}
 
 		// fingers crossed it's sorted.
 		return _referenceTrack;
@@ -1181,6 +1203,10 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	 */
 	public void setOffsetBearing(final double offsetBearing)
 	{
+    // DEBUG: track change to rel TMA
+    Application.logStack2(Application.INFO,
+        "RelativeTMASegment - offset bearing to:" + (int) offsetBearing);
+	  
 		_offset.setValues(MWC.Algorithms.Conversions.Degs2Rads(offsetBearing),
 				_offset.getRange(), _offset.getDepth());
 	}
@@ -1192,6 +1218,11 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	 */
 	public void setOffsetRange(final WorldDistance offsetRange)
 	{
+    // DEBUG: track change to rel TMA
+    Application.logStack2(Application.INFO,
+        "RelativeTMASegment - offset range to:"
+            + (int) offsetRange.getValueIn(WorldDistance.METRES));
+    
 		_offset.setValues(_offset.getBearing(),
 				offsetRange.getValueIn(WorldDistance.DEGS), _offset.getDepth());
 	}
