@@ -1093,7 +1093,7 @@ and so on....</programlisting></para>
             REP import stage via the Select track mode dialog:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SelectImportMode.png"/>
+                  <imagedata fileref="figures/SelectImportMode.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -1436,7 +1436,7 @@ and so on....</programlisting></para>
         format <indexterm>
           <primary>Formatting</primary>
           <secondary>track data</secondary>
-        </indexterm> what you see to improve its legibility. Learn more about formatting tracks in
+        </indexterm>what you see to improve its legibility. Learn more about formatting tracks in
         the <emphasis>Editing your data</emphasis> tutorial. <note>
           <para>Apologies in advance to the British users of <application>Debrief</application> for
             the American-spelling of colour. The software environment within which
@@ -1453,7 +1453,7 @@ and so on....</programlisting></para>
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/PropertiesView.png" width="237"/>
+                <imagedata fileref="figures/PropertiesView.png" width="237" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1553,7 +1553,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/brg_error.png" width="333"/>
+                  <imagedata fileref="figures/brg_error.png" width="333" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1597,7 +1597,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons2.png"/>
+                    <imagedata fileref="figures/PaletteButtons2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1685,7 +1685,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/scale_demo.gif"/>
+                    <imagedata fileref="figures/scale_demo.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1799,20 +1799,52 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/old_coastline.gif"/>
+                    <imagedata fileref="figures/old_coastline.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
             </figure></para>
         </sect2>
-
+        <sect2 xml:id="etopo_gridded_bathy">
+          <title>ETOPO gridded bathy</title>
+          <para>Whilst the VPF dataset <indexterm>
+              <primary>ETOPO Data</primary>
+            </indexterm>provides a contoured bathymetry within broad depth steps, the ETOPO dataset
+            provides a gridded bathymetry in 5&apos; or 2&apos; steps. When you ask Debrief to plot
+            an ETOPO background, Debrief will try to load an ETOPO-2 dataset first, followed by an
+            ETOPO-5 dataset if that is unavailable. The image below provides a sample of the level
+            of detail supplied. <figure xml:id="ETOPO_Demo">
+              <title>Sample of ETOPO gridded bathymetry</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/etopo_data.gif" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+        </sect2>
+        <sect2>
+          <title xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="chartlibrary">Chart
+            Library</title>
+          <para>Debrief also allows you to load 3rd-party chart libraries. This is covered in <xref
+              linkend="loadCharts"/><figure>
+              <title>Sample of chart library portfolio</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/ChartFolio.png" align="center" width="75%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+        </sect2>
         <sect2 xml:id="vectored_data">
           <title>Vectored data</title>
-
-          <para>The addition of vectored chart data is covered later in this document, in <xref linkend="view_vpf"/>. The image below provides a sample of the level of detail
+          <para>The addition of vectored chart data is also covered later in this document, in <xref
+              linkend="view_vpf"/>. The image below provides a sample of the level of detail
             supplied. <figure xml:id="vectored_Coast_demo">
-              <title>Sample of vectored coastline data</title>
-
+              <title xmlns="http://docbook.org/ns/docbook">Sample of vectored coastline data</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
@@ -1822,27 +1854,20 @@ and so on....</programlisting></para>
               </screenshot>
             </figure></para>
         </sect2>
-
-        <sect2 xml:id="etopo_gridded_bathy">
-          <title>ETOPO gridded bathy</title>
-
-          <para>Whilst the VPF dataset <indexterm>
-              <primary>ETOPO Data</primary>
-            </indexterm>provides a contoured bathymetry within broad depth steps, the ETOPO dataset
-            provides a gridded bathymetry in 5&apos; or 2&apos; steps. When you ask Debrief to plot an ETOPO
-            background, Debrief will try to load an ETOPO-2 dataset first, followed by an ETOPO-5
-            dataset if that is unavailable. The image below provides a sample of the level of detail
-            supplied. <figure xml:id="ETOPO_Demo">
-              <title>Sample of ETOPO gridded bathymetry</title>
-
+        <sect2>
+          <title xml:id="NaturalEarth">Natural Earth</title>
+          <para>In the same manner that we loaded the <xref linkend="chartlibrary"/>, we do exactly
+            the same thing with Natural Earth.<figure>
+              <title>Sample of Natural Earth</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/etopo_data.gif"/>
+                    <imagedata fileref="figures/NE_110M.png" align="center" width="75%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure></para>
+            </figure>For further information, refer to <xref linkend="natural_earth"/>
+          </para>
         </sect2>
       </sect1>
 
@@ -1980,7 +2005,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/EditPolygon.png" width="263"/>
+                    <imagedata fileref="figures/EditPolygon.png" width="263" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2045,7 +2070,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CalculatedLabel.png" align="center"/>
+                      <imagedata fileref="figures/CalculatedLabel.png" align="center" width="80%"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -2083,7 +2108,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/LayerManagerView.png" width="279"/>
+                    <imagedata fileref="figures/LayerManagerView.png" width="279" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2228,7 +2253,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SaveDialog.png" width="263"/>
+                    <imagedata fileref="figures/SaveDialog.png" width="263" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2723,7 +2748,7 @@ and so on....</programlisting></para>
             </orderedlist><screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LayerManagerView.png" width="279"/>
+                  <imagedata fileref="figures/LayerManagerView.png" width="279" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -3002,7 +3027,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/relative_demo.png" align="center"/>
+                      <imagedata fileref="figures/relative_demo.png" align="center" width="100%"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3270,7 +3295,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/SAM2Export.png" width="300"/>
+                      <imagedata fileref="figures/SAM2Export.png" width="300" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3454,7 +3479,8 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/time_variable_plot_switch.png" width="180"/>
+                  <imagedata fileref="figures/time_variable_plot_switch.png" width="180"
+                    align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -3819,7 +3845,7 @@ and so on....</programlisting></para>
               <title>Natural Earth logo</title>              
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/NaturalEarthLogo.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/NaturalEarthLogo.png" width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -3924,7 +3950,7 @@ and so on....</programlisting></para>
       </sect1>
 
       <sect1 xml:id="vpf_data">
-        <title>Installing VPF data</title>
+        <title>VPF data</title>
 
         <sect2 xml:id="vpf_intro">
           <title>Introduction</title>
@@ -4210,7 +4236,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer1.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer1.png" width="237" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4225,7 +4251,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer2.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer2.png" width="237" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4241,7 +4267,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer3.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer3.png" width="237" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4254,7 +4280,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer4.png" width="270"/>
+                    <imagedata fileref="figures/VPF_Layer4.png" width="270" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4265,7 +4291,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/VPF_Layer5.png" align="center"/>
+                  <imagedata fileref="figures/VPF_Layer5.png" align="center" width="270"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4979,7 +5005,7 @@ and so on....</programlisting></para>
                   leg parameters <screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/AddSegment6.png" width="40%"/>
+                        <imagedata fileref="figures/AddSegment6.png" width="80%" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5014,7 +5040,7 @@ and so on....</programlisting></para>
                   your set of legs in tabular form<screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/legsInGridEditor.png" width="80%"/>
+                        <imagedata fileref="figures/legsInGridEditor.png" width="80%" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5190,7 +5216,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter.png" width="338"/>
+                    <imagedata fileref="figures/narr_filter.png" width="338" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5199,7 +5225,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter_src.png" align="center"/>
+                    <imagedata fileref="figures/narr_filter_src.png" align="center" width="338"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5231,7 +5257,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LandsEnd.png" width="450"/>
+                  <imagedata fileref="figures/LandsEnd.png" width="450" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5268,7 +5294,8 @@ and so on....</programlisting></para>
         <para>Separately, Debrief can provide a folio of charts<indexterm>
             <primary>Charts</primary>
             <secondary>Folios</secondary>
-          </indexterm>, though the data must be stored in a specific layout (see <xref linkend="ChartStorage"/>), and Debrief it must be configured appropriately. Configure
+          </indexterm>, though the data must be stored in a specific layout (see <xref
+            linkend="ChartStorage"/>), and Debrief must be configured appropriately. Configure
           Debrief this by selecting the <guilabel>Chart Backdrops</guilabel> page under the
             <guilabel>Maritime Analysis</guilabel> section of the
             <guilabel>Window/Preferences</guilabel> dialog. In this page specify the parent folder
@@ -5278,7 +5305,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartOptions.png" width="450"/>
+                  <imagedata fileref="figures/ChartOptions.png" width="100%" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5290,8 +5317,8 @@ and so on....</programlisting></para>
               layers. For most analysis the presence of a chart backdrop can make vessel tracks
               difficult to distinguish. Making them semi-transparent fades them away a little -
               letting you focus on the tracks whilst still being aware of the backdrop chart data.
-              Unfortunately, the transparency setting isn&apos;t observed when you copy the plot to the
-              clipboard. Once pasted in MS Word, all charts are painted solid.</para>
+              Unfortunately, the transparency setting isn&apos;t observed when you copy the plot to
+              the clipboard. Once pasted in MS Word, all charts are painted solid.</para>
           </note></para>
         <para>Once a parent folder is specified, when you click on Insert Chart Library from the
           Chart Features menu Debrief will scan the child folders for correctly named shapefiles and
@@ -5300,7 +5327,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartFolio.png" align="center"/>
+                  <imagedata fileref="figures/ChartFolio.png" align="center" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5317,7 +5344,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LoadChart.png" align="center"/>
+                  <imagedata fileref="figures/LoadChart.png" align="center" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5405,6 +5432,17 @@ and so on....</programlisting></para>
                 useful processing on this data.</para>
             </note></para>
         </sect2>
+        <sect2>
+          <title>Viewing Sensor Data Time Period</title>
+          <para>When viewing the properties view, you will see a Start/Stop DTG for the current
+            sensor data time period. This entry is read only, but provides an at a glance method of
+            viewing range set for the sensor data.<mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/sensor_dtg_readonly.png" scalefit="1" width="75%"
+                  align="center"/>
+              </imageobject>
+            </mediaobject></para>
+        </sect2>
 
         <sect2 xml:id="SectWormInHole">
           <title>Worm in the hole</title>
@@ -5442,7 +5480,8 @@ Platform C,-551</screen></para>
             the <guilabel>Standard Array Offsets</guilabel> page<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ArrayLengthsPrefs.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ArrayLengthsPrefs.png" scalefit="1" width="100%"
+                    align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -5451,7 +5490,7 @@ Platform C,-551</screen></para>
             list of sensor offset distances when you view sensor data in the properties window:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LengthsEditor.png" width="308"/>
+                  <imagedata fileref="figures/LengthsEditor.png" width="308" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -5776,7 +5815,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             you right-click on them you are offered the &apos;View sensor range plot&apos; menu item:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ViewSensorPlot.png" width="313"/>
+                  <imagedata fileref="figures/ViewSensorPlot.png" width="100%" align="center"/>
                 </imageobject>
 
                 <caption>Popup menu with a track plus multiple sensor selected</caption>
@@ -5967,7 +6006,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             <para>The indirect path length is calculated as follows:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_length_alg.png" width="212"/>
+                    <imagedata fileref="figures/multi_length_alg.png" width="212" align="center"/>
                   </imageobject>
 
                   <caption>Algorithm used to determine indirect path length</caption>
@@ -6032,7 +6071,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               </variablelist>These lengths are the calculated as: <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_lengths.png" width="284"/>
+                    <imagedata fileref="figures/multi_lengths.png" width="284" align="center"/>
                   </imageobject>
 
                   <caption>Comparison of acoustic paths</caption>
@@ -6041,7 +6080,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               obtain the path travel times, and this the overall time delay:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_delay.png" width="233"/>
+                    <imagedata fileref="figures/multi_delay.png" width="233" align="center"/>
                   </imageobject>
 
                   <caption>Calculation of time delay</caption>
@@ -6501,7 +6540,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             interaction with the algorithm is as recorded below<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_sequence.png"/>
+                  <imagedata fileref="figures/SATC_sequence.png" width="100%"/>
                 </imageobject>
                 <caption>SATC Sequence</caption>
               </mediaobject>
@@ -6814,30 +6853,30 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
         <sect2 xml:id="dis_filter_config">
           <title>Filtering DIS traffic</title>
-          <para>It is possible for multiple DIS simulations to simultaneously run on a single network.  
-            Common-sense would suggest that 
-            these multiple sumulations should use unique network address and port, but this isn't mandatory.  
-            If multiple simulations are being run on the same network address and port, it is possible 
-            to control which simulations Debrief listens to:<variablelist>
+          <para>It is possible for multiple DIS simulations to simultaneously run on a single
+            network. Common-sense would suggest that these multiple simulations should use unique
+            network address and port, but this isn't mandatory. If multiple simulations are being
+            run on the same network address and port, it is possible to control which simulations
+            Debrief listens to:<variablelist>
               <varlistentry>
                 <term>Site</term>
                 <listitem>
-                  <para>Provision of this optional parameter restricts Debrief to handling messages from
-                  the specified site</para>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages
+                    from the specified site</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
                 <term>Application</term>
                 <listitem>
-                  <para>Provision of this optional parameter restricts Debrief to handling messages from
-                    the specified application</para>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages
+                    from the specified application</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
                 <term>Exercise</term>
                 <listitem>
-                  <para>Provision of this optional parameter restricts Debrief to handling messages from
-                    the specified DIS exercise</para>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages
+                    from the specified DIS exercise</para>
                 </listitem>
               </varlistentry>
             </variablelist>
@@ -6902,8 +6941,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             swamped with updates, the <guibutton>Live updates</guibutton> checkbox can be cleared,
             which will let Debrief continue to receive and store DIS messages, but Debrief will not
             bother updating the user interface (the Outline view or the Plot Editor).</para>
-          <para>The <guibutton>Server prefs</guibutton> link can be used to open the preferences
-            page for Debrief DIS communications.</para>
+          <para>Lastly, the <guibutton>Server prefs</guibutton> link can be used to open the 
+          preferences page for Debrief DIS communications.</para>
         </sect2>
         <sect2 xml:id="logging">
           <title>Logging DIS messages</title>
@@ -6916,7 +6955,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
              the user about this logging (with its associated performance and disk usage penalty),
              the <guilabel>Scenario Complete</guilabel> popup dialog includes a reminder that logging
              is active, when relevant.</para>
-         </sect2>
+        </sect2>
         <sect2><title>Performance graph</title>
           <para>
             At the foot of the <guibutton>DIS Listener View</guibutton> is a performance graph.  When
@@ -8516,21 +8555,21 @@ and entry type can be multi-word if surrounded by quotes (").
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_1.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_1.png" width="40%" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_2.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_2.png" width="40%" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_3.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_3.png" width="40%" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8567,7 +8606,7 @@ and entry type can be multi-word if surrounded by quotes (").
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/FormatExample.png" width="60%"/>
+                  <imagedata fileref="figures/FormatExample.png" width="60%" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -9205,7 +9244,7 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/rhumb_line_segments.gif" width="200"/>
+                  <imagedata fileref="figures/rhumb_line_segments.gif" width="200" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -9718,7 +9757,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_4.gif"/>
+                  <imagedata fileref="figures/contour_4.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure> Note that for large arrays the whole data array need not be stored in memory .
@@ -10092,7 +10131,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing all bounded states</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/NoSuppress.png" align="center"/>
+                      <imagedata fileref="figures/NoSuppress.png" align="center" width="100%"/>
                     </imageobject>                    
                     <caption>A solution showing all bounded states</caption>
                   </mediaobject>
@@ -10101,7 +10140,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing low precision cut suppression</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CutsSuppressed.png" align="center"/>
+                      <imagedata fileref="figures/CutsSuppressed.png" align="center" width="100%"/>
                     </imageobject>                    
                     <caption>A solution showing Low Precision cut suppression</caption>
                   </mediaobject>
@@ -10900,7 +10939,7 @@ end</code></screen>
                 <title>Arithmetic crossover example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/tma_fig7_arithmeticcrossoverex.png"/>
+                    <imagedata fileref="figures/tma_fig7_arithmeticcrossoverex.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -11346,7 +11385,7 @@ end</screen>
             <secondary>Command line paremeters</secondary>
           </indexterm></title>
         <para>Some organisations may wish to specify the DIS IP Address &amp; Port values in the
-          command line when starting Debrief. This allows a parent process/simulator to start
+          command line when starting Debrief.  This allows a parent process/simulator to start
           Debrief preconfigured with the correcft network parameters.</para>
         <para>Set these values by using these settings on the command line: <code> -Dport=2345
             -DipAddress=23.44.55.66</code>. </para>
