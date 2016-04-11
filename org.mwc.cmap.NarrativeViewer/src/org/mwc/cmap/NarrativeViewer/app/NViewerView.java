@@ -17,7 +17,6 @@ package org.mwc.cmap.NarrativeViewer.app;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -69,8 +68,8 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
-import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
+import MWC.TacticalData.NarrativeEntry;
 import de.kupzog.ktable.KTableCellDoubleClickAdapter;
 
 public class NViewerView extends ViewPart implements PropertyChangeListener,
@@ -827,34 +826,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     }
 
     res.append(_myFormat.format(theTime));
-
-    final DecimalFormat microsFormat = new DecimalFormat("000000");
-    final DecimalFormat millisFormat = new DecimalFormat("000");
-
-    // do we have micros?
-    if (micros % 1000 > 0)
-    {
-      // yes
-      res.append(".");
-      res.append(microsFormat.format(micros % 1000000));
-    }
-    else
-    {
-      // do we have millis?
-      if (micros % 1000000 > 0)
-      {
-        // yes, convert the value to millis
-
-        final long millis = micros = (micros % 1000000) / 1000;
-
-        res.append(".");
-        res.append(millisFormat.format(millis));
-      }
-      else
-      {
-        // just use the normal output
-      }
-    }
 
     return res.toString();
   }
