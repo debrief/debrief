@@ -2008,10 +2008,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           boolean thisChanged = needer.getLayers() != _myLayers;
           if (thisChanged)
           {
-            // DEBUG: track change to rel TMA
-            Application.logError2(Application.INFO,
-                "Plot editor - Rel TMA Seg has changed layers", null);
-            
             needer.setLayers(_myLayers);
           }
 
@@ -2022,11 +2018,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       // ok, have we processed a layer change
       if (layersChanged)
       {
-        // DEBUG: track change to rel TMA
-        Application.logError2(Application.INFO,
-            "Plot editor - layers have changed", null);
-
-        
         // yes. ok, loop through and update any dynamic infills
         segs = tw.getSegments();
         iter = segs.elements();
