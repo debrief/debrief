@@ -47,7 +47,7 @@ import MWC.GenericData.TimePeriod;
  * @author ian.mayo
  * 
  */
-public class ShowCutsForThisSensor implements RightClickContextItemGenerator
+public class ShowCutsForThisTMASegment implements RightClickContextItemGenerator
 {
   private static class ShowCutsOperation extends CMAPOperation
   {

@@ -298,18 +298,12 @@ public class ConvertAbsoluteTmaToRelative implements
             else
             {
               // don't bother, we didn't find anything useful
-              System.err.println("Segments must be from same track");
-
-              // TODO: popup dialog
               return;
             }
           }
           else
           {
             // ok, we only work on a collection of abs segments
-            System.err.println("All segments must be absolute");
-
-            // TODO: popup dialog
             return;
           }
         }
@@ -318,7 +312,6 @@ public class ConvertAbsoluteTmaToRelative implements
       if (commonParent == null)
       {
         // ok, we didn't find any relative segments
-        System.err.println("No relative segments found");
         return;
       }
 
@@ -358,7 +351,6 @@ public class ConvertAbsoluteTmaToRelative implements
 
         if (before == null && after == null)
         {
-          System.err.println("Track doesn't have any relative tracks");
           return;
         }
         else if (before != null || after != null)
@@ -372,19 +364,12 @@ public class ConvertAbsoluteTmaToRelative implements
 
           if (beforeS == null && afterS == null)
           {
-            System.err.println("Can't find relative track sensors");
-
-            // TODO: popup dialog
             return;
           }
 
           else if (beforeS != null && afterS != null && beforeS != afterS)
           {
-            System.err.println("They're not from the same host");
-            
             parent.add(new ShowMessage("Can't convert track", "Adjacent TMA Segments must be relative to same sensor"));
-
-            // TODO: popup dialog
             return;
           }
 
