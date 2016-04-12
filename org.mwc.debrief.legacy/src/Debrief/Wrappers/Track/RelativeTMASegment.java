@@ -1236,6 +1236,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		// processing depending on which end is being shifted.
 		SortedSet<Editable> data = (SortedSet<Editable>) this.getData();
 		final FixWrapper first = (FixWrapper) data.first();
+    final FixWrapper last = (FixWrapper) data.last();
 
 		// SPECIAL HANDLING: due to the DR rendering of 
 		// relative segements, we can get some very minor shift
@@ -1245,8 +1246,9 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		// relaxed test to determine if the drag origin
 		// is the same as the segment origin
     double distFromOrigin = first.getLocation().rangeFrom(origin);
+    double distFromEnd = last.getLocation().rangeFrom(origin);
 		
-		if (distFromOrigin < 1.0E-9)
+		if (distFromOrigin < distFromEnd)
 		{
       // set the new course
 			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
