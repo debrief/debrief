@@ -21,6 +21,7 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -34,6 +35,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -41,11 +43,19 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.annotations.XYTextAnnotation;
@@ -69,8 +79,13 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
+import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.Activator;
 
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -79,6 +94,7 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Shapes.DraggableItem;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 
 /**
@@ -135,6 +151,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	Action _onlyVisible;
 
+  /**
+   * flag indicating whether we should select the clicked item
+   * in the Outline View
+   */
+  Action _selectOnClick;
+
 	/**
 	 * our layers listener...
 	 */
@@ -179,6 +201,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	protected Vector<DraggableItem> _draggableSelection;
 
+  protected boolean _itemSelectedPending = false;
+
 	/**
 	 * 
 	 * @param needBrg
@@ -217,6 +241,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// fit to window
 		toolBarManager.add(_autoResize);
 		toolBarManager.add(_onlyVisible);
+		toolBarManager.add(_selectOnClick);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
 		// toolBarManager.add(_magicBtn);
@@ -380,7 +405,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setRangeGridlineStroke(new BasicStroke(2));
 		_linePlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
 		_linePlot.setDomainGridlineStroke(new BasicStroke(2));
-
+		
 		// and the plot object to display the cross hair value
 		final XYTextAnnotation annot = new XYTextAnnotation("-----", 2, 2);
 		annot.setTextAnchor(TextAnchor.TOP_LEFT);
@@ -405,10 +430,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_combined.add(_dotPlot);
 
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
-
+		
 		// put the plot into a chart
 		_myChart = new JFreeChart(null, null, _combined, true);
-
+		
 		final LegendItemSource[] sources = { _linePlot };
 		_myChart.getLegend().setSources(sources);
 
@@ -456,11 +481,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 					_linePlot.removeAnnotation(annot);
 					_linePlot.addAnnotation(annot);
 				}
+				
+				// ok, do we also have a selection event pending
+				if(_itemSelectedPending && _selectOnClick.isChecked())
+				{
+          _itemSelectedPending = false;
+          
+				  showFixAtThisTime(newDate);
+				}
 			}
 		});
 
 		// and insert into the panel
 		_holder.setChart(_myChart);
+		
+		_holder.addChartMouseListener(new ChartMouseListener()
+    {
+      @Override
+      public void chartMouseMoved(ChartMouseEvent arg0)
+      {
+      }
+      
+      @Override
+      public void chartMouseClicked(ChartMouseEvent arg0)
+      {
+        // ok, remember it was clicked
+        _itemSelectedPending = true;
+      }
+    });
 
 		// do a little tidying to reflect the memento settings
 		if (!_showLinePlot.isChecked())
@@ -500,6 +548,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	protected void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(_onlyVisible);
+    manager.add(_selectOnClick);
 		// and the help link
 		manager.add(new Separator());
 		manager.add(CorePlugin.createOpenHelpAction(
@@ -621,6 +670,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
 		_onlyVisible.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/reveal.png"));
+		
+
+    _selectOnClick = new Action("Select sensor cut when clicked",
+        IAction.AS_CHECK_BOX)
+    {
+    };
+    _selectOnClick.setChecked(false);
+    _selectOnClick.setToolTipText("Reveal the selected cut when clicked on plot");
+    _selectOnClick.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/outline.png"));
+		
 	}
 
 	/**
@@ -1068,5 +1128,75 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	}
 
+  private void showFixAtThisTime(final Date newDate)
+  {
+    if(_myTrackDataProvider != null)
+    {
+      if(_myTrackDataProvider.getSecondaryTracks().length != 1)
+        return;
+      
+      HiResDate theDate = new HiResDate(newDate);
+      
+      EditableWrapper subject = null;
+      
+      // ok, get the editor
+      final IWorkbench wb = PlatformUI.getWorkbench();
+      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+      final IWorkbenchPage page = win.getActivePage();
+      final IEditorPart editor = page.getActiveEditor();
 
+      Layers layers = (Layers) editor.getAdapter(Layers.class);
+
+      // did we find the layers
+      if(layers == null)
+        return;
+      
+      TrackWrapper secTrack =
+          (TrackWrapper) _myTrackDataProvider.getSecondaryTracks()[0];				    
+      SegmentList segs = secTrack.getSegments();
+      Enumeration<Editable> sIter = segs.elements();
+      while (sIter.hasMoreElements())
+      {
+        TrackSegment thisSeg = (TrackSegment) sIter.nextElement();
+        if(thisSeg.startDTG().lessThanOrEqualTo(theDate) && 
+            thisSeg.endDTG().greaterThanOrEqualTo(theDate))
+        {
+          // ok, loop through them
+          Enumeration<Editable> pts = thisSeg.elements();
+          while (pts.hasMoreElements())
+          {
+            FixWrapper fix = (FixWrapper) pts.nextElement();
+            if(fix.getDTG().equals(theDate))
+            {
+              // done.
+              EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+              subject = new EditableWrapper(fix, parentP, null);
+              break;
+            }
+          }
+        }
+      }
+      
+      if(subject != null)
+      {
+        IStructuredSelection selection = new StructuredSelection(subject);
+        
+        IContentOutlinePage outline =
+            (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+        // did we find an outline?
+        if (outline != null)
+        {
+          // now set the selection
+          outline.setSelection(selection);
+
+          // see uf we can expand the selection
+          if (outline instanceof PlotOutlinePage)
+          {
+            PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
+            plotOutline.editableSelected(selection, subject);
+          }
+        }
+      }
+    }
+  }
 }
