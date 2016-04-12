@@ -47,7 +47,7 @@ import MWC.GenericData.TimePeriod;
  * @author ian.mayo
  * 
  */
-public class ShowCutsForThisSensor implements RightClickContextItemGenerator
+public class ShowCutsForThisTMASegment implements RightClickContextItemGenerator
 {
   private static class ShowCutsOperation extends CMAPOperation
   {
@@ -57,7 +57,7 @@ public class ShowCutsForThisSensor implements RightClickContextItemGenerator
     public ShowCutsOperation(Layers theLayers,
         Map<SensorWrapper, ArrayList<TimePeriod>> periods)
     {
-      super("Select sensor cuts for selected segment(s)");
+      super("Show sensor cuts for selected segment(s)");
       _layers = theLayers;
       _periods = periods;
     }
@@ -248,7 +248,7 @@ public class ShowCutsForThisSensor implements RightClickContextItemGenerator
 
         // and now wrap it in an action
         Action doIt =
-            new Action("Only display sensor cuts for selected " + phrase)
+            new Action(getTitlePrefix() + phrase)
             {
               @Override
               public void run()
@@ -264,6 +264,11 @@ public class ShowCutsForThisSensor implements RightClickContextItemGenerator
 
   }
 
+  protected String getTitlePrefix()
+  {
+    return "Only display sensor cuts for selected ";
+  }
+  
   /**
    * move the operation generation to a method, so it can be overwritten (in testing)
    * 
