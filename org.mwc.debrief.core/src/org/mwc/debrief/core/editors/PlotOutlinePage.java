@@ -871,6 +871,10 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
 	public void editableSelected(final ISelection sel, final EditableWrapper pw)
 	{
+	  if(_treeViewer == null || _treeViewer.getControl().isDisposed())
+	  {
+	    return;
+	  }
 		if (_followSelectionToggle.isChecked())
 		{
 			// ahh, just check if this is a whole new layers object
@@ -1052,7 +1056,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	@Override
 	public void setSelection(ISelection selection)
 	{
-		_treeViewer.setSelection(selection);
+	  if(_treeViewer != null && !_treeViewer.getControl().isDisposed())
+	    _treeViewer.setSelection(selection);
 	}
 
 	public void dispose()
