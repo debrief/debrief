@@ -20,7 +20,6 @@ import java.awt.Point;
 import java.util.Collection;
 import java.util.Iterator;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -285,11 +284,6 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	 */
 	public void setCourse(final double course)
 	{
-    // DEBUG: track change to rel TMA
-    Application.logError2(Application.INFO,
-        "TMASegment - setting course to:" + (int) course, null);
-
-	  
 		_courseDegs = course;
 
 		final double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
