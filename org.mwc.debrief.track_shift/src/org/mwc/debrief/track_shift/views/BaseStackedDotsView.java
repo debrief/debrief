@@ -62,8 +62,6 @@ import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.entity.ChartEntity;
-import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -71,7 +69,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -85,10 +82,10 @@ import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.Activator;
 
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.BaseLayer;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -489,65 +486,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				if(_itemSelectedPending && _selectOnClick.isChecked())
 				{
           _itemSelectedPending = false;
-
-				  if(_myTrackDataProvider != null)
-				  {
-				    WatchableList priTrack = _myTrackDataProvider.getPrimaryTrack();
-				    if(priTrack instanceof TrackWrapper)
-				    {
-				      TrackWrapper tw = (TrackWrapper) priTrack;
-				      BaseLayer sensors = tw.getSensors();
-				      Enumeration<Editable> iter = sensors.elements();
-				      HiResDate theDate = new HiResDate(newDate);
-				      while (iter.hasMoreElements())
-              {
-                SensorWrapper sensor = (SensorWrapper) iter.nextElement();
-                if(!_onlyVisible.isChecked() || sensor.getVisible())
-                {
-                  // ok, check it
-                  Enumeration<Editable> cuts = sensor.elements();
-                  while (cuts.hasMoreElements())
-                  {
-                    SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
-                    if(cut.getDTG().equals(theDate))
-                    {
-                      // ok, get the editor
-                      final IWorkbench wb = PlatformUI.getWorkbench();
-                      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-                      final IWorkbenchPage page = win.getActivePage();
-                      final IEditorPart editor = page.getActiveEditor();
-
-                      IContentOutlinePage outline =
-                          (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
-                      Layers layers = (Layers) editor.getAdapter(Layers.class);
-
-                      final EditableWrapper parentP =
-                          new EditableWrapper(cut.getSensor().getHost(), null, layers);
-                      final EditableWrapper wrapped =
-                          new EditableWrapper(cut, parentP, layers);
-                      IStructuredSelection selection = new StructuredSelection(wrapped);
-                      
-                      if (outline != null)
-                      {
-                        // now set the selection
-                        outline.setSelection(selection);
-
-                        // see uf we can expand the selection
-                        if (outline instanceof PlotOutlinePage)
-                        {
-                          PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
-                          plotOutline.editableSelected(selection, wrapped);
-                        }
-                      }
-                    }
-                  }
-                }
-                
-              }
-				    }
-				  }
+          
+				  showFixAtThisTime(newDate);
 				}
-				
 			}
 		});
 
@@ -564,21 +505,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void chartMouseClicked(ChartMouseEvent arg0)
       {
-        _itemSelectedPending = false;
-        
-        ChartEntity entity = arg0.getEntity();
-        if(entity instanceof XYItemEntity)
-        {
-          XYItemEntity xe = (XYItemEntity) entity;
-          final XYDataset dataset = xe.getDataset();
-          
-          // is this hte line plot datsaet
-          if(dataset == _linePlot.getDataset())
-          {
-            // remember we've got a double-click pending
-            _itemSelectedPending = true;
-          }
-        }
+        // ok, remember it was clicked
+        _itemSelectedPending = true;
       }
     });
 
@@ -620,6 +548,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	protected void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(_onlyVisible);
+    manager.add(_selectOnClick);
 		// and the help link
 		manager.add(new Separator());
 		manager.add(CorePlugin.createOpenHelpAction(
@@ -750,7 +679,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _selectOnClick.setChecked(false);
     _selectOnClick.setToolTipText("Reveal the selected cut when clicked on plot");
     _selectOnClick.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/overview.png"));
+        .getImageDescriptor("icons/24/outline.png"));
 		
 	}
 
@@ -1199,5 +1128,75 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	}
 
+  private void showFixAtThisTime(final Date newDate)
+  {
+    if(_myTrackDataProvider != null)
+    {
+      if(_myTrackDataProvider.getSecondaryTracks().length != 1)
+        return;
+      
+      HiResDate theDate = new HiResDate(newDate);
+      
+      EditableWrapper subject = null;
+      
+      // ok, get the editor
+      final IWorkbench wb = PlatformUI.getWorkbench();
+      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+      final IWorkbenchPage page = win.getActivePage();
+      final IEditorPart editor = page.getActiveEditor();
 
+      Layers layers = (Layers) editor.getAdapter(Layers.class);
+
+      // did we find the layers
+      if(layers == null)
+        return;
+      
+      TrackWrapper secTrack =
+          (TrackWrapper) _myTrackDataProvider.getSecondaryTracks()[0];				    
+      SegmentList segs = secTrack.getSegments();
+      Enumeration<Editable> sIter = segs.elements();
+      while (sIter.hasMoreElements())
+      {
+        TrackSegment thisSeg = (TrackSegment) sIter.nextElement();
+        if(thisSeg.startDTG().lessThanOrEqualTo(theDate) && 
+            thisSeg.endDTG().greaterThanOrEqualTo(theDate))
+        {
+          // ok, loop through them
+          Enumeration<Editable> pts = thisSeg.elements();
+          while (pts.hasMoreElements())
+          {
+            FixWrapper fix = (FixWrapper) pts.nextElement();
+            if(fix.getDTG().equals(theDate))
+            {
+              // done.
+              EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+              subject = new EditableWrapper(fix, parentP, null);
+              break;
+            }
+          }
+        }
+      }
+      
+      if(subject != null)
+      {
+        IStructuredSelection selection = new StructuredSelection(subject);
+        
+        IContentOutlinePage outline =
+            (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+        // did we find an outline?
+        if (outline != null)
+        {
+          // now set the selection
+          outline.setSelection(selection);
+
+          // see uf we can expand the selection
+          if (outline instanceof PlotOutlinePage)
+          {
+            PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
+            plotOutline.editableSelected(selection, subject);
+          }
+        }
+      }
+    }
+  }
 }
