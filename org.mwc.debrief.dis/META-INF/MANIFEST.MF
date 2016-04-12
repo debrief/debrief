@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DIS Integration
 Bundle-SymbolicName: org.mwc.debrief.dis;singleton:=true
-Bundle-Version: 1.0.11
+Bundle-Version: 1.0.12
 Bundle-Activator: org.mwc.debrief.dis.DisActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.mwc.cmap.jfreechart,
