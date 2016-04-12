@@ -331,7 +331,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
       _theLayers = layers;
 
       // ok, we've moved.
-      // We'd better re-generate our references
+      // We'd better re-generate our references     
       identifyReferenceTrack();
 	  }
 	}
@@ -678,7 +678,9 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	{
 		// do we know it?
 		if (_referenceTrack == null)
+		{
 			identifyReferenceTrack();
+		}
 
 		// fingers crossed it's sorted.
 		return _referenceSensor;
@@ -688,7 +690,9 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	{
 		// do we know it?
 		if (_referenceTrack == null)
+		{
 			identifyReferenceTrack();
+		}
 
 		// fingers crossed it's sorted.
 		return _referenceTrack;
@@ -1230,15 +1234,26 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
-		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
-		if (first.getLocation().equals(origin))
+		SortedSet<Editable> data = (SortedSet<Editable>) this.getData();
+		final FixWrapper first = (FixWrapper) data.first();
+
+		// SPECIAL HANDLING: due to the DR rendering of 
+		// relative segements, we can get some very minor shift
+		// from the origin after a shift operation. 
+		// We can't use the WorldLocation.equals operation, since it
+		// use micrometer accuracy (1.0E-11). Let's use a slightly
+		// relaxed test to determine if the drag origin
+		// is the same as the segment origin
+    double distFromOrigin = first.getLocation().rangeFrom(origin);
+		
+		if (distFromOrigin < 1.0E-9)
 		{
-			// set the new course
+      // set the new course
 			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 		}
 		else
 		{
-			// reverse the course the course
+			// reverse the course
 			offset = origin.subtract(cursor);
 			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 
@@ -1305,6 +1320,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 		// clear the drag message, there's nothing to show message
 		_dragMsg = null;
+		
 		// tell any listeners that we've moved
 		fireAdjusted();
 	}

@@ -3953,7 +3953,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (isRelative)
         {
           final long thisTime = fw.getDateTimeGroup().getDate().getTime();
-
+          
           // ok, is this our first location?
           if (tmaLastLoc == null)
           {
@@ -3965,8 +3965,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             final long timeDelta = thisTime - tmaLastDTG;
             if (lastFix != null)
             {
-              final double speedKts = lastFix.getSpeed();
-              final double courseRads = lastFix.getCourse();
+              final double courseRads;
+              final double speedKts;
+              if(seg instanceof CoreTMASegment)
+              {
+                CoreTMASegment tmaSeg = (CoreTMASegment) seg;
+                courseRads = Math.toRadians(tmaSeg.getCourse());
+                speedKts = tmaSeg.getSpeed().getValueIn(WorldSpeed.Kts);
+              }
+              else
+              {
+                courseRads = lastFix.getCourse();
+                speedKts = lastFix.getSpeed();
+              }
+
               final double depthM = fw.getDepth();
               // use the value of depth as read in from the file
               tmaLastLoc.setDepth(depthM);
