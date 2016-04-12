@@ -21,6 +21,7 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -46,12 +47,16 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -59,6 +64,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -71,6 +77,10 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.track_shift.Activator;
 
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -79,6 +89,7 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Shapes.DraggableItem;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 
 /**
@@ -178,6 +189,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	protected ISelectionChangedListener _mySelListener;
 
 	protected Vector<DraggableItem> _draggableSelection;
+
+  protected boolean _itemSelectedPending = false;
 
 	/**
 	 * 
@@ -380,7 +393,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setRangeGridlineStroke(new BasicStroke(2));
 		_linePlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
 		_linePlot.setDomainGridlineStroke(new BasicStroke(2));
-
+		
 		// and the plot object to display the cross hair value
 		final XYTextAnnotation annot = new XYTextAnnotation("-----", 2, 2);
 		annot.setTextAnchor(TextAnchor.TOP_LEFT);
@@ -405,10 +418,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_combined.add(_dotPlot);
 
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
-
+		
 		// put the plot into a chart
 		_myChart = new JFreeChart(null, null, _combined, true);
-
+		
 		final LegendItemSource[] sources = { _linePlot };
 		_myChart.getLegend().setSources(sources);
 
@@ -456,11 +469,79 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 					_linePlot.removeAnnotation(annot);
 					_linePlot.addAnnotation(annot);
 				}
+				
+				// ok, do we also have a selection event pending
+				if(_itemSelectedPending)
+				{
+				  // ok, try to select the relevant item
+				  System.out.println("trying to double-click cut at:" + dateVal + " val:" + numA);
+				  
+				  if(_myTrackDataProvider != null)
+				  {
+				    WatchableList priTrack = _myTrackDataProvider.getPrimaryTrack();
+				    if(priTrack instanceof TrackWrapper)
+				    {
+				      TrackWrapper tw = (TrackWrapper) priTrack;
+				      BaseLayer sensors = tw.getSensors();
+				      Enumeration<Editable> iter = sensors.elements();
+				      HiResDate theDate = new HiResDate(newDate);
+				      while (iter.hasMoreElements())
+              {
+                SensorWrapper sensor = (SensorWrapper) iter.nextElement();
+                if(!_onlyVisible.isChecked() || sensor.getVisible())
+                {
+                  // ok, check it
+                  Enumeration<Editable> cuts = sensor.elements();
+                  while (cuts.hasMoreElements())
+                  {
+                    SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
+                    if(cut.getDTG().equals(theDate))
+                    {
+                      System.out.println("selecting " + cut + " from:" + cut.getSensorName());
+                    }
+                  }
+                }
+                
+              }
+				    }
+				  }
+				  
+				  _itemSelectedPending = false;
+				}
+				
 			}
 		});
 
 		// and insert into the panel
 		_holder.setChart(_myChart);
+		
+		_holder.addChartMouseListener(new ChartMouseListener()
+    {
+      @Override
+      public void chartMouseMoved(ChartMouseEvent arg0)
+      {
+      }
+      
+      @Override
+      public void chartMouseClicked(ChartMouseEvent arg0)
+      {
+        _itemSelectedPending = false;
+        
+        ChartEntity entity = arg0.getEntity();
+        if(entity instanceof XYItemEntity)
+        {
+          XYItemEntity xe = (XYItemEntity) entity;
+          final XYDataset dataset = xe.getDataset();
+          
+          // is this hte line plot datsaet
+          if(dataset == _linePlot.getDataset())
+          {
+            // remember we've got a double-click pending
+            _itemSelectedPending = true;
+          }
+        }
+      }
+    });
 
 		// do a little tidying to reflect the memento settings
 		if (!_showLinePlot.isChecked())
