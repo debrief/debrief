@@ -147,7 +147,6 @@ import org.mwc.debrief.core.operations.ExportToFlatFile2;
 import org.mwc.debrief.core.operations.PlotOperations;
 import org.osgi.framework.Bundle;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.NarrativeWrapper;
