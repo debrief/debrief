@@ -35,6 +35,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -42,11 +43,17 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.JFreeChart;
@@ -75,6 +82,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
+import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.Activator;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -145,6 +153,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * flag indicating whether we should only show stacked dots for visible fixes
 	 */
 	Action _onlyVisible;
+
+  /**
+   * flag indicating whether we should select the clicked item
+   * in the Outline View
+   */
+  Action _selectOnClick;
 
 	/**
 	 * our layers listener...
@@ -230,6 +244,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// fit to window
 		toolBarManager.add(_autoResize);
 		toolBarManager.add(_onlyVisible);
+		toolBarManager.add(_selectOnClick);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
 		// toolBarManager.add(_magicBtn);
@@ -471,11 +486,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				}
 				
 				// ok, do we also have a selection event pending
-				if(_itemSelectedPending)
+				if(_itemSelectedPending && _selectOnClick.isChecked())
 				{
-				  // ok, try to select the relevant item
-				  System.out.println("trying to double-click cut at:" + dateVal + " val:" + numA);
-				  
+          _itemSelectedPending = false;
+
 				  if(_myTrackDataProvider != null)
 				  {
 				    WatchableList priTrack = _myTrackDataProvider.getPrimaryTrack();
@@ -497,7 +511,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
                     if(cut.getDTG().equals(theDate))
                     {
-                      System.out.println("selecting " + cut + " from:" + cut.getSensorName());
+                      // ok, get the editor
+                      final IWorkbench wb = PlatformUI.getWorkbench();
+                      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+                      final IWorkbenchPage page = win.getActivePage();
+                      final IEditorPart editor = page.getActiveEditor();
+
+                      IContentOutlinePage outline =
+                          (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+                      Layers layers = (Layers) editor.getAdapter(Layers.class);
+
+                      final EditableWrapper parentP =
+                          new EditableWrapper(cut.getSensor().getHost(), null, layers);
+                      final EditableWrapper wrapped =
+                          new EditableWrapper(cut, parentP, layers);
+                      IStructuredSelection selection = new StructuredSelection(wrapped);
+                      
+                      if (outline != null)
+                      {
+                        // now set the selection
+                        outline.setSelection(selection);
+
+                        // see uf we can expand the selection
+                        if (outline instanceof PlotOutlinePage)
+                        {
+                          PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
+                          plotOutline.editableSelected(selection, wrapped);
+                        }
+                      }
                     }
                   }
                 }
@@ -505,8 +546,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               }
 				    }
 				  }
-				  
-				  _itemSelectedPending = false;
 				}
 				
 			}
@@ -702,6 +741,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
 		_onlyVisible.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/reveal.png"));
+		
+
+    _selectOnClick = new Action("Select sensor cut when clicked",
+        IAction.AS_CHECK_BOX)
+    {
+    };
+    _selectOnClick.setChecked(false);
+    _selectOnClick.setToolTipText("Reveal the selected cut when clicked on plot");
+    _selectOnClick.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/overview.png"));
+		
 	}
 
 	/**
