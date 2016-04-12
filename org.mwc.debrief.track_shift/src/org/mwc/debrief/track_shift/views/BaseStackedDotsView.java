@@ -672,12 +672,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				.getImageDescriptor("icons/24/reveal.png"));
 		
 
-    _selectOnClick = new Action("Select sensor cut when clicked",
+    _selectOnClick = new Action("Select TMA Fix in outline when clicked",
         IAction.AS_CHECK_BOX)
     {
     };
     _selectOnClick.setChecked(false);
-    _selectOnClick.setToolTipText("Reveal the selected cut when clicked on plot");
+    _selectOnClick.setToolTipText("Reveal the relevant TMA Fix when an error clicked on plot");
     _selectOnClick.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/outline.png"));
 		
