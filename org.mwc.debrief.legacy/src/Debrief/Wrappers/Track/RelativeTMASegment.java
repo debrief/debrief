@@ -1093,11 +1093,12 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		final WorldLocation newOrigin = currentStart.add(new WorldVector(
 				theDirection, distDegs, 0));
 
-		// and what's the point on the host track
-		final Watchable[] matches = this.getReferenceTrack().getNearestTo(
-				theNewStart);
-		final Watchable newRefPt = matches[0];
-		final WorldVector newOffset = newOrigin.subtract(newRefPt.getLocation());
+    // and what's the point on the host track
+    FixWrapper hostFix =
+        this._referenceTrack.getBacktraceTo(newStart, _referenceSensor
+            .getSensorOffset(), _referenceSensor.getWormInHole());
+		
+		final WorldVector newOffset = newOrigin.subtract(hostFix.getLocation());
 
 		// right, we know where the new track will be, see if we need to ditch any
 		if (delta > 0)
