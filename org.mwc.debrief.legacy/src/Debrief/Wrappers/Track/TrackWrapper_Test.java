@@ -1054,14 +1054,19 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// NOW FROM A SENSOR WRAPPER
 		// /////////////////////////
 		final SensorWrapper sw = new SensorWrapper("some sensor");
-		sw.setHost(tw);
 		sw.add(createSensorItem(tw, sw, 110000));
 		sw.add(createSensorItem(tw, sw, 120000));
 		sw.add(createSensorItem(tw, sw, 130000));
 		sw.add(createSensorItem(tw, sw, 140000));
+		
+    // store the sensor
+    tw.add(sw);
+
+		
 		final CoreTMASegment seg1 = new RelativeTMASegment(sw, offset, speed,
 				course, null);
 
+		
 		// check the create worked
 		assertEquals("enough points created", 4, seg1.size());
 
