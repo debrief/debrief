@@ -107,7 +107,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
 
 	private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
-
+  private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
+  private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
+	
 	/**
 	 * helper application to help track creation/activation of new plots
 	 */
@@ -676,7 +678,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         IAction.AS_CHECK_BOX)
     {
     };
-    _selectOnClick.setChecked(false);
+    _selectOnClick.setChecked(true);
     _selectOnClick.setToolTipText("Reveal the relevant TMA Fix when an error clicked on plot");
     _selectOnClick.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/outline.png"));
@@ -1106,6 +1108,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 			final Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
 			final Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
+			final Boolean doSelectOnClick = memento.getBoolean(SELECT_ON_CLICK);
+      final Boolean showOnlyVis = memento.getBoolean(SHOW_ONLY_VIS);
 			if (showLineVal != null)
 			{
 				_showLinePlot.setChecked(showLineVal);
@@ -1114,6 +1118,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			{
 				_showDotPlot.setChecked(showDotVal);
 			}
+      if (doSelectOnClick != null)
+      {
+        _selectOnClick.setChecked(doSelectOnClick);
+      }
+      if (showOnlyVis != null)
+      {
+        _onlyVisible.setChecked(showOnlyVis);
+      }
 		}
 	}
 
@@ -1125,6 +1137,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// remember if we're showing the error plot
 		memento.putBoolean(SHOW_LINE_PLOT, _showLinePlot.isChecked());
 		memento.putBoolean(SHOW_DOT_PLOT, _showDotPlot.isChecked());
+    memento.putBoolean(SELECT_ON_CLICK, _selectOnClick.isChecked());
+    memento.putBoolean(SHOW_ONLY_VIS, _onlyVisible.isChecked());
 
 	}
 
