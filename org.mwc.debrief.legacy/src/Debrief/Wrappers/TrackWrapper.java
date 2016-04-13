@@ -3979,7 +3979,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 speedKts = lastFix.getSpeed();
               }
 
-              final double depthM = fw.getDepth();
+              // check it has a location. 
+              final double depthM;
+              if(fw.getLocation() != null)
+              {
+                depthM= fw.getDepth();
+              }
+              else
+              {
+                // no location - we may be extending a TMA segment
+                depthM = tmaLastLoc.getDepth();
+              }
+                
               // use the value of depth as read in from the file
               tmaLastLoc.setDepth(depthM);
               final WorldVector thisVec =
@@ -3994,7 +4005,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           if (!moved)
           {
             // see if this represents a change
-            if (!fw.getLocation().equals(tmaLastLoc))
+            if (fw.getLocation() != null && !fw.getLocation().equals(tmaLastLoc))
             {
               moved = true;
             }
