@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.commands.Command;
@@ -62,7 +63,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -87,6 +92,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.cheatsheets.OpenCheatSheetAction;
 import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.FileStoreEditorInput;
@@ -699,7 +705,38 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               {
                 final ReplayLoader rl = (ReplayLoader) loader;
                 final ImportReplay ir = rl.getReplayLoader();
+                List<TrackWrapper> candidateHosts = null; 
+
                 final Vector<SensorWrapper> sensors = ir.getPendingSensors();
+
+                // see if there are any sensors awaiting a host
+                if (sensors.size() > 1)
+                {
+                  Iterator<SensorWrapper> sIter = sensors.iterator();
+                  while (sIter.hasNext())
+                  {
+                    SensorWrapper sensor = (SensorWrapper) sIter.next();
+                    if(sensor.getHost() == null)
+                    {
+                      // have we sorted out the hosts?
+                      if(candidateHosts == null)
+                      {
+                        candidateHosts = determineCandidateHosts();
+                      }
+                      
+                      if(candidateHosts.size() == 0)
+                      {
+                        CorePlugin.showMessage("Loading sensor data", "Sensor data can only be loaded after tracks");
+                        return;
+                      }
+                      
+                      // ok, let the user choose
+                      chooseHostFor(sensor, candidateHosts);
+                    }
+                  }
+                }
+                
+                // see if there are any sensors awaiting a color
                 if (sensors.size() == 1)
                 {
                   final SensorWrapper thisS = sensors.firstElement();
@@ -719,6 +756,63 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         CorePlugin.logError(Status.ERROR, "Problem loading data file:"
             + fileName, e);
       }
+    }
+  }
+
+  private List<TrackWrapper> determineCandidateHosts()
+  {
+    List<TrackWrapper> res = new ArrayList<TrackWrapper>();
+    
+    Enumeration<Editable> iter = _myLayers.elements();
+    while (iter.hasMoreElements())
+    {
+      Editable editable = (Editable) iter.nextElement();
+      if(editable instanceof TrackWrapper)
+      {
+        res.add((TrackWrapper) editable);
+      }
+    }
+    
+    return res;
+  }
+
+  private void chooseHostFor(SensorWrapper sensor, List<TrackWrapper> candidateHosts)
+  {
+    // ok, construct the popup
+    Object[] tArr = candidateHosts.toArray();
+    
+    // popup the layers in a question dialog
+    final IStructuredContentProvider theVals = new ArrayContentProvider();
+    final ILabelProvider theLabels = new LabelProvider();
+
+    // collate the dialog
+    final ListDialog list = new ListDialog(Display.getCurrent().getActiveShell());
+    list.setContentProvider(theVals);
+    list.setLabelProvider(theLabels);
+    list.setInput(tArr);
+    list.setMessage("Please select the track for sensor titled \"" + sensor.getName() + "\"\n(or Cancel to not store it)");
+    list.setTitle("Sensor track not found");
+    list.setHelpAvailable(false);
+
+    // select the first item, so it's valid to press OK immediately
+    list.setInitialSelections(new Object[]
+    { tArr[0] });
+
+    // open it
+    final int selection = list.open();
+
+    // did user say yes?
+    if (selection != ListDialog.CANCEL)
+    {    
+      // yup, store it's name
+      final Object[] val = list.getResult();
+
+      // check something got selected
+      if (val.length == 1)
+      {
+        TrackWrapper selected = (TrackWrapper) val[0];
+        sensor.setHost(selected);
+      };
     }
   }
 
