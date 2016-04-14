@@ -5398,11 +5398,6 @@ and so on....</programlisting></para>
                 from a single sensor a dialog pops up give you chance to override the sensor name
                 and color. If the file contains data from more than one sensor then they just
                 quietly slip in.</para>
-            </note><note>
-              <para>An item of note is that it is only since the 2001 update that
-                  <application>Debrief</application> has been able to properly show <glossterm linkend="g_sensor">sensor</glossterm> data. A rudimentary way of showing bearing
-                lines has been present for a number of years, but Debrief has not performed any
-                useful processing on this data.</para>
             </note></para>
         </sect2>
 
@@ -5495,10 +5490,25 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             </screen>
           </para>
 
-          <para>As you can see, unlike other Debrief line formats, this format allows for NULL
+          <para>As you can see, unlike most other Debrief line formats, this format allows for NULL
             fields. Where the sensor latitude and longitude values are replaced by the single word
             NULL, Debrief plots this sensor contact using a relative origin. NULL values may also be
             provided for the ambiguous sensor bearing and/or detection frequency.</para>
+          <note>
+            <para><indexterm>
+              <primary>Sensor data</primary>              
+              <secondary>Track name missing in REP</secondary>
+            </indexterm>It&apos;s quite common to produce a DSF file where the track name doesn't exactly
+              match the tracks already loaded. So, if, when importing a REP file the track name
+              doesn't match any existing tracks, Debrief will invite you to choose the track to add
+              the sensor to.<screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/SensorTrackNotFound.png" width="308"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot></para>
+          </note>
         </sect2>
 
         <sect2 xml:id="rel_sensor_data">
