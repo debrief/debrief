@@ -7884,6 +7884,34 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Black</para>
                     </entry>
                   </row>
+                  <row>
+                    <entry>
+                      <para>Q</para>
+                    </entry>
+                    <entry>
+                      <para>Circle</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>W</para>
+                    </entry>
+                    <entry>
+                      <para>Wheel</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
                 </tbody>
               </tgroup>
             </table>Here's an illustration of how the new colors appear against the range of Debrief
