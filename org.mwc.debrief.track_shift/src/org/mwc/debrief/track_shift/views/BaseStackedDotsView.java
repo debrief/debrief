@@ -679,7 +679,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
     };
     _selectOnClick.setChecked(true);
-    _selectOnClick.setToolTipText("Reveal the relevant TMA Fix when an error clicked on plot");
+    _selectOnClick.setToolTipText("Reveal the respective TMA Fix when an error clicked on plot");
     _selectOnClick.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/outline.png"));
 		
