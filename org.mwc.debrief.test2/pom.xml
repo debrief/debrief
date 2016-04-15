@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.debrief.test2</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <build>
