@@ -331,7 +331,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
       _theLayers = layers;
 
       // ok, we've moved.
-      // We'd better re-generate our references
+      // We'd better re-generate our references     
       identifyReferenceTrack();
 	  }
 	}
@@ -678,7 +678,9 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	{
 		// do we know it?
 		if (_referenceTrack == null)
+		{
 			identifyReferenceTrack();
+		}
 
 		// fingers crossed it's sorted.
 		return _referenceSensor;
@@ -688,7 +690,9 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	{
 		// do we know it?
 		if (_referenceTrack == null)
+		{
 			identifyReferenceTrack();
+		}
 
 		// fingers crossed it's sorted.
 		return _referenceTrack;
@@ -822,11 +826,24 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 	public void rotate(final double brg, final WorldLocation origin)
 	{
 		final double theBrg = -brg;
+		
+    // right - we just stretch about the ends, and we use different
+    // processing depending on which end is being shifted.
+    SortedSet<Editable> data = (SortedSet<Editable>) this.getData();
+    final FixWrapper first = (FixWrapper) data.first();
+    final FixWrapper last = (FixWrapper) data.last();
 
-		// right - we just rotate about the ends, and we use different
-		// processing depending on which end is being shifted.
-		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
-		if (first.getLocation().equals(origin))
+    // SPECIAL HANDLING: due to the DR rendering of 
+    // relative segements, we can get some very minor shift
+    // from the origin after a shift operation. 
+    // We can't use the WorldLocation.equals operation, since it
+    // use micrometer accuracy (1.0E-11). Let's use a slightly
+    // relaxed test to determine if the drag origin
+    // is the same as the segment origin
+    double distFromOrigin = first.getLocation().rangeFrom(origin);
+    double distFromEnd = last.getLocation().rangeFrom(origin);
+    
+    if (distFromOrigin < distFromEnd)
 		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our course
@@ -875,7 +892,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		int newCourse = (int) getCourse();
 		if (newCourse < 0)
 			newCourse += 360;
-		_dragMsg = "[" + newCourse + "\u00B0]";
+    _dragMsg = "[" + (int) newCourse + "\u00B0] ";
 
 		// tell any listeners that we've moved
 		fireAdjusted();
@@ -1089,11 +1106,12 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		final WorldLocation newOrigin = currentStart.add(new WorldVector(
 				theDirection, distDegs, 0));
 
-		// and what's the point on the host track
-		final Watchable[] matches = this.getReferenceTrack().getNearestTo(
-				theNewStart);
-		final Watchable newRefPt = matches[0];
-		final WorldVector newOffset = newOrigin.subtract(newRefPt.getLocation());
+    // and what's the point on the host track
+    FixWrapper hostFix =
+        this._referenceTrack.getBacktraceTo(newStart, _referenceSensor
+            .getSensorOffset(), _referenceSensor.getWormInHole());
+		
+		final WorldVector newOffset = newOrigin.subtract(hostFix.getLocation());
 
 		// right, we know where the new track will be, see if we need to ditch any
 		if (delta > 0)
@@ -1230,15 +1248,28 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
-		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
-		if (first.getLocation().equals(origin))
+		SortedSet<Editable> data = (SortedSet<Editable>) this.getData();
+		final FixWrapper first = (FixWrapper) data.first();
+    final FixWrapper last = (FixWrapper) data.last();
+
+		// SPECIAL HANDLING: due to the DR rendering of 
+		// relative segements, we can get some very minor shift
+		// from the origin after a shift operation. 
+		// We can't use the WorldLocation.equals operation, since it
+		// use micrometer accuracy (1.0E-11). Let's use a slightly
+		// relaxed test to determine if the drag origin
+		// is the same as the segment origin
+    double distFromOrigin = first.getLocation().rangeFrom(origin);
+    double distFromEnd = last.getLocation().rangeFrom(origin);
+		
+		if (distFromOrigin < distFromEnd)
 		{
-			// set the new course
+      // set the new course
 			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 		}
 		else
 		{
-			// reverse the course the course
+			// reverse the course
 			offset = origin.subtract(cursor);
 			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 
@@ -1305,6 +1336,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 		// clear the drag message, there's nothing to show message
 		_dragMsg = null;
+		
 		// tell any listeners that we've moved
 		fireAdjusted();
 	}

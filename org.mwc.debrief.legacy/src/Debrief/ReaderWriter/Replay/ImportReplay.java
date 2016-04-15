@@ -12,248 +12,6 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-// $RCSfile: ImportReplay.java,v $
-// @author $Author: ian.mayo $
-// @version $Revision: 1.18 $
-// $Log: ImportReplay.java,v $
-// Revision 1.18  2007/06/01 13:46:08  ian.mayo
-// Improve performance of export text to clipboard
-//
-// Revision 1.17  2006/08/08 12:55:30  Ian.Mayo
-// Restructure loading narrative entries (so we can see it from CMAP)
-//
-// Revision 1.16  2006/07/17 11:04:21  Ian.Mayo
-// Append to the clipboard, don't keep writing afresh
-//
-// Revision 1.15  2006/05/24 15:01:28  Ian.Mayo
-// Reflect change in exportThis method
-//
-// Revision 1.14  2006/05/23 14:53:55  Ian.Mayo
-// Make readLine public (so our data-importers can read it in)
-//
-// Revision 1.13  2006/02/13 16:19:06  Ian.Mayo
-// Sort out problem with creating sensor data
-//
-// Revision 1.12  2005/12/13 09:04:37  Ian.Mayo
-// Tidying - as recommended by Eclipse
-//
-// Revision 1.11  2005/05/12 14:11:45  Ian.Mayo
-// Allow import of typed-narrative entry
-//
-// Revision 1.10  2005/05/12 09:52:42  Ian.Mayo
-// Stop it being final - since in CMAP we want to override line counting method
-//
-// Revision 1.9  2004/12/17 15:53:57  Ian.Mayo
-// Get on top of some problems plotting sensor & tma data.
-//
-// Revision 1.8  2004/11/25 10:24:18  Ian.Mayo
-// Switch to Hi Res dates
-//
-// Revision 1.7  2004/11/22 13:53:28  Ian.Mayo
-// Replace variable name previously used for counting through enumeration - now part of JDK1.5
-//
-// Revision 1.6  2004/11/22 13:40:56  Ian.Mayo
-// Replace old variable name used for stepping through enumeration, since it is now part of language (Jdk1.5)
-//
-// Revision 1.5  2004/11/11 11:52:44  Ian.Mayo
-// Reflect new directory structure
-//
-// Revision 1.4  2004/09/09 10:22:58  Ian.Mayo
-// Reflect method name change in Layer interface
-//
-// Revision 1.3  2004/08/20 08:18:04  Ian.Mayo
-// Allow 4-figure dates in REP files
-//
-// Revision 1.2  2003/08/12 09:28:43  Ian.Mayo
-// Include import of DTF files
-//
-// Revision 1.1.1.2  2003/07/21 14:47:51  Ian.Mayo
-// Re-import Java files to keep correct line spacing
-//
-// Revision 1.11  2003-07-03 15:47:03+01  ian_mayo
-// Improved error checking
-//
-// Revision 1.10  2003-06-23 13:39:36+01  ian_mayo
-// Add TMA Handling code
-//
-// Revision 1.9  2003-06-23 08:39:38+01  ian_mayo
-// Initialise colours on request - not just in constructor (support for testing)
-//
-// Revision 1.8  2003-06-16 11:49:41+01  ian_mayo
-// Output completed message which was failing ANT built
-//
-// Revision 1.7  2003-04-30 16:05:46+01  ian_mayo
-// Correctly set GMT time zone for importing narratives
-//
-// Revision 1.6  2003-03-19 15:37:29+00  ian_mayo
-// improvements according to IntelliJ inspector
-//
-// Revision 1.5  2003-02-25 14:36:08+00  ian_mayo
-// Just use \n as line-break when exporting to clipboard
-//
-// Revision 1.4  2003-02-14 10:16:11+00  ian_mayo
-// Set the symbol type according to symbology in Replay file
-//
-// Revision 1.3  2002-10-01 15:40:18+01  ian_mayo
-// improve testing
-//
-// Revision 1.2  2002-05-28 11:34:21+01  ian_mayo
-// Implemented correct way of breaking out of a loop
-//
-// Revision 1.1  2002-05-28 09:12:09+01  ian_mayo
-// Initial revision
-//
-// Revision 1.1  2002-04-23 12:29:39+01  ian_mayo
-// Initial revision
-//
-// Revision 1.15  2002-03-12 09:18:00+00  administrator
-// Provide "Fallback" handler for missing milliseconds
-//
-// Revision 1.14  2002-02-18 09:20:19+00  administrator
-// Change tests so that we no longer write progress statements to screen
-//
-// Revision 1.13  2002-02-01 12:37:37+00  administrator
-// Allow track colours to be specified per-fix instead of one colour for the whole track
-//
-// Revision 1.12  2002-01-29 07:53:14+00  administrator
-// Use Trace method instead of System.out
-//
-// Revision 1.11  2001-11-14 19:48:49+00  administrator
-// Handle lines beginning with comment, but report error for unrecognised lines
-//
-// Revision 1.10  2001-11-14 19:39:14+00  administrator
-// Add error message for when annotation not recognised
-//
-// Revision 1.9  2001-11-13 21:11:32+00  administrator
-// improve testing
-//
-// Revision 1.8  2001-10-02 09:29:28+01  administrator
-// improve debug comments
-//
-// Revision 1.7  2001-09-09 08:40:49+01  administrator
-// Add read/write testing
-//
-// Revision 1.6  2001-08-29 19:16:53+01  administrator
-// Remove ContactWrapper stuff
-//
-// Revision 1.5  2001-08-21 15:17:45+01  administrator
-// Allow use of dsf suffix
-//
-// Revision 1.4  2001-08-17 07:59:57+01  administrator
-// Clear up memory leaks
-//
-// Revision 1.3  2001-08-13 12:53:34+01  administrator
-// Provide support for line styles, and support Sensor data
-//
-// Revision 1.2  2001-08-06 12:46:19+01  administrator
-// Use our monitor instead of a normal buffered reader
-//
-// Revision 1.1  2001-08-01 20:07:39+01  administrator
-// Provide interface for, and handle a list of formatting objects which apply some kind of formatting to imported data
-//
-// Revision 1.0  2001-07-17 08:41:33+01  administrator
-// Initial revision
-//
-// Revision 1.2  2001-07-09 14:01:58+01  novatech
-// add narrative importer to list of importers, and handle creation of layer for Narratives
-//
-// Revision 1.1  2001-01-03 13:40:46+00  novatech
-// Initial revision
-//
-// Revision 1.1.1.1  2000/12/12 20:47:24  ianmayo
-// initial import of files
-//
-// Revision 1.22  2000-11-17 09:10:45+00  ian_mayo
-// reflect changes in parent
-//
-// Revision 1.21  2000-11-08 11:48:50+00  ian_mayo
-// insert debug line
-//
-// Revision 1.20  2000-11-03 12:08:49+00  ian_mayo
-// add support for importBearing, reflect new status of TrackWrapper as layer, not just plottable
-//
-// Revision 1.19  2000-11-02 16:45:50+00  ian_mayo
-// changing Layer into Interface, replaced by BaseLayer, also changed TrackWrapper so that it implements Layer,  and as we read in files, we put them into track and add Track to Layers, not to Layer then Layers
-//
-// Revision 1.18  2000-10-09 13:37:35+01  ian_mayo
-// Switch stackTrace to go to file
-//
-// Revision 1.17  2000-10-03 14:18:25+01  ian_mayo
-// add reference to ImportWheel class
-//
-// Revision 1.16  2000-09-28 12:09:32+01  ian_mayo
-// switch to GMT time zone
-//
-// Revision 1.15  2000-09-21 12:22:39+01  ian_mayo
-// check for an empty clipboard
-//
-// Revision 1.14  2000-04-19 11:24:01+01  ian_mayo
-// add new import types
-//
-// Revision 1.13  2000-03-17 13:37:25+00  ian_mayo
-// Handle replay text colour symbols more tidily
-//
-// Revision 1.12  2000-03-07 14:48:16+00  ian_mayo
-// optimised algorithms
-//
-// Revision 1.11  2000-02-22 13:49:19+00  ian_mayo
-// ImportManager location changed, and export now receives Plottable, not PlainWrapper
-//
-// Revision 1.10  2000-02-02 14:27:35+00  ian_mayo
-// ensure that the "Importers" static vector is initialised before use
-//
-// Revision 1.9  2000-01-12 15:40:19+00  ian_mayo
-// added concept of contacts
-//
-// Revision 1.8  1999-12-03 14:41:05+00  ian_mayo
-// remove d-line
-//
-// Revision 1.7  1999-12-02 09:44:28+00  ian_mayo
-// removed "Sleep" command, Boy what speed gains this provided!
-//
-// Revision 1.6  1999-11-26 15:51:40+00  ian_mayo
-// tidying up
-//
-// Revision 1.5  1999-11-12 14:36:36+00  ian_mayo
-// make classes do export aswell as import
-//
-// Revision 1.4  1999-11-09 11:26:41+00  ian_mayo
-// added ellipses
-//
-// Revision 1.3  1999-10-14 12:00:33+01  ian_mayo
-// added support for lines
-//
-// Revision 1.2  1999-10-13 17:24:01+01  ian_mayo
-// add support for Rectangles
-//
-// Revision 1.1  1999-10-12 15:34:12+01  ian_mayo
-// Initial revision
-//
-// Revision 1.3  1999-07-27 09:27:28+01  administrator
-// added more error handlign
-//
-// Revision 1.2  1999-07-12 08:09:22+01  administrator
-// Property editing added
-//
-// Revision 1.6  1999-06-16 15:24:23+01  sm11td
-// before move around/ end of phase 1
-//
-// Revision 1.5  1999-06-04 08:45:26+01  sm11td
-// Ending phase 1, adding colours to annotations
-//
-// Revision 1.4  1999-06-01 16:49:17+01  sm11td
-// Reading in tracks aswell as fixes, commenting large portions of source code
-//
-// Revision 1.3  1999-02-04 08:02:24+00  sm11td
-// Plotting to canvas, scaling canvas,
-//
-// Revision 1.2  1999-02-01 16:08:47+00  sm11td
-// creating new sessions & panes, starting import management
-//
-// Revision 1.1  1999-01-31 13:33:04+00  sm11td
-// Initial revision
-//
-
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
@@ -273,6 +31,7 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
@@ -656,16 +415,21 @@ public class ImportReplay extends PlainImporterBase
     {
       if (trackName.length() > 6)
       {
-        val = getLayerFor(trackName = trackName.substring(6));
+        String tmpTrackName = trackName.substring(0,6);
+        val = getLayerFor(tmpTrackName);
+        
+        if(val != null)
+        {
+          // ok, adopt this track name
+          trackName = tmpTrackName;
+        }
       }
     }
-
-    // did we get anything?
-    // is this indeed a sensor?
-    if (val == null || !(val instanceof TrackWrapper))
-      return res;
-
+    
     // so, we've found a track - see if it holds this sensor
+    // SPECIAL HANDLING: it may actually still be a null. This is ok,
+    // because post-load the invite the user to select
+    // the parent track for these "null" tracks.
     final TrackWrapper theTrack = (TrackWrapper) val;
 
     Vector<SensorWrapper> thisTrackSensors = _pendingSensors.get(theTrack);
@@ -1314,8 +1078,19 @@ public class ImportReplay extends PlainImporterBase
         // find the track
         TrackWrapper parent = thisS.getHost();
 
-        // now formally add the sensor
-        parent.add(thisS);
+        // now formally add the sensor, if we can
+        if(parent != null)
+        {
+          parent.add(thisS);
+        }
+        else
+        {
+          // SPECIAL HANDLING - the user may have declined
+          // to assign the sensor to a track, in which case
+          // we just skip the assignent
+          Application.logError2(Application.INFO,
+              "Not storing sensor, track not found", null);
+        }
       }
     }
 

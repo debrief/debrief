@@ -85,6 +85,7 @@ import org.junit.runners.Suite;
   MWC.GUI.Shapes.RangeRingShape.WheelTest.class,
   MWC.GUI.Shapes.RectangleShape.RectangleTest.class,
   MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.ReferenceTest.class,
+  MWC.GUI.Shapes.Symbols.Geog.WreckSym.WreckTest.class,
   MWC.GUI.Shapes.Symbols.SymbolFactory.SymFactoryTest.class,
   MWC.GUI.Shapes.WheelShape.WheelTest.class,
   MWC.GenericData.Duration.DurationTest.class,

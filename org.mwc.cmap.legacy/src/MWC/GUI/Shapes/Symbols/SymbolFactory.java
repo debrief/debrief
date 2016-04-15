@@ -149,7 +149,9 @@ public final class SymbolFactory
   // member variables
   //////////////////////////////////////////////////
 
-	public static final String REFERENCE_POSITION = "Reference Position";
+  private static final String REFERENCE_POSITION = "Reference Position";
+  
+  private static final String WRECK = "Wreck";
 
 	public static final String DATUM = "Datum";
 
@@ -420,6 +422,7 @@ public final class SymbolFactory
       _theVesselIds.put(REFERENCE_POSITION, "L");
       _theVesselIds.put(CIRCLE, "Q");
       
+      _theVesselIds.put(WRECK, "W");
 
       // and another (A SSET related entry)
       _theVesselIds.put("MPA", "A");
@@ -449,6 +452,7 @@ public final class SymbolFactory
       _theFactory._theSymbols.put("Circle", MWC.GUI.Shapes.Symbols.Geog.CircleSymbol.class);
       _theFactory._theSymbols.put(CROSS, MWC.GUI.Shapes.Symbols.Geog.CrossSymbol.class);
       _theFactory._theSymbols.put(REFERENCE_POSITION, MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.class);
+      _theFactory._theSymbols.put(WRECK, MWC.GUI.Shapes.Symbols.Geog.WreckSym.class);
       _theFactory._theSymbols.put(DATUM, MWC.GUI.Shapes.Symbols.Geog.DatumSym.class);
       _theFactory._theSymbols.put("Missile", MWC.GUI.Shapes.Symbols.Vessels.MissileSym.class);
 

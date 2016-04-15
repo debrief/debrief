@@ -63,6 +63,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
   final public static double SMALL = 0.5;
   final public static double MEDIUM = 1;
   final public static double LARGE = 2;
+  final public static double HUGE = 5;
 
   protected Double _mySize;
 
@@ -70,13 +71,15 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
   {
                      "Small",
                      "Medium",
-                     "Large"};
+                     "Large",
+                     "Huge"};
 
   private final double sizes[] =
   {
     SMALL,
     MEDIUM,
-    LARGE
+    LARGE,
+    HUGE
   };
 
 
