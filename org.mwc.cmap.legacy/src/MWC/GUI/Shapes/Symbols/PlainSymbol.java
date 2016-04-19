@@ -135,6 +135,27 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
   /////////////////////////////////////////////////////////////
   // editable functions
   ////////////////////////////////////////////////////////////
+  
+
+  public void setLineWid(final CanvasType dest)
+  {
+    final float lineWid;
+    final double scaleVal = getScaleVal();
+    
+    if(scaleVal == SymbolScalePropertyEditor.SMALL || scaleVal == SymbolScalePropertyEditor.MEDIUM)
+    {
+      lineWid = 1f;
+    }
+    else if(scaleVal == SymbolScalePropertyEditor.LARGE)
+    {
+      lineWid = 2f;      
+    }
+    else
+    {
+      lineWid = 3f;      
+    }
+    dest.setLineWidth(lineWid);
+  }
 
   /** whether there is any edit information for this item
    * this is a convenience function to save creating the EditorType data
@@ -175,7 +196,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
    */
   protected boolean showSimplifiedSymbol()
   {
-    if(getScaleVal() == MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE)
+    if(getScaleVal() >= MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE)
       return false;
     else
       return true;

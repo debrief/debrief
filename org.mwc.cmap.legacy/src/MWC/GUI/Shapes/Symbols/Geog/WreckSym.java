@@ -118,10 +118,8 @@ public class WreckSym extends PlainSymbol
 
     // create our centre point
     final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    float wid = dest.getLineWidth();
-    dest.setLineWidth(2f);
 
+    // calculate the dimensions
     final double unit = (15d * getScaleVal()) / 11d;
     final int unit_11_over_2 = (int) (unit * 10d / 2);
     final int unit_4_5_over_2 = (int) (unit * 5d / 2) ;
@@ -133,8 +131,6 @@ public class WreckSym extends PlainSymbol
     dest.drawLine(centre.x, centre.y - unit_4_5_over_2, centre.x, centre.y + unit_4_5_over_2);
     dest.drawLine(centre.x - unit_2_75, centre.y - unit_3_over_2, centre.x - unit_2_75, centre.y + unit_3_over_2);
     dest.drawLine(centre.x + unit_2_75, centre.y - unit_3_over_2, centre.x + unit_2_75, centre.y + unit_3_over_2);
-    
-    dest.setLineWidth(wid);
   }
 
   public String getType()
