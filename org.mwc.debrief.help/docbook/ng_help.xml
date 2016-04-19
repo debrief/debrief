@@ -7405,18 +7405,6 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                   </row>
 
                   <row>
-                    <entry><para>Java 3D Libraries (required for viewing Debrief plots in 3D <footnote>
-                          <para>To interactively view Debrief plots in 3 dimensions the Java 3d
-                            runtime files and libraries must be installed on the machine. These
-                            libraries are a free download from the Java website.</para>
-                        </footnote> )</para></entry>
-
-                    <entry>Java 3D 1.3</entry>
-
-                    <entry><para>Java 3D 1.3</para></entry>
-                  </row>
-
-                  <row>
                     <entry><para>XML Libraries</para></entry>
 
                     <entry><para>SAX and DOM support (through the enclosed jaxp.jar and parser.jar
@@ -7487,12 +7475,6 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             executable in the top-level, together with some additional <filename>dll</filename>
             files used for optimised graphics (<filename>gdiplus.dll</filename>), and copy to
             clipboard (<filename>JavaClipboard.dll</filename>).</para>
-
-          <para>The <filename>jre</filename> folder contains a Java Runtime Environment that&apos;s been
-            modified by the inclusion of a current set of Java3d libraries. In the absence of this
-              <filename>jre</filename> folder Debrief (Eclipse) would use the system&apos;s default Java
-            installation, if there was one. Including it overrides any other configured
-            library.</para>
 
           <para>The <filename>configuration</filename> folder contains details of Debrief&apos;s initial
             settings together with the locations of update download sites.</para>
@@ -7576,7 +7558,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             directory. This application triggers the startup of Debrief, passing to it the
             parameters contained in the <filename>DebriefNG.ini</filename> file. This file contains
             options to select the initial perspective, the memory allocation, and additional files
-            to include on the classpath (3d files in our case).</para>
+            to include on the classpath.</para>
         </sect2>
 
         <sect2 xml:id="UseOfEnglishLocale">
