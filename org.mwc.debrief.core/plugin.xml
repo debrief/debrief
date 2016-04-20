@@ -668,6 +668,14 @@
             </command>
 
         </menuContribution>
+        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=additions">
+	            <toolbar id="undoredo.toolbar" label="Undo/Redo">
+	            <command commandId="org.eclipse.ui.edit.undo" id="undoredo.undo" style="push">
+	            </command>
+	            <command commandId="org.eclipse.ui.edit.redo" id="undoredo.redo" style="push">
+	            </command>
+	         </toolbar>
+	     </menuContribution>
     </extension>
 
     <extension point="org.eclipse.core.expressions.definitions">
