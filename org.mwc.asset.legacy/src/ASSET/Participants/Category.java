@@ -16,6 +16,8 @@ package ASSET.Participants;
 
 import java.awt.*;
 
+import MWC.GUI.Properties.DebriefColors;
+
 import junit.framework.TestCase;
 
 /**
@@ -294,11 +296,11 @@ public class Category implements java.io.Serializable
 	private static Color getColorFor(final String category)
 	{
 		if (category.equals(ASSET.Participants.Category.Force.RED))
-			return java.awt.Color.red;
+			return DebriefColors.RED;
 		else if (category.equals(ASSET.Participants.Category.Force.BLUE))
-			return java.awt.Color.blue;
+			return DebriefColors.BLUE;
 		else
-			return java.awt.Color.green;
+			return DebriefColors.GREEN;
 	}
 
 	static public Color getColorFor(final Category theCategory)

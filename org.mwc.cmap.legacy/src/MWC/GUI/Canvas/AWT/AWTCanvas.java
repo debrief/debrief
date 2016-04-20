@@ -133,6 +133,7 @@ import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -191,7 +192,7 @@ final public class AWTCanvas extends java.awt.Canvas
   public AWTCanvas()
   {
     // start with our background colour
-    setBackgroundColor(java.awt.Color.black);
+    setBackgroundColor(DebriefColors.BLACK);
 
     // initialisation
     _thePainters = new Vector<PaintListener>(0, 1);
@@ -658,7 +659,7 @@ final public class AWTCanvas extends java.awt.Canvas
     g1.fillRect(0, 0, sz.width, sz.height);
 
     // give us a start colour
-    // g1.setColor(java.awt.Color.red);
+    // g1.setColor(  MWC.GUI.Properties.DebriefColors.RED);
 
     // go through our painters
     final Enumeration<PaintListener> enumer = _thePainters.elements();

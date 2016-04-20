@@ -117,6 +117,7 @@ import MWC.GUI.JFreeChart.RelativeDateAxis;
 import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
@@ -1014,7 +1015,7 @@ public class XYPlotView extends ViewPart
 
 		// sort out the background colour
 		//final Dimension dim = _plotControl.getSize();
-		mf.setBackgroundColor(java.awt.Color.white);
+		mf.setBackgroundColor(DebriefColors.WHITE);
 		mf.setColor(mf.getBackgroundColor());
 		mf.fillRect(0, 0, dim.width, dim.height);
 

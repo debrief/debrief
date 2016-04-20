@@ -197,7 +197,7 @@ public final class FieldBuilder extends PatternBuilderType
 		{
 			// create the new symbol
 			final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("F"
-					+ (i + 1), lastPoint, java.awt.Color.red);
+					+ (i + 1), lastPoint,   MWC.GUI.Properties.DebriefColors.RED);
 
 			// get the parent to do the formatting
 			this.formatSymbol(lw, pattern);

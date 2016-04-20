@@ -249,7 +249,7 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 			dest.setColor(Color.WHITE);
 			dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5, ht);
 			// and draw the text
-			dest.setColor(java.awt.Color.BLACK);
+			dest.setColor( MWC.GUI.Properties.DebriefColors.BLACK);
 			dest.drawText(_dragMsg, pt.x, pt.y + 15);
 			if (dest instanceof ExtendedCanvasType)
 			{

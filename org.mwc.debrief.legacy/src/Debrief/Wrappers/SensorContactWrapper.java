@@ -1413,7 +1413,7 @@ public final class SensorContactWrapper extends
 			final WorldLocation origin = new WorldLocation(0, 0, 0);
 			final SensorContactWrapper ed = new SensorContactWrapper("blank track",
 					new HiResDate(new java.util.Date().getTime()), new WorldDistance(1,
-							WorldDistance.DEGS), 55d, origin, java.awt.Color.red, "my label",
+							WorldDistance.DEGS), 55d, origin,   MWC.GUI.Properties.DebriefColors.RED, "my label",
 					1, "theSensorName");
 
 			// check the editable parameters
