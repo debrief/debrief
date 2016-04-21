@@ -138,6 +138,9 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 				final int headingDegs = (int) MWC.Algorithms.Conversions.Rads2Degs(watch
 						.getCourse());
 				drawRangeRings(center, headingDegs, dest);
+				
+	      // and the array centre
+	      SWTPlotHighlighter.RectangleHighlight.plotArrayCentre(dest, watch, null, 5);
 			}
 		}
 	}

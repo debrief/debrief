@@ -79,7 +79,7 @@ public final class SWTSymbolHighlighter implements SWTPlotHighlighter, Editable
 
 					// do the plotting
 					sym.paint(dest, centre, watch.getCourse());
-
+					
 					// restore the size
 					sym.setScaleVal(size);
 
@@ -116,6 +116,10 @@ public final class SWTSymbolHighlighter implements SWTPlotHighlighter, Editable
 				// plot the rectangle
 				dest.drawRect(x, y, wid, ht);
 			}
+			
+      // and the array centre
+      SWTPlotHighlighter.RectangleHighlight.plotArrayCentre(dest, watch, null, 5);
+
 		}
 		catch (final IllegalStateException e)
 		{
