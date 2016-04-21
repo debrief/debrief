@@ -36,7 +36,7 @@ public class FrequencyMeasurement
 	public FrequencyMeasurement(Date time, GeoPoint theLoc, double freq)
 	{
 		this.time = time;
-		this.color = java.awt.Color.red;
+		this.color =   MWC.GUI.Properties.DebriefColors.RED;
 		this.isActive = true;
 		this.origin = theLoc;
 		this.freq = freq;

@@ -22,6 +22,7 @@ import ASSET.Scenario.MultiForceScenario;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldSpeed;
 
@@ -393,8 +394,8 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
     public java.awt.Color getColor()
     {
       if (_myPart.getCategory().getForce().equals(ASSET.Participants.Category.Force.BLUE))
-        return java.awt.Color.blue;
-			return java.awt.Color.red;
+        return DebriefColors.BLUE;
+			return DebriefColors.RED;
     }
 
     /***********************************************************************

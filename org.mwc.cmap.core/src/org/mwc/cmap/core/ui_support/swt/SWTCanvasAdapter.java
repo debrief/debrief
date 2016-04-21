@@ -144,6 +144,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -232,7 +233,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 * and our default background color
 	 * 
 	 */
-	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.LIGHT_GRAY;
+	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = DebriefColors.LIGHT_GRAY;
 
 	private SWTGraphics2D _sg2d;
 
@@ -590,7 +591,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 				// because "new GC(image)" ignores transparency on Linux. 
 				// It is probably a bug in SWT.
 				ImageData data = img.getImageData();
-				final java.awt.Color trColor = java.awt.Color.black;
+				final java.awt.Color trColor = DebriefColors.BLACK;
 				final int transPx = data.palette.getPixel(new RGB(trColor.getRed(),
 						trColor.getGreen(), trColor.getBlue()));
 				data.transparentPixel = transPx;
@@ -1207,7 +1208,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		if (!_theDest.isDisposed())
 		{
-			// _theDest.setBackground(ColorHelper.getColor(java.awt.Color.green));
+			// _theDest.setBackground(ColorHelper.getColor( MWC.GUI.Properties.DebriefColors.green));
 			_theDest.fillRectangle(x, y, wid, height);
 
 			// now, the fill only fills in the provided rectangle. we also have
