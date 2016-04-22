@@ -59,6 +59,9 @@
         <content-type base-type="org.eclipse.core.runtime.text"
             id="org.mwc.debrief.contenttype.ReplaySensorFile" file-extensions="dsf"
             name="Debrief Sensor File" priority="normal"> </content-type>
+        <content-type base-type="org.eclipse.core.runtime.text"
+            id="org.mwc.debrief.contenttype.INPFile" file-extensions="inp"
+            name="DIS Simulation input file" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.WorldImageFile" file-extensions="tif"
             name="World Image (Electronic Chart) File" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.KMZTrackArchive" file-extensions="kmz"
@@ -826,7 +829,7 @@
             <property name="introBrandingImageText"
                 value="Debrief, from the Maritime Warfare Centre"/>
             <property name="aboutImage" value="icons/DebriefNGlogoSmall.png"/>
-            <property name="windowImages" value="icons/icon.png"/>
+            <property name="windowImages" value="icons/icon.png,icons/48/icon_48.png"/>
             <property name="startupForegroundColor" value="000000"/>
             <property name="startupMessageRect" value="0,0,0,0"/>
             <property name="startupProgressRect" value="0,0,0,0"/>

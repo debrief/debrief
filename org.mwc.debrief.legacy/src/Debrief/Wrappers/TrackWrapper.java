@@ -155,14 +155,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 expertProp("Color", "the track color", FORMAT),
                 displayExpertProp("EndTimeLabels", "Start/End time labels",
                     "Whether to label track start/end with 6-figure DTG",
-                    FORMAT),
+                    VISIBILITY),
                 displayExpertProp("SymbolColor", "Symbol color",
                     "the color of the symbol (when used)", FORMAT),
                 displayExpertProp(
                     "PlotArrayCentre",
                     "Plot array centre",
                     "highlight the sensor array centre when non-zero array length provided",
-                    FORMAT),
+                    VISIBILITY),
                 displayExpertProp("TrackFont", "Track font",
                     "the track label font", FORMAT),
                 displayExpertProp("NameVisible", "Name visible",
@@ -173,7 +173,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                     "whether to show the track name at the start (or end)",
                     VISIBILITY),
                 displayExpertProp("LinkPositions", "Link positions",
-                    "whether to join the track points", FORMAT),
+                    "whether to join the track points", VISIBILITY),
                 expertProp("Visible", "whether the track is visible",
                     VISIBILITY),
                 displayExpertLongProp("NameLocation", "Name location",
@@ -2532,7 +2532,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     _relativeUpdatePending = true;
   }
-
+  
   /**
    * paint the fixes for this track
    * 
@@ -2543,7 +2543,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // collate a list of the start & end points
     final List<FixWrapper> endPoints = new ArrayList<FixWrapper>();
-
+    
     // we need an array to store the polyline of points in. Check it's big
     // enough
     checkPointsArray();
@@ -2682,10 +2682,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // colour change...
             if (thisCol != lastCol)
             {
-              // add our position to the list - so it
-              // finishes on us
-              _myPts[_ptCtr++] = thisP.x;
-              _myPts[_ptCtr++] = thisP.y;
+              
+              // double check we haven't been modified
+              if (_ptCtr > _myPts.length)
+              {
+                continue;
+              }
+
+              // add our position to the list - we'll output
+              // the polyline at the end
+              if (_ptCtr < _myPts.length -1)
+              {
+                _myPts[_ptCtr++] = thisP.x;
+                _myPts[_ptCtr++] = thisP.y;
+              }              
 
               // yup, better get rid of the previous
               // polygon
@@ -2694,6 +2704,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
             // add our position to the list - we'll output
             // the polyline at the end
+
+            if (_ptCtr > _myPts.length -1)
+            {
+              continue;
+            }
+            
             _myPts[_ptCtr++] = thisP.x;
             _myPts[_ptCtr++] = thisP.y;
           }
@@ -2725,7 +2741,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // ok - paint the label for the last visible point
       if (getPositionsVisible())
       {
-        paintIt(dest, endPoints.get(1), getEndTimeLabels());
+        if(endPoints.size() > 1)
+        {
+          paintIt(dest, endPoints.get(1), getEndTimeLabels());
+        }
       }
 
       // ok, just see if we have any pending polylines to paint

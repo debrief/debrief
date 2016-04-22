@@ -107,15 +107,17 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import MWC.GUI.Editable;
+import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
-		MWC.GUI.Layer, IRollingNarrativeProvider
+		MWC.GUI.Layer, IRollingNarrativeProvider, NeedsToBeInformedOfRemove
 {
 
 	// //////////////////////////////////////
@@ -132,7 +134,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * where we store our narrative data
 	 */
-	private final java.util.TreeSet<Editable> _myEntries;
+	private final ConcurrentSkipListSet<Editable> _myEntries;
 
 	/**
 	 * our editor
@@ -182,7 +184,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 		};
-		_myEntries = new java.util.TreeSet<Editable>();
+		_myEntries = new ConcurrentSkipListSet<Editable>();
 		_myName = title;
 	}
 
@@ -296,9 +298,19 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and inform anybody who happens to be listening
 			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
-		}
-
-	}
+			
+      // also tell the listeners
+      if (_myListeners != null)
+      {
+        for (final Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
+            .hasNext();)
+        {
+          final INarrativeListener thisL = iter.next();
+          thisL.newEntry((NarrativeEntry) editable);
+        }
+      }
+    }
+  }
 
 	public final void append(final MWC.GUI.Layer layer)
 	{
@@ -545,5 +557,11 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_myListeners.remove(listener);
 	}
+
+  @Override
+  public void beingRemoved()
+  {
+    _myEntries.clear();
+  }
 
 }

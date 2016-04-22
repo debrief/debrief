@@ -133,9 +133,17 @@ import java.util.Iterator;
 public final class SymbolFactory
 {
 
-  private static final String SQUARE = "Square";
+  public static final String SCALED_FRIGATE = "ScaledFrigate";
 
-	private static final String CROSS = "Cross";
+  public static final String TORPEDO = "Torpedo";
+
+  public static final String SCALED_SUBMARINE = "ScaledSubmarine";
+
+  public static final String SQUARE = "Square";
+
+  public static final String CIRCLE = "Circle";
+
+  public static final String CROSS = "Cross";
 
 	//////////////////////////////////////////////////
   // member variables
@@ -145,7 +153,7 @@ public final class SymbolFactory
   
   private static final String WRECK = "Wreck";
 
-	private static final String DATUM = "Datum";
+	public static final String DATUM = "Datum";
 
 	public static final String MERCHANT = "Merchant";
 
@@ -364,14 +372,14 @@ public final class SymbolFactory
       vessels.put("Aircraft", MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
       vessels.put("ScaledAmphib", MWC.GUI.Shapes.Symbols.Vessels.ScaledAmphibSym.class);
       vessels.put("ScaledContainer", MWC.GUI.Shapes.Symbols.Vessels.ScaledContainerSym.class);
-      vessels.put("ScaledFrigate", MWC.GUI.Shapes.Symbols.Vessels.ScaledFrigateSym.class);
+      vessels.put(SCALED_FRIGATE, MWC.GUI.Shapes.Symbols.Vessels.ScaledFrigateSym.class);
       vessels.put("ScaledLPG", MWC.GUI.Shapes.Symbols.Vessels.ScaledLPGSym.class);
       vessels.put("ScaledMerchant", MWC.GUI.Shapes.Symbols.Vessels.ScaledMerchantSym.class);
-      vessels.put("ScaledSubmarine", MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym.class);
+      vessels.put(SCALED_SUBMARINE, MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym.class);
       vessels.put("ScaledVessel", MWC.GUI.Shapes.Symbols.Vessels.ScaledVesselSym.class);
       vessels.put(SUBMARINE, MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub.class);
       vessels.put("Missile", MWC.GUI.Shapes.Symbols.Vessels.MissileSym.class);
-      vessels.put("Torpedo", MWC.GUI.Shapes.Symbols.Vessels.TorpedoSym.class);
+      vessels.put(TORPEDO, MWC.GUI.Shapes.Symbols.Vessels.TorpedoSym.class);
       vessels.put("Carrier", MWC.GUI.Shapes.Symbols.Vessels.AircraftCarrierSym.class);
       vessels.put("Cruiser", MWC.GUI.Shapes.Symbols.Vessels.CruiserSym.class);
       vessels.put("Destroyer", MWC.GUI.Shapes.Symbols.Vessels.DestroyerSym.class);
@@ -395,7 +403,7 @@ public final class SymbolFactory
       _theVesselIds.put("Helicopter", "H");
       _theVesselIds.put("Aircraft", "A");
       _theVesselIds.put(SUBMARINE, "S");
-      _theVesselIds.put("Torpedo", "P");
+      _theVesselIds.put(TORPEDO, "P");
       _theVesselIds.put("Carrier", "C");
       _theVesselIds.put("Cruiser", "U");
       _theVesselIds.put("Destroyer", "D");
@@ -412,6 +420,7 @@ public final class SymbolFactory
       _theVesselIds.put(SQUARE, "J");
       _theVesselIds.put(DATUM, "K");
       _theVesselIds.put(REFERENCE_POSITION, "L");
+      _theVesselIds.put(CIRCLE, "Q");
       
       _theVesselIds.put(WRECK, "W");
 

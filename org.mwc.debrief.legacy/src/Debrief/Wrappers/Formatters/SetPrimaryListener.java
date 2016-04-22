@@ -24,4 +24,11 @@ public class SetPrimaryListener implements INewItemListener
     }
   }
 
+  @Override
+  public void reset()
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

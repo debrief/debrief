@@ -71,7 +71,22 @@
 		<topic href="html/legacy/analyse_sensor_data.html#multi_delay_algorithms" label="Algorithms used in multi-path analysis"/>
 		<topic href="html/legacy/analyse_sensor_data.html#multi_ui" label="User Interface guidance for conducting multi path analysis"/>
 	</context>	
-		
+	<context id="DISSupport">
+		<description>Support for DIS protocol</description>
+		<topic href="html/legacy/dis_support.html" label="Introduction to DIS protocol support"/>
+		<topic href="html/legacy/dis_tips.html" label="Tips &amp; tricks for analysing DIS scenarios"/>
+		<topic href="html/legacy/dis_usage.html" label="Monitoring a DIS simulation"/>
+		<topic href="html/legacy/dis_usage.html#logging" label="Logging DIS messages"/>
+		<topic href="html/legacy/dis_ref.html" label="System documentation for DIS integration"/>
+		<topic href="html/legacy/dis_config.html" label="Configuring DIS support"/>
+	</context>	
+	<context id="DISConfig">
+		<description>Configuring DIS support</description>
+		<topic href="html/legacy/dis_config.html" label="DIS configuration parameters"/>
+		<topic href="html/legacy/dis_support.html" label="Introduction to DIS protocol support"/>
+		<topic href="html/legacy/dis_ref.html" label="System documentation for DIS integration"/>
+		<topic href="html/legacy/dis_usage.html#logging" label="Logging DIS messages"/>
+	</context>	
 	<context id="LengthPrefs">
 		<description>Stores and manipulates a set of agreed sensor offset distances</description>
 		<topic href="html/legacy/sensor_data.html#LENGTH_PREFS" label="Explanation of Sensor offsets"/>

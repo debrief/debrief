@@ -20,7 +20,7 @@
           <orgname/>
           <orgdiv><inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/DeepBlueC.png"/>
+                <imagedata fileref="figures/DeepBlueC.png" width="400"/>
               </imageobject>
             </inlinemediaobject></orgdiv>
           <orgdiv><inlinemediaobject>
@@ -1093,7 +1093,7 @@ and so on....</programlisting></para>
             REP import stage via the Select track mode dialog:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SelectImportMode.png"/>
+                  <imagedata fileref="figures/SelectImportMode.png" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -1436,7 +1436,7 @@ and so on....</programlisting></para>
         format <indexterm>
           <primary>Formatting</primary>
           <secondary>track data</secondary>
-        </indexterm> what you see to improve its legibility. Learn more about formatting tracks in
+        </indexterm>what you see to improve its legibility. Learn more about formatting tracks in
         the <emphasis>Editing your data</emphasis> tutorial. <note>
           <para>Apologies in advance to the British users of <application>Debrief</application> for
             the American-spelling of colour. The software environment within which
@@ -1453,7 +1453,7 @@ and so on....</programlisting></para>
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/PropertiesView.png" width="237"/>
+                <imagedata fileref="figures/PropertiesView.png" width="237" align="center"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1553,7 +1553,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/brg_error.png" width="333"/>
+                  <imagedata fileref="figures/brg_error.png" width="333" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1597,7 +1597,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons2.png"/>
+                    <imagedata fileref="figures/PaletteButtons2.png" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1685,7 +1685,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/scale_demo.gif"/>
+                    <imagedata fileref="figures/scale_demo.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1799,20 +1799,52 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/old_coastline.gif"/>
+                    <imagedata fileref="figures/old_coastline.gif" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
             </figure></para>
         </sect2>
-
+        <sect2 xml:id="etopo_gridded_bathy">
+          <title>ETOPO gridded bathy</title>
+          <para>Whilst the VPF dataset <indexterm>
+              <primary>ETOPO Data</primary>
+            </indexterm>provides a contoured bathymetry within broad depth steps, the ETOPO dataset
+            provides a gridded bathymetry in 5&apos; or 2&apos; steps. When you ask Debrief to plot
+            an ETOPO background, Debrief will try to load an ETOPO-2 dataset first, followed by an
+            ETOPO-5 dataset if that is unavailable. The image below provides a sample of the level
+            of detail supplied. <figure xml:id="ETOPO_Demo">
+              <title>Sample of ETOPO gridded bathymetry</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/etopo_data.gif" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+        </sect2>
+        <sect2>
+          <title xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="chartlibrary">Chart
+            Library</title>
+          <para>Debrief also allows you to load 3rd-party chart libraries. This is covered in <xref
+              linkend="loadCharts"/><figure>
+              <title>Sample of chart library portfolio</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/ChartFolio.png" align="center" width="75%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+        </sect2>
         <sect2 xml:id="vectored_data">
           <title>Vectored data</title>
-
-          <para>The addition of vectored chart data is covered later in this document, in <xref linkend="view_vpf"/>. The image below provides a sample of the level of detail
+          <para>The addition of vectored chart data is also covered later in this document, in <xref
+              linkend="view_vpf"/>. The image below provides a sample of the level of detail
             supplied. <figure xml:id="vectored_Coast_demo">
-              <title>Sample of vectored coastline data</title>
-
+              <title xmlns="http://docbook.org/ns/docbook">Sample of vectored coastline data</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
@@ -1822,27 +1854,20 @@ and so on....</programlisting></para>
               </screenshot>
             </figure></para>
         </sect2>
-
-        <sect2 xml:id="etopo_gridded_bathy">
-          <title>ETOPO gridded bathy</title>
-
-          <para>Whilst the VPF dataset <indexterm>
-              <primary>ETOPO Data</primary>
-            </indexterm>provides a contoured bathymetry within broad depth steps, the ETOPO dataset
-            provides a gridded bathymetry in 5&apos; or 2&apos; steps. When you ask Debrief to plot an ETOPO
-            background, Debrief will try to load an ETOPO-2 dataset first, followed by an ETOPO-5
-            dataset if that is unavailable. The image below provides a sample of the level of detail
-            supplied. <figure xml:id="ETOPO_Demo">
-              <title>Sample of ETOPO gridded bathymetry</title>
-
+        <sect2>
+          <title xml:id="NaturalEarth">Natural Earth</title>
+          <para>In the same manner that we loaded the <xref linkend="chartlibrary"/>, we do exactly
+            the same thing with Natural Earth.<figure>
+              <title>Sample of Natural Earth</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/etopo_data.gif"/>
+                    <imagedata fileref="figures/NE_110M.png" align="center" width="75%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure></para>
+            </figure>For further information, refer to <xref linkend="natural_earth"/>
+          </para>
         </sect2>
       </sect1>
 
@@ -1980,7 +2005,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/EditPolygon.png" width="263"/>
+                    <imagedata fileref="figures/EditPolygon.png" width="263" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2045,7 +2070,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CalculatedLabel.png" align="center"/>
+                      <imagedata fileref="figures/CalculatedLabel.png" align="center" width="80%"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -2083,7 +2108,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/LayerManagerView.png" width="279"/>
+                    <imagedata fileref="figures/LayerManagerView.png" width="279" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2228,7 +2253,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SaveDialog.png" width="263"/>
+                    <imagedata fileref="figures/SaveDialog.png" width="263" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2723,7 +2748,7 @@ and so on....</programlisting></para>
             </orderedlist><screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LayerManagerView.png" width="279"/>
+                  <imagedata fileref="figures/LayerManagerView.png" width="279" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -3002,7 +3027,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/relative_demo.png" align="center"/>
+                      <imagedata fileref="figures/relative_demo.png" align="center" width="100%"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3270,7 +3295,7 @@ and so on....</programlisting></para>
                 <screenshot>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/SAM2Export.png" width="300"/>
+                      <imagedata fileref="figures/SAM2Export.png" width="300" align="center"/>
                     </imageobject>
                   </mediaobject>
                 </screenshot>
@@ -3454,7 +3479,8 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/time_variable_plot_switch.png" width="180"/>
+                  <imagedata fileref="figures/time_variable_plot_switch.png" width="180"
+                    align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -3819,7 +3845,7 @@ and so on....</programlisting></para>
               <title>Natural Earth logo</title>              
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/NaturalEarthLogo.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/NaturalEarthLogo.png" width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -3924,7 +3950,7 @@ and so on....</programlisting></para>
       </sect1>
 
       <sect1 xml:id="vpf_data">
-        <title>Installing VPF data</title>
+        <title>VPF data</title>
 
         <sect2 xml:id="vpf_intro">
           <title>Introduction</title>
@@ -4210,7 +4236,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer1.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer1.png" width="237" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4225,7 +4251,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer2.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer2.png" width="237" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4241,7 +4267,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer3.png" width="237"/>
+                    <imagedata fileref="figures/VPF_Layer3.png" width="237" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4254,7 +4280,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer4.png" width="270"/>
+                    <imagedata fileref="figures/VPF_Layer4.png" width="270" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4265,7 +4291,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/VPF_Layer5.png" align="center"/>
+                  <imagedata fileref="figures/VPF_Layer5.png" align="center" width="270"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4979,7 +5005,7 @@ and so on....</programlisting></para>
                   leg parameters <screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/AddSegment6.png" width="40%"/>
+                        <imagedata fileref="figures/AddSegment6.png" width="80%" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5014,7 +5040,7 @@ and so on....</programlisting></para>
                   your set of legs in tabular form<screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/legsInGridEditor.png" width="80%"/>
+                        <imagedata fileref="figures/legsInGridEditor.png" width="80%" align="center"/>
                       </imageobject>
                     </mediaobject>
                   </screenshot></para>
@@ -5190,7 +5216,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter.png" width="338"/>
+                    <imagedata fileref="figures/narr_filter.png" width="338" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5199,7 +5225,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter_src.png" align="center"/>
+                    <imagedata fileref="figures/narr_filter_src.png" align="center" width="338"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5231,7 +5257,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LandsEnd.png" width="450"/>
+                  <imagedata fileref="figures/LandsEnd.png" width="450" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5268,7 +5294,8 @@ and so on....</programlisting></para>
         <para>Separately, Debrief can provide a folio of charts<indexterm>
             <primary>Charts</primary>
             <secondary>Folios</secondary>
-          </indexterm>, though the data must be stored in a specific layout (see <xref linkend="ChartStorage"/>), and Debrief it must be configured appropriately. Configure
+          </indexterm>, though the data must be stored in a specific layout (see <xref
+            linkend="ChartStorage"/>), and Debrief must be configured appropriately. Configure
           Debrief this by selecting the <guilabel>Chart Backdrops</guilabel> page under the
             <guilabel>Maritime Analysis</guilabel> section of the
             <guilabel>Window/Preferences</guilabel> dialog. In this page specify the parent folder
@@ -5278,7 +5305,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartOptions.png" width="450"/>
+                  <imagedata fileref="figures/ChartOptions.png" width="100%" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5290,8 +5317,8 @@ and so on....</programlisting></para>
               layers. For most analysis the presence of a chart backdrop can make vessel tracks
               difficult to distinguish. Making them semi-transparent fades them away a little -
               letting you focus on the tracks whilst still being aware of the backdrop chart data.
-              Unfortunately, the transparency setting isn&apos;t observed when you copy the plot to the
-              clipboard. Once pasted in MS Word, all charts are painted solid.</para>
+              Unfortunately, the transparency setting isn&apos;t observed when you copy the plot to
+              the clipboard. Once pasted in MS Word, all charts are painted solid.</para>
           </note></para>
         <para>Once a parent folder is specified, when you click on Insert Chart Library from the
           Chart Features menu Debrief will scan the child folders for correctly named shapefiles and
@@ -5300,7 +5327,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ChartFolio.png" align="center"/>
+                  <imagedata fileref="figures/ChartFolio.png" align="center" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5317,7 +5344,7 @@ and so on....</programlisting></para>
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LoadChart.png" align="center"/>
+                  <imagedata fileref="figures/LoadChart.png" align="center" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -5400,6 +5427,17 @@ and so on....</programlisting></para>
                 quietly slip in.</para>
             </note></para>
         </sect2>
+        <sect2>
+          <title>Viewing Sensor Data Time Period</title>
+          <para>When viewing the properties view, you will see a Start/Stop DTG for the current
+            sensor data time period. This entry is read only, but provides an at a glance method of
+            viewing range set for the sensor data.<mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/sensor_dtg_readonly.png" scalefit="1" width="75%"
+                  align="center"/>
+              </imageobject>
+            </mediaobject></para>
+        </sect2>
 
         <sect2 xml:id="SectWormInHole">
           <title>Worm in the hole</title>
@@ -5437,7 +5475,8 @@ Platform C,-551</screen></para>
             the <guilabel>Standard Array Offsets</guilabel> page<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ArrayLengthsPrefs.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ArrayLengthsPrefs.png" scalefit="1" width="100%"
+                    align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -5446,7 +5485,7 @@ Platform C,-551</screen></para>
             list of sensor offset distances when you view sensor data in the properties window:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LengthsEditor.png" width="308"/>
+                  <imagedata fileref="figures/LengthsEditor.png" width="308" align="center"/>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -5786,7 +5825,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             you right-click on them you are offered the &apos;View sensor range plot&apos; menu item:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ViewSensorPlot.png" width="313"/>
+                  <imagedata fileref="figures/ViewSensorPlot.png" width="100%" align="center"/>
                 </imageobject>
 
                 <caption>Popup menu with a track plus multiple sensor selected</caption>
@@ -5977,7 +6016,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             <para>The indirect path length is calculated as follows:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_length_alg.png" width="212"/>
+                    <imagedata fileref="figures/multi_length_alg.png" width="212" align="center"/>
                   </imageobject>
 
                   <caption>Algorithm used to determine indirect path length</caption>
@@ -6042,7 +6081,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               </variablelist>These lengths are the calculated as: <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_lengths.png" width="284"/>
+                    <imagedata fileref="figures/multi_lengths.png" width="284" align="center"/>
                   </imageobject>
 
                   <caption>Comparison of acoustic paths</caption>
@@ -6051,7 +6090,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               obtain the path travel times, and this the overall time delay:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_delay.png" width="233"/>
+                    <imagedata fileref="figures/multi_delay.png" width="233" align="center"/>
                   </imageobject>
 
                   <caption>Calculation of time delay</caption>
@@ -6511,7 +6550,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             interaction with the algorithm is as recorded below<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_sequence.png"/>
+                  <imagedata fileref="figures/SATC_sequence.png" width="100%"/>
                 </imageobject>
                 <caption>SATC Sequence</caption>
               </mediaobject>
@@ -6711,6 +6750,280 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               relative to an arbitrary location to hide any potentially sensitive data.
               Access to the data eases the task of externally analysing the scenario.</para>
           </formalpara>
+        </sect2>
+      </sect1>
+    </chapter>
+    
+    
+    <chapter xml:id="dis_support">
+      <title>Support for DIS Protocol</title>
+      
+      <sect1 xml:id="dis_intro">
+        <title>Introduction</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>Distributed Interactive Simulation</secondary>
+        </indexterm>
+        
+        <para>
+          One group of users employ Debrief for the analysis of scenario results from a headless simulation
+          engine.  The simulation engine produces results data in a range of output formats.  Historically
+          the users had to convert an existing output format to Debrief <code>.rep</code> format, but in the late 2000s 
+          direct support for Debrief was added.
+        </para>
+        <para>
+          In 2015 this body of users recognised the utility of using Debrief as a live simulation monitor, 
+          to bring these benefits:
+          <itemizedlist>
+            <listitem><para>Verify scenario participants behave as predicted before committing to lengthy
+              Monte Carlo block of simulation runs</para></listitem>
+            <listitem><para>Develop the behaviour of one or more scenario participants in a 
+              programming-like CODE-RUN-DEBUG cycle</para></listitem>
+          </itemizedlist>
+          The <glossterm linkend="g_DIS">DIS</glossterm>
+          standard was adopted for
+          network communications between Debrief and the headless simulation engine:
+          <uri xlink:href="https://en.wikipedia.org/wiki/Distributed_Interactive_Simulation">
+            </uri>.
+        </para>
+        <para>You can find System documentation for the DIS integration later in this 
+          document (<xref linkend="dis_ref"/>)</para>
+      </sect1>
+      <sect1 xml:id="dis_config">
+        <title>Configuring DIS</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>DIS Preferences</secondary>
+        </indexterm>
+        <para>
+          Access the DIS preferences page either from the <guimenu>Window / Preferences / Maritime Analysis</guimenu> DIS preferences page,
+          or by clicking on the <guibutton>Server prefs</guibutton> link on the <guilabel>DIS Listener View</guilabel>.
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="figures/DISPrefs.png" width="60%"/>
+            </imageobject>
+          </mediaobject>          
+        </para>
+        <sect2 xml:id="dis_net_config">
+          <title>Network configuration</title>
+          <para>Debrief uses DIS to talk to simulators running on the current machine, or on another
+            machine on the network.  This network communications requires some configuration - to tell
+            Debrief what to listen to.  Two specific values are used:<variablelist>
+              <varlistentry>
+                <term>IP Address</term>
+                <listitem>
+                  <para>The 4-block Network address for the multicast group being used for DIS
+                    messaging</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Port</term>
+                <listitem>
+                  <para>The number of the port on that address which is being used for DIS
+                    messaging</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </sect2>
+        <sect2 xml:id="dis_exe_config">
+          <title>Configuring the launch of an external simulator</title>
+          <para>Some DIS simulators run as complex combinations of services &amp; applications. Other simulators
+            are contained in simple standalone executables.  It is possible to launch such an executable
+            directly from Debrief<variablelist>
+              <varlistentry>
+                <term>Path to executable</term>
+                <listitem>
+                  <para>The application (or script) used to trigger a simulation run</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </sect2>
+        <sect2 xml:id="dis_debrief_config">
+          <title>Giving Debrief an identity</title>
+          <para>In an environment where a networked simulation has multiple participants, it can become necessary to
+            specify identify particular participants (so their messages could be, for example, ignored).  
+            Two particular values are used for this configuration<variablelist>
+            <varlistentry>
+              <term>Site</term>
+              <listitem>
+                <para>This value is unique to the site (location) where Debrief is being run from.  The value isn&apos;t derived
+                from a formal table, but is by local agreement</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Application</term>
+              <listitem>
+                <para>This value is unique to the Debrief application.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          </para>
+        </sect2>
+        <sect2 xml:id="dis_filter_config">
+          <title>Filtering DIS traffic</title>
+          <para>It is possible for multiple DIS simulations to simultaneously run on a single
+            network. Common-sense would suggest that these multiple simulations should use unique
+            network address and port, but this isn't mandatory. If multiple simulations are being
+            run on the same network address and port, it is possible to control which simulations
+            Debrief listens to:<variablelist>
+              <varlistentry>
+                <term>Site</term>
+                <listitem>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages
+                    from the specified site</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Application</term>
+                <listitem>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages
+                    from the specified application</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Exercise</term>
+                <listitem>
+                  <para>Provision of this optional parameter restricts Debrief to handling messages
+                    from the specified DIS exercise</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </sect2>
+      </sect1>
+      <sect1 xml:id="dis_usage">
+        <title>Monitoring a DIS simulation</title>
+        <para> Interaction with DIS scenarios is performed from the <guimenu>DIS Listener
+            View</guimenu>. <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="figures/DISView.png" width="60%"/>
+            </imageobject>
+          </mediaobject> At the top of the panel are two small icons. The first has a toggle
+          behaviour, and when ticked Debrief will auto-resize at each step, to ensure all loaded
+          data remains visible. The second icon opens the Console view (to keep track of messages
+          returned by the launched simulator - see more at <xref linkend="dis_console"/>), and the final one accesses the help for
+          Debrief&apos;s DIS integration. </para>
+        <sect2>
+          <title>Running a local simulator</title>
+          <para> If you have specified the path to an executable in the <guimenu>Server
+              preferences</guimenu> (see <xref linkend="dis_exe_config"/>), then you can use the
+              <guimenu>Local simulator</guimenu> box to (optionally) specify the location of the
+            input file to be passed to the executable. Click on the <guibutton>...</guibutton>
+            button to open a file browser. </para>
+          <para> Once a control file has been specified, you can click on the
+              <guibutton>Launch</guibutton> button to start the simulator executable, passing the
+            input file to it. After launching Debrief will automatically start listening on the
+            correct network port. <tip>
+              <para>A quick way of setting the input file is to drag one from the
+                  <guimenu>Navigator</guimenu> view oneo the path.  This will update the input file
+                path to the one dragged in.</para>
+              <para>An even quicker way of running a different input file is to right-click on a
+                  <filename>*.inp</filename> file in the <guimenu>Navigator</guimenu> view and
+                select <guimenu>Run in simulator</guimenu>.  This will launch the simulator, passing
+                it that control file.  Do this if you have lots of different input files in your
+                workspace.</para>
+            </tip></para>
+        </sect2>
+        <sect2>
+          <title>Interacting with a DIS simulation</title>
+          <para>The large listen button is used to toggle whether Debrief is listening for DIS
+            messages.</para>
+          <para>If Debrief receives sufficient network status messages from the simulator, Debrief
+            will enable the <guibutton>Play</guibutton>, <guibutton>Pause</guibutton>,
+              <guibutton>Stop</guibutton>. After <guibutton>Stop</guibutton> has been pressed, and
+            new DIS messages received will be put into a new plot (existing data will be wiped).
+          </para>
+        </sect2>
+        <sect2>
+          <title>Other settings</title>
+          <para> Two other minor options are provided. If <guibutton>New plot per
+              replication</guibutton> is ticked, when Debrief recognises that data for an new
+            simulation run is being received, Debrief will open a fresh plot to contain the data. <note>
+              <para>If the current plot is based on a <filename>.REP</filename> input file, Debrief
+                will base the fresh plot on that same input file. This practice can be used to
+                design a set of background annotations (such as exercise area, scale, bathy
+                backdrop) - which gets used for all plots.</para>
+            </note>
+          </para>
+          <para>If the simulator is running very quickly, and it looks like the UI is getting
+            swamped with updates, the <guibutton>Live updates</guibutton> checkbox can be cleared,
+            which will let Debrief continue to receive and store DIS messages, but Debrief will not
+            bother updating the user interface (the Outline view or the Plot Editor).</para>
+          <para>Lastly, the <guibutton>Server prefs</guibutton> link can be used to open the 
+          preferences page for Debrief DIS communications.</para>
+        </sect2>
+        <sect2 xml:id="logging">
+          <title>Logging DIS messages</title>
+           <para>On the <guilabel>DIS Listener</guilabel> view&apos;s drop-down menu is a
+             <guilabel>Log Messages</guilabel> toggle button. When this is selected, Debrief will
+             log all messages to the Debrief system log. This log can be accessed via the
+             <guilabel>Window / Show View / Error Log</guilabel> menu option. The
+             <filename>.log</filename> file is chunked into 1Mb files, and is stored in the hidden
+             <filename>.DebriefNG/.metadata</filename> folder within your home directory. To remind
+             the user about this logging (with its associated performance and disk usage penalty),
+             the <guilabel>Scenario Complete</guilabel> popup dialog includes a reminder that logging
+             is active, when relevant.</para>
+        </sect2>
+        <sect2><title>Performance graph</title>
+          <para>
+            At the foot of the <guibutton>DIS Listener View</guibutton> is a performance graph.  When
+            a simulation is being listened to, this graph updates once per second. It shows two lines. One is the 
+            frequency at which simulation messages are being received, and the second is the frequency of screen updates.
+            As more data is received, and shown on the plot, the frequency of screen updates will slow down.
+          </para>
+          <para>
+            Inspection of this graph can give the analyst an indication of whether the simulator is running, how
+            quickly it is running, and how Debrief is handling the volume of loaded data.
+          </para>
+        </sect2>
+      </sect1>
+      <sect1 xml:id="dis_tips">
+        <title>DIS Tips &amp; Tricks</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>Tips &amp; Tricks</secondary>
+        </indexterm>
+        <sect2><title>Specifying format parameters in advance</title>
+              <para>
+                In early 2016 Debrief received the ability to provide format instructions in a REP file, as in the
+                following example. 
+                <programlisting>
+;FORMAT_FIX: 10_min_sym SYMBOL NULL NULL TRUE 600000 
+;FORMAT_FIX: 30_min_lab LABEL NULL NULL TRUE 1800000 
+;FORMAT_FIX: 15_sec_arr ARROW NELSON NULL TRUE 900000 
+;FORMAT_TRACK_NAME_AT_END: name_at_end
+;FORMAT_LAYER_HIDE: hide_dis_6  DIS_6
+              </programlisting>
+                Use of these instructions will save effort re-applying formatting to each new model run.
+              </para>
+        </sect2>
+        <sect2><title>Running Debrief&apos;s DIS simulator</title>
+          <para>
+            To aid development of the new DIS integration capability, a very simple simulator
+            was developed that was capable of sending out messages in DIS format.  This tool 
+            has now been included in Debrief, to help users get started with (or just play) with
+            Debrief&apos;s DIS integration.
+          </para>
+          <para>
+            The simple simulator can be started using the script file that is contained in the 
+            <filename>Sample Data / Other formats</filename> folder.  Just assign the 
+            <filename>sender.sh</filename> or <filename>sender.bat</filename> as the 
+            executable in the <guimenu>Server preferences</guimenu> page, and use
+            <filename>control.inp</filename> as the simulation input file.
+          </para>
+        </sect2>
+        <sect2 xml:id="dis_console">
+          <title>Track the simulator using the Console</title>
+          <para>If you simulator outputs message to the command line, you may be used to always
+            running the simulator from a command prompt - so that you can track any error / status
+            message returned. But, you can use the Show Console button in the DIS Listener View to
+            open the console, as shown below.<mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="figures/DisConsoleUI.png" width="60%"/>
+              </imageobject>
+            </mediaobject></para>
         </sect2>
       </sect1>
     </chapter>
@@ -8216,7 +8529,6 @@ and entry type can be multi-word if surrounded by quotes (").
               <secondary>Dynamic Elements</secondary>
             </indexterm>The format for the different types of dynamic annotations is: <screen width="70">
             <markup>
-;;format
 ;;DYNAMIC_CIRCLE: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H YYY XX.XX 
 ;;DYNAMIC_POLYGON: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
 ;;DYNAMIC_RECTANGLE: @@@@@ YYMMDD HHMMSS "NAME"DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
@@ -8249,21 +8561,21 @@ and entry type can be multi-word if surrounded by quotes (").
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_1.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_1.png" width="40%" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_2.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_2.png" width="40%" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/arcs_3.png" width="40%"/>
+                    <imagedata fileref="figures/arcs_3.png" width="40%" align="center"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -8275,12 +8587,13 @@ and entry type can be multi-word if surrounded by quotes (").
             </indexterm>The format for the different types of dynamic track annotations is shown below.  Note that 
               each line may contain a series of definitions, and that the distance units are in yards.<screen width="70">
             <markup>
-;; format
 ;SENSORARC YYMMDD HHMMSS.SSS YYMMDD HHMMSS.SSS TRACKNAME SYMBOLOGY LEFT RIGHT INNER OUTER [LEFT RIGHT INNER OUTER] LABEL
 ;; (start time, end time, parent track, styling, min-max angles of the arc, inner-outer radiuses, collective label.
 ;; simple example
+
 ;SENSORARC 951212 062800 951212 063000 NELSON @@ -75 35 0 1000 "fwd dynamic"
 ;; dynamic example - so donut spreads outwards in time using 3 steps
+
 ;SENSORARC: 951212 053000 951212 054000 NELSON @A 0 360 500 1000 CZ_Ring
 ;SENSORARC: 951212 054000 951212 055000 NELSON @B 0 360 600 1100 CZ_Ring
 ;SENSORARC: 951212 055000 951212 060000 NELSON @C 0 360 700 1200 CZ_Ring
@@ -8290,6 +8603,62 @@ and entry type can be multi-word if surrounded by quotes (").
               shape being used for part or all of the track lifetime.</para></note>
             </para>
           </sect2>
+        <sect2 xml:id="replay_format_annotations">
+          <title>Formatting helpers</title>         
+          <para>
+            Entries can be included in REP files to help format data as it is loaded.  These commands can
+            specify the frequency at which labels/symbols are shown, or perform other presentation 
+            configuration, either on specific tracks/layers or for all data.
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/FormatExample.png" width="60%" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+            <tip>
+              <para>You can use these helpers to create a set of default look &amp; feels for your plots.  Create a set of
+              label, symbol, arrow markers to suit your data, then store them in a REP file, called something like 
+              <filename>LONG_RANGE_FORMAT.REP</filename>.  Then, when conducting a new piece of analysis
+               of long range tracks, start by opening this REP file.  Now, when you drag in your tracks, they
+               will all get formatted according to your preferred styling.</para>
+            </tip>
+          </para>
+          
+          <para><indexterm>
+            <primary>Format Helpers</primary>
+            <secondary>REP Format Helpers</secondary>
+          </indexterm>The format for these helpers is shown below.<screen width="70">
+            <markup>
+;FORMAT_FIX: 30_min_lab LABEL NULL NULL TRUE 1800000
+;; 30_min_lab - name for this formatter (shown in outline view) 
+;; LABEL - what we're applying to (SYMBOL, LABEL, ARROW)
+;; NULL - track name we apply to (or null for all tracks)
+;; NULL - symbology we apply to (e.g. @A) (or null for all tracks) 
+;; TRUE - whether interval should fall on regular interval or start
+;;        from first data point
+;; 1800000 - interval (in millis) to apply formatting
+
+;FORMAT_FIX: 10_min_sym SYMBOL NELSON NULL TRUE 600000 
+;; show symbol on every 10 minute marker (00:00,00:10, 00:20, etc) 
+;;    for track Nelson
+
+;FORMAT_LAYER_HIDE: format_name layer_name
+;; name for this formatter, name of the layer to hide 
+
+;FORMAT_LAYER_HIDE: format_name layer_1_name "layer 2 name"
+;; name for this formatter, name of the layers to hide
+;;     quotes can be used if name contains spaces 
+
+;FORMAT_TRACK_NAME_AT_END: format_name track_names
+;; name for this formatter, list of track names for which the name 
+;;     should be shown at the end, or empty to apply to all tracks
+            </markup>
+            </screen>
+            <note><para>A NULL can be provided instead of one or more of the times.  This will result in the dynamic
+              shape being used for part or all of the track lifetime.</para></note>
+          </para>
+        </sect2>        
       </sect1>
 
       <sect1 xml:id="debrief_file_format">
@@ -8881,7 +9250,7 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/rhumb_line_segments.gif" width="200"/>
+                  <imagedata fileref="figures/rhumb_line_segments.gif" width="200" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -9394,7 +9763,7 @@ departure / d.lat = tan (course)</markup>
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/contour_4.gif"/>
+                  <imagedata fileref="figures/contour_4.gif" align="center"/>
                 </imageobject>
               </mediaobject>
             </figure> Note that for large arrays the whole data array need not be stored in memory .
@@ -9768,7 +10137,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing all bounded states</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/NoSuppress.png" align="center"/>
+                      <imagedata fileref="figures/NoSuppress.png" align="center" width="100%"/>
                     </imageobject>                    
                     <caption>A solution showing all bounded states</caption>
                   </mediaobject>
@@ -9777,7 +10146,7 @@ departure / d.lat = tan (course)</markup>
                   <title>Solution showing low precision cut suppression</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/CutsSuppressed.png" align="center"/>
+                      <imagedata fileref="figures/CutsSuppressed.png" align="center" width="100%"/>
                     </imageobject>                    
                     <caption>A solution showing Low Precision cut suppression</caption>
                   </mediaobject>
@@ -10576,7 +10945,7 @@ end</code></screen>
                 <title>Arithmetic crossover example</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/tma_fig7_arithmeticcrossoverex.png"/>
+                    <imagedata fileref="figures/tma_fig7_arithmeticcrossoverex.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -10953,6 +11322,279 @@ end</screen>
         </section>
       </section>
     </chapter>
+    <chapter xml:id="dis_ref">
+      <title>System Documentation for DIS integration</title>
+      <indexterm>
+        <primary>DIS</primary>
+        <secondary>System documentation</secondary>
+      </indexterm>
+      <sect1>
+        <title>Introduction</title>  
+        <para>Debrief is able to integrate with network simulators that adhere to the DIS protocol.  Debrief
+        is able to receive a set of DIS messages (see <xref linkend="dis_messages"></xref>).  Debrief
+          is also able to send StartResume and StopFreeze messages along the link. User support is 
+        provided both in the form of a Debrief tutorial, and here in the user guide (see <xref linkend="dis_support"/>).</para>
+        <sect2>
+          <title>DIS Standard</title>
+          <indexterm>
+            <primary>DIS</primary>
+            <secondary>Protocol version</secondary>
+          </indexterm>          
+          <para>Debrief supports version 6 of the DIS standard (Version 6 - IEEE 1278.1a-1998
+            (amendment to IEEE 1278.1-1995)), as implemented by the Open Source OpenDis project: <uri
+              xlink:href="https://github.com/open-dis/open-dis-java"
+              >https://github.com/open-dis/open-dis-java</uri><code/>. </para>
+          <para>In practice, the version of OpenDis used will be updated to the most recent release each
+            time the code in Debrief&apos; DIS plugin receives maintenance attention.</para>
+        </sect2>
+        <sect2><title>Adding support for further DIS message types</title>
+          <indexterm>
+            <primary>DIS</primary>
+            <secondary>Supporting new message types</secondary>
+          </indexterm>          
+        <para>The following steps should be taken to support new DIS message types:
+            <orderedlist>
+              <listitem>
+                <para>Introduce a new listener interface for the new message (similar to
+                    <code>IDISFireListener)</code></para>
+              </listitem>
+              <listitem>
+                <para>Extend <code>DISModule</code> to allow listeners for the message to be
+                  managed</para>
+              </listitem>
+              <listitem>
+                <para>Extend <code>DISModule</code> to introduce a new handler method for this
+                  message (similar to <code>handleFire</code>)</para>
+              </listitem>
+              <listitem>
+                <para>Extend the <code>logPDU</code> method of <code>DISModule</code> listen for this
+                  message, and pass it to the handler</para>
+              </listitem>
+              <listitem>
+                <para>Introduce a new file listener for the event (like
+                    <code>FireFileListener</code>), and add it to
+                  <code>HeadlessDISLogger</code></para>
+              </listitem>
+              <listitem>
+                <para>Introduce a new Debrief listener for the event (like
+                    <code>DebriefFireListener</code>), and add it to
+                  <code>DISListenerView</code></para>
+              </listitem>
+              <listitem>
+                <para>Extend the list of messages supported (<xref linkend="dis_messages"/></para>
+              </listitem>
+            </orderedlist></para></sect2>
+      </sect1>
+      <sect1 xml:id="dis_command_line">
+        <title>Command line options<indexterm>
+            <primary>DIS</primary>
+            <secondary>Command line paremeters</secondary>
+          </indexterm></title>
+        <para>Some organisations may wish to specify the DIS IP Address &amp; Port values in the
+          command line when starting Debrief.  This allows a parent process/simulator to start
+          Debrief preconfigured with the correcft network parameters.</para>
+        <para>Set these values by using these settings on the command line: <code> -Dport=2345
+            -DipAddress=23.44.55.66</code>. </para>
+      </sect1>
+      <sect1 xml:id="dis_messages">
+        <title>Messages supported</title>
+        <indexterm>
+          <primary>DIS</primary>
+          <secondary>Messages supported</secondary>
+        </indexterm>
+        <para>
+          <table xml:id="dis_messages_list">
+            <title>DIS Messages Supported</title>
+            <tgroup cols="3">
+              <colspec colname="col1" colnum="1" colwidth="1.0*"/>              
+              <colspec colname="col2" colnum="2" colwidth="1.1*"/>
+              <colspec colname="col3" colnum="3" colwidth="2.2*"/>
+              <thead>
+                <row>
+                  <entry>Message</entry>                  
+                  <entry>Fields</entry>
+                  <entry>Representation in Debrief</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>Entity State</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Entity Id</para></listitem>
+                    <listitem><para>Location</para></listitem>
+                    <listitem><para>Orientation</para></listitem>
+                    <listitem><para>Velocity</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Retrieve the vessel name from the <code>Launch</code> message lookup table, create
+                  a track for this fix (if necessary), and add this fix to that track</entry>
+                </row>
+                <row>
+                  <entry>Collision</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Issuing Entity</para></listitem>
+                    <listitem><para>Colliding Entity</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Create a narrative entry for this event, assigned against the Issuing Entity</entry>
+                </row>
+                <row>
+                  <entry>Detonation</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Entity Id</para></listitem>
+                    <listitem><para>Location</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Create both a narrative entry for this event, assigned against the Issuing Entity.
+                  Also create a text label at the relevant location, placed in the <code>Detonations</code> layer</entry>
+                </row>
+                <row>
+                  <entry>Fire</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Firing Entity Id</para></listitem>
+                    <listitem><para>Target Entity Id</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Create both a narrative entry for this event, assigned against the Issuing Entity.
+                    Also create a text label at the relevant location, placed in the <code>WPN Release</code> layer</entry>
+                </row>
+                <row>
+                  <entry>Event Report</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Originator Id</para></listitem>
+                    <listitem><para>Event Type</para></listitem>
+                    <listitem><para>Variable Datums</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>The Event Report PDU is used as a handler for textual content
+                  across a range of simulation events.  See the list of event report types
+                  below (<xref linkend="dis_event_types"/>)</entry>
+                </row>
+                <row>
+                  <entry>Start / Resume</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Time</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Update the Debrief <guilabel>DIS Listener View</guilabel> to acknowledge
+                    that the simulator is running (e.g. enable the <guilabel>Pause</guilabel> and 
+                    <guilabel>Stop</guilabel> buttons</entry>
+                </row>
+                <row>
+                  <entry>Stop / Freeze</entry>
+                  <entry><itemizedlist>
+                    <listitem><para>Time</para></listitem>
+                    <listitem><para>Reason</para></listitem>
+                  </itemizedlist></entry>
+                  <entry>Update the Debrief <guilabel>DIS Listener View</guilabel> to acknowledge
+                    that the simulator has either stopped or paused (by inspecing the value 
+                  of the <code>Reason</code> field)</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+          <table xml:id="dis_event_types">
+            <title>DIS Event Report messages</title>
+            <tgroup cols="5">
+              <colspec colname="col1" colnum="1" colwidth="1.2*"/>              
+              <colspec colname="col2" colnum="2" colwidth="0.7*"/>
+              <colspec colname="col3" colnum="3" colwidth="1.8*"/>
+              <colspec colname="col4" colnum="4" colwidth="1.2*"/>
+              <colspec colname="col5" colnum="5" colwidth="1.8*"/>
+              <thead>
+                <row>
+                  <entry>Type</entry>                  
+                  <entry>Event Type</entry>                  
+                  <entry>Sample</entry>
+                  <entry>Parsing</entry>
+                  <entry>Representation in Debrief</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>Comms</entry>
+                  <entry>10001</entry>
+                  <entry>muteTime=0 txFreq=1804 ....</entry>
+                  <entry>Verbatim</entry>
+                  <entry>Narrative entry</entry>
+                </row>
+                <row>
+                  <entry>Launch</entry>
+                  <entry>10002</entry>
+                  <entry><code>NAME:FF23</code></entry>
+                  <entry>Use colon as delimiter</entry>
+                  <entry>Collate lookup table, to translate EntityId to entity name</entry>
+                </row>
+                <row>
+                  <entry>New TMA Track</entry>
+                  <entry>10003</entry>
+                  <entry>DETECTION E3-3</entry>
+                  <entry>E3-3</entry>
+                  <entry>Collate lookup table, to translate EntityId to entity name</entry>
+                </row>
+                <row>
+                  <entry>Tactics Change</entry>
+                  <entry>10004</entry>
+                  <entry><code>XXXX from YYYY</code></entry>
+                  <entry>Verbatim</entry>
+                  <entry>Narrative entry</entry>
+                </row>
+                <row>
+                  <entry>New TMA Track (where subject is OSAT)</entry>
+                  <entry>10005</entry>
+                  <entry>DETECTION E3-2</entry>
+                  <entry>E3-2</entry>
+                  <entry>Collate lookup table, to translate EntityId to entity name</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+        </para>
+      </sect1>
+      <sect1 xml:id="other_dis_specifics">
+        <title>Other DIS specifics</title>
+        <para>
+          <variablelist>
+            <varlistentry>
+              <term>Kind</term>
+              <listitem>
+                <para>A value of 1 denotes Platform, 2 denotes Munitions (Torpedo symbol), 8 for countermeasures, 101 the
+                  TMA track of interest (OSAT) and 102 other TMA tracks. Periods where a TMA track
+                  is denoted OSAT have fixes highlighted in a lighter shade (orange)</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Domain</term>
+              <listitem>
+                <para>0 for Other (sonar buoys), 3 for Surface (Frigate symbol), 4 for Sub-surface
+                  (submarine symbol), 6 for Torpedo</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Force</term>
+              <listitem>
+                <para>0 for Other (Orange), 1 for Friendly (Blue), 2 for Opposing (Red), 3 for
+                  Neutral (Green)</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Stop Reason</term>
+              <listitem>
+                <para>1 for Freeze (Pause), 2 for Stop (all complete), 7 for Iteration
+                  complete</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Stop PDU Request ID</term>
+              <listitem>
+                <para>The total number of iterations performed</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Start PDU Request ID</term>
+              <listitem>
+                <para>The id number of this iteration</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </sect1>
+    </chapter>
+    
   </part>
   <!-- ********************************************************************** -->
   
@@ -11227,12 +11869,23 @@ range = Range to target from ownship (yds)</markup>
         <glossterm>Dead reckoning</glossterm>
 
         <glossdef>
-          <para>Dead reckoning (DR) is the process of estimating one&apos;s current position based upon a
-            previously determined position, or fix, and advancing that position based upon known or
-            estimated speeds over elapsed time, and course. Debrief plots tracks in DR mode by
-            plotting the positions as a series of course/speed legs from an origin. Debrief plots
+          <para>Dead reckoning (DR) is the process of estimating one&apos;s current position based
+            upon a previously determined position, or fix, and advancing that position based upon
+            known or estimated speeds over elapsed time, and course. Debrief plots tracks in DR mode
+            by plotting the positions as a series of course/speed legs from an origin. Debrief plots
             lats/longs unchanged when in <glossterm linkend="g_OverTheGround">Over the
               Ground</glossterm> mode.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry xml:id="g_DIS">
+        <glossterm>DIS Standard</glossterm>
+
+        <glossdef>
+          <para>Distributed Interactive Simulation (DIS) is an IEEE standard for conducting
+            real-time platform-level wargaming across multiple host computers and is used worldwide,
+            especially by military organizations but also by other agencies such as those involved
+            in space exploration and medicine.</para>
         </glossdef>
       </glossentry>
 
@@ -11247,23 +11900,23 @@ range = Range to target from ownship (yds)</markup>
         </glossdef>
       </glossentry>
 
+      <glossentry xml:id="g_dtg">
+        <glossterm>DTG</glossterm>
+
+        <glossdef>
+          <para>Acronym representing Date Time Group</para>
+        </glossdef>
+      </glossentry>
+
       <glossentry xml:id="g_earth_model">
         <glossterm>Earth Model</glossterm>
 
         <glossdef>
           <para>The Earth Model used by the application is modular and interchangeable. In the
             initial release of the application the calculations use the Rhumb-Line Formulae, as
-            described in &apos;Admiralty Manual of Navigation, Volume 2, 1973&apos;. Short-distance sailing is
-            defined as "the following of a rhumb-line track for a distance not greater than
-            600"</para>
-        </glossdef>
-      </glossentry>
-
-      <glossentry xml:id="g_dtg">
-        <glossterm>DTG</glossterm>
-
-        <glossdef>
-          <para>Acronym representing Date Time Group</para>
+            described in &apos;Admiralty Manual of Navigation, Volume 2, 1973&apos;. Short-distance
+            sailing is defined as "the following of a rhumb-line track for a distance not greater
+            than 600"</para>
         </glossdef>
       </glossentry>
 
@@ -11278,8 +11931,8 @@ range = Range to target from ownship (yds)</markup>
         <glossterm>GitHub</glossterm>
         <glossdef>
           <para><link xlink:href="http://github.com">GitHub.com</link> is a web-site providing a
-            range of software development capabilities.  Its name comes from its use of the
-              <emphasis>Git</emphasis> software version control system.  <emphasis>Git</emphasis>
+            range of software development capabilities. Its name comes from its use of the
+              <emphasis>Git</emphasis> software version control system. <emphasis>Git</emphasis>
             allows multiple developers to work simultaneously on a project, preventing conflicts and
             helping to merge divergent development paths.</para>
         </glossdef>
@@ -11300,7 +11953,8 @@ range = Range to target from ownship (yds)</markup>
 
         <glossdef>
           <para>A collection of objected plotted on the <application>Debrief</application> Plot.
-            Each layer can be switched on and off individually using the Outline View (see <xref linkend="layer_mgr"/>). When written to a plot-file, each layer is stored separately -
+            Each layer can be switched on and off individually using the Outline View (see <xref
+              linkend="layer_mgr"/>). When written to a plot-file, each layer is stored separately -
             making it quite easy to copy individual layers out of a plot-file using a text-editor
             and collating them into a new file. (An example of this would be drawing exercise areas
             into one session, then moving them all into one layer, save the file to disk, copy this
@@ -11315,9 +11969,10 @@ range = Range to target from ownship (yds)</markup>
         <glossdef>
           <para>[Extracts taken from MWC 2000 Flyer]</para>
 
-          <para>Under CinCFleet, the Maritime Warfare Centre (MWC) is a &apos;one-stop shop&apos; for the
-            evolution and dissemination of maritime/joint doctrine and concepts through teaching,
-            tactical development, operational analysis, force development and wargaming.</para>
+          <para>Under CinCFleet, the Maritime Warfare Centre (MWC) is a &apos;one-stop shop&apos;
+            for the evolution and dissemination of maritime/joint doctrine and concepts through
+            teaching, tactical development, operational analysis, force development and
+            wargaming.</para>
 
           <para>It also provides the focus for the development and practice of operational level
             warfighting, planning and decision making.</para>
@@ -11338,19 +11993,18 @@ range = Range to target from ownship (yds)</markup>
             that the message have a DTG attached and that it may be represented in text form.</para>
         </glossdef>
       </glossentry>
-      
+
       <glossentry xml:id="g_ne">
         <glossterm>Natural Earth</glossterm>
-        
+
         <glossdef>
-          <para>In 2015 support for Natural Earth data was added to Debrief. Natural Earth
-            is a public domain, freely available dataset of Vector and Raster data. To support
-            Debrief analysts a customized version of Natural Earth has been produced that is 
-            compliant with the Mercator Projection, and styled suitably for the maritime domain.
-          </para>
+          <para>In 2015 support for Natural Earth data was added to Debrief. Natural Earth is a
+            public domain, freely available dataset of Vector and Raster data. To support Debrief
+            analysts a customized version of Natural Earth has been produced that is compliant with
+            the Mercator Projection, and styled suitably for the maritime domain. </para>
         </glossdef>
       </glossentry>
-      
+
       <glossentry xml:id="g_OverTheGround">
         <glossterm>Over the ground</glossterm>
 
@@ -11415,8 +12069,8 @@ range = Range to target from ownship (yds)</markup>
         <glossterm>Plot</glossterm>
 
         <glossdef>
-          <para>A graphic <emphasis>God&apos;s-eye</emphasis> representation of the current dataset. By
-            default the plot has a black background but this may be altered by the user.</para>
+          <para>A graphic <emphasis>God&apos;s-eye</emphasis> representation of the current dataset.
+            By default the plot has a black background but this may be altered by the user.</para>
         </glossdef>
       </glossentry>
 
@@ -11445,8 +12099,8 @@ range = Range to target from ownship (yds)</markup>
                 <para>The settings of any controls used in Debrief (time on the Tote,
                   primary/secondary tracks, etc)</para>
               </listitem>
-            </itemizedlist> Plot-Files end with an <filename>DPF</filename> suffix and may be viewed in
-              <application>Internet Explorer</application> or edited using
+            </itemizedlist> Plot-Files end with an <filename>DPF</filename> suffix and may be viewed
+            in <application>Internet Explorer</application> or edited using
               <application>Notepad</application>.</para>
         </glossdef>
       </glossentry>
@@ -11597,7 +12251,8 @@ brg = Bearing to target from ownship (degs)
         <glossdef>
           <para>A series of positions recorded for a particular vehicle (ship, submarine, helo,
             etc). A track has its own characteristics such as colour, label and symbol frequency,
-            and the symbol used to represent it when the symbol highlighter is in use (see <xref linkend="symbol_sets"/>).</para>
+            and the symbol used to represent it when the symbol highlighter is in use (see <xref
+              linkend="symbol_sets"/>).</para>
         </glossdef>
       </glossentry>
 
@@ -11620,7 +12275,8 @@ brg = Bearing to target from ownship (degs)
           <para>The Vector Product Format is the format of vectored data which may be viewed by
               <application>Debrief</application>. The main type of VPF data is the Vector Map Level
             0, an unclassified global database which includes coastlines, national borders and depth
-            contours. Its supplier ( <link xlink:href="http://www.nima.mil" xmlns:xlink="http://www.w3.org/1999/xlink">WWW.NIMA.MIL</link>) describes it as:
+            contours. Its supplier ( <link xlink:href="http://www.nima.mil"
+              xmlns:xlink="http://www.w3.org/1999/xlink">WWW.NIMA.MIL</link>) describes it as:
               <quote>The Vector Product Format (VPF) is a standard format, structure, and
               organization for large geographic databases that are based on a georelational data
               model and are intended for direct use. </quote></para>
@@ -11631,7 +12287,8 @@ brg = Bearing to target from ownship (degs)
         <glossterm>XML</glossterm>
 
         <glossdef>
-          <para>The eXtensible Markup Language, as recommend by the World Wide Web consortium.</para>
+          <para>The eXtensible Markup Language, as recommend by the World Wide Web
+            consortium.</para>
         </glossdef>
       </glossentry>
     </glossary>

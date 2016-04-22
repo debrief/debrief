@@ -24,6 +24,8 @@ package Debrief.ReaderWriter.XML;
  */
 
 import Debrief.ReaderWriter.XML.Formatters.CoreFormatHandler;
+import Debrief.ReaderWriter.XML.Formatters.HideLayerFormatHandler;
+import Debrief.ReaderWriter.XML.Formatters.TrackNameAtEndFormatHandler;
 import Debrief.ReaderWriter.XML.Shapes.ArcHandler;
 import Debrief.ReaderWriter.XML.Shapes.CircleHandler;
 import Debrief.ReaderWriter.XML.Shapes.EllipseHandler;
@@ -37,7 +39,10 @@ import Debrief.ReaderWriter.XML.Shapes.VectorHandler;
 import Debrief.ReaderWriter.XML.Shapes.WheelHandler;
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
+import Debrief.Wrappers.Formatters.HideLayerFormatListener;
+import Debrief.Wrappers.Formatters.TrackNameAtEndFormatListener;
 import MWC.GUI.Editable;
+import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
@@ -150,6 +155,20 @@ public class DebriefLayerHandler extends
         addThis(editable);
       }
     });
+    addHandler(new TrackNameAtEndFormatHandler()
+    {
+      public void addFormatter(Editable editable)
+      {
+        addThis(editable);
+      }
+    });
+    addHandler(new HideLayerFormatHandler()
+    {
+      public void addFormatter(Editable editable)
+      {
+        addThis(editable);
+      }
+    });
 
   }
 
@@ -183,9 +202,23 @@ public class DebriefLayerHandler extends
     else
     {
       // special handling, see if it's an item formatter
-      if (nextPlottable instanceof CoreFormatItemListener)
+      if (nextPlottable instanceof INewItemListener)
       {
-        CoreFormatHandler.exportThisPlottable(nextPlottable, eLayer, doc);
+        // ok, which type is it?
+        if (nextPlottable instanceof CoreFormatItemListener)
+        {
+          CoreFormatHandler.exportThisPlottable(nextPlottable, eLayer, doc);
+        }
+        else if (nextPlottable instanceof TrackNameAtEndFormatListener)
+        {
+          TrackNameAtEndFormatHandler.exportThisPlottable(nextPlottable,
+              eLayer, doc);
+        }
+        else if (nextPlottable instanceof HideLayerFormatListener)
+        {
+          HideLayerFormatHandler
+              .exportThisPlottable(nextPlottable, eLayer, doc);
+        }
       }
       else
       {

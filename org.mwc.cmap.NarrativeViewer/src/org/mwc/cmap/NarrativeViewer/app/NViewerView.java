@@ -17,7 +17,6 @@ package org.mwc.cmap.NarrativeViewer.app;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -69,8 +68,8 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
-import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
+import MWC.TacticalData.NarrativeEntry;
 import de.kupzog.ktable.KTableCellDoubleClickAdapter;
 
 public class NViewerView extends ViewPart implements PropertyChangeListener,
@@ -93,7 +92,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   IRollingNarrativeProvider _myRollingNarrative;
 
-  protected INarrativeListener _myRollingNarrListener;
+  final protected INarrativeListener _myRollingNarrListener;
 
   /**
    * whether to clip text to the visible size
@@ -188,6 +187,43 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       }
 
     };
+
+    // check if we have our rolling narrative listener
+    _myRollingNarrListener = new INarrativeListener()
+    {
+
+      private void updated()
+      {
+        if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
+          myViewer.setInput(_myRollingNarrative);
+        else
+          myViewer.setInput(null);
+      }
+
+      public void newEntry(final NarrativeEntry entry)
+      {
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            updated();
+          }
+        });
+      }
+
+      public void entryRemoved(final NarrativeEntry entry)
+      {
+        // update our list...
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            updated();
+          }
+        });
+      }
+    };
+
   }
 
   private boolean internalEquals(Color color1, Color color2)
@@ -475,9 +511,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
 
     if (newNarr != _myRollingNarrative)
+    {
       if (_myRollingNarrative != null)
       {
-
         // clear what's displayed
         myViewer.setInput(null);
 
@@ -486,50 +522,18 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
       }
 
-    // check it has some data
-    final NarrativeEntry[] entries = newNarr.getNarrativeHistory(new String[]
-    {});
+      // ok remember the new provider
+      _myRollingNarrative = newNarr;
 
-    _myRollingNarrative = newNarr;
-    if (entries.length > 0)
+      // ok, register as a listener
+      _myRollingNarrative.addNarrativeListener(
+          IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+      
+      // ok - show the narrative.  We can't rely on
+      // listening to the rolling narrative, since we 
+      // may be switching back to a previous plot.
       myViewer.setInput(_myRollingNarrative);
-    else
-      myViewer.setInput(null);
-
-    // check if we have our rolling narrative listener
-    if (_myRollingNarrListener == null)
-    {
-      _myRollingNarrListener = new INarrativeListener()
-      {
-        public void newEntry(final NarrativeEntry entry)
-        {
-          Display.getDefault().asyncExec(new Runnable()
-          {
-            public void run()
-            {
-              // ok, sort it - get the view to refresh itself
-              setInput(_myRollingNarrative);
-            }
-          });
-        }
-
-        public void entryRemoved(final NarrativeEntry entry)
-        {
-          // update our list...
-          Display.getDefault().asyncExec(new Runnable()
-          {
-            public void run()
-            {
-              // ok, sort it - get the view to refresh itself
-              setInput(_myRollingNarrative);
-            }
-          });
-        }
-      };
     }
-    // and start listening to it..
-    _myRollingNarrative.addNarrativeListener(
-        IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
   }
 
   /**
@@ -612,6 +616,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
               refreshColors();
               _myLayers.addDataModifiedListener(_layerListener);
               _myLayers.addDataReformattedListener(_layerListener);
+              _myLayers.addDataExtendedListener(_layerListener);
             }
           }
 
@@ -760,6 +765,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     {
       _myLayers.removeDataModifiedListener(_layerListener);
       _myLayers.removeDataReformattedListener(_layerListener);
+      _myLayers.removeDataExtendedListener(_layerListener);
       _myLayers = null;
     }
   }
@@ -821,34 +827,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
     res.append(_myFormat.format(theTime));
 
-    final DecimalFormat microsFormat = new DecimalFormat("000000");
-    final DecimalFormat millisFormat = new DecimalFormat("000");
-
-    // do we have micros?
-    if (micros % 1000 > 0)
-    {
-      // yes
-      res.append(".");
-      res.append(microsFormat.format(micros % 1000000));
-    }
-    else
-    {
-      // do we have millis?
-      if (micros % 1000000 > 0)
-      {
-        // yes, convert the value to millis
-
-        final long millis = micros = (micros % 1000000) / 1000;
-
-        res.append(".");
-        res.append(millisFormat.format(millis));
-      }
-      else
-      {
-        // just use the normal output
-      }
-    }
-
     return res.toString();
   }
 
@@ -904,12 +882,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
     if (_followTime.isChecked())
     {
-      if (_amUpdating)
-      {
-        // don't worry, we'll be finished soon
-        System.err.println("already doing update");
-      }
-      else
+      if (!_amUpdating)
       {
         // ok, remember that we're updating
         _amUpdating = true;
@@ -924,6 +897,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             {
               // ok, tell the model to move to the relevant item
               myViewer.setDTG(dtg);
+              
+              // clear the updating lock
+              _amUpdating = false;
             }
           });
         }

@@ -33,6 +33,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 {
 
 	public static final String DTG = "DTG";
+	public static final Color DEFAULT_COLOR = new Color(178,0,0);
 
 	// ///////////////////////////////////////////
 	// member variables
@@ -45,7 +46,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 
 	private transient NarrativeEntryInfo _myInfo;
 
-	private Color _color = Color.DARK_GRAY;
+	private Color _color = DEFAULT_COLOR;
 
 	/**
      * 
@@ -164,17 +165,56 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 		return _color;
 	}
 
-	/**
-	 * member function to meet requirements of comparable interface *
-	 */
-	public final int compareTo(final Plottable o)
-	{
-		final NarrativeEntry other = (NarrativeEntry) o;
-		int result = _DTG.compareTo(other._DTG);
-		if (result == 0)
-			result = 1;
-		return result;
-	}
+  // primarily by name, secondarily by value; null-safe; case-insensitive
+  public int compareTo(final String myStr, final String other)
+  {
+    int result = nullSafeStringComparator(myStr, other);
+    if (result != 0)
+    {
+      return result;
+    }
+
+    return nullSafeStringComparator(myStr, other);
+  }
+
+  public static int
+      nullSafeStringComparator(final String one, final String two)
+  {
+    if (one == null ^ two == null)
+    {
+      return (one == null) ? -1 : 1;
+    }
+
+    if (one == null && two == null)
+    {
+      return 0;
+    }
+
+    return one.compareToIgnoreCase(two);
+  }
+
+  /**
+   * member function to meet requirements of comparable interface *
+   */
+  public final int compareTo(final Plottable o)
+  {
+    final NarrativeEntry other = (NarrativeEntry) o;
+    int result = _DTG.compareTo(other._DTG);
+    if (result == 0)
+    {
+      result = compareTo(getTrackName(), other.getTrackName());
+    }
+    if (result == 0)
+    {
+      result = compareTo(getType(), other.getType());
+    }
+    if (result == 0)
+    {
+      result = compareTo(getEntry(), other.getEntry());
+    }
+    return result;
+  }
+
 
 	// ///////////////////////////////////////////
 	// member methods to meet requirements of Plottable interface
@@ -262,7 +302,13 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
             return true;
         if (!(obj instanceof NarrativeEntry))
             return false;
-        return super.equals(obj);
+        
+        NarrativeEntry other = (NarrativeEntry) obj;
+        return (other.getSource().equals(getSource())) &&
+               (other.getType().equals(getType())) &&
+               (other.getDTG().equals(getDTG())) &&
+               (other.getEntry().equals(getEntry()));
+        
 	}
 
 

@@ -63,6 +63,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -399,10 +400,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
           else
           {
-            CorePlugin.logError(Status.ERROR,
+            CorePlugin.logError(Status.WARNING,
                 "data source for PlotEditor not of expected type:" + input,
                 null);
-            System.err.println("Not expected file type:" + input);
+            setPartName(input.toString());
           }
         }
       }
@@ -532,6 +533,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     // lastly, set the title (if we have one)
     this.setPartName(input.getName());
+    
+    // hmm, does this input have an icon?
+    ImageDescriptor icon = input.getImageDescriptor();
+    if (icon != null)
+    {
+      this.setTitleImage(icon.createImage());
+    }
   }
 
   /**

@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.plotViewer.editors;
 
+import interfaces.INameablePart;
+
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -72,6 +74,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
@@ -125,7 +128,8 @@ import MWC.GenericData.WorldLocation;
 
 public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
-		IChartBasedEditor, IUndoable
+		IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider,
+		INameablePart
 {
 
 	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
@@ -836,12 +840,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 				});
 	}
 
+  @SuppressWarnings("unused")
 	private void listenForSelectionChange()
 	{
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(final String type, final Object part,
+          public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
 						final ISelectionProvider iS = (ISelectionProvider) part;
@@ -1035,8 +1040,34 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{
 		System.out.println("Files dropped");
 	}
+	
+	
 
-	public void setFocus()
+  @Override
+  public void setName(final String name)
+  {
+    final Runnable runner = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        setPartName(name);
+      }
+    };
+    
+    // are we in the display thread?
+    if (Display.getCurrent() == null)
+    {
+      // no - do update in correct thread
+      Display.getDefault().asyncExec(runner);
+    }
+    else
+    {
+      runner.run();
+    }
+  }
+
+  public void setFocus()
 	{
 		// just put some kind of blank object into the properties window
 		// putBackdropIntoProperties();
@@ -1058,25 +1089,41 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{ "rawtypes" })
 	public Object getAdapter(final Class adapter)
 	{
-		Object res = null;
+		final Object res;
 
-		// so, is he looking for the layers?
-		if (adapter == CorePlotEditor.class)
-		{
-			res = this;
-		}
-		else if (adapter == ISelectionProvider.class)
-		{
-			res = this;
-		}
-		else if (adapter == IControllableViewport.class)
-		{
-			res = this;
-		}
-		else if (adapter == CanvasType.class)
-		{
-			res = _myChart.getCanvas();
-		}
+    // so, is he looking for the layers?
+    if (adapter == CorePlotEditor.class)
+    {
+      res = this;
+    }
+    else if (adapter == ISelectionProvider.class)
+    {
+      res = this;
+    }
+    else if (adapter == IControllableViewport.class)
+    {
+      res = this;
+    }
+    else if (adapter == CanvasType.class)
+    {
+      res = _myChart.getCanvas();
+    }
+    else if (adapter == CanvasType.ScreenUpdateProvider.class)
+    {
+      res = this;
+    }
+    else if (IEditorPart.class.equals(adapter))
+    {
+      res = this;
+    }
+    else if (adapter == INameablePart.class)
+    {
+      res = this;
+    }
+    else
+    {
+      res = null;
+    }
 
 		return res;
 	}
@@ -1149,6 +1196,34 @@ public abstract class CorePlotEditor extends EditorPart implements
 		if (!_selectionListeners.contains(listener))
 			_selectionListeners.add(listener);
 	}
+
+
+	/** let someone listen to screen updates
+	 * 
+	 * @param listener
+	 */
+	@Override
+  public void addScreenUpdateListener(SWTCanvas.ScreenUpdateListener listener)
+  {
+    if (getChart() != null)
+    {
+      getChart().getSWTCanvas().addScreenUpdateListener(listener);
+    }
+  }
+
+
+  /** let someone listen to screen updates
+   * 
+   * @param listener
+   */
+  @Override
+  public void removeScreenUpdateListener(SWTCanvas.ScreenUpdateListener listener)
+  {
+    if (getChart() != null)
+    {
+      getChart().getSWTCanvas().removeScreenUpdateListener(listener);
+    }
+  }
 
 	/**
 	 * Returns the ActionbarContributor for the Editor. ISelectionChangedListener

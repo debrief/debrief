@@ -1,0 +1,4 @@
+// params as follows:
+// IP address, Port Id, network mode, 
+// time interval, num participants, num scenario cycles
+239.1.2.3 62040 multicast 1000 12 15

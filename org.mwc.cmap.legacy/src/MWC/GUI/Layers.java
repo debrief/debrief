@@ -367,10 +367,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
     _newItemListeners = new ArrayList<INewItemListener>();
   }
 
-  /**
-   * get the bounds of this set of layers (return our SPECIAL area in absence of bounds)
-   */
-  public WorldArea getBounds()
+  public WorldArea getRawBounds()
   {
     WorldArea res = null;
 
@@ -388,6 +385,16 @@ public class Layers implements Serializable, Plottable, PlottablesType
       }
     }
 
+    return res;
+  }
+  
+  /**
+   * get the bounds of this set of layers (return our SPECIAL area in absence of bounds)
+   */
+  public WorldArea getBounds()
+  {
+    WorldArea res = getRawBounds();
+    
     // did we find anything?
     if (res == null)
     {
@@ -1091,7 +1098,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
    * @author ian
    * 
    */
-  public interface INewItemListener
+  public interface INewItemListener extends ExcludeFromRightClickEdit
   {
     /**
      * a new layer, or a new item has been added
@@ -1103,6 +1110,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
      * @param theSymbology 
      */
     void newItem(Layer parent, Editable item, String theSymbology);
+    
+    /** the data has been reloaded, forget any existing state
+     * 
+     */
+    void reset();
   }
 
   /**

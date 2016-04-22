@@ -31,6 +31,12 @@ public interface IRollingNarrativeProvider
 	 */
 	public final String ALL_CATS = "ALL";	
 	
+	/** how many entries do we have?
+	 * 
+	 * @return
+	 */
+	public int size();
+	
 	/** add a narrative listener
 	 * 
 	 * @param categories

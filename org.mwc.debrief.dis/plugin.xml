@@ -6,21 +6,61 @@
 		point="org.eclipse.ui.preferencePages">
         <page
         	category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
-        	class="org.mwc.debrief.dis.preferences.DisPrefs"
+        	class="org.mwc.debrief.dis.ui.preferences.DisPrefs"
             id="org.mwc.debrief.dis.preferences.DisPrefs"
             name="DIS Preferences">
         </page>
     </extension>
     
+	<extension
+         point="org.eclipse.core.runtime.preferences">
+         <scope name="DIS Preferences" class="org.mwc.debrief.dis.ui.preferences.DisPrefs"/>
+      <initializer
+            class="org.mwc.debrief.dis.ui.preferences.DisPrefsInitialiser">
+      </initializer>
+  	</extension>    
+    
     <extension
          point="org.eclipse.ui.views">
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.debrief.dis.views.DisListenerView"
-            icon="icons/document_chart.png"
+            class="org.mwc.debrief.dis.ui.views.DisListenerView"
+            icon="icons/16px/dis_icon.png"
             id="org.mwc.debrief.dis.views.DisListenerView"
-            name="DIS Listener" restorable="false">
+            name="DIS Listener" restorable="true">
       </view>
    </extension>
+    
+    <extension
+          point="org.eclipse.ui.menus">
+       <menuContribution
+             allPopups="true"
+             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="org.mwc.debrief.dis.runinsimulator"
+               icon="icons/16px/dis_icon.png"
+               label="Run In Simulator"
+               style="push"
+               tooltip="Run In Simulator">
+               <visibleWhen checkEnabled="false">
+				<with variable="activeMenuSelection">
+					<iterate ifEmpty="false">
+						<adapt type="org.eclipse.core.resources.IResource">
+						<test property="org.eclipse.core.resources.extension" value="inp" />
+						</adapt>
+					</iterate>
+				</with>
+				</visibleWhen>
+         </command>
+       </menuContribution>
+    </extension>
+    <extension
+          point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.debrief.dis.action.DISRunInSimulatorHandler"
+             id="org.mwc.debrief.dis.runinsimulator"
+             name="Run In Simulator">
+       </command>
+    </extension>    
     
 </plugin>

@@ -374,16 +374,26 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			}
 		}
 
-		// check we have found a valid area
-		if (theArea != null)
-		{
-			// so, we now have the data area for everything which
-			// wants to plot to it, give it to the projection
-			_theProjection.setDataArea(theArea);
+    // check we have found a valid area
+    if (theArea != null)
+    {
+      // what's the width in degs?
+      double wid = theArea.getWidth();
 
-			// get the projection to refit-itself
-		//	_theProjection.zoom(0.0);
-		}
+      // get the border for this projection
+      double border = _theProjection.getDataBorder();
+      if (border >= 1)
+      {
+        border = border - 1d;
+      }
+
+      // add a border
+      theArea.grow(wid * border, 0);
+
+      // so, we now have the data area for everything which
+      // wants to plot to it, give it to the projection
+      _theProjection.setDataArea(theArea);
+    }
 
 	}
 

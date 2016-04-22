@@ -203,17 +203,26 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 		return new GDataInfo(this);
 	}
 
-	@Override
-	public int compareTo(final Plottable o)
-	{
-		if (o instanceof GDataItem)
-		{
-			final GDataItem other = (GDataItem) o;
-			return this.getTime().compareTo(other.getTime());
-		}
-		else
-			return 0;
-	}
+  @Override
+  public int compareTo(final Plottable o)
+  {
+    int res = 0;
+    if (o instanceof GDataItem)
+    {
+      final GDataItem other = (GDataItem) o;
+      res = this.getTime().compareTo(other.getTime());
+    }
+    
+    // have we sorted? 
+    if (res == 0)
+    {
+      // nope, try the hashcode, as a fallback
+      res = Integer.compare(this.hashCode(), o.hashCode());
+    }
+
+    return res;
+  }
+
 
 	public HiResDate getTime()
 	{

@@ -152,12 +152,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import junit.framework.Assert;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
@@ -179,7 +178,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * the actual list of plottables
 	 */
 	// private TreeSet<Editable> _thePlottables;
-	private final SortedSet<Editable> _thePlottables;
+	private final ConcurrentSkipListSet<Editable> _thePlottables;
 
 	// protected com.sun.java.util.collections.Hashset _thePlottables;
 	/**
@@ -202,8 +201,9 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	// //////////////////////////////////////////////////////////////
 	public Plottables()
 	{
-		_thePlottables = Collections.synchronizedSortedSet(new TreeSet<Editable>(
-				new CompareEditables()));
+		_thePlottables = new ConcurrentSkipListSet<>(new CompareEditables());
+//		Collections.synchronizedSortedSet(new TreeSet<Editable>(
+//				new CompareEditables()));
 		_visible = true;
 	}
 
@@ -574,19 +574,17 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	public int compareTo(final Plottable arg0)
 	{
 		final Plottable other = (Plottable) arg0;
-		return getName().compareTo(other.getName());
 
-		// final int res;
-		// Plottable other = (Plottable) arg0;
-		// int myCode = hashCode();
-		// int otherCode = other.hashCode();
-		// if(myCode < otherCode)
-		// res = -1;
-		// else if(myCode > otherCode)
-		// res = 1;
-		// else
-		// res = 0;
-		// return res;
+		// start by comparing name
+		int res = getName().compareTo(other.getName());
+		
+		// use hashcode as fallback
+		if(res == 0)
+		{
+		  res = Integer.compare(this.hashCode(), other.hashCode());
+		}
+		
+		return res;
 	}
 
 	/**
