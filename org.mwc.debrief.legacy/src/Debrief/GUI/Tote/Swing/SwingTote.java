@@ -193,6 +193,7 @@ import javax.swing.*;
 import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
 import MWC.GenericData.HiResDate;
@@ -508,7 +509,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
 
     public calcHolder(final toteCalculation calc, final String name)
     {
-      setForeground(java.awt.Color.black);
+      setForeground(DebriefColors.BLACK);
       _myCalc = calc;
       _myName = name;
       setText("---");

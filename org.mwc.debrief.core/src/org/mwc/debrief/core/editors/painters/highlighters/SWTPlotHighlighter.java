@@ -158,58 +158,82 @@ public interface SWTPlotHighlighter extends Editable {
 				// plot the rectangle
 				dest.drawRect(x, y, wid, ht);
 
-				// just see if we've got sensor data, so we can plot the array
-				// centre
-        if (watch instanceof FixWrapper) {
-          FixWrapper fw = (FixWrapper) watch;
-          TrackWrapper tw = fw.getTrackWrapper();
-          
-          if(tw != null && tw.getPlotArrayCentre())
-          {
-
-						final Enumeration<Editable> enumer = tw.getSensors()
-								.elements();
-						while (enumer.hasMoreElements()) {
-							final SensorWrapper sw = (SensorWrapper) enumer
-									.nextElement();
-
-							// is this sensor visible?
-							if (sw.getVisible()) {
-								final ArrayLength len = sw.getSensorOffset();
-								if (len != null) {
-									if (len.getValue() != 0) {
-										final WorldLocation centre = tw
-												.getBacktraceTo(fw.getTime(),
-														len, sw.getWormInHole()).getLocation();
-										final Point pt = dest.toScreen(centre);
-										dest.drawLine(pt.x - _mySize, pt.y
-												- _mySize, pt.x + _mySize, pt.y
-												+ _mySize);
-										dest.drawLine(pt.x + _mySize, pt.y
-												- _mySize, pt.x - _mySize, pt.y
-												+ _mySize);
-
-										// store the new screen update area
-										thisR = new Rectangle(pt.x - _mySize,
-												pt.y - _mySize, _mySize,
-												_mySize);
-										_areaCovered.add(thisR);
-										thisR = new Rectangle(pt.x + _mySize,
-												pt.y - _mySize, _mySize,
-												_mySize);
-										_areaCovered.add(thisR);
-									}
-								}
-							}
-						}
-					}
-				}
+				// and the array centre
+				plotArrayCentre(dest, watch, _areaCovered, _mySize);
 
 			} catch (final IllegalStateException e) {
 				MWC.Utilities.Errors.Trace.trace(e);
 			}
 
 		}
+
+    protected static void plotArrayCentre(final CanvasType dest,
+        MWC.GenericData.Watchable watch, Rectangle areaCovered, int mySize)
+    {
+      java.awt.Rectangle thisR;
+      java.awt.Color sensorColor = null;
+      // just see if we've got sensor data, so we can plot the array
+      // centre
+      if (watch instanceof FixWrapper) {
+        FixWrapper fw = (FixWrapper) watch;
+        TrackWrapper tw = fw.getTrackWrapper();
+        
+        if(tw != null && tw.getPlotArrayCentre())
+        {
+
+      		final Enumeration<Editable> enumer = tw.getSensors()
+      				.elements();
+      		while (enumer.hasMoreElements()) {
+      			final SensorWrapper sw = (SensorWrapper) enumer
+      					.nextElement();
+
+      			// is this sensor visible?
+      			if (sw.getVisible()) {
+      				final ArrayLength len = sw.getSensorOffset();
+      				if (len != null) {
+      					if (len.getValue() != 0) {
+      					  
+      					  // ok, use a lighter color
+      					  if(sensorColor == null)
+      					  {
+      					    sensorColor = fw.getColor().brighter();
+      					    dest.setColor(sensorColor);
+      					  }
+      					  
+      						final WorldLocation centre = tw
+      								.getBacktraceTo(fw.getTime(),
+      										len, sw.getWormInHole()).getLocation();
+      						final Point pt = dest.toScreen(centre);
+      						dest.drawLine(pt.x - mySize, pt.y
+      								- mySize, pt.x + mySize, pt.y
+      								+ mySize);
+      						dest.drawLine(pt.x + mySize, pt.y
+      								- mySize, pt.x - mySize, pt.y
+      								+ mySize);
+
+      						// store the new screen update area
+      						thisR = new Rectangle(pt.x - mySize,
+      								pt.y - mySize, mySize,
+      								mySize);
+      						if(areaCovered != null)
+                  {
+                    areaCovered.add(thisR);
+                  }
+      						
+      						thisR = new Rectangle(pt.x + mySize,
+      								pt.y - mySize, mySize,
+      								mySize);
+                  if(areaCovered != null)
+                  {
+                    areaCovered.add(thisR);
+                  }
+      					}
+      				}
+      			}
+      		}
+      	}
+      }
+    }
 
 		/**
 		 * the name of this object

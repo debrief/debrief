@@ -96,6 +96,7 @@ import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldLocation;
 
 /** base class for our symbols
@@ -127,7 +128,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
   // member functions
   ////////////////////////////////////////////////////////////
   public PlainSymbol(){
-    _theCol = java.awt.Color.cyan;
+    _theCol = DebriefColors.CYAN;
     _theScaleVal = 1.0;
     _fillMe = false;
   }

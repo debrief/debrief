@@ -19,6 +19,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.Clip.WindowsClipboard;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 
@@ -78,7 +79,7 @@ public class WriteClipboard extends PlainTool
     
     
     // sort out the background colour
-    wc.setBackgroundColor(java.awt.Color.white);
+    wc.setBackgroundColor(DebriefColors.WHITE);
     
     // ask the canvas to paint the image
     final MWC.GUI.Canvas.Swing.SwingCanvas sc = (MWC.GUI.Canvas.Swing.SwingCanvas)_theChart.getCanvas();
