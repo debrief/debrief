@@ -398,13 +398,13 @@ public class DynamicInfillSegment extends TrackSegment
 	 */
 	public void reconstruct()
 	{
+    // check we know our data
+    if(_before == null || _after == null)
+      return;
+
 		// ok, clear ourselves out
 		this.removeAllElements();
 		
-		// check we know our data
-		if(_before == null || _after == null)
-		  return;
-
 		// now the num to use
 		final int oneUse = Math.min(2, _before.size());
 		final int twoUse = Math.min(3, _after.size());

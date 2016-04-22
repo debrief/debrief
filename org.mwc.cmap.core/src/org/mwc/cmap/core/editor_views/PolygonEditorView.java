@@ -35,6 +35,7 @@ import org.mwc.cmap.core.property_support.LatLongHelper.LatLongPropertySource;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.CanvasType.PaintListener;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.*;
 
 public class PolygonEditorView extends ViewPart implements ISelectionProvider,
@@ -380,7 +381,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	{
 		// ok - draw the polygon
 		int counter = 2;
-		dest.setColor(java.awt.Color.gray);
+		dest.setColor(DebriefColors.GRAY);
 		final Collection<WorldLocation> pts = _myPath.getPoints();
 		Point lastP = null;
 		Point startP = null;

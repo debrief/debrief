@@ -66,6 +66,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DebriefColors;
 
 public class FeaturePainter implements Plottable, Serializable, ExcludeFromRightClickEdit
 {
@@ -77,7 +78,7 @@ public class FeaturePainter implements Plottable, Serializable, ExcludeFromRight
 	private final String _featureType;
   private final String _description;
   private boolean _isOn = false;
-  private java.awt.Color _myColor = java.awt.Color.white;
+  private java.awt.Color _myColor = DebriefColors.WHITE;
   /** our editor
    */
   transient private Editable.EditorType _myEditor;

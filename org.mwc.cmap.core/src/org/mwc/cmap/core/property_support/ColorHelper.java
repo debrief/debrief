@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 
+import MWC.GUI.Properties.DebriefColors;
+
 public class ColorHelper extends EditorHelper
 {
 	// Control _parentControl;
@@ -92,7 +94,7 @@ public class ColorHelper extends EditorHelper
 
 		java.awt.Color theColor = javaCol;
 		// hmm, we're having trouble with white. is this white?
-		if (theColor.equals(java.awt.Color.WHITE))
+		if (theColor.equals(DebriefColors.WHITE))
 		{
 			// right - switch White to off-white. For some reason SWT won't plot white
 			theColor = OFF_WHITE;

@@ -223,10 +223,10 @@ public class MaintainContributionsView extends ViewPart
 	private Chart performanceChart;
 
 	private final java.awt.Color[] defaultColors = new java.awt.Color[] {
-			java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
-			java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
-			java.awt.Color.darkGray, java.awt.Color.orange, java.awt.Color.pink,
-			java.awt.Color.lightGray };
+			  MWC.GUI.Properties.DebriefColors.RED,  MWC.GUI.Properties.DebriefColors.GREEN,   MWC.GUI.Properties.DebriefColors.YELLOW,
+			  MWC.GUI.Properties.DebriefColors.BLUE,  MWC.GUI.Properties.DebriefColors.CYAN,  MWC.GUI.Properties.DebriefColors.MAGENTA,
+			 MWC.GUI.Properties.DebriefColors.DARK_GRAY,  MWC.GUI.Properties.DebriefColors.ORANGE,  MWC.GUI.Properties.DebriefColors.PINK,
+			 MWC.GUI.Properties.DebriefColors.LIGHT_GRAY };
 	private XYPlot legPlot;
 	private Composite legGraphComposite;
 	private PropertyChangeListener _legListener;
@@ -693,23 +693,23 @@ public class MaintainContributionsView extends ViewPart
 		final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
 
-		legPlot.setBackgroundPaint(java.awt.Color.WHITE);
-		legPlot.setRangeGridlinePaint(java.awt.Color.LIGHT_GRAY);
-		legPlot.setDomainGridlinePaint(java.awt.Color.LIGHT_GRAY);
+		legPlot.setBackgroundPaint( MWC.GUI.Properties.DebriefColors.WHITE);
+		legPlot.setRangeGridlinePaint( MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
+		legPlot.setDomainGridlinePaint( MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
 
 		// format the cross hairs, when they're clicked
 		legPlot.setDomainCrosshairVisible(true);
 		legPlot.setRangeCrosshairVisible(true);
-		legPlot.setDomainCrosshairPaint(java.awt.Color.GRAY);
-		legPlot.setRangeCrosshairPaint(java.awt.Color.GRAY);
+		legPlot.setDomainCrosshairPaint( MWC.GUI.Properties.DebriefColors.GRAY);
+		legPlot.setRangeCrosshairPaint( MWC.GUI.Properties.DebriefColors.GRAY);
 		legPlot.setDomainCrosshairStroke(new BasicStroke(1));
 		legPlot.setRangeCrosshairStroke(new BasicStroke(1));
 
 		// and the plot object to display the cross hair value
 		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
 		annot.setTextAnchor(TextAnchor.TOP_LEFT);
-		annot.setPaint(java.awt.Color.black);
-		annot.setBackgroundPaint(java.awt.Color.white);
+		annot.setPaint( MWC.GUI.Properties.DebriefColors.BLACK);
+		annot.setBackgroundPaint( MWC.GUI.Properties.DebriefColors.WHITE);
 		legPlot.addAnnotation(annot);
 
 		legChart.addProgressListener(new ChartProgressListener()
@@ -1431,8 +1431,8 @@ public class MaintainContributionsView extends ViewPart
 		if (showOSCourse != null)
 			showCourses = showOSCourse.getSelection();
 
-		java.awt.Color courseCol = java.awt.Color.blue.darker().darker();
-		java.awt.Color speedCol = java.awt.Color.blue.brighter().brighter();
+		java.awt.Color courseCol =   MWC.GUI.Properties.DebriefColors.BLUE.darker().darker();
+		java.awt.Color speedCol =   MWC.GUI.Properties.DebriefColors.BLUE.brighter().brighter();
 
 		// ok, now loop through and set them
 		long startTime = Long.MAX_VALUE;
@@ -1613,7 +1613,7 @@ public class MaintainContributionsView extends ViewPart
 				true, true);
 		lineRenderer1.setSeriesPaint(1, courseCol);
 		lineRenderer1.setSeriesShape(1, ShapeUtilities.createDiamond(0.1f));
-		lineRenderer1.setSeriesPaint(0, java.awt.Color.RED);
+		lineRenderer1.setSeriesPaint(0,   MWC.GUI.Properties.DebriefColors.RED);
 		lineRenderer1.setSeriesShape(0, ShapeUtilities.createDiamond(2f));
 
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(

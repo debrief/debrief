@@ -38,14 +38,40 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	 * 
 	 * @return the returned java.awt.Dimension
 	 */
-	public java.awt.Dimension getBounds()
-	{
-		// sort out the size of the symbol at the current scale factor
-		final java.awt.Dimension res = new java.awt.Dimension(
-				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
-		return res;
-	}
+	 final public java.awt.Dimension getBounds()
+	  {
+	    // track the largest dimension
+	     double maxDim = -1;
 
+	    // get the dims from the coords
+	    Vector<double[][]> coords = getMyCoords();
+
+	    // start looping through the lines - to paint them
+	    final Iterator<double[][]> iter = coords.iterator();
+	    while (iter.hasNext())
+	    {
+	      final double[][] thisLine = iter.next();
+	      // now loop through the points
+	      for (int i = 0; i < thisLine.length; i++)
+	      {
+	        // ok, get this point
+	        double thisX = Math.abs(thisLine[i][0]);
+	        double thisY = Math.abs(thisLine[i][1]);
+
+	        maxDim = Math.max(maxDim, thisX);
+	        maxDim = Math.max(maxDim, thisY);
+	      }
+	    }     
+	    
+	    // sort out the size of the symbol at the current scale factor
+	    final java.awt.Dimension res = new java.awt.Dimension(
+	        (int) (maxDim * 2* getScaleVal()), (int)(maxDim * 2* getScaleVal()));
+
+	    return res;
+	  }
+
+
+	
 	/**
 	 * paint - ignoring the current direction
 	 * 
@@ -65,7 +91,7 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	 * 
 	 * @return
 	 */
-	private Vector<double[][]> getMyCoords()
+	protected Vector<double[][]> getMyCoords()
 	{
 		if (_myCoords == null)
 			_myCoords = getCoords();

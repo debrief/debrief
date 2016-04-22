@@ -1000,7 +1000,7 @@ public final class ReformatFixes implements FilterOperation
     {
       System.out.println("test 2");
       final Debrief.Wrappers.TrackWrapper tw = new Debrief.Wrappers.TrackWrapper();
-      tw.setColor(java.awt.Color.red);
+      tw.setColor(DebriefColors.RED);
       tw.setName("scrap track");
 
       final Editable.EditorType et = tw.getInfo();
@@ -1041,7 +1041,7 @@ public final class ReformatFixes implements FilterOperation
 
       // ok, start with a track
       final Debrief.Wrappers.TrackWrapper tw = new Debrief.Wrappers.TrackWrapper();
-      tw.setColor(java.awt.Color.red);
+      tw.setColor(DebriefColors.RED);
       res.add(tw);
 
       if(num < 2)
@@ -1049,8 +1049,8 @@ public final class ReformatFixes implements FilterOperation
 
       // and another...
       final Debrief.Wrappers.TrackWrapper tw2 = new Debrief.Wrappers.TrackWrapper();
-      tw2.setColor(java.awt.Color.red);
-      tw2.setTrackColor(java.awt.Color.green);
+      tw2.setColor(  MWC.GUI.Properties.DebriefColors.RED);
+      tw2.setTrackColor( MWC.GUI.Properties.DebriefColors.GREEN);
       res.add(tw2);
 
       if(num < 3)
@@ -1059,14 +1059,14 @@ public final class ReformatFixes implements FilterOperation
       // and a shape
       final MWC.GenericData.WorldLocation theLocation = new MWC.GenericData.WorldLocation(0, 1, 1d);
       final MWC.GUI.Shapes.PlainShape theShape = new MWC.GUI.Shapes.CircleShape(theLocation, 0.03d);
-      final Debrief.Wrappers.ShapeWrapper sw = new Debrief.Wrappers.ShapeWrapper("bingo", theShape, java.awt.Color.red, null);
+      final Debrief.Wrappers.ShapeWrapper sw = new Debrief.Wrappers.ShapeWrapper("bingo", theShape,   MWC.GUI.Properties.DebriefColors.RED, null);
       res.add(sw);
 
       if(num < 4)
         return res;
 
       // and a label
-      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("here", theLocation, java.awt.Color.red);
+      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("here", theLocation,   MWC.GUI.Properties.DebriefColors.RED);
       res.add(lw);
 
       if(num < 5)
@@ -1104,14 +1104,14 @@ public final class ReformatFixes implements FilterOperation
 
     public void testMatchingAnnotations()
     {
-      final LabelWrapper lw = new LabelWrapper("first label", null, java.awt.Color.blue);
+      final LabelWrapper lw = new LabelWrapper("first label", null,   MWC.GUI.Properties.DebriefColors.BLUE);
 
       final WorldLocation loc = new WorldLocation(0d,0d,0d);
       final PlainShape ps = new CircleShape(loc, 12d);
-      final ShapeWrapper sw = new ShapeWrapper("first shape", ps, java.awt.Color.blue, null);
+      final ShapeWrapper sw = new ShapeWrapper("first shape", ps,   MWC.GUI.Properties.DebriefColors.BLUE, null);
 
       final TrackWrapper tw = new TrackWrapper();
-      tw.setColor(java.awt.Color.blue);
+      tw.setColor(  MWC.GUI.Properties.DebriefColors.BLUE);
       final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(5,0), loc, 0d, 0d));
       final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(7,0), loc, 0d, 0d));
       final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(9,0), loc, 0d, 0d));
@@ -1125,18 +1125,18 @@ public final class ReformatFixes implements FilterOperation
       fw1.setTrackWrapper(tw);
       fw2.setTrackWrapper(tw);
       fw3.setTrackWrapper(tw);
-      fw1.setColor(java.awt.Color.blue);
-      fw2.setColor(java.awt.Color.blue);
-      fw3.setColor(java.awt.Color.blue);
+      fw1.setColor(  MWC.GUI.Properties.DebriefColors.BLUE);
+      fw2.setColor(  MWC.GUI.Properties.DebriefColors.BLUE);
+      fw3.setColor(  MWC.GUI.Properties.DebriefColors.BLUE);
 
       // check they're visible
       assertTrue("label is visible", lw.getVisible());
       assertTrue("shape is visible", sw.getVisible());
       assertTrue("track wrapper is visible", tw.getVisible());
 
-      assertEquals("track is blue", java.awt.Color.blue, tw.getColor());
-      assertEquals("label is blue", java.awt.Color.blue, lw.getColor());
-      assertEquals("shape is blue", java.awt.Color.blue, sw.getColor());
+      assertEquals("track is blue",   MWC.GUI.Properties.DebriefColors.BLUE, tw.getColor());
+      assertEquals("label is blue",   MWC.GUI.Properties.DebriefColors.BLUE, lw.getColor());
+      assertEquals("shape is blue",   MWC.GUI.Properties.DebriefColors.BLUE, sw.getColor());
 
       final Vector<WatchableList> theTracks = new Vector<WatchableList>(0,1);
       theTracks.add(lw);
@@ -1191,11 +1191,11 @@ public final class ReformatFixes implements FilterOperation
       res.undo();
 
       // check if colours updates
-      assertEquals("track changed to red", java.awt.Color.blue, fw1.getColor());
-      assertEquals("shape changed to red", java.awt.Color.blue, sw.getColor());
-      assertEquals("label changed to red", java.awt.Color.blue, lw.getColor());
+      assertEquals("track changed to red",   MWC.GUI.Properties.DebriefColors.BLUE, fw1.getColor());
+      assertEquals("shape changed to red",   MWC.GUI.Properties.DebriefColors.BLUE, sw.getColor());
+      assertEquals("label changed to red",   MWC.GUI.Properties.DebriefColors.BLUE, lw.getColor());
 
-      newVal = java.awt.Color.yellow;
+      newVal =   MWC.GUI.Properties.DebriefColors.YELLOW;
       position_type = ReformatFixes.ONLY_VISIBLE;
 
       // ok, the user data is collated, lets do it!
@@ -1207,10 +1207,10 @@ public final class ReformatFixes implements FilterOperation
       res.execute();
 
       // check if colours updates
-      assertEquals("fix 1 changed to yellow", java.awt.Color.yellow, fw1.getColor());
-      assertEquals("fix 2 not changed to yellow", java.awt.Color.blue, fw2.getColor());
-      assertEquals("shape changed to yellow", java.awt.Color.yellow, sw.getColor());
-      assertEquals("label changed to yellow", java.awt.Color.yellow, lw.getColor());
+      assertEquals("fix 1 changed to yellow",   MWC.GUI.Properties.DebriefColors.YELLOW, fw1.getColor());
+      assertEquals("fix 2 not changed to yellow",   MWC.GUI.Properties.DebriefColors.BLUE, fw2.getColor());
+      assertEquals("shape changed to yellow",   MWC.GUI.Properties.DebriefColors.YELLOW, sw.getColor());
+      assertEquals("label changed to yellow",   MWC.GUI.Properties.DebriefColors.YELLOW, lw.getColor());
 
 
 
