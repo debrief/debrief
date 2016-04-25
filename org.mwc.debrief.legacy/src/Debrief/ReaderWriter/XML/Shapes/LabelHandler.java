@@ -168,7 +168,7 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     }
 
     // now the scale
-    if(_scale != null)
+    if(_scale != null && _scale.length() > 0)
     {
       ss_editor.setAsText(_scale);
       final Double val = (Double) ss_editor.getValue();
