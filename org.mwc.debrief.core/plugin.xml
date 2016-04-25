@@ -143,6 +143,22 @@
                 <separator name="sep3" visible="true"/>
                 <separator name="additions" visible="true"/>
             </toolbar>
+            <toolbar
+                  id="org.mwc.debrief.core.undoRedo"
+                  label="Undo Redo">
+               <separator
+                     name="features"
+                     visible="true">
+               </separator>
+               <separator
+                     name="sep3"
+                     visible="true">
+               </separator>
+               <separator
+                     name="additions"
+                     visible="true">
+               </separator>
+            </toolbar>
             <toolbar id="org.mwc.debrief.core.EditorFeatures" label="Add Features">
                 <separator name="features" visible="true"/>
                 <separator name="sep3" visible="true"/>
@@ -250,6 +266,21 @@
                 icon="icons/24/create_project.png" label="Create Project"
                 tooltip="Create folders to contain your Debrief working files" style="push"
                 id="org.mwc.debrief.core.createProject"> </command>
+        </menuContribution>
+        <menuContribution
+              locationURI="toolbar:org.mwc.debrief.core.undoRedo?before=additions">
+           <command
+                 commandId="org.eclipse.ui.edit.undo"
+                 icon="icons/24/undo.png"
+                 id="undoredo.undo"
+                 style="push">
+           </command>
+           <command
+                 commandId="org.eclipse.ui.edit.redo"
+                 icon="icons/24/redo.png"
+                 id="undoredo.redo"
+                 style="push">
+           </command>
         </menuContribution>
 
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio">
