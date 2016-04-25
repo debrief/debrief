@@ -17,6 +17,7 @@ package org.mwc.cmap.gt2plot.proj;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.Iterator;
 
@@ -224,8 +225,12 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
       if (dArea.getWidth() > 0 || dArea.getHeight() > 0)
       {
         // now got to screen
-        _view.getScreenToWorld().transform(_workScreen, _workMetres);
-        _degs2metres.inverse().transform(_workMetres, _workDegs);
+        final AffineTransform currentTransform = _view.getScreenToWorld();
+        if (currentTransform != null)
+        {
+          currentTransform.transform(_workScreen, _workMetres);
+          _degs2metres.inverse().transform(_workMetres, _workDegs);
+        }
         res =
             new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
                 .getCoordinate()[0], 0);
