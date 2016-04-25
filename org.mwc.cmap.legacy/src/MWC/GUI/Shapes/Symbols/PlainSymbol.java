@@ -143,9 +143,9 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
     final float lineWid;
     final double scaleVal = getScaleVal();
     
-    if(scaleVal == SymbolScalePropertyEditor.SMALL || scaleVal == SymbolScalePropertyEditor.MEDIUM)
+    if(scaleVal == SymbolScalePropertyEditor.HUGE)
     {
-      lineWid = 1f;
+      lineWid = 3f;
     }
     else if(scaleVal == SymbolScalePropertyEditor.LARGE)
     {
@@ -153,7 +153,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
     }
     else
     {
-      lineWid = 3f;      
+      lineWid = 1f;      
     }
     dest.setLineWidth(lineWid);
   }

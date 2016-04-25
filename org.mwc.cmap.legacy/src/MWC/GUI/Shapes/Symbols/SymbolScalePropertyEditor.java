@@ -130,6 +130,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
       if(thisS.equals(theVal))
       {
         _mySize = new Double(sizes[i]);
+        break;
       }
     }
 

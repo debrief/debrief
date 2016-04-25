@@ -80,7 +80,15 @@ public class TagListHelper extends EditorHelper
 			// that string
 			_propEditor.setValue(value);
 			final String txtVersion = _propEditor.getAsText();
-			res = translateToSWT(txtVersion);
+			if(txtVersion == null)
+			{
+			  // ok, just use the first one
+        res = translateToSWT(_theTags[0]);
+			}
+			else
+			{
+			  res = translateToSWT(txtVersion);
+			}
 		}
 		return res;
 	}
