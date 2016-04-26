@@ -89,39 +89,12 @@ public class Startup implements IStartup
     removePerspective();
     removePreferencePages();
     updateMenuIcons();
+    updateViewIcons();
     new ResetPerspective().resetPerspective();
-    ;
     if (DebriefPlugin.getDefault().getCreateProject())
     {
       new CreateDebriefProject().createStartProject();
     }
-    Display.getDefault().asyncExec(new Runnable()
-    {
-
-      @Override
-      public void run()
-      {
-        IWorkbenchPage page =
-            PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                .getActivePage();
-        page.addPartListener(partListener);
-        IViewPart view = page.findView(IPageLayout.ID_OUTLINE);
-        if (view instanceof ContentOutline)
-        {
-          changeIcon(view);
-        }
-        view = page.findView(IPageLayout.ID_PROP_SHEET);
-        if (view instanceof PropertySheet)
-        {
-          changeIcon(view);
-        }
-        view = page.findView(IPageLayout.ID_RES_NAV);
-        if (view instanceof ResourceNavigator)
-        {
-          changeIcon(view);
-        }
-      }
-    });
   }
 
   private void updateMenuIcons()
@@ -151,6 +124,37 @@ public class Startup implements IStartup
     });
   }
 
+  private void updateViewIcons()
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        IWorkbenchPage page =
+            PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                .getActivePage();
+        page.addPartListener(partListener);
+        IViewPart view = page.findView(IPageLayout.ID_OUTLINE);
+        if (view instanceof ContentOutline)
+        {
+          changeIcon(view);
+        }
+        view = page.findView(IPageLayout.ID_PROP_SHEET);
+        if (view instanceof PropertySheet)
+        {
+          changeIcon(view);
+        }
+        view = page.findView(IPageLayout.ID_RES_NAV);
+        if (view instanceof ResourceNavigator)
+        {
+          changeIcon(view);
+        }
+      }
+    });
+  }
+  
   protected void changeIcon(IWorkbenchPart part)
   {
     try
@@ -277,6 +281,7 @@ public class Startup implements IStartup
       IWorkbenchWindow activeWorkbenchWindow =
           PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
+      @SuppressWarnings("restriction")
       Class<?> clazz = WorkbenchWindow.class;
       Method method;
       try
