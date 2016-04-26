@@ -15,7 +15,12 @@ Require-Bundle: org.mwc.cmap.jfreechart,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui.console,
- org.eclipse.ui
+ org.eclipse.ui, 
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jface.text, 
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
