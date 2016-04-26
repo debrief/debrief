@@ -65,7 +65,7 @@
     <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="edu.nps.moves.dis.editor.InputFileEditor"
+            class="org.mwc.debrief.dis.editor.InputFileEditor"
             contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
             default="true"
             extensions="inp"

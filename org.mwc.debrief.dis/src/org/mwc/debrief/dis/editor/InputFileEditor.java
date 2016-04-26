@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package edu.nps.moves.dis.editor;
+package org.mwc.debrief.dis.editor;
 
 import org.eclipse.ui.editors.text.TextEditor;
 
