@@ -129,7 +129,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
   ////////////////////////////////////////////////////////////
   public PlainSymbol(){
     _theCol = DebriefColors.CYAN;
-    _theScaleVal = 1.0;
+    _theScaleVal = SymbolScalePropertyEditor.MEDIUM;
     _fillMe = false;
   }
 

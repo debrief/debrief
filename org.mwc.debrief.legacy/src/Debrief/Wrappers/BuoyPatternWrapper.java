@@ -172,6 +172,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -238,7 +239,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the symbol size for the buoys in this pattern
 	 */
-	private double _buoySymbolSize = 1.0;
+	private double _buoySymbolSize = SymbolScalePropertyEditor.MEDIUM;
 
 	/**
 	 * the label visibility for the buoys in this pattern
