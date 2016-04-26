@@ -62,5 +62,29 @@
              name="Run In Simulator">
        </command>
     </extension>    
-    
+    <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="edu.nps.moves.dis.editor.InputFileEditor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            default="true"
+            extensions="inp"
+            filenames="*.inp"
+            icon="icons/16px/dis_icon.png"
+            id="inputfile.editor"
+            name="Input File Editor">
+         <contentTypeBinding
+               contentTypeId="org.mwc.debrief.dis.inputfile">
+         </contentTypeBinding>
+      </editor>
+   </extension>
+    <extension
+          point="org.eclipse.core.contenttype.contentTypes">
+       <content-type
+             file-extensions="ins"
+             id="org.mwc.debrief.dis.inputfile"
+             name="Input File"
+             priority="high">
+       </content-type>
+    </extension>
 </plugin>
