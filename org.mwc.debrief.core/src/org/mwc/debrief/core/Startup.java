@@ -108,6 +108,12 @@ public class Startup implements IStartup
       {
 
         ActionAccessSupport accessSupport = new ActionAccessSupport();
+        IAction save = accessSupport.getAction("save");
+        if (save != null)
+        {
+          save.setImageDescriptor(DebriefPlugin
+              .getImageDescriptor("icons/16/save.png"));
+        }
         IAction redo = accessSupport.getAction("redo");
         if (redo != null)
         {
