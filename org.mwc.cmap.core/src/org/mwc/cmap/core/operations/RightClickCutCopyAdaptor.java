@@ -14,18 +14,32 @@
  */
 package org.mwc.cmap.core.operations;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
-import org.eclipse.swt.dnd.*;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.swt.dnd.ByteArrayTransfer;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Wrappers.FixWrapper;
@@ -34,7 +48,10 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -265,7 +282,7 @@ public class RightClickCutCopyAdaptor
 
 			// formatting
 			super.setText("Cut " + toString());
-
+			setActionDefinitionId(ActionFactory.CUT.getCommandId());
 			// and the icon
 			setImageIcon();
 
@@ -459,6 +476,7 @@ public class RightClickCutCopyAdaptor
 			super(data, clipboard, theParent, theLayers, updateLayer);
 
 			super.setText(toString());
+			setActionDefinitionId(ActionFactory.COPY.getCommandId());
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 					.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 
@@ -982,6 +1000,9 @@ public class RightClickCutCopyAdaptor
 			// formatting
 			super.setText("Delete " + toString());
 
+			
+			setActionDefinitionId(ActionFactory.DELETE.getCommandId());
+			
 			// and the icon
 			setImageIcon();
 
