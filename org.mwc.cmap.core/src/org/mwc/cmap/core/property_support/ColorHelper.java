@@ -25,6 +25,7 @@ import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.util.*;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
@@ -169,7 +170,7 @@ public class ColorHelper extends EditorHelper
 		if (size > extent)
 			size = extent;
 
-		final int width = indent + size;
+		final int width = indent + size +5;//padding to right side indent 
 		final int height = extent;
 
 		final int xoffset = indent;
@@ -328,10 +329,32 @@ public class ColorHelper extends EditorHelper
 	class ColorCellEditor extends org.eclipse.jface.viewers.ColorCellEditor
 	{
 
-		public ColorCellEditor(final Composite parent)
-		{
-			super(parent);
-		}
+	  private Label empy;
+
+    public ColorCellEditor(final Composite parent)
+    {
+      super(parent);
+    }
+
+    @Override
+    protected Control createContents(Composite cell)
+    {
+      empy = new Label(cell, SWT.NONE);
+      return empy;
+    }
+
+    @Override
+    protected void updateContents(Object value)
+    {
+      RGB rgb = (RGB) value;
+      
+      if (rgb == null)
+      {
+        rgb = new RGB(0, 0, 0);
+      }
+
+      empy.setText("(" + rgb.red + "," + rgb.green + "," + rgb.blue + ")");//$NON-NLS-4$//$NON-NLS-3$//$NON-NLS-2$//$NON-NLS-1$
+    }
 
 		protected Object openDialogBox(final Control cellEditorWindow)
 		{
