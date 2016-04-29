@@ -25,6 +25,7 @@ import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.util.*;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
@@ -52,8 +53,6 @@ public class ColorHelper extends EditorHelper
 	public ColorHelper(final Control parentControl)
 	{
 		super(java.awt.Color.class);
-
-		// _parentControl = parentControl;
 	}
 
 	@Override
@@ -152,24 +151,15 @@ public class ColorHelper extends EditorHelper
 
 		ImageData data = null;
 
-		// GC gc = new GC(_parentControl.getParent().getParent());
-		// FontMetrics fm = gc.getFontMetrics();
-		// int size = fm.getAscent();
-		// gc.dispose();
 		int size = 14;
 
 		final int indent = 6;
 		final int extent = 8;
 
-		// if (_parentControl instanceof Table)
-		// extent = ((Table) _parentControl).getItemHeight() - 1;
-		// else if (_parentControl instanceof Tree)
-		// extent = ((Tree) _parentControl).getItemHeight() - 1;
-
 		if (size > extent)
 			size = extent;
 
-		final int width = indent + size;
+		final int width = indent + size +5;//padding to right side indent 
 		final int height = extent;
 
 		final int xoffset = indent;
@@ -204,7 +194,7 @@ public class ColorHelper extends EditorHelper
 			public String getText(final Object element)
 			{
 				final RGB rgb = (RGB) element;
-				final String res = "(" + rgb.red + ", " + rgb.green + ", " + rgb.blue + ")";
+				final String res = stringFor(rgb);
 				return res;
 			}
 
@@ -250,11 +240,6 @@ public class ColorHelper extends EditorHelper
 		 */
 		public Image getImage(final Object element)
 		{
-			// RGB rgCol = (RGB) element;
-			// ImageData theD = createColorImage(rgCol);
-			// Image theI = new Image(Display.getDefault(), theD);
-			// return theI;
-
 			String imageKey = "vpf.gif";
 			imageKey = ISharedImages.IMG_OBJ_FOLDER;
 
@@ -328,10 +313,32 @@ public class ColorHelper extends EditorHelper
 	class ColorCellEditor extends org.eclipse.jface.viewers.ColorCellEditor
 	{
 
-		public ColorCellEditor(final Composite parent)
-		{
-			super(parent);
-		}
+	  private Label empy;
+
+    public ColorCellEditor(final Composite parent)
+    {
+      super(parent);
+    }
+
+    @Override
+    protected Control createContents(Composite cell)
+    {
+      empy = new Label(cell, SWT.NONE);
+      return empy;
+    }
+
+    @Override
+    protected void updateContents(Object value)
+    {
+      RGB rgb = (RGB) value;
+      
+      if (rgb == null)
+      {
+        rgb = new RGB(0, 0, 0);
+      }
+
+      empy.setText(stringFor(rgb));//$NON-NLS-4$//$NON-NLS-3$//$NON-NLS-2$//$NON-NLS-1$
+    }
 
 		protected Object openDialogBox(final Control cellEditorWindow)
 		{
@@ -371,4 +378,8 @@ public class ColorHelper extends EditorHelper
 
 	}
 
+  private String stringFor(final RGB rgb)
+  {
+    return "(R:" + rgb.red + " G:" + rgb.green + " B:" + rgb.blue + ")";
+  }
 }
