@@ -112,13 +112,13 @@ public class Startup implements IStartup
         if (saveall != null)
         {
           saveall.setImageDescriptor(DebriefPlugin
-              .getImageDescriptor("icons/16/save.png"));
+              .getImageDescriptor("icons/16/save_all.png"));
         }
         IAction saveas = accessSupport.getAction("saveAs");
         if (saveas != null)
         {
           saveas.setImageDescriptor(DebriefPlugin
-              .getImageDescriptor("icons/16/save.png"));
+              .getImageDescriptor("icons/16/save_as.png"));
         }
         IAction save = accessSupport.getAction("save");
         if (save != null)
