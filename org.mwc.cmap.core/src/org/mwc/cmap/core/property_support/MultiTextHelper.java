@@ -183,6 +183,10 @@ public class MultiTextHelper extends EditorHelper
         dialogModel = true;
         MultiLineInputDialog dialog =
             new MultiLineInputDialog(text.getShell(), text.getText());
+        dialog.create();
+        Point location = text.toDisplay(text.getLocation());
+        location.y +=text.getBounds().height; 
+        dialog.getShell().setLocation(location);
         dialog.open();
         dialogModel = false;
         text.setText(dialog.mContent);
@@ -796,6 +800,8 @@ public class MultiTextHelper extends EditorHelper
     public MultiLineInputDialog(Shell parentShell, String content)
     {
       super(parentShell);
+      setShellStyle(getShellStyle()|SWT.NO_TRIM );
+      setBlockOnOpen(true);
       this.mContent = content;
     }
 
