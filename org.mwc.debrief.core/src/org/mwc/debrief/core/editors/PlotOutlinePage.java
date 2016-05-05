@@ -71,6 +71,8 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.CopyItem;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.CutItem;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.DeleteItem;
+import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
+import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
@@ -288,6 +290,75 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         final StructuredSelection sel =
             (StructuredSelection) _treeViewer.getSelection();
         return !sel.isEmpty();
+      }
+      
+    });
+    
+    actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
+        new Action()
+    {
+      @Override
+      public void run()
+      {
+        final Clipboard _clipboard = CorePlugin.getDefault().getClipboard();
+        
+        final EditableTransfer transfer = EditableTransfer.getInstance();
+        final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
+        if(tr==null || tr.length==0)
+        {
+          return ;
+        }
+        
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        SelectionContext selectionContext = SelectionContext.create(sel);
+        
+        Editable selectedItem = null;
+        if (selectionContext.eList.length == 1)
+        {
+          selectedItem = selectionContext.eList[0];
+        }
+        if((selectedItem instanceof MWC.GUI.Layer) || (selectedItem == null))
+        {
+          RightClickPasteAdaptor.createAction(selectedItem, _myLayers, _clipboard, tr).run();
+        }
+
+        
+      }
+      
+      @Override
+      public boolean isEnabled()
+      {
+        final Clipboard _clipboard = CorePlugin.getDefault().getClipboard();
+        
+        final EditableTransfer transfer = EditableTransfer.getInstance();
+        final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
+        if(tr==null || tr.length==0)
+        {
+          return false;
+        }
+        
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        SelectionContext selectionContext = SelectionContext.create(sel);
+        
+        Editable selectedItem = null;
+        if (selectionContext.eList.length == 1)
+        {
+          selectedItem = selectionContext.eList[0];
+        }
+        if((selectedItem instanceof MWC.GUI.Layer) || (selectedItem == null))
+        {
+          return  RightClickPasteAdaptor.createAction(selectedItem, _myLayers, _clipboard, tr)!=null;
+        }
+       
+        
+        
+        
+        
+        
+        
+        return false;
       }
       
     });
