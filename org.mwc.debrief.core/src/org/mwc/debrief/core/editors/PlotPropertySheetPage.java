@@ -15,10 +15,7 @@
 package org.mwc.debrief.core.editors;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -64,7 +61,7 @@ public class PlotPropertySheetPage extends PropertySheetPage
 	  context = new Label(_base,SWT.NONE); 
 	  FontData fontData = context.getFont().getFontData()[0];
 	  final Font font = new Font(parent.getDisplay(), new FontData(fontData.getName(), fontData
-	      .getHeight(), SWT.BOLD));
+	      .getHeight(), SWT.ITALIC));
 	  context.setFont(font);
 	  context.addDisposeListener(new DisposeListener()
     {
@@ -98,8 +95,10 @@ public class PlotPropertySheetPage extends PropertySheetPage
 	    {
 	      StringBuilder builder = new StringBuilder();
 	      boolean addSep = false;
-	      for (Object object : objs)
-        {
+	      final int MAX_SIZE = 5;
+	      for(int ctr = 0; ctr < objs.length && ctr < MAX_SIZE; ctr++)
+	      {
+	        Object object = objs[ctr];
 	        if(object instanceof EditableWrapper)
 	        {
 	          if(addSep)
@@ -113,15 +112,18 @@ public class PlotPropertySheetPage extends PropertySheetPage
 	        }
         }
 	      
-	      
+	      // see if we need to append ...
+	      if(objs.length > MAX_SIZE)
+	      {
+	        builder.append(", ...");
+	      }
+
 	      context.setText(builder.toString());
 	      context.setToolTipText(builder.toString());
 	      return;
 	    }
-	    
-	   
 	  }
-	  context.setText("<selection>");
+	  context.setText("<pending>");
 	  context.setToolTipText("");
 	}
 	
