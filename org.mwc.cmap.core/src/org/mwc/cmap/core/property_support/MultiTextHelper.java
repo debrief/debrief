@@ -800,7 +800,7 @@ public class MultiTextHelper extends EditorHelper
     public MultiLineInputDialog(Shell parentShell, String content)
     {
       super(parentShell);
-      setShellStyle(getShellStyle()|SWT.NO_TRIM );
+      setShellStyle(getShellStyle() | SWT.NO_TRIM);
       setBlockOnOpen(true);
       this.mContent = content;
     }
@@ -811,9 +811,28 @@ public class MultiTextHelper extends EditorHelper
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-      mContentText = new Text(container, SWT.BORDER | SWT.WRAP | SWT.MULTI);
+      mContentText = new Text(container, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
       mContentText.setText(mContent);
 
+      // hide scrollbars when not necessary
+      Listener scrollBarListener = new Listener () {
+        @Override
+        public void handleEvent(Event event) {
+          Text t = (Text)event.widget;
+          Rectangle r1 = t.getClientArea();
+          Rectangle r2 = t.computeTrim(r1.x, r1.y, r1.width, r1.height);
+          Point p = t.computeSize(SWT.DEFAULT,  SWT.DEFAULT,  true);
+          t.getHorizontalBar().setVisible(r2.width <= p.x);
+          t.getVerticalBar().setVisible(r2.height <= p.y);
+          if (event.type == SWT.Modify) {
+            t.getParent().layout(true);
+            t.showSelection();
+          }
+        }
+      };
+      mContentText.addListener(SWT.Resize, scrollBarListener);
+      mContentText.addListener(SWT.Modify, scrollBarListener);
+      
       return container;
     }
 
