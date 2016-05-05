@@ -27,6 +27,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
@@ -174,6 +175,7 @@ public class RightClickPasteAdaptor
 			// formatting
 			super.setText("Paste " + toString());
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+			setActionDefinitionId(ActionFactory.PASTE.getCommandId());
 			
 		}
 
