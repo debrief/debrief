@@ -51,6 +51,9 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -61,7 +64,10 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
@@ -191,11 +197,156 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		actionBars.updateActionBars();
 	}
 
+	
+	
 	@Override
 	public void createControl(Composite parent)
 	{
 	  
-	  IActionBars actionBars= getSite().getActionBars();
+    
+		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+
+		_treeViewer.setUseHashlookup(true);
+		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
+		_treeViewer.setContentProvider(new ViewContentProvider());
+		_myLabelProvider = new CoreViewLabelProvider();
+		_treeViewer.setLabelProvider(_myLabelProvider);
+		_treeViewer.setSorter(new NameSorter());
+		_treeViewer.setInput(_myLayers);
+		_treeViewer.setComparer(new IElementComparer()
+		{
+			public boolean equals(final Object a, final Object b)
+			{
+				Object obj1 = a;
+				Object obj2 = b;
+				// do our special case for comparing plottables
+				if (obj1 instanceof EditableWrapper)
+				{
+					final EditableWrapper pw = (EditableWrapper) obj1;
+					obj1 = pw.getEditable();
+				}
+
+				if (obj2 instanceof EditableWrapper)
+				{
+					final EditableWrapper pw = (EditableWrapper) obj2;
+					obj2 = pw.getEditable();
+				}
+
+				return obj1 == obj2;
+			}
+
+			public int hashCode(final Object element)
+			{
+				int res = 0;
+
+				if (element instanceof EditableWrapper)
+				{
+					final EditableWrapper pw = (EditableWrapper) element;
+					final Editable pl = pw.getEditable();
+					if (pl != null)
+						res += pw.getEditable().hashCode();
+				}
+				else
+					res = element.hashCode();
+
+				return res;
+			}
+
+		});
+
+		_dragDropSupport = new DragDropSupport(_treeViewer);
+		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY,
+				_dragDropSupport.getTypes(), _dragDropSupport);
+		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY,
+				_dragDropSupport.getTypes(), _dragDropSupport);
+
+		// and format the tree
+		final Tree tree = _treeViewer.getTree();
+		tree.setHeaderVisible(true);
+		formatTree(tree);
+
+		makeActions();
+		hookContextMenu();
+		hookDoubleClickAction();
+		contributeToActionBars();
+
+		// set ourselves as selection source
+		getSite().setSelectionProvider(_treeViewer);
+
+		_selectionChangeListener = new ISelectionChangedListener()
+		{
+
+			public void selectionChanged(final SelectionChangedEvent event)
+			{
+				// right, see what it is
+				final ISelection sel = event.getSelection();
+				if (sel instanceof StructuredSelection)
+				{
+					final StructuredSelection ss = (StructuredSelection) sel;
+					final Object datum = ss.getFirstElement();
+					if (datum instanceof EditableWrapper)
+					{
+						final EditableWrapper pw = (EditableWrapper) datum;
+						editableSelected(sel, pw);
+					}
+				}
+				connectActions();
+			}
+		};
+
+		_plotEditor.addSelectionChangedListener(_selectionChangeListener);
+
+		// also listen out ourselves to any changes, so we can update the button
+		// enablement
+		_treeViewer.addSelectionChangedListener(new ISelectionChangedListener()
+		{
+
+			public void selectionChanged(final SelectionChangedEvent event)
+			{
+				final ISelection isel = event.getSelection();
+				if (isel instanceof StructuredSelection)
+				{
+					final StructuredSelection ss = (StructuredSelection) isel;
+
+					// right, see if this is an item we can make primary
+					_makePrimary.setEnabled(isValidPrimary(ss));
+
+					// and see if we can make it a secondary
+					_makeSecondary.setEnabled(isValidSecondary(ss));
+
+					// and see if we can make it a secondary
+					_addAsSecondary.setEnabled(isValidSecondary(ss));
+				}
+				connectActions();
+			}
+
+		});
+		_treeViewer.getTree().addFocusListener(new FocusAdapter()
+    {
+		  @Override
+		  public void focusGained(FocusEvent e)
+		  {
+
+		    connectActions();
+		  }
+    });
+		// and declare our context sensitive help
+		// FIXME
+		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
+
+		processNewLayers();
+
+    connectActions();
+    
+	}
+
+	
+
+  public void connectActions()
+  {
+    IActionBars actionBars= getSite().getActionBars();
+   
     actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
         new Action()
         {
@@ -351,140 +502,15 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         {
           return  RightClickPasteAdaptor.createAction(selectedItem, _myLayers, _clipboard, tr)!=null;
         }
-       
-        
-        
-        
-        
-        
+ 
         
         return false;
       }
       
     });
     
-    
-		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-		_treeViewer.setUseHashlookup(true);
-		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
-		_treeViewer.setContentProvider(new ViewContentProvider());
-		_myLabelProvider = new CoreViewLabelProvider();
-		_treeViewer.setLabelProvider(_myLabelProvider);
-		_treeViewer.setSorter(new NameSorter());
-		_treeViewer.setInput(_myLayers);
-		_treeViewer.setComparer(new IElementComparer()
-		{
-			public boolean equals(final Object a, final Object b)
-			{
-				Object obj1 = a;
-				Object obj2 = b;
-				// do our special case for comparing plottables
-				if (obj1 instanceof EditableWrapper)
-				{
-					final EditableWrapper pw = (EditableWrapper) obj1;
-					obj1 = pw.getEditable();
-				}
-
-				if (obj2 instanceof EditableWrapper)
-				{
-					final EditableWrapper pw = (EditableWrapper) obj2;
-					obj2 = pw.getEditable();
-				}
-
-				return obj1 == obj2;
-			}
-
-			public int hashCode(final Object element)
-			{
-				int res = 0;
-
-				if (element instanceof EditableWrapper)
-				{
-					final EditableWrapper pw = (EditableWrapper) element;
-					final Editable pl = pw.getEditable();
-					if (pl != null)
-						res += pw.getEditable().hashCode();
-				}
-				else
-					res = element.hashCode();
-
-				return res;
-			}
-
-		});
-
-		_dragDropSupport = new DragDropSupport(_treeViewer);
-		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY,
-				_dragDropSupport.getTypes(), _dragDropSupport);
-		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY,
-				_dragDropSupport.getTypes(), _dragDropSupport);
-
-		// and format the tree
-		final Tree tree = _treeViewer.getTree();
-		tree.setHeaderVisible(true);
-		formatTree(tree);
-
-		makeActions();
-		hookContextMenu();
-		hookDoubleClickAction();
-		contributeToActionBars();
-
-		// set ourselves as selection source
-		getSite().setSelectionProvider(_treeViewer);
-
-		_selectionChangeListener = new ISelectionChangedListener()
-		{
-
-			public void selectionChanged(final SelectionChangedEvent event)
-			{
-				// right, see what it is
-				final ISelection sel = event.getSelection();
-				if (sel instanceof StructuredSelection)
-				{
-					final StructuredSelection ss = (StructuredSelection) sel;
-					final Object datum = ss.getFirstElement();
-					if (datum instanceof EditableWrapper)
-					{
-						final EditableWrapper pw = (EditableWrapper) datum;
-						editableSelected(sel, pw);
-					}
-				}
-			}
-		};
-
-		_plotEditor.addSelectionChangedListener(_selectionChangeListener);
-
-		// also listen out ourselves to any changes, so we can update the button
-		// enablement
-		_treeViewer.addSelectionChangedListener(new ISelectionChangedListener()
-		{
-
-			public void selectionChanged(final SelectionChangedEvent event)
-			{
-				final ISelection isel = event.getSelection();
-				if (isel instanceof StructuredSelection)
-				{
-					final StructuredSelection ss = (StructuredSelection) isel;
-
-					// right, see if this is an item we can make primary
-					_makePrimary.setEnabled(isValidPrimary(ss));
-
-					// and see if we can make it a secondary
-					_makeSecondary.setEnabled(isValidSecondary(ss));
-
-					// and see if we can make it a secondary
-					_addAsSecondary.setEnabled(isValidSecondary(ss));
-				}
-			}
-
-		});
-		// and declare our context sensitive help
-		// FIXME
-		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
-
-		processNewLayers();
-	}
+    actionBars.updateActionBars();
+  }
 
 	private void contributeToActionBars()
 	{

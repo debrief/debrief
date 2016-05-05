@@ -1082,6 +1082,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 			// yup, better observe it then
 			_myChart.setDragMode(curMode);
 		}
+		_myChart.getCanvasControl().forceFocus();
 
 	}
 
