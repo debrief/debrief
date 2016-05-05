@@ -2,7 +2,7 @@
  *    Debrief - the Open Source Maritime Analysis Application
  *    http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ *    (C) 2000-2016, Deep Blue C Technology Ltd
  *
  *    This library is free software; you can redistribute it and/or
  *    modify it under the terms of the Eclipse Public License v1.0
@@ -42,17 +42,14 @@ public class MultiTextHelper extends EditorHelper
   public CellEditor getCellEditorFor(Composite parent)
   {
     return new DialogCellEditor(parent){
-
       
       private Label text;
-
-     
 
       @Override
       protected Control createContents(Composite cell)
       {
         text = (Label) super.createContents(cell);
-        
+
         return text;
       }
 
