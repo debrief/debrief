@@ -49,7 +49,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -60,13 +64,21 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.CopyItem;
+import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.CutItem;
+import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.DeleteItem;
+import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
+import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
@@ -84,6 +96,7 @@ import MWC.GenericData.WatchableList;
 
 public class PlotOutlinePage extends Page implements IContentOutlinePage
 {
+ 
 	public static final String NAME_COLUMN_NAME = "Name";
 
 	public static final String VISIBILITY_COLUMN_NAME = "Visibility";
@@ -166,8 +179,12 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		this._myLayers = _myLayers;
 		this._theTrackDataListener = (TrackManager) _plotEditor
 				.getAdapter(TrackManager.class);
+		
+		
 	}
 
+	
+	
 	@Override
 	public void init(IPageSite pageSite)
 	{
@@ -180,11 +197,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		actionBars.updateActionBars();
 	}
 
+	
+	
 	@Override
 	public void createControl(Composite parent)
 	{
+	  
+    
 		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
+
 		_treeViewer.setUseHashlookup(true);
 		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider());
@@ -269,6 +291,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 						editableSelected(sel, pw);
 					}
 				}
+				connectActions();
 			}
 		};
 
@@ -295,15 +318,199 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 					// and see if we can make it a secondary
 					_addAsSecondary.setEnabled(isValidSecondary(ss));
 				}
+				connectActions();
 			}
 
 		});
+		_treeViewer.getTree().addFocusListener(new FocusAdapter()
+    {
+		  @Override
+		  public void focusGained(FocusEvent e)
+		  {
+
+		    connectActions();
+		  }
+    });
 		// and declare our context sensitive help
 		// FIXME
 		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
 
 		processNewLayers();
+
+    connectActions();
+    
 	}
+
+	
+
+  public void connectActions()
+  {
+    IActionBars actionBars= getSite().getActionBars();
+   
+    actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
+        new Action()
+        {
+          @Override
+          public void run()
+          {
+            // get the selected item
+            final StructuredSelection sel =
+                (StructuredSelection) _treeViewer.getSelection();
+
+            if (!sel.isEmpty())
+            {
+              SelectionContext selectionContext = SelectionContext.create(sel);
+              DeleteItem deleteItem =
+                  new DeleteItem(selectionContext.eList,
+                      selectionContext.parentLayers, _myLayers,
+                      selectionContext.updateLayers);
+              deleteItem.run();
+            }
+
+          }
+
+          @Override
+          public boolean isEnabled()
+          {
+            final StructuredSelection sel =
+                (StructuredSelection) _treeViewer.getSelection();
+            return !sel.isEmpty();
+          }
+
+        });
+    actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+        new Action()
+    {
+      @Override
+      public void run()
+      {
+        // get the selected item
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        
+        if (!sel.isEmpty())
+        {
+          final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
+
+          SelectionContext selectionContext = SelectionContext.create(sel);
+          CopyItem copyItem =
+              new CopyItem(selectionContext.eList,theClipboard,
+                  selectionContext.parentLayers, _myLayers,
+                  selectionContext.updateLayers);
+          copyItem.run();
+        }
+        
+      }
+      
+      @Override
+      public boolean isEnabled()
+      {
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        return !sel.isEmpty();
+      }
+      
+    });
+    actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(),
+        new Action()
+    {
+      @Override
+      public void run()
+      {
+      // get the selected item
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        
+        if (!sel.isEmpty())
+        {
+          final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
+
+          SelectionContext selectionContext = SelectionContext.create(sel);
+          CutItem cutItem =
+              new CutItem(selectionContext.eList,theClipboard,
+                  selectionContext.parentLayers, _myLayers,
+                  selectionContext.updateLayers);
+          cutItem.run();
+        }
+        
+      }
+      
+      @Override
+      public boolean isEnabled()
+      {
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        return !sel.isEmpty();
+      }
+      
+    });
+    
+    actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
+        new Action()
+    {
+      @Override
+      public void run()
+      {
+        final Clipboard _clipboard = CorePlugin.getDefault().getClipboard();
+        
+        final EditableTransfer transfer = EditableTransfer.getInstance();
+        final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
+        if(tr==null || tr.length==0)
+        {
+          return ;
+        }
+        
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        SelectionContext selectionContext = SelectionContext.create(sel);
+        
+        Editable selectedItem = null;
+        if (selectionContext.eList.length == 1)
+        {
+          selectedItem = selectionContext.eList[0];
+        }
+        if((selectedItem instanceof MWC.GUI.Layer) || (selectedItem == null))
+        {
+          RightClickPasteAdaptor.createAction(selectedItem, _myLayers, _clipboard, tr).run();
+        }
+
+        
+      }
+      
+      @Override
+      public boolean isEnabled()
+      {
+        final Clipboard _clipboard = CorePlugin.getDefault().getClipboard();
+        
+        final EditableTransfer transfer = EditableTransfer.getInstance();
+        final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
+        if(tr==null || tr.length==0)
+        {
+          return false;
+        }
+        
+        final StructuredSelection sel =
+            (StructuredSelection) _treeViewer.getSelection();
+        SelectionContext selectionContext = SelectionContext.create(sel);
+        
+        Editable selectedItem = null;
+        if (selectionContext.eList.length == 1)
+        {
+          selectedItem = selectionContext.eList[0];
+        }
+        if((selectedItem instanceof MWC.GUI.Layer) || (selectedItem == null))
+        {
+          return  RightClickPasteAdaptor.createAction(selectedItem, _myLayers, _clipboard, tr)!=null;
+        }
+ 
+        
+        return false;
+      }
+      
+    });
+    
+    actionBars.updateActionBars();
+  }
 
 	private void contributeToActionBars()
 	{
@@ -715,38 +922,11 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
-		// hey, sort out the data-specific items
-		// build up a list of menu items
-
-		// create some lists to store our selected items
-		final Editable[] eList = new Editable[sel.size()];
-		final Layer[] parentLayers = new Layer[sel.size()];
-		final Layer[] updateLayers = new Layer[sel.size()];
-
-		// right, now populate them
-		final Object[] oList = sel.toArray();
-		for (int i = 0; i < oList.length; i++)
-		{
-			final EditableWrapper wrapper = (EditableWrapper) oList[i];
-			eList[i] = wrapper.getEditable();
-
-			// sort out the parent layer
-			final EditableWrapper theParent = wrapper.getParent();
-
-			// hmm, did we find one?
-			if (theParent != null)
-				// yes, store it
-				parentLayers[i] = (Layer) wrapper.getParent().getEditable();
-			else
-				// nope - store a null (to indicate it's a top-level layer)
-				parentLayers[i] = null;
-
-			updateLayers[i] = wrapper.getTopLevelLayer();
-		}
+		SelectionContext selectionContext = SelectionContext.create(sel);
 
 		// ok, sort out what we can do with all of this...
-		RightClickSupport.getDropdownListFor(manager, eList, updateLayers,
-				parentLayers, _myLayers, false);
+		RightClickSupport.getDropdownListFor(manager, selectionContext.eList, selectionContext.updateLayers,
+		    selectionContext.parentLayers, _myLayers, false);
 
 	}
 
@@ -1570,6 +1750,51 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		}
 
 		// ok, and update the layers
+	}
+	
+	
+	
+	private static class SelectionContext
+	{
+	
+    final Editable[] eList ;
+    final Layer[] parentLayers;
+    final Layer[] updateLayers;
+    
+    static SelectionContext create(StructuredSelection sel)
+    {
+      return new SelectionContext(sel);
+    }
+    
+    private  SelectionContext(StructuredSelection sel)
+      {
+         eList = new Editable[sel.size()];
+         parentLayers = new Layer[sel.size()];
+         updateLayers = new Layer[sel.size()]; 
+        
+     // right, now populate them
+        final Object[] oList = sel.toArray();
+        for (int i = 0; i < oList.length; i++)
+        {
+          final EditableWrapper wrapper = (EditableWrapper) oList[i];
+          eList[i] = wrapper.getEditable();
+  
+          // sort out the parent layer
+          final EditableWrapper theParent = wrapper.getParent();
+  
+          // hmm, did we find one?
+          if (theParent != null)
+            // yes, store it
+            parentLayers[i] = (Layer) wrapper.getParent().getEditable();
+          else
+            // nope - store a null (to indicate it's a top-level layer)
+            parentLayers[i] = null;
+  
+          updateLayers[i] = wrapper.getTopLevelLayer();
+       }
+    }
+
+    
 	}
 
 }
