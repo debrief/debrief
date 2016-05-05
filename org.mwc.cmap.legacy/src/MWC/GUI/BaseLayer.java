@@ -142,6 +142,7 @@ package MWC.GUI;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
@@ -193,7 +194,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	/**
 	 * property change support for the base layer
 	 */
-	private transient java.beans.PropertyChangeSupport _pSupport;
+	private transient java.beans.PropertyChangeSupport _propSupport;
 
 	/**
 	 * whether my children have their own order
@@ -229,7 +230,21 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		_orderedChildren = orderedChildren;
 
 		// initialise the property change support
-		_pSupport = new java.beans.PropertyChangeSupport(this);
+		_propSupport = getProperties();
+	}
+	
+	/** double-check we have properties, they're a
+	 * transient object that may not be present for new layers
+	 * 
+	 * @return
+	 */
+	final PropertyChangeSupport getProperties()
+	{
+	  if(_propSupport == null)
+	  {
+	    _propSupport = new PropertyChangeSupport(this);
+	  }
+	  return _propSupport;
 	}
 
 	// ///////////////////////////////////////////////////////////
@@ -361,7 +376,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		super.setVisible(visible);
 
 		// and now fire the event
-		_pSupport.firePropertyChange(VISIBILITY_CHANGE, !visible, visible);
+		getProperties().firePropertyChange(VISIBILITY_CHANGE, !visible, visible);
 	}
 
 	@FireReformatted
@@ -407,7 +422,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
   public void firePropertyChange(final String propertyChanged, final Object oldValue,
 			final Object newValue)
 	{
-  	_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
+    getProperties().firePropertyChange(propertyChanged, oldValue, newValue);
 	}
 
 
@@ -501,25 +516,25 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	public void addPropertyChangeListener(final String property,
 			final PropertyChangeListener listener)
 	{
-		_pSupport.addPropertyChangeListener(property, listener);
+	  getProperties().addPropertyChangeListener(property, listener);
 	}
 
 	@Override
 	public void addPropertyChangeListener(final PropertyChangeListener listener)
 	{
-		_pSupport.addPropertyChangeListener(listener);
+	  getProperties().addPropertyChangeListener(listener);
 	}
 
 	@Override
 	public void removePropertyChangeListener(final PropertyChangeListener listener)
 	{
-		_pSupport.removePropertyChangeListener(listener);
+	  getProperties().removePropertyChangeListener(listener);
 	}
 
 	@Override
 	public void removePropertyChangeListener(final String property,
 			final PropertyChangeListener listener)
 	{
-		_pSupport.removePropertyChangeListener(property, listener);
+	  getProperties().removePropertyChangeListener(property, listener);
 	}
 }
