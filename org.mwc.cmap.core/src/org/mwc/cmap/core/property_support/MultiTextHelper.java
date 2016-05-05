@@ -830,7 +830,7 @@ public class MultiTextHelper extends EditorHelper
     @Override
     protected Point getInitialSize()
     {
-      return new Point(600, 300);
+      return new Point(300, 150);
     }
   }
 
