@@ -110,14 +110,13 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import MWC.GUI.Editable;
-import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
-		MWC.GUI.Layer, IRollingNarrativeProvider, NeedsToBeInformedOfRemove
+		MWC.GUI.Layer, IRollingNarrativeProvider
 {
 
 	// //////////////////////////////////////
@@ -557,11 +556,5 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_myListeners.remove(listener);
 	}
-
-  @Override
-  public void beingRemoved()
-  {
-    _myEntries.clear();
-  }
 
 }
