@@ -297,25 +297,32 @@ public class RightClickCutCopyAdaptor
 		// remember what used to be on the clipboard
 		protected void rememberPreviousContents()
 		{
-			// copy in the new data
-			final EditableTransfer transfer = EditableTransfer.getInstance();
-			_oldContents = _myClipboard.getContents(transfer);
+		  if(_myClipboard!=null)
+      {
+  			// copy in the new data
+  			final EditableTransfer transfer = EditableTransfer.getInstance();
+  			_oldContents = _myClipboard.getContents(transfer);
+      }
 		}
 
 		// restore the previous contents of the clipboard
 		protected void restorePreviousContents()
 		{
-			// just check that there were some previous contents
-			if (_oldContents != null)
-			{
-				// copy in the new data
-				final EditableTransfer transfer = EditableTransfer.getInstance();
-				_myClipboard.setContents(new Object[]
-				{ _oldContents }, new Transfer[]
-				{ transfer });
-			}
-			// and forget what we're holding
-			_oldContents = null;
+		  if(_myClipboard!=null)
+		  {
+		 // just check that there were some previous contents
+	      if (_oldContents != null)
+	      {
+	        // copy in the new data
+	        final EditableTransfer transfer = EditableTransfer.getInstance();
+	        _myClipboard.setContents(new Object[]
+	        { _oldContents }, new Transfer[]
+	        { transfer });
+	      }
+	      // and forget what we're holding
+	      _oldContents = null;
+		  }
+			
 		}
 
 		/**
@@ -407,9 +414,13 @@ public class RightClickCutCopyAdaptor
 
 					// copy in the new data
 					final EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(new Object[]
-					{ _data }, new Transfer[]
-					{ transfer });
+					if(_myClipboard!=null)
+					{
+					  _myClipboard.setContents(new Object[]
+			          { _data }, new Transfer[]
+			          { transfer });
+					}
+					
 
 					for (int i = 0; i < _data.length; i++)
 					{
@@ -976,26 +987,14 @@ public class RightClickCutCopyAdaptor
 	// ////////////////////////////////////////////
 	//
 	// ///////////////////////////////////////////////
-	public static class DeleteItem extends Action
+	public static class DeleteItem extends CutItem
 	{
-		protected Editable[] _data;
-
-		protected Layer[] _theParent;
-
-		protected Layers _theLayers;
-
-		protected Object _oldContents;
-
-		protected Layer[] _updateLayer;
+		
 
 		public DeleteItem(final Editable[] data, final Layer[] theParent, final Layers theLayers,
 				final Layer[] updateLayer)
 		{
-			// remember parameters
-			_data = data;
-			_theParent = theParent;
-			_theLayers = theLayers;
-			_updateLayer = updateLayer;
+			super(data, null, theParent, theLayers, updateLayer);
 
 			// formatting
 			super.setText("Delete " + toString());
@@ -1014,98 +1013,6 @@ public class RightClickCutCopyAdaptor
 					.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		}
 
-		/**
-		 * 
-		 */
-		public void run()
-		{
-			final AbstractOperation myOperation = new AbstractOperation(getText())
-			{
-				public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-						throws ExecutionException
-				{
-					doCut();
-					return Status.OK_STATUS;
-				}
-
-				public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-						throws ExecutionException
-				{
-					return Status.OK_STATUS;
-				}
-
-				/**
-				 * the cut operation is common for execute and redo operations - so
-				 * factor it out to here...
-				 * 
-				 */
-				private void doCut()
-				{
-					final Vector<Layer> changedLayers = new Vector<Layer>();
-
-					for (int i = 0; i < _data.length; i++)
-					{
-						final Editable thisE = _data[i];
-						final Layer parentLayer = _theParent[i];
-
-						// is the parent the data object itself?
-						if (parentLayer == null)
-						{
-							// no, it must be the top layers object
-							_theLayers.removeThisLayer((Layer) thisE);
-
-							// no need to remember the layer. the "removeThisLayer" will have
-							// fired updates
-						}
-						else
-						{
-							// remove the new data from it's parent
-							parentLayer.removeElement(thisE);
-							if (thisE instanceof NeedsToBeInformedOfRemove)
-							{
-								((NeedsToBeInformedOfRemove)thisE).beingRemoved();
-							}
-
-							if (!changedLayers.contains(parentLayer))
-								changedLayers.add(parentLayer);
-						}
-					}
-
-					if (changedLayers.size() > 1)
-						_theLayers.fireExtended();
-					else if (changedLayers.size() == 1)
-						_theLayers.fireExtended(null, changedLayers.firstElement());
-					else
-					{
-						// zero layers listed as changed. no 'firing' necessary
-					}
-				}
-
-				@Override
-				public boolean canRedo()
-				{
-					return false;
-				}
-
-				@Override
-				public boolean canUndo()
-				{
-					return false;
-				}
-
-				@Override
-				public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
-						throws ExecutionException
-				{
-					return null;
-				}
-
-			};
-			if (CorePlugin.getUndoContext() != null) {
-				myOperation.addContext(CorePlugin.getUndoContext());
-			}
-			CorePlugin.run(myOperation);
-		}
 
 		public String toString()
 		{
