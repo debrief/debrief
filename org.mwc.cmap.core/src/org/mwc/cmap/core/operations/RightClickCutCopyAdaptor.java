@@ -440,9 +440,19 @@ public class RightClickCutCopyAdaptor
 						{
 							// remove the new data from it's parent
 							parentLayer.removeElement(thisE);
+							
+							// some objects want to know when they're removed
+              if (thisE instanceof NeedsToBeInformedOfRemove)
+              {
+                // spread the good news
+                ((NeedsToBeInformedOfRemove) thisE).beingRemoved();
+              }
 
+              // see if we need to track this layer change
 							if (!changedLayers.contains(parentLayer))
+							{
 								changedLayers.add(parentLayer);
+							}
 						}
 					}
 
