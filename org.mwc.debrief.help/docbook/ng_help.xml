@@ -1880,7 +1880,6 @@ and so on....</programlisting></para>
                     this will change in the <emphasis>Outline view</emphasis>.</para>
                 </listitem>
               </varlistentry>
-            </variablelist><variablelist>
               <varlistentry>
                 <term>Negative color</term>
                 <listitem>
@@ -1898,7 +1897,6 @@ and so on....</programlisting></para>
                   </screenshot>
                 </listitem>
               </varlistentry>
-            </variablelist><variablelist>
               <varlistentry>
                 <term>Prefix</term>
                 <listitem>
