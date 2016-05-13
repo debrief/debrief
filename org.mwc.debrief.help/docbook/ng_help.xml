@@ -786,7 +786,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/bare_app.png" width="100%"/>
+                  <imagedata fileref="figures/bare_app.png"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1018,12 +1018,16 @@ Naval Undersea Warfare Center (NUWC)
           </itemizedlist>
 
           <para>To further illustrate this, refer to this image:</para>
-          <para><inlinemediaobject>
-              <imageobject>
-                <imagedata fileref="figures/replay_log_file.png" width="100%"
-                />
-              </imageobject>
-            </inlinemediaobject></para>
+          <figure>
+            <title>Detailed Sample Replay file contents</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/replay_log_file.png" align="center" width="100%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure>
           <para>Note the third line, which contains a <glossterm linkend="g_narrative"
               >narrative</glossterm> entry. This entry represents one of a group of types of data
             called <glossterm linkend="g_annotation">Annotation</glossterm> entries. These entries
@@ -1090,26 +1094,35 @@ and so on....</programlisting></para>
             Reconstruction (see <xref linkend="TwoThouOnwards"/>), Debrief is able to import data in
             either <glossterm linkend="g_DeadReckoning">DR</glossterm> or <glossterm
               linkend="g_OverTheGround">OTG</glossterm> mode. The mode to be used is decided at the
-            REP import stage via the Select track mode dialog:<screenshot>
+            REP import stage via the Select track mode dialog:</para>
+          <figure>
+            <title>Select Track Mode</title>
+            <screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/SelectImportMode.png" align="center"/>
                 </imageobject>
               </mediaobject>
-            </screenshot></para>
+            </screenshot>
+          </figure>
 
           <para>Once imported, it is not possible to switch between the two track modes. As such, if
             you need to switch modes, delete the track, re-import it, and then select the track mode
             required.</para>
 
           <para>If you want to set a different default import mode, then use the Maritime Analysis
-            Preferences dialog located in Windows > Preferences:<screenshot>
+            Preferences dialog located in Windows > Preferences:</para>
+          <figure>
+            <title>Debrief's Preferences</title>
+            <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ImportModePreference.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/ImportModePreference.png" scalefit="1" width="550"
+                    align="center"/>
                 </imageobject>
               </mediaobject>
-            </screenshot></para>
+            </screenshot>
+          </figure>
         </sect2>
       </sect1>
 
@@ -1690,6 +1703,253 @@ and so on....</programlisting></para>
                 </mediaobject>
               </screenshot>
             </figure></para>
+        </sect2>
+        <sect2 xml:id="time_display_absolute" linkend="time_display_relative">
+          <title>Time Display (Absolute)</title>
+          <para>Debrief offers 2 types of time display within the <emphasis>plot editor</emphasis>:
+            absolute and relative. We will cover <xref linkend="time_display_relative"/> in the
+            following section. The <emphasis>Time Display (Absolute) </emphasis>button opens up a
+            new layer within the <emphasis>Outline view</emphasis>:<figure>
+              <title>Time Display (Absolute)</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/chart_feat_add_timedisplay.png" align="center"
+                      width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+          <para>Additional timers can be added, as required.</para>
+          <para>As can be seen in the screenshot above, <emphasis role="bold">Dynamic Features (1
+              items)</emphasis> is added to the <emphasis>Outline view</emphasis>, the
+              <emphasis>Time Display (Absolute) </emphasis>properties display in the
+              <emphasis>Properties view</emphasis>, and the <emphasis role="bold">Absolute
+              Time</emphasis><emphasis role="bold"> </emphasis>is shown in the bottom right of the
+              <emphasis>plot editor</emphasis>; this is its default position.</para>
+          <para>In the <emphasis>Properties view</emphasis>, you can  modify the display
+            properties:</para>
+          <variablelist>
+            <varlistentry>
+              <term>Background color</term>
+              <listitem>
+                <para>By default, the background color for the time display is white (RGB 255, 255,
+                  255), but can be changed as required.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Color</term>
+              <listitem>
+                <para>The font colour used in the display.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Font</term>
+              <listitem>
+                <para>The font type used.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Location</term>
+              <listitem>
+                <para>The default location for the time display is Bottom Right, but Bottom Left,
+                  Top Right, and Top Left are also available.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Name</term>
+              <listitem>
+                <para>You can rename this time display as required. Once done, its name will change
+                  in the <emphasis>Outline view</emphasis>:</para>
+                <figure>
+                  <title>Renaming Time Display</title>
+                  <screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/time_display_absolute_multiples.png"
+                          align="center"/>
+                      </imageobject>
+                    </mediaobject>
+                  </screenshot>
+                </figure>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <variablelist>
+            <varlistentry>
+              <term>Prefix</term>
+              <listitem>
+                <para>By default, the display does not have a prefix, but you can set this here. For
+                  example:</para>
+                <screenshot>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/time_display_prefix.png" align="center"/>
+                    </imageobject>
+                  </mediaobject>
+                </screenshot>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <variablelist>
+            <varlistentry>
+              <term>Suffix</term>
+              <listitem>
+                <para>Similarly, you can also specify a suffix:</para>
+                <screenshot>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/time_display_suffix.png" align="center"/>
+                    </imageobject>
+                  </mediaobject>
+                </screenshot>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <variablelist>
+            <varlistentry>
+              <term>Time-related</term>
+              <listitem>
+                <para>Use this option to change the <emphasis role="bold">Time format</emphasis>: </para>
+                <screenshot>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/time_display_timeformat.png" align="center"/>
+                    </imageobject>
+                  </mediaobject>
+                </screenshot>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <variablelist>
+            <varlistentry>
+              <term>Visibility</term>
+              <listitem>
+                <para>This option is a simple toggle option which allows you to show or hide the
+                  time display.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </sect2>
+        <sect2 xml:id="time_display_relative">
+          <title>Time Display (Relative)</title>
+          <para>Debrief also allows you to add a relative time display to the <emphasis>plot
+              editor</emphasis>. You add this in the same manner as you add a <emphasis>Time Display
+              (Absolute)</emphasis>. It will show as follows:  <figure>
+              <title>Time Display (Relative)</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/chart_feat_add_timedisplay_rel.png" align="center"
+                      width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure><variablelist>
+              <varlistentry>
+                <term>Background color</term>
+                <listitem>
+                  <para>By default, the background color for the time display is white (RGB 255,
+                    255, 255), but can be changed as required.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Color</term>
+                <listitem>
+                  <para>The font colour used in the display (set to RGB 64, 64, 64 by
+                    default).</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Font</term>
+                <listitem>
+                  <para>The font type used.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Location</term>
+                <listitem>
+                  <para>The default location for the time display is Bottom Right, but Bottom Left,
+                    Top Right, and Top Left are also available.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Name</term>
+                <listitem>
+                  <para>You can rename this time display as required. As shown in the image above,
+                    this will change in the <emphasis>Outline view</emphasis>.</para>
+                </listitem>
+              </varlistentry>
+            </variablelist><variablelist>
+              <varlistentry>
+                <term>Negative color</term>
+                <listitem>
+                  <para>If you step back through the timer in the <emphasis>Time Controller
+                      view</emphasis>, the absolute time could precede the <emphasis>time
+                      origin</emphasis> specified for this relative time display. If so, specifying
+                    a negative colour provides a clear indication here:</para>
+                  <para/>
+                  <screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/time_display_negative_time.png" align="center"/>
+                      </imageobject>
+                    </mediaobject>
+                  </screenshot>
+                </listitem>
+              </varlistentry>
+            </variablelist><variablelist>
+              <varlistentry>
+                <term>Prefix</term>
+                <listitem>
+                  <para>As with the <emphasis>Time Display (Absolute)</emphasis> you can specify a
+                    prefix for the relative timer (the image above has been assigned ML1:) .</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Suffix</term>
+                <listitem>
+                  <para>If your time display warrants a suffix, you can add this here.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Time Related</term>
+                <listitem>
+                  <para>The absolute display only has a single time related option (time format),
+                    but the relative display has an additional one (time origin).</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Time format</term>
+                <listitem>
+                  <para>Select from a number of time format options.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Time origin</term>
+                <listitem>
+                  <para>Unlike the absolute time display, which mirrors the time from the
+                      <emphasis>Time controller view</emphasis>, the relative time is set to
+                    coincide with an event in the current scenario. You can specify the exact start
+                    time here:</para>
+                  <screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/time_display_time_origin.png" align="center"/>
+                      </imageobject>
+                    </mediaobject>
+                  </screenshot>
+                </listitem>
+              </varlistentry>
+            </variablelist><variablelist>
+              <varlistentry>
+                <term>Visibility</term>
+                <listitem>
+                  <para>This is a simple toggle option which allows you to turn the time display on
+                    or off without deleting it from the <emphasis>Outline view</emphasis>. </para>
+                </listitem>
+              </varlistentry>
+            </variablelist></para>
         </sect2>
 
         <sect2 xml:id="the_grid">
@@ -2307,14 +2567,19 @@ and so on....</programlisting></para>
             Sided Reconstruction extensions (see <xref linkend="TwoThouOnwards"/>) added
             functionality to Debrief to perform elementary track operations, including smoothing and
             removal of jumps. One approach to avoiding the jumps commonly associated with data from
-            inertial navigation systems is to load the data in DR mode (see <xref linkend="import_modes"/>). The alternative is to move the track before/after the jump
-            to line up the two sections.<screenshot>
+            inertial navigation systems is to load the data in DR mode (see <xref
+              linkend="import_modes"/>). The alternative is to move the track before/after the jump
+            to line up the two sections.</para>
+          <figure>
+            <title>Grooming Track Data</title>
+            <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackWithJump.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/TrackWithJump.png" width="100%" align="center"/>
                 </imageobject>
               </mediaobject>
-            </screenshot></para>
+            </screenshot>
+          </figure>
         </sect2>
 
         <sect2 xml:id="ResamplingData">
@@ -2368,29 +2633,36 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Track sections</primary>
-
               <secondary>Split</secondary>
             </indexterm>Before a jump can be removed from a track, the track must be split. To split
             a track, first decide where the split should be made, and right-click on the point where
-            the split should happen (either on the plot or in the Outline View). The popup menu
-            will provide options to split the track immediately before or after the indicated point.<screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/SplitTrackMenu.png" align="center"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot></para>
+            the split should happen (either on the plot or in the Outline View). The popup menu will
+            provide options to split the track immediately before or after the indicated point.<figure>
+              <title>Splitting Track Sections</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/SplitTrackMenu.png" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
 
-          <para>On completion you&apos;ll see a visible split in the track, and the track represented as
-            two segments in the Outline View.<screenshot>
+          <para>On completion you&apos;ll see a visible split in the track, and the track
+            represented as two segments in the Outline View.The track segments are named according
+            to the DTG of their start point. The two track segments can now be manipulated
+            separately (dragged) using the &apos;drag TMA segment&apos; tool as described later (see
+              <xref linkend="DraggingTracks"/>).</para>
+          <figure>
+            <title>Track Sections Split</title>
+            <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackAfterSplit.png" scalefit="1" width="100%"/>
+                  <imagedata fileref="figures/TrackAfterSplit.png" align="center"/>
                 </imageobject>
               </mediaobject>
-            </screenshot>The track segments are named according to the DTG of their start point. The
-            two track segments can now be manipulated separately (dragged) using the &apos;drag TMA
-            segment&apos; tool as described later (see <xref linkend="DraggingTracks"/>).</para>
+            </screenshot>
+          </figure>
         </sect2>
 
         <sect2 xml:id="JoinTrackSections">
@@ -2398,18 +2670,21 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Track sections</primary>
-
               <secondary>Join</secondary>
-            </indexterm>Once track segments have been manipulated (see <xref linkend="DraggingTracks"/>), they can be rejoined. To rejoin tracks, select them
+            </indexterm>Once track segments have been manipulated (see <xref
+              linkend="DraggingTracks"/>), they can be rejoined. To rejoin tracks, select them
             both/all in the Outline View (using the <guilabel>Control</guilabel> key as
             appropriate). Then right-click and select Merge Tracks as shown below. Note, you can
-            select which track becomes the &apos;host&apos;. <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/MergeTracks.png" align="center"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot></para>
+            select which track becomes the &apos;host&apos;. <figure>
+              <title>Joining Track Sections</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/MergeTracks.png" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
 
           <para>The Debrief merge algorithm is not able to handle overlapping tracks, since it
             cannot resolve which overlapping segment to favour. This is a task best undertaken by
@@ -2481,34 +2756,43 @@ and so on....</programlisting></para>
             period of drift, with two green markers indicating the start/end of the dived period. A
             GPS fix was obtained at the green marker near the North-West. Then the submarine dived,
             and the drift error grew cumulatively. The next GPS fix was obtained at the time of the
-            green marker near the South East. <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/JumpOne.png" scalefit="1" width="100%"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot></para>
-          <para>To remove jumps for this period, the analyst opens the Outline View, then selects positions
-            for the whole period representing the 
-          drift section of track, from the first green marker to the second green marker (inclusive).
-            <tip><para>Use the shift-key to select a continuous sequence of items</para></tip> After right-clicking
-          on this period of position data the analyst will select <guibutton>Remove jumps in selected positions</guibutton>.
-          The algorithm determines the size of the large jump at the end of the period, then works through the selected
-          positions, applying a proportion of that large jump to each position, ensuring the green positions remain unchanged. <screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/JumpTwo.png" scalefit="1" width="100%"/>
-              </imageobject>
-            </mediaobject>
-          </screenshot>
-            In addition to selecting a discrete period of positions, it is possible to right-click on a track&apos;s 
-            <emphasis>Positions</emphasis> element in the Outline View, then selecting 
-            <guibutton>Remove jumps for selected track</guibutton>.  But, please note that this will
-            probably give a sub-optimal solution.  When the whole track is selected, Debrief uses the first
-            point in that track as the first lock point.  For a more accurate tidied track, manually select
-            the positions, ensuring a real GPS fix is used as the first point.
-          <note><para>Read more about the algorithm underpinning Remove Jumps in Chapter 3 of 
-            the Reference Guide <xref linkend="RemoveJumpsRef"/></para></note></para>
+            green marker near the South East. <figure>
+              <title>Removing Track Jumps</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/JumpOne.png" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+          <para>To remove jumps for this period, the analyst opens the Outline View, then selects
+            positions for the whole period representing the drift section of track, from the first
+            green marker to the second green marker (inclusive). <tip>
+              <para>Use the shift-key to select a continuous sequence of items</para>
+            </tip> After right-clicking on this period of position data the analyst will select
+              <guibutton>Remove jumps in selected positions</guibutton>. The algorithm determines
+            the size of the large jump at the end of the period, then works through the selected
+            positions, applying a proportion of that large jump to each position, ensuring the green
+            positions remain unchanged. <figure>
+              <title>Track Jumps Removed</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/JumpTwo.png" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure> In addition to selecting a discrete period of positions, it is possible to
+            right-click on a track&apos;s <emphasis>Positions</emphasis> element in the Outline
+            View, then selecting <guibutton>Remove jumps for selected track</guibutton>. But, please
+            note that this will probably give a sub-optimal solution. When the whole track is
+            selected, Debrief uses the first point in that track as the first lock point. For a more
+            accurate tidied track, manually select the positions, ensuring a real GPS fix is used as
+            the first point. <note>
+              <para>Read more about the algorithm underpinning Remove Jumps in Chapter 3 of the
+                Reference Guide <xref linkend="RemoveJumpsRef"/></para>
+            </note></para>
         </sect2>
       </sect1>
 
@@ -2521,13 +2805,16 @@ and so on....</programlisting></para>
           <para><indexterm>
               <primary>Grid editor</primary>
             </indexterm>The Grid Editor is a tabular editor with an associated xy plot that allows
-            bulk editing of data points, together with data smoothing operations.<screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/GridOverview.png" scalefit="1" width="100%"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot></para>
+            bulk editing of data points, together with data smoothing operations.<figure>
+              <title>The Grid Editor</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/GridOverview.png" align="center" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
         </sect2>
 
         <sect2 xml:id="UseOfGrid">
@@ -2732,26 +3019,28 @@ and so on....</programlisting></para>
         <sect2 xml:id="more_assigning_tracks">
           <title>Assigning tracks</title>
 
-          <para>Assigning primary and secondary tracks is covered in the respective <glossterm linkend="g_cheat">Cheat Sheet</glossterm>. Icons are provided in the Outline View
+          <para>Assigning primary and secondary tracks is covered in the respective <glossterm
+              linkend="g_cheat">Cheat Sheet</glossterm>. Icons are provided in the Outline View
             toolbar to specify if the selected track should be:<orderedlist>
               <listitem>
                 <para>Made primary</para>
               </listitem>
-
               <listitem>
                 <para>Made secondary</para>
               </listitem>
-
               <listitem>
                 <para>Added to the list of secondaries</para>
               </listitem>
-            </orderedlist><screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/LayerManagerView.png" width="279" align="center"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot></para>
+            </orderedlist><figure>
+              <title>Assigning Tracks</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/LayerManagerView.png" align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
 
           <tip>
             <para>If you have more than two tracks, it can be quicker to assign the primary track
@@ -3816,13 +4105,19 @@ and so on....</programlisting></para>
           <para>To access this property, select the Properties button on the <glossterm
               linkend="g_tote">Time Controller</glossterm> (the drop-down button on the view), and
             change to Symbol Highlight in Plotting Mode. As shown below:</para>
-          <para><inlinemediaobject>
-              <imageobject>
-                <imagedata
-                  fileref="figures/time_controller_symbolhighlighter.png"
-                  width="100%"/>
-              </imageobject>
-            </inlinemediaobject></para>
+          <para>
+            <figure>
+              <title>Highlighting Symbols in Tracks</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/time_controller_symbolhighlighter.png"
+                      align="center"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>
+          </para>
 
           <tip>
             <para>By switching to Snail mode and reducing the reducing the Trail Length to zero, a
@@ -4936,52 +5231,71 @@ and so on....</programlisting></para>
           off by navigating to the part of the world where you roughly want your vessel tracks to
           be. You&apos;ll make more detailed changes to the track location once the track is
           created.</para>
-        <para>Next, you must select "Create Track Segment" from <application>Debrief</application>&apos;s
-          Drawing Toolbar, or the <guimenu>Drawing</guimenu> menu.<screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/AddSegment.png" align="center"/>
-              </imageobject>
-            </mediaobject>
-          </screenshot></para>
-        <para>Next you&apos;ll be invited to select which parent track to add the track segment to. In
-          this instance, we don&apos;t have an existing track, so select "[New Track...]" from the
-          dialog. Clearly if you were extending an existing planning track you&apos;d select it.<screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/AddSegment2.png" align="center"/>
-              </imageobject>
-            </mediaobject>
-          </screenshot></para>
-        <para>Since we&apos;re creating a new track we now see a couple of dialogs associated with the
-          new track. First we must give the new track a name:<screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/AddSegment3.png" align="center"/>
-              </imageobject>
-            </mediaobject>
-          </screenshot></para>
-        <para>Next we must specify the starting date/time for the track:<screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/AddSegment4.png" align="center"/>
-              </imageobject>
-            </mediaobject>
-          </screenshot></para>
+        <para>Next, you must select "Create Track Segment" from
+          <application>Debrief</application>&apos;s Drawing Toolbar, or the
+            <guimenu>Drawing</guimenu> menu.<figure>
+            <title>Create tracks toolbar button</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+        <para>Next you&apos;ll be invited to select which parent track to add the track segment to.
+          In this instance, we don&apos;t have an existing track, so select "[New Track...]" from
+          the dialog. Clearly if you were extending an existing planning track you&apos;d select it.<figure>
+            <title>Adding a new track segment</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment2.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+        <para>Since we&apos;re creating a new track we now see a couple of dialogs associated with
+          the new track. First we must give the new track a name:<figure>
+            <title>Naming the new track</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment3.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+        <para>Next we must specify the starting date/time for the track:<figure>
+            <title>Specifying the track's DTG</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment4.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
         <para>Once we&apos;ve finished specifying the track, we must specify a name for this
-          particular leg of the track:<screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/AddSegment5.png" align="center"/>
-              </imageobject>
-            </mediaobject>
-          </screenshot>Your track will now appear on the screen, and also in the layer manager.<screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/AddSegment5a.png" align="center"/>
-              </imageobject>
-            </mediaobject>
-          </screenshot></para>
+          particular leg of the track:<figure>
+            <title>Naming the leg</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment5.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure>Your track will now appear on the screen, and also in the layer manager.<figure>
+            <title>Track created</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment5a.png" align="center"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
         <para>Once you&apos;ve created a parent track, next time you can select it from the first dialog
           - after which you just need to specify a leg name,</para>
       </sect1>
