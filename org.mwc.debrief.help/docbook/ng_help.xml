@@ -786,7 +786,7 @@ Naval Undersea Warfare Center (NUWC)
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/bare_app.png"/>
+                  <imagedata fileref="figures/bare_app.png" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -1774,8 +1774,6 @@ and so on....</programlisting></para>
                 </figure>
               </listitem>
             </varlistentry>
-          </variablelist>
-          <variablelist>
             <varlistentry>
               <term>Prefix</term>
               <listitem>
@@ -1790,8 +1788,6 @@ and so on....</programlisting></para>
                 </screenshot>
               </listitem>
             </varlistentry>
-          </variablelist>
-          <variablelist>
             <varlistentry>
               <term>Suffix</term>
               <listitem>
@@ -1805,8 +1801,6 @@ and so on....</programlisting></para>
                 </screenshot>
               </listitem>
             </varlistentry>
-          </variablelist>
-          <variablelist>
             <varlistentry>
               <term>Time-related</term>
               <listitem>
@@ -1820,8 +1814,6 @@ and so on....</programlisting></para>
                 </screenshot>
               </listitem>
             </varlistentry>
-          </variablelist>
-          <variablelist>
             <varlistentry>
               <term>Visibility</term>
               <listitem>
@@ -1939,7 +1931,6 @@ and so on....</programlisting></para>
                   </screenshot>
                 </listitem>
               </varlistentry>
-            </variablelist><variablelist>
               <varlistentry>
                 <term>Visibility</term>
                 <listitem>
@@ -2635,7 +2626,13 @@ and so on....</programlisting></para>
             </indexterm>Before a jump can be removed from a track, the track must be split. To split
             a track, first decide where the split should be made, and right-click on the point where
             the split should happen (either on the plot or in the Outline View). The popup menu will
-            provide options to split the track immediately before or after the indicated point.<figure>
+            provide options to split the track immediately before or after the indicated point.<tip>
+              <para>It might be worthwhile enabling the <emphasis role="bold">Start/End time
+                  labels</emphasis> attribute so you can see exactly where the start and end times
+                for each track segment begin and end. Refer to tutorial 2, <emphasis role="bold"
+                  >Viewing some data</emphasis>, and the procedure for <emphasis role="bold">Adding
+                  data to a plot</emphasis>. </para>
+            </tip><figure>
               <title>Splitting Track Sections</title>
               <screenshot>
                 <mediaobject>
