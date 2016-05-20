@@ -86,8 +86,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	public CoreViewLabelProvider()
 	{
 		// ok, retrieve the images from our own registry
-		visImage = CorePlugin.getImageFromRegistry("check2.png");
-		hiddenImage = CorePlugin.getImageFromRegistry("blank_check.png");
+		visImage = CorePlugin.getImageFromRegistry("show.png");
+		hiddenImage = CorePlugin.getImageFromRegistry("hide.png");
 		nonVisibleImage = CorePlugin.getImageFromRegistry("desktop.png");
 	}
 
