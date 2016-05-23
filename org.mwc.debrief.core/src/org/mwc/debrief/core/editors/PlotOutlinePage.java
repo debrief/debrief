@@ -47,6 +47,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -54,6 +55,9 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -205,7 +209,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	  
     
 		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
+				| SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 		_treeViewer.setUseHashlookup(true);
 		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
@@ -317,11 +321,48 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
 					// and see if we can make it a secondary
 					_addAsSecondary.setEnabled(isValidSecondary(ss));
+					
+					enableVisibilityActions(ss);
 				}
 				connectActions();
 			}
 
 		});
+		
+		/**
+		 * Intentional not used TableEditor which would create lot of objects 
+		 * as this view usually has more data.
+		 */
+		_treeViewer.getTree().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				Point pt = new Point(e.x, e.y);
+				if(e.count > 1)
+					return;
+				
+				ViewerCell viewerCell = _treeViewer.getCell(pt);
+				//click on visibility column and check image only.
+				if(viewerCell != null && viewerCell.getColumnIndex() == 1 
+						&& viewerCell.getImageBounds() != null && viewerCell.getImageBounds().contains(pt)){
+					Object element = viewerCell.getElement();
+					if (element instanceof EditableWrapper) {
+						final EditableWrapper pw = (EditableWrapper) element;
+						final Editable ed = pw.getEditable();
+						if (ed instanceof Plottable) {
+							Plottable pl = (Plottable) ed;
+							// toggle
+							if(pl.getVisible()){
+								_hideAction.run();
+							}else{
+								_revealAction.run();
+							}
+						}
+					}
+				}
+			}
+		});
+		
+		
 		_treeViewer.getTree().addFocusListener(new FocusAdapter()
     {
 		  @Override
@@ -812,6 +853,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
 		_hideAction = new Action()
 		{
+			
 			public void run()
 			{
 				final AbstractOperation doIt = new SelectionOperation("Hide item",
@@ -835,6 +877,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 							}
 						}, _treeViewer, _myLayers);
 				CorePlugin.run(doIt);
+				enableVisibilityActions((StructuredSelection) getSelection());
 			}
 		};
 		_hideAction.setText("Hide item");
@@ -867,6 +910,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 							}
 						}, _treeViewer, _myLayers);
 				CorePlugin.run(doIt);
+				enableVisibilityActions((StructuredSelection) getSelection());
 			}
 		};
 		_revealAction.setText("Reveal item");
@@ -902,8 +946,12 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		if (sel.size() > 0)
 		{
 			// ok, allow hide/reveal
-			manager.add(_hideAction);
-			manager.add(_revealAction);
+			if(isAtleastOnePlottableCheck(sel, true)){
+				manager.add(_hideAction);
+			}
+			if(isAtleastOnePlottableCheck(sel, false)){
+				manager.add(_revealAction);
+			}
 
 			// have a look at the data-types to sort out whether to primary/secondary
 			if (isValidPrimary(sel))
@@ -929,6 +977,33 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		    selectionContext.parentLayers, _myLayers, false);
 
 	}
+	
+	
+	/**
+	 * Checks atleast one plottable element is visible or not based on parameter
+	 * @param ss
+	 * @param visible
+	 * @return
+	 */
+	protected boolean isAtleastOnePlottableCheck(final StructuredSelection ss, boolean visible){
+		boolean atleastOnePlottableCheck = false;
+		if(!ss.isEmpty()){
+			for(Object element: ss.toList()){
+				final EditableWrapper pw = (EditableWrapper) element;
+				final Editable ed = pw.getEditable();
+				if (ed instanceof Plottable)
+				{
+					final Plottable pl = (Plottable) ed;
+					if (pl.getVisible() == visible){
+						atleastOnePlottableCheck = true;
+						break;
+					}
+				}
+			}
+		}
+		return atleastOnePlottableCheck;
+	}
+	
 
 	/**
 	 * find out if the selection is valid for setting as primary
@@ -1681,6 +1756,14 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			});
 		}
 
+	}
+
+	private void enableVisibilityActions(final StructuredSelection ss) {
+		// enable hide action if atleast one selected plottable element is visible
+		_hideAction.setEnabled(isAtleastOnePlottableCheck(ss, true));
+		
+		// enable hide action if atleast one selected plottable element is hidden
+		_revealAction.setEnabled(isAtleastOnePlottableCheck(ss, false));
 	}
 
 	private static interface IOperateOn
