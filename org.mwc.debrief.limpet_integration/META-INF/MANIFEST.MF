@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Limpet_integration
+Bundle-SymbolicName: org.mwc.debrief.limpet_integration; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.mwc.debrief.limpet_integration.LimpetInt_Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.core,
+ org.mwc.cmap.legacy,
+ info.limpet.stackedcharts.model;bundle-version="1.0.0",
+ info.limpet.stackedcharts.ui;bundle-version="1.0.0"
+Bundle-ActivationPolicy: lazy
