@@ -9,5 +9,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy,
  info.limpet.stackedcharts.model;bundle-version="1.0.0",
- info.limpet.stackedcharts.ui;bundle-version="1.0.0"
+ info.limpet.stackedcharts.ui;bundle-version="1.0.0",
+ org.mwc.debrief.legacy;bundle-version="1.0.310"
 Bundle-ActivationPolicy: lazy
