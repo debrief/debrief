@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
@@ -55,11 +56,12 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
   private static final String ORIENTATION = "Orientation";
   private static final String MY_TYPE = "Grid4W";
 	private static final String NAME = "Name";
+  private static final String LINE_STYLE = "LineStyle";
 	private static final String FILL_GRID = "FillGrid";
 	private static final String FILL_COLOR = "FillColor";
+  private static final String FONT_COLOR = "FontColor";
 	private static final String US_STANDARD = "US_Standard";
 
-  java.awt.Color _theColor;
   boolean _isVisible;
   boolean _plotLabels;
   boolean _plotLines;
@@ -73,7 +75,10 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
 	double _orientation=0;
 	WorldLocation _origin;
 	Font _font = null;
+  Color _theColor = null;
 	Color _fillColor= null;
+  Color _fontColor= null;
+  int _lineStyle = LineStylePropertyEditor.SOLID;
 	boolean _fillGrid = false;
 	boolean _usStandard = false;
 	
@@ -165,7 +170,13 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
         _yMax  = val;
       }
     });
-    
+    addAttributeHandler(new HandleIntegerAttribute(LINE_STYLE)
+    {
+      public void setValue(final String name, final int val)
+      {
+        _lineStyle  = val;
+      }
+    });    
     
     
     addAttributeHandler(new HandleAttribute("Name")
@@ -211,6 +222,13 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
         _fillColor = color;
       }
     });
+    addHandler(new ColourHandler(FONT_COLOR)
+    {
+      public void setColour(final java.awt.Color color)
+      {
+        _fontColor = color;
+      }
+    });
 
   }
 
@@ -235,10 +253,19 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
    	csp.setPlotLines(_plotLines);
    	csp.setOriginAtTopLeft(_usStandard);
    	if(_fillColor != null)
-   		csp.setFillColor(_fillColor);
-   	
+   		csp.setFillColor(_fillColor);   	
    	if(_font != null)
    		csp.setFont(_font);
+   	if(_fontColor != null)
+   	{
+   	  csp.setFontColor(_fontColor);
+   	}
+   	else
+   	{
+   	  // just use the default shape colro
+   	  csp.setFontColor(_theColor);
+   	}
+   	csp.setLineStyle(_lineStyle);
     	
     addPlottable(csp);
 
@@ -246,10 +273,12 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
     _font = null;
     _origin = null;
     _fillColor= null;
+    _fontColor= null;
     _theColor = null;
     _plotLabels = false;
     _isVisible = false;
     _myName = null;
+    _lineStyle = LineStylePropertyEditor.SOLID;
   }
 
   /**
@@ -306,8 +335,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
     gridElement.setAttribute(PLOT_LINES, writeThis(theGrid.getPlotLines()));
     gridElement.setAttribute(FILL_GRID, writeThis(theGrid.getFillGrid()));
     gridElement.setAttribute(US_STANDARD, writeThis(theGrid.getOriginAtTopLeft()));
-    
-    
+    gridElement.setAttribute(LINE_STYLE, writeThis(theGrid.getLineStyle()));
+        
     // does it have a none-standard name?
     if(theGrid.getName() != GridPainter.GRID_TYPE_NAME)
     {
@@ -317,6 +346,7 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
     // do the colour
     ColourHandler.exportColour(theGrid.getColor(), gridElement, doc);
     ColourHandler.exportColour(theGrid.getFillColor(), gridElement, doc, FILL_COLOR);
+    ColourHandler.exportColour(theGrid.getFontColor(), gridElement, doc, FONT_COLOR);
     LocationHandler.exportLocation(theGrid.getOrigin(), ORIGIN, gridElement, doc);
     FontHandler.exportFont(theGrid.getFont(), gridElement, doc);
   }
