@@ -723,7 +723,6 @@
 		<xs:attribute name="yDelta" type="xs:double" />
 		<xs:attribute name="yMax" type="xs:integer" />
 		<xs:attribute name="yMin" type="xs:integer" />
-		<xs:attribute name="yMin" type="xs:integer" />
 		<xs:attribute name="LineStyle" type="xs:integer" />
 	</xs:complexType>
 	<xs:complexType name="vpf_database">
