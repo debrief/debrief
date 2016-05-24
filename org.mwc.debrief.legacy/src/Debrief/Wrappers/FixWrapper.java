@@ -536,7 +536,12 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   @FireReformatted
   public final void resetColor()
   {
-    setColor(null);
+    // do we know our parent?
+    if(_trackWrapper != null)
+    {
+      // ok, revert to the parent color
+      setColor(_trackWrapper.getColor());
+    }
   }
 
   /**
