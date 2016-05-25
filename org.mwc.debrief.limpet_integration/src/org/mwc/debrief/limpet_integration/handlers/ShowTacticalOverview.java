@@ -1,13 +1,11 @@
 package org.mwc.debrief.limpet_integration.handlers;
 
-import info.limpet.stackedcharts.model.AxisType;
 import info.limpet.stackedcharts.model.Chart;
 import info.limpet.stackedcharts.model.ChartSet;
 import info.limpet.stackedcharts.model.DataItem;
 import info.limpet.stackedcharts.model.Dataset;
 import info.limpet.stackedcharts.model.DependentAxis;
 import info.limpet.stackedcharts.model.IndependentAxis;
-import info.limpet.stackedcharts.model.LineType;
 import info.limpet.stackedcharts.model.MarkerStyle;
 import info.limpet.stackedcharts.model.Orientation;
 import info.limpet.stackedcharts.model.PlainStyling;
@@ -110,7 +108,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // sort out the time axis
     IndependentAxis ia = factory.createIndependentAxis();
-    ia.setAxisType(AxisType.TIME);
+    ia.setAxisType(factory.createDateAxis());
     ia.setName("Time");
     charts.setSharedAxis(ia);
 
@@ -218,7 +216,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Dataset courseData = factory.createDataset();
     courseData.setName("Course (\u00b0)");
     PlainStyling courseStyle = factory.createPlainStyling();
-    courseStyle.setColor(getHTMLColorString(color.brighter()));
+    courseStyle.setColor(color.brighter());
     courseData.setStyling(courseStyle);
     courseStyle.setMarkerStyle(MarkerStyle.CIRCLE);
     courseAxis.getDatasets().add(courseData);
@@ -226,7 +224,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Dataset speedData = factory.createDataset();
     speedData.setName("Speed (kts)");
     PlainStyling speedStyle = factory.createPlainStyling();
-    speedStyle.setColor(getHTMLColorString(color.darker()));
+    speedStyle.setColor(color.darker());
     speedStyle.setMarkerStyle(MarkerStyle.CROSS);
     speedData.setStyling(speedStyle);
     speedAxis.getDatasets().add(speedData);
@@ -234,7 +232,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Dataset depthData = factory.createDataset();
     depthData.setName("Depth (m)");
     PlainStyling depthStyle = factory.createPlainStyling();
-    depthStyle.setColor(getHTMLColorString(color));
+    depthStyle.setColor(color);
     depthStyle.setMarkerStyle(MarkerStyle.NONE);
     depthData.setStyling(depthStyle);
     depthAxis.getDatasets().add(depthData);
@@ -304,7 +302,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Dataset bearingData = factory.createDataset();
     bearingData.setName("Bearing (\u00b0)");
     PlainStyling bearingStyle = factory.createPlainStyling();
-    bearingStyle.setColor(getHTMLColorString(color.darker().darker()));
+    bearingStyle.setColor(color.darker().darker());
     bearingData.setStyling(bearingStyle);
     bearingStyle.setMarkerStyle(MarkerStyle.DIAMOND);
     bearingAxis.getDatasets().add(bearingData);
@@ -312,7 +310,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Dataset relBearingData = factory.createDataset();
     relBearingData.setName("Rel Bearing (\u00b0)");
     PlainStyling speedStyle = factory.createPlainStyling();
-    speedStyle.setColor(getHTMLColorString(color));
+    speedStyle.setColor(color);
     speedStyle.setMarkerStyle(MarkerStyle.CROSS);
     relBearingData.setStyling(speedStyle);
     relBearingAxis.getDatasets().add(relBearingData);
@@ -320,7 +318,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Dataset atbData = factory.createDataset();
     atbData.setName("ATB (\u00b0)");
     PlainStyling relStyle = factory.createPlainStyling();
-    relStyle.setColor(getHTMLColorString(color.brighter().brighter()));
+    relStyle.setColor(color.brighter().brighter());
     relStyle.setMarkerStyle(MarkerStyle.CIRCLE);
     atbData.setStyling(relStyle);
     relBearingAxis.getDatasets().add(atbData);
@@ -328,7 +326,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Dataset rangeData = factory.createDataset();
     rangeData.setName("Range (m)");
     PlainStyling rangeStyle = factory.createPlainStyling();
-    rangeStyle.setColor(getHTMLColorString(Color.green));
+    rangeStyle.setColor(Color.green);
     rangeStyle.setMarkerStyle(MarkerStyle.NONE);
     rangeData.setStyling(rangeStyle);
     rangeAxis.getDatasets().add(rangeData);
