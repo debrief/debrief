@@ -225,6 +225,7 @@ public class ShowTacticalOverview extends AbstractHandler
                 // represent it as a datum
                 Datum datum = factory.createDatum();
                 datum.setVal(thisC.getDTG().getDate().getTime());
+                datum.setColor(thisC.getColor());
 
                 // ok, add it.
                 if(scatter == null)
@@ -252,12 +253,14 @@ public class ShowTacticalOverview extends AbstractHandler
     // ok, loop through the calculations
     Chart courseChart = factory.createChart();
     DependentAxis courseAxis = factory.createDependentAxis();
+    courseChart.setName("Course");
     courseAxis.setAxisType(factory.createNumberAxis());
     courseAxis.setName("Course (\u00b0)");
     courseChart.getMinAxes().add(courseAxis);
     charts.getCharts().add(courseChart);
     
     Chart speedChart = factory.createChart();
+    speedChart.setName("Speed & Depth");
     DependentAxis speedAxis = factory.createDependentAxis();
     speedAxis.setAxisType(factory.createNumberAxis());
     speedAxis.setName("Speed (Kts)");
