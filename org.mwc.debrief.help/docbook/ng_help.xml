@@ -791,10 +791,14 @@ Naval Undersea Warfare Center (NUWC)
               </mediaobject>
             </screenshot>
           </figure>
-          <para>Debrief requires you to have a working folder to store your data in (a project). As
+ 	  <para>Debrief requires you to have a working folder to store your data in (a project). As
             a convenience, when you open Debrief it will check if there are any projects present. If
-            none are present, you will be invited to create a project folder. Debrief will also
-            offer to copy in some sample data - it's a good idea to do this.</para>
+            none are present, the 
+		<indexterm>
+                <primary>New Project Wizard</primary>
+              </indexterm>
+	    Debrief New Project Wizard will invite you to create a project folder.
+	    Debrief will also offer to copy in some sample data - it's a good idea to do this.</para>
           <para>The Debrief user-interface follows the Workbench convention, whereby a users edits
             individual files in an <emphasis>Editor</emphasis> assisted by a series of supporting
             information panes called <emphasis>Views</emphasis>. The specific arrangement of editors
