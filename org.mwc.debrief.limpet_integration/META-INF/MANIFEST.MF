@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Limpet_integration
-Bundle-SymbolicName: org.mwc.debrief.limpet.integration; singleton:=true
+Bundle-SymbolicName: org.mwc.debrief.limpet_integration; singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.mwc.debrief.limpet_integration.LimpetInt_Activator
 Require-Bundle: org.eclipse.ui,
