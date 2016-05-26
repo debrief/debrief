@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.mwc.debrief</groupId>
-  <artifactId>org.mwc.debrief.limpet_integration"</artifactId>
+  <artifactId>org.mwc.debrief.limpet.integration"</artifactId>
   <version>1.0.0</version>
   <packaging>eclipse-plugin</packaging>
 </project>

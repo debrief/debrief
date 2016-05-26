@@ -262,7 +262,7 @@ Library.
          unpack="false"/>
 
    <plugin
-         id="org.mwc.debrief.limpet_integration"
+         id="org.mwc.debrief.limpet.integration"
          download-size="0"
          install-size="0"
          version="0.0.0"
