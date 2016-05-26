@@ -868,6 +868,10 @@
             <property name="applicationCSSResources"
                 value="platform:/plugin/org.eclipse.platform/images/"/>
             <property name="aboutText" value="%aboutText"> </property>
+            <property
+                  name="windowImages"
+                  value="icons/icon.png,icons/48/icon_48.png">
+            </property>
         </product>
     </extension>
 
