@@ -35,6 +35,16 @@
             </command>
          </toolbar>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.mwc.cmap.tote.views.ToteView">
+         <command
+               commandId="org.mwc.debrief.limpet_integration.commands.showTacticalOverview"
+               icon="icons/x_section.png"
+               id="org.mwc.debrief.limpet_integration.toolbars.showTacticalOverview"
+               tooltip="Show tactical overview">
+         </command>
+      </menuContribution>
    </extension>
 
 </plugin>
