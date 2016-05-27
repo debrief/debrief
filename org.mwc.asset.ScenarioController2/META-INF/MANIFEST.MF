@@ -16,5 +16,5 @@ Require-Bundle: org.mwc.asset.legacy,
  org.eclipse.ui.navigator,
  org.mwc.asset.NetCore
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.mwc.asset.scenariocontroller2.views

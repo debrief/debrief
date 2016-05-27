@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.core;bundle-version="1.0.193",
  org.mwc.debrief.satc.core;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: libs/jts-1.13.jar,
  .
 Export-Package: org.mwc.debrief.satc_interface,
