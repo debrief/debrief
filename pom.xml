@@ -87,6 +87,7 @@
     <module>org.mwc.debrief.product</module>
     <module>org.mwc.debrief.satc.core</module>
     <module>org.mwc.debrief.satc.integration</module>
+    <module>org.mwc.debrief.limpet_integration</module>
   </modules>
 
   <build>

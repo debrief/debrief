@@ -20,4 +20,4 @@ Require-Bundle: org.eclipse.ui,
  org.geotools,
  org.mwc.cmap.NaturalEarth
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
