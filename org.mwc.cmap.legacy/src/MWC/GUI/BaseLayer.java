@@ -287,7 +287,12 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		// special handling.  If this the chart features layer, we will double-buffer it, so VPF redraws
 		// more quickly
 	  // Time Display requires painting
-		if(theName.equals(Layers.CHART_FEATURES))
+		//
+		// NOTE - SPECIAL HANDLING: on linux the transparent buffer image isn't actually
+		// transparent. To be fixed.
+		final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
+		
+		if(!isLinux && theName.equals(Layers.CHART_FEATURES))
 			setBuffered(true);
 	}
 

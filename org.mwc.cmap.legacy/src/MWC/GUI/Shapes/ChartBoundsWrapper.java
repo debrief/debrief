@@ -495,13 +495,9 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		System.err.println("loading:" + _fileName + " into:" + _myLayers);
 		
-		// create a layer name from the filename
-		File tmpFile = new File(_fileName);
-		String layerName = tmpFile.getName();
-
 		// represent it as a normal shapefile
 		final Layer res = new ExternallyManagedDataLayer(WORLDIMAGE_TYPE,
-				getCoverageName(_fileName), layerName);
+				getCoverageName(_fileName), _fileName);
 		_myLayers.addThisLayer(res);
 
 	}
