@@ -6,7 +6,7 @@ Bundle-Version: 0.9.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.nebula.cwt.animation,
  org.eclipse.nebula.cwt.animation.effects,
  org.eclipse.nebula.cwt.animation.movement,
