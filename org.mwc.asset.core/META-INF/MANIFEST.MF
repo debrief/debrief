@@ -26,4 +26,4 @@ Export-Package: org.mwc.asset.core;
    ASSET.Models.Decision,
    org.eclipse.jface.dialogs"
 Bundle-ClassPath: .
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

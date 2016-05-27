@@ -14,4 +14,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.help.base,
  org.apache.lucene.core,
  org.apache.lucene.analysis
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

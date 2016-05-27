@@ -4,7 +4,7 @@ Bundle-Name: Debrief tests
 Bundle-SymbolicName: org.mwc.debrief.test2
 Bundle-Version: 1.0.6
 Bundle-Vendor: MWC
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.junit;bundle-version="4.0.0",
  org.mwc.cmap.LiveDataMonitor;bundle-version="1.0.5",
  org.mwc.cmap.NarrativeViewer;bundle-version="1.0.18",
