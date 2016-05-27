@@ -14,4 +14,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.core,
  org.eclipse.ui.views
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

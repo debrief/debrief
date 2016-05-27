@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.legacy;bundle-version="1.0.246",
  org.mwc.cmap.TimeController;bundle-version="1.0.49",
  org.mwc.debrief.satc.integration;bundle-version="1.0.12"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.timebar,
  org.mwc.debrief.timebar.model,

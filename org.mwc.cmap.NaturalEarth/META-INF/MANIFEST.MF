@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.legacy;bundle-version="1.0.190",
  org.mwc.cmap.gt2Plot,
  org.mwc.cmap.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
 Bundle-ClassPath: .
