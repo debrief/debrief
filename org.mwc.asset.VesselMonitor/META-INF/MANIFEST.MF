@@ -12,4 +12,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.asset.legacy
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: VesselMonitor.jar
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

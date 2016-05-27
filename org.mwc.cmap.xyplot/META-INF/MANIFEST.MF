@@ -15,4 +15,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer
 Export-Package: org.mwc.cmap.xyplot,
  org.mwc.cmap.xyplot.views
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
