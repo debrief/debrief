@@ -292,20 +292,24 @@ public class ShowTacticalOverview extends AbstractHandler
         track.getItemsBetween(track.getStartDTG(), track.getEndDTG());
 
     Dataset courseData = factory.createDataset();
-    courseData.setName(track.getName() + "- Course");
+    courseData.setName(track.getName() + " Course");
     courseAxis.getDatasets().add(courseData);
     PlainStyling courseStyle = factory.createPlainStyling();
     courseStyle.setColor(track.getColor());
+    courseStyle.setMarkerStyle(MarkerStyle.NONE);
+    courseData.setStyling(courseStyle);
     Dataset speedData = factory.createDataset();
-    speedData.setName(track.getName() + "- Speed");
+    speedData.setName(track.getName() + " Speed");
     PlainStyling speedStyle = factory.createPlainStyling();
     speedStyle.setColor(track.getColor().brighter());
+    speedStyle.setMarkerStyle(MarkerStyle.NONE);
     speedData.setStyling(speedStyle);    
     speedAxis.getDatasets().add(speedData);
     Dataset depthData = factory.createDataset();
-    depthData.setName(track.getName() + "- Depth");
+    depthData.setName(track.getName() + " Depth");
     PlainStyling depthStyle = factory.createPlainStyling();
     depthStyle.setColor(track.getColor().darker().darker());
+    depthStyle.setMarkerStyle(MarkerStyle.NONE);
     depthData.setStyling(depthStyle);
     
     boolean hasDepth = false;
@@ -387,14 +391,14 @@ public class ShowTacticalOverview extends AbstractHandler
     PlainStyling courseStyle = factory.createPlainStyling();
     courseStyle.setColor(color.brighter());
     courseData.setStyling(courseStyle);
-    courseStyle.setMarkerStyle(MarkerStyle.CIRCLE);
+    courseStyle.setMarkerStyle(MarkerStyle.NONE);
     courseAxis.getDatasets().add(courseData);
 
     Dataset speedData = factory.createDataset();
     speedData.setName("Speed (kts)");
     PlainStyling speedStyle = factory.createPlainStyling();
     speedStyle.setColor(color.darker());
-    speedStyle.setMarkerStyle(MarkerStyle.CROSS);
+    speedStyle.setMarkerStyle(MarkerStyle.NONE);
     speedData.setStyling(speedStyle);
     speedAxis.getDatasets().add(speedData);
 
