@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ui.commands">
       <category
-            name="Sample Category"
+            name="Tactical Overview"
             id="org.mwc.debrief.limpet_integration.commands.category">
       </category>
       <command
@@ -23,18 +23,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="org.mwc.debrief.limpet_integration.toolbars.overview">
-            <command
-                  commandId="org.mwc.debrief.limpet_integration.commands.showTacticalOverview"
-                  icon="icons/x_section.png"
-                  tooltip="Show tactical overview"
-                  id="org.mwc.debrief.limpet_integration.toolbars.showTacticalOverview">
-            </command>
-         </toolbar>
-      </menuContribution>
       <menuContribution
             allPopups="false"
             locationURI="toolbar:org.mwc.cmap.tote.views.ToteView">
