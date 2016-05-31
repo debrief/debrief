@@ -133,6 +133,8 @@ import java.util.Iterator;
 public final class SymbolFactory
 {
 
+  private static final String FISHING_VESSEL = "Fishing_Vessel";
+
   public static final String SCALED_FRIGATE = "ScaledFrigate";
 
   public static final String TORPEDO = "Torpedo";
@@ -385,7 +387,7 @@ public final class SymbolFactory
       vessels.put("Destroyer", MWC.GUI.Shapes.Symbols.Vessels.DestroyerSym.class);
       vessels.put("Frigate", MWC.GUI.Shapes.Symbols.Vessels.FrigateSym.class);
       vessels.put("TA Frigate", MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym.class);
-      vessels.put("Fishing_Vessel", MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
+      vessels.put(FISHING_VESSEL, MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
       vessels.put(MERCHANT, MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
       vessels.put("Unknown", MWC.GUI.Shapes.Symbols.Vessels.UnknownSym.class);
       vessels.put("Minesweeper", MWC.GUI.Shapes.Symbols.Vessels.MinesweeperSym.class);
@@ -409,7 +411,7 @@ public final class SymbolFactory
       _theVesselIds.put("Destroyer", "D");
       _theVesselIds.put("Frigate", "F");
       _theVesselIds.put("TA Frigate", "T");
-      _theVesselIds.put("Fishing Vessel", "V");
+      _theVesselIds.put(FISHING_VESSEL, "V");
       _theVesselIds.put(MERCHANT, "M");
       _theVesselIds.put("Minesweeper", "N");
       _theVesselIds.put("Troop_Carrier", "R");
