@@ -163,7 +163,16 @@ public class ShowTacticalOverview extends AbstractHandler
 
     producePerStateCharts(pri, secs, factory, charts);
     
-    Chart thisChart = null;
+    // produce the range/sensor chart
+    Chart sensorChart = factory.createChart();
+    sensorChart.setName("Contact");
+    DependentAxis rangeAxis = factory.createDependentAxis();
+    rangeAxis.setName("Range");
+    rangeAxis.setAxisType(factory.createNumberAxis());
+    sensorChart.getMinAxes().add(rangeAxis);
+
+    // produce the sensor coverage
+    produceSensorCoverage(pri, ia, sensorChart, factory);
     
     // produce the relative chart
     if (secs != null)
@@ -172,8 +181,8 @@ public class ShowTacticalOverview extends AbstractHandler
       if (secs.length == 1)
       {
         // ok, single secondary - we just need on relative plot
-        thisChart =
-            createRelativeChartFor(factory, pri, secs[0], "Relative State");
+        Chart thisChart =
+            createRelativeChartFor(factory, pri, secs[0], "Relative State", rangeAxis);
         charts.getCharts().add(thisChart);
       }
       else
@@ -184,16 +193,17 @@ public class ShowTacticalOverview extends AbstractHandler
         for (int i = 0; i < secs.length; i++)
         {
           // ok, single secondary - we just need on relative plot
-          thisChart =
+          Chart thisChart =
               createRelativeChartFor(factory, pri, secs[i], secs[i].getName()
-                  + " vs " + pri.getName());
+                  + " vs " + pri.getName(), rangeAxis);
           charts.getCharts().add(thisChart);
         }
       }
     }
 
-    // produce the sensor coverage
-    produceSensorCoverage(pri, ia, thisChart, factory);
+    // put the sensor chart at the bottom of the stack
+    charts.getCharts().add(sensorChart);
+
     return charts;
   }
 
@@ -457,7 +467,7 @@ public class ShowTacticalOverview extends AbstractHandler
   }
 
   private Chart createRelativeChartFor(StackedchartsFactory factory,
-      WatchableList pri, WatchableList sec, String string)
+      WatchableList pri, WatchableList sec, String string, DependentAxis rangeAxis)
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
@@ -476,25 +486,20 @@ public class ShowTacticalOverview extends AbstractHandler
     relBearingAxis.setAxisType(factory.createNumberAxis());
     chart.getMinAxes().add(relBearingAxis);
 
-    DependentAxis rangeAxis = factory.createDependentAxis();
-    rangeAxis.setName("Range");
-    rangeAxis.setAxisType(factory.createNumberAxis());
-    chart.getMaxAxes().add(rangeAxis);
-
     // prepare our datasets
     Dataset bearingData = factory.createDataset();
     bearingData.setName("Bearing (\u00b0)");
     PlainStyling bearingStyle = factory.createPlainStyling();
     bearingStyle.setColor(color.darker().darker());
     bearingData.setStyling(bearingStyle);
-    bearingStyle.setMarkerStyle(MarkerStyle.DIAMOND);
+    bearingStyle.setMarkerStyle(MarkerStyle.NONE);
     bearingAxis.getDatasets().add(bearingData);
 
     Dataset relBearingData = factory.createDataset();
     relBearingData.setName("Rel Bearing (\u00b0)");
     PlainStyling speedStyle = factory.createPlainStyling();
     speedStyle.setColor(color);
-    speedStyle.setMarkerStyle(MarkerStyle.CROSS);
+    speedStyle.setMarkerStyle(MarkerStyle.NONE);
     relBearingData.setStyling(speedStyle);
     relBearingAxis.getDatasets().add(relBearingData);
 
@@ -502,14 +507,14 @@ public class ShowTacticalOverview extends AbstractHandler
     atbData.setName("ATB (\u00b0)");
     PlainStyling relStyle = factory.createPlainStyling();
     relStyle.setColor(color.brighter().brighter());
-    relStyle.setMarkerStyle(MarkerStyle.CIRCLE);
+    relStyle.setMarkerStyle(MarkerStyle.NONE);
     atbData.setStyling(relStyle);
     relBearingAxis.getDatasets().add(atbData);
 
     Dataset rangeData = factory.createDataset();
     rangeData.setName("Range (m)");
     PlainStyling rangeStyle = factory.createPlainStyling();
-    rangeStyle.setColor(Color.green);
+    rangeStyle.setColor(sec.getColor());
     rangeStyle.setMarkerStyle(MarkerStyle.NONE);
     rangeData.setStyling(rangeStyle);
     rangeAxis.getDatasets().add(rangeData);
