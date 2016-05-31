@@ -117,13 +117,23 @@ public class ShowTacticalOverview extends AbstractHandler
     
     // ok, produce the chartset model
     ChartSet charts = produceChartSet(pri, secs);
+    
+    // create a composite name, to use as the id
+    String viewId = pri.getName();
+    if(secs != null)
+    {
+      for (int i = 0; i < secs.length; i++)
+      {
+        WatchableList watchableList = secs[i];
+        viewId += watchableList.getName();
+      }
+    }
 
     // create a new instance of the Tactical Overview
     String ID = StackedChartsView.ID;
-    String title = editor.getTitle() + " - Tactical Overview";
     try
     {
-      page.showView(ID, title, IWorkbenchPage.VIEW_ACTIVATE);
+      page.showView(ID, viewId, IWorkbenchPage.VIEW_ACTIVATE);
     }
     catch (PartInitException e)
     {
@@ -131,7 +141,7 @@ public class ShowTacticalOverview extends AbstractHandler
     }
 
     // send over the data
-    IViewReference viewRef = page.findViewReference(ID, title);
+    IViewReference viewRef = page.findViewReference(ID, viewId);
     if (viewRef != null)
     {
       IViewPart theView = viewRef.getView(true);
