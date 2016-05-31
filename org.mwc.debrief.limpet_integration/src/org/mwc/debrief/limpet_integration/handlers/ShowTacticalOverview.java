@@ -216,29 +216,36 @@ public class ShowTacticalOverview extends AbstractHandler
           if(thisS.getVisible())
           {
             Collection<Editable> matches = thisS.getItemsBetween(track.getStartDTG(), track.getEndDTG());
-            Iterator<Editable> sEnum = matches.iterator();
-            while (sEnum.hasNext())
+            
+            // did we find any?
+            if(matches != null)
             {
-              SensorContactWrapper thisC = (SensorContactWrapper) sEnum.next();
-              if(thisC.getVisible())
+              Iterator<Editable> sEnum = matches.iterator();
+              while (sEnum.hasNext())
               {
-                // represent it as a datum
-                Datum datum = factory.createDatum();
-                datum.setVal(thisC.getDTG().getDate().getTime());
-                datum.setColor(thisC.getColor());
-
-                // ok, add it.
-                if(scatter == null)
+                SensorContactWrapper thisC =
+                    (SensorContactWrapper) sEnum.next();
+                if (thisC.getVisible())
                 {
-                  SelectiveAnnotation sel = factory.createSelectiveAnnotation();
-                  sel.getAppearsIn().add(thisChart);
-                  scatter = factory.createScatterSet();
-                  scatter.setColor(thisS.getColor());
-                  sel.setAnnotation(scatter);
-                  ia.getAnnotations().add(sel);
+                  // represent it as a datum
+                  Datum datum = factory.createDatum();
+                  datum.setVal(thisC.getDTG().getDate().getTime());
+                  datum.setColor(thisC.getColor());
+
+                  // ok, add it.
+                  if (scatter == null)
+                  {
+                    SelectiveAnnotation sel =
+                        factory.createSelectiveAnnotation();
+                    sel.getAppearsIn().add(thisChart);
+                    scatter = factory.createScatterSet();
+                    scatter.setColor(thisS.getColor());
+                    sel.setAnnotation(scatter);
+                    ia.getAnnotations().add(sel);
+                  }
+
+                  scatter.getDatums().add(datum);
                 }
-                
-                scatter.getDatums().add(datum);
               }
             }
           }
