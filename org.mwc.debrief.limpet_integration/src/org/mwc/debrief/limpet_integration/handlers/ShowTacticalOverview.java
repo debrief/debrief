@@ -7,6 +7,7 @@ import info.limpet.stackedcharts.model.Dataset;
 import info.limpet.stackedcharts.model.Datum;
 import info.limpet.stackedcharts.model.DependentAxis;
 import info.limpet.stackedcharts.model.IndependentAxis;
+import info.limpet.stackedcharts.model.LineType;
 import info.limpet.stackedcharts.model.MarkerStyle;
 import info.limpet.stackedcharts.model.Orientation;
 import info.limpet.stackedcharts.model.PlainStyling;
@@ -57,6 +58,11 @@ import MWC.GenericData.WatchableList;
  */
 public class ShowTacticalOverview extends AbstractHandler
 {
+  
+
+  // standard line thickness
+  final static private float THICKNESS = 3;
+  
   /**
    * The constructor.
    */
@@ -182,20 +188,19 @@ public class ShowTacticalOverview extends AbstractHandler
       {
         // ok, single secondary - we just need on relative plot
         Chart thisChart =
-            createRelativeChartFor(factory, pri, secs[0], "Relative State", rangeAxis);
+            createRelativeChartFor(factory, pri, secs[0], "Relative State", rangeAxis, true);
         charts.getCharts().add(thisChart);
       }
       else
       {
         // multiple secondaries - we need multiple relative plots
-
         // loop through them
         for (int i = 0; i < secs.length; i++)
         {
           // ok, single secondary - we just need on relative plot
           Chart thisChart =
               createRelativeChartFor(factory, pri, secs[i], secs[i].getName()
-                  + " vs " + pri.getName(), rangeAxis);
+                  + " vs " + pri.getName(), rangeAxis, false);
           charts.getCharts().add(thisChart);
         }
       }
@@ -314,19 +319,25 @@ public class ShowTacticalOverview extends AbstractHandler
     PlainStyling courseStyle = factory.createPlainStyling();
     courseStyle.setColor(track.getColor());
     courseStyle.setMarkerStyle(MarkerStyle.NONE);
+    courseStyle.setIncludeInLegend(false);
+    courseStyle.setLineThickness(THICKNESS);
     courseData.setStyling(courseStyle);
     Dataset speedData = factory.createDataset();
     speedData.setName(track.getName() + " Speed");
     PlainStyling speedStyle = factory.createPlainStyling();
     speedStyle.setColor(track.getColor().brighter());
     speedStyle.setMarkerStyle(MarkerStyle.NONE);
+    speedStyle.setIncludeInLegend(false);
+    speedStyle.setLineThickness(THICKNESS);
     speedData.setStyling(speedStyle);    
     speedAxis.getDatasets().add(speedData);
     Dataset depthData = factory.createDataset();
     depthData.setName(track.getName() + " Depth");
     PlainStyling depthStyle = factory.createPlainStyling();
     depthStyle.setColor(track.getColor().darker().darker());
+    depthStyle.setLineThickness(THICKNESS);
     depthStyle.setMarkerStyle(MarkerStyle.NONE);
+    depthStyle.setIncludeInLegend(false);
     depthData.setStyling(depthStyle);
     
     boolean hasDepth = false;
@@ -407,6 +418,7 @@ public class ShowTacticalOverview extends AbstractHandler
     courseData.setName("Course (\u00b0)");
     PlainStyling courseStyle = factory.createPlainStyling();
     courseStyle.setColor(color.brighter());
+    courseStyle.setIncludeInLegend(false);
     courseData.setStyling(courseStyle);
     courseStyle.setMarkerStyle(MarkerStyle.NONE);
     courseAxis.getDatasets().add(courseData);
@@ -416,6 +428,7 @@ public class ShowTacticalOverview extends AbstractHandler
     PlainStyling speedStyle = factory.createPlainStyling();
     speedStyle.setColor(color.darker());
     speedStyle.setMarkerStyle(MarkerStyle.NONE);
+    speedStyle.setIncludeInLegend(false);
     speedData.setStyling(speedStyle);
     speedAxis.getDatasets().add(speedData);
 
@@ -424,6 +437,7 @@ public class ShowTacticalOverview extends AbstractHandler
     PlainStyling depthStyle = factory.createPlainStyling();
     depthStyle.setColor(color);
     depthStyle.setMarkerStyle(MarkerStyle.NONE);
+    depthStyle.setIncludeInLegend(false);
     depthData.setStyling(depthStyle);
     depthAxis.getDatasets().add(depthData);
 
@@ -466,8 +480,18 @@ public class ShowTacticalOverview extends AbstractHandler
     return chart;
   }
 
+  /**
+   * 
+   * @param factory
+   * @param pri
+   * @param sec
+   * @param string
+   * @param rangeAxis
+   * @param soloSeconary
+   * @return
+   */
   private Chart createRelativeChartFor(StackedchartsFactory factory,
-      WatchableList pri, WatchableList sec, String string, DependentAxis rangeAxis)
+      WatchableList pri, WatchableList sec, String string, DependentAxis rangeAxis, boolean soloSeconary)
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
@@ -475,6 +499,7 @@ public class ShowTacticalOverview extends AbstractHandler
     Chart chart = factory.createChart();
     chart.setName(name);
 
+    
     // prepare our axes
     DependentAxis bearingAxis = factory.createDependentAxis();
     bearingAxis.setAxisType(factory.createNumberAxis());
@@ -488,34 +513,50 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // prepare our datasets
     Dataset bearingData = factory.createDataset();
-    bearingData.setName("Bearing (\u00b0)");
+    bearingData.setName(sec.getName() + " Bearing (\u00b0)");
     PlainStyling bearingStyle = factory.createPlainStyling();
     bearingStyle.setColor(color.darker().darker());
+    bearingStyle.setLineStyle(LineType.DOTTED);
+    bearingStyle.setLineThickness(THICKNESS);
     bearingData.setStyling(bearingStyle);
     bearingStyle.setMarkerStyle(MarkerStyle.NONE);
     bearingAxis.getDatasets().add(bearingData);
 
     Dataset relBearingData = factory.createDataset();
-    relBearingData.setName("Rel Bearing (\u00b0)");
-    PlainStyling speedStyle = factory.createPlainStyling();
-    speedStyle.setColor(color);
-    speedStyle.setMarkerStyle(MarkerStyle.NONE);
-    relBearingData.setStyling(speedStyle);
+    relBearingData.setName(sec.getName() + " Rel Bearing (\u00b0)");
+    PlainStyling relBearingStyle = factory.createPlainStyling();
+    relBearingStyle.setColor(color);
+    relBearingStyle.setLineThickness(THICKNESS);
+    relBearingStyle.setLineStyle(LineType.DASHED);
+    relBearingStyle.setMarkerStyle(MarkerStyle.NONE);
+    relBearingData.setStyling(relBearingStyle);
     relBearingAxis.getDatasets().add(relBearingData);
 
     Dataset atbData = factory.createDataset();
-    atbData.setName("ATB (\u00b0)");
+    atbData.setName(sec.getName() + " ATB (\u00b0)");
     PlainStyling relStyle = factory.createPlainStyling();
     relStyle.setColor(color.brighter().brighter());
+    relStyle.setLineThickness(THICKNESS);
     relStyle.setMarkerStyle(MarkerStyle.NONE);
     atbData.setStyling(relStyle);
     relBearingAxis.getDatasets().add(atbData);
 
     Dataset rangeData = factory.createDataset();
-    rangeData.setName("Range (m)");
+    final String rangeName;
+    if(soloSeconary)
+    {
+      rangeName = "Range (m)";
+    }
+    else
+    {
+      rangeName = sec + " Range (m)";
+    }
+    rangeData.setName(rangeName);
     PlainStyling rangeStyle = factory.createPlainStyling();
     rangeStyle.setColor(sec.getColor());
+    rangeStyle.setIncludeInLegend(false);
     rangeStyle.setMarkerStyle(MarkerStyle.NONE);
+    rangeStyle.setLineThickness(THICKNESS);
     rangeData.setStyling(rangeStyle);
     rangeAxis.getDatasets().add(rangeData);
 
