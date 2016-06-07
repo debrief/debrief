@@ -34,5 +34,11 @@
          </command>
       </menuContribution>
    </extension>
+   <extension
+         point="info.limpet.stackedcharts.ui.stacked_adapter">
+      <adapter
+            class="org.mwc.debrief.limpet_integration.adapter.DebriefStackedChartsAdapter">
+      </adapter>
+   </extension>
 
 </plugin>
