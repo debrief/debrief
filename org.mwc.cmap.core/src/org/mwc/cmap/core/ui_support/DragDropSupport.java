@@ -46,7 +46,6 @@ import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.VPF.VPFDatabase;
@@ -132,7 +131,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
       else if (pl instanceof ETOPOPainter)
         res = false;
       else if (pl instanceof TrackWrapper)
-        res = false;
+        res = true;
       else if (pl instanceof FixWrapper)
         res = false;
       else if (pl instanceof NarrativeWrapper)
@@ -482,28 +481,30 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 					// is this a top-level item?
 					if (parent == null)
 					{
-						final Layers layers = thisP.getLayers();
-						layers.removeThisLayer((Layer) dragee);
+					  // note: we don't allow drag/drop reorganisation of
+					  // top level layers
 					}
 					else
 					{
+					  // ok, handle the drop
 						final BaseLayer parentLayer = (BaseLayer) parent.getEditable();
 						parentLayer.removeElement(dragee);
-					}
-				}
 
-				// add to new parent
-				final TreeItem ti = (TreeItem) event.item;
-				final EditableWrapper destination = (EditableWrapper) ti.getData();
-
-				// ok, we need to add a new instance of the dragee (so we can support
-				// multiple instances)
-				final Editable newDragee = (Editable) RightClickCutCopyAdaptor
-						.cloneThis(dragee);
-
-				// also add it to the plottable layer target
-				final BaseLayer dest = (BaseLayer) destination.getEditable();
-				dest.add(newDragee);
+    				// add to new parent
+    				final TreeItem ti = (TreeItem) event.item;
+    				final EditableWrapper destination = (EditableWrapper) ti.getData();
+    
+    				// ok, we need to add a new instance of the dragee (so we can support
+    				// multiple instances)
+    				final Editable newDragee = (Editable) RightClickCutCopyAdaptor
+    						.cloneThis(dragee);
+    
+    				// also add it to the plottable layer target
+    				final BaseLayer dest = (BaseLayer) destination.getEditable();
+    				dest.add(newDragee);
+          }
+        }
+				
 			}
 		}
 		// fire update
