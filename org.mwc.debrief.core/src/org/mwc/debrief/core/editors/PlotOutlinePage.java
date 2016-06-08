@@ -582,9 +582,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		manager.add(_makeSecondary);
 		manager.add(_addAsSecondary);
 		manager.add(new Separator());
-		manager.add(_revealAction);
-		manager.add(_hideAction);
-		manager.add(new Separator());
 		manager.add(_expandAllAction);
 		manager.add(_collapseAllAction);
 		manager.add(new Separator());
@@ -945,13 +942,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		// is selected
 		if (sel.size() > 0)
 		{
-			// ok, allow hide/reveal
-			if(isAtleastOnePlottableCheck(sel, true)){
-				manager.add(_hideAction);
-			}
-			if(isAtleastOnePlottableCheck(sel, false)){
-				manager.add(_revealAction);
-			}
 
 			// have a look at the data-types to sort out whether to primary/secondary
 			if (isValidPrimary(sel))
