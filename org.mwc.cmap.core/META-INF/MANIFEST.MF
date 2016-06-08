@@ -197,7 +197,5 @@ Require-Bundle: org.mwc.cmap.legacy,
  org.eclipse.ui.views,
  org.eclipse.help,
  org.eclipse.ui.ide,
- org.mwc.cmap.jfreechart,
- info.limpet.stackedcharts.ui,
- info.limpet.stackedcharts.model
+ org.mwc.cmap.jfreechart
 Bundle-ActivationPolicy: lazy

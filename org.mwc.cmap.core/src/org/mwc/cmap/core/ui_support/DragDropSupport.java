@@ -14,8 +14,6 @@
  */
 package org.mwc.cmap.core.ui_support;
 
-import info.limpet.stackedcharts.ui.view.adapter.AdapterRegistry;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,9 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
@@ -44,7 +40,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 import org.mwc.cmap.core.property_support.EditableWrapper;
-import org.mwc.cmap.core.ui_support.DragDropSupport.XMLFileDropHandler;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
@@ -108,6 +103,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
   public void dragFinished(final DragSourceEvent event)
   {
+    LocalSelectionTransfer.getTransfer().setSelection(null);
   }
 
   public void dragSetData(final DragSourceEvent event)
@@ -116,26 +112,13 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
     if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType))
     {
-      AdapterRegistry adapter = new AdapterRegistry();
-      List<Object> element = new ArrayList<Object>(sel.size());
-      for (Object object : sel.toArray())
-      {
-        if (adapter.canConvert(object))
-        {
-          element.add(adapter.convert(object));
-        }
-      }
-
-      StructuredSelection structuredSelection =
-          new StructuredSelection(element);
-      LocalSelectionTransfer.getTransfer().setSelection(structuredSelection);
-      event.data = structuredSelection;
+      LocalSelectionTransfer.getTransfer().setSelection(sel);
     }
     else
     {
-      event.data = sel;
+      
     }
-
+    event.data = sel;
   }
 
   public void dragStart(final DragSourceEvent event)
@@ -168,8 +151,10 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
       else if (pl instanceof TacticalDataWrapper)
         res = false;
     }
-
     event.doit = res;
+    if(event.doit)
+      LocalSelectionTransfer.getTransfer().setSelection(sel);
+    
   }
 
   /**
