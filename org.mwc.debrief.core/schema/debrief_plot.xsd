@@ -707,6 +707,7 @@
 			<xs:element minOccurs="0" name="Origin" type="locationType" />
 			<xs:element minOccurs="0" name="colour" type="colourType" />
 			<xs:element minOccurs="0" name="FillColor" type="colourType" />
+			<xs:element minOccurs="0" name="FontColor" type="colourType" />
 			<xs:element minOccurs="0" name="font" type="font" />
 		</xs:all>
 		<xs:attribute name="FillGrid" type="xs:boolean" />
@@ -722,6 +723,7 @@
 		<xs:attribute name="yDelta" type="xs:double" />
 		<xs:attribute name="yMax" type="xs:integer" />
 		<xs:attribute name="yMin" type="xs:integer" />
+		<xs:attribute name="LineStyle" type="xs:integer" />
 	</xs:complexType>
 	<xs:complexType name="vpf_database">
 		<xs:sequence>

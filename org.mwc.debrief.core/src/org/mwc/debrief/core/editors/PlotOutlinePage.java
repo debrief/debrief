@@ -33,6 +33,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -54,7 +55,6 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
@@ -68,11 +68,11 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.handlers.CollapseAllHandler;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -624,6 +624,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 				.setToolTipText("Collapse all layers in the Outline View");
 		_collapseAllAction.setImageDescriptor(DebriefPlugin
 				.getImageDescriptor("icons/16/collapse_all.png"));
+		_collapseAllAction.setActionDefinitionId(IWorkbenchCommandConstants.NAVIGATE_COLLAPSE_ALL);
 
 		_expandAllAction = new Action("Expand all", Action.AS_PUSH_BUTTON)
 		{
@@ -914,6 +915,10 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		_revealAction.setToolTipText("Reveal selected items");
 		_revealAction.setImageDescriptor(DebriefPlugin
 				.getImageDescriptor("icons/16/show.png"));
+		
+		
+		IHandlerService handlerService= (IHandlerService)getSite().getService(IHandlerService.class);
+		handlerService.activateHandler(CollapseAllHandler.COMMAND_ID, new ActionHandler(_collapseAllAction));
 	}
 
 	private void hookContextMenu()

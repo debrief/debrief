@@ -536,7 +536,12 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   @FireReformatted
   public final void resetColor()
   {
-    setColor(null);
+    // do we know our parent?
+    if(_trackWrapper != null)
+    {
+      // ok, revert to the parent color
+      setColor(_trackWrapper.getColor());
+    }
   }
 
   /**
@@ -1138,13 +1143,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
               {
                   displayProp("SymbolScale", "Symbol scale",
                       "the scale of the symbol", FORMAT),
-                  displayProp("DateTimeGroup", "DateTime group",
-                      "the DTG for the fix"),
-                  prop("Color", "the position color", FORMAT),
-                  prop("Label", "the position label", FORMAT),
-                  prop("Font", "the label font", FORMAT),
-                  displayProp("LabelShowing", "Label showing",
-                      "whether the label is showing", VISIBILITY),
                   displayProp("SymbolShowing", "Symbol showing",
                       "whether the symbol is showing", VISIBILITY),
                   displayProp("ArrowShowing", "Arrow showing",
@@ -1152,10 +1150,17 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
                   displayProp("LineShowing", "Line showing",
                       "whether the to join this position it's predecessor",
                       VISIBILITY),
+                  displayProp("DateTimeGroup", "DateTime group",
+                      "the DTG for the fix"),
+                  prop("Color", "the position color", FORMAT),
+                  prop("Label", "the position label", FORMAT),
+                  prop("Font", "the label font", FORMAT),
                   displayProp("FixLocation", "Fix location",
                       "the location of the fix", SPATIAL),
                   prop("Visible", "whether the whole fix is visible",
                       VISIBILITY),
+                  displayProp("LabelShowing", "Label showing",
+                      "whether the label is showing", VISIBILITY),
                   displayLongProp("LabelFormat", "Label format",
                       "the time format of the label, or N/A to leave as-is",
                       MyDateFormatPropertyEditor.class, SPATIAL),
