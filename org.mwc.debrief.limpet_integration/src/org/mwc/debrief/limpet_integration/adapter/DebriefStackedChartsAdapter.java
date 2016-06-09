@@ -1,5 +1,6 @@
 package org.mwc.debrief.limpet_integration.adapter;
 
+import info.limpet.stackedcharts.model.Chart;
 import info.limpet.stackedcharts.model.DataItem;
 import info.limpet.stackedcharts.model.Dataset;
 import info.limpet.stackedcharts.model.PlainStyling;
@@ -215,6 +216,15 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
     }
 
     return res;
+  }
+
+  @Override
+  public boolean canBeDroppedOn(Object data, Chart destination)
+  {
+    // ok, for Debrief, we don't know about which chart they
+    // want to drop until they've started the drop process.
+    // So, just return true;
+    return true;
   }
 
 }
