@@ -1161,11 +1161,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         keeper.append((Layer) pl);
       }
 
-      _thePositions.removeElement(pl);
+      removeElement(pl);
     }
 
     // and put the keepers back in
-    _thePositions.addSegment(keeper);
+    add(keeper);
 
     // and remember we need an update
     setRelativePending();
@@ -4221,11 +4221,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     // now clear the positions
-    _thePositions.removeElement(relevantSegment);
+    removeElement(relevantSegment);
 
     // and put back our new layers
-    _thePositions.addSegment(ts1);
-    _thePositions.addSegment(ts2);
+    add(ts1);
+    add(ts2);
 
     // remember them
     res = new Vector<TrackSegment>();
