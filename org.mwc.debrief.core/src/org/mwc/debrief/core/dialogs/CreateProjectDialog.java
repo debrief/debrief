@@ -229,7 +229,7 @@ public class CreateProjectDialog extends TitleAreaDialog
     {
       if (projectName.equals(project.getName()))
       {
-        setErrorMessage(String.format("There is such project.['%s']",
+        setErrorMessage(String.format("A project with this is already loaded in Debrief:[%s]\nPlease select another",
             projectName));
         return false;
       }
