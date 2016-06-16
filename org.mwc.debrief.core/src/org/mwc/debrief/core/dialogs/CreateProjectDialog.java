@@ -69,7 +69,7 @@ public class CreateProjectDialog extends TitleAreaDialog
   private static final String PROJECT_NAME_IS_REQUIRED =
       "The project name is required";
   private static final String PROJECT_IMPORT_FOLDER_INVALID =
-      "The project name is required";
+      "A project with this name is already loaded in Debrief:[%s]. Please select another";
 
   private IOverwriteQuery overwriteQuery = new IOverwriteQuery()
   {
@@ -229,7 +229,7 @@ public class CreateProjectDialog extends TitleAreaDialog
     {
       if (projectName.equals(project.getName()))
       {
-        setErrorMessage(String.format("A project with this is already loaded in Debrief:[%s]\nPlease select another",
+        setErrorMessage(String.format(PROJECT_IMPORT_FOLDER_INVALID,
             projectName));
         return false;
       }
@@ -267,8 +267,8 @@ public class CreateProjectDialog extends TitleAreaDialog
     catch (Exception e)
     {
       MessageDialog.openError(getShell(), "Error",
-          "Can not create project. Error:" + e.getMessage());
-      DebriefPlugin.logError(Status.ERROR, "Whilst create a project", e);
+          "Can't create new project.\nError:" + e.getMessage());
+      DebriefPlugin.logError(Status.ERROR, "Whilst creating a project", e);
     }
     super.okPressed();
   }
