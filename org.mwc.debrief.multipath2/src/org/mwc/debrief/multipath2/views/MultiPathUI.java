@@ -110,6 +110,7 @@ public class MultiPathUI extends Composite
 		chartHolder = new Composite(this, SWT.EMBEDDED);
 		chartHolder
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		chartHolder.setLayout(new FillLayout());
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
