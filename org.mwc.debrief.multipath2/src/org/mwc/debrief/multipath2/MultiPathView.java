@@ -32,6 +32,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Slider;
@@ -91,6 +92,7 @@ public class MultiPathView extends ViewPart implements
 	 */
 	public void createPartControl(final Composite parent)
 	{
+	  parent.setLayout(new FillLayout());
 		_ui = new MultiPathUI(parent, SWT.EMBEDDED);
 
 		createPlot(_ui.getChartHolder());
