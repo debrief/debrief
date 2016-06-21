@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.jfree.experimental.chart.swt.ChartComposite;
 
 public class MultiPathUI extends Composite
 {
@@ -107,7 +108,7 @@ public class MultiPathUI extends Composite
 		_btnMagic.setImage(ResourceManager.getPluginImage("org.mwc.debrief.multipath2", "icons/magic_hat.png"));
 		_btnMagic.setBounds(0, 0, 40, 40);
 
-		chartHolder = new Composite(this, SWT.EMBEDDED);
+		chartHolder = new ChartComposite(this, SWT.NONE);
 		chartHolder
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 		chartHolder.setLayout(new FillLayout());

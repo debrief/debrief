@@ -88,8 +88,7 @@ public class MultiPathView extends ViewPart implements
 	public void createPartControl(final Composite parent)
 	{
 	  parent.setLayout(new FillLayout());
-		_ui = new MultiPathUI(parent, SWT.EMBEDDED);  
-		// SWT.NONE allows some controls to appear - but not graph
+		_ui = new MultiPathUI(parent, SWT.NONE);  
 
 		createPlot(_ui.getChartHolder());
 
