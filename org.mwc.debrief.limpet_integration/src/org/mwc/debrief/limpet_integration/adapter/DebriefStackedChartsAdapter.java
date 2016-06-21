@@ -217,14 +217,4 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
 
     return res;
   }
-
-  @Override
-  public boolean canBeDroppedOn(Object data, Chart destination)
-  {
-    // ok, for Debrief, we don't know about which chart they
-    // want to drop until they've started the drop process.
-    // So, just return true;
-    return true;
-  }
-
 }
