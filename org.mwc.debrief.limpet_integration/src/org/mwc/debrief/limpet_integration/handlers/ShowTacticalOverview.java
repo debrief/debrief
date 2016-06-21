@@ -18,7 +18,10 @@ import info.limpet.stackedcharts.model.impl.StackedchartsFactoryImpl;
 import info.limpet.stackedcharts.ui.view.StackedChartsView;
 
 import java.awt.Color;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 
@@ -34,6 +37,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.Tools.Tote.Calculations.atbCalc;
@@ -58,11 +62,10 @@ import MWC.GenericData.WatchableList;
  */
 public class ShowTacticalOverview extends AbstractHandler
 {
-  
 
   // standard line thickness
   final static private float THICKNESS = 3;
-  
+
   /**
    * The constructor.
    */
@@ -114,13 +117,13 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // do we have secondaries?
     WatchableList[] secs = data.getSecondaryTracks();
-    
+
     // ok, produce the chartset model
     ChartSet charts = produceChartSet(pri, secs);
-    
+
     // create a composite name, to use as the id
     String viewId = pri.getName();
-    if(secs != null)
+    if (secs != null)
     {
       for (int i = 0; i < secs.length; i++)
       {
@@ -149,12 +152,46 @@ public class ShowTacticalOverview extends AbstractHandler
       // double check it's what we're after
       if (theView instanceof StackedChartsView)
       {
-        StackedChartsView cv = (StackedChartsView) theView;
+        final StackedChartsView cv = (StackedChartsView) theView;
 
         if (charts != null)
         {
           // set follow selection to off
           cv.setModel(charts);
+
+          // see if we have a time provider
+          final TimeProvider timeProv =
+              (TimeProvider) editor.getAdapter(TimeProvider.class);
+          if (timeProv != null)
+          {
+            final PropertyChangeListener evt = new PropertyChangeListener()
+            {
+
+              @Override
+              public void propertyChange(PropertyChangeEvent evt)
+              {
+                HiResDate hd = (HiResDate) evt.getNewValue();
+                if (hd != null)
+                {
+                  Date newDate = new Date(hd.getDate().getTime());
+                  cv.updateTime(newDate);
+                }
+              }
+            };
+            timeProv.addListener(evt, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+            // we also need to listen for it closing, to remove the listner
+            cv.addRunOnCloseCallback(new Runnable()
+            {
+
+              @Override
+              public void run()
+              {
+                timeProv.removeListener(evt,
+                    TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+              }
+            });
+          }
         }
       }
     }
@@ -175,10 +212,10 @@ public class ShowTacticalOverview extends AbstractHandler
     ia.setName("Time");
     charts.setSharedAxis(ia);
 
-//    producePerPlatformCharts(pri, secs, factory, charts);
+    // producePerPlatformCharts(pri, secs, factory, charts);
 
     producePerStateCharts(pri, secs, factory, charts);
-    
+
     // produce the range/sensor chart
     Chart sensorChart = factory.createChart();
     sensorChart.setName("Contact");
@@ -189,7 +226,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // produce the sensor coverage
     produceSensorCoverage(pri, ia, sensorChart, factory);
-    
+
     // produce the relative chart
     if (secs != null)
     {
@@ -198,7 +235,8 @@ public class ShowTacticalOverview extends AbstractHandler
       {
         // ok, single secondary - we just need on relative plot
         Chart thisChart =
-            createRelativeChartFor(factory, pri, secs[0], "Relative State", rangeAxis, true);
+            createRelativeChartFor(factory, pri, secs[0], "Relative State",
+                rangeAxis, true);
         charts.getCharts().add(thisChart);
       }
       else
@@ -222,28 +260,29 @@ public class ShowTacticalOverview extends AbstractHandler
     return charts;
   }
 
-  private void produceSensorCoverage(WatchableList pri, 
-      IndependentAxis ia, Chart thisChart, StackedchartsFactory factory)
+  private void produceSensorCoverage(WatchableList pri, IndependentAxis ia,
+      Chart thisChart, StackedchartsFactory factory)
   {
     ScatterSet scatter = null;
-    
+
     // see what contact we have
-    if(pri instanceof TrackWrapper)
+    if (pri instanceof TrackWrapper)
     {
       TrackWrapper track = (TrackWrapper) pri;
       BaseLayer sensors = track.getSensors();
-      if(sensors.size() > 0)
+      if (sensors.size() > 0)
       {
         Enumeration<Editable> numer = sensors.elements();
         while (numer.hasMoreElements())
         {
           SensorWrapper thisS = (SensorWrapper) numer.nextElement();
-          if(thisS.getVisible())
+          if (thisS.getVisible())
           {
-            Collection<Editable> matches = thisS.getItemsBetween(track.getStartDTG(), track.getEndDTG());
-            
+            Collection<Editable> matches =
+                thisS.getItemsBetween(track.getStartDTG(), track.getEndDTG());
+
             // did we find any?
-            if(matches != null)
+            if (matches != null)
             {
               Iterator<Editable> sEnum = matches.iterator();
               while (sEnum.hasNext())
@@ -290,7 +329,7 @@ public class ShowTacticalOverview extends AbstractHandler
     courseAxis.setName("Course (\u00b0)");
     courseChart.getMinAxes().add(courseAxis);
     charts.getCharts().add(courseChart);
-    
+
     Chart speedChart = factory.createChart();
     speedChart.setName("Speed & Depth");
     DependentAxis speedAxis = factory.createDependentAxis();
@@ -303,11 +342,11 @@ public class ShowTacticalOverview extends AbstractHandler
     depthAxis.setAxisType(factory.createNumberAxis());
     depthAxis.setName("Depth (m)");
     // don't add it - we won't bother until we have depth
-//    speedChart.getMaxAxes().add(speedAxis);
+    // speedChart.getMaxAxes().add(speedAxis);
 
     // do the primary
     processTrack(pri, courseAxis, speedAxis, depthAxis, factory);
-    
+
     for (int i = 0; i < secs.length; i++)
     {
       WatchableList sec = secs[i];
@@ -339,7 +378,7 @@ public class ShowTacticalOverview extends AbstractHandler
     speedStyle.setMarkerStyle(MarkerStyle.NONE);
     speedStyle.setIncludeInLegend(false);
     speedStyle.setLineThickness(THICKNESS);
-    speedData.setStyling(speedStyle);    
+    speedData.setStyling(speedStyle);
     speedAxis.getDatasets().add(speedData);
     Dataset depthData = factory.createDataset();
     depthData.setName(track.getName() + " Depth");
@@ -349,9 +388,9 @@ public class ShowTacticalOverview extends AbstractHandler
     depthStyle.setMarkerStyle(MarkerStyle.NONE);
     depthStyle.setIncludeInLegend(false);
     depthData.setStyling(depthStyle);
-    
+
     boolean hasDepth = false;
-    
+
     for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
     {
       Watchable thisF = (Watchable) iterator.next();
@@ -377,8 +416,8 @@ public class ShowTacticalOverview extends AbstractHandler
         depthData.getMeasurements().add(depth);
       }
     }
-    
-    if(hasDepth)
+
+    if (hasDepth)
     {
       depthAxis.getDatasets().add(depthData);
     }
@@ -501,7 +540,8 @@ public class ShowTacticalOverview extends AbstractHandler
    * @return
    */
   private Chart createRelativeChartFor(StackedchartsFactory factory,
-      WatchableList pri, WatchableList sec, String string, DependentAxis rangeAxis, boolean soloSeconary)
+      WatchableList pri, WatchableList sec, String string,
+      DependentAxis rangeAxis, boolean soloSeconary)
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
@@ -509,7 +549,6 @@ public class ShowTacticalOverview extends AbstractHandler
     Chart chart = factory.createChart();
     chart.setName(name);
 
-    
     // prepare our axes
     DependentAxis bearingAxis = factory.createDependentAxis();
     bearingAxis.setAxisType(factory.createNumberAxis());
@@ -553,7 +592,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     Dataset rangeData = factory.createDataset();
     final String rangeName;
-    if(soloSeconary)
+    if (soloSeconary)
     {
       rangeName = "Range (m)";
     }

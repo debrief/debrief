@@ -1,6 +1,5 @@
 package org.mwc.debrief.limpet_integration.adapter;
 
-import info.limpet.stackedcharts.model.Chart;
 import info.limpet.stackedcharts.model.DataItem;
 import info.limpet.stackedcharts.model.Dataset;
 import info.limpet.stackedcharts.model.PlainStyling;
