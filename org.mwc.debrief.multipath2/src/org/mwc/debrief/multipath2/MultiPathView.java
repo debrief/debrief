@@ -105,7 +105,14 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	private void createPlot(final Composite ui)
-	{ // create a date-formatting axis
+	{ 
+	  //clean old ChartComposites
+	  Control[] children = ui.getChildren();
+	  for (Control control : children)
+    {
+      control.dispose();
+    }
+	  // create a date-formatting axis
 		final DateAxis dateAxis = new RelativeDateAxis();
 		dateAxis.setStandardTickUnits(DateAxisEditor
 				.createStandardDateTickUnitsAsTickUnits());
@@ -131,6 +138,7 @@ public class MultiPathView extends ViewPart implements
 			}
 		};
 		_plotControl.setChart(_plotArea);
+		ui.layout(true);
 	}
 
 	@Override

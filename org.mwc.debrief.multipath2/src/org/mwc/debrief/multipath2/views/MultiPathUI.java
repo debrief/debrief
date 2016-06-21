@@ -109,8 +109,10 @@ public class MultiPathUI extends Composite
 		_btnMagic.setBounds(0, 0, 40, 40);
 
 		chartHolder = new ChartComposite(this, SWT.NONE);
-		chartHolder
-				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		layoutData.horizontalSpan =3;
+    chartHolder
+				.setLayoutData(layoutData);
 		chartHolder.setLayout(new FillLayout());
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
