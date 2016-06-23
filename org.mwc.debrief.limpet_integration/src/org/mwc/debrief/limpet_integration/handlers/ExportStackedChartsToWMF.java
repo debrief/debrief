@@ -1,8 +1,5 @@
 package org.mwc.debrief.limpet_integration.handlers;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-
 import info.limpet.stackedcharts.ui.view.StackedChartsView;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -11,25 +8,8 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.expressions.IEvaluationContext;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
-
-import MWC.GUI.PlainChart;
-import MWC.GUI.Canvas.MetafileCanvas;
-import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
-import MWC.GUI.Tools.Chart.WriteMetafile;
-
-import com.pietjonas.wmfwriter2d.ClipboardCopy;
 
 public class ExportStackedChartsToWMF implements IHandler
 {
