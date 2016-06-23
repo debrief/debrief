@@ -8,7 +8,6 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.expressions.IEvaluationContext;
-import org.eclipse.swt.graphics.GC;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
 public class ExportStackedChartsToWMF implements IHandler
@@ -17,36 +16,23 @@ public class ExportStackedChartsToWMF implements IHandler
   @Override
   public void addHandlerListener(IHandlerListener handlerListener)
   {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public void dispose()
   {
-    // TODO Auto-generated method stub
-
   }
 
-  
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException
   {
-    System.out.println("DOING EXPORT TO WMF");
-
     StackedChartsView view = getChartView(event);
     
     if(view != null)
     {
+      @SuppressWarnings("unused")
       final ChartComposite composite = view.getChartComposite();
-      
-      // create the WMF graphics      
-      GC wmf = null;
-      
-      // paint to the graphics
-      composite.print(wmf );
-      
-      // put the WMF on the clipboard
+      System.out.println("Painting chart to WMF:");
     }
     
     return null;
@@ -77,7 +63,6 @@ public class ExportStackedChartsToWMF implements IHandler
   @Override
   public boolean isEnabled()
   {
-    // TODO Auto-generated method stub
     return true;
   }
 
@@ -92,7 +77,6 @@ public class ExportStackedChartsToWMF implements IHandler
   public void removeHandlerListener(IHandlerListener handlerListener)
   {
     // TODO Auto-generated method stub
-
   }
 
 }
