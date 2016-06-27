@@ -29,10 +29,12 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
   protected abstract static class DataChoiceProvider
   {
     protected final String _name;
+    protected final String _units;
 
-    DataChoiceProvider(String name)
+    DataChoiceProvider(String name, String units)
     {
       _name = name;
+      _units = units;
     }
 
     public String toString()
@@ -47,9 +49,9 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
       DataChoiceProvider
   {
 
-    StateChoiceProvider(String name)
+    StateChoiceProvider(String name, String units)
     {
-      super(name);
+      super(name, units);
     }
 
     List<Dataset> getDatasets(WatchableList track)
@@ -60,6 +62,7 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
 
       Dataset dataset = factory.createDataset();
       dataset.setName(track.getName() + "-" + _name);
+      dataset.setUnits(_units);
       PlainStyling ps = factory.createPlainStyling();
       ps.setColor(track.getColor());
       ps.setLineThickness(2.0d);
@@ -121,21 +124,21 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
         {
 
           DataChoiceProvider[] choices = new DataChoiceProvider[]
-          {new StateChoiceProvider("Course (degs)")
+          {new StateChoiceProvider("Course", "degs")
           {
             @Override
             protected double valueFor(FixWrapper fix)
             {
               return fix.getCourseDegs();
             }
-          }, new StateChoiceProvider("Speed (kts)")
+          }, new StateChoiceProvider("Speed", "kts")
           {
             @Override
             protected double valueFor(FixWrapper fix)
             {
               return fix.getSpeed();
             }
-          }, new StateChoiceProvider("Depth (m)")
+          }, new StateChoiceProvider("Depth","m")
           {
             @Override
             protected double valueFor(FixWrapper fix)
@@ -150,7 +153,7 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
                   .getInstance(), new LabelProvider(),
                   "Please choose which data to display");
 
-          dialog.setTitle("dialog title");
+          dialog.setTitle("Loading new measurement");
 
           if(_previousChoices != null)
           {
