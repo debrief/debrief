@@ -1084,7 +1084,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		// check that we're still after the start of the host track
 		if (theNewStart.lessThan(this.getReferenceTrack().getStartDTG()))
 		{
-			theNewStart = this.getReferenceTrack().getStartDTG();
+			theNewStart = new HiResDate(this.getReferenceTrack().getStartDTG());
 		}
 
 		// ok, how far is this from the current end
@@ -1108,7 +1108,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
     // and what's the point on the host track
     FixWrapper hostFix =
-        this._referenceTrack.getBacktraceTo(newStart, _referenceSensor
+        this._referenceTrack.getBacktraceTo(theNewStart, _referenceSensor
             .getSensorOffset(), _referenceSensor.getWormInHole());
 		
 		final WorldVector newOffset = newOrigin.subtract(hostFix.getLocation());
@@ -1154,7 +1154,7 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 			// note: we don't want one large leap. So, insert a few points
 			long oldStartT = startDTG().getDate().getTime();
-			long newStartT = newStart.getDate().getTime();
+			long newStartT = theNewStart.getDate().getTime();
 			final long typicalDelta = typicalTimeStep(true);
 			long thisT = oldStartT - typicalDelta;
 

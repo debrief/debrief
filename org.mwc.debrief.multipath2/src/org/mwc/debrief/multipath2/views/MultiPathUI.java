@@ -19,13 +19,14 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
-import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.ResourceManager;
+import org.eclipse.wb.swt.SWTResourceManager;
+import org.jfree.experimental.chart.swt.ChartComposite;
 
 public class MultiPathUI extends Composite
 {
@@ -107,9 +108,12 @@ public class MultiPathUI extends Composite
 		_btnMagic.setImage(ResourceManager.getPluginImage("org.mwc.debrief.multipath2", "icons/magic_hat.png"));
 		_btnMagic.setBounds(0, 0, 40, 40);
 
-		chartHolder = new Composite(this, SWT.EMBEDDED);
-		chartHolder
-				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		chartHolder = new ChartComposite(this, SWT.NONE);
+		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		layoutData.horizontalSpan =3;
+    chartHolder
+				.setLayoutData(layoutData);
+		chartHolder.setLayout(new FillLayout());
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
