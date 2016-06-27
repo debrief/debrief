@@ -261,9 +261,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
 		_dragDropSupport = new DragDropSupport(_treeViewer);
 		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY,
-				_dragDropSupport.getTypes(), _dragDropSupport);
+				_dragDropSupport.getDragTypes(), _dragDropSupport);
 		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY,
-				_dragDropSupport.getTypes(), _dragDropSupport);
+				_dragDropSupport.getDropTypes(), _dragDropSupport);
 
 		// and format the tree
 		final Tree tree = _treeViewer.getTree();
