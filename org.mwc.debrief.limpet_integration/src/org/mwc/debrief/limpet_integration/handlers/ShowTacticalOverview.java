@@ -128,7 +128,7 @@ public class ShowTacticalOverview extends AbstractHandler
     final Dataset atbData = factory.createDataset();
     atbData.setName(sec.getName() + " ATB (\u00b0)");
     final PlainStyling relStyle = factory.createPlainStyling();
-    relStyle.setColor(color.brighter().brighter());
+    relStyle.setColor(color.brighter().brighter().brighter());
     relStyle.setLineThickness(THICKNESS);
     relStyle.setMarkerStyle(MarkerStyle.NONE);
     atbData.setStyling(relStyle);
