@@ -570,6 +570,15 @@ public class ShowTacticalOverview extends AbstractHandler
       final WatchableList[] secs, final StackedchartsFactory factory,
       final ChartSet charts)
   {
+    // right, create the charts
+    final Chart speedChart = factory.createChart();
+    speedChart.setName("Speed & Depth");
+    final DependentAxis speedAxis = factory.createDependentAxis();
+    speedAxis.setAxisType(factory.createNumberAxis());
+    speedAxis.setName("Speed (Kts)");
+    speedChart.getMinAxes().add(speedAxis);
+    charts.getCharts().add(speedChart);
+
     // ok, loop through the calculations
     final Chart courseChart = factory.createChart();
     final DependentAxis courseAxis = factory.createDependentAxis();
@@ -578,14 +587,6 @@ public class ShowTacticalOverview extends AbstractHandler
     courseAxis.setName("Course (\u00b0)");
     courseChart.getMinAxes().add(courseAxis);
     charts.getCharts().add(courseChart);
-
-    final Chart speedChart = factory.createChart();
-    speedChart.setName("Speed & Depth");
-    final DependentAxis speedAxis = factory.createDependentAxis();
-    speedAxis.setAxisType(factory.createNumberAxis());
-    speedAxis.setName("Speed (Kts)");
-    speedChart.getMinAxes().add(speedAxis);
-    charts.getCharts().add(speedChart);
 
     final DependentAxis depthAxis = factory.createDependentAxis();
     depthAxis.setAxisType(factory.createNumberAxis());
