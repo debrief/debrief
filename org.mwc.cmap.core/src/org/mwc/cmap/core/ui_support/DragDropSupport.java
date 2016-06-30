@@ -43,6 +43,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
@@ -141,6 +142,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
       else if (pl instanceof ETOPOPainter)
         res = false;
       else if (pl instanceof TrackWrapper)
+        res = true;
+      else if (pl instanceof SensorWrapper)
         res = true;
       else if (pl instanceof FixWrapper)
         res = false;

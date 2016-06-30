@@ -649,6 +649,7 @@ public class ShowTacticalOverview extends AbstractHandler
                     sel.getAppearsIn().add(thisChart);
                     scatter = factory.createScatterSet();
                     scatter.setColor(thisS.getColor());
+                    scatter.setName(thisS.getName());
                     sel.setAnnotation(scatter);
                     ia.getAnnotations().add(sel);
                   }
