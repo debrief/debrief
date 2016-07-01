@@ -513,7 +513,8 @@ public class ShowTacticalOverview extends AbstractHandler
     sensorChart.getMinAxes().add(rangeAxis);
 
     // produce the sensor coverage
-    produceSensorCoverage(pri, ia, sensorChart, factory);
+    // no, don't bother
+//    produceSensorCoverage(pri, ia, sensorChart, factory);
 
     // produce the relative chart
     if (secs != null)
@@ -604,6 +605,7 @@ public class ShowTacticalOverview extends AbstractHandler
     }
   }
 
+  @SuppressWarnings("unused")
   private void produceSensorCoverage(final WatchableList pri,
       final IndependentAxis ia, final Chart thisChart,
       final StackedchartsFactory factory)
