@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -154,65 +155,25 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * ditch the cache for the specified items, so we generate new ones as
 	 * required
 	 */
-	public void resetCacheFor(Tree tree)
+	public void resetCacheFor(TreeViewer tree)
 	{
-		if (tree != null && _imageMap != null && _imageMap.values().size() > 100)
-		{
-			TreeItem[] items = tree.getItems();
-			Set<String> imageIds = new HashSet<String>();
-			for (TreeItem item : items)
-			{
-				addImageIds(imageIds, item);
-			}
-			Set<String> keySet = _imageMap.keySet();
-			Set<String> toRemove = new HashSet<String>();
-			for (String key : keySet)
-			{
-				if (!imageIds.contains(key))
-				{
-					toRemove.add(key);
-				}
-			}
-			for (String id : toRemove)
-			{
-				Image image = _imageMap.get(id);
-				if (image != null && !image.isDisposed())
-				{
-					image.dispose();
-				}
-				_imageMap.remove(id);
-			}
-		}
+    if (tree != null && _imageMap != null && _imageMap.values().size() > 100)
+    {
+      for (String id : _imageMap.keySet())
+      {
+        Image image = _imageMap.get(id);
+        if (image != null && !image.isDisposed())
+        {
+          image.dispose();
+        }
+      }
+      _imageMap.clear();
+      tree.refresh(true);
+    }
+		
 	}
 
-	private void addImageIds(Set<String> imageIds, TreeItem item)
-	{
-		Object data = item.getData();
-		if (data instanceof EditableWrapper)
-		{
-			EditableWrapper editableWrapper = (EditableWrapper) data;
-			Editable editable = editableWrapper.getEditable();
-			if (editable instanceof ColoredWatchable)
-			{
-				ColoredWatchable watchable = (ColoredWatchable) editable;
-        Color color = watchable.getColor();
-        if(watchable instanceof IChunkedColors)
-        {
-          color = getChunkedColor(color);
-        }
-        String id = idFor(watchable,color, "");
-				imageIds.add(id);
-			}
-		}
-		TreeItem[] items = item.getItems();
-		if (items.length > 0)
-		{
-			for (TreeItem i : items)
-			{
-				addImageIds(imageIds, i);
-			}
-		}
-	}
+	
 	
 	
   public static java.awt.Color getChunkedColor(final java.awt.Color javaCol)
