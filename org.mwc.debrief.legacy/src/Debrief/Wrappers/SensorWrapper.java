@@ -176,14 +176,13 @@ import MWC.GUI.MessageProvider;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.IChunkedColors;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class SensorWrapper extends TacticalDataWrapper implements
-    GriddableSeriesMarker, Cloneable,IChunkedColors
+    GriddableSeriesMarker, Cloneable
 {
 
   /**

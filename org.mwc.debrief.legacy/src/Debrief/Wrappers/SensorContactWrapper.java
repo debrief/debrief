@@ -163,7 +163,6 @@ import MWC.GUI.Plottables;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.IChunkedColors;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -175,7 +174,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
 		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
-		Editable.DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit,IChunkedColors
+		Editable.DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
 {
 	
 	/** if the sensor cut doesn't have a range, we plot it out to the

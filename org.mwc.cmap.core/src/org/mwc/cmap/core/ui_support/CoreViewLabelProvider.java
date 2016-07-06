@@ -15,13 +15,10 @@
 package org.mwc.cmap.core.ui_support;
 
 import java.awt.Color;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
@@ -35,8 +32,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
@@ -50,10 +45,8 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
-import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.VPF.VPFDatabase;
 import MWC.GenericData.ColoredWatchable;
-import MWC.GenericData.IChunkedColors;
 import MWC.GenericData.NonColoredWatchable;
 
 public class CoreViewLabelProvider extends LabelProvider implements
@@ -173,31 +166,6 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		
 	}
 
-	
-	
-	
-  public static java.awt.Color getChunkedColor(final java.awt.Color javaCol)
-  {
-
-    java.awt.Color theColor = javaCol;
-    if (!Arrays.asList(DebriefColors.COLORS).contains(theColor))// TODO: Check for DebriefColors and
-                                                                // ignore
-    {
-      float[] hsb =
-          Color.RGBtoHSB(theColor.getRed(), theColor.getGreen(), theColor
-              .getBlue(), null);
-
-      // Chunked to 100 element shade
-      hsb[0] = (float) (Math.floor(hsb[0] * 100) / 100);
-      hsb[1] = (float) (Math.floor(hsb[1] * 100) / 100);
-      hsb[2] = (float) (Math.floor(hsb[2] * 100) / 100);
-      return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
-    }
-
-    return javaCol;
-  }
-	
-
 	@Override
 	public Image getImage(final Object subject)
 	{
@@ -240,11 +208,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 					// sort out the color index. Note: we incude the image descriptor, since
 					// some elements (tracks) can provide different icons.
-					Color color = thisW.getColor();
-					if(thisW instanceof IChunkedColors)
-          {
-					  color = getChunkedColor(color);
-          }
+					final Color color = thisW.getColor();
 					final String thisId = idFor(thisW,color, thirdPartyImageDescriptor.toString());
 
 					// do we have a cached image for this combination?
