@@ -195,7 +195,12 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			if (editable instanceof ColoredWatchable)
 			{
 				ColoredWatchable watchable = (ColoredWatchable) editable;
-        String id = idFor(watchable,watchable.getColor(), "");
+        Color color = watchable.getColor();
+        if(watchable instanceof IChunkedColors)
+        {
+          color = getChunkedColor(color);
+        }
+        String id = idFor(watchable,color, "");
 				imageIds.add(id);
 			}
 		}
