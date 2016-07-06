@@ -15,6 +15,7 @@
 package org.mwc.cmap.core.ui_support;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,8 +49,10 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.VPF.VPFDatabase;
 import MWC.GenericData.ColoredWatchable;
+import MWC.GenericData.IChunkedColors;
 import MWC.GenericData.NonColoredWatchable;
 
 public class CoreViewLabelProvider extends LabelProvider implements
@@ -191,7 +194,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			Editable editable = editableWrapper.getEditable();
 			if (editable instanceof ColoredWatchable)
 			{
-				String id = idFor((ColoredWatchable) editable, "");
+				ColoredWatchable watchable = (ColoredWatchable) editable;
+        String id = idFor(watchable,watchable.getColor(), "");
 				imageIds.add(id);
 			}
 		}
@@ -204,6 +208,29 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			}
 		}
 	}
+	
+	
+  public static java.awt.Color getChunkedColor(final java.awt.Color javaCol)
+  {
+
+    java.awt.Color theColor = javaCol;
+    if (!Arrays.asList(DebriefColors.COLORS).contains(theColor))// TODO: Check for DebriefColors and
+                                                                // ignore
+    {
+      float[] hsb =
+          Color.RGBtoHSB(theColor.getRed(), theColor.getGreen(), theColor
+              .getBlue(), null);
+
+      // Chunked to 100 element shade
+      hsb[0] = (float) (Math.floor(hsb[0] * 100) / 100);
+      hsb[1] = (float) (Math.floor(hsb[1] * 100) / 100);
+      hsb[2] = (float) (Math.floor(hsb[2] * 10000) / 100);
+      return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+    }
+
+    return javaCol;
+  }
+	
 
 	@Override
 	public Image getImage(final Object subject)
@@ -247,7 +274,12 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 					// sort out the color index. Note: we incude the image descriptor, since
 					// some elements (tracks) can provide different icons.
-					final String thisId = idFor(thisW, thirdPartyImageDescriptor.toString());
+					Color color = thisW.getColor();
+					if(thisW instanceof IChunkedColors)
+          {
+					  color = getChunkedColor(color);
+          }
+					final String thisId = idFor(thisW,color, thirdPartyImageDescriptor.toString());
 
 					// do we have a cached image for this combination?
 					res = getLocallyCachedImage(thisId);
@@ -270,7 +302,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 							final GC newGC = new GC(res);
 
 							// set the color of our editable
-							Color jColor = thisW.getColor();
+							Color jColor = color;
 							if(jColor == null)
 							{
 								// ok, declare a warning
@@ -279,9 +311,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 								// give it a color for now
 								jColor = Color.gray;
 							}
+              final org.eclipse.swt.graphics.Color thisColor =  ColorHelper.getColor(jColor);
 							
-							final org.eclipse.swt.graphics.Color thisColor = ColorHelper
-									.getColor(jColor);
 							newGC.setBackground(thisColor);
 
 							// apply a color wash
@@ -388,9 +419,9 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * @param thirdPartyImageDescriptor 
 	 * @return a unique string for this item type and color
 	 */
-	private String idFor(final ColoredWatchable thisW, String thirdPartyImageDescriptor)
+	private String idFor(final ColoredWatchable thisW,Color color, String thirdPartyImageDescriptor)
 	{
-		return thisW.getClass() + " " + thisW.getColor() + " " + thirdPartyImageDescriptor;
+		return thisW.getClass() + " " + color + " " + thirdPartyImageDescriptor;
 	}
 
 	public Image getColumnImage(final Object element, final int columnIndex)
