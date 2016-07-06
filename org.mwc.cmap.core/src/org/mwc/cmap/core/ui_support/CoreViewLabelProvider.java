@@ -17,10 +17,8 @@ package org.mwc.cmap.core.ui_support;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
@@ -28,13 +26,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
@@ -151,58 +148,22 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * ditch the cache for the specified items, so we generate new ones as
 	 * required
 	 */
-	public void resetCacheFor(Tree tree)
+	public void resetCacheFor(TreeViewer tree)
 	{
-		if (tree != null && _imageMap != null && _imageMap.values().size() > 100)
-		{
-			TreeItem[] items = tree.getItems();
-			Set<String> imageIds = new HashSet<String>();
-			for (TreeItem item : items)
-			{
-				addImageIds(imageIds, item);
-			}
-			Set<String> keySet = _imageMap.keySet();
-			Set<String> toRemove = new HashSet<String>();
-			for (String key : keySet)
-			{
-				if (!imageIds.contains(key))
-				{
-					toRemove.add(key);
-				}
-			}
-			for (String id : toRemove)
-			{
-				Image image = _imageMap.get(id);
-				if (image != null && !image.isDisposed())
-				{
-					image.dispose();
-				}
-				_imageMap.remove(id);
-			}
-		}
-	}
-
-	private void addImageIds(Set<String> imageIds, TreeItem item)
-	{
-		Object data = item.getData();
-		if (data instanceof EditableWrapper)
-		{
-			EditableWrapper editableWrapper = (EditableWrapper) data;
-			Editable editable = editableWrapper.getEditable();
-			if (editable instanceof ColoredWatchable)
-			{
-				String id = idFor((ColoredWatchable) editable, "");
-				imageIds.add(id);
-			}
-		}
-		TreeItem[] items = item.getItems();
-		if (items.length > 0)
-		{
-			for (TreeItem i : items)
-			{
-				addImageIds(imageIds, i);
-			}
-		}
+    if (tree != null && _imageMap != null && _imageMap.values().size() > 100)
+    {
+      for (String id : _imageMap.keySet())
+      {
+        Image image = _imageMap.get(id);
+        if (image != null && !image.isDisposed())
+        {
+          image.dispose();
+        }
+      }
+      _imageMap.clear();
+      tree.refresh(true);
+    }
+		
 	}
 
 	@Override
@@ -247,7 +208,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 					// sort out the color index. Note: we incude the image descriptor, since
 					// some elements (tracks) can provide different icons.
-					final String thisId = idFor(thisW, thirdPartyImageDescriptor.toString());
+					final Color color = thisW.getColor();
+					final String thisId = idFor(thisW,color, thirdPartyImageDescriptor.toString());
 
 					// do we have a cached image for this combination?
 					res = getLocallyCachedImage(thisId);
@@ -270,7 +232,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 							final GC newGC = new GC(res);
 
 							// set the color of our editable
-							Color jColor = thisW.getColor();
+							Color jColor = color;
 							if(jColor == null)
 							{
 								// ok, declare a warning
@@ -279,9 +241,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 								// give it a color for now
 								jColor = Color.gray;
 							}
+              final org.eclipse.swt.graphics.Color thisColor =  ColorHelper.getColor(jColor);
 							
-							final org.eclipse.swt.graphics.Color thisColor = ColorHelper
-									.getColor(jColor);
 							newGC.setBackground(thisColor);
 
 							// apply a color wash
@@ -388,9 +349,9 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * @param thirdPartyImageDescriptor 
 	 * @return a unique string for this item type and color
 	 */
-	private String idFor(final ColoredWatchable thisW, String thirdPartyImageDescriptor)
+	private String idFor(final ColoredWatchable thisW,Color color, String thirdPartyImageDescriptor)
 	{
-		return thisW.getClass() + " " + thisW.getColor() + " " + thirdPartyImageDescriptor;
+		return thisW.getClass() + " " + color + " " + thirdPartyImageDescriptor;
 	}
 
 	public Image getColumnImage(final Object element, final int columnIndex)

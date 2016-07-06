@@ -1690,7 +1690,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			// of the images may have changed
 			// Issue #533
 			// _myLabelProvider.resetCacheFor(newList);
-			_myLabelProvider.resetCacheFor(_treeViewer.getTree());
+			_myLabelProvider.resetCacheFor(_treeViewer);
 
 			// and do the update
 			final Object[] itemsToUpdate = newList.toArray();

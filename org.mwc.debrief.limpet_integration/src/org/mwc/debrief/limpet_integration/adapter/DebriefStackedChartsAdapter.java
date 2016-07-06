@@ -103,9 +103,9 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
   @SuppressWarnings(
   {"unused"})
   @Override
-  public List<Dataset> convert(Object data)
+  public List<Object> convert(Object data)
   {
-    List<Dataset> res = null;
+    List<Object> res = null;
 
     // we should have already checked, but just
     // double-check we can handle it
@@ -175,7 +175,7 @@ public class DebriefStackedChartsAdapter implements IStackedAdapter
               if (datasets != null && datasets.size() > 0)
                 if (res == null)
                 {
-                  res = new ArrayList<Dataset>();
+                  res = new ArrayList<Object>();
                 }
               res.addAll(datasets);
 
