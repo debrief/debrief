@@ -229,7 +229,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
       // Chunked to 100 element shade
       hsb[0] = (float) (Math.floor(hsb[0] * 100) / 100);
       hsb[1] = (float) (Math.floor(hsb[1] * 100) / 100);
-      hsb[2] = (float) (Math.floor(hsb[2] * 10000) / 100);
+      hsb[2] = (float) (Math.floor(hsb[2] * 100) / 100);
       return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
     }
 
