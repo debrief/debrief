@@ -16,6 +16,7 @@ import info.limpet.stackedcharts.model.SelectiveAnnotation;
 import info.limpet.stackedcharts.model.StackedchartsFactory;
 import info.limpet.stackedcharts.model.impl.StackedchartsFactoryImpl;
 import info.limpet.stackedcharts.ui.view.StackedChartsView;
+import info.limpet.stackedcharts.ui.view.StackedChartsView.ControllableDate;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
@@ -37,6 +38,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
@@ -375,7 +377,6 @@ public class ShowTacticalOverview extends AbstractHandler
         {
           // set follow selection to off
           cv.setModel(charts);
-
           // see if we have a time provider
           final TimeProvider timeProv =
               (TimeProvider) editor.getAdapter(TimeProvider.class);
@@ -406,6 +407,43 @@ public class ShowTacticalOverview extends AbstractHandler
               {
                 timeProv.removeListener(evt,
                     TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+              }
+            });
+          }
+
+          // see if we have a time provider
+          final ControllableTime timeCont =
+              (ControllableTime) editor.getAdapter(ControllableTime.class);
+          if (timeCont != null && timeProv != null)
+          {
+
+            ControllableDate dateC = new ControllableDate()
+            {
+
+              @Override
+              public void setDate(long time)
+              {
+                timeCont.setTime(this, new HiResDate(time), true);
+              }
+
+              @Override
+              public long getDate()
+              {
+                return timeProv.getTime().getDate().getTime();
+              }
+            };
+
+            cv.setDateSupport(dateC);
+
+            // add a utility to cancel the support on close
+            cv.addRunOnCloseCallback(new Runnable()
+            {
+
+              @Override
+              public void run()
+              {
+                // clear date support helper
+                cv.setDateSupport(null);
               }
             });
           }
