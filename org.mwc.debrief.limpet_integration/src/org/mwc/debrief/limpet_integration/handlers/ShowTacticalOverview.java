@@ -421,15 +421,15 @@ public class ShowTacticalOverview extends AbstractHandler
             {
 
               @Override
-              public void setDate(long time)
+              public void setDate(Date time)
               {
                 timeCont.setTime(this, new HiResDate(time), true);
               }
 
               @Override
-              public long getDate()
+              public Date getDate()
               {
-                return timeProv.getTime().getDate().getTime();
+                return timeProv.getTime().getDate();
               }
             };
 
