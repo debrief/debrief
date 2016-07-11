@@ -200,7 +200,7 @@ public class CreateProjectPage extends WizardPage
     contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     contents.setLayout(new GridLayout(3, false));
     setTitle(CREATE_A_PROJECT);
-    setMessage("Debrief requires a project to store your data in, which will stored be in the \nyour file system. "
+    setMessage("Debrief requires a project to store your data in, which will be stored in \nyour file system. "
         + "Debrief can also provide you with some sample data, for use in the tutorials.");
 
     new Label(contents, SWT.LEFT).setText("Project location:");
