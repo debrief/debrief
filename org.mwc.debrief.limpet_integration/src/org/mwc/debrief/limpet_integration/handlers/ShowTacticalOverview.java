@@ -1,5 +1,6 @@
 package org.mwc.debrief.limpet_integration.handlers;
 
+import info.limpet.stackedcharts.model.AngleAxis;
 import info.limpet.stackedcharts.model.Chart;
 import info.limpet.stackedcharts.model.ChartSet;
 import info.limpet.stackedcharts.model.DataItem;
@@ -9,6 +10,7 @@ import info.limpet.stackedcharts.model.DependentAxis;
 import info.limpet.stackedcharts.model.IndependentAxis;
 import info.limpet.stackedcharts.model.LineType;
 import info.limpet.stackedcharts.model.MarkerStyle;
+import info.limpet.stackedcharts.model.NumberAxis;
 import info.limpet.stackedcharts.model.Orientation;
 import info.limpet.stackedcharts.model.PlainStyling;
 import info.limpet.stackedcharts.model.ScatterSet;
@@ -464,6 +466,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     final Dataset courseData = factory.createDataset();
     courseData.setName(track.getName() + " Course");
+    courseData.setUnits("\u00b0");
     courseAxis.getDatasets().add(courseData);
     final PlainStyling courseStyle = factory.createPlainStyling();
     courseStyle.setColor(track.getColor());
@@ -547,7 +550,10 @@ public class ShowTacticalOverview extends AbstractHandler
     sensorChart.setName("Contact");
     final DependentAxis rangeAxis = factory.createDependentAxis();
     rangeAxis.setName("Range");
-    rangeAxis.setAxisType(factory.createNumberAxis());
+    final NumberAxis rangeAxisType = factory.createNumberAxis();
+    final String rangeUnits = new rangeCalc().getUnits();
+    rangeAxisType.setUnits(rangeUnits);
+    rangeAxis.setAxisType(rangeAxisType);
     sensorChart.getMinAxes().add(rangeAxis);
 
     // produce the sensor coverage
@@ -613,8 +619,10 @@ public class ShowTacticalOverview extends AbstractHandler
     final Chart speedChart = factory.createChart();
     speedChart.setName("Speed & Depth");
     final DependentAxis speedAxis = factory.createDependentAxis();
-    speedAxis.setAxisType(factory.createNumberAxis());
-    speedAxis.setName("Speed (Kts)");
+    final NumberAxis speedAxisType = factory.createNumberAxis();
+    speedAxisType.setUnits("Kts");
+    speedAxis.setAxisType(speedAxisType);
+    speedAxis.setName("Speed");
     speedChart.getMinAxes().add(speedAxis);
     charts.getCharts().add(speedChart);
 
@@ -622,13 +630,17 @@ public class ShowTacticalOverview extends AbstractHandler
     final Chart courseChart = factory.createChart();
     final DependentAxis courseAxis = factory.createDependentAxis();
     courseChart.setName("Course");
-    courseAxis.setAxisType(factory.createNumberAxis());
-    courseAxis.setName("Course (\u00b0)");
+    AngleAxis angleType = factory.createAngleAxis();
+    angleType.setUnits("\u00b0");
+    courseAxis.setAxisType(angleType);
+    courseAxis.setName("Course");
     courseChart.getMinAxes().add(courseAxis);
     charts.getCharts().add(courseChart);
 
     final DependentAxis depthAxis = factory.createDependentAxis();
-    depthAxis.setAxisType(factory.createNumberAxis());
+    final NumberAxis depthAxisType = factory.createNumberAxis();
+    depthAxisType.setUnits("m");
+    depthAxis.setAxisType(depthAxisType);
     depthAxis.setName("Depth (m)");
     // don't add it - we won't bother until we have depth
     // speedChart.getMaxAxes().add(speedAxis);
