@@ -48,7 +48,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
 import org.eclipse.ui.wizards.datatransfer.ImportOperation;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.preferences.PrefsPage;
 
 /**
  * Create a project
@@ -82,10 +84,12 @@ public class CreateProjectPage extends WizardPage
   private Button addDebriefSamplesButton;
 
   private Wizard wizard;
+  private boolean showAskMeButton;
 
-  public CreateProjectPage()
+  public CreateProjectPage(boolean showAskMeButton)
   {
     super("project.create");
+    this.showAskMeButton = showAskMeButton;
   }
 
   public void configureShell(Wizard wizard)
@@ -259,8 +263,30 @@ public class CreateProjectPage extends WizardPage
     addDebriefSamplesButton
         .setText("Add Debrief Samples (required for self-teach tutorials)");
     addDebriefSamplesButton.setSelection(true);
+    if (showAskMeButton)
+    {
+      final Button askMeNextTime = new Button(contents, SWT.CHECK);
+      gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+      gd.horizontalSpan = 3;
+      askMeNextTime.setLayoutData(gd);
 
-    projectNameText.setFocus();
+      askMeNextTime.setText("Always check at startup");
+      askMeNextTime.setSelection(true);
+      askMeNextTime.addSelectionListener(new SelectionAdapter()
+      {
+
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          Boolean askMe = askMeNextTime.getSelection();
+          CorePlugin.getDefault().getPreferenceStore()
+              .putValue(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT,
+                  askMe.toString());
+        }
+
+      });
+    }
+    locationButton.setFocus();
     setControl(contents);
 
   }

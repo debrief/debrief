@@ -8,10 +8,14 @@ import org.eclipse.ui.IWorkbench;
 public class NewProjectWizard extends Wizard implements INewWizard
 {
   private CreateProjectPage page;
-
+  boolean showAskMeButton;
+  public NewProjectWizard(boolean showAskMeButton)
+  {
+    this.showAskMeButton = showAskMeButton;
+  }
   public NewProjectWizard()
   {
-
+    this(false);
   }
 
   @Override
@@ -23,7 +27,7 @@ public class NewProjectWizard extends Wizard implements INewWizard
   @Override
   public void addPages()
   {
-    page = new CreateProjectPage();
+    page = new CreateProjectPage(showAskMeButton);
     page.configureShell(this);
     addPage(page);
     super.addPages();
