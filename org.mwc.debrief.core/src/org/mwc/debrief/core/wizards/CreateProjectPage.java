@@ -66,6 +66,8 @@ public class CreateProjectPage extends WizardPage
 
   private static final String PROJECT_NAME_IS_REQUIRED =
       "The project name is required";
+  private static final String WRITEABLE_FOLDER_IS_REQUIRED =
+      "You must have write access to the project folder:[%s]";
   private static final String PROJECT_IMPORT_FOLDER_INVALID =
       "A project with this name is already loaded in Debrief:[%s]. Please select another";
 
@@ -131,7 +133,7 @@ public class CreateProjectPage extends WizardPage
     }
     catch(IOException ef)
     {
-      setErrorMessage(String.format("You must have write access to the project folder: [%s]",
+      setErrorMessage(String.format(WRITEABLE_FOLDER_IS_REQUIRED,
           projectName));
       return false;
     }
@@ -230,12 +232,6 @@ public class CreateProjectPage extends WizardPage
     projectNameText = new Text(contents, SWT.SINGLE | SWT.BORDER);
     locationButton = new Button(contents, SWT.PUSH);
 
-    // IProject project =
-    // ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-    // if (project != null && project.exists())
-    // {
-    // projectName = "";
-    // }
     projectNameText.setEditable(false);
     projectNameText.setText(projectName);
 
