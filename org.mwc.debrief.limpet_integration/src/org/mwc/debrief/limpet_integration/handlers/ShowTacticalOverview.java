@@ -93,6 +93,16 @@ public class ShowTacticalOverview extends AbstractHandler
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
+    final Boolean wasInterpolated;
+    if(sec instanceof TrackWrapper)
+    {
+      TrackWrapper track = (TrackWrapper) sec;
+      wasInterpolated = track.getInterpolatePoints();
+    }
+    else
+    {
+      wasInterpolated = null;
+    }
 
     final Chart chart = factory.createChart();
     chart.setName(name);
@@ -204,6 +214,13 @@ public class ShowTacticalOverview extends AbstractHandler
         rangeData.getMeasurements().add(item);
       }
 
+    }
+    
+    // restore the interpolation, if it's a track
+    if(sec instanceof TrackWrapper)
+    {
+      final TrackWrapper track = (TrackWrapper) sec;
+      track.setInterpolatePoints(wasInterpolated);
     }
 
     return chart;
