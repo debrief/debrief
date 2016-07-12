@@ -42,6 +42,6 @@ public class NewProjectWizard extends Wizard implements INewWizard
   @Override
   public boolean canFinish()
   {
-    return page != null && page.validate();
+    return page != null && page.isPageComplete();
   }
 }

@@ -90,6 +90,7 @@ public class CreateProjectPage extends WizardPage
   {
     super("project.create");
     this.showAskMeButton = showAskMeButton;
+    setPageComplete(false);
   }
 
   public void configureShell(Wizard wizard)
@@ -220,18 +221,7 @@ public class CreateProjectPage extends WizardPage
     // }
     projectNameText.setEditable(false);
     projectNameText.setText(projectName);
-    projectNameText.addModifyListener(new ModifyListener()
-    {
-      public void modifyText(ModifyEvent event)
-      {
-        if (event.widget == projectNameText)
-        {
-          projectName = projectNameText.getText().trim();
-          setPageComplete(validate());
-        }
-      }
 
-    });
     projectNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
         false));
 
