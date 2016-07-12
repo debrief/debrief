@@ -99,13 +99,19 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // prepare our axes
     final DependentAxis bearingAxis = factory.createDependentAxis();
-    bearingAxis.setAxisType(factory.createNumberAxis());
+    AngleAxis bearingAxisType = factory.createAngleAxis();
+    bearingAxisType.setMinVal(0);
+    bearingAxisType.setMaxVal(360);
+    bearingAxis.setAxisType(bearingAxisType);
     bearingAxis.setName("Bearing");
     chart.getMinAxes().add(bearingAxis);
 
     final DependentAxis relBearingAxis = factory.createDependentAxis();
     relBearingAxis.setName("Rel Bearing");
-    relBearingAxis.setAxisType(factory.createNumberAxis());
+    AngleAxis relBearingAxisType = factory.createAngleAxis();
+    relBearingAxisType.setMinVal(-180);
+    relBearingAxisType.setMaxVal(180);
+    relBearingAxis.setAxisType(relBearingAxisType);
     chart.getMinAxes().add(relBearingAxis);
 
     // prepare our datasets
@@ -631,6 +637,8 @@ public class ShowTacticalOverview extends AbstractHandler
     final DependentAxis courseAxis = factory.createDependentAxis();
     courseChart.setName("Course");
     AngleAxis angleType = factory.createAngleAxis();
+    angleType.setMinVal(0d);
+    angleType.setMaxVal(360d);
     angleType.setUnits("\u00b0");
     courseAxis.setAxisType(angleType);
     courseAxis.setName("Course");
