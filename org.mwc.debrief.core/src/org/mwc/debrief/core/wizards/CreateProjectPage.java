@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.wizards;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.filesystem.URIUtil;
@@ -119,6 +120,22 @@ public class CreateProjectPage extends WizardPage
         return false;
       }
     }
+    
+    // check user has write access to project folder
+    try
+    {
+      File sample =
+          new File(projectNameText.getText(), "test_" + System.currentTimeMillis() + ".txt");
+      sample.createNewFile();
+      sample.delete();
+    }
+    catch(IOException ef)
+    {
+      setErrorMessage(String.format("You must have write access to the project folder: [%s]",
+          projectName));
+      return false;
+    }
+    
     // folder is not empty and found a project
     java.io.File projectPath = new java.io.File(projectNameText.getText());
     if (projectPath.list().length > 0
