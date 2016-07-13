@@ -23,10 +23,13 @@ import info.limpet.stackedcharts.ui.view.StackedChartsView.ControllableDate;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -54,6 +57,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -70,12 +74,46 @@ public class ShowTacticalOverview extends AbstractHandler
   // standard line thickness
   final static private float THICKNESS = 3;
 
+  // the track change listeners
+  Map<WatchableList, ArrayList<Runnable>> _watchers = new HashMap<WatchableList, ArrayList<Runnable>>();
+  
   /**
    * The constructor.
    */
   public ShowTacticalOverview()
   {
   }
+  
+  private void registerListener(WatchableList pri, Runnable updater)
+  {
+    ArrayList<Runnable> list = _watchers.get(pri);
+    if(list == null)
+    {
+      // ok, we're not listening for changes. we should be
+      final ArrayList<Runnable> newList = new ArrayList<Runnable>();
+      list = newList;
+      _watchers.put(pri, list);
+
+      // ok, we should also start listening
+      if(pri instanceof TrackWrapper)
+      {
+        TrackWrapper track = (TrackWrapper) pri;
+        track.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, new PropertyChangeListener(){
+
+          @Override
+          public void propertyChange(PropertyChangeEvent evt)
+          {
+            for(Runnable item: newList)
+            {
+              item.run();
+            }
+          }});
+      }
+    }
+    
+    list.add(updater);
+  }
+  
 
   /**
    * 
@@ -93,16 +131,6 @@ public class ShowTacticalOverview extends AbstractHandler
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
-    final Boolean wasInterpolated;
-    if(sec instanceof TrackWrapper)
-    {
-      TrackWrapper track = (TrackWrapper) sec;
-      wasInterpolated = track.getInterpolatePoints();
-    }
-    else
-    {
-      wasInterpolated = null;
-    }
 
     final Chart chart = factory.createChart();
     chart.setName(name);
@@ -173,55 +201,89 @@ public class ShowTacticalOverview extends AbstractHandler
     rangeData.setStyling(rangeStyle);
     rangeAxis.getDatasets().add(rangeData);
 
-    // get the calculators
-    final plainCalc range = new rangeCalc();
-    final plainCalc brg = new bearingCalc();
-    final plainCalc relB = new relBearingCalc();
-    final plainCalc atb = new atbCalc();
-
-    // now for the actual data
-    final Collection<Editable> priItems =
-        pri.getItemsBetween(pri.getStartDTG(), pri.getEndDTG());
-    for (final Iterator<Editable> iterator = priItems.iterator(); iterator
-        .hasNext();)
+    // ok, wrap the calculation in a Runnable, so we can add
+    // it as a property listener
+    Runnable toUpdate = new Runnable()
     {
-      final Watchable thisPri = (Watchable) iterator.next();
-      final HiResDate thisTime = thisPri.getTime();
-      final long thisT = thisPri.getTime().getDate().getTime();
 
-      // ok, and the sec?
-      final Watchable[] thisSec = sec.getNearestTo(thisPri.getTime());
-      if (thisSec != null && thisSec.length == 1)
+      @Override
+      public void run()
       {
-        DataItem item = factory.createDataItem();
-        item.setDependentVal(brg.calculate(thisPri, thisSec[0], thisTime));
-        item.setIndependentVal(thisT);
-        bearingData.getMeasurements().add(item);
+        final Boolean wasInterpolated;
+        if (sec instanceof TrackWrapper)
+        {
+          TrackWrapper track = (TrackWrapper) sec;
+          wasInterpolated = track.getInterpolatePoints();
+        }
+        else
+        {
+          wasInterpolated = null;
+        }
 
-        item = factory.createDataItem();
-        item.setDependentVal(relB.calculate(thisPri, thisSec[0], thisTime));
-        item.setIndependentVal(thisT);
-        relBearingData.getMeasurements().add(item);
+        // get the calculators
+        final plainCalc range = new rangeCalc();
+        final plainCalc brg = new bearingCalc();
+        final plainCalc relB = new relBearingCalc();
+        final plainCalc atb = new atbCalc();
+        
+        // clear any existing data
+        bearingData.getMeasurements().clear();
+        relBearingData.getMeasurements().clear();
+        atbData.getMeasurements().clear();
+        rangeData.getMeasurements().clear();       
 
-        item = factory.createDataItem();
-        item.setDependentVal(atb.calculate(thisPri, thisSec[0], thisTime));
-        item.setIndependentVal(thisT);
-        atbData.getMeasurements().add(item);
+        // now for the actual data
+        final Collection<Editable> priItems =
+            pri.getItemsBetween(pri.getStartDTG(), pri.getEndDTG());
+        for (final Iterator<Editable> iterator = priItems.iterator(); iterator
+            .hasNext();)
+        {
+          final Watchable thisPri = (Watchable) iterator.next();
+          final HiResDate thisTime = thisPri.getTime();
+          final long thisT = thisPri.getTime().getDate().getTime();
 
-        item = factory.createDataItem();
-        item.setDependentVal(range.calculate(thisPri, thisSec[0], thisTime));
-        item.setIndependentVal(thisT);
-        rangeData.getMeasurements().add(item);
+          // ok, and the sec?
+          final Watchable[] thisSec = sec.getNearestTo(thisPri.getTime());
+          if (thisSec != null && thisSec.length == 1)
+          {
+            DataItem item = factory.createDataItem();
+            item.setDependentVal(brg.calculate(thisPri, thisSec[0], thisTime));
+            item.setIndependentVal(thisT);
+            bearingData.getMeasurements().add(item);
+
+            item = factory.createDataItem();
+            item.setDependentVal(relB.calculate(thisPri, thisSec[0], thisTime));
+            item.setIndependentVal(thisT);
+            relBearingData.getMeasurements().add(item);
+
+            item = factory.createDataItem();
+            item.setDependentVal(atb.calculate(thisPri, thisSec[0], thisTime));
+            item.setIndependentVal(thisT);
+            atbData.getMeasurements().add(item);
+
+            item = factory.createDataItem();
+            item.setDependentVal(range.calculate(thisPri, thisSec[0], thisTime));
+            item.setIndependentVal(thisT);
+            rangeData.getMeasurements().add(item);
+          }
+
+        }
+
+        // restore the interpolation, if it's a track
+        if (sec instanceof TrackWrapper)
+        {
+          final TrackWrapper track = (TrackWrapper) sec;
+          track.setInterpolatePoints(wasInterpolated);
+        }
       }
-
-    }
+    };
     
-    // restore the interpolation, if it's a track
-    if(sec instanceof TrackWrapper)
-    {
-      final TrackWrapper track = (TrackWrapper) sec;
-      track.setInterpolatePoints(wasInterpolated);
-    }
+    // register it
+    registerListener(pri, toUpdate);
+    registerListener(sec, toUpdate);
+    
+    // ok, run it
+    toUpdate.run();
 
     return chart;
   }
@@ -578,10 +640,6 @@ public class ShowTacticalOverview extends AbstractHandler
     rangeAxisType.setUnits(rangeUnits);
     rangeAxis.setAxisType(rangeAxisType);
     sensorChart.getMinAxes().add(rangeAxis);
-
-    // produce the sensor coverage
-    // no, don't bother
-//    produceSensorCoverage(pri, ia, sensorChart, factory);
 
     // produce the relative chart
     if (secs != null)
