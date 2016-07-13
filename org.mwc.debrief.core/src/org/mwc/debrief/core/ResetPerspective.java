@@ -29,7 +29,7 @@ import org.eclipse.ui.PlatformUI;
 public class ResetPerspective
 {
 	private static final String RESET_PERSPECTIVE = "";
-	private static final long resetPerspective = 4;
+	private static final long resetPerspective = 5;
 
 	public void resetPerspective()
 	{
