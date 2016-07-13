@@ -1,5 +1,6 @@
 package org.mwc.debrief.limpet_integration.handlers;
 
+import info.limpet.stackedcharts.model.AngleAxis;
 import info.limpet.stackedcharts.model.Chart;
 import info.limpet.stackedcharts.model.ChartSet;
 import info.limpet.stackedcharts.model.DataItem;
@@ -9,6 +10,7 @@ import info.limpet.stackedcharts.model.DependentAxis;
 import info.limpet.stackedcharts.model.IndependentAxis;
 import info.limpet.stackedcharts.model.LineType;
 import info.limpet.stackedcharts.model.MarkerStyle;
+import info.limpet.stackedcharts.model.NumberAxis;
 import info.limpet.stackedcharts.model.Orientation;
 import info.limpet.stackedcharts.model.PlainStyling;
 import info.limpet.stackedcharts.model.ScatterSet;
@@ -16,6 +18,7 @@ import info.limpet.stackedcharts.model.SelectiveAnnotation;
 import info.limpet.stackedcharts.model.StackedchartsFactory;
 import info.limpet.stackedcharts.model.impl.StackedchartsFactoryImpl;
 import info.limpet.stackedcharts.ui.view.StackedChartsView;
+import info.limpet.stackedcharts.ui.view.StackedChartsView.ControllableDate;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
@@ -37,6 +40,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
@@ -89,19 +93,35 @@ public class ShowTacticalOverview extends AbstractHandler
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
+    final Boolean wasInterpolated;
+    if(sec instanceof TrackWrapper)
+    {
+      TrackWrapper track = (TrackWrapper) sec;
+      wasInterpolated = track.getInterpolatePoints();
+    }
+    else
+    {
+      wasInterpolated = null;
+    }
 
     final Chart chart = factory.createChart();
     chart.setName(name);
 
     // prepare our axes
     final DependentAxis bearingAxis = factory.createDependentAxis();
-    bearingAxis.setAxisType(factory.createNumberAxis());
+    AngleAxis bearingAxisType = factory.createAngleAxis();
+    bearingAxisType.setMinVal(0);
+    bearingAxisType.setMaxVal(360);
+    bearingAxis.setAxisType(bearingAxisType);
     bearingAxis.setName("Bearing");
     chart.getMinAxes().add(bearingAxis);
 
     final DependentAxis relBearingAxis = factory.createDependentAxis();
     relBearingAxis.setName("Rel Bearing");
-    relBearingAxis.setAxisType(factory.createNumberAxis());
+    AngleAxis relBearingAxisType = factory.createAngleAxis();
+    relBearingAxisType.setMinVal(-180);
+    relBearingAxisType.setMaxVal(180);
+    relBearingAxis.setAxisType(relBearingAxisType);
     chart.getMinAxes().add(relBearingAxis);
 
     // prepare our datasets
@@ -128,7 +148,7 @@ public class ShowTacticalOverview extends AbstractHandler
     final Dataset atbData = factory.createDataset();
     atbData.setName(sec.getName() + " ATB (\u00b0)");
     final PlainStyling relStyle = factory.createPlainStyling();
-    relStyle.setColor(color.brighter().brighter());
+    relStyle.setColor(color.brighter().brighter().brighter());
     relStyle.setLineThickness(THICKNESS);
     relStyle.setMarkerStyle(MarkerStyle.NONE);
     atbData.setStyling(relStyle);
@@ -194,6 +214,13 @@ public class ShowTacticalOverview extends AbstractHandler
         rangeData.getMeasurements().add(item);
       }
 
+    }
+    
+    // restore the interpolation, if it's a track
+    if(sec instanceof TrackWrapper)
+    {
+      final TrackWrapper track = (TrackWrapper) sec;
+      track.setInterpolatePoints(wasInterpolated);
     }
 
     return chart;
@@ -375,7 +402,6 @@ public class ShowTacticalOverview extends AbstractHandler
         {
           // set follow selection to off
           cv.setModel(charts);
-
           // see if we have a time provider
           final TimeProvider timeProv =
               (TimeProvider) editor.getAdapter(TimeProvider.class);
@@ -409,6 +435,43 @@ public class ShowTacticalOverview extends AbstractHandler
               }
             });
           }
+
+          // see if we have a time provider
+          final ControllableTime timeCont =
+              (ControllableTime) editor.getAdapter(ControllableTime.class);
+          if (timeCont != null && timeProv != null)
+          {
+
+            ControllableDate dateC = new ControllableDate()
+            {
+
+              @Override
+              public void setDate(Date time)
+              {
+                timeCont.setTime(this, new HiResDate(time), true);
+              }
+
+              @Override
+              public Date getDate()
+              {
+                return timeProv.getTime().getDate();
+              }
+            };
+
+            cv.setDateSupport(dateC);
+
+            // add a utility to cancel the support on close
+            cv.addRunOnCloseCallback(new Runnable()
+            {
+
+              @Override
+              public void run()
+              {
+                // clear date support helper
+                cv.setDateSupport(null);
+              }
+            });
+          }
         }
       }
     }
@@ -426,6 +489,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     final Dataset courseData = factory.createDataset();
     courseData.setName(track.getName() + " Course");
+    courseData.setUnits("\u00b0");
     courseAxis.getDatasets().add(courseData);
     final PlainStyling courseStyle = factory.createPlainStyling();
     courseStyle.setColor(track.getColor());
@@ -509,11 +573,15 @@ public class ShowTacticalOverview extends AbstractHandler
     sensorChart.setName("Contact");
     final DependentAxis rangeAxis = factory.createDependentAxis();
     rangeAxis.setName("Range");
-    rangeAxis.setAxisType(factory.createNumberAxis());
+    final NumberAxis rangeAxisType = factory.createNumberAxis();
+    final String rangeUnits = new rangeCalc().getUnits();
+    rangeAxisType.setUnits(rangeUnits);
+    rangeAxis.setAxisType(rangeAxisType);
     sensorChart.getMinAxes().add(rangeAxis);
 
     // produce the sensor coverage
-    produceSensorCoverage(pri, ia, sensorChart, factory);
+    // no, don't bother
+//    produceSensorCoverage(pri, ia, sensorChart, factory);
 
     // produce the relative chart
     if (secs != null)
@@ -570,25 +638,34 @@ public class ShowTacticalOverview extends AbstractHandler
       final WatchableList[] secs, final StackedchartsFactory factory,
       final ChartSet charts)
   {
+    // right, create the charts
+    final Chart speedChart = factory.createChart();
+    speedChart.setName("Speed & Depth");
+    final DependentAxis speedAxis = factory.createDependentAxis();
+    final NumberAxis speedAxisType = factory.createNumberAxis();
+    speedAxisType.setUnits("Kts");
+    speedAxis.setAxisType(speedAxisType);
+    speedAxis.setName("Speed");
+    speedChart.getMinAxes().add(speedAxis);
+    charts.getCharts().add(speedChart);
+
     // ok, loop through the calculations
     final Chart courseChart = factory.createChart();
     final DependentAxis courseAxis = factory.createDependentAxis();
     courseChart.setName("Course");
-    courseAxis.setAxisType(factory.createNumberAxis());
-    courseAxis.setName("Course (\u00b0)");
+    AngleAxis angleType = factory.createAngleAxis();
+    angleType.setMinVal(0d);
+    angleType.setMaxVal(360d);
+    angleType.setUnits("\u00b0");
+    courseAxis.setAxisType(angleType);
+    courseAxis.setName("Course");
     courseChart.getMinAxes().add(courseAxis);
     charts.getCharts().add(courseChart);
 
-    final Chart speedChart = factory.createChart();
-    speedChart.setName("Speed & Depth");
-    final DependentAxis speedAxis = factory.createDependentAxis();
-    speedAxis.setAxisType(factory.createNumberAxis());
-    speedAxis.setName("Speed (Kts)");
-    speedChart.getMinAxes().add(speedAxis);
-    charts.getCharts().add(speedChart);
-
     final DependentAxis depthAxis = factory.createDependentAxis();
-    depthAxis.setAxisType(factory.createNumberAxis());
+    final NumberAxis depthAxisType = factory.createNumberAxis();
+    depthAxisType.setUnits("m");
+    depthAxis.setAxisType(depthAxisType);
     depthAxis.setName("Depth (m)");
     // don't add it - we won't bother until we have depth
     // speedChart.getMaxAxes().add(speedAxis);
@@ -603,6 +680,7 @@ public class ShowTacticalOverview extends AbstractHandler
     }
   }
 
+  @SuppressWarnings("unused")
   private void produceSensorCoverage(final WatchableList pri,
       final IndependentAxis ia, final Chart thisChart,
       final StackedchartsFactory factory)
@@ -648,6 +726,7 @@ public class ShowTacticalOverview extends AbstractHandler
                     sel.getAppearsIn().add(thisChart);
                     scatter = factory.createScatterSet();
                     scatter.setColor(thisS.getColor());
+                    scatter.setName(thisS.getName());
                     sel.setAnnotation(scatter);
                     ia.getAnnotations().add(sel);
                   }
