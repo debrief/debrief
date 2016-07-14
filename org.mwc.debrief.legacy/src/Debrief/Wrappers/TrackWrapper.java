@@ -813,6 +813,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         // child track move. remember that we need to recalculate & redraw
         setRelativePending();
+        
+        // also share the good news
+        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System.currentTimeMillis());
       }
     };
 
@@ -2041,7 +2044,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           // how do we do filters?
 
           // get the data. use tailSet, since it's inclusive...
-          SortedSet<Editable> set = getRawPositions().tailSet(nearestFix);
+          final SortedSet<Editable> rawPositions = getRawPositions();
+          SortedSet<Editable> set = rawPositions.tailSet(nearestFix);
 
           // see if the requested DTG was inside the range of the data
           if (!set.isEmpty() && (set.size() > 0))
@@ -2114,7 +2118,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 // find the one
                 // after the first
                 final SortedSet<Editable> otherSet =
-                    getRawPositions().headSet(nearestFix);
+                    rawPositions.headSet(nearestFix);
 
                 FixWrapper previous = null;
 
@@ -2200,7 +2204,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     return _showPositions;
   }
-
+  
   private SortedSet<Editable> getRawPositions()
   {
     SortedSet<Editable> res = null;
@@ -3773,6 +3777,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public void shift(final WorldVector vector)
   {
     boolean handled = false;
+    boolean updateAlreadyFired = false;
     
     // check it contains a range
     if (vector.getRange() > 0d)
@@ -3803,7 +3808,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       handled = true;
       
       // ok, get the legs to re-generate themselves
-      sortOutRelativePositions();
+      updateAlreadyFired = sortOutRelativePositions();
     }
 
     // now update the other children - some 
@@ -3811,12 +3816,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     this.updateDependents(elements(), vector);
 
     // did we move any dependents
-    if(handled)
+    if(handled && !updateAlreadyFired)
     {
       firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this._theLabel
           .getLocation());
     }
-
   }
 
   /**
@@ -3943,9 +3947,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * if we've got a relative track segment, it only learns where its individual fixes are once
    * they've been initialised. This is where we do it.
    */
-  public void sortOutRelativePositions()
+  public boolean sortOutRelativePositions()
   {
     boolean moved = false;
+    boolean updateFired = false;
 
     final Enumeration<Editable> segments = _thePositions.elements();
     while (segments.hasMoreElements())
@@ -4045,7 +4050,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       
       // also share the good news
       firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System.currentTimeMillis());
+      
+      updateFired = true;
     }
+    
+    return updateFired;
   }
 
   /**
