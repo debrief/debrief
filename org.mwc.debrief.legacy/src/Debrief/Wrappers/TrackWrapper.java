@@ -2044,7 +2044,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           // how do we do filters?
 
           // get the data. use tailSet, since it's inclusive...
-          SortedSet<Editable> set = getRawPositions().tailSet(nearestFix);
+          final SortedSet<Editable> rawPositions = getRawPositions();
+          SortedSet<Editable> set = rawPositions.tailSet(nearestFix);
 
           // see if the requested DTG was inside the range of the data
           if (!set.isEmpty() && (set.size() > 0))
@@ -2117,7 +2118,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 // find the one
                 // after the first
                 final SortedSet<Editable> otherSet =
-                    getRawPositions().headSet(nearestFix);
+                    rawPositions.headSet(nearestFix);
 
                 FixWrapper previous = null;
 
@@ -2203,7 +2204,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     return _showPositions;
   }
-
+  
   private SortedSet<Editable> getRawPositions()
   {
     SortedSet<Editable> res = null;
