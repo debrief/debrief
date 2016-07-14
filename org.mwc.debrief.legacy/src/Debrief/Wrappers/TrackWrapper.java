@@ -813,6 +813,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         // child track move. remember that we need to recalculate & redraw
         setRelativePending();
+        
+        // also share the good news
+        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System.currentTimeMillis());
       }
     };
 
@@ -3773,6 +3776,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public void shift(final WorldVector vector)
   {
     boolean handled = false;
+    boolean updateAlreadyFired = false;
     
     // check it contains a range
     if (vector.getRange() > 0d)
@@ -3803,7 +3807,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       handled = true;
       
       // ok, get the legs to re-generate themselves
-      sortOutRelativePositions();
+      updateAlreadyFired = sortOutRelativePositions();
     }
 
     // now update the other children - some 
@@ -3811,12 +3815,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     this.updateDependents(elements(), vector);
 
     // did we move any dependents
-    if(handled)
+    if(handled && !updateAlreadyFired)
     {
       firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this._theLabel
           .getLocation());
     }
-
   }
 
   /**
@@ -3943,9 +3946,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * if we've got a relative track segment, it only learns where its individual fixes are once
    * they've been initialised. This is where we do it.
    */
-  public void sortOutRelativePositions()
+  public boolean sortOutRelativePositions()
   {
     boolean moved = false;
+    boolean updateFired = false;
 
     final Enumeration<Editable> segments = _thePositions.elements();
     while (segments.hasMoreElements())
@@ -4045,7 +4049,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       
       // also share the good news
       firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System.currentTimeMillis());
+      
+      updateFired = true;
     }
+    
+    return updateFired;
   }
 
   /**
