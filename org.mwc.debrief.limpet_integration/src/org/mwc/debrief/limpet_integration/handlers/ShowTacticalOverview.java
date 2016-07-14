@@ -101,7 +101,10 @@ public class ShowTacticalOverview extends AbstractHandler
     for (PlainWrapper subject : subjects)
     {
       ArrayList<Runnable> list = _updaters.get(subject);
-      list.clear();
+      if(list != null)
+      {
+        list.clear();
+      }
     }
     _updaters.clear();
   }
@@ -621,10 +624,6 @@ public class ShowTacticalOverview extends AbstractHandler
       final DependentAxis courseAxis, final DependentAxis speedAxis,
       final DependentAxis depthAxis, final StackedchartsFactory factory)
   {
-    // now for the actual data
-    final Collection<Editable> items =
-        track.getItemsBetween(track.getStartDTG(), track.getEndDTG());
-
     final Dataset courseData = factory.createDataset();
     courseData.setName(track.getName() + " Course");
     courseData.setUnits("\u00b0");
@@ -653,39 +652,79 @@ public class ShowTacticalOverview extends AbstractHandler
     depthStyle.setIncludeInLegend(false);
     depthData.setStyling(depthStyle);
 
-    boolean hasDepth = false;
-
-    for (final Iterator<Editable> iterator = items.iterator(); iterator
-        .hasNext();)
+    // ok, wrap the calculation in a Runnable, so we can add
+    // it as a property listener
+    Runnable toUpdate = new Runnable()
     {
-      final Watchable thisF = (Watchable) iterator.next();
-      final long thisT = thisF.getTime().getDate().getTime();
 
-      final DataItem course = factory.createDataItem();
-      course.setDependentVal(Math.toDegrees(thisF.getCourse()));
-      course.setIndependentVal(thisT);
-      courseData.getMeasurements().add(course);
-
-      final DataItem speed = factory.createDataItem();
-      speed.setDependentVal(thisF.getSpeed());
-      speed.setIndependentVal(thisT);
-      speedData.getMeasurements().add(speed);
-
-      final DataItem depth = factory.createDataItem();
-      final double theDepth = thisF.getDepth();
-      if (theDepth != 0)
+      @Override
+      public void run()
       {
-        hasDepth = true;
-        depth.setDependentVal(theDepth);
-        depth.setIndependentVal(thisT);
-        depthData.getMeasurements().add(depth);
-      }
-    }
 
-    if (hasDepth)
-    {
-      depthAxis.getDatasets().add(depthData);
-    }
+        boolean hasDepth = false;
+        
+        // now for the actual data
+        final Collection<Editable> items =
+            track.getItemsBetween(track.getStartDTG(), track.getEndDTG());
+
+        // clear the data
+        courseData.getMeasurements().clear();
+        speedData.getMeasurements().clear();
+        depthData.getMeasurements().clear();
+        
+        // create lists of new data items, to reduce 
+        // updates
+        ArrayList<DataItem> courseD = new ArrayList<DataItem>();
+        ArrayList<DataItem> speedD = new ArrayList<DataItem>();
+        ArrayList<DataItem> depthD = new ArrayList<DataItem>();
+        
+        for (final Iterator<Editable> iterator = items.iterator(); iterator
+            .hasNext();)
+        {
+          final Watchable thisF = (Watchable) iterator.next();
+          final long thisT = thisF.getTime().getDate().getTime();
+
+          final DataItem course = factory.createDataItem();
+          course.setDependentVal(Math.toDegrees(thisF.getCourse()));
+          course.setIndependentVal(thisT);
+          courseD.add(course);
+
+          final DataItem speed = factory.createDataItem();
+          speed.setDependentVal(thisF.getSpeed());
+          speed.setIndependentVal(thisT);
+          speedD.add(speed);
+
+          final DataItem depth = factory.createDataItem();
+          final double theDepth = thisF.getDepth();
+          if (theDepth != 0)
+          {
+            hasDepth = true;
+            depth.setDependentVal(theDepth);
+            depth.setIndependentVal(thisT);
+            depthD.add(depth);
+          }
+        }
+        
+        // store the new items all at once
+        courseData.getMeasurements().addAll(courseD);
+        speedData.getMeasurements().addAll(speedD);
+        depthData.getMeasurements().addAll(depthD);
+
+        if (hasDepth)
+        {
+          depthAxis.getDatasets().add(depthData);
+        }
+
+      }
+    };
+
+    // remember to re-generate this if the track moves
+    registerListener(track, toUpdate);
+    
+    // ok, run it
+    toUpdate.run();
+
+
   }
 
   private ChartSet produceChartSet(final WatchableList pri,
