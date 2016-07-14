@@ -18,13 +18,15 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchWindow;
-import org.mwc.debrief.core.dialogs.CreateProjectDialog;
+import org.mwc.debrief.core.wizards.NewProjectWizard;
 
 @SuppressWarnings("restriction")
 public class CreateDebriefProject
@@ -105,8 +107,21 @@ public class CreateDebriefProject
 			{
 				Shell shell = PlatformUI.getWorkbench().getModalDialogShellProvider()
 						.getShell();
-				CreateProjectDialog dialog = new CreateProjectDialog(shell, true);
-				dialog.open();
+				
+				NewProjectWizard wizard = new NewProjectWizard(true);
+	        wizard.init(PlatformUI.getWorkbench(), null);
+
+	        WizardDialog dialog = new WizardDialog(shell, wizard)
+	        {
+	          @Override
+	          protected void setShellStyle(int newShellStyle)
+	          {
+	            super.setShellStyle(newShellStyle| SWT.SHEET);
+	          }
+	        };
+	        dialog.create();
+	        dialog.open();
+				
 
 			}
 		});

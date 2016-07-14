@@ -101,6 +101,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut("org.eclipse.pde.runtime.LogView");
 		
 		// hey - try to add the 'new plot' to the New menu
+		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewProjectWizard");
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
 		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
 		

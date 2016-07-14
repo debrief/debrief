@@ -846,9 +846,20 @@
     </extension>
 
     <extension point="org.eclipse.ui.newWizards">
-        <wizard category="org.mwc.cmap.core" class="org.mwc.debrief.core.wizards.NewPlotWizard"
-            icon="icons/16/plot_file.png" id="org.mwc.debrief.core.wizards.NewPlotWizard"
-            name="Debrief Plot"/>
+        <wizard
+              category="org.eclipse.ui.Basic"
+              class="org.mwc.debrief.core.wizards.NewProjectWizard"
+              icon="icons/16/create_project.png"
+              id="org.mwc.debrief.core.wizards.NewProjectWizard"
+              name="Debrief Project"
+              project="true"/>
+        <wizard
+              category="org.mwc.cmap.core"
+              class="org.mwc.debrief.core.wizards.NewPlotWizard"
+              icon="icons/16/plot_file.png"
+              id="org.mwc.debrief.core.wizards.NewPlotWizard"
+              name="Debrief Plot">
+        </wizard>
     </extension>
     <extension id="Debrief" point="org.eclipse.core.runtime.products">
         <product application="org.eclipse.ui.ide.workbench"
@@ -1069,5 +1080,16 @@
             class="org.mwc.debrief.core.handlers.DynamicLayerHandler">
       </helper>
     </extension>
-   
+   <extension
+      point="org.eclipse.ui.activities">
+	    <activity
+	         id="test.disable"
+	         name="Disable New Project">
+	   </activity>
+	   <activityPatternBinding
+	         activityId="test.disable"
+	         isEqualityPattern="true"
+	         pattern="org.eclipse.ui.ide/org.eclipse.ui.wizards.new.project">
+	   </activityPatternBinding>
+	</extension>
 </plugin>
