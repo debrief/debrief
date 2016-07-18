@@ -270,8 +270,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
     toolBarManager.add(_showTargetOverview);
-		// toolBarManager.add(_magicBtn);
 
+    addExtras(toolBarManager);
+    
 		// and a separator
 		toolBarManager.add(new Separator());
 
@@ -284,7 +285,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		}
 	}
 
-	/**
+	/** additional method, to allow extra items
+	 * to be added before the segment modes
+	 * @param toolBarManager
+	 */
+	protected void addExtras(IToolBarManager toolBarManager)
+  {
+  }
+
+  /**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
@@ -433,10 +442,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setDomainGridlineStroke(new BasicStroke(2));
 
 	  _targetOverview = new XYPlot();
-    final NumberAxis overviewCourse = new NumberAxis("Tgt Course (Degs)");
+    final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)");
     overviewCourse.setLabelFont(axisLabelFont);
     overviewCourse.setTickLabelFont(tickLabelFont);
-    final NumberAxis overviewSpeed = new NumberAxis("Tgt Speed (Kts)");
+    final NumberAxis overviewSpeed = new NumberAxis("Speed (Kts)");
     overviewSpeed.setLabelFont(axisLabelFont);
     overviewSpeed.setTickLabelFont(tickLabelFont);
     _targetOverview.setRangeAxis(overviewCourse);
@@ -445,11 +454,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverview.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
     final DefaultXYItemRenderer overviewCourseRenderer = new ResidualXYItemRenderer(
         null, null, _targetCourseSeries);
-    overviewCourseRenderer.setPaint(DebriefColors.RED.brighter());
+    overviewCourseRenderer.setSeriesPaint(0, DebriefColors.RED.brighter());
+    overviewCourseRenderer.setSeriesPaint(1, DebriefColors.BLUE);
     overviewCourseRenderer.setSeriesShape(0, new Ellipse2D.Double(-4.0, -4.0,
         8.0, 8.0));
-    overviewCourseRenderer.setSeriesShape(1, new Ellipse2D.Double(-2.0, -2.0,
-        4.0, 4.0));
+    overviewCourseRenderer.setSeriesShapesVisible(1,  false);
     overviewCourseRenderer.setSeriesStroke(0,  new BasicStroke(2f));
     overviewCourseRenderer.setSeriesStroke(1,  new BasicStroke(2f));
     final DefaultXYItemRenderer overviewSpeedRenderer =
@@ -464,13 +473,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverview.mapDatasetToRangeAxis(1, 1);
     _targetOverview.setRangeAxisLocation(0, AxisLocation.TOP_OR_LEFT);
     _targetOverview.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);
-
-    _targetOverview.setDomainCrosshairVisible(true);
-    _targetOverview.setRangeCrosshairVisible(true);
-    _targetOverview.setDomainCrosshairPaint(Color.GRAY);
-    _targetOverview.setRangeCrosshairPaint(Color.GRAY);
-    _targetOverview.setDomainCrosshairStroke(new BasicStroke(3.0f));
-    _targetOverview.setRangeCrosshairStroke(new BasicStroke(3.0f));
 
     _targetOverview.setRangeGridlinePaint(Color.LIGHT_GRAY);
     _targetOverview.setRangeGridlineStroke(new BasicStroke(2));

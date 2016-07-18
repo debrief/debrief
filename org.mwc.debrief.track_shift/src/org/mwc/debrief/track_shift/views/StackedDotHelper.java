@@ -482,12 +482,6 @@ public final class StackedDotHelper
     }
 
 		// ok, add these new series
-
-		if (showCourse)
-		{
-		  actualSeries.addSeries(osCourseValues);
-		}
-
 		if (errorValues.getItemCount() > 0)
 			errorSeries.addSeries(errorValues);
 
@@ -505,6 +499,11 @@ public final class StackedDotHelper
     if(tgtSpeedValues.getItemCount() > 0)
       targetSpeedSeries.addSeries(tgtSpeedValues);
 
+    if (showCourse)
+    {
+      targetCourseSeries.addSeries(osCourseValues);
+    }
+    
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);
 		targetPlot.setDataset(0, targetCourseSeries);

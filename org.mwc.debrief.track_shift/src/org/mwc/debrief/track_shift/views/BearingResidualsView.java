@@ -21,7 +21,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
-import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
@@ -136,10 +135,20 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
 	}
 
+	
+	
 	@Override
+  protected void addExtras(IToolBarManager toolBarManager)
+  {
+    super.addExtras(toolBarManager);
+    toolBarManager.add(showCourse);
+  }
+
+
+
+  @Override
 	protected void fillLocalToolBar(final IToolBarManager manager)
 	{
-		manager.add(showCourse);
 		manager.add(flipCourse);
 		manager.add(scaleError);
 		super.fillLocalToolBar(manager);
@@ -155,7 +164,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
 	protected String getUnits()
 	{
-		return "degs";
+		return "\u00b0";
 	}
 
 	protected String getType()
@@ -169,26 +178,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverview, _theTrackDataListener,
 				_onlyVisible.isChecked(), showCourse.isChecked(),
 				flipCourse.isChecked(), _holder, this, updateDoublets, _targetCourseSeries, _targetSpeedSeries);
-
-		// hide the line for the course dataset (if we're showing the course)
-    if (_showLinePlot.isChecked())
-    {
-      final DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
-          .getRenderer();
-      if (showCourse.isChecked())
-      {
-        // right, we've got a course, and it's always in slot one - so
-        // hide the
-        // shapes
-        lineRend.setSeriesShapesVisible(0, false);
-      }
-      else
-      {
-        // just make sure the first series is visible, it's clearly not
-        // a course
-        lineRend.setSeriesShapesVisible(0, true);
-      }
-    }
 	}
 
 	private void processShowCourse()
