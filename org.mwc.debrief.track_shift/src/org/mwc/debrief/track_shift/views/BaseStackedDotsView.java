@@ -19,6 +19,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -69,6 +71,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -93,6 +96,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
@@ -125,6 +129,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * 
 	 */
 	XYPlot _linePlot;
+	
+  /**
+   * and the actual values
+   * 
+   */
+  XYPlot _targetOverview;
+
+  /** declare the tgt course dataset, we need to give it to the renderer
+   * 
+   */
+  final TimeSeriesCollection _targetCourseSeries = new TimeSeriesCollection();
+
+  /** declare the tgt speed dataset, we need to give it to the renderer
+   * 
+   */
+  final TimeSeriesCollection _targetSpeedSeries = new TimeSeriesCollection();
+
 
 	/**
 	 * legacy helper class
@@ -146,7 +167,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * 
 	 */
 	protected Action _showLinePlot;
-	Action _showDotPlot;
+	protected Action _showDotPlot;
+	
+  protected Action _showTargetOverview;
 
 	/**
 	 * flag indicating whether we should only show stacked dots for visible fixes
@@ -246,6 +269,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(_selectOnClick);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
+    toolBarManager.add(_showTargetOverview);
 		// toolBarManager.add(_magicBtn);
 
 		// and a separator
@@ -407,6 +431,52 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setRangeGridlineStroke(new BasicStroke(2));
 		_linePlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
 		_linePlot.setDomainGridlineStroke(new BasicStroke(2));
+
+	  _targetOverview = new XYPlot();
+    final NumberAxis overviewCourse = new NumberAxis("Tgt Course (Degs)");
+    overviewCourse.setLabelFont(axisLabelFont);
+    overviewCourse.setTickLabelFont(tickLabelFont);
+    final NumberAxis overviewSpeed = new NumberAxis("Tgt Speed (Kts)");
+    overviewSpeed.setLabelFont(axisLabelFont);
+    overviewSpeed.setTickLabelFont(tickLabelFont);
+    _targetOverview.setRangeAxis(overviewCourse);
+    _targetOverview.setRangeAxis(1, overviewSpeed);
+    absBrgAxis.setAutoRangeIncludesZero(false);
+    _targetOverview.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
+    final DefaultXYItemRenderer overviewCourseRenderer = new ResidualXYItemRenderer(
+        null, null, _targetCourseSeries);
+    overviewCourseRenderer.setPaint(DebriefColors.RED.brighter());
+    overviewCourseRenderer.setSeriesShape(0, new Ellipse2D.Double(-4.0, -4.0,
+        8.0, 8.0));
+    overviewCourseRenderer.setSeriesShape(1, new Ellipse2D.Double(-2.0, -2.0,
+        4.0, 4.0));
+    overviewCourseRenderer.setSeriesStroke(0,  new BasicStroke(2f));
+    overviewCourseRenderer.setSeriesStroke(1,  new BasicStroke(2f));
+    final DefaultXYItemRenderer overviewSpeedRenderer =
+        new ResidualXYItemRenderer(null, null, _targetSpeedSeries);
+    overviewSpeedRenderer.setPaint(DebriefColors.RED.darker());
+    overviewSpeedRenderer.setSeriesShape(0, new Rectangle2D.Double(-4.0, -4.0,
+        8.0, 8.0));
+    overviewSpeedRenderer.setSeriesStroke(0,  new BasicStroke(2f));
+    _targetOverview.setRenderer(0, overviewCourseRenderer);
+    _targetOverview.setRenderer(1, overviewSpeedRenderer);
+    _targetOverview.mapDatasetToRangeAxis(0, 0);
+    _targetOverview.mapDatasetToRangeAxis(1, 1);
+    _targetOverview.setRangeAxisLocation(0, AxisLocation.TOP_OR_LEFT);
+    _targetOverview.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);
+
+    _targetOverview.setDomainCrosshairVisible(true);
+    _targetOverview.setRangeCrosshairVisible(true);
+    _targetOverview.setDomainCrosshairPaint(Color.GRAY);
+    _targetOverview.setRangeCrosshairPaint(Color.GRAY);
+    _targetOverview.setDomainCrosshairStroke(new BasicStroke(3.0f));
+    _targetOverview.setRangeCrosshairStroke(new BasicStroke(3.0f));
+
+    _targetOverview.setRangeGridlinePaint(Color.LIGHT_GRAY);
+    _targetOverview.setRangeGridlineStroke(new BasicStroke(2));
+    _targetOverview.setDomainGridlinePaint(Color.LIGHT_GRAY);
+    _targetOverview.setDomainGridlineStroke(new BasicStroke(2));
+		
 		
 		// and the plot object to display the cross hair value
 		final XYTextAnnotation annot = new XYTextAnnotation("-----", 2, 2);
@@ -421,22 +491,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// give them a high contrast backdrop
 		_dotPlot.setBackgroundPaint(Color.white);
 		_linePlot.setBackgroundPaint(Color.white);
+    _targetOverview.setBackgroundPaint(Color.white);
 
 		// set the y axes to autocalculate
 		_dotPlot.getRangeAxis().setAutoRange(true);
 		_linePlot.getRangeAxis().setAutoRange(true);
+    _targetOverview.getRangeAxis().setAutoRange(true);
 
 		_combined = new CombinedDomainXYPlot(xAxis);
 
 		_combined.add(_linePlot);
 		_combined.add(_dotPlot);
+    _combined.add(_targetOverview);
 
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
 		
 		// put the plot into a chart
 		_myChart = new JFreeChart(null, null, _combined, true);
 		
-		final LegendItemSource[] sources = { _linePlot };
+		final LegendItemSource[] sources = { _linePlot, _targetOverview };
 		_myChart.getLegend().setSources(sources);
 
 		_myChart.addProgressListener(new ChartProgressListener()
@@ -517,6 +590,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			_combined.remove(_linePlot);
 		if (!_showDotPlot.isChecked() && _showLinePlot.isChecked())
 			_combined.remove(_dotPlot);
+    if (!_showTargetOverview.isChecked())
+      _combined.remove(_targetOverview);
 	}
 
 	/**
@@ -640,6 +715,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_showDotPlot.setToolTipText("Show the error plot");
 		_showDotPlot.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/stacked_dots.png"));
+		
+    _showTargetOverview = new Action("Target Overview", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        if (_showTargetOverview.isChecked())
+        {
+          _combined.add(_targetOverview);
+        }
+        else
+        {
+          _combined.remove(_targetOverview);
+        }
+      }
+    };
+    _showTargetOverview.setChecked(true);
+    _showTargetOverview.setToolTipText("Show the target overview");
+    _showTargetOverview.setImageDescriptor(Activator
+        .getImageDescriptor("icons/24/tgt_overview.png"));
 
 		// get an error logger
 		final ErrorLogger logger = this;
@@ -729,6 +825,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			// it's ok we're already in a display thread
 			_dotPlot.setDataset(null);
 			_linePlot.setDataset(null);
+			_targetOverview.setDataset(null);
 		}
 		else
 		{
@@ -739,6 +836,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				{
 					_dotPlot.setDataset(null);
 					_linePlot.setDataset(null);
+		      _targetOverview.setDataset(null);
 				}
 			});
 		}
@@ -790,6 +888,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_linePlot.getRangeAxis().setAutoRange(false);
 				_linePlot.getRangeAxis().setAutoRange(true);
 			}
+      if (_showTargetOverview.isChecked())
+      {
+        _targetOverview.getRangeAxis().setAutoRange(false);
+        _targetOverview.getRangeAxis().setAutoRange(true);
+      }
 		}
 
 		// note, we also update the domain axis if we're updating the data in
@@ -813,6 +916,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_linePlot.getDomainAxis().setAutoRange(true);
 				_linePlot.getDomainAxis().setAutoRange(false);
 			}
+      if (_showTargetOverview.isChecked())
+      {
+        _targetOverview.getDomainAxis().setAutoRange(false);
+        _targetOverview.getDomainAxis().setAutoRange(true);
+        _targetOverview.getDomainAxis().setAutoRange(false);
+      }
 		}
 	}
 
@@ -1068,6 +1177,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 							_linePlot.setDataset(null);
 							_dotPlot.setDataset(null);
+							_targetOverview.setDataset(null);
 						}
 					}
 

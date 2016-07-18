@@ -166,29 +166,29 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 	protected void updateData(final boolean updateDoublets)
 	{
 		// update the current datasets
-		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
+		_myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverview, _theTrackDataListener,
 				_onlyVisible.isChecked(), showCourse.isChecked(),
-				flipCourse.isChecked(), _holder, this, updateDoublets);
+				flipCourse.isChecked(), _holder, this, updateDoublets, _targetCourseSeries, _targetSpeedSeries);
 
 		// hide the line for the course dataset (if we're showing the course)
-		if (_showLinePlot.isChecked())
-		{
-			final DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
-					.getRenderer();
-			if (showCourse.isChecked())
-			{
-				// right, we've got a course, and it's always in slot one - so
-				// hide the
-				// shapes
-				lineRend.setSeriesShapesVisible(0, false);
-			}
-			else
-			{
-				// just make sure the first series is visible, it's clearly not
-				// a course
-				lineRend.setSeriesShapesVisible(0, true);
-			}
-		}
+    if (_showLinePlot.isChecked())
+    {
+      final DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
+          .getRenderer();
+      if (showCourse.isChecked())
+      {
+        // right, we've got a course, and it's always in slot one - so
+        // hide the
+        // shapes
+        lineRend.setSeriesShapesVisible(0, false);
+      }
+      else
+      {
+        // just make sure the first series is visible, it's clearly not
+        // a course
+        lineRend.setSeriesShapesVisible(0, true);
+      }
+    }
 	}
 
 	private void processShowCourse()

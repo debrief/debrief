@@ -39,6 +39,7 @@ import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.Doublet;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
@@ -241,14 +242,16 @@ public final class StackedDotHelper
 	 * @param b
 	 * @param holder
 	 * @param logger
+	 * @param targetCourseSeries 
+	 * @param targetSpeedSeries 
 	 * 
 	 * @param currentOffset
 	 *          how far the current track has been dragged
 	 */
-	public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot,
+	public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot, XYPlot targetPlot,
 			final TrackDataProvider tracks, final boolean onlyVis,
 			final boolean showCourse, final boolean flipAxes, final Composite holder,
-			final ErrorLogger logger, final boolean updateDoublets)
+			final ErrorLogger logger, final boolean updateDoublets, TimeSeriesCollection targetCourseSeries, TimeSeriesCollection targetSpeedSeries)
 	{
 		// do we even have a primary track
 		if (_primaryTrack == null)
@@ -272,6 +275,7 @@ public final class StackedDotHelper
 			// better clear the plot
 			dotPlot.setDataset(null);
 			linePlot.setDataset(null);
+			targetPlot.setDataset(null);
 			return;
 		}
 
@@ -286,8 +290,15 @@ public final class StackedDotHelper
 		final TimeSeries ambigValues = new TimeSeries("Ambiguous Bearing");
 		final TimeSeries calculatedValues = new TimeSeries("Calculated");
 
-		final TimeSeries osCourseValues = new TimeSeries("Course");
+		final TimeSeries osCourseValues = new TimeSeries("O/S Course");
+		
+    final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
+    final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
 
+    // clear the existing target datasets
+    targetCourseSeries.removeAllSeries();
+    targetSpeedSeries.removeAllSeries();
+    
 		// ok, run through the points on the primary track
 		final Iterator<Doublet> iter = _primaryDoublets.iterator();
 		while (iter.hasNext())
@@ -420,11 +431,61 @@ public final class StackedDotHelper
 			osCourseValues.add(crseBearing);
 		}
 
+    // sort out the target course/speed
+    Enumeration<Editable> segments = _secondaryTrack.segments();
+    TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+    while (segments.hasMoreElements())
+    {
+      SegmentList segList = (SegmentList) segments.nextElement();
+      Enumeration<Editable> segIter = segList.elements();
+      while (segIter.hasMoreElements())
+      {
+        TrackSegment segment = (TrackSegment) segIter.nextElement();
+        
+        // is this an infill segment
+        final boolean isInfill = segment instanceof DynamicInfillSegment;
+
+        // check it's in range
+        if (segment.startDTG().greaterThan(endDTG)
+            || segment.endDTG().lessThan(startDTG))
+        {
+          // ok, we can skip this one
+        }
+        else
+        {
+          Enumeration<Editable> points = segment.elements();
+          while (points.hasMoreElements())
+          {
+            FixWrapper fw = (FixWrapper) points.nextElement();
+            if (period.contains(fw.getDateTimeGroup()))
+            {
+              // ok, create a point for it
+              final FixedMillisecond thisMilli =
+                  new FixedMillisecond(fw.getDateTimeGroup().getDate()
+                      .getTime());
+              double tgtCourse =
+                  MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
+              double tgtSpeed = fw.getSpeed();
+
+              final ColouredDataItem crseBearingItem =
+                  new ColouredDataItem(thisMilli, tgtCourse, fw.getColor()
+                      .brighter(), isInfill, null);
+              tgtCourseValues.add(crseBearingItem);
+              final ColouredDataItem tgtSpeedItem =
+                  new ColouredDataItem(thisMilli, tgtSpeed, fw.getColor()
+                      .darker(), isInfill, null);
+              tgtSpeedValues.add(tgtSpeedItem);
+            }
+          }
+        }
+      }
+    }
+
 		// ok, add these new series
 
 		if (showCourse)
 		{
-			actualSeries.addSeries(osCourseValues);
+		  actualSeries.addSeries(osCourseValues);
 		}
 
 		if (errorValues.getItemCount() > 0)
@@ -437,9 +498,18 @@ public final class StackedDotHelper
 
 		if (calculatedValues.getItemCount() > 0)
 			actualSeries.addSeries(calculatedValues);
+		
+		if(tgtCourseValues.getItemCount() > 0)
+		  targetCourseSeries.addSeries(tgtCourseValues);
+
+    if(tgtSpeedValues.getItemCount() > 0)
+      targetSpeedSeries.addSeries(tgtSpeedValues);
 
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);
+		targetPlot.setDataset(0, targetCourseSeries);
+		targetPlot.setDataset(1, targetSpeedSeries);
+		
 	}
 
 	/**
