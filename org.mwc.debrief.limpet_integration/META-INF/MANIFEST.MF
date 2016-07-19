@@ -11,5 +11,6 @@ Require-Bundle: org.eclipse.ui,
  info.limpet.stackedcharts.model;bundle-version="1.0.0",
  info.limpet.stackedcharts.ui;bundle-version="1.0.0",
  org.mwc.debrief.legacy;bundle-version="1.0.310",
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.freehep
 Bundle-ActivationPolicy: lazy
