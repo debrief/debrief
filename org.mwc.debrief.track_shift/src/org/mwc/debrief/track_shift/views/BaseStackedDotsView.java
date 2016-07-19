@@ -772,7 +772,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     _showTargetOverview.setChecked(true);
-    _showTargetOverview.setToolTipText("Show the target overview");
+    _showTargetOverview.setToolTipText("Show the overview plot");
     _showTargetOverview.setImageDescriptor(Activator
         .getImageDescriptor("icons/24/tgt_overview.png"));
 

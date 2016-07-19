@@ -101,7 +101,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 			}
 		};
 		showCourse.setChecked(true);
-		showCourse.setToolTipText("Show ownship course in absolute plot");
+		showCourse.setToolTipText("Show ownship course in overview chart");
 		showCourse.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/ShowCourse.png"));
 
