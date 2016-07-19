@@ -276,6 +276,7 @@ public final class StackedDotHelper
 			dotPlot.setDataset(null);
 			linePlot.setDataset(null);
 			targetPlot.setDataset(null);
+			targetPlot.setDataset(1, null);
 			return;
 		}
 
@@ -596,7 +597,7 @@ public final class StackedDotHelper
 		}
 
 		// must have worked, hooray
-		logger.logError(IStatus.OK, dataType + " error", null);
+		logger.logError(IStatus.OK, null, null);
 
 		// ok, get the positions
 		updateDoublets(onlyVis, needBrg, needFreq);
