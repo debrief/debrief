@@ -32,58 +32,49 @@ import org.jfree.data.xy.XYDataset;
 import MWC.GUI.JFreeChart.AttractiveDataItem;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 
-/**
- * Created by IntelliJ IDEA. User: Ian.Mayo Date: Feb 5, 2003 Time: 10:59:40 AM
- * To change this template use Options | File Templates.
- */
 // ////////////////////////////////////////////////
 // custom renderer, which uses the specified color for the data series
 // ////////////////////////////////////////////////
-public final class ResidualXYItemRenderer extends DefaultXYItemRenderer
+public class ResidualXYItemRenderer extends DefaultXYItemRenderer
 {
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	/** A working line (to save creating thousands of instances). */
-	// private Line2D workingLine = new Line2D.Double(0.0, 0.0, 0.0, 0.0);
+  private static final long serialVersionUID = 1L;
+  /** A working line (to save creating thousands of instances). */
+  // private Line2D workingLine = new Line2D.Double(0.0, 0.0, 0.0, 0.0);
 
-	/**
-	 * the plot whose data we're plotting
-	 * 
-	 */
-	private final TimeSeriesCollection _dataset;
+  /**
+   * the plot whose data we're plotting
+   * 
+   */
+  private final TimeSeriesCollection _dataset;
 
-	/**
-	 * Constructs a new renderer.
-	 * <p>
-	 * To specify the type of renderer, use one of the constants: SHAPES, LINES or
-	 * SHAPES_AND_LINES.
-	 * 
-	 * @param type
-	 *          the type of renderer.
-	 * @param toolTipGenerator
-	 *          the tooltip generator.
-	 * @param urlGenerator
-	 *          the URL generator.
-	 * @param dataset 
-	 * @param plot
-	 */
-	public ResidualXYItemRenderer(
-			final XYToolTipGenerator toolTipGenerator,
-			final XYURLGenerator urlGenerator, TimeSeriesCollection dataset)
-	{
-		super();
-		this.setBaseToolTipGenerator(toolTipGenerator);
-		this.setURLGenerator(urlGenerator);
-		_dataset = dataset;
-	}
-	
-	
+  /**
+   * Constructs a new renderer.
+   * <p>
+   * To specify the type of renderer, use one of the constants: SHAPES, LINES or SHAPES_AND_LINES.
+   * 
+   * @param type
+   *          the type of renderer.
+   * @param toolTipGenerator
+   *          the tooltip generator.
+   * @param urlGenerator
+   *          the URL generator.
+   * @param dataset
+   * @param plot
+   */
+  public ResidualXYItemRenderer(final XYToolTipGenerator toolTipGenerator,
+      final XYURLGenerator urlGenerator, TimeSeriesCollection dataset)
+  {
+    super();
+    this.setBaseToolTipGenerator(toolTipGenerator);
+    this.setURLGenerator(urlGenerator);
+    _dataset = dataset;
+  }
 
-
-	@Override
+  @Override
   public boolean getItemShapeFilled(int row, int column)
   {
     boolean res = true;
@@ -109,52 +100,53 @@ public final class ResidualXYItemRenderer extends DefaultXYItemRenderer
   }
 
   @Override
-	public Paint getItemPaint(final int row, final int column)
-	{
-		Color theColor = null;
+  public Paint getItemPaint(final int row, final int column)
+  {
+    Color theColor = null;
 
-		Paint res = null;
+    Paint res = null;
 
-			final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
-			// get the data series
-			final TimeSeries bts = tsc.getSeries(row);
-			final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-			if (tsdp instanceof AttractiveDataItem)
-			{
-				final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
-				theColor = cdi.getColor();
-			}
+    final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
+    // get the data series
+    final TimeSeries bts = tsc.getSeries(row);
+    final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+    if (tsdp instanceof AttractiveDataItem)
+    {
+      final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
+      theColor = cdi.getColor();
+    }
 
-		if (theColor != null)
-			res = theColor;
-		else
-			res = super.getItemPaint(row, column);
+    if (theColor != null)
+      res = theColor;
+    else
+      res = super.getItemPaint(row, column);
 
-		return res;
-	}
+    return res;
+  }
 
-	/**
-	 * Returns a legend item for a series.
-	 * 
-	 * @param series
-	 *          the series (zero-based index).
-	 * 
-	 * @return a legend item for the series.
-	 */
-	public LegendItem getLegendItem(final int series)
-	{
+  /**
+   * Returns a legend item for a series.
+   * 
+   * @param series
+   *          the series (zero-based index).
+   * 
+   * @return a legend item for the series.
+   */
+  public LegendItem getLegendItem(final int series)
+  {
 
-		final XYPlot plot = this.getPlot();
+    final XYPlot plot = this.getPlot();
 
-		final XYDataset dataset = plot.getDataset();
-		final String label = (String) dataset.getSeriesKey(series);
-		final String description = label;
-		final Shape shape = null;
-		final Paint paint = this.getSeriesPaint(series);
-		final Paint outlinePaint = paint;
-		final Stroke stroke = plot.getRenderer().getSeriesStroke(series);
+    final XYDataset dataset = plot.getDataset();
+    final String label = (String) dataset.getSeriesKey(series);
+    final String description = label;
+    final Shape shape = null;
+    final Paint paint = this.getSeriesPaint(series);
+    final Paint outlinePaint = paint;
+    final Stroke stroke = plot.getRenderer().getSeriesStroke(series);
 
-		return new LegendItem(label, description, null, null, shape, paint, stroke,
-				outlinePaint);
-	}
+    return new LegendItem(label, description, null, null, shape, paint, stroke,
+        outlinePaint);
+  }
+
 }
