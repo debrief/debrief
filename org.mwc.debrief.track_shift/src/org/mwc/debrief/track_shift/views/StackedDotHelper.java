@@ -437,7 +437,19 @@ public final class StackedDotHelper
     TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
     while (segments.hasMoreElements())
     {
-      SegmentList segList = (SegmentList) segments.nextElement();
+      Editable nextE = segments.nextElement();
+      // if there's just one segment - then we need to wrap it
+      final SegmentList segList;
+      if(nextE instanceof SegmentList)
+      {
+        segList = (SegmentList) nextE;
+      }
+      else
+      {
+        segList = new SegmentList();
+        segList.addSegment((TrackSegment) nextE);
+      }
+      
       Enumeration<Editable> segIter = segList.elements();
       while (segIter.hasMoreElements())
       {
