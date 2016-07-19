@@ -110,6 +110,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 {
 
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
+  private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
 
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
@@ -1256,6 +1257,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       final Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
       final Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
+      final Boolean showOverview = memento.getBoolean(SHOW_OVERVIEW);
       final Boolean doSelectOnClick = memento.getBoolean(SELECT_ON_CLICK);
       final Boolean showOnlyVis = memento.getBoolean(SHOW_ONLY_VIS);
       if (showLineVal != null)
@@ -1274,6 +1276,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         _onlyVisible.setChecked(showOnlyVis);
       }
+      if(showOverview != null)
+      {
+        _showTargetOverview.setChecked(showOverview);
+      }
     }
   }
 
@@ -1285,6 +1291,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // remember if we're showing the error plot
     memento.putBoolean(SHOW_LINE_PLOT, _showLinePlot.isChecked());
     memento.putBoolean(SHOW_DOT_PLOT, _showDotPlot.isChecked());
+    memento.putBoolean(SHOW_OVERVIEW, _showTargetOverview.isChecked());
     memento.putBoolean(SELECT_ON_CLICK, _selectOnClick.isChecked());
     memento.putBoolean(SHOW_ONLY_VIS, _onlyVisible.isChecked());
 
