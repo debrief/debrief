@@ -976,11 +976,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             }
           }
         }
-
-        // we also need to listen for a child moving
-        newRelativeSegment.addPropertyChangeListener(CoreTMASegment.ADJUSTED,
-            _childTrackMovedListener);
       }
+      // we also need to listen for a child moving
+      seg.addPropertyChangeListener(CoreTMASegment.ADJUSTED,
+          _childTrackMovedListener);
     }
     else if (point instanceof Layer)
     {
