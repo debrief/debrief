@@ -14,14 +14,7 @@
             id="org.mwc.debrief.limpet_integration.commands.showTacticalOverview">
       </command>
    </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <command
-            name="Export to WMF"
-            categoryId="org.mwc.debrief.limpet_integration.commands.category"
-            id="org.mwc.debrief.limpet_integration.commands.exportToWMF">
-      </command>
-   </extension>
+
    <extension
          point="org.eclipse.ui.handlers">
       <handler
