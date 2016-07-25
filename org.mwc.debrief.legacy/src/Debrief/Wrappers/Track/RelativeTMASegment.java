@@ -353,22 +353,21 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 		return createFixAt(theTime);
 	}
 
-	/**
-	 * create a solution from all of the array of fixes
-	 * @param override 
-	 * 
-	 * @param sw
-	 */
-	private void createPointsFrom(final SensorContactWrapper[] observations, Color override)
-	{
-		// better start looping
-		for (int i = 0; i < observations.length; i++)
-		{
-			final SensorContactWrapper thisS = observations[i];
+  /**
+   * @param observations the cuts to create from
+   * @param override optional fixed color to set positions
+   */
+  private void createPointsFrom(final SensorContactWrapper[] observations,
+      Color override)
+  {
+    // better start looping
+    for (int i = 0; i < observations.length; i++)
+    {
+      final SensorContactWrapper thisS = observations[i];
 
-			doThisFix(thisS, override);
-		}
-	}
+      doThisFix(thisS, override);
+    }
+  }
 
 //	/**
 //	 * create a solution from all of ths fixes in this sensor
