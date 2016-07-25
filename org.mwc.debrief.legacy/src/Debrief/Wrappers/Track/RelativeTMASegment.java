@@ -14,6 +14,7 @@
  */
 package Debrief.Wrappers.Track;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -230,10 +231,13 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
    *          the initial target speed estimate
    * @param courseDegs
    *          the initial target course estimate
+   * @param theLayers
+   * @param override optional, whether to force usage of a track color. If null, the
+   *          relevant sensor cut color will be used
    */
   public RelativeTMASegment(final SensorContactWrapper[] observations,
       final WorldVector offset, final WorldSpeed speed,
-      final double courseDegs, final Layers theLayers)
+      final double courseDegs, final Layers theLayers, final Color override)
   {
     this(courseDegs, speed, offset, theLayers, observations[0].getSensor().getHost().getName(),
         observations[0].getSensor().getName());
@@ -245,33 +249,33 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
     setTrack(scw.getSensor().getHost());
 
     // create the points
-    createPointsFrom(observations);
+    createPointsFrom(observations, override);
   }
-
-  /**
-   * build up a solution from the supplied sensor data
-   * 
-   * @param observations
-   *          create a single position for the DTG of each solution
-   * @param offset
-   *          the range/brg from the host's position at the DTG of the first
-   *          observation
-   * @param speed
-   *          the initial target speed estimate
-   * @param courseDegs
-   *          the initial target course estimate
-   */
-  public RelativeTMASegment(final SensorWrapper sw, final WorldVector offset,
-      final WorldSpeed speed, final double courseDegs, final Layers theLayers)
-  {
-    this(courseDegs, speed, offset, theLayers, sw.getHost().getName(), sw.getName());
-
-    // sort out the origin
-    setTrack(sw.getHost());
-
-    // create the points
-    createPointsFrom(sw);
-  }
+//
+//  /**
+//   * build up a solution from the supplied sensor data
+//   * 
+//   * @param observations
+//   *          create a single position for the DTG of each solution
+//   * @param offset
+//   *          the range/brg from the host's position at the DTG of the first
+//   *          observation
+//   * @param speed
+//   *          the initial target speed estimate
+//   * @param courseDegs
+//   *          the initial target course estimate
+//   */
+//  public RelativeTMASegment(final SensorWrapper sw, final WorldVector offset,
+//      final WorldSpeed speed, final double courseDegs, final Layers theLayers)
+//  {
+//    this(courseDegs, speed, offset, theLayers, sw.getHost().getName(), sw.getName());
+//
+//    // sort out the origin
+//    setTrack(sw.getHost());
+//
+//    // create the points
+//    createPointsFrom(sw);
+//  }
   
 
 
@@ -351,46 +355,60 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 	/**
 	 * create a solution from all of the array of fixes
+	 * @param override 
 	 * 
 	 * @param sw
 	 */
-	private void createPointsFrom(final SensorContactWrapper[] observations)
+	private void createPointsFrom(final SensorContactWrapper[] observations, Color override)
 	{
 		// better start looping
 		for (int i = 0; i < observations.length; i++)
 		{
 			final SensorContactWrapper thisS = observations[i];
 
-			doThisFix(thisS);
+			doThisFix(thisS, override);
 		}
 	}
 
-	/**
-	 * create a solution from all of ths fixes in this sensor
-	 * 
-	 * @param sw
-	 */
-	private void createPointsFrom(final SensorWrapper sw)
-	{
-		final Enumeration<Editable> obs = sw.elements();
-		while (obs.hasMoreElements())
-		{
-			final SensorContactWrapper thisS = (SensorContactWrapper) obs
-					.nextElement();
-			doThisFix(thisS);
-		}
-	}
+//	/**
+//	 * create a solution from all of ths fixes in this sensor
+//	 * 
+//	 * @param sw
+//	 */
+//	private void createPointsFrom(final SensorWrapper sw)
+//	{
+//		final Enumeration<Editable> obs = sw.elements();
+//		while (obs.hasMoreElements())
+//		{
+//			final SensorContactWrapper thisS = (SensorContactWrapper) obs
+//					.nextElement();
+//			doThisFix(thisS, null);
+//		}
+//	}
 
 	/**
 	 * create a fix from this sensor item
 	 * 
 	 * @param thisS
+	 * @param override 
 	 */
-	private void doThisFix(final SensorContactWrapper thisS)
+	private void doThisFix(final SensorContactWrapper thisS, Color override)
 	{
 		// and create a fix for this cut
 		final FixWrapper newFix = createPointFor(thisS);
 		newFix.setSymbolShowing(true);
+		
+		final Color fixColor;
+		if(override != null)
+		{
+		  fixColor = override;
+		}
+		else
+		{
+		  fixColor = thisS.getColor();
+		}
+		
+		newFix.setColor(fixColor);
 
 		// store it
 		addFix(newFix);
