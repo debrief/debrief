@@ -63,22 +63,13 @@ public class HideLayerFormatListener extends PlainWrapper implements
     {
       HideLayerFormatListener cf =
           new HideLayerFormatListener("Test", new String[]
-          {"Name2"});
+          {"Name4"});
       TrackWrapper tw = new TrackWrapper();
-      tw.setName("Name");
-      FixWrapper f1 = createFix(4000);
-      FixWrapper f2 = createFix(5000);
-      FixWrapper f3 = createFix(6000);
-      FixWrapper f4 = createFix(10000);
-      FixWrapper f5 = createFix(12000);
+      tw.setName("Name4");
 
-      cf.newItem(tw, f1, null);
-      cf.newItem(tw, f2, null);
-      cf.newItem(tw, f3, null);
-      cf.newItem(tw, f4, null);
-      cf.newItem(tw, f5, null);
+      cf.newItem(tw, null, null);
 
-      assertTrue("not at end", tw.getNameAtStart());
+      assertFalse("not visible", tw.getVisible());
 
     }
 
@@ -88,7 +79,7 @@ public class HideLayerFormatListener extends PlainWrapper implements
           new HideLayerFormatListener("Test", new String[]
           {"Name"});
       TrackWrapper tw = new TrackWrapper();
-      tw.setName("Name");
+      tw.setName("JamJar");
       FixWrapper f1 = createFix(4000);
       FixWrapper f2 = createFix(5000);
       FixWrapper f3 = createFix(9000);
@@ -101,7 +92,7 @@ public class HideLayerFormatListener extends PlainWrapper implements
       cf.newItem(tw, f4, null);
       cf.newItem(tw, f5, null);
 
-      assertFalse("at end", tw.getNameAtStart());
+      assertTrue("is visible", tw.getVisible());
 
     }
 
@@ -122,7 +113,7 @@ public class HideLayerFormatListener extends PlainWrapper implements
       cf.newItem(tw, f4, null);
       cf.newItem(tw, f5, null);
 
-      assertFalse("at end", tw.getNameAtStart());
+      assertTrue("is visible", tw.getVisible());
     }
 
     private FixWrapper createFix(int time)
