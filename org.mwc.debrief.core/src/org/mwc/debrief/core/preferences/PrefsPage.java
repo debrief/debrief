@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts;
 
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 
@@ -84,6 +85,9 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         "Policy for dynamic infill colors:", 1, _trackModeTags,
         getFieldEditorParent()));
 
+    addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
+        "Use sensor cut colors for new TMA leg positions",
+        getFieldEditorParent()));
   }
 
   /*
@@ -107,6 +111,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String ASK_ABOUT_PROJECT = "createProject";
     public static final String INFILL_COLOR_STRATEGY =
         DynamicInfillSegment.INFILL_COLOR_STRATEGY;
+    public static final String USE_CUT_COLOR =
+        GenerateTMASegmentFromCuts.USE_CUT_COLOR;
   }
 
 }
