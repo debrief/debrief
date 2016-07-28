@@ -19,6 +19,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.ToolParent;
+import MWC.GenericData.ColoredWatchable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -28,7 +29,7 @@ import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-public class DynamicInfillSegment extends TrackSegment
+public class DynamicInfillSegment extends TrackSegment implements ColoredWatchable
 {
 
   public static final String RANDOM_INFILL = "RANDOM_INFILL";
@@ -690,5 +691,10 @@ public class DynamicInfillSegment extends TrackSegment
       }
     }
   }
+
+	@Override
+	public Color getColor() {
+		return _myColor;
+	}
 
 }

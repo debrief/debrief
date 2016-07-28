@@ -216,7 +216,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 		@Override
 		public boolean canRedo()
 		{
-			return false;
+			return true;
 		}
 
 		@Override
@@ -238,6 +238,9 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 				_parentTrack.removeElement(thisSeg);
 			}
 
+			// and clera the infills
+			_infills.clear();
+			
 			// cool, tell everyone
 			_layers.fireExtended(null, _parentTrack);
 
