@@ -25,60 +25,64 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import org.w3c.dom.Element;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 
-abstract public class DynamicInfillSegmentHandler extends CoreTrackSegmentHandler
+abstract public class DynamicInfillSegmentHandler extends
+    CoreTrackSegmentHandler
 {
-	private static final String DYNAMIC_SEGMENT = "DynamicInfillSegment";
-	private static final String BEFORE = "BeforeLeg";
-	private static final String AFTER = "AfterLeg";
+  private static final String DYNAMIC_SEGMENT = "DynamicInfillSegment";
+  private static final String BEFORE = "BeforeLeg";
+  private static final String AFTER = "AfterLeg";
 
-	private String _beforeName;
-	private String _afterName;
-	
-	public DynamicInfillSegmentHandler()
-	{
-		// inform our parent what type of class we are
-		super(DYNAMIC_SEGMENT);
+  private String _beforeName;
+  private String _afterName;
 
-		addAttributeHandler(new HandleAttribute(BEFORE)
-		{
-			@Override
-			public void setValue(String name, String value)
-			{
-				_beforeName = value;
-			}
-		});
-		addAttributeHandler(new HandleAttribute(AFTER)
-		{
-			@Override
-			public void setValue(String name, String value)
-			{
-				_afterName = value;
-			}
-		});
-	}
-	
-	
+  public DynamicInfillSegmentHandler()
+  {
+    // inform our parent what type of class we are
+    super(DYNAMIC_SEGMENT);
 
-	@Override
-	protected TrackSegment createTrack()
-	{
-		final TrackSegment res = new DynamicInfillSegment(_beforeName, _afterName);
-		return res;
-	}
+    addAttributeHandler(new HandleAttribute(BEFORE)
+    {
+      @Override
+      public void setValue(String name, String value)
+      {
+        _beforeName = value;
+      }
+    });
+    addAttributeHandler(new HandleAttribute(AFTER)
+    {
+      @Override
+      public void setValue(String name, String value)
+      {
+        _afterName = value;
+      }
+    });
+  }
 
+  @Override
+  protected TrackSegment createTrack()
+  {
+    // get the color form the first item
+    FixWrapper first = super._fixes.firstElement();
 
-	public static void exportThisSegment(final org.w3c.dom.Document doc, final Element trk,
-			final DynamicInfillSegment seg)
-	{		
-		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg, DYNAMIC_SEGMENT);
-	
-		// sort out the remaining attributes
-		segE.setAttribute(BEFORE, seg.getBeforeName());
-		segE.setAttribute(AFTER, seg.getAfterName());
-	
-		trk.appendChild(segE);
-	}
+    final TrackSegment res =
+        new DynamicInfillSegment(_beforeName, _afterName, first.getColor());
+    return res;
+  }
+
+  public static void exportThisSegment(final org.w3c.dom.Document doc,
+      final Element trk, final DynamicInfillSegment seg)
+  {
+    final Element segE =
+        CoreTrackSegmentHandler.exportThisSegment(doc, seg, DYNAMIC_SEGMENT);
+
+    // sort out the remaining attributes
+    segE.setAttribute(BEFORE, seg.getBeforeName());
+    segE.setAttribute(AFTER, seg.getAfterName());
+
+    trk.appendChild(segE);
+  }
 }

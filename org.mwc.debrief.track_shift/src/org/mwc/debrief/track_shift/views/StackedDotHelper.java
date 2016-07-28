@@ -480,13 +480,26 @@ public final class StackedDotHelper
                   MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
               double tgtSpeed = fw.getSpeed();
 
+              // we use the raw color for infills, to help find which
+              // infill we're referring to (esp in random infills)
+              final Color courseColor;
+              final Color speedColor;
+              if(isInfill)
+              {
+                courseColor = fw.getColor();
+                speedColor = fw.getColor();
+              }
+              else
+              {
+                courseColor = fw.getColor().brighter();
+                speedColor = fw.getColor().darker();
+              }
+              
               final ColouredDataItem crseBearingItem =
-                  new ColouredDataItem(thisMilli, tgtCourse, fw.getColor()
-                      .brighter(), isInfill, null);
+                  new ColouredDataItem(thisMilli, tgtCourse, courseColor, isInfill, null);
               tgtCourseValues.add(crseBearingItem);
               final ColouredDataItem tgtSpeedItem =
-                  new ColouredDataItem(thisMilli, tgtSpeed, fw.getColor()
-                      .darker(), isInfill, null);
+                  new ColouredDataItem(thisMilli, tgtSpeed, speedColor, isInfill, null);
               tgtSpeedValues.add(tgtSpeedItem);
             }
           }

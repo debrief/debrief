@@ -44,7 +44,7 @@ abstract public class CoreTrackSegmentHandler extends
 	public static final String NAME = "Name";
 	public static final String LINE_STYLE = "LineStyle";
 
-	private Vector<FixWrapper> _fixes;
+	protected Vector<FixWrapper> _fixes;
 	private boolean _visible;
 	private String _name;
 	private int _lineStyle = CanvasType.SOLID;
