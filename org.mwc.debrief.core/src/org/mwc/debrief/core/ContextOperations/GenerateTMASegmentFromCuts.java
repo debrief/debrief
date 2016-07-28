@@ -37,6 +37,7 @@ import org.mwc.debrief.core.wizards.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.EnterSolutionPage.SolutionDataItem;
 import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -61,109 +62,115 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * 
  */
 public class GenerateTMASegmentFromCuts implements
-		RightClickContextItemGenerator
+    RightClickContextItemGenerator
 {
 
-	private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
-			WorldSpeed.Kts);
-	private static final double DEFAULT_TARGET_COURSE = 120d;
+  private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
+      WorldSpeed.Kts);
+  private static final double DEFAULT_TARGET_COURSE = 120d;
+  public static final String USE_CUT_COLOR = "USE_CUT_COLOR";
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public testMe(final String val)
-		{
-			super(val);
-		}
+    public testMe(final String val)
+    {
+      super(val);
+    }
 
-		public final void testIWork()
-		{
+    public final void testIWork()
+    {
 
-		}
+    }
 
     @SuppressWarnings("deprecation")
     private TrackWrapper getLongerTrack()
     {
-    	final TrackWrapper tw = new TrackWrapper();
-    
-    	final WorldLocation loc_1 = new WorldLocation(0.00000001, 0.000000001, 0);
-    	WorldLocation lastLoc = loc_1;
-    	
-    	for(int i=0;i<50;i++)
-    	{
-    	  long thisTime = new Date(2016, 1, 14, 12, i, 0).getTime();
-        final FixWrapper fw = new FixWrapper(new Fix(new HiResDate(thisTime),
-            lastLoc.add(getVector(25, 0)), MWC.Algorithms.Conversions.Degs2Rads(0),
-            110));
+      final TrackWrapper tw = new TrackWrapper();
+
+      final WorldLocation loc_1 = new WorldLocation(0.00000001, 0.000000001, 0);
+      WorldLocation lastLoc = loc_1;
+
+      for (int i = 0; i < 50; i++)
+      {
+        long thisTime = new Date(2016, 1, 14, 12, i, 0).getTime();
+        final FixWrapper fw =
+            new FixWrapper(new Fix(new HiResDate(thisTime), lastLoc
+                .add(getVector(25, 0)),
+                MWC.Algorithms.Conversions.Degs2Rads(0), 110));
         fw.setLabel("fw1");
         tw.addFix(fw);
-        
+
         lastLoc = new WorldLocation(fw.getLocation());
-    	}
-    
+      }
+
       final SensorWrapper swa = new SensorWrapper("title one");
       tw.add(swa);
       swa.setSensorOffset(new ArrayLength(-400));
-    
-      for(int i=0;i<50;i+=3)
+
+      for (int i = 0; i < 50; i += 3)
       {
         long thisTime = new Date(2016, 1, 14, 12, i, 30).getTime();
-        final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
-            new HiResDate(thisTime), null, null, null, null, null, 0, null);
+        final SensorContactWrapper scwa1 =
+            new SensorContactWrapper("aaa", new HiResDate(thisTime), null,
+                null, null, null, null, 0, null);
         swa.add(scwa1);
       }
-    
-    	return tw;
+
+      return tw;
     }
 
     public void testSplitWithOffset() throws ExecutionException
     {
       TrackWrapper tw = getLongerTrack();
-      
+
       assertNotNull(tw);
-      
+
       // get the sensor data
-      SensorWrapper sw = (SensorWrapper) tw.getSensors().elements().nextElement();
-      
+      SensorWrapper sw =
+          (SensorWrapper) tw.getSensors().elements().nextElement();
+
       assertNotNull(sw);
-      
+
       // create a list of cuts (to simulate the selection)
       SensorContactWrapper[] items = new SensorContactWrapper[sw.size()];
       Enumeration<Editable> numer = sw.elements();
-      int ctr=0;
+      int ctr = 0;
       while (numer.hasMoreElements())
       {
         SensorContactWrapper cut = (SensorContactWrapper) numer.nextElement();
         items[ctr++] = cut;
       }
-      
+
       Layers theLayers = new Layers();
-      WorldVector worldOffset= new WorldVector(Math.PI, 0.002, 0);
+      WorldVector worldOffset = new WorldVector(Math.PI, 0.002, 0);
       double tgtCourse = 0;
       WorldSpeed tgtSpeed = new WorldSpeed(3, WorldSpeed.Kts);
-      
+
       // ok, generate the target track
-      CMAPOperation op = new TMAfromCuts(items, theLayers, worldOffset, tgtCourse, tgtSpeed);
-      
+      CMAPOperation op =
+          new TMAfromCuts(items, theLayers, worldOffset, tgtCourse, tgtSpeed);
+
       // and run it
       op.execute(null, null);
-      
+
       assertEquals("has new data", 1, theLayers.size());
 
       TrackWrapper sol = (TrackWrapper) theLayers.elementAt(0);
       assertNotNull("new layer not found", sol);
-      
+
       // ok, now try to split it
       assertEquals("only has one segment", 1, sol.getSegments().size());
 
-      RelativeTMASegment seg = (RelativeTMASegment) sol.getSegments().elements().nextElement();
+      RelativeTMASegment seg =
+          (RelativeTMASegment) sol.getSegments().elements().nextElement();
 
       assertNotNull("new seg not found", seg);
-      
+
       // ok, and we split it.
       int ctr2 = 0;
       FixWrapper beforeF = null;
@@ -173,9 +180,9 @@ public class GenerateTMASegmentFromCuts implements
       {
         FixWrapper fix = (FixWrapper) eF.nextElement();
         ctr2++;
-        if(ctr2 > seg.size() / 2)
+        if (ctr2 > seg.size() / 2)
         {
-          if(beforeF == null)
+          if (beforeF == null)
           {
             beforeF = fix;
           }
@@ -186,31 +193,31 @@ public class GenerateTMASegmentFromCuts implements
           }
         }
       }
-      
+
       assertNotNull("fix not found", beforeF);
 
-      // ok, what's the time offset 
+      // ok, what's the time offset
       WorldLocation afterBeforeSplit = afterF.getLocation();
-      
+
       // ok, time to split
       SubjectAction[] actions = beforeF.getInfo().getUndoableActions();
       SubjectAction doSplit = actions[1];
       doSplit.execute(beforeF);
-      
+
       // ok, have another look
       assertEquals("now has two segments", 2, sol.getSegments().size());
       Enumeration<Editable> aNum = sol.getSegments().elements();
       aNum.nextElement();
       TrackSegment afterSeg = (TrackSegment) aNum.nextElement();
       WorldLocation locAfterSplit = afterSeg.getTrackStart();
-      
+
       assertEquals("origin remains valid", afterBeforeSplit, locAfterSplit);
-      
+
       // hey, try the undo
       doSplit.undo(beforeF);
 
       assertEquals("now has one segment again", 1, sol.getSegments().size());
-      
+
       // hey, try the undo
       doSplit.execute(beforeF);
       assertEquals("now has two segments", 2, sol.getSegments().size());
@@ -219,8 +226,8 @@ public class GenerateTMASegmentFromCuts implements
       aNum.nextElement();
       afterSeg = (TrackSegment) aNum.nextElement();
       locAfterSplit = afterSeg.getTrackStart();
-      assertEquals("origin remains valid, after undo/redo", afterBeforeSplit, locAfterSplit);
-
+      assertEquals("origin remains valid, after undo/redo", afterBeforeSplit,
+          locAfterSplit);
 
     }
 
@@ -229,316 +236,350 @@ public class GenerateTMASegmentFromCuts implements
      */
     private WorldVector getVector(final double courseDegs, final double distM)
     {
-    	return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(courseDegs),
-    			new WorldDistance(distM, WorldDistance.METRES), null);
+      return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(courseDegs),
+          new WorldDistance(distM, WorldDistance.METRES), null);
     }
-	}
+  }
 
-	private static class TMAfromCuts extends CMAPOperation
-	{
+  private static class TMAfromCuts extends CMAPOperation
+  {
 
-		private final Layers _layers;
-		private final SensorContactWrapper[] _items;
-		private TrackWrapper _newTrack;
-		private final double _courseDegs;
-		private final WorldSpeed _speed;
-		private final WorldVector _offset;
+    private final Layers _layers;
+    private final SensorContactWrapper[] _items;
+    private TrackWrapper _newTrack;
+    private final double _courseDegs;
+    private final WorldSpeed _speed;
+    private final WorldVector _offset;
 
-		public TMAfromCuts(final SensorContactWrapper[] items,
-				final Layers theLayers, final WorldVector offset,
-				final double courseDegs, final WorldSpeed speed)
-		{
-			super("Create TMA solution from sensor cuts");
-			_items = items;
-			_layers = theLayers;
-			_courseDegs = courseDegs;
-			_speed = speed;
-			_offset = offset;
-		}
+    public TMAfromCuts(final SensorContactWrapper[] items,
+        final Layers theLayers, final WorldVector offset,
+        final double courseDegs, final WorldSpeed speed)
+    {
+      super("Create TMA solution from sensor cuts");
+      _items = items;
+      _layers = theLayers;
+      _courseDegs = courseDegs;
+      _speed = speed;
+      _offset = offset;
+    }
 
-		@Override
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			// create it, then
-			final TrackSegment seg = new RelativeTMASegment(_items, _offset, _speed,
-					_courseDegs, _layers);
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
 
-			// now wrap it
-			_newTrack = new TrackWrapper();
-			_newTrack.setColor(Color.red);
-			_newTrack.add(seg);
-			final String tNow = TrackSegment.TMA_LEADER
-					+ FormatRNDateTime.toString(_newTrack.getStartDTG().getDate()
-							.getTime());
-			_newTrack.setName(tNow);
+      // sort out the color of the segment
+      final Color colorOverride;
 
-			_layers.addThisLayerAllowDuplication(_newTrack);
+      // have a looka the property
+      String useCutColorStr =
+          Application.getThisProperty(USE_CUT_COLOR);
+      if (useCutColorStr == null)
+      {
+        useCutColorStr = "TRUE";
+      }
 
-			// sorted, do the update
-			_layers.fireExtended();
+      boolean useCutColor = Boolean.valueOf(useCutColorStr);
+      if (useCutColor)
+      {
+        colorOverride = null;
+      }
+      else
+      {
+        colorOverride = Color.red;
+      }
 
-			return Status.OK_STATUS;
-		}
+      // create it, then
+      final TrackSegment seg =
+          new RelativeTMASegment(_items, _offset, _speed, _courseDegs, _layers,
+              colorOverride);
 
-		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			// forget about the new tracks
-			_layers.removeThisLayer(_newTrack);
-			_layers.fireExtended();
+      // now wrap it
+      _newTrack = new TrackWrapper();
+      _newTrack.setColor(Color.red);
+      _newTrack.add(seg);
+      final String tNow =
+          TrackSegment.TMA_LEADER
+              + FormatRNDateTime.toString(_newTrack.getStartDTG().getDate()
+                  .getTime());
+      _newTrack.setName(tNow);
 
-			return Status.OK_STATUS;
-		}
+      _layers.addThisLayerAllowDuplication(_newTrack);
 
-		@Override
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
-			_layers.addThisLayerAllowDuplication(_newTrack);
+      // sorted, do the update
+      _layers.fireExtended();
 
-			// sorted, do the update
-			_layers.fireExtended();
+      return Status.OK_STATUS;
+    }
 
-			return Status.OK_STATUS;
-		}
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      // forget about the new tracks
+      _layers.removeThisLayer(_newTrack);
+      _layers.fireExtended();
 
-		@Override
-		public boolean canExecute()
-		{
-			return true;
-		}
+      return Status.OK_STATUS;
+    }
 
-		@Override
-		public boolean canRedo()
-		{
-			return true;
-		}
+    @Override
+    public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      _layers.addThisLayerAllowDuplication(_newTrack);
 
-		@Override
-		public boolean canUndo()
-		{
-			return true;
-		}
+      // sorted, do the update
+      _layers.fireExtended();
 
-	}
+      return Status.OK_STATUS;
+    }
 
-	/**
-	 * @param parent
-	 * @param theLayers
-	 * @param parentLayers
-	 * @param subjects
-	 */
-	public void generate(final IMenuManager parent, final Layers theLayers,
-			final Layer[] parentLayers, final Editable[] subjects)
-	{
-		//
-		Action _myAction = null;
+    @Override
+    public boolean canExecute()
+    {
+      return true;
+    }
 
-		// so, see if it's something we can do business with
-		if (subjects.length == 1)
-		{
-			// ok, do I know how to create a TMA segment from this?
-			final Editable onlyOne = subjects[0];
-			if (onlyOne instanceof SensorWrapper)
-			{
-				final SensorWrapper sw = (SensorWrapper) onlyOne;
-				// cool, go for it
-				final Vector<SensorContactWrapper> wraps = new Vector<SensorContactWrapper>();
-				final Enumeration<Editable> numer = sw.elements();
-				while (numer.hasMoreElements())
-				{
-					wraps.add((SensorContactWrapper) numer.nextElement());
-				}
-				if (!wraps.isEmpty())
-				{
-					final SensorContactWrapper[] items = new SensorContactWrapper[wraps
-							.size()];
-					final SensorContactWrapper[] finalItems = wraps.toArray(items);
-					final SensorContactWrapper firstContact = finalItems[0];
+    @Override
+    public boolean canRedo()
+    {
+      return true;
+    }
 
-					// cool wrap it in an action.
-					_myAction = new Action("Generate TMA solution from all cuts")
-					{
-						@Override
-						public void run()
-						{
-							// get ready for the supporting data (using selected sensor data,
-							// if
-							// we can)
-							WorldVector res = null;
-							double courseDegs = 0;
-							WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+    @Override
+    public boolean canUndo()
+    {
+      return true;
+    }
 
-							// just check we have some kind of range
-							WorldDistance theDist = firstContact.getRange();
-							if (theDist == null)
-								theDist = new WorldDistance(6, WorldDistance.NM);
+  }
 
-							// get the supporting data
-							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
-									firstContact.getBearing(), theDist, DEFAULT_TARGET_COURSE,
-									DEFAULT_TARGET_SPEED);
-							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-									.getActiveShell(), wizard);
-							dialog.create();
-							dialog.open();
+  /**
+   * @param parent
+   * @param theLayers
+   * @param parentLayers
+   * @param subjects
+   */
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    //
+    Action _myAction = null;
 
-							// did it work?
-							if (dialog.getReturnCode() == WizardDialog.OK)
-							{
+    // so, see if it's something we can do business with
+    if (subjects.length == 1)
+    {
+      // ok, do I know how to create a TMA segment from this?
+      final Editable onlyOne = subjects[0];
+      if (onlyOne instanceof SensorWrapper)
+      {
+        final SensorWrapper sw = (SensorWrapper) onlyOne;
+        // cool, go for it
+        final Vector<SensorContactWrapper> wraps =
+            new Vector<SensorContactWrapper>();
+        final Enumeration<Editable> numer = sw.elements();
+        while (numer.hasMoreElements())
+        {
+          wraps.add((SensorContactWrapper) numer.nextElement());
+        }
+        if (!wraps.isEmpty())
+        {
+          final SensorContactWrapper[] items =
+              new SensorContactWrapper[wraps.size()];
+          final SensorContactWrapper[] finalItems = wraps.toArray(items);
+          final SensorContactWrapper firstContact = finalItems[0];
 
-								final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-										.getPage(RangeBearingPage.NAME);
-								if (offsetPage != null)
-								{
-									if (offsetPage.isPageComplete())
-									{
-										res = new WorldVector(
-												MWC.Algorithms.Conversions.Degs2Rads(offsetPage
-														.getBearingDegs()), offsetPage.getRange(), null);
-									}
-								}
+          // cool wrap it in an action.
+          _myAction = new Action("Generate TMA solution from all cuts")
+          {
+            @Override
+            public void run()
+            {
+              // get ready for the supporting data (using selected sensor data,
+              // if
+              // we can)
+              WorldVector res = null;
+              double courseDegs = 0;
+              WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
-								final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
-										.getPage(EnterSolutionPage.NAME);
-								if (solutionPage != null)
-								{
-									if (solutionPage.isPageComplete())
-									{
-										final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
-												.getEditable();
-										courseDegs = item.getCourse();
-										speed = item.getSpeed();
-									}
-								}
+              // just check we have some kind of range
+              WorldDistance theDist = firstContact.getRange();
+              if (theDist == null)
+                theDist = new WorldDistance(6, WorldDistance.NM);
 
-								// ok, go for it.
-								// sort it out as an operation
-								final IUndoableOperation convertToTrack1 = new TMAfromCuts(
-										finalItems, theLayers, res, courseDegs, speed);
+              // get the supporting data
+              final TMAFromSensorWizard wizard =
+                  new TMAFromSensorWizard(firstContact.getBearing(), theDist,
+                      DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
+              final WizardDialog dialog =
+                  new WizardDialog(Display.getCurrent().getActiveShell(),
+                      wizard);
+              dialog.create();
+              dialog.open();
 
-								// ok, stick it on the buffer
-								runIt(convertToTrack1);
+              // did it work?
+              if (dialog.getReturnCode() == WizardDialog.OK)
+              {
 
-							}
-							else
-								System.err.println("user cancelled");
-						}
-					};
-				}
-				; // whether there are any cuts for this sensor
-			}
-		}
-		else
-		{
-			// so, it's a number of items, Are they all sensor contact wrappers
-			boolean allGood = true;
-			final SensorContactWrapper[] items = new SensorContactWrapper[subjects.length];
-			for (int i = 0; i < subjects.length; i++)
-			{
-				final Editable editable = subjects[i];
-				if (editable instanceof SensorContactWrapper)
-				{
-					// cool, stick with it
-					items[i] = (SensorContactWrapper) editable;
-				}
-				else
-				{
-					allGood = false;
-					break;
-				}
+                final RangeBearingPage offsetPage =
+                    (RangeBearingPage) wizard.getPage(RangeBearingPage.NAME);
+                if (offsetPage != null)
+                {
+                  if (offsetPage.isPageComplete())
+                  {
+                    res =
+                        new WorldVector(MWC.Algorithms.Conversions
+                            .Degs2Rads(offsetPage.getBearingDegs()), offsetPage
+                            .getRange(), null);
+                  }
+                }
 
-				// are we good to go?
-				if (allGood)
-				{
-					final SensorContactWrapper firstContact = items[0];
+                final EnterSolutionPage solutionPage =
+                    (EnterSolutionPage) wizard.getPage(EnterSolutionPage.NAME);
+                if (solutionPage != null)
+                {
+                  if (solutionPage.isPageComplete())
+                  {
+                    final EnterSolutionPage.SolutionDataItem item =
+                        (SolutionDataItem) solutionPage.getEditable();
+                    courseDegs = item.getCourse();
+                    speed = item.getSpeed();
+                  }
+                }
 
-					// cool wrap it in an action.
-					_myAction = new Action("Generate TMA solution from selected cuts")
-					{
+                // ok, go for it.
+                // sort it out as an operation
+                final IUndoableOperation convertToTrack1 =
+                    new TMAfromCuts(finalItems, theLayers, res, courseDegs,
+                        speed);
 
-						@Override
-						public void run()
-						{
+                // ok, stick it on the buffer
+                runIt(convertToTrack1);
 
-							// get the supporting data
-							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
-									firstContact.getBearing(), firstContact.getRange(),
-									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
-							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-									.getActiveShell(), wizard);
-							dialog.create();
-							dialog.open();
+              }
+              else
+                System.err.println("user cancelled");
+            }
+          };
+        }
+        ; // whether there are any cuts for this sensor
+      }
+    }
+    else
+    {
+      // so, it's a number of items, Are they all sensor contact wrappers
+      boolean allGood = true;
+      final SensorContactWrapper[] items =
+          new SensorContactWrapper[subjects.length];
+      for (int i = 0; i < subjects.length; i++)
+      {
+        final Editable editable = subjects[i];
+        if (editable instanceof SensorContactWrapper)
+        {
+          // cool, stick with it
+          items[i] = (SensorContactWrapper) editable;
+        }
+        else
+        {
+          allGood = false;
+          break;
+        }
 
-							// did it work?
-							if (dialog.getReturnCode() == WizardDialog.OK)
-							{
-								WorldVector res = new WorldVector(0, new WorldDistance(5,
-										WorldDistance.NM), null);
-								double courseDegs = 0;
-								WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+        // are we good to go?
+        if (allGood)
+        {
+          final SensorContactWrapper firstContact = items[0];
 
-								final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-										.getPage(RangeBearingPage.NAME);
-								if (offsetPage != null)
-								{
-									if (offsetPage.isPageComplete())
-									{
-										res = new WorldVector(
-												MWC.Algorithms.Conversions.Degs2Rads(offsetPage
-														.getBearingDegs()), offsetPage.getRange(), null);
-									}
-								}
+          // cool wrap it in an action.
+          _myAction = new Action("Generate TMA solution from selected cuts")
+          {
 
-								final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
-										.getPage(EnterSolutionPage.NAME);
-								if (solutionPage != null)
-								{
-									if (solutionPage.isPageComplete())
-									{
-										final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
-												.getEditable();
-										courseDegs = item.getCourse();
-										speed = item.getSpeed();
-									}
-								}
+            @Override
+            public void run()
+            {
 
-								// ok, go for it.
-								// sort it out as an operation
-								final IUndoableOperation convertToTrack1 = new TMAfromCuts(
-										items, theLayers, res, courseDegs, speed);
+              // get the supporting data
+              final TMAFromSensorWizard wizard =
+                  new TMAFromSensorWizard(firstContact.getBearing(),
+                      firstContact.getRange(), DEFAULT_TARGET_COURSE,
+                      DEFAULT_TARGET_SPEED);
+              final WizardDialog dialog =
+                  new WizardDialog(Display.getCurrent().getActiveShell(),
+                      wizard);
+              dialog.create();
+              dialog.open();
 
-								// ok, stick it on the buffer
-								runIt(convertToTrack1);
+              // did it work?
+              if (dialog.getReturnCode() == WizardDialog.OK)
+              {
+                WorldVector res =
+                    new WorldVector(0, new WorldDistance(5, WorldDistance.NM),
+                        null);
+                double courseDegs = 0;
+                WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
-							}
-							else
-								System.err.println("user cancelled");
+                final RangeBearingPage offsetPage =
+                    (RangeBearingPage) wizard.getPage(RangeBearingPage.NAME);
+                if (offsetPage != null)
+                {
+                  if (offsetPage.isPageComplete())
+                  {
+                    res =
+                        new WorldVector(MWC.Algorithms.Conversions
+                            .Degs2Rads(offsetPage.getBearingDegs()), offsetPage
+                            .getRange(), null);
+                  }
+                }
 
-						}
-					};
-				}
+                final EnterSolutionPage solutionPage =
+                    (EnterSolutionPage) wizard.getPage(EnterSolutionPage.NAME);
+                if (solutionPage != null)
+                {
+                  if (solutionPage.isPageComplete())
+                  {
+                    final EnterSolutionPage.SolutionDataItem item =
+                        (SolutionDataItem) solutionPage.getEditable();
+                    courseDegs = item.getCourse();
+                    speed = item.getSpeed();
+                  }
+                }
 
-			}
+                // ok, go for it.
+                // sort it out as an operation
+                final IUndoableOperation convertToTrack1 =
+                    new TMAfromCuts(items, theLayers, res, courseDegs, speed);
 
-		}
+                // ok, stick it on the buffer
+                runIt(convertToTrack1);
 
-		// go for it, or not...
-		if (_myAction != null)
-			parent.add(_myAction);
+              }
+              else
+                System.err.println("user cancelled");
 
-	}
+            }
+          };
+        }
 
-	/**
-	 * put the operation firer onto the undo history. We've refactored this into a
-	 * separate method so testing classes don't have to simulate the CorePlugin
-	 * 
-	 * @param operation
-	 */
-	protected void runIt(final IUndoableOperation operation)
-	{
-		CorePlugin.run(operation);
-	}
+      }
+
+    }
+
+    // go for it, or not...
+    if (_myAction != null)
+      parent.add(_myAction);
+
+  }
+
+  /**
+   * put the operation firer onto the undo history. We've refactored this into a separate method so
+   * testing classes don't have to simulate the CorePlugin
+   * 
+   * @param operation
+   */
+  protected void runIt(final IUndoableOperation operation)
+  {
+    CorePlugin.run(operation);
+  }
 }

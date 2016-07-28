@@ -1054,18 +1054,25 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// NOW FROM A SENSOR WRAPPER
 		// /////////////////////////
 		final SensorWrapper sw = new SensorWrapper("some sensor");
-		sw.add(createSensorItem(tw, sw, 110000));
-		sw.add(createSensorItem(tw, sw, 120000));
-		sw.add(createSensorItem(tw, sw, 130000));
-		sw.add(createSensorItem(tw, sw, 140000));
 		
     // store the sensor
     tw.add(sw);
-
 		
-		final CoreTMASegment seg1 = new RelativeTMASegment(sw, offset, speed,
-				course, null);
+    final SensorContactWrapper[] items2 = new SensorContactWrapper[4]; 
+    items2[0] = createSensorItem(tw, sw, 110000);
+    items2[1] = createSensorItem(tw, sw, 120000);
+    items2[2] = createSensorItem(tw, sw, 130000);
+    items2[3] = createSensorItem(tw, sw, 140000);
 
+    // sort out the host
+    for (int i = 0; i < items2.length; i++)
+    {
+      final SensorContactWrapper sensorContactWrapper = items2[i];
+      sensorContactWrapper.setSensor(sw);
+    }
+
+    final CoreTMASegment seg1 = new RelativeTMASegment(items2, offset,
+        speed, course, null, Color.yellow);    
 		
 		// check the create worked
 		assertEquals("enough points created", 4, seg1.size());
@@ -1107,7 +1114,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		}
 
 		final RelativeTMASegment seg2 = new RelativeTMASegment(items, offset,
-				speed, course, null);
+				speed, course, null, Color.yellow);
 
 		// check the create worked
 		assertEquals("enough points created", 5, seg2.size());
@@ -1305,15 +1312,29 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// NOW FROM A SENSOR WRAPPER
 		// /////////////////////////
 		final SensorWrapper sw = new SensorWrapper("some sensor");
-		sw.setHost(tw);
-		sw.add(createSensorItem(tw, sw, 110000));
-		sw.add(createSensorItem(tw, sw, 120000));
-		sw.add(createSensorItem(tw, sw, 130000));
-		sw.add(createSensorItem(tw, sw, 140000));
-		sw.add(createSensorItem(tw, sw, 150000));
-		sw.add(createSensorItem(tw, sw, 160000));
-		sw.add(createSensorItem(tw, sw, 170000));
-		seg = new RelativeTMASegment(sw, offset, speed, course, null);
+    sw.setHost(tw);
+		
+    final SensorContactWrapper[] items = new SensorContactWrapper[7];
+    
+    items[0] =createSensorItem(tw, sw, 110000);
+    items[1] =createSensorItem(tw, sw, 120000);
+    items[2] =createSensorItem(tw, sw, 130000);
+    items[3] =createSensorItem(tw, sw, 140000);
+    items[4] =createSensorItem(tw, sw, 150000);
+    items[5] =createSensorItem(tw, sw, 160000);
+    items[6] =createSensorItem(tw, sw, 170000);
+
+    // sort out the host
+    for (int i = 0; i < items.length; i++)
+    {
+      final SensorContactWrapper sensorContactWrapper = items[i];
+      sw.add(sensorContactWrapper);
+    }
+		
+		
+//		seg = new RelativeTMASegment(sw, offset, speed, course, null);
+   seg = new RelativeTMASegment(items, offset,
+        speed, course, null, Color.yellow);    
 
 		// check the create worked
 		assertEquals("enough points created", 7, seg.size());

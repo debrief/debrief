@@ -43,7 +43,7 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 	{
 		super(GRID);
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-		setDescription("Settings applicable to MWC's Core Maritime Analysis Platform");
+		setDescription("Settings applicable to Maritime Analysis");
 	}
 
 	/** the tags and labels to use in the range units editor
