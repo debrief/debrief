@@ -61,6 +61,8 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 
@@ -179,11 +181,12 @@ public class ShowTacticalOverview extends AbstractHandler
    * @param string
    * @param rangeAxis
    * @param soloSeconary
+   * @param period 
    * @return
    */
   private Chart createRelativeChartFor(final StackedchartsFactory factory,
       final WatchableList pri, final WatchableList sec, final String string,
-      final DependentAxis rangeAxis, final boolean soloSeconary)
+      final DependentAxis rangeAxis, final boolean soloSeconary, final TimePeriod period)
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
@@ -201,16 +204,17 @@ public class ShowTacticalOverview extends AbstractHandler
     chart.getMinAxes().add(bearingAxis);
 
     final DependentAxis relBearingAxis = factory.createDependentAxis();
-    relBearingAxis.setName("Rel Bearing");
+    relBearingAxis.setName("Rel Bearing / ATB");
     AngleAxis relBearingAxisType = factory.createAngleAxis();
     relBearingAxisType.setMinVal(-180);
     relBearingAxisType.setMaxVal(180);
+    relBearingAxisType.setRedGreen(true);
     relBearingAxis.setAxisType(relBearingAxisType);
     chart.getMinAxes().add(relBearingAxis);
 
     // prepare our datasets
     final Dataset bearingData = factory.createDataset();
-    bearingData.setName(sec.getName() + " Bearing (\u00b0)");
+    bearingData.setName("Bearing to " + sec.getName() + " (\u00b0)");
     final PlainStyling bearingStyle = factory.createPlainStyling();
     bearingStyle.setColor(color.darker().darker());
     bearingStyle.setLineStyle(LineType.DOTTED);
@@ -220,7 +224,7 @@ public class ShowTacticalOverview extends AbstractHandler
     bearingAxis.getDatasets().add(bearingData);
 
     final Dataset relBearingData = factory.createDataset();
-    relBearingData.setName(sec.getName() + " Rel Bearing (\u00b0)");
+    relBearingData.setName("Rel Bearing to:" + sec.getName() + " (\u00b0)");
     final PlainStyling relBearingStyle = factory.createPlainStyling();
     relBearingStyle.setColor(color);
     relBearingStyle.setLineThickness(THICKNESS);
@@ -230,7 +234,7 @@ public class ShowTacticalOverview extends AbstractHandler
     relBearingAxis.getDatasets().add(relBearingData);
 
     final Dataset atbData = factory.createDataset();
-    atbData.setName(sec.getName() + " ATB (\u00b0)");
+    atbData.setName("ATB from:" + sec.getName() + " (\u00b0)");
     final PlainStyling relStyle = factory.createPlainStyling();
     relStyle.setColor(color.brighter().brighter().brighter());
     relStyle.setLineThickness(THICKNESS);
@@ -303,7 +307,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
         // now for the actual data
         final Collection<Editable> priItems =
-            pri.getItemsBetween(pri.getStartDTG(), pri.getEndDTG());
+            pri.getItemsBetween(period.getStartDTG(), period.getEndDTG());
         for (final Iterator<Editable> iterator = priItems.iterator(); iterator
             .hasNext();)
         {
@@ -497,9 +501,11 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // do we have secondaries?
     final WatchableList[] secs = data.getSecondaryTracks();
+    
+    final TimePeriod period = intersectingPeriodFor(pri, secs);
 
     // ok, produce the chartset model
-    final ChartSet charts = produceChartSet(pri, secs);
+    final ChartSet charts = produceChartSet(pri, secs, period);
 
     // create a composite name, to use as the id
     String viewId = pri.getName();
@@ -620,9 +626,24 @@ public class ShowTacticalOverview extends AbstractHandler
     return null;
   }
 
+  private TimePeriod intersectingPeriodFor(WatchableList pri,
+      WatchableList[] secs)
+  {
+    BaseTimePeriod base = new TimePeriod.BaseTimePeriod(pri.getStartDTG(), pri.getEndDTG());
+    if(secs != null)
+    {
+      for(WatchableList sec: secs)
+      {
+        BaseTimePeriod thisP = new TimePeriod.BaseTimePeriod(sec.getStartDTG(), sec.getEndDTG());
+        base = base.intersects(thisP);
+      }
+    }
+    return base;
+  }
+
   private void processTrack(final WatchableList track,
       final DependentAxis courseAxis, final DependentAxis speedAxis,
-      final DependentAxis depthAxis, final StackedchartsFactory factory)
+      final DependentAxis depthAxis, final StackedchartsFactory factory, final TimePeriod period)
   {
     final Dataset courseData = factory.createDataset();
     courseData.setName(track.getName() + " Course");
@@ -665,7 +686,7 @@ public class ShowTacticalOverview extends AbstractHandler
         
         // now for the actual data
         final Collection<Editable> items =
-            track.getItemsBetween(track.getStartDTG(), track.getEndDTG());
+            track.getItemsBetween(period.getStartDTG(), period.getEndDTG());
 
         // clear the data
         courseData.getMeasurements().clear();
@@ -728,7 +749,7 @@ public class ShowTacticalOverview extends AbstractHandler
   }
 
   private ChartSet produceChartSet(final WatchableList pri,
-      final WatchableList[] secs)
+      final WatchableList[] secs, TimePeriod period)
   {
     // produce the ChartSet
     final StackedchartsFactory factory = StackedchartsFactoryImpl.init();
@@ -743,7 +764,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // producePerPlatformCharts(pri, secs, factory, charts);
 
-    producePerStateCharts(pri, secs, factory, charts);
+    producePerStateCharts(pri, secs, factory, charts, period);
 
     // produce the range/sensor chart
     final Chart sensorChart = factory.createChart();
@@ -757,7 +778,7 @@ public class ShowTacticalOverview extends AbstractHandler
     sensorChart.getMinAxes().add(rangeAxis);
 
     // produce the relative chart
-    if (secs != null)
+    if (secs != null && secs.length > 0)
     {
       // ok, we have some secondaries. how many?
       if (secs.length == 1)
@@ -765,7 +786,7 @@ public class ShowTacticalOverview extends AbstractHandler
         // ok, single secondary - we just need on relative plot
         final Chart thisChart =
             createRelativeChartFor(factory, pri, secs[0], "Relative State",
-                rangeAxis, true);
+                rangeAxis, true, period);
         charts.getCharts().add(thisChart);
       }
       else
@@ -777,14 +798,15 @@ public class ShowTacticalOverview extends AbstractHandler
           // ok, single secondary - we just need on relative plot
           final Chart thisChart =
               createRelativeChartFor(factory, pri, secs[i], secs[i].getName()
-                  + " vs " + pri.getName(), rangeAxis, false);
+                  + " vs " + pri.getName(), rangeAxis, false, period);
           charts.getCharts().add(thisChart);
         }
       }
+      
+      // put the sensor chart at the bottom of the stack (if it has data)
+      charts.getCharts().add(sensorChart);
     }
 
-    // put the sensor chart at the bottom of the stack
-    charts.getCharts().add(sensorChart);
 
     return charts;
   }
@@ -809,7 +831,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
   private void producePerStateCharts(final WatchableList pri,
       final WatchableList[] secs, final StackedchartsFactory factory,
-      final ChartSet charts)
+      final ChartSet charts, TimePeriod period)
   {
     // right, create the charts
     final Chart speedChart = factory.createChart();
@@ -844,12 +866,12 @@ public class ShowTacticalOverview extends AbstractHandler
     // speedChart.getMaxAxes().add(speedAxis);
 
     // do the primary
-    processTrack(pri, courseAxis, speedAxis, depthAxis, factory);
+    processTrack(pri, courseAxis, speedAxis, depthAxis, factory, period);
 
     for (int i = 0; i < secs.length; i++)
     {
       final WatchableList sec = secs[i];
-      processTrack(sec, courseAxis, speedAxis, depthAxis, factory);
+      processTrack(sec, courseAxis, speedAxis, depthAxis, factory, period);
     }
   }
 
