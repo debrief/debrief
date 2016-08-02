@@ -61,6 +61,9 @@
 
 package MWC.GenericData;
 
+import java.util.Date;
+
+import junit.framework.TestCase;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -288,8 +291,55 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
       return res;
     }
 
+    public BaseTimePeriod intersects(BaseTimePeriod thisP)
+    {
+      // sort out the overlap
+      long startP = Math.max(this.getStartDTG().getMicros(), thisP.getStartDTG().getMicros());
+      long endP = Math.min(this.getEndDTG().getMicros(), thisP.getEndDTG().getMicros());
+      BaseTimePeriod result = new BaseTimePeriod(new HiResDate(0, startP), new HiResDate(0, endP));
+      return result;
+    }
+
 
   }
 
+  public static class TestTimePeriod extends TestCase
+  {
+    @SuppressWarnings("deprecation")
+    public void testIntersects()
+    {
+      HiResDate t1 = new HiResDate(new Date(2016,3,3));
+      HiResDate t2 = new HiResDate(new Date(2016,3,4));
+      HiResDate t3 = new HiResDate(new Date(2016,3,5));
+      HiResDate t4 = new HiResDate(new Date(2016,3,6));
+      HiResDate t5 = new HiResDate(new Date(2016,3,7));
+      
+      BaseTimePeriod p1 = new BaseTimePeriod(t1,  t4);
+      BaseTimePeriod p2 = new BaseTimePeriod(t2, t3);
+      BaseTimePeriod overlap = p1.intersects(p2);
+      assertEquals("inner period", overlap.getStartDTG(), t2);
+      assertEquals("inner period", overlap.getEndDTG(), t3);
 
+      p1 = new BaseTimePeriod(t1,  t4);
+      p2 = new BaseTimePeriod(t2, t3);
+      overlap = p2.intersects(p1);
+      assertEquals("inner period", overlap.getStartDTG(), t2);
+      assertEquals("inner period", overlap.getEndDTG(), t3);
+
+      p1 = new BaseTimePeriod(t1,  t3);
+      p2 = new BaseTimePeriod(t2, t4);
+      overlap = p2.intersects(p1);
+      assertEquals("inner period", overlap.getStartDTG(), t2);
+      assertEquals("inner period", overlap.getEndDTG(), t3);
+      
+      p1 = new BaseTimePeriod(t1,  t5);
+      p2 = new BaseTimePeriod(t2, t4);
+      overlap = p2.intersects(p1);
+      assertEquals("inner period", overlap.getStartDTG(), t2);
+      assertEquals("inner period", overlap.getEndDTG(), t4);
+      
+      
+    }
+  }
+  
 }

@@ -96,6 +96,7 @@ import org.junit.runners.Suite;
   MWC.GenericData.WorldPath.PathTest.class,
   MWC.GenericData.WorldSpeed.SpeedTest.class,
   MWC.GenericData.WorldVector.VectorTest.class,
+  MWC.GenericData.TimePeriod.TestTimePeriod.class,
   MWC.TacticalData.NarrativeEntry.testMe.class,
   MWC.Utilities.Errors.Testing.EmptyTestCase.class,
   MWC.Utilities.Errors.Testing.TestEmpty.class,
