@@ -778,7 +778,7 @@ public class ShowTacticalOverview extends AbstractHandler
     sensorChart.getMinAxes().add(rangeAxis);
 
     // produce the relative chart
-    if (secs != null)
+    if (secs != null && secs.length > 0)
     {
       // ok, we have some secondaries. how many?
       if (secs.length == 1)
@@ -802,10 +802,11 @@ public class ShowTacticalOverview extends AbstractHandler
           charts.getCharts().add(thisChart);
         }
       }
+      
+      // put the sensor chart at the bottom of the stack (if it has data)
+      charts.getCharts().add(sensorChart);
     }
 
-    // put the sensor chart at the bottom of the stack
-    charts.getCharts().add(sensorChart);
 
     return charts;
   }
