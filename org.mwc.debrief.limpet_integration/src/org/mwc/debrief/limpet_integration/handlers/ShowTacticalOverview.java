@@ -201,16 +201,17 @@ public class ShowTacticalOverview extends AbstractHandler
     chart.getMinAxes().add(bearingAxis);
 
     final DependentAxis relBearingAxis = factory.createDependentAxis();
-    relBearingAxis.setName("Rel Bearing");
+    relBearingAxis.setName("Rel Bearing / ATB");
     AngleAxis relBearingAxisType = factory.createAngleAxis();
     relBearingAxisType.setMinVal(-180);
     relBearingAxisType.setMaxVal(180);
+    relBearingAxisType.setRedGreen(true);
     relBearingAxis.setAxisType(relBearingAxisType);
     chart.getMinAxes().add(relBearingAxis);
 
     // prepare our datasets
     final Dataset bearingData = factory.createDataset();
-    bearingData.setName(sec.getName() + " Bearing (\u00b0)");
+    bearingData.setName("Bearing to " + sec.getName() + " (\u00b0)");
     final PlainStyling bearingStyle = factory.createPlainStyling();
     bearingStyle.setColor(color.darker().darker());
     bearingStyle.setLineStyle(LineType.DOTTED);
@@ -220,7 +221,7 @@ public class ShowTacticalOverview extends AbstractHandler
     bearingAxis.getDatasets().add(bearingData);
 
     final Dataset relBearingData = factory.createDataset();
-    relBearingData.setName(sec.getName() + " Rel Bearing (\u00b0)");
+    relBearingData.setName("Rel Bearing to:" + sec.getName() + " (\u00b0)");
     final PlainStyling relBearingStyle = factory.createPlainStyling();
     relBearingStyle.setColor(color);
     relBearingStyle.setLineThickness(THICKNESS);
@@ -230,7 +231,7 @@ public class ShowTacticalOverview extends AbstractHandler
     relBearingAxis.getDatasets().add(relBearingData);
 
     final Dataset atbData = factory.createDataset();
-    atbData.setName(sec.getName() + " ATB (\u00b0)");
+    atbData.setName("ATB from:" + sec.getName() + " (\u00b0)");
     final PlainStyling relStyle = factory.createPlainStyling();
     relStyle.setColor(color.brighter().brighter().brighter());
     relStyle.setLineThickness(THICKNESS);
