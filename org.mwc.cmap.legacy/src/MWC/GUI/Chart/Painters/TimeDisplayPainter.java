@@ -274,7 +274,7 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 		switch (_location)
 		{
 		case (DiagonalLocationPropertyEditor.TOP_LEFT):
-			TL = new Point((int) (screen_size.width * 0.05),
+			TL = new Point((int) (screen_size.width * 0.19),
 					(int) (txtHt + screen_size.height * 0.032));
 			BR = new Point((TL.x + width), (int) (txtHt + screen_size.height * 0.035));
 			break;
@@ -284,7 +284,7 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 			TL = new Point((BR.x - width), (int) (txtHt + screen_size.height * 0.032));
 			break;
 		case (DiagonalLocationPropertyEditor.BOTTOM_LEFT):
-			TL = new Point((int) (screen_size.width * 0.05),
+			TL = new Point((int) (screen_size.width * 0.19),
 					(int) (screen_size.height * 0.987));
 			BR = new Point((TL.x + width), (int) (screen_size.height * 0.99));
 			break;
