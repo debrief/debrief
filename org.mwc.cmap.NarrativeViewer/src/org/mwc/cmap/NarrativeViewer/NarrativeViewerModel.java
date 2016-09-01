@@ -39,6 +39,7 @@ import de.kupzog.ktable.SWTX;
 import de.kupzog.ktable.editors.KTableCellEditorCheckbox2;
 import de.kupzog.ktable.renderers.CheckableCellRenderer;
 import de.kupzog.ktable.renderers.FixedCellRenderer;
+import de.kupzog.ktable.renderers.FixedVerticalCellRenderer;
 import de.kupzog.ktable.renderers.TextCellRenderer;
 
 public class NarrativeViewerModel extends KTableDefaultModel
@@ -289,8 +290,22 @@ public class NarrativeViewerModel extends KTableDefaultModel
     public Object doGetContentAt(final int col, final int row)
     {
         final Column column = getVisibleColumn(col);
-        return row == 0 ? column.getColumnName() : column
-                .getProperty(myVisibleRows.get(row - 1));
+        if(row == 0)
+          return column.getColumnName();
+        else
+        {
+          Object property = column
+                  .getProperty(myVisibleRows.get(row - 1));
+          if(column==myColumnEntry && myColumnEntry.isWrapping())
+          {
+            final GC gc = new GC(Display.getCurrent());
+            
+            property = SWTX.wrapText(gc, (String)property, myEntryCellContentWidth);
+           
+            gc.dispose();
+          }
+          return  property;
+        }
     }
     
     public NarrativeEntry getEntryAt(final int col, final int row)
@@ -491,7 +506,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
     private static class ColumnEntry extends AbstractTextColumn
     {
-        private boolean myIsWrapping;
+        private boolean myIsWrapping = true;
         private TextCellRenderer myWrappingRenderer;
 
         public ColumnEntry(final IPreferenceStore store)
@@ -505,7 +520,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
             if (changed)
             {
                 myIsWrapping = shouldWrap;
-                updateWrapping();
+                
             }
             return changed;
         }
@@ -525,24 +540,11 @@ public class NarrativeViewerModel extends KTableDefaultModel
         {
             myWrappingRenderer = new TextCellRenderer(
                     TextCellRenderer.INDICATION_FOCUS_ROW);
-            updateWrapping();
+          
             return myWrappingRenderer;
         }
 
-        private void updateWrapping()
-        {
-            if (myWrappingRenderer == null)
-            {
-                return;
-            }
-            int alignment = SWTX.ALIGN_HORIZONTAL_LEFT
-                    | SWTX.ALIGN_VERTICAL_TOP;
-            if (myIsWrapping)
-            {
-                alignment |= SWTX.WRAP;
-            }
-            myWrappingRenderer.setAlignment(alignment);
-        }
+
     }
 
     static TimeFormatter DEFAULT_TIME = new TimeFormatter()

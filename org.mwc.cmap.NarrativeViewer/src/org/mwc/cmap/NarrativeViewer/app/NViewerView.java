@@ -195,7 +195,19 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       private void updated()
       {
         if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
+        {
           myViewer.setInput(_myRollingNarrative);
+          Display.getCurrent().asyncExec(new Runnable()
+          {
+            
+            @Override
+            public void run()
+            {
+              myViewer.refresh();
+              
+            }
+          });
+        }
         else
           myViewer.setInput(null);
       }
@@ -360,13 +372,14 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       public void run()
       {
         super.run();
-        myViewer.setWrappingEntries(!_clipText.isChecked());
+        myViewer.setWrappingEntries(_clipText.isChecked());
       }
     };
     _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
         .getImageDescriptor("icons/16/wrap.png"));
     _clipText.setToolTipText("Whether to clip to visible space");
     _clipText.setChecked(true);
+
 
     menuManager.add(_clipText);
     toolManager.add(_clipText);
@@ -533,6 +546,16 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       // listening to the rolling narrative, since we 
       // may be switching back to a previous plot.
       myViewer.setInput(_myRollingNarrative);
+      Display.getCurrent().asyncExec(new Runnable()
+      {
+        
+        @Override
+        public void run()
+        {
+          myViewer.refresh();
+          
+        }
+      });
     }
   }
 
