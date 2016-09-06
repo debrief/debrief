@@ -155,10 +155,10 @@ public class SWTX {
 		{
 			boolean addPoint = false;
 
-			if ((textAlign & WRAP_MASK) != WRAP) {
-				int cutoffLength = w / gc.getFontMetrics().getAverageCharWidth();
-				text = text.substring(0, Math.max(0, Math.min(cutoffLength, text.length())));
-			}
+//			if ((textAlign & WRAP_MASK) != WRAP) {
+//				int cutoffLength = w / gc.getFontMetrics().getAverageCharWidth();
+//				text = text.substring(0, Math.max(0, Math.min(cutoffLength, text.length())));
+//			}
 
 			while ((text.length() > 0) && (textSize.x >= w)) {
 				text = text.substring(0, Math.max(text.length() - 1, 0));
