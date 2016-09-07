@@ -17,101 +17,119 @@ package org.mwc.cmap.NarrativeViewer;
 import java.util.LinkedHashSet;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 
-import de.kupzog.ktable.KTableCellEditor;
-import de.kupzog.ktable.KTableCellRenderer;
+abstract class AbstractColumn implements Column
+{
+  private static final String PREFERENCE_PREFIX =
+      "com.borlander.ianmayo.nviewer.preferences.isHidden.";
 
-abstract class AbstractColumn implements Column {
-	private static final String PREFERENCE_PREFIX = "com.borlander.ianmayo.nviewer.preferences.isHidden.";
+  private final int myIndex;
+  private final String myColumnName;
+  private final int myInitialWidth;
+  private final IPreferenceStore myStore;
 
-	private final int myIndex;
-	private final String myColumnName;
-	private final int myInitialWidth;
-	private final IPreferenceStore myStore;
+  private ColumnLabelProvider myRenderer;
 
-	private KTableCellRenderer myRenderer;
-	private boolean myRendererCreated;
+  private boolean myIsVisible = true;
+  private ColumnFilter myFilter;
 
-	private boolean myIsVisible = true;
-	private ColumnFilter myFilter;
-	
-	private final LinkedHashSet<VisibilityListener> myVisibilityListeners = new LinkedHashSet<VisibilityListener>(); 
+  private final LinkedHashSet<VisibilityListener> myVisibilityListeners =
+      new LinkedHashSet<VisibilityListener>();
 
-	protected abstract KTableCellRenderer createRenderer();
+  protected abstract ColumnLabelProvider createRenderer();
 
-	public AbstractColumn(final int index, final String columnName, final IPreferenceStore store) {
-		this(index, columnName, 100, store);
-	}
+  public AbstractColumn(final int index, final String columnName,
+      final IPreferenceStore store)
+  {
+    this(index, columnName, 100, store);
+  }
 
-	public AbstractColumn(final int index, final String columnName, final int initialWidth, final IPreferenceStore store) {
-		myIndex = index;
-		myColumnName = columnName;
-		myInitialWidth = initialWidth;
-		myStore = store;
+  public AbstractColumn(final int index, final String columnName,
+      final int initialWidth, final IPreferenceStore store)
+  {
+    myIndex = index;
+    myColumnName = columnName;
+    myInitialWidth = initialWidth;
+    myStore = store;
 
-		myIsVisible = myStore != null && !myStore.getBoolean(getIsHiddenPreferenceName());
-	}
-	
-	public void addVisibilityListener(final VisibilityListener visibilityListener) {
-		myVisibilityListeners.add(visibilityListener);
-	}
-	
-	public void setFilter(final ColumnFilter filter){
-		myFilter = filter;
-	}
-	
-	public ColumnFilter getFilter() {
-		return myFilter;
-	}
+    myIsVisible =
+        myStore != null && !myStore.getBoolean(getIsHiddenPreferenceName());
+  }
 
-	public int getIndex() {
-		return myIndex;
-	}
+  public void
+      addVisibilityListener(final VisibilityListener visibilityListener)
+  {
+    myVisibilityListeners.add(visibilityListener);
+  }
 
-	public final int getColumnWidth() {
-		return myInitialWidth;
-	}
+  public void setFilter(final ColumnFilter filter)
+  {
+    myFilter = filter;
+  }
 
-	public final String getColumnName() {
-		return myColumnName;
-	}
+  public ColumnFilter getFilter()
+  {
+    return myFilter;
+  }
 
-	public KTableCellRenderer getCellRenderer() {
-		if (!myRendererCreated) {
-			myRenderer = createRenderer();
-			myRendererCreated = true;
-		}
-		return myRenderer;
-	}
+  public int getIndex()
+  {
+    return myIndex;
+  }
 
-	public KTableCellEditor getCellEditor() {
-		// by default -- read only
-		return null;
-	}
+  public final int getColumnWidth()
+  {
+    return myInitialWidth;
+  }
 
-	public boolean isVisible() {
-		return myIsVisible;
-	}
+  public final String getColumnName()
+  {
+    return myColumnName;
+  }
 
-	public void setVisible(final boolean isVisible) {
-		final boolean oldValue = myIsVisible;
-		myIsVisible = isVisible;
-		if (myStore != null) {
-			myStore.setValue(getIsHiddenPreferenceName(), !isVisible);
-		}
-		
-		if (myIsVisible != oldValue){
-			for (final Column.VisibilityListener next : myVisibilityListeners){
-				next.columnVisibilityChanged(this, myIsVisible);	
-			}
-		}
-	}
+  public ColumnLabelProvider getCellRenderer()
+  {
+    if (myRenderer != null)
+    {
+      myRenderer = createRenderer();
+    }
+    return myRenderer;
+  }
 
-	private String getIsHiddenPreferenceName() {
-		return PREFERENCE_PREFIX + getColumnName();
-	}
-	
-	
-	
+  public CellEditor getCellEditor()
+  {
+    // by default -- read only
+    return null;
+  }
+
+  public boolean isVisible()
+  {
+    return myIsVisible;
+  }
+
+  public void setVisible(final boolean isVisible)
+  {
+    final boolean oldValue = myIsVisible;
+    myIsVisible = isVisible;
+    if (myStore != null)
+    {
+      myStore.setValue(getIsHiddenPreferenceName(), !isVisible);
+    }
+
+    if (myIsVisible != oldValue)
+    {
+      for (final Column.VisibilityListener next : myVisibilityListeners)
+      {
+        next.columnVisibilityChanged(this, myIsVisible);
+      }
+    }
+  }
+
+  private String getIsHiddenPreferenceName()
+  {
+    return PREFERENCE_PREFIX + getColumnName();
+  }
 
 }

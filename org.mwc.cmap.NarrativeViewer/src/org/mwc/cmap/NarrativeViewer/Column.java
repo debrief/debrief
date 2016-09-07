@@ -14,18 +14,19 @@
  */
 package org.mwc.cmap.NarrativeViewer;
 
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+
 import MWC.TacticalData.NarrativeEntry;
-import de.kupzog.ktable.KTableCellEditor;
-import de.kupzog.ktable.KTableCellRenderer;
 
 public interface Column {
 	public String getColumnName();
 
 	public int getColumnWidth();
 
-	public KTableCellRenderer getCellRenderer();
+	public ColumnLabelProvider getCellRenderer();
 
-	public KTableCellEditor getCellEditor();
+	public CellEditor getCellEditor();
 
 	public boolean isVisible();
 
