@@ -2092,23 +2092,23 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 				loc_1.add(new WorldVector(33, new WorldDistance(100,
-						WorldDistance.METRES), null)), 10, 110));
+						WorldDistance.METRES), null)), 0.10, 110));
 		fw1.setLabel("fw1");
 		final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
 				loc_1.add(new WorldVector(33, new WorldDistance(200,
-						WorldDistance.METRES), null)), 20, 120));
+						WorldDistance.METRES), null)), 0.20, 120));
 		fw2.setLabel("fw2");
 		final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
 				loc_1.add(new WorldVector(33, new WorldDistance(300,
-						WorldDistance.METRES), null)), 30, 130));
+						WorldDistance.METRES), null)), 0.30, 130));
 		fw3.setLabel("fw3");
 		final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
 				loc_1.add(new WorldVector(33, new WorldDistance(400,
-						WorldDistance.METRES), null)), 40, 140));
+						WorldDistance.METRES), null)), 0.40, 140));
 		fw4.setLabel("fw4");
 		final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
 				loc_1.add(new WorldVector(33, new WorldDistance(500,
-						WorldDistance.METRES), null)), 50, 150));
+						WorldDistance.METRES), null)), 0.50, 150));
 		fw5.setLabel("fw5");
 		tw.addFix(fw1);
 		tw.addFix(fw2);
@@ -2171,7 +2171,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("right answer", 0, Conversions.Degs2m(rangeError.getRange()),
 				0.0001);
 		assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0.00000000001);
-		assertEquals("right course", res.getCourse(), fw3.getCourse(), 0);
+		assertEquals("right course", res.getCourse(), fw3.getCourse(), 0.0001);
 
 	}
 
