@@ -468,7 +468,7 @@ public class NarrativeViewerModel
       @Override
       public Object[] getElements(Object inputElement)
       {
-        return myAllEntries == null ? NO_ENTRIES : myAllEntries;
+        return myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
       }
     });
 

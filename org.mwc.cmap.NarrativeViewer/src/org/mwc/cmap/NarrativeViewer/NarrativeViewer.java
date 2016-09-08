@@ -118,7 +118,6 @@ public class NarrativeViewer
   public void setInput(final IRollingNarrativeProvider entryWrapper)
   {
     myModel.setInput(entryWrapper);
-    viewer.setInput(new Object());
     refresh();
   }
 
@@ -130,7 +129,7 @@ public class NarrativeViewer
 
   public void refresh()
   {
-    viewer.refresh();
+    viewer.setInput(new Object());
   }
 
   public boolean isWrappingEntries()

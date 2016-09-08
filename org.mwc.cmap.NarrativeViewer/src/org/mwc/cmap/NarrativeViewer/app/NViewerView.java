@@ -198,16 +198,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
         {
           myViewer.setInput(_myRollingNarrative);
-          Display.getCurrent().asyncExec(new Runnable()
-          {
-            
-            @Override
-            public void run()
-            {
-              myViewer.refresh();
-              
-            }
-          });
+         
         }
         else
           myViewer.setInput(null);
@@ -315,9 +306,17 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       public void selectionChanged(SelectionChangedEvent event)
       {
         StructuredSelection selection = (StructuredSelection) event.getSelection();
+        
         if(selection.getFirstElement() instanceof NarrativeEntry)
         {
-          fireNewSeletion((NarrativeEntry)selection.getFirstElement());
+          final Object element = selection.getFirstElement();
+          Display.getCurrent().asyncExec( new Runnable()
+          {
+            public void run()
+            {
+              fireNewSeletion((NarrativeEntry)(element));
+            }
+          });
         }
         
       }
@@ -568,16 +567,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       // listening to the rolling narrative, since we 
       // may be switching back to a previous plot.
       myViewer.setInput(_myRollingNarrative);
-      Display.getCurrent().asyncExec(new Runnable()
-      {
-        
-        @Override
-        public void run()
-        {
-          myViewer.refresh();
-          
-        }
-      });
+      
     }
   }
 
