@@ -18,21 +18,19 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Tree;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 
@@ -66,6 +64,12 @@ public class NarrativeViewerModel
 
   private IRollingNarrativeProvider myInput;
 
+  
+  public AbstractColumn[] getAllColumns()
+  {
+    return myAllColumns;
+  }
+  
   public NarrativeViewerModel(final IPreferenceStore store)
   {
 
@@ -297,7 +301,7 @@ public class NarrativeViewerModel
     }
     
     @Override
-    public CellEditor getCellEditor(Table table)
+    public CellEditor getCellEditor(Tree table)
     {
       CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(table);
      
@@ -447,10 +451,10 @@ public class NarrativeViewerModel
     }
   };
 
-  public void createTable(final TableViewer viewer, TableColumnLayout layout)
+  public void createTable(final TreeViewer viewer, FilteredTreeColumnLayout layout)
   {
     TableViewerColumnFactory factory = new TableViewerColumnFactory(viewer);
-    viewer.setContentProvider(new IStructuredContentProvider()
+    viewer.setContentProvider(new ITreeContentProvider()
     {
 
       @Override
@@ -470,6 +474,26 @@ public class NarrativeViewerModel
       {
         return myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
       }
+
+      @Override
+      public Object[] getChildren(Object parentElement)
+      {
+       
+        return new Object[0];
+      }
+
+      @Override
+      public Object getParent(Object element)
+      {
+        
+        return null;
+      }
+
+      @Override
+      public boolean hasChildren(Object element)
+      {
+        return false;
+      }
     });
 
     
@@ -477,10 +501,10 @@ public class NarrativeViewerModel
     {
       for (final AbstractColumn column : myAllColumns)
       {
-        final TableViewerColumn viewerColumn =
+        final TreeViewerColumn viewerColumn =
             factory.createColumn(column.getColumnName(), column
                 .getColumnWidth(), column.createRenderer());
-         final CellEditor cellEditor = column.getCellEditor(viewer.getTable());
+         final CellEditor cellEditor = column.getCellEditor(viewer.getTree());
         if(cellEditor!=null)
         viewerColumn.setEditingSupport(new EditingSupport(viewer)
         {

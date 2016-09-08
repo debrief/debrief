@@ -1,33 +1,33 @@
 package org.mwc.cmap.NarrativeViewer;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TreeColumn;
 
 public class TableViewerColumnFactory
 {
-  private final TableViewer _viewer;
+  private final TreeViewer _viewer;
 
-  public TableViewerColumnFactory(TableViewer viewer)
+  public TableViewerColumnFactory(TreeViewer viewer)
   {
     super();
     this._viewer = viewer;
   }
 
-  public TableViewerColumn createColumn(String header, int width,
+  public TreeViewerColumn createColumn(String header, int width,
       ColumnLabelProvider provider)
   {
     return createColumn(header, width, provider, SWT.LEFT);
   }
 
-  public TableViewerColumn createColumn(String header, int width,
+  public TreeViewerColumn createColumn(String header, int width,
       ColumnLabelProvider provider, int alignment)
   {
-    final TableViewerColumn viewerColumn =
-        new TableViewerColumn(_viewer, SWT.NONE);
-    final TableColumn column = viewerColumn.getColumn();
+    final TreeViewerColumn viewerColumn =
+        new TreeViewerColumn(_viewer, SWT.NONE);
+    final TreeColumn column = viewerColumn.getColumn();
     column.setText(header == null ? "" : header);
 
     if (width > 0)

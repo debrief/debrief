@@ -20,6 +20,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Tree;
 
 import MWC.TacticalData.NarrativeEntry;
 
@@ -85,14 +86,14 @@ abstract class AbstractColumn implements Column
 
   public ColumnLabelProvider getCellRenderer()
   {
-    if (myRenderer != null)
+    if (myRenderer == null)
     {
       myRenderer = createRenderer();
     }
     return myRenderer;
   }
 
-  public CellEditor getCellEditor(Table table)
+  public CellEditor getCellEditor(Tree table)
   {
     // by default -- read only
     return null;

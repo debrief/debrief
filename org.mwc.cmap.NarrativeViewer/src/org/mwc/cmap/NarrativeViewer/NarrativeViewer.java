@@ -18,12 +18,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -38,22 +41,46 @@ public class NarrativeViewer
   final NarrativeViewerModel myModel;
   private NarrativeViewerActions myActions;
 
-  final TableViewer viewer;
+  final TreeViewer viewer;
+  private Composite composite;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
-    TableColumnLayout layout = new TableColumnLayout(); 
-    Composite composite = new Composite(parent, SWT.NONE);
+    FilteredTreeColumnLayout layout = new FilteredTreeColumnLayout(); 
+     composite = new Composite(parent, SWT.NONE);
     composite.setLayout(layout);
-    viewer = new TableViewer(composite, SWT.V_SCROLL | SWT.FULL_SELECTION);
-    viewer.getTable().setHeaderVisible(true);
-    viewer.getTable().setLinesVisible(true);
+    FilteredTree tree = new FilteredTree(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
+      
+      @Override
+      protected boolean isLeafMatch(Viewer viewer, Object element)
+      {
+        
+        AbstractColumn[] allColumns = myModel.getAllColumns();
+        for (AbstractColumn abstractColumn : allColumns)
+        {
+          if(abstractColumn.isVisible())
+          {
+            String text = abstractColumn.getCellRenderer().getText(element);
+           if(text!=null && wordMatches(text))
+           {
+             return true;
+           }
+          }
+        }
+        
+        return false;
+      }
+      
+    }, true) ;
+    viewer = tree.getViewer();
+    viewer.getTree().setHeaderVisible(true);
+    viewer.getTree().setLinesVisible(true);
     myModel = new NarrativeViewerModel(preferenceStore);
 
    
     myModel.createTable(viewer,layout);
-
+ 
     
     //
     // addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
@@ -73,13 +100,13 @@ public class NarrativeViewer
 
  
 
-  public TableViewer getViewer()
+  public TreeViewer getViewer()
   {
     return viewer;
   }
   public Composite getControl()
   {
-    return viewer.getTable().getParent();
+    return composite;
   }
 
   public NarrativeViewerActions getViewerActions()
@@ -105,7 +132,7 @@ public class NarrativeViewer
     }
 
     final FilterDialog dialog =
-        new FilterDialog(viewer.getTable().getShell(), myModel.getInput(),
+        new FilterDialog(viewer.getTree().getShell(), myModel.getInput(),
             column);
 
     if (Dialog.OK == dialog.open())
