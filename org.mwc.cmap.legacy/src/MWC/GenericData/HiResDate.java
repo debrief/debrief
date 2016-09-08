@@ -149,16 +149,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 		return getMicros() <= other.getMicros();
 	}
 
-	public boolean equals(final Object other)
-	{
-		boolean res = false;
-		if (other instanceof HiResDate)
-		{
-			final HiResDate otherD = (HiResDate) other;
-			res = (getMicros() == otherD.getMicros());
-		}
-		return res;
-	}
+	
 
 	/**
 	 * compare the supplied date to us
@@ -183,10 +174,30 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 		return res;
 	}
 
-	@Override
-	public int hashCode()
-	{
-		return super.hashCode();
-	}
+  @Override
+  public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (_micros ^ (_micros >>> 32));
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    HiResDate other = (HiResDate) obj;
+    if (_micros != other._micros)
+      return false;
+    return true;
+  }
+
+	
 
 }
