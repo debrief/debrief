@@ -18,21 +18,21 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 
@@ -113,7 +113,6 @@ public class NarrativeViewerModel
     myColumnSource.setFilter(mySourceFilter);
     myColumnType.setFilter(myTypeFilter);
 
-    
   }
 
   public void setInput(final IRollingNarrativeProvider entryWrapper)
@@ -171,10 +170,6 @@ public class NarrativeViewerModel
     }
   }
 
- 
-
-  
-
   public Column getColumnSource()
   {
     return myColumnSource;
@@ -209,8 +204,6 @@ public class NarrativeViewerModel
   {
     return true;
   }
-
- 
 
   private static abstract class AbstractTextColumn extends AbstractColumn
   {
@@ -278,45 +271,37 @@ public class NarrativeViewerModel
   private static class ColumnVisible extends AbstractColumn
   {
 
-    private static final String CHECKED_KEY = "CHECKED";
-    private static final String UNCHECK_KEY = "UNCHECKED";
-
-    private Image makeShot( boolean type)
-    {
-      Shell s = new Shell(Display.getDefault(), SWT.NO_TRIM);
-      Button b = new Button(s, SWT.CHECK);
-      b.setSelection(type);
-      Point bsize = b.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-      b.setSize(bsize);
-      b.setLocation(0, 0);
-      s.setSize(bsize);
-      s.open();
-
-      GC gc = new GC(b);
-      Image image = new Image(Display.getDefault(), bsize.x, bsize.y);
-      gc.copyArea(image, 0, 0);
-      gc.dispose();
-
-      s.close();
-
-      return image;
-    }
+    
 
     public ColumnVisible(final IPreferenceStore store)
     {
       super(0, "Visible", store);
-      if (JFaceResources.getImageRegistry().getDescriptor(CHECKED_KEY) == null)
-      {
-        JFaceResources.getImageRegistry().put(UNCHECK_KEY,
-            makeShot( false));
-        JFaceResources.getImageRegistry().put(CHECKED_KEY,
-            makeShot( true));
-      }
+    
     }
 
     public Object getProperty(final NarrativeEntry entry)
     {
       return entry.getVisible();
+    }
+    
+    @Override
+    public void setProperty(NarrativeEntry entry, Object obj)
+    {
+      entry.setVisible((Boolean)obj);
+    }
+
+    @Override
+    public int getColumnWidth()
+    {
+      return 20;
+    }
+    
+    @Override
+    public CellEditor getCellEditor(Table table)
+    {
+      CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(table);
+     
+      return checkboxCellEditor;
     }
 
     // public KTableCellEditor getCellEditor()
@@ -334,26 +319,14 @@ public class NarrativeViewerModel
       return new ColumnLabelProvider()
       {
 
+       
+        
         @Override
-        public Image getImage(Object element)
+        public String getText(Object element)
         {
-          if (element instanceof NarrativeEntry)
-          {
-            NarrativeEntry entry = (NarrativeEntry) element;
-
-            if (entry.getVisible())
-            {
-              return JFaceResources.getImageRegistry().getDescriptor(
-                  CHECKED_KEY).createImage();
-            }
-            else
-            {
-              return JFaceResources.getImageRegistry().getDescriptor(
-                  UNCHECK_KEY).createImage();
-            }
-          }
-          return super.getImage(element);
+          return getProperty((NarrativeEntry) element).toString();
         }
+        
 
       };
     }
@@ -366,6 +339,12 @@ public class NarrativeViewerModel
     public ColumnTime(final IPreferenceStore store)
     {
       super(1, "Time", store);
+    }
+
+    @Override
+    public int getColumnWidth()
+    {
+      return 50;
     }
 
     public Object getProperty(final NarrativeEntry entry)
@@ -390,6 +369,12 @@ public class NarrativeViewerModel
     {
       return entry.getTrackName();
     }
+
+    @Override
+    public int getColumnWidth()
+    {
+      return 40;
+    }
   }
 
   private static class ColumnType extends AbstractTextColumn
@@ -403,6 +388,12 @@ public class NarrativeViewerModel
     {
       return entry.getType();
     }
+
+    @Override
+    public int getColumnWidth()
+    {
+      return 40;
+    }
   }
 
   private static class ColumnEntry extends AbstractTextColumn
@@ -412,6 +403,12 @@ public class NarrativeViewerModel
     public ColumnEntry(final IPreferenceStore store)
     {
       super(4, "Entry", store);
+    }
+
+    @Override
+    public int getColumnWidth()
+    {
+      return 250;
     }
 
     public boolean setWrapping(final boolean shouldWrap)
@@ -450,55 +447,106 @@ public class NarrativeViewerModel
     }
   };
 
-  public void createTable(TableViewer viewer)
+  public void createTable(final TableViewer viewer, TableColumnLayout layout)
   {
     TableViewerColumnFactory factory = new TableViewerColumnFactory(viewer);
     viewer.setContentProvider(new IStructuredContentProvider()
     {
-      
+
       @Override
       public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
       {
-        // TODO Auto-generated method stub
-        
+
       }
-      
+
       @Override
       public void dispose()
       {
-        // TODO Auto-generated method stub
-        
+
       }
-      
+
       @Override
       public Object[] getElements(Object inputElement)
       {
-        return myAllEntries;
+        return myAllEntries == null ? NO_ENTRIES : myAllEntries;
       }
     });
+
+    
     
     {
-      
-      for (AbstractColumn column : myAllColumns)
+      for (final AbstractColumn column : myAllColumns)
       {
-        final TableViewerColumn viewerColumn = factory.createColumn(column.getColumnName(), column.getColumnWidth(), column.createRenderer());
-       
-        column.addVisibilityListener(new VisibilityListener()
+        final TableViewerColumn viewerColumn =
+            factory.createColumn(column.getColumnName(), column
+                .getColumnWidth(), column.createRenderer());
+         final CellEditor cellEditor = column.getCellEditor(viewer.getTable());
+        if(cellEditor!=null)
+        viewerColumn.setEditingSupport(new EditingSupport(viewer)
         {
           
           @Override
-          public void columnVisibilityChanged(Column column, boolean actualIsVisible)
+          protected void setValue(Object element, Object value)
           {
-            // TODO Auto-generated method stub
+            column.setProperty((NarrativeEntry)element,value);
+           
             
           }
+          
+          @Override
+          protected Object getValue(Object element)
+          {
+            return column.getProperty((NarrativeEntry)element);
+          }
+          
+          @Override
+          protected CellEditor getCellEditor(Object element)
+          {
+           
+            return cellEditor;
+          }
+          
+          @Override
+          protected boolean canEdit(Object element)
+          {
+            return cellEditor!=null;
+          }
         });
+        column.addVisibilityListener(new VisibilityListener()
+        {
+
+          @Override
+          public void columnVisibilityChanged(Column column,
+              boolean actualIsVisible)
+          {
+             if(column.isVisible())
+             {
+               viewerColumn.getColumn().setWidth(column.getColumnWidth());
+               viewerColumn.getColumn().setResizable(true);
+             }
+             else
+             {
+               viewerColumn.getColumn().setWidth(0);
+               viewerColumn.getColumn().setResizable(false);
+             }
+
+          }
+        });
+        layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+            column.getColumnWidth()));
+        
+        if(!column.isVisible())
+        {
+          viewerColumn.getColumn().setWidth(0);
+          viewerColumn.getColumn().setResizable(false);
+        }
+     
       }
       
+     
+
     }
-    
-    
-    
+
   }
 
 }

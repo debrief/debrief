@@ -19,6 +19,9 @@ import java.util.LinkedHashSet;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.swt.widgets.Table;
+
+import MWC.TacticalData.NarrativeEntry;
 
 abstract class AbstractColumn implements Column
 {
@@ -27,7 +30,6 @@ abstract class AbstractColumn implements Column
 
   private final int myIndex;
   private final String myColumnName;
-  private final int myInitialWidth;
   private final IPreferenceStore myStore;
 
   private ColumnLabelProvider myRenderer;
@@ -40,18 +42,13 @@ abstract class AbstractColumn implements Column
 
   protected abstract ColumnLabelProvider createRenderer();
 
-  public AbstractColumn(final int index, final String columnName,
-      final IPreferenceStore store)
-  {
-    this(index, columnName, 100, store);
-  }
+ 
 
   public AbstractColumn(final int index, final String columnName,
-      final int initialWidth, final IPreferenceStore store)
+       final IPreferenceStore store)
   {
     myIndex = index;
     myColumnName = columnName;
-    myInitialWidth = initialWidth;
     myStore = store;
 
     myIsVisible =
@@ -79,10 +76,7 @@ abstract class AbstractColumn implements Column
     return myIndex;
   }
 
-  public final int getColumnWidth()
-  {
-    return myInitialWidth;
-  }
+
 
   public final String getColumnName()
   {
@@ -98,10 +92,17 @@ abstract class AbstractColumn implements Column
     return myRenderer;
   }
 
-  public CellEditor getCellEditor()
+  public CellEditor getCellEditor(Table table)
   {
     // by default -- read only
     return null;
+  }
+  
+  @Override
+  public void setProperty(NarrativeEntry entry, Object obj)
+  {
+    //do nothing 
+    
   }
 
   public boolean isVisible()

@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -42,13 +43,16 @@ public class NarrativeViewer
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
-    viewer = new TableViewer(parent, SWT.V_SCROLL | SWT.FULL_SELECTION);
+    TableColumnLayout layout = new TableColumnLayout(); 
+    Composite composite = new Composite(parent, SWT.NONE);
+    composite.setLayout(layout);
+    viewer = new TableViewer(composite, SWT.V_SCROLL | SWT.FULL_SELECTION);
     viewer.getTable().setHeaderVisible(true);
     viewer.getTable().setLinesVisible(true);
     myModel = new NarrativeViewerModel(preferenceStore);
 
    
-    build(myModel);
+    myModel.createTable(viewer,layout);
 
     
     //
@@ -67,15 +71,15 @@ public class NarrativeViewer
     // });
   }
 
-  private void build(NarrativeViewerModel model)
-  {
-    model.createTable(viewer);
-
-  }
+ 
 
   public TableViewer getViewer()
   {
     return viewer;
+  }
+  public Composite getControl()
+  {
+    return viewer.getTable().getParent();
   }
 
   public NarrativeViewerActions getViewerActions()

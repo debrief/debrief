@@ -267,7 +267,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     myViewer =
         new NarrativeViewer(rootPanel, Activator.getInstance()
             .getPreferenceStore());
-    rootPanelLayout.topControl = myViewer.getViewer().getTable();
+    rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
 
@@ -293,11 +293,26 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
      * 
      */
     setupPartListeners();
-    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
+//    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
+//    {
+//      
+//      @Override
+//      public void doubleClick(DoubleClickEvent event)
+//      {
+//        StructuredSelection selection = (StructuredSelection) event.getSelection();
+//        if(selection.getFirstElement() instanceof NarrativeEntry)
+//        {
+//          fireNewSeletion((NarrativeEntry)selection.getFirstElement());
+//        }
+//        
+//      }
+//    });
+    
+    myViewer.getViewer().addSelectionChangedListener(new ISelectionChangedListener()
     {
       
       @Override
-      public void doubleClick(DoubleClickEvent event)
+      public void selectionChanged(SelectionChangedEvent event)
       {
         StructuredSelection selection = (StructuredSelection) event.getSelection();
         if(selection.getFirstElement() instanceof NarrativeEntry)
