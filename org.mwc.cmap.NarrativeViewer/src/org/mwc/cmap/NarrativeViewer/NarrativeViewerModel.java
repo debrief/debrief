@@ -244,7 +244,7 @@ public class NarrativeViewerModel
             {
               swtColor =
                   new Color(Display.getCurrent(), color.getRed(), color
-                      .getBlue(), color.getGreen());
+                      .getGreen(), color.getBlue());
               swtColorMap.put(color, swtColor);
             }
 
