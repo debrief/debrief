@@ -28,6 +28,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
@@ -379,6 +381,12 @@ public class NarrativeViewerModel
     {
       return 40;
     }
+    
+    @Override
+    protected void columnSelection(NarrativeViewer viewer)
+    {
+      viewer.showFilterDialog(this);
+    }
   }
 
   private static class ColumnType extends AbstractTextColumn
@@ -397,6 +405,12 @@ public class NarrativeViewerModel
     public int getColumnWidth()
     {
       return 40;
+    }
+    
+    @Override
+    protected void columnSelection(NarrativeViewer viewer)
+    {
+      viewer.showFilterDialog(this);
     }
   }
 
@@ -451,10 +465,10 @@ public class NarrativeViewerModel
     }
   };
 
-  public void createTable(final TreeViewer viewer, FilteredTreeColumnLayout layout)
+  public void createTable(final NarrativeViewer viewer, FilteredTreeColumnLayout layout)
   {
-    TableViewerColumnFactory factory = new TableViewerColumnFactory(viewer);
-    viewer.setContentProvider(new ITreeContentProvider()
+    TableViewerColumnFactory factory = new TableViewerColumnFactory(viewer.getViewer());
+    viewer.getViewer().setContentProvider(new ITreeContentProvider()
     {
 
       @Override
@@ -504,9 +518,18 @@ public class NarrativeViewerModel
         final TreeViewerColumn viewerColumn =
             factory.createColumn(column.getColumnName(), column
                 .getColumnWidth(), column.createRenderer());
-         final CellEditor cellEditor = column.getCellEditor(viewer.getTree());
+        
+        viewerColumn.getColumn().addSelectionListener(new SelectionAdapter()
+        {
+          @Override
+          public void widgetSelected(SelectionEvent e)
+          {
+            column.columnSelection(viewer);
+          }
+        });
+         final CellEditor cellEditor = column.getCellEditor(viewer.getViewer().getTree());
         if(cellEditor!=null)
-        viewerColumn.setEditingSupport(new EditingSupport(viewer)
+        viewerColumn.setEditingSupport(new EditingSupport(viewer.getViewer())
         {
           
           @Override

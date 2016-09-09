@@ -19,6 +19,7 @@ import java.util.LinkedHashSet;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 
@@ -77,6 +78,11 @@ abstract class AbstractColumn implements Column
     return myIndex;
   }
 
+  
+  protected void columnSelection(NarrativeViewer viewer)
+  {
+    
+  }
 
 
   public final String getColumnName()

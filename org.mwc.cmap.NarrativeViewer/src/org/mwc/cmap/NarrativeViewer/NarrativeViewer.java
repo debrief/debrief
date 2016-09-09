@@ -24,7 +24,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
@@ -79,7 +78,7 @@ public class NarrativeViewer
     myModel = new NarrativeViewerModel(preferenceStore);
 
    
-    myModel.createTable(viewer,layout);
+    myModel.createTable(this,layout);
  
     
     //
