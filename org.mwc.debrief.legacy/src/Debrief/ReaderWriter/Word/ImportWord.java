@@ -46,6 +46,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public class ImportWord
 {
@@ -295,7 +296,17 @@ public class ImportWord
         final int year;
         if (yrStr.length() == 2)
         {
-          year = 2000 + Integer.parseInt(yrStr);
+          final int theYear = Integer.parseInt(yrStr);
+          
+          // is this from the late 80's onwards?
+          if(theYear > 80)
+          {
+            year = 1900 + theYear;
+          }
+          else
+          {
+            year = 2000 + theYear;
+          }
         }
         else
         {
@@ -313,7 +324,7 @@ public class ImportWord
         // ok, and the message part
         final int ind = entry.indexOf(type);
 
-        text = entry.substring(ind + type.length() + 2).trim();
+        text = entry.substring(ind + type.length() + 1).trim();
 
         // remember what's happening, so we can refer back to previous entries
         lastDtg = new Date(dtg.getDate().getTime());
@@ -496,9 +507,8 @@ public class ImportWord
       final Object[] arr = items.toArray();
       final NarrativeEntry first = (NarrativeEntry) arr[0];
       final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
-
       
-      final DateFormat sdf = new SimpleDateFormat("yyMMDD HHmmss");
+      final DateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
       sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
       
       assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
