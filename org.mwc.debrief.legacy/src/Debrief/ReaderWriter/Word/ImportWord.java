@@ -498,9 +498,8 @@ public class ImportWord
       final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
 
       
-      final DateFormat sdf = new SimpleDateFormat("yymmDD HHmmss");
+      final DateFormat sdf = new SimpleDateFormat("yyMMDD HHmmss");
       sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
       
       assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
       assertEquals("correct first", "160916 093700", sdf.format(last.getDTG().getDate()));
