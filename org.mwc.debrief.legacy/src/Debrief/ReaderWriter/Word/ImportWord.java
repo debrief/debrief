@@ -59,7 +59,7 @@ public class ImportWord
      */
     private static String parseTrack(final String str)
     {
-      final String longTrackId = "[A-Z](\\d{3})";
+      final String longTrackId = "[A-Z]{1,4}(\\d{3})";
       final Pattern longPattern = Pattern.compile(longTrackId);
 
       final Matcher matcher1 = longPattern.matcher(str);
@@ -87,114 +87,76 @@ public class ImportWord
       return res;
     }
 
+    private static Double
+        getElement(final String identifier, final String input)
+    {
+      Double res = null;
+
+      final String regexp = identifier + "-*(\\d+\\.?\\d*)";
+      final Pattern pattern = Pattern.compile(regexp);
+
+      final Matcher matcher = pattern.matcher(input);
+      if (matcher.find())
+      {
+        String found = matcher.group(1);
+        try
+        {
+          res = Double.parseDouble(found);
+        }
+        catch (NumberFormatException fe)
+        {
+          // ok, we failed :-(
+        }
+      }
+
+      return res;
+    }
+
+
+    private static String
+        getClassified(final String input)
+    {
+      String res = null;
+
+      final String regexp = "Classified (.*$)";
+      final Pattern pattern = Pattern.compile(regexp);
+
+      final Matcher matcher = pattern.matcher(input);
+      if (matcher.find())
+      {
+        res = matcher.group(1);
+      }
+
+      return res;
+    }
+
     final double brgDegs;
     final double rangYds;
     final String tgtType;
-    private String contact;
-    public double crseDegs;
-    public double spdKts;
-
-    @SuppressWarnings("unused")
-    private final String label;
+    final String contact;
+    final double crseDegs;
+    final double spdKts;
 
     public FCSEntry(final NarrEntry thisN, final String msg)
     {
-
-      final int bIndex = msg.indexOf("B-");
-      final int rIndex = msg.indexOf("R-");
-      final int rEndIndex = msg.indexOf("kyds", rIndex);
-      final int cIndex = msg.indexOf("C-");
-      final int sIndex = msg.indexOf("S-");
-      final int classStrStart = msg.indexOf("Classified");
-      final int classStrEnd2 =
-          msg.indexOf(".", classStrStart + "Classified".length() + 2);
-
-      // did we have Distance off track?
-      final int speedEnd = msg.indexOf(" ", sIndex + 1);
-
-      final String id = msg.substring(0, bIndex).trim();
-      String bStr = msg.substring(bIndex + 2, rIndex - 1);
-      final String rStr = msg.substring(rIndex + 2, rEndIndex);
-
-      String cStr;
-      if (cIndex == -1)
-      {
-        cStr = "N/A";
-      }
-      else
-      {
-        cStr = msg.substring(cIndex + 2, sIndex - 1);
-
-        // just double-check there isn't a degree symbol in there
-        cStr = cStr.replace("\u00B0", "");
-        cStr = cStr.replace("�", "");
-
-        final int degIndex = cStr.indexOf("�");
-        if (degIndex != -1)
-        {
-          cStr = cStr.substring(0, degIndex);
-        }
-
-        this.crseDegs = Double.parseDouble(cStr);
-      }
-
-      String sStr;
-      if (cIndex == -1)
-      {
-        sStr = "N/A";
-      }
-      else
-      {
-        sStr = msg.substring(sIndex + 2, speedEnd);
-
-        // extract the kts
-        final int ktsIndex = sStr.indexOf("kt");
-        if (ktsIndex != -1)
-        {
-          sStr = sStr.substring(0, ktsIndex);
-        }
-        this.spdKts = Double.parseDouble(sStr);
-      }
-
-      final String classStr;
-      if (classStrStart != -1 && classStrEnd2 != -1)
-      {
-        classStr =
-            msg.substring(classStrStart + "Classified".length(), classStrEnd2)
-                .trim();
-      }
-      else
-      {
-        classStr = "N/A";
-      }
-
-      tgtType = classStr.trim();
-
-      label = "Class:" + classStr + " " + cStr + "\u00B0 " + sStr;
+      // pull out the matching strings
+      final Double bVal = getElement("B-", msg);
+      final Double rVal = getElement("R-", msg);
+      final Double cVal = getElement("C-", msg);
+      final Double sVal = getElement("S-", msg);
+      
+      // extract the classification
+      final String classStr = getClassified(msg);
 
       // try to extract the track id
-      final String trackId = parseTrack(id);
-      if (trackId != null)
-      {
-        // ok. we have an integer.
-        contact = trackId;
-      }
-      else
-      {
-        contact = id;
-      }
-
-      // just check there isn't a bearing value in there
-      bStr = bStr.replace("�", "");
-
-      final int degIndex = bStr.indexOf("�");
-      if (degIndex != -1)
-      {
-        bStr = bStr.substring(0, degIndex);
-      }
-
-      brgDegs = Double.parseDouble(bStr);
-      rangYds = Double.parseDouble(rStr) * 1000;
+      final String trackId = parseTrack(msg);
+      
+      this.crseDegs = cVal != null ? cVal : 0d;
+      this.brgDegs = bVal != null ? bVal : 0d;
+      this.rangYds = rVal != null ? rVal * 1000d : 0d;
+      this.spdKts = sVal != null ? sVal : 0d;
+      this.tgtType = classStr != null ? classStr : "N/A";
+      this.contact = trackId != null ? trackId : "N/A";      
     }
 
   }
@@ -254,7 +216,8 @@ public class ImportWord
       return res;
     }
 
-    /** reset the static variables we use to handle missing, or mangled data
+    /**
+     * reset the static variables we use to handle missing, or mangled data
      * 
      */
     public static void reset()
@@ -279,7 +242,6 @@ public class ImportWord
       final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
       sixBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-      
       final boolean correctLength = parts.length > 5;
       final boolean sixFigDTG =
           correctLength && parts[0].length() == 6
@@ -288,8 +250,6 @@ public class ImportWord
           correctLength && parts[0].length() == 4
               && parts[0].matches(DATE_MATCH_FOUR);
       final boolean hasDTG = sixFigDTG || fourFigDTG;
-      
-      
 
       if (hasDTG)
       {
@@ -503,8 +463,8 @@ public class ImportWord
   public static class TestImportWord extends TestCase
   {
 
-    private final static String doc_path = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/narrative.doc";
-
+    private final static String doc_path =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/narrative.doc";
 
     public void testImportEmptyLayers() throws FileNotFoundException
     {
@@ -620,10 +580,21 @@ public class ImportWord
     public void testParseFCS() throws ParseException
     {
       final String str1 =
-          "160504,16,08,2016,NONSUCH,AAA,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA. ";
+          "160504,16,08,2016,NONSUCH,AAA,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
       final String str2 =
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+
+      // try our special identifier
+      assertEquals("first bearing", 123d, FCSEntry.getElement("B-", str1));
+      assertEquals("first course", 321d, FCSEntry.getElement("C-", str1));
+      assertEquals("first range", 5d, FCSEntry.getElement("R-", str1));
+      assertEquals("first speed", 6d, FCSEntry.getElement("S-", str1));
+
+      assertEquals("second bearing", 311d, FCSEntry.getElement("B-", str2));
+      assertEquals("second range", 12.4, FCSEntry.getElement("R-", str2));
+      
+      assertEquals("correct classified", "AAAAAA BBBBBB AAAAAA.", FCSEntry.getClassified(str1));
 
       NarrEntry ne = new NarrEntry(str1);
       final FCSEntry fe1 = new FCSEntry(ne, ne.text);
@@ -632,7 +603,7 @@ public class ImportWord
       assertEquals("got contact:", "023", fe1.contact);
       assertEquals("got course:", 321d, fe1.crseDegs);
       assertEquals("got speed:", 6d, fe1.spdKts);
-      assertEquals("got name:", "AAAAAA BBBBBB AAAAAA", fe1.tgtType);
+      assertEquals("got name:", "AAAAAA BBBBBB AAAAAA.", fe1.tgtType);
 
       ne = new NarrEntry(str2);
       final FCSEntry fe2 = new FCSEntry(ne, ne.text);
@@ -641,7 +612,7 @@ public class ImportWord
       assertEquals("got contact:", "M01", fe2.contact);
       assertEquals("got course:", 0d, fe2.crseDegs);
       assertEquals("got speed:", 0d, fe2.spdKts);
-      assertEquals("got name:", "AAAAAA CCCCCC AAAAAA", fe2.tgtType);
+      assertEquals("got name:", "AAAAAA CCCCCC AAAAAA.", fe2.tgtType);
 
     }
 
