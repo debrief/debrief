@@ -42,7 +42,7 @@ import org.junit.runners.Suite;
   Debrief.ReaderWriter.Replay.ImportTMA_RngBrg.testImportTMA_RngBrg.class,
   Debrief.ReaderWriter.XML.Shapes.LabelHandler.testMe.class,
   Debrief.ReaderWriter.XML.Tactical.TMAContactHandler.testIt.class,
-  Debrief.ReaderWriter.Word.ImportWord.TestImportAIS.class,
+  Debrief.ReaderWriter.Word.ImportWord.TestImportWord.class,
   Debrief.Tools.FilterOperations.ReformatFixes.testListOfProperties.class,
   Debrief.Tools.Palette.BuoyPatterns.ArcBuilder.testMe.class,
   Debrief.Tools.Palette.BuoyPatterns.BarrierBuilder.testMe.class,
