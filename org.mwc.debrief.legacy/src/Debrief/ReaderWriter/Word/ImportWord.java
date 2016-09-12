@@ -237,10 +237,10 @@ public class ImportWord
 
       // sort out our date formats
       final DateFormat fourBlock = new SimpleDateFormat("HHmm");
-      fourBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
+      fourBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-      final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
-      sixBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
+//      final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
+//      sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
       final boolean correctLength = parts.length > 5;
       final boolean sixFigDTG =
@@ -308,7 +308,7 @@ public class ImportWord
                 .parseInt(dayStr));
 
         final Date timePart = fourBlock.parse(dtgStr);
-
+        
         dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
 
         // ok, and the message part
@@ -332,7 +332,7 @@ public class ImportWord
         }
 
         // see if the first few characters are date
-        final String dateStr =
+        String dateStr =
             trimmed.substring(0, Math.min(trimmed.length(), blockToUse));
 
         // is this all numeric
@@ -361,40 +361,18 @@ public class ImportWord
             Date timePart = null;
             if (dateStr.length() == 6)
             {
-              // first try to parse it
-              timePart = sixBlock.parse(trimmed);
-
-              // check the date matches
-              final int date = timePart.getDate();
-
-              if (date == lastDtg.getDate())
-              {
-                // ok, we can go for it
-                final Date newDate = new Date(lastDtg.getTime());
-
-                newDate.setHours(timePart.getHours());
-                newDate.setMinutes(timePart.getMinutes());
-                newDate.setSeconds(timePart.getSeconds());
-
-                dtg = new HiResDate(newDate);
-              }
-
+              // reduce to four charts
+              dateStr = dateStr.substring(2, 6);
             }
-            else if (dateStr.length() == 4)
-            {
-              // first try to parse it
-              timePart = fourBlock.parse(trimmed);
+            // first try to parse it
+            timePart = fourBlock.parse(dateStr);
+            
+            // ok, we can go for it
+            final Date newDate = new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg.getDate());
 
-              // ok, we can go for it
-              final Date newDate = new Date(lastDtg.getTime());
-
-              newDate.setHours(timePart.getHours());
-              newDate.setMinutes(timePart.getMinutes());
-              newDate.setSeconds(timePart.getSeconds());
-
-              dtg = new HiResDate(newDate);
-
-            }
+            // ok, we're ready for the DTG
+            
+            dtg = new HiResDate(newDate.getTime() + timePart.getTime());
 
             // stash the platform
             platform = lastPlatform;
