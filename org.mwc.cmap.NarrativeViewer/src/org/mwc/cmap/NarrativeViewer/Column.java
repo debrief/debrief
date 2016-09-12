@@ -15,8 +15,9 @@
 package org.mwc.cmap.NarrativeViewer;
 
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.widgets.Tree;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.swt.widgets.Table;
 
 import MWC.TacticalData.NarrativeEntry;
 
@@ -25,9 +26,9 @@ public interface Column {
 
 	public int getColumnWidth();
 
-	public ColumnLabelProvider getCellRenderer();
+	public CellLabelProvider getCellRenderer(ColumnViewer viewer);
 
-	public CellEditor getCellEditor(Tree table);
+	public CellEditor getCellEditor(Table table);
 
 	public boolean isVisible();
 

@@ -18,10 +18,9 @@ import java.util.LinkedHashSet;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Tree;
 
 import MWC.TacticalData.NarrativeEntry;
 
@@ -34,7 +33,7 @@ abstract class AbstractColumn implements Column
   private final String myColumnName;
   private final IPreferenceStore myStore;
 
-  private ColumnLabelProvider myRenderer;
+  private CellLabelProvider myRenderer;
 
   private boolean myIsVisible = true;
   private ColumnFilter myFilter;
@@ -42,7 +41,7 @@ abstract class AbstractColumn implements Column
   private final LinkedHashSet<VisibilityListener> myVisibilityListeners =
       new LinkedHashSet<VisibilityListener>();
 
-  protected abstract ColumnLabelProvider createRenderer();
+  protected abstract CellLabelProvider createRenderer(ColumnViewer viewer); 
 
  
 
@@ -90,16 +89,16 @@ abstract class AbstractColumn implements Column
     return myColumnName;
   }
 
-  public ColumnLabelProvider getCellRenderer()
+  public CellLabelProvider getCellRenderer(ColumnViewer viewer)
   {
     if (myRenderer == null)
     {
-      myRenderer = createRenderer();
+      myRenderer = createRenderer(viewer);
     }
     return myRenderer;
   }
 
-  public CellEditor getCellEditor(Tree table)
+  public CellEditor getCellEditor(Table table)
   {
     // by default -- read only
     return null;

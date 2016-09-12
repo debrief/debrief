@@ -1,33 +1,33 @@
 package org.mwc.cmap.NarrativeViewer;
 
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TableColumn;
 
 public class TableViewerColumnFactory
 {
-  private final TreeViewer _viewer;
+  private final TableViewer _viewer;
 
-  public TableViewerColumnFactory(TreeViewer viewer)
+  public TableViewerColumnFactory(TableViewer viewer)
   {
     super();
     this._viewer = viewer;
   }
 
-  public TreeViewerColumn createColumn(String header, int width,
-      ColumnLabelProvider provider)
+  public TableViewerColumn createColumn(String header, int width,
+      CellLabelProvider provider)
   {
     return createColumn(header, width, provider, SWT.LEFT);
   }
 
-  public TreeViewerColumn createColumn(String header, int width,
-      ColumnLabelProvider provider, int alignment)
+  public TableViewerColumn createColumn(String header, int width,
+      CellLabelProvider provider, int alignment)
   {
-    final TreeViewerColumn viewerColumn =
-        new TreeViewerColumn(_viewer, SWT.NONE);
-    final TreeColumn column = viewerColumn.getColumn();
+    final TableViewerColumn viewerColumn =
+        new TableViewerColumn(_viewer, SWT.NONE);
+    final TableColumn column = viewerColumn.getColumn();
     column.setText(header == null ? "" : header);
 
     if (width > 0)

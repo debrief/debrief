@@ -18,14 +18,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.dialogs.FilteredTree;
-import org.eclipse.ui.dialogs.PatternFilter;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -40,41 +38,42 @@ public class NarrativeViewer
   final NarrativeViewerModel myModel;
   private NarrativeViewerActions myActions;
 
-  final TreeViewer viewer;
+  final TableViewer viewer;
   private Composite composite;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
-    FilteredTreeColumnLayout layout = new FilteredTreeColumnLayout(); 
+    TableColumnLayout layout = new TableColumnLayout(); 
      composite = new Composite(parent, SWT.NONE);
     composite.setLayout(layout);
-    FilteredTree tree = new FilteredTree(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
-      
-      @Override
-      protected boolean isLeafMatch(Viewer viewer, Object element)
-      {
-        
-        AbstractColumn[] allColumns = myModel.getAllColumns();
-        for (AbstractColumn abstractColumn : allColumns)
-        {
-          if(abstractColumn.isVisible())
-          {
-            String text = abstractColumn.getCellRenderer().getText(element);
-           if(text!=null && wordMatches(text))
-           {
-             return true;
-           }
-          }
-        }
-        
-        return false;
-      }
-      
-    }, true) ;
-    viewer = tree.getViewer();
-    viewer.getTree().setHeaderVisible(true);
-    viewer.getTree().setLinesVisible(true);
+//    FilteredTree tree = new FilteredTree(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
+//      
+//      @Override
+//      protected boolean isLeafMatch(Viewer viewer, Object element)
+//      {
+//        
+//        AbstractColumn[] allColumns = myModel.getAllColumns();
+//        for (AbstractColumn abstractColumn : allColumns)
+//        {
+//          if(abstractColumn.isVisible())
+//          {
+//            String text = abstractColumn.getProperty((NarrativeEntry) element).toString();
+//           if(text!=null && wordMatches(text))
+//           {
+//             return true;
+//           }
+//          }
+//        }
+//        
+//        return false;
+//      }
+//      
+//    }, true) ;
+    viewer = new TableViewer(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI);
+    viewer.getTable().setHeaderVisible(true);
+    viewer.getTable().setLinesVisible(true);
+
     myModel = new NarrativeViewerModel(preferenceStore);
 
    
@@ -99,7 +98,7 @@ public class NarrativeViewer
 
  
 
-  public TreeViewer getViewer()
+  public TableViewer getViewer()
   {
     return viewer;
   }
@@ -131,7 +130,7 @@ public class NarrativeViewer
     }
 
     final FilterDialog dialog =
-        new FilterDialog(viewer.getTree().getShell(), myModel.getInput(),
+        new FilterDialog(viewer.getTable().getShell(), myModel.getInput(),
             column);
 
     if (Dialog.OK == dialog.open())
@@ -168,6 +167,7 @@ public class NarrativeViewer
     if (myModel.setWrappingEntries(shouldWrap))
     {
       refresh();
+     
     }
   }
 

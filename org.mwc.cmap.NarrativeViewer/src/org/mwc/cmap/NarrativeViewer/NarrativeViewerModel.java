@@ -18,21 +18,29 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Table;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 
@@ -66,12 +74,11 @@ public class NarrativeViewerModel
 
   private IRollingNarrativeProvider myInput;
 
-  
   public AbstractColumn[] getAllColumns()
   {
     return myAllColumns;
   }
-  
+
   public NarrativeViewerModel(final IPreferenceStore store)
   {
 
@@ -220,7 +227,7 @@ public class NarrativeViewerModel
     }
 
     @Override
-    protected ColumnLabelProvider createRenderer()
+    protected CellLabelProvider createRenderer(ColumnViewer viewer)
     {
       return new ColumnLabelProvider()
       {
@@ -273,27 +280,25 @@ public class NarrativeViewerModel
       };
     }
   }
-
+ 
   private static class ColumnVisible extends AbstractColumn
   {
-
-    
 
     public ColumnVisible(final IPreferenceStore store)
     {
       super(0, "Visible", store);
-    
+
     }
 
     public Object getProperty(final NarrativeEntry entry)
     {
       return entry.getVisible();
     }
-    
+
     @Override
     public void setProperty(NarrativeEntry entry, Object obj)
     {
-      entry.setVisible((Boolean)obj);
+      entry.setVisible((Boolean) obj);
     }
 
     @Override
@@ -301,12 +306,12 @@ public class NarrativeViewerModel
     {
       return 20;
     }
-    
+
     @Override
-    public CellEditor getCellEditor(Tree table)
+    public CellEditor getCellEditor(Table table)
     {
       CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(table);
-     
+
       return checkboxCellEditor;
     }
 
@@ -320,19 +325,16 @@ public class NarrativeViewerModel
     // }
 
     @Override
-    protected ColumnLabelProvider createRenderer()
+    protected ColumnLabelProvider createRenderer(ColumnViewer viewer)
     {
       return new ColumnLabelProvider()
       {
 
-       
-        
         @Override
         public String getText(Object element)
         {
           return getProperty((NarrativeEntry) element).toString();
         }
-        
 
       };
     }
@@ -381,7 +383,7 @@ public class NarrativeViewerModel
     {
       return 40;
     }
-    
+
     @Override
     protected void columnSelection(NarrativeViewer viewer)
     {
@@ -406,7 +408,7 @@ public class NarrativeViewerModel
     {
       return 40;
     }
-    
+
     @Override
     protected void columnSelection(NarrativeViewer viewer)
     {
@@ -437,6 +439,7 @@ public class NarrativeViewerModel
         myIsWrapping = shouldWrap;
 
       }
+      
       return changed;
     }
 
@@ -447,7 +450,163 @@ public class NarrativeViewerModel
 
     public Object getProperty(final NarrativeEntry entry)
     {
-      return entry.getEntry();
+      return entry.getEntry()==null?"":entry.getEntry();
+    }
+
+    @Override
+    protected CellLabelProvider createRenderer(final ColumnViewer viewer)
+    {
+      return new OwnerDrawLabelProvider()
+      {
+
+        private int defultSize = 0;
+        private static final int TEXT_MARGIN = 3;
+        private GC m_LastGCFromExtend;
+        private Map<String, Point> m_StringExtentCache =
+            new HashMap<String, Point>();
+
+        public synchronized Point getCachedStringExtent(GC gc, String text)
+        {
+          if (m_LastGCFromExtend != gc)
+          {
+            m_StringExtentCache.clear();
+            m_LastGCFromExtend = gc;
+          }
+          Point p = (Point) m_StringExtentCache.get(text);
+          if (p == null)
+          {
+            if (text == null)
+              return new Point(0, 0);
+            p = gc.textExtent(text);
+            m_StringExtentCache.put(text, p);
+          }
+          return new Point(p.x, p.y);
+        }
+
+        public String wrapText(GC gc, String text, int width)
+        {
+          Point textSize = getCachedStringExtent(gc, text);
+          if (textSize.x > width)
+          {
+            StringBuffer wrappedText = new StringBuffer();
+            String[] lines = text.split("\n");
+            int cutoffLength =
+                width / gc.getFontMetrics().getAverageCharWidth();
+            if (cutoffLength < 3)
+              return text;
+            for (int i = 0; i < lines.length; i++)
+            {
+              int breakOffset = 0;
+              while (breakOffset < lines[i].length())
+              {
+                String lPart =
+                    lines[i].substring(breakOffset, Math.min(breakOffset
+                        + cutoffLength, lines[i].length()));
+                Point lineSize = getCachedStringExtent(gc, lPart);
+                while ((lPart.length() > 0) && (lineSize.x >= width))
+                {
+                  lPart = lPart.substring(0, Math.max(lPart.length() - 1, 0));
+                  lineSize = getCachedStringExtent(gc, lPart);
+                }
+                wrappedText.append(lPart);
+                breakOffset += lPart.length();
+                wrappedText.append('\n');
+              }
+            }
+            return wrappedText.substring(0, Math.max(wrappedText.length() - 1,
+                0));
+          }
+          else
+            return text;
+
+        }
+
+        @Override
+        protected void measure(final Event event, final Object element)
+        {
+          defultSize = Math.min(defultSize, event.y);
+          String property = getProperty((NarrativeEntry) element).toString();
+          event.width =
+              ((TableViewer) viewer).getTable().getColumn(event.index).getWidth();
+          if (event.width == 0 || !isWrapping())
+            return;
+          
+          if(isWrapping())
+          {
+          String text = isWrapping()? wrapText(event.gc, property, event.width):property;
+          final Point size =
+              event.gc.textExtent(text);
+          event.height = Math.max(event.height, size.y );
+          }
+          else
+          {
+            event.y = defultSize;
+          }
+
+          
+        }
+
+        
+        private Map<java.awt.Color, Color> swtColorMap =
+            new HashMap<java.awt.Color, Color>();
+
+        @Override
+        public void dispose()
+        {
+          for (Color color : swtColorMap.values())
+          {
+            color.dispose();
+          }
+          super.dispose();
+        }
+
+      
+        public Color getForeground(Object element)
+        {
+          if (element instanceof NarrativeEntry)
+          {
+            NarrativeEntry entry = (NarrativeEntry) element;
+            java.awt.Color color = entry.getColor();
+            Color swtColor = swtColorMap.get(color);
+            if (swtColor == null || !swtColor.isDisposed())
+            {
+              swtColor =
+                  new Color(Display.getCurrent(), color.getRed(), color
+                      .getGreen(), color.getBlue());
+              swtColorMap.put(color, swtColor);
+            }
+
+            return swtColor;
+          }
+          return null;
+        }
+        
+        @Override
+        protected void paint(final Event event, final Object element)
+        {
+          if((event.detail & SWT.SELECTED) == 0)
+          {
+            Color foreground = getForeground(element);
+            if(foreground!=null)
+            {
+              event.gc.setForeground(foreground);
+            }
+          }
+          
+          String property = getProperty((NarrativeEntry) element).toString();
+          int width =
+              ((TableViewer) viewer).getTable().getColumn(event.index).getWidth();
+          String text = isWrapping() ?wrapText(event.gc, property, width):property;
+          event.gc.drawText(text, event.x
+              + TEXT_MARGIN, event.y, true);
+        }
+
+        @Override
+        protected void erase(Event event, Object element)
+        {
+
+        }
+      };
     }
 
   }
@@ -465,9 +624,11 @@ public class NarrativeViewerModel
     }
   };
 
-  public void createTable(final NarrativeViewer viewer, FilteredTreeColumnLayout layout)
+  public void createTable(final NarrativeViewer viewer,
+      TableColumnLayout layout)
   {
-    TableViewerColumnFactory factory = new TableViewerColumnFactory(viewer.getViewer());
+    TableViewerColumnFactory factory =
+        new TableViewerColumnFactory(viewer.getViewer());
     viewer.getViewer().setContentProvider(new ITreeContentProvider()
     {
 
@@ -492,14 +653,14 @@ public class NarrativeViewerModel
       @Override
       public Object[] getChildren(Object parentElement)
       {
-       
+
         return new Object[0];
       }
 
       @Override
       public Object getParent(Object element)
       {
-        
+
         return null;
       }
 
@@ -510,15 +671,13 @@ public class NarrativeViewerModel
       }
     });
 
-    
-    
     {
       for (final AbstractColumn column : myAllColumns)
       {
-        final TreeViewerColumn viewerColumn =
+        final TableViewerColumn viewerColumn =
             factory.createColumn(column.getColumnName(), column
-                .getColumnWidth(), column.createRenderer());
-        
+                .getColumnWidth(), column.getCellRenderer(viewer.getViewer()));
+
         viewerColumn.getColumn().addSelectionListener(new SelectionAdapter()
         {
           @Override
@@ -527,38 +686,38 @@ public class NarrativeViewerModel
             column.columnSelection(viewer);
           }
         });
-         final CellEditor cellEditor = column.getCellEditor(viewer.getViewer().getTree());
-        if(cellEditor!=null)
-        viewerColumn.setEditingSupport(new EditingSupport(viewer.getViewer())
-        {
-          
-          @Override
-          protected void setValue(Object element, Object value)
+        final CellEditor cellEditor =
+            column.getCellEditor(viewer.getViewer().getTable());
+        if (cellEditor != null)
+          viewerColumn.setEditingSupport(new EditingSupport(viewer.getViewer())
           {
-            column.setProperty((NarrativeEntry)element,value);
-           
-            
-          }
-          
-          @Override
-          protected Object getValue(Object element)
-          {
-            return column.getProperty((NarrativeEntry)element);
-          }
-          
-          @Override
-          protected CellEditor getCellEditor(Object element)
-          {
-           
-            return cellEditor;
-          }
-          
-          @Override
-          protected boolean canEdit(Object element)
-          {
-            return cellEditor!=null;
-          }
-        });
+
+            @Override
+            protected void setValue(Object element, Object value)
+            {
+              column.setProperty((NarrativeEntry) element, value);
+
+            }
+
+            @Override
+            protected Object getValue(Object element)
+            {
+              return column.getProperty((NarrativeEntry) element);
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element)
+            {
+
+              return cellEditor;
+            }
+
+            @Override
+            protected boolean canEdit(Object element)
+            {
+              return cellEditor != null;
+            }
+          });
         column.addVisibilityListener(new VisibilityListener()
         {
 
@@ -566,31 +725,29 @@ public class NarrativeViewerModel
           public void columnVisibilityChanged(Column column,
               boolean actualIsVisible)
           {
-             if(column.isVisible())
-             {
-               viewerColumn.getColumn().setWidth(column.getColumnWidth());
-               viewerColumn.getColumn().setResizable(true);
-             }
-             else
-             {
-               viewerColumn.getColumn().setWidth(0);
-               viewerColumn.getColumn().setResizable(false);
-             }
+            if (column.isVisible())
+            {
+              viewerColumn.getColumn().setWidth(column.getColumnWidth());
+              viewerColumn.getColumn().setResizable(true);
+            }
+            else
+            {
+              viewerColumn.getColumn().setWidth(0);
+              viewerColumn.getColumn().setResizable(false);
+            }
 
           }
         });
         layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
             column.getColumnWidth()));
-        
-        if(!column.isVisible())
+
+        if (!column.isVisible())
         {
           viewerColumn.getColumn().setWidth(0);
           viewerColumn.getColumn().setResizable(false);
         }
-     
+
       }
-      
-     
 
     }
 
