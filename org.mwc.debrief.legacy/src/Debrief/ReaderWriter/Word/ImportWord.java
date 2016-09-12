@@ -497,8 +497,13 @@ public class ImportWord
       final NarrativeEntry first = (NarrativeEntry) arr[0];
       final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
 
-      assertEquals("correct first", "160916 080900", first.getDTGString());
-      assertEquals("correct first", "160916 093700", last.getDTGString());
+      
+      final DateFormat sdf = new SimpleDateFormat("yymmDD HHmmss");
+      sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+      
+      assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
+      assertEquals("correct first", "160916 093700", sdf.format(last.getDTG().getDate()));
 
       // check array item
       final NarrativeEntry multiLine = (NarrativeEntry) arr[9];
