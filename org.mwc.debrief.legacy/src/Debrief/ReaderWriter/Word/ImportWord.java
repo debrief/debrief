@@ -106,28 +106,8 @@ public class ImportWord
       final int cIndex = msg.indexOf("C-");
       final int sIndex = msg.indexOf("S-");
       final int classStrStart = msg.indexOf("Classified");
-      final int classStrEnd1 = -1;
       final int classStrEnd2 =
           msg.indexOf(".", classStrStart + "Classified".length() + 2);
-
-      final int classStrEnd;
-      if (classStrEnd1 != -1 && classStrEnd2 != -1)
-      {
-        classStrEnd = Math.min(classStrEnd1, classStrEnd2);
-      }
-      else if (classStrEnd2 != -1)
-      {
-        classStrEnd = classStrEnd2;
-      }
-      else if (classStrEnd1 != -1)
-      {
-        classStrEnd = classStrEnd1;
-      }
-      else
-      {
-        classStrEnd = -1;
-        // ok, we can't process it. maybe we need to use the
-      }
 
       // did we have Distance off track?
       final int speedEnd = msg.indexOf(" ", sIndex + 1);
@@ -177,10 +157,10 @@ public class ImportWord
       }
 
       final String classStr;
-      if (classStrStart != -1 && classStrEnd != -1)
+      if (classStrStart != -1 && classStrEnd2 != -1)
       {
         classStr =
-            msg.substring(classStrStart + "Classified".length(), classStrEnd)
+            msg.substring(classStrStart + "Classified".length(), classStrEnd2)
                 .trim();
       }
       else
@@ -292,6 +272,14 @@ public class ImportWord
       final String[] parts = trimmed.split(",");
       int ctr = 0;
 
+      // sort out our date formats
+      final DateFormat fourBlock = new SimpleDateFormat("HHmm");
+      fourBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+      final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
+      sixBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+      
       final boolean correctLength = parts.length > 5;
       final boolean sixFigDTG =
           correctLength && parts[0].length() == 6
@@ -300,6 +288,8 @@ public class ImportWord
           correctLength && parts[0].length() == 4
               && parts[0].matches(DATE_MATCH_FOUR);
       final boolean hasDTG = sixFigDTG || fourFigDTG;
+      
+      
 
       if (hasDTG)
       {
@@ -357,10 +347,7 @@ public class ImportWord
             new Date(year - 1900, Integer.parseInt(monStr) - 1, Integer
                 .parseInt(dayStr));
 
-        final DateFormat dtgBlock = new SimpleDateFormat("HHmm");
-        dtgBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-        final Date timePart = dtgBlock.parse(dtgStr);
+        final Date timePart = fourBlock.parse(dtgStr);
 
         dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
 
@@ -415,9 +402,7 @@ public class ImportWord
             if (dateStr.length() == 6)
             {
               // first try to parse it
-              final DateFormat dtgBlock = new SimpleDateFormat("ddHHmm");
-              dtgBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
-              timePart = dtgBlock.parse(trimmed);
+              timePart = sixBlock.parse(trimmed);
 
               // check the date matches
               final int date = timePart.getDate();
@@ -438,9 +423,7 @@ public class ImportWord
             else if (dateStr.length() == 4)
             {
               // first try to parse it
-              final DateFormat dtgBlock = new SimpleDateFormat("HHmm");
-              dtgBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
-              timePart = dtgBlock.parse(trimmed);
+              timePart = fourBlock.parse(trimmed);
 
               // ok, we can go for it
               final Date newDate = new Date(lastDtg.getTime());
@@ -542,6 +525,15 @@ public class ImportWord
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(0);
       System.out.println("processed:" + narrLayer.size());
+
+      // hey, let's have a look tthem
+      Enumeration<Editable> iter = narrLayer.elements();
+      while (iter.hasMoreElements())
+      {
+        Editable editable = (Editable) iter.nextElement();
+        NarrativeEntry ne = (NarrativeEntry) editable;
+        System.out.println("DTG:" + ne.getDTG().getDate());
+      }
 
     }
 
