@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -351,27 +352,33 @@ public class ImportWord
         {
         }
 
-        if (probIsDate)
+        boolean probHasContent = entry.length() > 8; 
+        
+        if (probIsDate && probHasContent)
         {
           // yes, go for it.
 
           // ooh, do we have some stored data?
           if (lastDtg != null && lastPlatform != null)
           {
-            Date timePart = null;
+            final String parseStr;
             if (dateStr.length() == 6)
             {
               // reduce to four charts
-              dateStr = dateStr.substring(2, 6);
+              parseStr = dateStr.substring(2, 6);
             }
+            else
+            {
+              parseStr = dateStr;
+            }
+            
             // first try to parse it
-            timePart = fourBlock.parse(dateStr);
+            final Date timePart = fourBlock.parse(parseStr);
             
             // ok, we can go for it
             final Date newDate = new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg.getDate());
 
-            // ok, we're ready for the DTG
-            
+            // ok, we're ready for the DTG            
             dtg = new HiResDate(newDate.getTime() + timePart.getTime());
 
             // stash the platform
@@ -381,6 +388,11 @@ public class ImportWord
             text = trimmed.substring(dateStr.length()).trim();
 
             // see if we can recognise the first word as a track number
+            if(text.length() == 0)
+            {
+              System.out.println("here");
+            }
+            
             final String startOfLine =
                 text.substring(0, Math.min(20, text.length() - 1));
             final String trackNum = FCSEntry.parseTrack(startOfLine);
@@ -417,7 +429,7 @@ public class ImportWord
           {
             // it's ok, we can silently fail
           }
-
+          
           if (hasDate)
           {
             // ok. skip it. it's just a date
@@ -442,7 +454,7 @@ public class ImportWord
   {
 
     private final static String doc_path =
-        "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/narrative.doc";
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
 
     public void testImportEmptyLayers() throws FileNotFoundException
     {
@@ -465,15 +477,35 @@ public class ImportWord
       System.out.println("processed:" + narrLayer.size());
 
       // hey, let's have a look tthem
-      Enumeration<Editable> iter = narrLayer.elements();
-      while (iter.hasMoreElements())
-      {
-        Editable editable = (Editable) iter.nextElement();
-        NarrativeEntry ne = (NarrativeEntry) editable;
-        System.out.println("DTG:" + ne.getDTG().getDate());
-      }
+      AbstractCollection<Editable> items = narrLayer.getData();
+      Object[] arr = items.toArray();
+      NarrativeEntry first = (NarrativeEntry) arr[0];
+      NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
 
+      assertEquals("correct first", "160916 080900", first.getDTGString());
+      assertEquals("correct first", "160916 093700", last.getDTGString());
+      
+      // check array item
+      NarrativeEntry multiLine = (NarrativeEntry) arr[9];
+      String contents = multiLine.getEntry();
+      assertEquals("multi-line entry", 3, countLines(contents));
+      
+      // correct final count
+      assertEquals("Got num lines", 13, narrLayer.size());
     }
+    
+    public static int countLines(String str) {
+      if(str == null || str.isEmpty())
+      {
+          return 0;
+      }
+      int lines = 1;
+      int pos = 0;
+      while ((pos = str.indexOf("\n", pos) + 1) != 0) {
+          lines++;
+      }
+      return lines;
+  }
 
     public void testNameHandler()
     {
@@ -535,7 +567,7 @@ public class ImportWord
       assertEquals("year", 116, thisN2.dtg.getDate().getYear());
       assertEquals("month", 8, thisN2.dtg.getDate().getMonth());
       assertEquals("day", 16, thisN2.dtg.getDate().getDate());
-      assertEquals("hour", 11, thisN2.dtg.getDate().getHours());
+      assertEquals("hour", 10, thisN2.dtg.getDate().getHours());
       assertEquals("min", 6, thisN2.dtg.getDate().getMinutes());
       assertEquals("sec", 0, thisN2.dtg.getDate().getSeconds());
       assertEquals("platform", "HMS NONSUCH", thisN2.platform);
