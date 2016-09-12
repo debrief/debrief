@@ -52,6 +52,47 @@ public class ImportWord
 
   private static class FCSEntry
   {
+    private static String getClassified(final String input)
+    {
+      String res = null;
+
+      final String regexp = "Classified (.*$)";
+      final Pattern pattern = Pattern.compile(regexp);
+
+      final Matcher matcher = pattern.matcher(input);
+      if (matcher.find())
+      {
+        res = matcher.group(1);
+      }
+
+      return res;
+    }
+
+    private static Double
+        getElement(final String identifier, final String input)
+    {
+      Double res = null;
+
+      final String regexp = identifier + "-*(\\d+\\.?\\d*)";
+      final Pattern pattern = Pattern.compile(regexp);
+
+      final Matcher matcher = pattern.matcher(input);
+      if (matcher.find())
+      {
+        final String found = matcher.group(1);
+        try
+        {
+          res = Double.parseDouble(found);
+        }
+        catch (final NumberFormatException fe)
+        {
+          // ok, we failed :-(
+        }
+      }
+
+      return res;
+    }
+
     /**
      * extract the track number from the provided string
      * 
@@ -88,49 +129,6 @@ public class ImportWord
       return res;
     }
 
-    private static Double
-        getElement(final String identifier, final String input)
-    {
-      Double res = null;
-
-      final String regexp = identifier + "-*(\\d+\\.?\\d*)";
-      final Pattern pattern = Pattern.compile(regexp);
-
-      final Matcher matcher = pattern.matcher(input);
-      if (matcher.find())
-      {
-        String found = matcher.group(1);
-        try
-        {
-          res = Double.parseDouble(found);
-        }
-        catch (NumberFormatException fe)
-        {
-          // ok, we failed :-(
-        }
-      }
-
-      return res;
-    }
-
-
-    private static String
-        getClassified(final String input)
-    {
-      String res = null;
-
-      final String regexp = "Classified (.*$)";
-      final Pattern pattern = Pattern.compile(regexp);
-
-      final Matcher matcher = pattern.matcher(input);
-      if (matcher.find())
-      {
-        res = matcher.group(1);
-      }
-
-      return res;
-    }
-
     final double brgDegs;
     final double rangYds;
     final String tgtType;
@@ -145,19 +143,19 @@ public class ImportWord
       final Double rVal = getElement("R-", msg);
       final Double cVal = getElement("C-", msg);
       final Double sVal = getElement("S-", msg);
-      
+
       // extract the classification
       final String classStr = getClassified(msg);
 
       // try to extract the track id
       final String trackId = parseTrack(msg);
-      
+
       this.crseDegs = cVal != null ? cVal : 0d;
       this.brgDegs = bVal != null ? bVal : 0d;
       this.rangYds = rVal != null ? rVal * 1000d : 0d;
       this.spdKts = sVal != null ? sVal : 0d;
       this.tgtType = classStr != null ? classStr : "N/A";
-      this.contact = trackId != null ? trackId : "N/A";      
+      this.contact = trackId != null ? trackId : "N/A";
     }
 
   }
@@ -240,8 +238,8 @@ public class ImportWord
       final DateFormat fourBlock = new SimpleDateFormat("HHmm");
       fourBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-//      final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
-//      sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
+      // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
+      // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
       final boolean correctLength = parts.length > 5;
       final boolean sixFigDTG =
@@ -309,7 +307,7 @@ public class ImportWord
                 .parseInt(dayStr));
 
         final Date timePart = fourBlock.parse(dtgStr);
-        
+
         dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
 
         // ok, and the message part
@@ -333,7 +331,7 @@ public class ImportWord
         }
 
         // see if the first few characters are date
-        String dateStr =
+        final String dateStr =
             trimmed.substring(0, Math.min(trimmed.length(), blockToUse));
 
         // is this all numeric
@@ -352,8 +350,8 @@ public class ImportWord
         {
         }
 
-        boolean probHasContent = entry.length() > 8; 
-        
+        final boolean probHasContent = entry.length() > 8;
+
         if (probIsDate && probHasContent)
         {
           // yes, go for it.
@@ -371,14 +369,16 @@ public class ImportWord
             {
               parseStr = dateStr;
             }
-            
+
             // first try to parse it
             final Date timePart = fourBlock.parse(parseStr);
-            
-            // ok, we can go for it
-            final Date newDate = new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg.getDate());
 
-            // ok, we're ready for the DTG            
+            // ok, we can go for it
+            final Date newDate =
+                new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg
+                    .getDate());
+
+            // ok, we're ready for the DTG
             dtg = new HiResDate(newDate.getTime() + timePart.getTime());
 
             // stash the platform
@@ -388,11 +388,11 @@ public class ImportWord
             text = trimmed.substring(dateStr.length()).trim();
 
             // see if we can recognise the first word as a track number
-            if(text.length() == 0)
+            if (text.length() == 0)
             {
               System.out.println("here");
             }
-            
+
             final String startOfLine =
                 text.substring(0, Math.min(20, text.length() - 1));
             final String trackNum = FCSEntry.parseTrack(startOfLine);
@@ -429,7 +429,7 @@ public class ImportWord
           {
             // it's ok, we can silently fail
           }
-          
+
           if (hasDate)
           {
             // ok. skip it. it's just a date
@@ -456,6 +456,21 @@ public class ImportWord
     private final static String doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
 
+    public static int countLines(final String str)
+    {
+      if (str == null || str.isEmpty())
+      {
+        return 0;
+      }
+      int lines = 1;
+      int pos = 0;
+      while ((pos = str.indexOf("\n", pos) + 1) != 0)
+      {
+        lines++;
+      }
+      return lines;
+    }
+
     public void testImportEmptyLayers() throws FileNotFoundException
     {
       final String testFile = doc_path;
@@ -477,35 +492,22 @@ public class ImportWord
       System.out.println("processed:" + narrLayer.size());
 
       // hey, let's have a look tthem
-      AbstractCollection<Editable> items = narrLayer.getData();
-      Object[] arr = items.toArray();
-      NarrativeEntry first = (NarrativeEntry) arr[0];
-      NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
+      final AbstractCollection<Editable> items = narrLayer.getData();
+      final Object[] arr = items.toArray();
+      final NarrativeEntry first = (NarrativeEntry) arr[0];
+      final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
 
       assertEquals("correct first", "160916 080900", first.getDTGString());
       assertEquals("correct first", "160916 093700", last.getDTGString());
-      
+
       // check array item
-      NarrativeEntry multiLine = (NarrativeEntry) arr[9];
-      String contents = multiLine.getEntry();
+      final NarrativeEntry multiLine = (NarrativeEntry) arr[9];
+      final String contents = multiLine.getEntry();
       assertEquals("multi-line entry", 3, countLines(contents));
-      
+
       // correct final count
       assertEquals("Got num lines", 13, narrLayer.size());
     }
-    
-    public static int countLines(String str) {
-      if(str == null || str.isEmpty())
-      {
-          return 0;
-      }
-      int lines = 1;
-      int pos = 0;
-      while ((pos = str.indexOf("\n", pos) + 1) != 0) {
-          lines++;
-      }
-      return lines;
-  }
 
     public void testNameHandler()
     {
@@ -603,8 +605,9 @@ public class ImportWord
 
       assertEquals("second bearing", 311d, FCSEntry.getElement("B-", str2));
       assertEquals("second range", 12.4, FCSEntry.getElement("R-", str2));
-      
-      assertEquals("correct classified", "AAAAAA BBBBBB AAAAAA.", FCSEntry.getClassified(str1));
+
+      assertEquals("correct classified", "AAAAAA BBBBBB AAAAAA.", FCSEntry
+          .getClassified(str1));
 
       NarrEntry ne = new NarrEntry(str1);
       final FCSEntry fe1 = new FCSEntry(ne, ne.text);
