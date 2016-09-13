@@ -5,20 +5,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
@@ -50,419 +44,6 @@ import MWC.TacticalData.NarrativeEntry;
 
 public class ImportNarrativeDocument
 {
-
-  private static class FCSEntry
-  {
-    private static String getClassified(final String input)
-    {
-      String res = null;
-
-      final String regexp = "Classified (.*$)";
-      final Pattern pattern = Pattern.compile(regexp);
-
-      final Matcher matcher = pattern.matcher(input);
-      if (matcher.find())
-      {
-        res = matcher.group(1);
-      }
-
-      return res;
-    }
-
-    private static Double
-        getElement(final String identifier, final String input)
-    {
-      Double res = null;
-
-      final String regexp = identifier + "-*(\\d+\\.?\\d*)";
-      final Pattern pattern = Pattern.compile(regexp);
-
-      final Matcher matcher = pattern.matcher(input);
-      if (matcher.find())
-      {
-        final String found = matcher.group(1);
-        try
-        {
-          res = Double.parseDouble(found);
-        }
-        catch (final NumberFormatException fe)
-        {
-          // ok, we failed :-(
-        }
-      }
-
-      return res;
-    }
-
-    /**
-     * extract the track number from the provided string
-     * 
-     * @param str
-     * @return
-     */
-    private static String parseTrack(final String str)
-    {
-      final String longTrackId = "[A-Z]{1,4}(\\d{3})";
-      final Pattern longPattern = Pattern.compile(longTrackId);
-
-      final Matcher matcher1 = longPattern.matcher(str);
-      final String res;
-      if (matcher1.find())
-      {
-        res = matcher1.group(1);
-      }
-      else
-      {
-        final String shortTrackId = "(M\\d{2})";
-        final Pattern shortPattern = Pattern.compile(shortTrackId);
-
-        final Matcher matcher = shortPattern.matcher(str);
-        if (matcher.find())
-        {
-          res = matcher.group(1);
-        }
-        else
-        {
-          res = null;
-        }
-      }
-
-      return res;
-    }
-
-    final double brgDegs;
-    final double rangYds;
-    final String tgtType;
-
-    final String contact;
-
-    final double crseDegs;
-
-    final double spdKts;
-
-    public FCSEntry(final NarrEntry thisN, final String msg)
-    {
-      // pull out the matching strings
-      final Double bVal = getElement("B-", msg);
-      final Double rVal = getElement("R-", msg);
-      final Double cVal = getElement("C-", msg);
-      final Double sVal = getElement("S-", msg);
-
-      // extract the classification
-      final String classStr = getClassified(msg);
-
-      // try to extract the track id
-      final String trackId = parseTrack(msg);
-
-      this.crseDegs = cVal != null ? cVal : 0d;
-      this.brgDegs = bVal != null ? bVal : 0d;
-      this.rangYds = rVal != null ? rVal * 1000d : 0d;
-      this.spdKts = sVal != null ? sVal : 0d;
-      this.tgtType = classStr != null ? classStr : "N/A";
-      this.contact = trackId != null ? trackId : "N/A";
-    }
-
-  }
-
-  private static class NarrEntry
-  {
-    HiResDate dtg;
-    String type;
-    String platform;
-    String text;
-
-    boolean appendedToPrevious = false;
-
-    // ///////////////////
-    // static variables to help handle corrupt/incomplete data.
-    // NOTE: any new ones should be included in the "reset() processing
-    // ///////////////////
-
-    private static Date lastDtg;
-    private static String lastPlatform;
-    private static NarrEntry lastEntry;
-    /**
-     * we've encountered circumstances where copy/paste has ended up with the day being earlier than
-     * the current one When we can detect this, we'll use the previous day.
-     */
-    private static String lastDay;
-
-    static public NarrEntry create(final String msg, final int lineNum)
-    {
-      NarrEntry res = null;
-      try
-      {
-        res = new NarrEntry(msg);
-
-        if (res.appendedToPrevious && res.text != null)
-        {
-          // that's ok - we'll let the parent handle it
-        }
-        else
-        {
-          // just check it's valid
-          final boolean valid =
-              (res.dtg != null) && (res.type != null) && (res.platform != null)
-                  && (res.text != null);
-          if (!valid)
-          {
-            res = null;
-          }
-        }
-      }
-      catch (final ParseException e)
-      {
-        logThisError("Failed whilst parsing Word Document, at line:" + lineNum,
-            e);
-      }
-
-      return res;
-    }
-
-    /**
-     * reset the static variables we use to handle missing, or mangled data
-     * 
-     */
-    public static void reset()
-    {
-      lastDtg = null;
-      lastPlatform = null;
-      lastEntry = null;
-      lastDay = null;
-    }
-
-    @SuppressWarnings("deprecation")
-    public NarrEntry(final String entry) throws ParseException
-    {
-      final String trimmed = entry.trim();
-      final String[] parts = trimmed.split(",");
-      int ctr = 0;
-
-      // sort out our date formats
-      final DateFormat fourBlock = new SimpleDateFormat("HHmm");
-      fourBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-      // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
-      // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-      final boolean correctLength = parts.length > 5;
-      final boolean sixFigDTG =
-          correctLength && parts[0].length() == 6
-              && parts[0].matches(DATE_MATCH_SIX);
-      final boolean fourFigDTG =
-          correctLength && parts[0].length() == 4
-              && parts[0].matches(DATE_MATCH_FOUR);
-      final boolean hasDTG = sixFigDTG || fourFigDTG;
-
-      if (hasDTG)
-      {
-        final String dtgStr;
-        if (fourFigDTG)
-        {
-          dtgStr = parts[ctr++];
-        }
-        else
-        {
-          dtgStr = parts[ctr++].substring(2, 6);
-        }
-
-        // ok, sort out the time first
-        String dayStr = parts[ctr++];
-        final String monStr = parts[ctr++];
-        final String yrStr = parts[ctr++];
-        platform = parts[ctr++].trim();
-        type = parts[ctr++].trim();
-
-        /**
-         * special processing, to overcome the previous day being used
-         * 
-         */
-        if (lastDay != null
-            && Integer.parseInt(dayStr) < Integer.parseInt(lastDay))
-        {
-          dayStr = lastDay;
-        }
-        else
-        {
-          // it's valid, update the last day
-          lastDay = dayStr;
-        }
-
-        // hmm, on occasion we don't get the closing comma on the entry type
-        if (type.length() > 20)
-        {
-          final int firstSpace = type.indexOf(" ");
-          // note: should actually be looking for non-alphanumeric, since it may be a tab
-          type = type.substring(0, firstSpace - 1);
-        }
-
-        final int year;
-        if (yrStr.length() == 2)
-        {
-          final int theYear = Integer.parseInt(yrStr);
-
-          // is this from the late 80's onwards?
-          if (theYear > 80)
-          {
-            year = 1900 + theYear;
-          }
-          else
-          {
-            year = 2000 + theYear;
-          }
-        }
-        else
-        {
-          year = Integer.parseInt(yrStr);
-        }
-
-        final Date datePart =
-            new Date(year - 1900, Integer.parseInt(monStr) - 1, Integer
-                .parseInt(dayStr));
-
-        final Date timePart = fourBlock.parse(dtgStr);
-
-        dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
-
-        // ok, and the message part
-        final int ind = entry.indexOf(type);
-
-        text = entry.substring(ind + type.length() + 1).trim();
-
-        // remember what's happening, so we can refer back to previous entries
-        lastDtg = new Date(dtg.getDate().getTime());
-        lastPlatform = platform;
-        lastEntry = this;
-      }
-      else
-      {
-
-        final int firstTab = trimmed.indexOf("\t");
-        int blockToUse = 6;
-        if (firstTab != -1 && firstTab <= 7)
-        {
-          blockToUse = firstTab;
-        }
-
-        // see if the first few characters are date
-        final String dateStr =
-            trimmed.substring(0, Math.min(trimmed.length(), blockToUse));
-
-        // is this all numeric
-        boolean probIsDate = false;
-
-        try
-        {
-          if (dateStr.length() == 6 || dateStr.length() == 4)
-          {
-            @SuppressWarnings("unused")
-            final int testInt = Integer.parseInt(dateStr);
-            probIsDate = true;
-          }
-        }
-        catch (final NumberFormatException e)
-        {
-        }
-
-        final boolean probHasContent = entry.length() > 8;
-
-        if (probIsDate && probHasContent)
-        {
-          // yes, go for it.
-
-          // ooh, do we have some stored data?
-          if (lastDtg != null && lastPlatform != null)
-          {
-            final String parseStr;
-            if (dateStr.length() == 6)
-            {
-              // reduce to four charts
-              parseStr = dateStr.substring(2, 6);
-            }
-            else
-            {
-              parseStr = dateStr;
-            }
-
-            // first try to parse it
-            final Date timePart = fourBlock.parse(parseStr);
-
-            // ok, we can go for it
-            final Date newDate =
-                new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg
-                    .getDate());
-
-            // ok, we're ready for the DTG
-            dtg = new HiResDate(newDate.getTime() + timePart.getTime());
-
-            // stash the platform
-            platform = lastPlatform;
-
-            // and catch the rest of the text
-            text = trimmed.substring(dateStr.length()).trim();
-
-            // see if we can recognise the first word as a track number
-            if (text.length() == 0)
-            {
-              System.out.println("here");
-            }
-
-            final String startOfLine =
-                text.substring(0, Math.min(20, text.length() - 1));
-            final String trackNum = FCSEntry.parseTrack(startOfLine);
-            if (trackNum != null)
-            {
-              type = "FCS";
-            }
-            else
-            {
-              // explain we don't know what type of comment this is
-              type = "N/A";
-            }
-
-            // try to replace soft returns with hard returns
-            text = text.replace("\r", "\n");
-          }
-        }
-        else
-        {
-          // hmm, see if it's just text. If it is, stick it on the end of the previous one
-
-          // ooh, it may be a next day marker. have a check
-          final DateFormat dtgBlock = new SimpleDateFormat("dd MMM yy");
-          dtgBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-          boolean hasDate = false;
-          try
-          {
-            @SuppressWarnings("unused")
-            final Date scrapDate = dtgBlock.parse(trimmed);
-            hasDate = true;
-          }
-          catch (final ParseException e)
-          {
-            // it's ok, we can silently fail
-          }
-
-          if (hasDate)
-          {
-            // ok. skip it. it's just a date
-          }
-          else
-          {
-            // ooh, do we have a previous one?
-            if (lastEntry != null)
-            {
-              text = trimmed;
-
-              // now flag that we've just added ourselves to the previous one
-              appendedToPrevious = true;
-            }
-          }
-        }
-      }
-    }
-  }
 
   public static class TestImportWord extends TestCase
   {
@@ -560,7 +141,7 @@ public class ImportNarrativeDocument
       final InputStream is = new FileInputStream(testI);
 
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-      ArrayList<String> strings = importer.importThisWord(testFile, is);
+      ArrayList<String> strings = importer.importFromWord(testFile, is);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -588,7 +169,7 @@ public class ImportNarrativeDocument
       final Layers tLayers = new Layers();
 
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-      ArrayList<String> strings = importer.importThisWord(testFile, is);
+      ArrayList<String> strings = importer.importFromWord(testFile, is);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -763,9 +344,9 @@ public class ImportNarrativeDocument
    * match a 6 figure DTG
    * 
    */
-  private static final String DATE_MATCH_SIX = "(\\d{6})";
+  static final String DATE_MATCH_SIX = "(\\d{6})";
 
-  private static final String DATE_MATCH_FOUR = "(\\d{4})";
+  static final String DATE_MATCH_FOUR = "(\\d{4})";
 
   public static void logThisError(final String msg, final Exception e)
   {
@@ -779,11 +360,14 @@ public class ImportNarrativeDocument
   private final Layers _layers;
 
   /**
-   * keep track of the last successfully imported narrateive entry if we've just received a plain
+   * keep track of the last successfully imported narrative entry if we've just received a plain
    * text block, we'll add it to the previous one *
    */
   private NarrativeEntry _lastEntry;
 
+  /** keep track of track names that we have matched
+   * 
+   */
   Map<String, String> nameMatches = new HashMap<String, String>();
 
   public ImportNarrativeDocument(final Layers target)
@@ -894,7 +478,7 @@ public class ImportNarrativeDocument
     return nw;
   }
 
-  public ArrayList<String> importThisWord(final String fName, final InputStream is)
+  public ArrayList<String> importFromWord(final String fName, final InputStream is)
   {
     ArrayList<String> strings  = new ArrayList<String>();
     
