@@ -46,6 +46,7 @@ import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.SplittableLayer;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
+import Debrief.Wrappers.Track.TrackWrapper_Test;
 import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.WormInHoleOffset;
@@ -477,7 +478,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // where we dump the new data points
     TrackWrapper newTrack = (TrackWrapper) recipient;
-
+    
     // check that the legs don't overlap
     String failedMsg = checkTheyAreNotOverlapping(subjects);
 
@@ -498,6 +499,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // is it a plain segment?
       if (thisL instanceof TrackWrapper)
       {
+        
+        // is this the first one? If so, we'll copy the symbol setup
+        if(i ==0)
+        {
+          TrackWrapper track = (TrackWrapper) thisL;
+          copyStyling(newTrack, track);
+        }
+        
         // pass down through the positions/segments
         final Enumeration<Editable> pts = thisL.elements();
 
@@ -534,10 +543,26 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // and add it to the new track
         newTrack.append(newT);
+        
+        // is this the first one? If so, we'll copy the symbol setup
+        if(i ==0)
+        {
+          TrackWrapper track = ts.getWrapper();
+          copyStyling(newTrack, track);
+        }
+
       }
       else if (thisL instanceof SegmentList)
       {
         SegmentList sl = (SegmentList) thisL;
+
+
+        // is this the first one? If so, we'll copy the symbol setup
+        if(i ==0)
+        {
+          TrackWrapper track = sl.getWrapper();
+          copyStyling(newTrack, track);
+        }
 
         // it's absolute, since merged tracks are always
         // absolute
@@ -548,6 +573,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // and add it to the new track
         newTrack.append(newT);
+        
       }
     }
 
@@ -555,6 +581,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     theLayers.addThisLayer(newTrack);
 
     return MessageProvider.OK;
+  }
+
+  /**
+   * 
+   * @param newTrack
+   * @param reference
+   * Note: these parameters are tested here
+   * @see TrackWrapper_Test#testTrackMerge1()
+   */
+  private static void copyStyling(TrackWrapper newTrack, TrackWrapper reference)
+  {
+    // Note: see link in javadoc for where these are tested
+    newTrack.setSymbolType(reference.getSymbolType());
+    newTrack.setSymbolWidth(reference.getSymbolWidth());
+    newTrack.setSymbolLength(reference.getSymbolLength());
+    newTrack.setSymbolColor(reference.getSymbolColor());
   }
 
   private static void duplicateFixes(SegmentList sl, TrackSegment target)
