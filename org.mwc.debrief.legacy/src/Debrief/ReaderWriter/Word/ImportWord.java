@@ -36,6 +36,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -46,7 +47,6 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public class ImportWord
 {
@@ -238,7 +238,7 @@ public class ImportWord
       // sort out our date formats
       final DateFormat fourBlock = new SimpleDateFormat("HHmm");
       fourBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
-
+      
       // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
       // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -464,8 +464,12 @@ public class ImportWord
   public static class TestImportWord extends TestCase
   {
 
-    private final static String doc_path =
+    private final static String dummy_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
+    private final static String valid_doc_path =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/FCS_narrative.doc";
+    private final static String ownship_track =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
     public static int countLines(final String str)
     {
@@ -482,9 +486,108 @@ public class ImportWord
       return lines;
     }
 
+    private class DummyParent implements ToolParent
+    {
+
+      @Override
+      public void logError(int status, String text, Exception e)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void logStack(int status, String text)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void setCursor(int theCursor)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void restoreCursor()
+      {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void addActionToBuffer(Action theAction)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public String getProperty(String name)
+      {
+        return ImportReplay.IMPORT_AS_OTG;
+      }
+
+      @Override
+      public Map<String, String> getPropertiesLike(String pattern)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public void setProperty(String name, String value)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+      
+    }
+    
+    public void testAddFCSToTrack() throws FileNotFoundException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new DummyParent());
+      trackImporter.importThis(ownship_track, bs, tLayers);
+      
+      assertEquals("read in track", 1, tLayers.size());
+      
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+
+      final ImportWord importer = new ImportWord(tLayers);
+      importer.importThis(testFile, is);
+
+      // hmmm, how many tracks
+      assertEquals("got new tracks", 6, tLayers.size());
+
+      final NarrativeWrapper narrLayer =
+          (NarrativeWrapper) tLayers.elementAt(1);
+      // correct final count
+      assertEquals("Got num lines", 368, narrLayer.size());
+      
+      // hey, let's have a look tthem
+      final TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
+      assertEquals("got fixes", 4, tw.numFixes());
+
+    }
+    
     public void testImportEmptyLayers() throws FileNotFoundException
     {
-      final String testFile = doc_path;
+      final String testFile = dummy_doc_path;
       final File testI = new File(testFile);
       assertTrue(testI.exists());
 
@@ -505,11 +608,11 @@ public class ImportWord
       // hey, let's have a look tthem
       final AbstractCollection<Editable> items = narrLayer.getData();
       final Object[] arr = items.toArray();
-      final NarrativeEntry first = (NarrativeEntry) arr[0];
-      final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
-      
-      final DateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
-      sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//      final NarrativeEntry first = (NarrativeEntry) arr[0];
+//      final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
+//      
+//      final DateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
+//      sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
       
 //      assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
 //      assertEquals("correct first", "160916 093700", sdf.format(last.getDTG().getDate()));
@@ -606,7 +709,7 @@ public class ImportWord
     public void testParseFCS() throws ParseException
     {
       final String str1 =
-          "160504,16,08,2016,NONSUCH,AAA,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
       final String str2 =
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
