@@ -29,16 +29,15 @@ import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-public class DynamicInfillSegment extends TrackSegment implements ColoredWatchable
+public class DynamicInfillSegment extends TrackSegment implements
+    ColoredWatchable
 {
 
   public static final String RANDOM_INFILL = "RANDOM_INFILL";
 
   public static final String DARKER_INFILL = "DARKER_INFILL";
-  
+
   public static final String GREEN_INFILL = "GREEN_INFILL";
-  
-  
 
   public static final String INFILL_COLOR_STRATEGY = "INFILL_COLOR_STRATEGY";
 
@@ -241,8 +240,9 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
   public DynamicInfillSegment(final TrackSegment before,
       final TrackSegment after)
   {
-    this(before.getName(), after.getName(),getColorStrategy( ((FixWrapper) before.last())
-        .getColor().darker().darker()));
+    this(before.getName(), after.getName(),
+        getColorStrategy(((FixWrapper) before.last()).getColor().darker()
+            .darker()));
 
     // ok, and start listening
     configure(before, after);
@@ -325,7 +325,10 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
    */
   public String getAfterName()
   {
-    return _afterName;
+    // use the actual segment name, if we know it
+    final String res = _after != null ? _after.getName() : _afterName;
+
+    return res;
   }
 
   /**
@@ -335,7 +338,10 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
    */
   public String getBeforeName()
   {
-    return _beforeName;
+    // use the actual segment name, if we know it
+    final String res = _before != null ? _before.getName() : _beforeName;
+
+    return res;
   }
 
   @Override
@@ -692,9 +698,10 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
     }
   }
 
-	@Override
-	public Color getColor() {
-		return _myColor;
-	}
+  @Override
+  public Color getColor()
+  {
+    return _myColor;
+  }
 
 }
