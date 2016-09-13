@@ -548,15 +548,18 @@ public class ImportNarrativeDocument
 
     // ok, now we can loop through the strings
     int ctr = 0;
-    for(final String text: strings)
+    for(String raw_text: strings)
     {
       ctr++;
     
-      if (text.trim().length() == 0)
+      if (raw_text.trim().length() == 0)
       {
         continue;
       }
 
+      // ok, replace any soft newlines with hard ones
+      final String text = raw_text.replace('\u000B', '\n');
+      
       // ok, get the narrative type
       final NarrEntry thisN = NarrEntry.create(text, ctr);
 
