@@ -133,8 +133,11 @@ public class ImportWord
     final double brgDegs;
     final double rangYds;
     final String tgtType;
+
     final String contact;
+
     final double crseDegs;
+
     final double spdKts;
 
     public FCSEntry(final NarrEntry thisN, final String msg)
@@ -238,7 +241,7 @@ public class ImportWord
       // sort out our date formats
       final DateFormat fourBlock = new SimpleDateFormat("HHmm");
       fourBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
-      
+
       // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
       // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -297,9 +300,9 @@ public class ImportWord
         if (yrStr.length() == 2)
         {
           final int theYear = Integer.parseInt(yrStr);
-          
+
           // is this from the late 80's onwards?
-          if(theYear > 80)
+          if (theYear > 80)
           {
             year = 1900 + theYear;
           }
@@ -464,10 +467,59 @@ public class ImportWord
   public static class TestImportWord extends TestCase
   {
 
+    private class DummyParent implements ToolParent
+    {
+
+      @Override
+      public void addActionToBuffer(final Action theAction)
+      {
+      }
+
+      @Override
+      public Map<String, String> getPropertiesLike(final String pattern)
+      {
+        return null;
+      }
+
+      @Override
+      public String getProperty(final String name)
+      {
+        return ImportReplay.IMPORT_AS_OTG;
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e)
+      {
+      }
+
+      @Override
+      public void logStack(final int status, final String text)
+      {
+      }
+
+      @Override
+      public void restoreCursor()
+      {
+      }
+
+      @Override
+      public void setCursor(final int theCursor)
+      {
+      }
+
+      @Override
+      public void setProperty(final String name, final String value)
+      {
+      }
+
+    }
+
     private final static String dummy_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
     private final static String valid_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/FCS_narrative.doc";
+
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
@@ -486,66 +538,6 @@ public class ImportWord
       return lines;
     }
 
-    private class DummyParent implements ToolParent
-    {
-
-      @Override
-      public void logError(int status, String text, Exception e)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public void logStack(int status, String text)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public void setCursor(int theCursor)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public void restoreCursor()
-      {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public void addActionToBuffer(Action theAction)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public String getProperty(String name)
-      {
-        return ImportReplay.IMPORT_AS_OTG;
-      }
-
-      @Override
-      public Map<String, String> getPropertiesLike(String pattern)
-      {
-        // TODO Auto-generated method stub
-        return null;
-      }
-
-      @Override
-      public void setProperty(String name, String value)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-      
-    }
-    
     public void testAddFCSToTrack() throws FileNotFoundException
     {
       final Layers tLayers = new Layers();
@@ -555,18 +547,17 @@ public class ImportWord
       assertTrue(boatFile.exists());
       final InputStream bs = new FileInputStream(boatFile);
 
-      ImportReplay trackImporter = new ImportReplay();
+      final ImportReplay trackImporter = new ImportReplay();
       ImportReplay.initialise(new DummyParent());
       trackImporter.importThis(ownship_track, bs, tLayers);
-      
+
       assertEquals("read in track", 1, tLayers.size());
-      
+
       final String testFile = valid_doc_path;
       final File testI = new File(testFile);
       assertTrue(testI.exists());
 
       final InputStream is = new FileInputStream(testI);
-
 
       final ImportWord importer = new ImportWord(tLayers);
       importer.importThis(testFile, is);
@@ -578,13 +569,13 @@ public class ImportWord
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
       assertEquals("Got num lines", 368, narrLayer.size());
-      
+
       // hey, let's have a look tthem
       final TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
       assertEquals("got fixes", 4, tw.numFixes());
 
     }
-    
+
     public void testImportEmptyLayers() throws FileNotFoundException
     {
       final String testFile = dummy_doc_path;
@@ -608,14 +599,14 @@ public class ImportWord
       // hey, let's have a look tthem
       final AbstractCollection<Editable> items = narrLayer.getData();
       final Object[] arr = items.toArray();
-//      final NarrativeEntry first = (NarrativeEntry) arr[0];
-//      final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
-//      
-//      final DateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
-//      sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-      
-//      assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
-//      assertEquals("correct first", "160916 093700", sdf.format(last.getDTG().getDate()));
+      // final NarrativeEntry first = (NarrativeEntry) arr[0];
+      // final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
+      //
+      // final DateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
+      // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+      // assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
+      // assertEquals("correct first", "160916 093700", sdf.format(last.getDTG().getDate()));
 
       // check array item
       final NarrativeEntry multiLine = (NarrativeEntry) arr[9];
