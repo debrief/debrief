@@ -38,7 +38,9 @@ import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.MockCanvasType;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
@@ -1555,6 +1557,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final Layers theLayers = new Layers();
 		theLayers.addThisLayer(tw3);
 		theLayers.addThisLayer(_tw);
+		
+		_tw.setSymbolType(SymbolFactory.SCALED_FRIGATE);
+		_tw.setSymbolLength(new WorldDistance(200, WorldDistance.METRES));
+		_tw.setSymbolWidth(new WorldDistance(40, WorldDistance.METRES));
+		_tw.setSymbolColor(DebriefColors.CYAN);
 
 		// check startup status
 		assertEquals("track starts correctly", 6, trackLength());
@@ -1577,6 +1584,14 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("new track has correct name", "Merged", newTarget.getName());
 		assertEquals("original fix still in place", "test track", _fw1
 				.getTrackWrapper().getName());
+		
+		
+		assertEquals(SymbolFactory.SCALED_FRIGATE, newTarget.getSymbolType());
+    assertEquals(new WorldDistance(200, WorldDistance.METRES), newTarget.getSymbolLength());
+    assertEquals(new WorldDistance(40, WorldDistance.METRES), newTarget.getSymbolWidth());
+    assertEquals(DebriefColors.CYAN,newTarget.getSymbolColor());
+		
+		
 	}
 
 	public void testTrackMerge2()
