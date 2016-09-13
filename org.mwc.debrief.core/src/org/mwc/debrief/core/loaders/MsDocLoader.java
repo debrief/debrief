@@ -14,7 +14,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
-import Debrief.ReaderWriter.Word.ImportWord;
+import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import MWC.GUI.Layers;
 
 public class MsDocLoader extends IPlotLoader.BaseLoader
@@ -49,8 +49,8 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
               // ok, get reading
               if (fileName.endsWith(".doc"))
               {
-                ImportWord iw = new ImportWord(theLayers);
-                iw.importThis(fileName, inputStream);
+                ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);
+                iw.importThisWord(fileName, inputStream);
               }
 
               // and inform the plot editor

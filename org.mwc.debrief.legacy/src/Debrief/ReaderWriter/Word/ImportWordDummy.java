@@ -410,7 +410,7 @@ public class ImportWordDummy
 
       final Layers tLayers = new Layers();
 
-      final ImportWord importer = new ImportWord(tLayers);
+      final ImportWordDummy importer = new ImportWordDummy(tLayers);
       importer.importThis(testFile, is);
 
       // hmmm, how many tracks
@@ -434,7 +434,7 @@ public class ImportWordDummy
       track.setName("Nelson");
       tLayers.addThisLayer(track);
 
-      final ImportWord importer = new ImportWord(tLayers)
+      final ImportWordDummy importer = new ImportWordDummy(tLayers)
       {
 
         @Override
@@ -483,7 +483,7 @@ public class ImportWordDummy
       track.add(createF(new HiResDate(df.parse("1995,12,12,06:34:32"))));
       track.add(createF(new HiResDate(df.parse("1995,12,12,06:56:32"))));
 
-      final ImportWord importer = new ImportWord(tLayers)
+      final ImportWordDummy importer = new ImportWordDummy(tLayers)
       {
 
         @Override

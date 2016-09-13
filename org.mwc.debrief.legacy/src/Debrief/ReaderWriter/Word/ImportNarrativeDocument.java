@@ -48,7 +48,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 
-public class ImportWord
+public class ImportNarrativeDocument
 {
 
   private static class FCSEntry
@@ -559,8 +559,9 @@ public class ImportWord
 
       final InputStream is = new FileInputStream(testI);
 
-      final ImportWord importer = new ImportWord(tLayers);
-      importer.importThis(testFile, is);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+      ArrayList<String> strings = importer.importThisWord(testFile, is);
+      importer.processThese(strings);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 6, tLayers.size());
@@ -586,8 +587,9 @@ public class ImportWord
 
       final Layers tLayers = new Layers();
 
-      final ImportWord importer = new ImportWord(tLayers);
-      importer.importThis(testFile, is);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+      ArrayList<String> strings = importer.importThisWord(testFile, is);
+      importer.processThese(strings);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 1, tLayers.size());
@@ -626,7 +628,7 @@ public class ImportWord
       final TrackWrapper track2 = new TrackWrapper();
       track2.setName("Iron Duck");
       layers.addThisLayer(track2);
-      final ImportWord iw = new ImportWord(layers);
+      final ImportNarrativeDocument iw = new ImportNarrativeDocument(layers);
       String match = iw.trackFor("HMS Boat", "HMS Boat");
       assertNull("not found match", match);
       match = iw.trackFor("HMS Nelson", "HMS Nelson");
@@ -784,7 +786,7 @@ public class ImportWord
 
   Map<String, String> nameMatches = new HashMap<String, String>();
 
-  public ImportWord(final Layers target)
+  public ImportNarrativeDocument(final Layers target)
   {
     _layers = target;
 
@@ -892,20 +894,44 @@ public class ImportWord
     return nw;
   }
 
-  public void importThis(final String fName, final InputStream is)
+  public ArrayList<String> importThisWord(final String fName, final InputStream is)
   {
-    HWPFDocument doc = null;
+    ArrayList<String> strings  = new ArrayList<String>();
+    
     try
     {
-      doc = new HWPFDocument(is);
+      HWPFDocument doc = new HWPFDocument(is);
+
+      final Range r = doc.getRange();
+
+      // clear the stored data in the MS Word importer
+      NarrEntry.reset();
+      
+      final int lenParagraph = r.numParagraphs();
+      for (int x = 0; x < lenParagraph; x++)
+      {
+        final Paragraph p = r.getParagraph(x);
+        strings.add(p.text());
+      }
     }
     catch (final IOException e)
     {
       e.printStackTrace();
     }
 
-    if (doc == null)
+    return strings;
+  }
+
+  /** parse a list of strings
+   * 
+   * @param strings
+   */
+  public void processThese(ArrayList<String> strings)
+  {
+    if (strings.isEmpty())
+    {
       return;
+    }
 
     // keep track of if we've added anything
     boolean dataAdded = false;
@@ -936,23 +962,19 @@ public class ImportWord
       }
     }
 
-    final Range r = doc.getRange();
-
-    // clear the stored data in the MS Word importer
-    NarrEntry.reset();
-
-    final int lenParagraph = r.numParagraphs();
-    for (int x = 0; x < lenParagraph; x++)
+    // ok, now we can loop through the strings
+    int ctr = 0;
+    for(final String text: strings)
     {
-      final Paragraph p = r.getParagraph(x);
-      final String text = p.text();
+      ctr++;
+    
       if (text.trim().length() == 0)
       {
         continue;
       }
 
       // ok, get the narrative type
-      final NarrEntry thisN = NarrEntry.create(text, x);
+      final NarrEntry thisN = NarrEntry.create(text, ctr);
 
       if (thisN == null)
       {
