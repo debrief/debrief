@@ -688,4 +688,16 @@ public class ImportNarrativeDocument
 
     return match;
   }
+
+  public ArrayList<String> importFromPdf(String fileName,
+      InputStream inputStream)
+  {
+    throw new RuntimeException("PDF import not implemented");
+  }
+
+  public ArrayList<String> importFromWordX(String fileName,
+      InputStream inputStream)
+  {
+    throw new RuntimeException("Docx import not implemented");
+  }
 }
