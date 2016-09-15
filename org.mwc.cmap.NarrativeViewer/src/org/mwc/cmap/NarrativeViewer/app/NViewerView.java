@@ -477,7 +477,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   public void setFocus()
   {
-    myViewer.getViewer().getTable().setFocus();
+    myViewer.getViewer().getGrid().setFocus();
   }
 
   /**

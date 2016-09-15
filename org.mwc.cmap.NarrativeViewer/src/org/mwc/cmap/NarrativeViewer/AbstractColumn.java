@@ -20,7 +20,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.nebula.widgets.grid.Grid;
 
 import MWC.TacticalData.NarrativeEntry;
 
@@ -67,6 +67,11 @@ abstract class AbstractColumn implements Column
     myFilter = filter;
   }
 
+  public boolean isWrap()
+  {
+    return false;
+  }
+  
   public ColumnFilter getFilter()
   {
     return myFilter;
@@ -98,7 +103,7 @@ abstract class AbstractColumn implements Column
     return myRenderer;
   }
 
-  public CellEditor getCellEditor(Table table)
+  public CellEditor getCellEditor(Grid table)
   {
     // by default -- read only
     return null;

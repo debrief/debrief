@@ -21,9 +21,12 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
+import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
+import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -38,13 +41,13 @@ public class NarrativeViewer
   final NarrativeViewerModel myModel;
   private NarrativeViewerActions myActions;
 
-  final TableViewer viewer;
+  final GridTableViewer viewer;
   private Composite composite;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
-    TableColumnLayout layout = new TableColumnLayout(); 
+    GridColumnLayout layout = new GridColumnLayout(); 
      composite = new Composite(parent, SWT.NONE);
     composite.setLayout(layout);
 //    FilteredTree tree = new FilteredTree(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
@@ -70,9 +73,9 @@ public class NarrativeViewer
 //      }
 //      
 //    }, true) ;
-    viewer = new TableViewer(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI);
-    viewer.getTable().setHeaderVisible(true);
-    viewer.getTable().setLinesVisible(true);
+    viewer = new GridTableViewer(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI);
+    viewer.getGrid().setHeaderVisible(true);
+    viewer.getGrid().setLinesVisible(true);
 
     myModel = new NarrativeViewerModel(preferenceStore);
 
@@ -98,7 +101,7 @@ public class NarrativeViewer
 
  
 
-  public TableViewer getViewer()
+  public GridTableViewer getViewer()
   {
     return viewer;
   }
@@ -130,7 +133,7 @@ public class NarrativeViewer
     }
 
     final FilterDialog dialog =
-        new FilterDialog(viewer.getTable().getShell(), myModel.getInput(),
+        new FilterDialog(viewer.getGrid().getShell(), myModel.getInput(),
             column);
 
     if (Dialog.OK == dialog.open())
@@ -155,6 +158,22 @@ public class NarrativeViewer
   public void refresh()
   {
     viewer.setInput(new Object());
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        if(getViewer().getGrid().isDisposed())
+          return;
+        GridColumn[] columns = getViewer().getGrid().getColumns();
+        for (GridColumn gridColumn : columns)
+        {
+          NarrativeViewerModel.calculateHeight(getViewer().getGrid(),gridColumn);
+        }
+        
+      }
+    });
   }
 
   public boolean isWrappingEntries()
@@ -166,7 +185,15 @@ public class NarrativeViewer
   {
     if (myModel.setWrappingEntries(shouldWrap))
     {
+      GridColumn[] columns = getViewer().getGrid().getColumns();
+      for (GridColumn gridColumn : columns)
+      {
+        gridColumn.setWordWrap(shouldWrap);
+      }
       refresh();
+      
+     
+      
      
     }
   }

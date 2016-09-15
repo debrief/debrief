@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -28,19 +27,21 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
+import org.eclipse.nebula.jface.gridviewer.GridViewerColumn;
+import org.eclipse.nebula.widgets.grid.Grid;
+import org.eclipse.nebula.widgets.grid.GridColumn;
+import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Table;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 
@@ -308,7 +309,7 @@ public class NarrativeViewerModel
     }
 
     @Override
-    public CellEditor getCellEditor(Table table)
+    public CellEditor getCellEditor(Grid table)
     {
       CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(table);
 
@@ -431,6 +432,21 @@ public class NarrativeViewerModel
       return 250;
     }
 
+    @Override
+    public boolean isWrap()
+    {
+      return true;
+    }
+    
+    
+//    @Override
+//    public CellEditor getCellEditor(Grid table)
+//    {
+//      return  new TextCellEditor(table,
+//          SWT.WRAP);
+//    }
+    
+    
     public boolean setWrapping(final boolean shouldWrap)
     {
       final boolean changed = myIsWrapping ^ shouldWrap;
@@ -453,161 +469,161 @@ public class NarrativeViewerModel
       return entry.getEntry()==null?"":entry.getEntry();
     }
 
-    @Override
-    protected CellLabelProvider createRenderer(final ColumnViewer viewer)
-    {
-      return new OwnerDrawLabelProvider()
-      {
-
-        private int defultSize = 0;
-        private static final int TEXT_MARGIN = 3;
-        private GC m_LastGCFromExtend;
-        private Map<String, Point> m_StringExtentCache =
-            new HashMap<String, Point>();
-
-        public synchronized Point getCachedStringExtent(GC gc, String text)
-        {
-          if (m_LastGCFromExtend != gc)
-          {
-            m_StringExtentCache.clear();
-            m_LastGCFromExtend = gc;
-          }
-          Point p = (Point) m_StringExtentCache.get(text);
-          if (p == null)
-          {
-            if (text == null)
-              return new Point(0, 0);
-            p = gc.textExtent(text);
-            m_StringExtentCache.put(text, p);
-          }
-          return new Point(p.x, p.y);
-        }
-
-        public String wrapText(GC gc, String text, int width)
-        {
-          Point textSize = getCachedStringExtent(gc, text);
-          if (textSize.x > width)
-          {
-            StringBuffer wrappedText = new StringBuffer();
-            String[] lines = text.split("\n");
-            int cutoffLength =
-                width / gc.getFontMetrics().getAverageCharWidth();
-            if (cutoffLength < 3)
-              return text;
-            for (int i = 0; i < lines.length; i++)
-            {
-              int breakOffset = 0;
-              while (breakOffset < lines[i].length())
-              {
-                String lPart =
-                    lines[i].substring(breakOffset, Math.min(breakOffset
-                        + cutoffLength, lines[i].length()));
-                Point lineSize = getCachedStringExtent(gc, lPart);
-                while ((lPart.length() > 0) && (lineSize.x >= width))
-                {
-                  lPart = lPart.substring(0, Math.max(lPart.length() - 1, 0));
-                  lineSize = getCachedStringExtent(gc, lPart);
-                }
-                wrappedText.append(lPart);
-                breakOffset += lPart.length();
-                wrappedText.append('\n');
-              }
-            }
-            return wrappedText.substring(0, Math.max(wrappedText.length() - 1,
-                0));
-          }
-          else
-            return text;
-
-        }
-
-        @Override
-        protected void measure(final Event event, final Object element)
-        {
-          defultSize = Math.min(defultSize, event.y);
-          String property = getProperty((NarrativeEntry) element).toString();
-          event.width =
-              ((TableViewer) viewer).getTable().getColumn(event.index).getWidth();
-          if (event.width == 0 || !isWrapping())
-            return;
-          
-          if(isWrapping())
-          {
-          String text = isWrapping()? wrapText(event.gc, property, event.width):property;
-          final Point size =
-              event.gc.textExtent(text);
-          event.height = Math.max(event.height, size.y );
-          }
-          else
-          {
-            event.y = defultSize;
-          }
-
-          
-        }
-
-        
-        private Map<java.awt.Color, Color> swtColorMap =
-            new HashMap<java.awt.Color, Color>();
-
-        @Override
-        public void dispose()
-        {
-          for (Color color : swtColorMap.values())
-          {
-            color.dispose();
-          }
-          super.dispose();
-        }
-
-      
-        public Color getForeground(Object element)
-        {
-          if (element instanceof NarrativeEntry)
-          {
-            NarrativeEntry entry = (NarrativeEntry) element;
-            java.awt.Color color = entry.getColor();
-            Color swtColor = swtColorMap.get(color);
-            if (swtColor == null || !swtColor.isDisposed())
-            {
-              swtColor =
-                  new Color(Display.getCurrent(), color.getRed(), color
-                      .getGreen(), color.getBlue());
-              swtColorMap.put(color, swtColor);
-            }
-
-            return swtColor;
-          }
-          return null;
-        }
-        
-        @Override
-        protected void paint(final Event event, final Object element)
-        {
-          if((event.detail & SWT.SELECTED) == 0)
-          {
-            Color foreground = getForeground(element);
-            if(foreground!=null)
-            {
-              event.gc.setForeground(foreground);
-            }
-          }
-          
-          String property = getProperty((NarrativeEntry) element).toString();
-          int width =
-              ((TableViewer) viewer).getTable().getColumn(event.index).getWidth();
-          String text = isWrapping() ?wrapText(event.gc, property, width):property;
-          event.gc.drawText(text, event.x
-              + TEXT_MARGIN, event.y, true);
-        }
-
-        @Override
-        protected void erase(Event event, Object element)
-        {
-
-        }
-      };
-    }
+//    @Override
+//    protected CellLabelProvider createRenderer(final ColumnViewer viewer)
+//    {
+//      return new OwnerDrawLabelProvider()
+//      {
+//
+//        private int defultSize = 0;
+//        private static final int TEXT_MARGIN = 3;
+//        private GC m_LastGCFromExtend;
+//        private Map<String, Point> m_StringExtentCache =
+//            new HashMap<String, Point>();
+//
+//        public synchronized Point getCachedStringExtent(GC gc, String text)
+//        {
+//          if (m_LastGCFromExtend != gc)
+//          {
+//            m_StringExtentCache.clear();
+//            m_LastGCFromExtend = gc;
+//          }
+//          Point p = (Point) m_StringExtentCache.get(text);
+//          if (p == null)
+//          {
+//            if (text == null)
+//              return new Point(0, 0);
+//            p = gc.textExtent(text);
+//            m_StringExtentCache.put(text, p);
+//          }
+//          return new Point(p.x, p.y);
+//        }
+//
+//        public String wrapText(GC gc, String text, int width)
+//        {
+//          Point textSize = getCachedStringExtent(gc, text);
+//          if (textSize.x > width)
+//          {
+//            StringBuffer wrappedText = new StringBuffer();
+//            String[] lines = text.split("\n");
+//            int cutoffLength =
+//                width / gc.getFontMetrics().getAverageCharWidth();
+//            if (cutoffLength < 3)
+//              return text;
+//            for (int i = 0; i < lines.length; i++)
+//            {
+//              int breakOffset = 0;
+//              while (breakOffset < lines[i].length())
+//              {
+//                String lPart =
+//                    lines[i].substring(breakOffset, Math.min(breakOffset
+//                        + cutoffLength, lines[i].length()));
+//                Point lineSize = getCachedStringExtent(gc, lPart);
+//                while ((lPart.length() > 0) && (lineSize.x >= width))
+//                {
+//                  lPart = lPart.substring(0, Math.max(lPart.length() - 1, 0));
+//                  lineSize = getCachedStringExtent(gc, lPart);
+//                }
+//                wrappedText.append(lPart);
+//                breakOffset += lPart.length();
+//                wrappedText.append('\n');
+//              }
+//            }
+//            return wrappedText.substring(0, Math.max(wrappedText.length() - 1,
+//                0));
+//          }
+//          else
+//            return text;
+//
+//        }
+//
+//        @Override
+//        protected void measure(final Event event, final Object element)
+//        {
+//          defultSize = Math.min(defultSize, event.y);
+//          String property = getProperty((NarrativeEntry) element).toString();
+//          event.width =
+//              ((TableViewer) viewer).getTable().getColumn(event.index).getWidth();
+//          if (event.width == 0 || !isWrapping())
+//            return;
+//          
+//          if(isWrapping())
+//          {
+//          String text = isWrapping()? wrapText(event.gc, property, event.width):property;
+//          final Point size =
+//              event.gc.textExtent(text);
+//          event.height = Math.max(event.height, size.y );
+//          }
+//          else
+//          {
+//            event.y = defultSize;
+//          }
+//
+//          
+//        }
+//
+//        
+//        private Map<java.awt.Color, Color> swtColorMap =
+//            new HashMap<java.awt.Color, Color>();
+//
+//        @Override
+//        public void dispose()
+//        {
+//          for (Color color : swtColorMap.values())
+//          {
+//            color.dispose();
+//          }
+//          super.dispose();
+//        }
+//
+//      
+//        public Color getForeground(Object element)
+//        {
+//          if (element instanceof NarrativeEntry)
+//          {
+//            NarrativeEntry entry = (NarrativeEntry) element;
+//            java.awt.Color color = entry.getColor();
+//            Color swtColor = swtColorMap.get(color);
+//            if (swtColor == null || !swtColor.isDisposed())
+//            {
+//              swtColor =
+//                  new Color(Display.getCurrent(), color.getRed(), color
+//                      .getGreen(), color.getBlue());
+//              swtColorMap.put(color, swtColor);
+//            }
+//
+//            return swtColor;
+//          }
+//          return null;
+//        }
+//        
+//        @Override
+//        protected void paint(final Event event, final Object element)
+//        {
+//          if((event.detail & SWT.SELECTED) == 0)
+//          {
+//            Color foreground = getForeground(element);
+//            if(foreground!=null)
+//            {
+//              event.gc.setForeground(foreground);
+//            }
+//          }
+//          
+//          String property = getProperty((NarrativeEntry) element).toString();
+//          int width =
+//              ((TableViewer) viewer).getTable().getColumn(event.index).getWidth();
+//          String text = isWrapping() ?wrapText(event.gc, property, width):property;
+//          event.gc.drawText(text, event.x
+//              + TEXT_MARGIN, event.y, true);
+//        }
+//
+//        @Override
+//        protected void erase(Event event, Object element)
+//        {
+//
+//        }
+//      };
+//    }
 
   }
 
@@ -624,8 +640,19 @@ public class NarrativeViewerModel
     }
   };
 
+  static void calculateHeight(Grid fGrid,GridColumn gridColumn) {
+    for (GridItem item : fGrid.getItems()) {
+      GC gc = new GC(item.getDisplay());
+      
+      Point textBounds = gridColumn.getCellRenderer().computeSize(gc, gridColumn.getWidth(), SWT.DEFAULT, item);
+      gc.dispose();
+      item.setHeight(textBounds.y);
+    }
+  }
+  
+  
   public void createTable(final NarrativeViewer viewer,
-      TableColumnLayout layout)
+      final GridColumnLayout layout)
   {
     TableViewerColumnFactory factory =
         new TableViewerColumnFactory(viewer.getViewer());
@@ -674,10 +701,17 @@ public class NarrativeViewerModel
     {
       for (final AbstractColumn column : myAllColumns)
       {
-        final TableViewerColumn viewerColumn =
+        final GridViewerColumn viewerColumn =
             factory.createColumn(column.getColumnName(), column
-                .getColumnWidth(), column.getCellRenderer(viewer.getViewer()));
+                .getColumnWidth(), column.getCellRenderer(viewer.getViewer()),column.isWrap());
 
+        
+        viewerColumn.getColumn().addControlListener(new ControlAdapter() {
+          @Override
+          public void controlResized(ControlEvent e) {
+            calculateHeight(viewer.getViewer().getGrid(), viewerColumn.getColumn());
+          }
+        });
         viewerColumn.getColumn().addSelectionListener(new SelectionAdapter()
         {
           @Override
@@ -687,7 +721,7 @@ public class NarrativeViewerModel
           }
         });
         final CellEditor cellEditor =
-            column.getCellEditor(viewer.getViewer().getTable());
+            column.getCellEditor(viewer.getViewer().getGrid());
         if (cellEditor != null)
           viewerColumn.setEditingSupport(new EditingSupport(viewer.getViewer())
           {
@@ -725,17 +759,18 @@ public class NarrativeViewerModel
           public void columnVisibilityChanged(Column column,
               boolean actualIsVisible)
           {
-            if (column.isVisible())
+            viewerColumn.getColumn().setVisible(column.isVisible());
+
+            if(column.isVisible())
             {
-              viewerColumn.getColumn().setWidth(column.getColumnWidth());
-              viewerColumn.getColumn().setResizable(true);
+              layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+                  column.getColumnWidth()));
             }
             else
             {
-              viewerColumn.getColumn().setWidth(0);
-              viewerColumn.getColumn().setResizable(false);
+              layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+                  0));
             }
-
           }
         });
         layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
@@ -743,8 +778,9 @@ public class NarrativeViewerModel
 
         if (!column.isVisible())
         {
-          viewerColumn.getColumn().setWidth(0);
-          viewerColumn.getColumn().setResizable(false);
+          viewerColumn.getColumn().setVisible(column.isVisible());
+          layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+              0));
         }
 
       }
