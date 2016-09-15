@@ -865,6 +865,7 @@
         <product application="org.eclipse.ui.ide.workbench"
             description="Debrief Maritime Analysis Software" name="DebriefNG">
             <property name="appName" value="DebriefNG"/>
+            <property name="preferenceCustomization" value="plugin_customization.ini"/>
             <property name="introTitle" value="Welcome to DebriefNG (with Charts)"/>
             <property name="introBrandingImage" value="product:icons/icon.png"/>
             <property name="introBrandingImageText"
@@ -880,11 +881,7 @@
             <property name="aboutText" value="%aboutText"> </property>
             <property
                   name="windowImages"
-                  value="icons/icon.png,icons/48/icon_48.png">
-            </property>
-            <property
-                  name="preferenceCustomization"
-                  value="plugin_customization.ini">
+                  value="icons/16/icon_16.png,icons/32/icon_32.png,icons/48/icon_48.png,icons/256/icon_256.png">
             </property>
         </product>
     </extension>
