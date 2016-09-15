@@ -138,188 +138,190 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
-		MWC.GUI.Layer, IRollingNarrativeProvider
+    MWC.GUI.Layer, IRollingNarrativeProvider
 {
 
-	// //////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////
+  // //////////////////////////////////////
+  // member variables
+  // //////////////////////////////////////
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private String _myName = "blank";
+  private String _myName = "blank";
 
-	/**
-	 * where we store our narrative data
-	 */
-	private final ConcurrentSkipListSet<Editable> _myEntries;
+  /**
+   * where we store our narrative data
+   */
+  private final ConcurrentSkipListSet<Editable> _myEntries;
 
-	/**
-	 * our editor
-	 */
-	transient private MWC.GUI.Editable.EditorType _myEditor;
+  /**
+   * our editor
+   */
+  transient private MWC.GUI.Editable.EditorType _myEditor;
 
-	/**
-	 * the line width to draw
-	 */
-	private int _lineWidth = 1;
+  /**
+   * the line width to draw
+   */
+  private int _lineWidth = 1;
 
-	/**
-	 * anybody listening to this narrative data
-	 * 
-	 */
-	private transient Vector<INarrativeListener> _myListeners;
+  /**
+   * anybody listening to this narrative data
+   * 
+   */
+  private transient Vector<INarrativeListener> _myListeners;
 
-	private final PropertyChangeListener _dateChangeListener;
-	/**
-	 * property type to signify data being added or removed
-	 */
-	public final static String CONTENTS_CHANGED = "CONTENTS_CHANGED";
+  private final PropertyChangeListener _dateChangeListener;
+  /**
+   * property type to signify data being added or removed
+   */
+  public final static String CONTENTS_CHANGED = "CONTENTS_CHANGED";
 
-	// //////////////////////////////////////
-	// constructors
-	// //////////////////////////////////////
-	/**
-	 * constructor, of course.
-	 * 
-	 * @param title
-	 */
-	public NarrativeWrapper(final String title)
-	{
-		_dateChangeListener = new PropertyChangeListener()
-		{
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt)
-			{
-				// double-check it's the date
-				if (evt.getPropertyName().equals(NarrativeEntry.DTG))
-				{
-					// ok, remove this entry
-					_myEntries.remove(evt.getSource());
+  // //////////////////////////////////////
+  // constructors
+  // //////////////////////////////////////
+  /**
+   * constructor, of course.
+   * 
+   * @param title
+   */
+  public NarrativeWrapper(final String title)
+  {
+    _dateChangeListener = new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        // double-check it's the date
+        if (evt.getPropertyName().equals(NarrativeEntry.DTG))
+        {
+          // ok, remove this entry
+          _myEntries.remove(evt.getSource());
 
-					// and replace it
-					_myEntries.add((Editable) evt.getSource());
-				}
-			}
-		};
-		_myEntries = new ConcurrentSkipListSet<Editable>();
-		_myName = title;
-	}
+          // and replace it
+          _myEntries.add((Editable) evt.getSource());
+        }
+      }
+    };
+    _myEntries = new ConcurrentSkipListSet<Editable>();
+    _myName = title;
+  }
 
-	// //////////////////////////////////////
-	// member methods to meet plain wrapper responsibilities
-	// //////////////////////////////////////
-	public final String getName()
-	{
-		return _myName;
-	}
+  // //////////////////////////////////////
+  // member methods to meet plain wrapper responsibilities
+  // //////////////////////////////////////
+  public final String getName()
+  {
+    return _myName;
+  }
 
-	public final void setName(final String name)
-	{
-		_myName = name;
-	}
+  public final void setName(final String name)
+  {
+    _myName = name;
+  }
 
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 * 
-	 * @return
-	 */
-	public int getLineThickness()
-	{
-		return _lineWidth;
-	}
+  /**
+   * the line thickness (convenience wrapper around width)
+   * 
+   * @return
+   */
+  public int getLineThickness()
+  {
+    return _lineWidth;
+  }
 
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 */
-	public void setLineThickness(final int val)
-	{
-		_lineWidth = val;
-	}
-	
-	/** how many entries do we have?
-	 * 
-	 */
-	public int size()
-	{
-		return _myEntries.size();
-	}
+  /**
+   * the line thickness (convenience wrapper around width)
+   */
+  public void setLineThickness(final int val)
+  {
+    _lineWidth = val;
+  }
 
-	public final boolean hasEditor()
-	{
-		return true;
-	}
+  /**
+   * how many entries do we have?
+   * 
+   */
+  public int size()
+  {
+    return _myEntries.size();
+  }
 
-	public final MWC.GenericData.WorldArea getBounds()
-	{
-		return null;
-	}
+  public final boolean hasEditor()
+  {
+    return true;
+  }
 
-	public final void paint(final MWC.GUI.CanvasType canvas)
-	{
-		// don't bother
-	}
+  public final MWC.GenericData.WorldArea getBounds()
+  {
+    return null;
+  }
 
-	public final MWC.GUI.Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new NarrativeInfo(this);
+  public final void paint(final MWC.GUI.CanvasType canvas)
+  {
+    // don't bother
+  }
 
-		return _myEditor;
-	}
+  public final MWC.GUI.Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor = new NarrativeInfo(this);
 
-	// //////////////////////////////////////
-	// member methods to meet Layer responsibilities
-	// //////////////////////////////////////
+    return _myEditor;
+  }
 
-	public final java.util.Enumeration<Editable> elements()
-	{
-		return new IteratorWrapper(_myEntries.iterator());
-	}
+  // //////////////////////////////////////
+  // member methods to meet Layer responsibilities
+  // //////////////////////////////////////
 
-	public final void removeElement(final MWC.GUI.Editable editable)
-	{
-		// check it's a narrative entry
-		if (editable instanceof NarrativeEntry)
-		{
-			_myEntries.remove(editable);
+  public final java.util.Enumeration<Editable> elements()
+  {
+    return new IteratorWrapper(_myEntries.iterator());
+  }
 
-			// and inform anybody who happens to be listening
-			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
-			
-			// stop listening to it
-			editable.getInfo().removePropertyChangeListener(NarrativeEntry.DTG, _dateChangeListener);
+  public final void removeElement(final MWC.GUI.Editable editable)
+  {
+    // check it's a narrative entry
+    if (editable instanceof NarrativeEntry)
+    {
+      _myEntries.remove(editable);
 
-			// and the narrative listeners, if we have one
-			if (_myListeners != null)
-			{
-				for (final Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
-						.hasNext();)
-				{
-					final INarrativeListener thisL = iter.next();
-					thisL.entryRemoved((NarrativeEntry) editable);
-				}
-			}
-		}
-	}
+      // and inform anybody who happens to be listening
+      getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
 
-	public final void add(final MWC.GUI.Editable editable)
-	{
-		// check it's a narrative entry
-		if (editable instanceof NarrativeEntry)
-		{
-			// listen for date changes, since we'll have to re-order
-			editable.getInfo().addPropertyChangeListener(NarrativeEntry.DTG,
-					_dateChangeListener);
+      // stop listening to it
+      editable.getInfo().removePropertyChangeListener(NarrativeEntry.DTG,
+          _dateChangeListener);
 
-			_myEntries.add(editable);
+      // and the narrative listeners, if we have one
+      if (_myListeners != null)
+      {
+        for (final Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
+            .hasNext();)
+        {
+          final INarrativeListener thisL = iter.next();
+          thisL.entryRemoved((NarrativeEntry) editable);
+        }
+      }
+    }
+  }
 
-			// and inform anybody who happens to be listening
-			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
-			
+  public final void add(final MWC.GUI.Editable editable)
+  {
+    // check it's a narrative entry
+    if (editable instanceof NarrativeEntry)
+    {
+      // listen for date changes, since we'll have to re-order
+      editable.getInfo().addPropertyChangeListener(NarrativeEntry.DTG,
+          _dateChangeListener);
+
+      _myEntries.add(editable);
+
+      // and inform anybody who happens to be listening
+      getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
+
       // also tell the listeners
       if (_myListeners != null)
       {
@@ -333,317 +335,334 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
-	public final void append(final MWC.GUI.Layer layer)
-	{
-		// don't bother
-	}
+  public final void append(final MWC.GUI.Layer layer)
+  {
+    // don't bother
+  }
 
-	public final void exportShape()
-	{
-		MWC.Utilities.ReaderWriter.ImportManager.exportThis(this);
-	}
+  public final void exportShape()
+  {
+    MWC.Utilities.ReaderWriter.ImportManager.exportThis(this);
+  }
 
-	// ///////////////////////////////////////
-	// other member functions
-	// ///////////////////////////////////////
+  // ///////////////////////////////////////
+  // other member functions
+  // ///////////////////////////////////////
 
-	public final String toString()
-	{
-		return getName() + " (" + _myEntries.size() + " items)";
-	}
+  public final String toString()
+  {
+    return getName() + " (" + _myEntries.size() + " items)";
+  }
 
-	public final java.util.AbstractCollection<Editable> getData()
-	{
-		return _myEntries;
-	}
+  public final java.util.AbstractCollection<Editable> getData()
+  {
+    return _myEntries;
+  }
 
-	public boolean hasOrderedChildren()
-	{
-		return true;
-	}
+  public boolean hasOrderedChildren()
+  {
+    return true;
+  }
 
-	/**
-	 * convenience function to find the narrative entry immediately before the
-	 * supplied dtg.
-	 * 
-	 * @param dtg
-	 *          the time to find an entry for
-	 * @return
-	 */
-	public NarrativeEntry getEntryNearestTo(final HiResDate dtg)
-	{
-		NarrativeEntry res = null;
+  /**
+   * convenience function to find the narrative entry immediately before the supplied dtg.
+   * 
+   * @param dtg
+   *          the time to find an entry for
+   * @return
+   */
+  public NarrativeEntry getEntryNearestTo(final HiResDate dtg)
+  {
+    NarrativeEntry res = null;
 
-		// ahh, do we have data?
-		if (_myEntries.size() > 0)
-		{
-			final NarrativeEntry firstN = (NarrativeEntry) _myEntries.first();
-			final NarrativeEntry lastN = (NarrativeEntry) _myEntries.last();
-			// just see if this dtg is outside our time period
-			if (dtg.lessThan(firstN.getDTG()))
-			{
-				// hmm, off the start of the plot
-				res = null;
-			}
-			else if (dtg.greaterThan(lastN.getDTG()))
-			{
-				res = (NarrativeEntry) _myEntries.last();
-			}
-			else
-			{
+    // ahh, do we have data?
+    if (_myEntries.size() > 0)
+    {
+      final NarrativeEntry firstN = (NarrativeEntry) _myEntries.first();
+      final NarrativeEntry lastN = (NarrativeEntry) _myEntries.last();
+      // just see if this dtg is outside our time period
+      if (dtg.lessThan(firstN.getDTG()))
+      {
+        // hmm, off the start of the plot
+        res = null;
+      }
+      else if (dtg.greaterThan(lastN.getDTG()))
+      {
+        res = (NarrativeEntry) _myEntries.last();
+      }
+      else
+      {
 
-				// create an object to use for comparisons
-				final NarrativeEntry toTest = new NarrativeEntry("", dtg, " ");
+        // create an object to use for comparisons
+        final NarrativeEntry toTest = new NarrativeEntry("", dtg, " ");
 
-				// and retrieve all items before this one
-				final SortedSet<Editable> before = _myEntries.headSet(toTest);
+        // and retrieve all items before this one
+        final SortedSet<Editable> before = _myEntries.headSet(toTest);
 
-				// did we find any?
-				if (before != null)
-					res = (NarrativeEntry) before.last();
-			}
-		}
+        // did we find any?
+        if (before != null)
+          res = (NarrativeEntry) before.last();
+      }
+    }
 
-		return res;
-	}
+    return res;
+  }
 
-	@SuppressWarnings("deprecation")
-	public static NarrativeWrapper createDummyData(final String title, final int len)
-	{
-		final NarrativeWrapper res = new NarrativeWrapper(title);
-		final Date newDate = new Date(2005, 06, (int) (Math.random() * 12),
-				(int) (Math.random() * 13), 33);
-		for (int i = 0; i < len; i++)
-		{
-			String entryTxt = "entry number " + i + " for narrative:" + title;
+  @SuppressWarnings("deprecation")
+  public static NarrativeWrapper createDummyData(final String title,
+      final int len)
+  {
+    final NarrativeWrapper res = new NarrativeWrapper(title);
+    final Date newDate =
+        new Date(2005, 06, (int) (Math.random() * 12),
+            (int) (Math.random() * 13), 33);
+    for (int i = 0; i < len; i++)
+    {
+      String entryTxt = "entry number " + i + " for narrative:" + title;
 
-			if (Math.random() > 0.9)
-			{
-				entryTxt += "\n and more...";
-			}
-			final NarrativeEntry ne = new NarrativeEntry(title, "type_"
-					+ (int) (Math.random() * 5), new HiResDate(newDate.getTime() + i
-					* 10000, 0), entryTxt);
+      if (Math.random() > 0.9)
+      {
+        entryTxt += "\n and more...";
+      }
+      final NarrativeEntry ne =
+          new NarrativeEntry(title, "type_" + (int) (Math.random() * 5),
+              new HiResDate(newDate.getTime() + i * 10000, 0), entryTxt);
 
-			res.add(ne);
-		}
+      res.add(ne);
+    }
 
-		return res;
-	}
+    return res;
+  }
 
-	// //////////////////////////////////////////////////////////////////
-	// embedded class to allow us to pass the local iterator (Iterator) used
-	// internally
-	// outside as an Enumeration
-	// /////////////////////////////////////////////////////////////////
-	protected static final class IteratorWrapper implements
-			java.util.Enumeration<Editable>
-	{
-		private final java.util.Iterator<Editable> _val;
+  // //////////////////////////////////////////////////////////////////
+  // embedded class to allow us to pass the local iterator (Iterator) used
+  // internally
+  // outside as an Enumeration
+  // /////////////////////////////////////////////////////////////////
+  protected static final class IteratorWrapper implements
+      java.util.Enumeration<Editable>
+  {
+    private final java.util.Iterator<Editable> _val;
 
-		public IteratorWrapper(final java.util.Iterator<Editable> iterator)
-		{
-			_val = iterator;
-		}
+    public IteratorWrapper(final java.util.Iterator<Editable> iterator)
+    {
+      _val = iterator;
+    }
 
-		public final boolean hasMoreElements()
-		{
-			return _val.hasNext();
+    public final boolean hasMoreElements()
+    {
+      return _val.hasNext();
 
-		}
+    }
 
-		public final Editable nextElement()
-		{
-			return _val.next();
-		}
-	}
+    public final Editable nextElement()
+    {
+      return _val.next();
+    }
+  }
 
-	// //////////////////////////////////////////////////////////////////////////
-	// embedded class, used for editing the projection
-	// //////////////////////////////////////////////////////////////////////////
-	/**
-	 * the definition of what is editable about this object
-	 */
-	public final class NarrativeInfo extends MWC.GUI.Editable.EditorType
-	{
+  // //////////////////////////////////////////////////////////////////////////
+  // embedded class, used for editing the projection
+  // //////////////////////////////////////////////////////////////////////////
+  /**
+   * the definition of what is editable about this object
+   */
+  public final class NarrativeInfo extends MWC.GUI.Editable.EditorType
+  {
 
-		/**
-		 * constructor for editable details of a set of Layers
-		 * 
-		 * @param data
-		 *          the Layers themselves
-		 */
-		public NarrativeInfo(final NarrativeWrapper data)
-		{
-			super(data, data.getName(), "Narrative");
-		}
+    /**
+     * constructor for editable details of a set of Layers
+     * 
+     * @param data
+     *          the Layers themselves
+     */
+    public NarrativeInfo(final NarrativeWrapper data)
+    {
+      super(data, data.getName(), "Narrative");
+    }
 
-		/**
-		 * return a description of this bean, also specifies the custom editor we
-		 * use
-		 * 
-		 * @return the BeanDescriptor
-		 */
-		public final BeanDescriptor getBeanDescriptor()
-		{
-			final BeanDescriptor bp = new BeanDescriptor(NarrativeWrapper.class,
-					Debrief.GUI.Panels.NarrativeViewer.class);
-			bp.setDisplayName("Narrative Viewer");
-			return bp;
-		}
+    /**
+     * return a description of this bean, also specifies the custom editor we use
+     * 
+     * @return the BeanDescriptor
+     */
+    public final BeanDescriptor getBeanDescriptor()
+    {
+      final BeanDescriptor bp =
+          new BeanDescriptor(NarrativeWrapper.class,
+              Debrief.GUI.Panels.NarrativeViewer.class);
+      bp.setDisplayName("Narrative Viewer");
+      return bp;
+    }
 
-		/**
-		 * The things about these Layers which are editable. We don't really use
-		 * this list, since we have our own custom editor anyway
-		 * 
-		 * @return property descriptions
-		 */
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ prop("Name", "the name for this narrative"), };
+    /**
+     * The things about these Layers which are editable. We don't really use this list, since we
+     * have our own custom editor anyway
+     * 
+     * @return property descriptions
+     */
+    public final PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+        {prop("Name", "the name for this narrative"),};
 
-				return res;
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
+        return res;
+      }
+      catch (final IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
 
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
-			// just add the reset color field first
-			final Class<NarrativeWrapper> c = NarrativeWrapper.class;
+    public final MethodDescriptor[] getMethodDescriptors()
+    {
+      // just add the reset color field first
+      final Class<NarrativeWrapper> c = NarrativeWrapper.class;
 
-			final MethodDescriptor[] mds =
-			{ method(c, "exportShape", null, "Export Shape") };
+      final MethodDescriptor[] mds =
+      {method(c, "exportShape", null, "Export Shape")};
 
-			return mds;
-		}
-	}
+      return mds;
+    }
+  }
 
-	/**
-	 * find the time period covered by this narrative data
-	 * 
-	 * @return the inclusive time period
-	 */
-	public TimePeriod getTimePeriod()
-	{
-		TimePeriod res = null;
+  /**
+   * find the time period covered by this narrative data
+   * 
+   * @return the inclusive time period
+   */
+  public TimePeriod getTimePeriod()
+  {
+    TimePeriod res = null;
 
-		final HiResDate start = ((NarrativeEntry) _myEntries.first()).getDTG();
-		final HiResDate end = ((NarrativeEntry) _myEntries.last()).getDTG();
+    final HiResDate start = ((NarrativeEntry) _myEntries.first()).getDTG();
+    final HiResDate end = ((NarrativeEntry) _myEntries.last()).getDTG();
 
-		res = new TimePeriod.BaseTimePeriod(start, end);
+    res = new TimePeriod.BaseTimePeriod(start, end);
 
-		return res;
-	}
+    return res;
+  }
 
-	/**
-	 * ok, retrieve the back-history
-	 * 
-	 * @param categories
-	 * @return
-	 */
-	public NarrativeEntry[] getNarrativeHistory(final String[] categories)
-	{
-		NarrativeEntry[] res = new NarrativeEntry[]
-		{};
-		// ok, cn
-		final Vector<NarrativeEntry> theNarrs = new Vector<NarrativeEntry>(10, 10);
-		final Iterator<Editable> iter = getData().iterator();
-		while (iter.hasNext())
-		{
-			final NarrativeEntry ne = (NarrativeEntry) iter.next();
-			theNarrs.add(ne);
-		}
-		res = theNarrs.toArray(res);
+  /**
+   * ok, retrieve the back-history
+   * 
+   * @param categories
+   * @return
+   */
+  public NarrativeEntry[] getNarrativeHistory(final String[] categories)
+  {
+    NarrativeEntry[] res = new NarrativeEntry[]
+    {};
+    // ok, cn
+    final Vector<NarrativeEntry> theNarrs = new Vector<NarrativeEntry>(10, 10);
+    final Iterator<Editable> iter = getData().iterator();
+    while (iter.hasNext())
+    {
+      final NarrativeEntry ne = (NarrativeEntry) iter.next();
+      theNarrs.add(ne);
+    }
+    res = theNarrs.toArray(res);
 
-		return res;
-	}
+    return res;
+  }
 
-	public void addNarrativeListener(final String category, final INarrativeListener listener)
-	{
-		if (_myListeners == null)
-			_myListeners = new Vector<INarrativeListener>(1, 1);
+  public void addNarrativeListener(final String category,
+      final INarrativeListener listener)
+  {
+    if (_myListeners == null)
+      _myListeners = new Vector<INarrativeListener>(1, 1);
 
-		_myListeners.add(listener);
-	}
+    _myListeners.add(listener);
+  }
 
-	public void removeNarrativeListener(final String category,
-			final INarrativeListener listener)
-	{
-		_myListeners.remove(listener);
-	}
+  public void removeNarrativeListener(final String category,
+      final INarrativeListener listener)
+  {
+    _myListeners.remove(listener);
+  }
 
-	public static class TestMe extends TestCase
-	{
-	   public void testDuplicates() throws ParserConfigurationException, TransformerException, SAXException
-	   {
-	     NarrativeWrapper narr = new NarrativeWrapper("Some title");
-	     assertEquals("empty", 0, narr.size());
-	     
-	     NarrativeEntry n1 = new NarrativeEntry("track", new HiResDate(3000), "some entry");
-	     narr.add(n1);
+  public static class TestMe extends TestCase
+  {
+    /** note: the following test was produced to overcome a specific issue.
+     * The narrative wrapper was successfully ignoring duplicate entries, 
+     * except after a file had been save/restored.
+     * 
+     * @throws ParserConfigurationException
+     * @throws TransformerException
+     * @throws SAXException
+     */
+    public void testDuplicates() throws ParserConfigurationException,
+        TransformerException, SAXException
+    {
+      NarrativeWrapper narr = new NarrativeWrapper("Some title");
+      assertEquals("empty", 0, narr.size());
 
-       assertEquals("has one", 1, narr.size());
-       
-       NarrativeEntry n2 = new NarrativeEntry("track", new HiResDate(3100), "some entry");
-       narr.add(n2);
+      NarrativeEntry n1 =
+          new NarrativeEntry("track", new HiResDate(3000), "some entry");
+      narr.add(n1);
 
-       assertEquals("has two", 2, narr.size());
+      assertEquals("has one", 1, narr.size());
 
-       NarrativeEntry n3 = new NarrativeEntry("track", new HiResDate(3100), "some entry");
-       narr.add(n3);
+      NarrativeEntry n2 =
+          new NarrativeEntry("track", new HiResDate(3100), "some entry");
+      narr.add(n2);
 
-       assertEquals("still has two", 2, narr.size());
+      assertEquals("has two", 2, narr.size());
 
-       // make tiny change
-       NarrativeEntry n4 = new NarrativeEntry("track", new HiResDate(3100), "some entry.");
-       narr.add(n4);
+      NarrativeEntry n3 =
+          new NarrativeEntry("track", new HiResDate(3100), "some entry");
+      narr.add(n3);
 
-       assertEquals("now has three", 3, narr.size());
+      assertEquals("still has two", 2, narr.size());
 
-       // hmm, we need to export then reload, to check for matching hashcode
-       final Document doc = DocumentBuilderFactory.newInstance()
-           .newDocumentBuilder().newDocument();
-       final org.w3c.dom.Element plt = doc.createElement("narrative");
-       plt.setAttribute("Name", ImportReplay.NARRATIVE_LAYER);
-       doc.appendChild(plt);
-       NarrativeHandler.EntryHandler.exportEntry(n4, plt, doc);
+      // make tiny change
+      NarrativeEntry n4 =
+          new NarrativeEntry("track", new HiResDate(3100), "some entry.");
+      narr.add(n4);
 
-       // output to String
-       TransformerFactory tf = TransformerFactory.newInstance();
-       Transformer transformer = tf.newTransformer();
-       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-       StringWriter writer = new StringWriter();
-       transformer.transform(new DOMSource(doc), new StreamResult(writer));
-       String output = writer.getBuffer().toString().replaceAll("\n|\r", "");       
-       
-       // ok, put it into an input strean
-       InputStream stream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));       
-       
-       
-       // ok, re-import it
-       Layers parent = new Layers();
-       NarrativeHandler handler = new NarrativeHandler(parent);
-       
-       MWCXMLReaderWriter.importThis(handler, "some name", stream);
+      assertEquals("now has three", 3, narr.size());
 
-       // get the contents
-       NarrativeWrapper narrLayer = (NarrativeWrapper) parent.findLayer(ImportReplay.NARRATIVE_LAYER);
-       
-       NarrativeEntry theEntry = (NarrativeEntry) narrLayer.elements().nextElement();
-       
-       narr.add(theEntry);
+      // hmm, we need to export then reload, to check for matching hashcode
+      final Document doc =
+          DocumentBuilderFactory.newInstance().newDocumentBuilder()
+              .newDocument();
+      final org.w3c.dom.Element plt = doc.createElement("narrative");
+      plt.setAttribute("Name", ImportReplay.NARRATIVE_LAYER);
+      doc.appendChild(plt);
+      NarrativeHandler.EntryHandler.exportEntry(n4, plt, doc);
 
-       assertEquals("still has three", 3, narr.size());
-       
-       
-	   }
-	}
-	
+      // output to String
+      TransformerFactory tf = TransformerFactory.newInstance();
+      Transformer transformer = tf.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      StringWriter writer = new StringWriter();
+      transformer.transform(new DOMSource(doc), new StreamResult(writer));
+      String output = writer.getBuffer().toString().replaceAll("\n|\r", "");
+
+      // ok, put it into an input strean
+      InputStream stream =
+          new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
+
+      // ok, re-import it
+      Layers parent = new Layers();
+      NarrativeHandler handler = new NarrativeHandler(parent);
+
+      MWCXMLReaderWriter.importThis(handler, "some name", stream);
+
+      // get the contents
+      NarrativeWrapper narrLayer =
+          (NarrativeWrapper) parent.findLayer(ImportReplay.NARRATIVE_LAYER);
+
+      NarrativeEntry theEntry =
+          (NarrativeEntry) narrLayer.elements().nextElement();
+
+      narr.add(theEntry);
+
+      assertEquals("still has three", 3, narr.size());
+
+    }
+  }
+
 }
