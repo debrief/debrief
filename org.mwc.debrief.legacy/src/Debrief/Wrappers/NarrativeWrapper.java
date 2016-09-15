@@ -109,6 +109,8 @@ import java.util.SortedSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import junit.framework.TestCase;
+
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -557,4 +559,35 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		_myListeners.remove(listener);
 	}
 
+	public static class TestMe extends TestCase
+	{
+	   public void testDuplicates()
+	   {
+	     NarrativeWrapper narr = new NarrativeWrapper("Some title");
+	     assertEquals("empty", 0, narr.size());
+	     
+	     NarrativeEntry n1 = new NarrativeEntry("track", new HiResDate(3000), "some entry");
+	     narr.add(n1);
+
+       assertEquals("has one", 1, narr.size());
+       
+       NarrativeEntry n2 = new NarrativeEntry("track", new HiResDate(3100), "some entry");
+       narr.add(n2);
+
+       assertEquals("has two", 2, narr.size());
+
+       NarrativeEntry n3 = new NarrativeEntry("track", new HiResDate(3100), "some entry");
+       narr.add(n3);
+
+       assertEquals("still has two", 2, narr.size());
+
+       // make tiny change
+       NarrativeEntry n4 = new NarrativeEntry("track", new HiResDate(3100), "some entry.");
+       narr.add(n4);
+
+       assertEquals("now has three", 3, narr.size());
+
+	   }
+	}
+	
 }

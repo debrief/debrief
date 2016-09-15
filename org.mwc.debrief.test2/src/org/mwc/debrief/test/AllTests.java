@@ -51,6 +51,7 @@ import org.junit.runners.Suite;
   Debrief.Tools.Palette.BuoyPatterns.WedgeBuilder.testMe.class,
   Debrief.Wrappers.BuoyPatternWrapper.testMe.class,
   Debrief.Wrappers.FixWrapper.testMe.class,
+  Debrief.Wrappers.NarrativeWrapper.TestMe.class,
   Debrief.Wrappers.LabelWrapper.testMe.class,
   Debrief.Wrappers.SensorContactWrapper.testSensorContact.class,
   Debrief.Wrappers.SensorWrapper.testSensors.class,
