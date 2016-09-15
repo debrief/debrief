@@ -247,8 +247,11 @@ public class NarrativeViewer
    */
   public void setEntry(final NarrativeEntry entry)
   {
+    // select this item
     viewer.setSelection(new StructuredSelection(entry));
-
+    
+    // make sure the new item is visible
+    viewer.reveal(entry);
   }
 
   public NarrativeViewerModel getModel()
