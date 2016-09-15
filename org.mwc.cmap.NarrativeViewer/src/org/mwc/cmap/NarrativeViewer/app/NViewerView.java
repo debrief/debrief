@@ -34,6 +34,8 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -70,7 +72,6 @@ import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import MWC.TacticalData.NarrativeEntry;
-import de.kupzog.ktable.KTableCellDoubleClickAdapter;
 
 public class NViewerView extends ViewPart implements PropertyChangeListener,
     ISelectionProvider
@@ -197,16 +198,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
         {
           myViewer.setInput(_myRollingNarrative);
-          Display.getCurrent().asyncExec(new Runnable()
-          {
-            
-            @Override
-            public void run()
-            {
-              myViewer.refresh();
-              
-            }
-          });
+         
         }
         else
           myViewer.setInput(null);
@@ -266,7 +258,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     myViewer =
         new NarrativeViewer(rootPanel, Activator.getInstance()
             .getPreferenceStore());
-    rootPanelLayout.topControl = myViewer;
+    rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
 
@@ -292,17 +284,25 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
      * 
      */
     setupPartListeners();
-
-    myViewer.addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
+    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
     {
-      public void cellDoubleClicked(final int col, final int row,
-          final int statemask)
+      
+      @Override
+      public void doubleClick(DoubleClickEvent event)
       {
-        final NarrativeEntry theEntry =
-            myViewer.getModel().getEntryAt(col, row);
-        fireNewSeletion(theEntry);
+        StructuredSelection selection = (StructuredSelection) event.getSelection();
+        if(selection.getFirstElement() instanceof NarrativeEntry)
+        {
+          fireNewSeletion((NarrativeEntry)selection.getFirstElement());
+        }
+        
       }
     });
+    
+
+
+   
+   
 
     _selectionChangeListener = new ISelectionChangedListener()
     {
@@ -477,7 +477,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   public void setFocus()
   {
-    myViewer.setFocus();
+    myViewer.getViewer().getGrid().setFocus();
   }
 
   /**
@@ -546,16 +546,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       // listening to the rolling narrative, since we 
       // may be switching back to a previous plot.
       myViewer.setInput(_myRollingNarrative);
-      Display.getCurrent().asyncExec(new Runnable()
-      {
-        
-        @Override
-        public void run()
-        {
-          myViewer.refresh();
-          
-        }
-      });
+      
     }
   }
 
@@ -947,12 +938,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         final IFileEditorInput ife = (IFileEditorInput) input;
         final IResource file = ife.getFile();
 
-        // check we have a selection
-        final int[] rows = myViewer.getRowSelection();
-        if (rows.length == 1)
+        
+        StructuredSelection selection = (StructuredSelection) myViewer.getViewer().getSelection();
+        if(selection.getFirstElement() instanceof NarrativeEntry)
         {
-          final NarrativeEntry entry =
-              myViewer.getModel().getEntryAt(0, rows[0]);
+         
+        
+          final NarrativeEntry entry =(NarrativeEntry) selection.getFirstElement();
           final long tNow = entry.getDTG().getMicros();
           final String currentText = FormatDateTime.toString(tNow / 1000);
           if (file != null)

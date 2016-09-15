@@ -14,3 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-Activator: org.mwc.cmap.NarrativeViewer.app.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .,
+ libs/org.eclipse.nebula.widgets.grid_1.0.0.201605312033.jar
