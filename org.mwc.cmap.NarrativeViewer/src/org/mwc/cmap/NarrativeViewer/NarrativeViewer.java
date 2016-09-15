@@ -18,13 +18,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
@@ -76,6 +77,12 @@ public class NarrativeViewer
     viewer = new GridTableViewer(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI);
     viewer.getGrid().setHeaderVisible(true);
     viewer.getGrid().setLinesVisible(true);
+    viewer.getGrid().addControlListener(new ControlAdapter() {
+      @Override
+      public void controlResized(ControlEvent e) {
+        calculateGridRawHeight();
+      }
+    });
 
     myModel = new NarrativeViewerModel(preferenceStore);
 
@@ -158,6 +165,13 @@ public class NarrativeViewer
   public void refresh()
   {
     viewer.setInput(new Object());
+    calculateGridRawHeight();
+  }
+
+
+
+  private void calculateGridRawHeight()
+  {
     Display.getDefault().asyncExec(new Runnable()
     {
       
@@ -190,7 +204,7 @@ public class NarrativeViewer
       {
         gridColumn.setWordWrap(shouldWrap);
       }
-      refresh();
+      calculateGridRawHeight();
       
      
       

@@ -709,7 +709,24 @@ public class NarrativeViewerModel
         viewerColumn.getColumn().addControlListener(new ControlAdapter() {
           @Override
           public void controlResized(ControlEvent e) {
-            calculateHeight(viewer.getViewer().getGrid(), viewerColumn.getColumn());
+            
+            Display.getDefault().asyncExec(new Runnable()
+            {
+              
+              @Override
+              public void run()
+              {
+                if(viewer.getViewer().getGrid().isDisposed())
+                  return;
+                GridColumn[] columns = viewer.getViewer().getGrid().getColumns();
+                for (GridColumn gridColumn : columns)
+                {
+                  NarrativeViewerModel.calculateHeight(viewer.getViewer().getGrid(),gridColumn);
+                }
+                
+              }
+            });
+            
           }
         });
         viewerColumn.getColumn().addSelectionListener(new SelectionAdapter()
