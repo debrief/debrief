@@ -103,19 +103,39 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import junit.framework.TestCase;
 
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		MWC.GUI.Layer, IRollingNarrativeProvider
@@ -561,7 +581,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 	public static class TestMe extends TestCase
 	{
-	   public void testDuplicates()
+	   public void testDuplicates() throws ParserConfigurationException, TransformerException, SAXException
 	   {
 	     NarrativeWrapper narr = new NarrativeWrapper("Some title");
 	     assertEquals("empty", 0, narr.size());
@@ -587,6 +607,42 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
        assertEquals("now has three", 3, narr.size());
 
+       // hmm, we need to export then reload, to check for matching hashcode
+       final Document doc = DocumentBuilderFactory.newInstance()
+           .newDocumentBuilder().newDocument();
+       final org.w3c.dom.Element plt = doc.createElement("narrative");
+       plt.setAttribute("Name", ImportReplay.NARRATIVE_LAYER);
+       doc.appendChild(plt);
+       NarrativeHandler.EntryHandler.exportEntry(n4, plt, doc);
+
+       // output to String
+       TransformerFactory tf = TransformerFactory.newInstance();
+       Transformer transformer = tf.newTransformer();
+       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+       StringWriter writer = new StringWriter();
+       transformer.transform(new DOMSource(doc), new StreamResult(writer));
+       String output = writer.getBuffer().toString().replaceAll("\n|\r", "");       
+       
+       // ok, put it into an input strean
+       InputStream stream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));       
+       
+       
+       // ok, re-import it
+       Layers parent = new Layers();
+       NarrativeHandler handler = new NarrativeHandler(parent);
+       
+       MWCXMLReaderWriter.importThis(handler, "some name", stream);
+
+       // get the contents
+       NarrativeWrapper narrLayer = (NarrativeWrapper) parent.findLayer(ImportReplay.NARRATIVE_LAYER);
+       
+       NarrativeEntry theEntry = (NarrativeEntry) narrLayer.elements().nextElement();
+       
+       narr.add(theEntry);
+
+       assertEquals("still has three", 3, narr.size());
+       
+       
 	   }
 	}
 	
