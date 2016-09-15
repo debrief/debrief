@@ -25,6 +25,7 @@ public interface Column {
 	public String getColumnName();
 
 	public int getColumnWidth();
+	public boolean isColumnWidthExpand();
 
 	public CellLabelProvider getCellRenderer(ColumnViewer viewer);
 

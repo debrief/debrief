@@ -55,6 +55,12 @@ abstract class AbstractColumn implements Column
     myIsVisible =
         myStore != null && !myStore.getBoolean(getIsHiddenPreferenceName());
   }
+  
+  @Override
+  public boolean isColumnWidthExpand()
+  {
+    return false;
+  }
 
   public void
       addVisibilityListener(final VisibilityListener visibilityListener)

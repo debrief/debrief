@@ -431,6 +431,12 @@ public class NarrativeViewerModel
     {
       return 250;
     }
+    
+    @Override
+    public boolean isColumnWidthExpand()
+    {
+      return true;
+    }
 
     @Override
     public boolean isWrap()
@@ -791,7 +797,7 @@ public class NarrativeViewerModel
           }
         });
         layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
-            column.getColumnWidth()));
+            column.getColumnWidth(),column.isColumnWidthExpand()));
 
         if (!column.isVisible())
         {
