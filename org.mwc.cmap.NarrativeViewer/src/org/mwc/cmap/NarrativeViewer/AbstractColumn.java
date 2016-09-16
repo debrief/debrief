@@ -61,6 +61,11 @@ abstract class AbstractColumn implements Column
   {
     return false;
   }
+  
+  public boolean isWrapSupport()
+  {
+    return false;
+  }
 
   public void
       addVisibilityListener(final VisibilityListener visibilityListener)
