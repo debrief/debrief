@@ -22,6 +22,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
+import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -168,24 +169,26 @@ public class NarrativeViewer
     calculateGridRawHeight();
   }
 
-
-
   private void calculateGridRawHeight()
   {
     Display.getDefault().asyncExec(new Runnable()
     {
-      
       @Override
       public void run()
       {
-        if(getViewer().getGrid().isDisposed())
+        final Grid grid = getViewer().getGrid();
+        if(grid.isDisposed())
           return;
-        GridColumn[] columns = getViewer().getGrid().getColumns();
-        for (GridColumn gridColumn : columns)
-        {
-          NarrativeViewerModel.calculateHeight(getViewer().getGrid(),gridColumn);
-        }
         
+        final GridColumn[] columns = grid.getColumns();
+        for (final GridColumn gridColumn : columns)
+        {
+          // only do resize if this column is visible
+          if(gridColumn.isVisible())
+          {
+            NarrativeViewerModel.calculateHeight(grid,gridColumn);
+          }
+        }        
       }
     });
   }
@@ -205,10 +208,6 @@ public class NarrativeViewer
         gridColumn.setWordWrap(shouldWrap);
       }
       calculateGridRawHeight();
-      
-     
-      
-     
     }
   }
 
