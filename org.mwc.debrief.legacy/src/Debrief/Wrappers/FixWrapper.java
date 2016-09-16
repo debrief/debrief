@@ -473,7 +473,29 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
         next.getLocation().getLong() - previous.getLocation().getLong();
     double dDepth =
         next.getLocation().getDepth() - previous.getLocation().getDepth();
+    
     double dCourse = next.getCourse() - previous.getCourse();
+    
+    // SPECIAL HANDLING FOR COURSE - IN CASE IT'S WRAPPING THROUGH ZERO
+    if(Math.abs(dCourse) >  Math.PI)
+    {
+      // ok, put them in the same domain
+      double pCourse = previous.getCourse();
+      double nCourse = next.getCourse();
+      
+      if(pCourse < Math.PI)
+      {
+        pCourse += 2 * Math.PI;
+      }
+      if(nCourse < Math.PI)
+      {
+        nCourse += 2 * Math.PI;
+      }
+      
+      dCourse = nCourse - pCourse;
+    }
+    
+    
     double dSpeed = next.getSpeed() - previous.getSpeed();
 
     // sort out the proportions
@@ -502,6 +524,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     // ok, trim the course
     if (newCourse < 0)
       newCourse += Math.PI * 2;
+    if (newCourse > Math.PI * 2)
+      newCourse -= Math.PI * 2;
 
     final Fix tmpFix =
         new Fix(dtg, newLoc, newCourse, MWC.Algorithms.Conversions
@@ -1353,17 +1377,42 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
       fw1 = TrackWrapper_Test.createFix(100, 60, 30, 0, 31, 0, 0, 2, 3);
       fw2 = TrackWrapper_Test.createFix(200, 60, 15, 0, 31, 30, 0, 2, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
-
-      System.out.println(fw1.getLocation() + ": " + fw1.getLocation().getLat()
-          + ", " + fw1.getLocation().getLong());
-      System.out.println(fw2.getLocation() + ": " + fw2.getLocation().getLat()
-          + ", " + fw2.getLocation().getLong());
-      System.out.println(fw3.getLocation() + ": " + fw3.getLocation().getLat()
-          + ", " + fw3.getLocation().getLong());
+//
+//      System.out.println(fw1.getLocation() + ": " + fw1.getLocation().getLat()
+//          + ", " + fw1.getLocation().getLong());
+//      System.out.println(fw2.getLocation() + ": " + fw2.getLocation().getLat()
+//          + ", " + fw2.getLocation().getLong());
+//      System.out.println(fw3.getLocation() + ": " + fw3.getLocation().getLat()
+//          + ", " + fw3.getLocation().getLong());
 
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
       assertEquals("right long", 31.25, fw3.getLocation().getLong(), 0.0001);
       assertEquals("right lat", 60.375, fw3.getLocation().getLat(), 0.001);
+      
+      // handle the course passing through zero
+      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 0, 1);
+      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 10, 3);
+      fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
+      assertEquals("right time", 150, fw3.getTime().getDate().getTime());
+      assertEquals("right course", MWC.Algorithms.Conversions.Degs2Rads(5), fw3
+          .getCourse(), 0.001);
+
+      // handle the course passing through zero
+      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 355, 1);
+      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 15, 3);
+      fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
+      assertEquals("right time", 150, fw3.getTime().getDate().getTime());
+      assertEquals("right course", 5, Math.toDegrees(fw3
+          .getCourse()), 0.001);
+
+      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 315, 1);
+      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 15, 3);
+      fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
+      assertEquals("right time", 150, fw3.getTime().getDate().getTime());
+      assertEquals("right course", 345, Math.toDegrees(fw3
+          .getCourse()), 0.001);
+
+      
     }
 
   }

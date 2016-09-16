@@ -19,11 +19,16 @@ import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
+import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
+import org.eclipse.nebula.widgets.grid.Grid;
+import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -31,258 +36,240 @@ import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
-import de.kupzog.ktable.KTable;
-import de.kupzog.ktable.KTableCellDoubleClickAdapter;
-import de.kupzog.ktable.KTableCellResizeAdapter;
-import de.kupzog.ktable.SWTX;
 
-public class NarrativeViewer extends KTable
+public class NarrativeViewer
 {
 
-	final NarrativeViewerModel myModel;
-	private NarrativeViewerActions myActions;
+  final NarrativeViewerModel myModel;
+  private NarrativeViewerActions myActions;
 
-	public NarrativeViewer(final Composite parent, final IPreferenceStore preferenceStore)
-	{
-		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+  final GridTableViewer viewer;
+  private Composite composite;
 
-		myModel = new NarrativeViewerModel(preferenceStore,
-				new ColumnSizeCalculator()
-				{
-					@SuppressWarnings("synthetic-access")
-					public int getColumnWidth(final int col)
-					{
-						return getColumnRight(col) - getColumnLeft(col);
-					}
-				});
+  public NarrativeViewer(final Composite parent,
+      final IPreferenceStore preferenceStore)
+  {
+    GridColumnLayout layout = new GridColumnLayout(); 
+     composite = new Composite(parent, SWT.NONE);
+    composite.setLayout(layout);
+//    FilteredTree tree = new FilteredTree(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
+//      
+//      @Override
+//      protected boolean isLeafMatch(Viewer viewer, Object element)
+//      {
+//        
+//        AbstractColumn[] allColumns = myModel.getAllColumns();
+//        for (AbstractColumn abstractColumn : allColumns)
+//        {
+//          if(abstractColumn.isVisible())
+//          {
+//            String text = abstractColumn.getProperty((NarrativeEntry) element).toString();
+//           if(text!=null && wordMatches(text))
+//           {
+//             return true;
+//           }
+//          }
+//        }
+//        
+//        return false;
+//      }
+//      
+//    }, true) ;
+    viewer = new GridTableViewer(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI);
+    viewer.getGrid().setHeaderVisible(true);
+    viewer.getGrid().setLinesVisible(true);
+    viewer.getGrid().addControlListener(new ControlAdapter() {
+      @Override
+      public void controlResized(ControlEvent e) {
+        calculateGridRawHeight();
+      }
+    });
 
-		myModel.addColumnVisibilityListener(new Column.VisibilityListener()
-		{
-			public void columnVisibilityChanged(final Column column, final boolean actualIsVisible)
-			{
-				refresh();
-			}
-		});
-		setModel(myModel);
+    myModel = new NarrativeViewerModel(preferenceStore);
 
-		addControlListener(new ControlAdapter()
-		{
-			public void controlResized(final ControlEvent e)
-			{
-				onColumnsResized(false);
-			}
-		});
+   
+    myModel.createTable(this,layout);
+ 
+    
+    //
+    // addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
+    // {
+    // public void fixedCellDoubleClicked(final int col, final int row, final int statemask)
+    // {
+    // final Column column = myModel.getVisibleColumn(col);
+    // showFilterDialog(column);
+    // final ColumnFilter filter = column.getFilter();
+    // if (filter != null)
+    // {
+    //
+    // }
+    // }
+    // });
+  }
 
-		addCellResizeListener(new KTableCellResizeAdapter()
-		{
-			public void columnResized(final int col, final int newWidth)
-			{
-				onColumnsResized(false);
-			}
-		});
+ 
 
-		addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
-		{
-			public void fixedCellDoubleClicked(final int col, final int row, final int statemask)
-			{
-				final Column column = myModel.getVisibleColumn(col);
-				showFilterDialog(column);
-				final ColumnFilter filter = column.getFilter();
-				if (filter != null)
-				{
+  public GridTableViewer getViewer()
+  {
+    return viewer;
+  }
+  public Composite getControl()
+  {
+    return composite;
+  }
 
-				}
-			}
-		});
-	}
+  public NarrativeViewerActions getViewerActions()
+  {
+    if (myActions == null)
+    {
+      myActions = new NarrativeViewerActions(this);
+    }
+    return myActions;
+  }
 
-	public NarrativeViewerActions getViewerActions()
-	{
-		if (myActions == null)
-		{
-			myActions = new NarrativeViewerActions(this);
-		}
-		return myActions;
-	}
+  public void showFilterDialog(final Column column)
+  {
+    if (!myModel.hasInput())
+    {
+      return;
+    }
 
-	public NarrativeViewerModel getModel()
-	{
-		return (NarrativeViewerModel) super.getModel();
-	}
+    final ColumnFilter filter = column.getFilter();
+    if (filter == null)
+    {
+      return;
+    }
 
-	public void showFilterDialog(final Column column)
-	{
-		if (!myModel.hasInput())
-		{
-			return;
-		}
+    final FilterDialog dialog =
+        new FilterDialog(viewer.getGrid().getShell(), myModel.getInput(),
+            column);
 
-		final ColumnFilter filter = column.getFilter();
-		if (filter == null)
-		{
-			return;
-		}
+    if (Dialog.OK == dialog.open())
+    {
+      dialog.commitFilterChanges();
+      refresh();
+    }
+  }
 
-		final FilterDialog dialog = new FilterDialog(getShell(), myModel.getInput(),
-				column);
+  public void setInput(final IRollingNarrativeProvider entryWrapper)
+  {
+    myModel.setInput(entryWrapper);
+    refresh();
+  }
 
-		if (Dialog.OK == dialog.open())
-		{
-			dialog.commitFilterChanges();
-			refresh();
-		}
-	}
+  public void setTimeFormatter(final TimeFormatter timeFormatter)
+  {
+    myModel.setTimeFormatter(timeFormatter);
+    viewer.refresh();
+  }
 
-	void onColumnsResized(final boolean force)
-	{
-		final GC gc = new GC(this);
-		myModel.onColumnsResized(gc, force);
-		gc.dispose();
-	}
+  public void refresh()
+  {
+    viewer.setInput(new Object());
+    calculateGridRawHeight();
+  }
 
-	public void setInput(final IRollingNarrativeProvider entryWrapper)
-	{
-		myModel.setInput(entryWrapper);
-		refresh();
-	}
+  private void calculateGridRawHeight()
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        final Grid grid = getViewer().getGrid();
+        if(grid.isDisposed())
+          return;
+        
+        final GridColumn[] columns = grid.getColumns();
+        for (final GridColumn gridColumn : columns)
+        {
+          // only do resize if this column is visible
+          if(gridColumn.isVisible())
+          {
+            NarrativeViewerModel.calculateHeight(grid,gridColumn);
+          }
+        }        
+      }
+    });
+  }
 
-	public void setTimeFormatter(final TimeFormatter timeFormatter)
-	{
-		myModel.setTimeFormatter(timeFormatter);
-		redraw();
-	}
+  public boolean isWrappingEntries()
+  {
+    return myModel.isWrappingEntries();
+  }
 
-	public void refresh()
-	{
-		onColumnsResized(true);
-		redraw();
-	}
+  public void setWrappingEntries(final boolean shouldWrap)
+  {
+    if (myModel.setWrappingEntries(shouldWrap))
+    {
+      GridColumn[] columns = getViewer().getGrid().getColumns();
+      for (GridColumn gridColumn : columns)
+      {
+        gridColumn.setWordWrap(shouldWrap);
+      }
+      calculateGridRawHeight();
+    }
+  }
 
-	public boolean isWrappingEntries()
-	{
-		return myModel.isWrappingEntries();
-	}
+  /**
+   * the controlling time has updated
+   * 
+   * @param dtg
+   *          the selected dtg
+   */
+  public void setDTG(final HiResDate dtg)
+  {
+    // find the table entry immediately after or on this DTG
+    NarrativeEntry entry = null;
 
-	public void setWrappingEntries(final boolean shouldWrap)
-	{
-		if (myModel.setWrappingEntries(shouldWrap))
-		{
-			refresh();
-		}
-	}
+    // retrieve the list of visible rows
+    final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
 
-	/**
-	 * the controlling time has updated
-	 * 
-	 * @param dtg
-	 *          the selected dtg
-	 */
-	public void setDTG(final HiResDate dtg)
-	{
-		// find the table entry immediately after or on this DTG
-		int theIndex = -1;
-		int thisIndex = 0;
+    // step through them
+    for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
+        .hasNext();)
+    {
+      final NarrativeEntry narrativeEntry =
+          (NarrativeEntry) entryIterator.next();
 
-		// retrieve the list of visible rows
-		final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+      // get the date
+      final HiResDate dt = narrativeEntry.getDTG();
 
-		// step through them
-		for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
-				.hasNext();)
-		{
-			final NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+      // is this what we're looking for?
+      if (dt.greaterThanOrEqualTo(dtg))
+      {
+        entry = narrativeEntry;
+        break;
+      }
 
-			// get the date
-			final HiResDate dt = narrativeEntry.getDTG();
+    }
 
-			// is this what we're looking for?
-			if (dt.greaterThanOrEqualTo(dtg))
-			{
-				// yup, remember the index
-				theIndex = thisIndex;
-				break;
-			}
+    // ok, try to select this entry
+    if (entry != null)
+    {
+      setEntry(entry);
+    }
 
-			// increment the counter
-			thisIndex++;
-		}
+  }
 
-		// ok, try to select this entry
-		if (theIndex > -1)
-		{
-			// just check it's not already selected
-			final int[] currentRows = super.getRowSelection();
-			if (currentRows.length == 1)
-			{
-				// don't bother, we've already selected it
-				if (currentRows[0] == theIndex + 1)
-					return;
-			}
+  /**
+   * the controlling time has updated
+   * 
+   * @param dtg
+   *          the selected dtg
+   */
+  public void setEntry(final NarrativeEntry entry)
+  {
+    // select this item
+    viewer.setSelection(new StructuredSelection(entry));
+    
+    // make sure the new item is visible
+    viewer.reveal(entry);
+  }
 
-			// to make sure the desired entry is fully visible (even if it's a
-			// multi-line one),
-			// select the entry after our target one, then our target entry.
-			super.setSelection(1, theIndex + 2, true);
+  public NarrativeViewerModel getModel()
+  {
+    return myModel;
+  }
 
-			// right, it's currently looking at the entry after our one. Now select
-			// our one.
-			super.setSelection(1, theIndex + 1, true);
-		}
-
-	}
-
-	/**
-	 * the controlling time has updated
-	 * 
-	 * @param dtg
-	 *          the selected dtg
-	 */
-	public void setEntry(final NarrativeEntry entry)
-	{
-		// find the table entry immediately after or on this DTG
-		int theIndex = -1;
-		int thisIndex = 0;
-
-		// retrieve the list of visible rows
-		final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
-
-		// step through them
-		for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
-				.hasNext();)
-		{
-			final NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
-
-			if (narrativeEntry == entry)
-			{
-				// yup, remember the index
-				theIndex = thisIndex;
-				break;
-			}
-
-			// increment the counter
-			thisIndex++;
-		}
-
-		// ok, try to select this entry
-		if (theIndex > -1)
-		{
-			// to make sure the desired entry is fully visible (even if it's a
-			// multi-line one),
-			// select the entry after our target one, then our target entry.
-			super.setSelection(1, theIndex + 2, true);
-
-			// right, it's currently looking at the entry after our one. Now select
-			// our one.
-			super.setSelection(1, theIndex + 1, true);
-		}
-
-	}
-	
-	@Override
-	public void dispose() {
-		if (myModel != null) {
-			myModel.dispose();
-		}
-		super.dispose();
-	}
 }
