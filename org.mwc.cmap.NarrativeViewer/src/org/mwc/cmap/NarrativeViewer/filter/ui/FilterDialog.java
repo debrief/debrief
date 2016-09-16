@@ -233,7 +233,7 @@ public class FilterDialog extends Dialog
 
     private List createItemsList(final Composite parent, final Iterable<String> items)
     {
-        final List result = new List(parent, SWT.BORDER);
+        final List result = new List(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         result.setLayoutData(new GridData(ITEM_LIST_WIDTH, ITEM_LIST_HEIGHT));
         for (final String item : items)
         {
