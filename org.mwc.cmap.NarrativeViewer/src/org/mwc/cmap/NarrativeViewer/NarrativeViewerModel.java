@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
+import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.jface.gridviewer.GridViewerColumn;
 import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
@@ -51,6 +52,7 @@ import MWC.TacticalData.NarrativeEntry;
 
 public class NarrativeViewerModel
 {
+  private static final String VARYING_HEIGHT = "VARYING_HEIGHT";
   private static final NarrativeEntry[] NO_ENTRIES = new NarrativeEntry[0];
   protected static final org.eclipse.swt.graphics.Color SWT_WHITE =
       new org.eclipse.swt.graphics.Color(Display.getCurrent(), 255, 255, 254);
@@ -444,6 +446,11 @@ public class NarrativeViewerModel
       return true;
     }
     
+    public boolean isWrapSupport()
+    {
+      return true;
+    }
+    
     
 //    @Override
 //    public CellEditor getCellEditor(Grid table)
@@ -648,12 +655,15 @@ public class NarrativeViewerModel
 
   static void calculateHeight(Grid fGrid,GridColumn gridColumn) 
   {   
-    for (GridItem item : fGrid.getItems()) {
-      GC gc = new GC(item.getDisplay());
-      
-      Point textBounds = gridColumn.getCellRenderer().computeSize(gc, gridColumn.getWidth(), SWT.DEFAULT, item);
-      gc.dispose();
-      item.setHeight(textBounds.y);
+    final Boolean HEIGHT_DATA = (Boolean) gridColumn.getData(VARYING_HEIGHT);
+    if((HEIGHT_DATA!=null && HEIGHT_DATA))
+    {
+      for (final GridItem item : fGrid.getItems()) {
+        final GC gc = new GC(item.getDisplay());        
+        final Point textBounds = gridColumn.getCellRenderer().computeSize(gc, gridColumn.getWidth(), SWT.DEFAULT, item);
+        gc.dispose();
+        item.setHeight(textBounds.y);
+      }
     }
   }
   
@@ -713,30 +723,30 @@ public class NarrativeViewerModel
                 .getColumnWidth(), column.getCellRenderer(viewer.getViewer()),column.isWrap());
 
         
-        viewerColumn.getColumn().addControlListener(new ControlAdapter() {
+        final GridColumn gridColumn = viewerColumn.getColumn();
+        gridColumn.setData(VARYING_HEIGHT, column.isWrapSupport());
+        gridColumn.addControlListener(new ControlAdapter() {
           @Override
           public void controlResized(ControlEvent e) {
-            
             Display.getDefault().asyncExec(new Runnable()
             {
-              
               @Override
               public void run()
               {
-                if(viewer.getViewer().getGrid().isDisposed())
+                GridTableViewer gridTableViewer = viewer.getViewer();
+                if(gridTableViewer.getGrid().isDisposed())
                   return;
-                GridColumn[] columns = viewer.getViewer().getGrid().getColumns();
+                GridColumn[] columns = gridTableViewer.getGrid().getColumns();
                 for (GridColumn gridColumn : columns)
                 {
-                  NarrativeViewerModel.calculateHeight(viewer.getViewer().getGrid(),gridColumn);
+                  if(gridColumn.isVisible() )
+                    NarrativeViewerModel.calculateHeight(gridTableViewer.getGrid(),gridColumn);
                 }
-                
               }
             });
-            
           }
         });
-        viewerColumn.getColumn().addSelectionListener(new SelectionAdapter()
+        gridColumn.addSelectionListener(new SelectionAdapter()
         {
           @Override
           public void widgetSelected(SelectionEvent e)
@@ -754,7 +764,6 @@ public class NarrativeViewerModel
             protected void setValue(Object element, Object value)
             {
               column.setProperty((NarrativeEntry) element, value);
-
             }
 
             @Override
@@ -766,7 +775,6 @@ public class NarrativeViewerModel
             @Override
             protected CellEditor getCellEditor(Object element)
             {
-
               return cellEditor;
             }
 
@@ -783,27 +791,27 @@ public class NarrativeViewerModel
           public void columnVisibilityChanged(Column column,
               boolean actualIsVisible)
           {
-            viewerColumn.getColumn().setVisible(column.isVisible());
+            gridColumn.setVisible(column.isVisible());
 
             if(column.isVisible())
             {
-              layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+              layout.setColumnData(gridColumn, new ColumnWeightData(
                   column.getColumnWidth()));
             }
             else
             {
-              layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+              layout.setColumnData(gridColumn, new ColumnWeightData(
                   0));
             }
           }
         });
-        layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+        layout.setColumnData(gridColumn, new ColumnWeightData(
             column.getColumnWidth(),column.isColumnWidthExpand()));
 
         if (!column.isVisible())
         {
-          viewerColumn.getColumn().setVisible(column.isVisible());
-          layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(
+          gridColumn.setVisible(column.isVisible());
+          layout.setColumnData(gridColumn, new ColumnWeightData(
               0));
         }
 

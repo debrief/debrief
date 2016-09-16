@@ -188,7 +188,7 @@ public class NarrativeViewer
         for (final GridColumn gridColumn : columns)
         {
           // only do resize if this column is visible
-          if(gridColumn.isVisible())
+          if(gridColumn.isVisible() )
           {
             NarrativeViewerModel.calculateHeight(grid,gridColumn);
           }
