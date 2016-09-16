@@ -52,7 +52,7 @@ import MWC.TacticalData.NarrativeEntry;
 
 public class NarrativeViewerModel
 {
-  private static final String CALCULATE_HEIGHT = "CALCULATE_HEIGHT";
+  private static final String VARYING_HEIGHT = "VARYING_HEIGHT";
   private static final NarrativeEntry[] NO_ENTRIES = new NarrativeEntry[0];
   protected static final org.eclipse.swt.graphics.Color SWT_WHITE =
       new org.eclipse.swt.graphics.Color(Display.getCurrent(), 255, 255, 254);
@@ -655,12 +655,12 @@ public class NarrativeViewerModel
 
   static void calculateHeight(Grid fGrid,GridColumn gridColumn) 
   {   
-    if((gridColumn.getData(CALCULATE_HEIGHT)!=null && (Boolean)gridColumn.getData(CALCULATE_HEIGHT)))
+    final Boolean HEIGHT_DATA = (Boolean) gridColumn.getData(VARYING_HEIGHT);
+    if((HEIGHT_DATA!=null && HEIGHT_DATA))
     {
-      for (GridItem item : fGrid.getItems()) {
-        GC gc = new GC(item.getDisplay());
-        
-        Point textBounds = gridColumn.getCellRenderer().computeSize(gc, gridColumn.getWidth(), SWT.DEFAULT, item);
+      for (final GridItem item : fGrid.getItems()) {
+        final GC gc = new GC(item.getDisplay());        
+        final Point textBounds = gridColumn.getCellRenderer().computeSize(gc, gridColumn.getWidth(), SWT.DEFAULT, item);
         gc.dispose();
         item.setHeight(textBounds.y);
       }
@@ -724,14 +724,12 @@ public class NarrativeViewerModel
 
         
         final GridColumn gridColumn = viewerColumn.getColumn();
-        gridColumn.setData(CALCULATE_HEIGHT, column.isWrapSupport());
+        gridColumn.setData(VARYING_HEIGHT, column.isWrapSupport());
         gridColumn.addControlListener(new ControlAdapter() {
           @Override
           public void controlResized(ControlEvent e) {
-            
             Display.getDefault().asyncExec(new Runnable()
             {
-              
               @Override
               public void run()
               {
@@ -744,10 +742,8 @@ public class NarrativeViewerModel
                   if(gridColumn.isVisible() )
                     NarrativeViewerModel.calculateHeight(gridTableViewer.getGrid(),gridColumn);
                 }
-                
               }
             });
-            
           }
         });
         gridColumn.addSelectionListener(new SelectionAdapter()
@@ -768,7 +764,6 @@ public class NarrativeViewerModel
             protected void setValue(Object element, Object value)
             {
               column.setProperty((NarrativeEntry) element, value);
-
             }
 
             @Override
@@ -780,7 +775,6 @@ public class NarrativeViewerModel
             @Override
             protected CellEditor getCellEditor(Object element)
             {
-
               return cellEditor;
             }
 
