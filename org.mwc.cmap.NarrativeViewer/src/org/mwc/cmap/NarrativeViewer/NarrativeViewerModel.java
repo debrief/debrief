@@ -646,7 +646,8 @@ public class NarrativeViewerModel
     }
   };
 
-  static void calculateHeight(Grid fGrid,GridColumn gridColumn) {
+  static void calculateHeight(Grid fGrid,GridColumn gridColumn) 
+  {   
     for (GridItem item : fGrid.getItems()) {
       GC gc = new GC(item.getDisplay());
       
