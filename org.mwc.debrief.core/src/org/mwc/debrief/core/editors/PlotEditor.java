@@ -1327,11 +1327,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
         res = wrapper;
       }
-      else
-      {
-        // create an empty narrative warpper
-        res = new NarrativeWrapper("Empty");
-      }
     }
     else if (adapter == RelativeProjectionParent.class)
     {
