@@ -654,6 +654,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
               _myLayers.addDataModifiedListener(_layerListener);
               _myLayers.addDataReformattedListener(_layerListener);
               _myLayers.addDataExtendedListener(_layerListener);
+              
+              // fire the extended listener once, just in case
+              // we need to empty the narrative
+              _layerListener.dataExtended(_myLayers);
             }
           }
 
