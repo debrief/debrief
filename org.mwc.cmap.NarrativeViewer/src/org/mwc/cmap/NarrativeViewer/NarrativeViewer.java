@@ -84,7 +84,7 @@ public class NarrativeViewer
         calculateGridRawHeight();
       }
     });
-
+    
     myModel = new NarrativeViewerModel(preferenceStore);
 
    
@@ -165,8 +165,12 @@ public class NarrativeViewer
 
   public void refresh()
   {
-    viewer.setInput(new Object());
-    calculateGridRawHeight();
+    // check we're not closing
+    if(!viewer.getControl().isDisposed())
+    {
+      viewer.setInput(new Object());
+      calculateGridRawHeight();
+    }
   }
 
   private void calculateGridRawHeight()
