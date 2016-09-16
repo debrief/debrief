@@ -62,6 +62,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -173,7 +174,25 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void dataExtended(final Layers theData)
       {
+        // nope, see if there is one
+        final Layer match = theData.findLayer(ImportReplay.NARRATIVE_LAYER);
 
+        // ok, do we already have a narrative?
+        if(_myRollingNarrative == null)
+        {
+          if(match instanceof IRollingNarrativeProvider)
+          {
+            setInput((IRollingNarrativeProvider) match);
+          }
+        }
+        else
+        {
+          // hmm, has our narrative been deleted?
+          if(match == null)
+          {
+            setInput(null);
+          }
+        }
       }
 
       @Override
@@ -535,18 +554,20 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
       }
 
-      // ok remember the new provider
-      _myRollingNarrative = newNarr;
+      // ok remember the new provider (even if it's null)
+      _myRollingNarrative = newNarr; 
 
-      // ok, register as a listener
-      _myRollingNarrative.addNarrativeListener(
-          IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-      
-      // ok - show the narrative.  We can't rely on
-      // listening to the rolling narrative, since we 
-      // may be switching back to a previous plot.
-      myViewer.setInput(_myRollingNarrative);
-      
+      if (newNarr != null)
+      {
+        // ok, register as a listener
+        _myRollingNarrative.addNarrativeListener(
+            IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+
+        // ok - show the narrative. We can't rely on
+        // listening to the rolling narrative, since we
+        // may be switching back to a previous plot.
+        myViewer.setInput(_myRollingNarrative);
+      }
     }
   }
 
@@ -628,6 +649,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
               _myLayers = layer;
               refreshColors();
+              
+              // and sort out the listeners
               _myLayers.addDataModifiedListener(_layerListener);
               _myLayers.addDataReformattedListener(_layerListener);
               _myLayers.addDataExtendedListener(_layerListener);
@@ -983,6 +1006,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   private void refreshColors()
   {
     if (_myLayers == null)
+    {
+      return;
+    }
+    if(_myRollingNarrative == null)
     {
       return;
     }
