@@ -192,6 +192,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             setInput(null);
           }
         }
+        
+        // oh, oooh, see if we've learned some more colors
+        refreshColors();
       }
 
       @Override
@@ -551,6 +554,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       // ok remember the new provider (even if it's null)
       _myRollingNarrative = newNarr;
 
+      // is the new one a real object?
       if (newNarr != null)
       {
         // ok, register as a listener
@@ -575,58 +579,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
 
     final NViewerView me = this;
-
-    _myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
-        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final IRollingNarrativeProvider newNarr =
-                (IRollingNarrativeProvider) part;
-            if (newNarr != _myRollingNarrative)
-            {
-              setInput(newNarr);
-            }
-          }
-        });
-
-    // unusually, we are also going to track the open event for narrative
-    // data so that we can start off with some data
-    _myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
-        PartMonitor.OPENED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final IRollingNarrativeProvider newNarr =
-                (IRollingNarrativeProvider) part;
-            if (newNarr != _myRollingNarrative)
-            {
-              setInput(newNarr);
-            }
-          }
-
-        });
-
-    _myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
-        PartMonitor.CLOSED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final IRollingNarrativeProvider newNarr =
-                (IRollingNarrativeProvider) part;
-            if (newNarr == _myRollingNarrative)
-            {
-              // stop listening to old narrative
-              _myRollingNarrative.removeNarrativeListener(
-                  IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-              myViewer.setInput(null);
-              _myRollingNarrative = null;
-            }
-          }
-        });
 
     // //////////////////////////////////////////
     // and the layers - to hear about refresh
@@ -733,6 +685,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             {
               _myTemporalDataset.removeListener(_temporalListener,
                   TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+              
+              // and clear the pointer
+              _myTemporalDataset = null;
             }
           }
         });
