@@ -1613,6 +1613,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("track starts correctly", 6, trackLength());
 		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
 		assertEquals("have right num tracks", 2, theLayers.size());
+    assertEquals("segment is correct length", 5, ts2.size());
 
 		// do a merge
 		final Editable[] subjects = new Editable[]
@@ -1620,11 +1621,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		TrackWrapper.mergeTracks(_tw, theLayers, subjects);
 
 		// have a look at the results
-		assertEquals("track is longer", 11, _tw.numFixes());
+		assertEquals("track is longer", 17, _tw.numFixes());
 		assertEquals("track got ditched", 2, theLayers.size());
 		final TrackSegment sl = (TrackSegment) _tw.getSegments().elements()
 				.nextElement();
-		assertEquals("just the one segment - with all our points", 11, sl.size());
+		assertEquals("just the one segment - with all our points", 17, sl.size());
 
 	}
 
