@@ -773,11 +773,14 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
     if (_controllableTime != null)
     {
+      _controllableTime = null;
+    }
+    
+    if(_myTemporalDataset != null)
+    {
       _myTemporalDataset.removeListener(_temporalListener,
           TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
       _myTemporalDataset = null;
-      _controllableTime = null;
     }
 
     ditchOldLayers();
