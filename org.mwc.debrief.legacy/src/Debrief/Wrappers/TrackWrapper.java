@@ -625,11 +625,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     Enumeration<Editable> tsPts = source.elements();
     while (tsPts.hasMoreElements())
     {
-      FixWrapper existingFix = (FixWrapper) tsPts.nextElement();
-      FixWrapper newF = new FixWrapper(existingFix.getFix());
+      final FixWrapper existingFW = (FixWrapper) tsPts.nextElement();
+      final Fix existingFix = existingFW.getFix();
+      final Fix newFix = existingFix.makeCopy();
+      final FixWrapper newF = new FixWrapper(newFix);
 
       // also duplicate the label
-      newF.setLabel(existingFix.getLabel());
+      newF.setLabel(existingFW.getLabel());
 
       target.addFix(newF);
     }
