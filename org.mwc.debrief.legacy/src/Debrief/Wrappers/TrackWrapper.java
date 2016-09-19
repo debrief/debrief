@@ -445,7 +445,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // may as well ditch it anyway
             theLayers.removeThisLayer(thisP);
           }
-
         }
         else
         {
@@ -462,7 +461,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * perform a merge of the supplied tracks.
    * 
-   * @param target
+   * @param recipient
    *          the final recipient of the other items
    * @param theLayers
    * @param parents
@@ -473,12 +472,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    *          name to give to the merged object
    * @return sufficient information to undo the merge
    */
-  public static int mergeTracks(final TrackWrapper recipient,
+  public static int mergeTracks(final TrackWrapper newTrack,
       final Layers theLayers, final Editable[] subjects)
-  {
-    // where we dump the new data points
-    TrackWrapper newTrack = (TrackWrapper) recipient;
-    
+  {   
     // check that the legs don't overlap
     String failedMsg = checkTheyAreNotOverlapping(subjects);
 
@@ -499,9 +495,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // is it a plain segment?
       if (thisL instanceof TrackWrapper)
       {
-        
         // is this the first one? If so, we'll copy the symbol setup
-        if(i ==0)
+        if(i == 0)
         {
           TrackWrapper track = (TrackWrapper) thisL;
           copyStyling(newTrack, track);
@@ -516,16 +511,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           if (obj instanceof SegmentList)
           {
             final SegmentList sl = (SegmentList) obj;
-            TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
+            final TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
             duplicateFixes(sl, newT);
             newTrack.add(newT);
           }
           else if (obj instanceof TrackSegment)
           {
-            TrackSegment ts = (TrackSegment) obj;
+            final TrackSegment ts = (TrackSegment) obj;
 
             // ok, duplicate the fixes in this segment
-            TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
+            final TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
             duplicateFixes(ts, newT);
 
             // and add it to the new track
@@ -535,10 +530,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
       else if (thisL instanceof TrackSegment)
       {
-        TrackSegment ts = (TrackSegment) thisL;
+        final TrackSegment ts = (TrackSegment) thisL;
 
         // ok, duplicate the fixes in this segment
-        TrackSegment newT = new TrackSegment(ts.getPlotRelative());
+        final TrackSegment newT = new TrackSegment(ts.getPlotRelative());
         duplicateFixes(ts, newT);
 
         // and add it to the new track
@@ -547,33 +542,30 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // is this the first one? If so, we'll copy the symbol setup
         if(i ==0)
         {
-          TrackWrapper track = ts.getWrapper();
+          final TrackWrapper track = ts.getWrapper();
           copyStyling(newTrack, track);
         }
-
       }
       else if (thisL instanceof SegmentList)
       {
-        SegmentList sl = (SegmentList) thisL;
-
+        final SegmentList sl = (SegmentList) thisL;
 
         // is this the first one? If so, we'll copy the symbol setup
         if(i ==0)
         {
-          TrackWrapper track = sl.getWrapper();
+          final TrackWrapper track = sl.getWrapper();
           copyStyling(newTrack, track);
         }
 
         // it's absolute, since merged tracks are always
         // absolute
-        TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
+        final TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
 
         // ok, duplicate the fixes in this segment
         duplicateFixes(sl, newT);
 
         // and add it to the new track
         newTrack.append(newT);
-        
       }
     }
 
@@ -599,7 +591,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     newTrack.setSymbolColor(reference.getSymbolColor());
   }
 
-  private static void duplicateFixes(SegmentList sl, TrackSegment target)
+  private static void duplicateFixes(final SegmentList sl, final TrackSegment target)
   {
     final Enumeration<Editable> segs = sl.elements();
     while (segs.hasMoreElements())
@@ -608,8 +600,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       if (segment instanceof CoreTMASegment)
       {
-        CoreTMASegment ct = (CoreTMASegment) segment;
-        TrackSegment newSeg = new TrackSegment(ct);
+        final CoreTMASegment ct = (CoreTMASegment) segment;
+        final TrackSegment newSeg = new TrackSegment(ct);
         duplicateFixes(newSeg, target);
       }
       else
@@ -619,17 +611,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
-  private static void duplicateFixes(TrackSegment source, TrackSegment target)
+  private static void duplicateFixes(final TrackSegment source, final TrackSegment target)
   {
     // ok, retrieve the points in the track segment
-    Enumeration<Editable> tsPts = source.elements();
+    final Enumeration<Editable> tsPts = source.elements();
     while (tsPts.hasMoreElements())
     {
-      FixWrapper existingFix = (FixWrapper) tsPts.nextElement();
-      FixWrapper newF = new FixWrapper(existingFix.getFix());
+      final FixWrapper existingFW = (FixWrapper) tsPts.nextElement();
+      final Fix existingFix = existingFW.getFix();
+      final Fix newFix = existingFix.makeCopy();
+      final FixWrapper newF = new FixWrapper(newFix);
 
       // also duplicate the label
-      newF.setLabel(existingFix.getLabel());
+      newF.setLabel(existingFW.getLabel());
 
       target.addFix(newF);
     }
