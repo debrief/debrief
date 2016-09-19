@@ -205,7 +205,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         {
           uiUpdate();
         }
-        refreshColor(changedLayer);
+        
+        // do we have a rolling narrative?
+        if(_myRollingNarrative != null)
+        {
+          // ok, try to refresh the colors based on the new data
+          refreshColor(changedLayer);
+        }
       }
 
     };
