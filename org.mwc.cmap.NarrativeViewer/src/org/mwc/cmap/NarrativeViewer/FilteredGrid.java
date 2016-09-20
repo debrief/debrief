@@ -9,7 +9,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -155,7 +154,7 @@ public class FilteredGrid extends Composite {
 	 */
 	private static final String DISABLED_CLEAR_ICON= "org.eclipse.ui.internal.dialogs.DCLEAR_ICON"; //$NON-NLS-1$
 
-  private static final String FilteredGrid_FilterMessage = "filter text";
+  private static final String FilteredGrid_FilterMessage = "filter text (including * or ?)";
 
   private static final String FilteredGrid_ClearToolTip = "Clear";
 
@@ -402,10 +401,6 @@ public class FilteredGrid extends Composite {
 				Control redrawFalseControl = gridComposite != null ? gridComposite
 						: gridViewer.getControl();
 				try {
-					// don't want the user to see updates that will be made to
-					// the grid
-					// we are setting redraw(false) on the composite to avoid
-					// dancing scrollbar
 					redrawFalseControl.setRedraw(false);
 					
 					gridViewer.refresh(true);
@@ -510,9 +505,7 @@ public class FilteredGrid extends Composite {
 				 */
 				public void mouseDown(MouseEvent e) {
 					if (filterText.getText().equals(initialText)) {
-						// XXX: We cannot call clearText() due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=260664
-						setFilterText(""); //$NON-NLS-1$
-						textChanged();
+					  clearText();
 					}
 				}
 			});
@@ -617,19 +610,10 @@ public class FilteredGrid extends Composite {
 		return new Text(parent, SWT.SINGLE);
 	}
 
-	private String previousFilterText;
-
-	private boolean narrowingDown;
-
 	/**
 	 * Update the receiver after the text has changed.
 	 */
 	protected void textChanged() {
-		narrowingDown = previousFilterText == null
-				|| previousFilterText
-						.equals(FilteredGrid_FilterMessage)
-				|| getFilterString().startsWith(previousFilterText);
-		previousFilterText = getFilterString();
 		// cancel currently running job first, to prevent unnecessary redraw
 		refreshJob.cancel();
 		refreshJob.schedule(getRefreshJobDelay());
