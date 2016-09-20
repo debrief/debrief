@@ -9,6 +9,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -43,7 +44,18 @@ import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
 
-
+/**
+ * 
+ * @author Anuradha
+ * 
+ * Direct port from Jface FilteredTree make sure to override passed PatternFilter
+ *   
+ *     public boolean isElementVisible(Viewer viewer, Object element)
+ *     {
+ *       
+ *     }
+ *
+ */
 public class FilteredGrid extends Composite {
 
 	/**
