@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.Grid;
@@ -29,6 +30,7 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.dialogs.PatternFilter;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -43,39 +45,51 @@ public class NarrativeViewer
   final NarrativeViewerModel myModel;
   private NarrativeViewerActions myActions;
 
-  final GridTableViewer viewer;
-  private Composite composite;
+  private final GridTableViewer viewer;
+  private final FilteredGrid filterGrid;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
     GridColumnLayout layout = new GridColumnLayout(); 
-     composite = new Composite(parent, SWT.NONE);
-    composite.setLayout(layout);
-//    FilteredTree tree = new FilteredTree(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
-//      
-//      @Override
-//      protected boolean isLeafMatch(Viewer viewer, Object element)
-//      {
-//        
-//        AbstractColumn[] allColumns = myModel.getAllColumns();
-//        for (AbstractColumn abstractColumn : allColumns)
-//        {
-//          if(abstractColumn.isVisible())
-//          {
-//            String text = abstractColumn.getProperty((NarrativeEntry) element).toString();
-//           if(text!=null && wordMatches(text))
-//           {
-//             return true;
-//           }
-//          }
-//        }
-//        
-//        return false;
-//      }
-//      
-//    }, true) ;
-    viewer = new GridTableViewer(composite, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI);
+ 
+     filterGrid = new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
+       
+       @Override
+      public boolean isElementVisible(final Viewer viewer, final Object element)
+      {
+        return isLeafMatch(viewer, element);
+      }
+      
+      @Override
+      protected boolean isLeafMatch(final Viewer viewer, final Object element)
+      {
+        
+        final AbstractColumn[] allColumns = myModel.getAllColumns();
+        for (AbstractColumn abstractColumn : allColumns)
+        {
+          if(abstractColumn.isVisible())
+          {
+            final Object content = abstractColumn.getProperty((NarrativeEntry) element);
+            
+            // anything in this column?
+            if(content != null)
+            {
+              final String text = content.toString();
+              if(text!=null && wordMatches(text))
+              {
+                return true;
+              }
+            }
+          }
+        }
+        
+        return false;
+      }
+      
+    }, true) ;
+     filterGrid.getGridComposite().setLayout(layout);
+    viewer = filterGrid.getViewer();
     viewer.getGrid().setHeaderVisible(true);
     viewer.getGrid().setLinesVisible(true);
     viewer.getGrid().addControlListener(new ControlAdapter() {
@@ -115,7 +129,7 @@ public class NarrativeViewer
   }
   public Composite getControl()
   {
-    return composite;
+    return filterGrid;
   }
 
   public NarrativeViewerActions getViewerActions()
