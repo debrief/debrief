@@ -45,8 +45,8 @@ public class NarrativeViewer
   final NarrativeViewerModel myModel;
   private NarrativeViewerActions myActions;
 
-  final GridTableViewer viewer;
-  private FilteredGrid filterGrid;
+  private final GridTableViewer viewer;
+  private final FilteredGrid filterGrid;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -56,25 +56,31 @@ public class NarrativeViewer
      filterGrid = new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
        
        @Override
-      public boolean isElementVisible(Viewer viewer, Object element)
+      public boolean isElementVisible(final Viewer viewer, final Object element)
       {
         return isLeafMatch(viewer, element);
       }
       
       @Override
-      protected boolean isLeafMatch(Viewer viewer, Object element)
+      protected boolean isLeafMatch(final Viewer viewer, final Object element)
       {
         
-        AbstractColumn[] allColumns = myModel.getAllColumns();
+        final AbstractColumn[] allColumns = myModel.getAllColumns();
         for (AbstractColumn abstractColumn : allColumns)
         {
           if(abstractColumn.isVisible())
           {
-            String text = abstractColumn.getProperty((NarrativeEntry) element).toString();
-           if(text!=null && wordMatches(text))
-           {
-             return true;
-           }
+            final Object content = abstractColumn.getProperty((NarrativeEntry) element);
+            
+            // anything in this column?
+            if(content != null)
+            {
+              final String text = content.toString();
+              if(text!=null && wordMatches(text))
+              {
+                return true;
+              }
+            }
           }
         }
         
