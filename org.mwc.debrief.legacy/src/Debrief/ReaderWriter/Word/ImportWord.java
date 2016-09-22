@@ -745,12 +745,15 @@ public class ImportWord
       final String str2a = "asdfads M00 adf ag a";
       final String str3 = "asdfads adf ag a";
       final String str5 = "M00 0000";
+      final String str6 = "popopo M01 0000";
 
       assertEquals("right id", "000", FCSEntry.parseTrack(str1));
       assertEquals("right id", "000", FCSEntry.parseTrack(str1a));
       assertEquals("right id", "000", FCSEntry.parseTrack(str2));
       assertEquals("right id", "M00", FCSEntry.parseTrack(str2a));
+      assertEquals("right id", null, FCSEntry.parseTrack(str3));
       assertEquals("right id", "M00", FCSEntry.parseTrack(str5));
+      assertEquals("right id", "M01", FCSEntry.parseTrack(str6));
       assertNull("right id", FCSEntry.parseTrack(str3));
     }
   }
