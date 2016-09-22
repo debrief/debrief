@@ -77,8 +77,6 @@ import MWC.TacticalData.NarrativeEntry;
 public class NViewerView extends ViewPart implements PropertyChangeListener,
     ISelectionProvider
 {
-  public static final String VIEW_ID = "com.borlander.ianmayo.nviewer.app.view";
-
   NarrativeViewer myViewer;
 
   /**

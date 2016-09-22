@@ -64,11 +64,10 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(CorePlugin.LIVE_DATA_MONITOR);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
-		// bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
 
 		// and our view shortcuts
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
-		layout.addShowViewShortcut(CorePlugin.NARRATIVES);
+		layout.addShowViewShortcut(CorePlugin.NARRATIVE_VIEWER);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		layout.addShowViewShortcut(ASSETPlugin.SCENARIO_CONTROLLER2);
 		layout.addShowViewShortcut(ASSETPlugin.VESSEL_MONITOR);

@@ -7,7 +7,7 @@
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.NarrativeViewer.app.NViewerView"
             icon="icons/16/narrative_viewer.png"
-            id="com.borlander.ianmayo.nviewer.app.view"
+            id="org.mwc.cmap.narrative.views.NarrativeViewer"
             name="Narrative Viewer">
       </view>
    </extension>
