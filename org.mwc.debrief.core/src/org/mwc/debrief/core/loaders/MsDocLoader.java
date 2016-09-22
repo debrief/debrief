@@ -85,12 +85,12 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
     }
     catch (final InterruptedException e)
     {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading shapefile:"
+      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
           + fileName, e);
     }
     catch (final IOException e)
     {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading shapefile:"
+      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
           + fileName, e);
     }
     finally
@@ -98,7 +98,7 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
     }
     // }
     // ok, load the data...
-    DebriefPlugin.logError(Status.INFO, "Successfully loaded shapefile", null);
+    DebriefPlugin.logError(Status.INFO, "Successfully loaded MS Word document", null);
   }
 
 }
