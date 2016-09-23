@@ -97,7 +97,9 @@ public class CrossSectionViewer
 
 	protected CrossSectionViewer(final Composite parent)
 	{
-		_chartFrame = new ChartComposite(parent, SWT.NONE, null, true)
+	  
+		_chartFrame = new ChartComposite(parent, SWT.NONE, null, 400, 600, 300,
+        200, 1800, 1800, true, false, true, true, true, true)
 		{
 			@Override
 			public void mouseUp(MouseEvent event)
