@@ -149,6 +149,9 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 							_line = (LineShape) shape;
 							_line.addPropertyListener(_lineListener);
 							_viewer.fillPlot(_myLayers, _line, _datasetProvider);
+							
+							// and resize the axes
+							_viewer.resetBothAxes(_line);
 						}
 					}		
 				}
