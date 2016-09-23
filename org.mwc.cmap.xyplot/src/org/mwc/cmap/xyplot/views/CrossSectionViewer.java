@@ -14,7 +14,9 @@
  */
 package org.mwc.cmap.xyplot.views;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -32,7 +34,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -47,6 +48,73 @@ import MWC.GenericData.WorldVector;
 
 public class CrossSectionViewer
 {
+  
+  public static class SnailRenderer extends XYLineAndShapeRenderer
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    private ArrayList<ArrayList<Double>> rows = new ArrayList<ArrayList<Double>>();
+    
+    public void reset()
+    {
+      rows.clear();
+    }
+    
+    public void setRowColProportion(int row, int column, double proportion)
+    {
+      final ArrayList<Double> thisRow;
+      
+      if(rows.size() < row + 1)
+      {
+        thisRow = new ArrayList<Double>(); 
+        rows.add(thisRow);
+      }
+      else
+      {
+        thisRow = rows.get(row);
+      }
+            
+      thisRow.add(proportion);
+    }
+    
+    
+
+    @Override
+    public Paint getItemFillPaint(int row, int column)
+    {
+      return getItemPaint(row, column);
+    }
+
+    @Override
+    public Paint getItemPaint(int row, int column)
+    {
+      double proportion = getProportionFor(row, column);
+      
+      // ok, get the series color
+      Paint seriesColor = super.getItemPaint(row, column);
+      
+      if(seriesColor instanceof Color)
+      {
+        Color thisC = (Color) seriesColor;
+        float[] parts = thisC.getColorComponents(new float[3]);
+        seriesColor = new Color(parts[0], parts[1], parts[2], 1-(float)proportion);
+      }
+      
+      return seriesColor;
+    }
+
+    public double getProportionFor(int row, int column)
+    {
+      List<Double> thisRow = rows.get(row);
+      double proportion = thisRow.get(column);
+      return proportion;
+    }
+    
+  }
 
 	private List<ISelectionChangedListener> _listeners = new ArrayList<ISelectionChangedListener>();
 
@@ -61,9 +129,9 @@ public class CrossSectionViewer
 
 	private XYSeriesCollection _dataset = new XYSeriesCollection();
 
-	private XYLineAndShapeRenderer _snailRenderer = new XYLineAndShapeRenderer();
+	private SnailRenderer _snailRenderer = new SnailRenderer();
 
-	private XYDotRenderer _discreteRenderer = new XYDotRenderer();
+	private XYLineAndShapeRenderer _discreteRenderer = new XYLineAndShapeRenderer();
 
 	/**
 	 * The current time we are looking at
@@ -73,8 +141,9 @@ public class CrossSectionViewer
 	/**
 	 * the chart marker
 	 */
-	private static final Shape _markerShape = new Rectangle2D.Double(-2, -2, 2, 2);
-	private static final int _markerSize = 4;
+	private static final Shape _markerShape = new Rectangle2D.Double(-3, -3, 5, 5);
+	
+//	private static final int _markerSize = 4;
 
 	/**
 	 * Number of ticks to show before and after min and max axis values.
@@ -82,6 +151,12 @@ public class CrossSectionViewer
 	private static final int TICK_OFFSET = 1;
 
 	private long _timePeriod = 0;
+	
+	/** sometimes we need to rescale the axes,
+	 * but we don't have any data yet. We use the 
+	 * pending flag to remember that one is due
+	 */
+	private boolean _resetPending = false;
 
 	private String _plotId;
 
@@ -122,11 +197,12 @@ public class CrossSectionViewer
 				true // urs
 				);
 
-		// Fix the axises start at zero
+		// Fix the axes start at zero
 		final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis();
 		yAxis.setLowerBound(0);
 		final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
 		xAxis.setLowerBound(0);
+		xAxis.setAutoRange(false);
 
 		_chartFrame.setChart(_chart);
 		_chartFrame.addDisposeListener(new DisposeListener()
@@ -183,7 +259,7 @@ public class CrossSectionViewer
 					final HiResDate startDTG = new HiResDate(_currentTime.getDate()
 							.getTime() - _timePeriod);
 					_dataset = _datasetProvider.getDataset(line, theLayers, startDTG,
-							_currentTime);
+							_currentTime, _snailRenderer);
 					final Map<Integer, Color> colors = _datasetProvider.getSeriesColors();
 					for (Integer seriesKey : colors.keySet())
 					{
@@ -204,31 +280,59 @@ public class CrossSectionViewer
 
 			}
 
-			double maxY = 0;
-			double minY = Integer.MAX_VALUE;
-
-			for (int i = 0; i < _dataset.getSeriesCount(); i++)
+			_chart.getXYPlot().setDataset(_dataset);			
+			
+			// are we waiting to reset?
+			if(_resetPending)
 			{
-				final XYSeries series = _dataset.getSeries(_dataset.getSeriesKey(i));
-				final double y = series.getMaxY();
-				if (maxY < y)
-					maxY = y;
-				final double mY = series.getMinY();
-				if (minY > mY)
-					minY = mY;
+			  _resetPending = false;
+			  resetBothAxes(line);
 			}
-			final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis();
-			yAxis.setUpperBound(maxY + TICK_OFFSET);
-			yAxis.setLowerBound(minY - TICK_OFFSET);
-
-			final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
-			xAxis.setUpperBound(getXAxisLength(line) + TICK_OFFSET);
-			xAxis.setLowerBound(0);
-
-			_chart.getXYPlot().setDataset(_dataset);
+			else
+			{
+			  resetDepthAxis();
+			}
 
 		}
 	}
+
+  void resetBothAxes(final LineShape line)
+  {
+    
+    // hmm, if we don't have a time, we can't do a reaset
+    if(_currentTime == null)
+    {
+      _resetPending = true;
+    }
+
+    resetDepthAxis();
+    
+    final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
+    xAxis.setUpperBound(getXAxisLength(line) + TICK_OFFSET);
+    xAxis.setLowerBound(0);
+  }
+  
+  void resetDepthAxis()
+  {
+    double maxY = 0;
+    double minY = Integer.MAX_VALUE;
+
+    for (int i = 0; i < _dataset.getSeriesCount(); i++)
+    {
+      final XYSeries series = _dataset.getSeries(_dataset.getSeriesKey(i));
+      final double y = series.getMaxY();
+      if (maxY < y)
+        maxY = y;
+      final double mY = series.getMinY();
+      if (minY > mY)
+        minY = mY;
+    }
+
+    final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis();
+    yAxis.setUpperBound(maxY + TICK_OFFSET);
+    yAxis.setLowerBound(minY - TICK_OFFSET);
+    
+  }
 
 	private double getXAxisLength(LineShape line)
 	{
@@ -238,12 +342,10 @@ public class CrossSectionViewer
 
 	private void setDiscreteRenderer(final int series, final Color paint)
 	{
-		_discreteRenderer.setSeriesShape(series, _markerShape);
-
-		_discreteRenderer.setSeriesFillPaint(series, paint);
-		_discreteRenderer.setSeriesPaint(series, paint);
-		_discreteRenderer.setDotHeight(_markerSize);
-		_discreteRenderer.setDotWidth(_markerSize);
+		_discreteRenderer.setSeriesShape(series, null);
+		_discreteRenderer.setSeriesFillPaint(series, Color.green);
+		_discreteRenderer.setSeriesPaint(series, Color.yellow);
+		_discreteRenderer.setSeriesShapesVisible(series, false);
 	}
 
 	private void setSnailRenderer(final int series, final Color paint)
@@ -256,6 +358,7 @@ public class CrossSectionViewer
 		_snailRenderer.setUseFillPaint(true);
 		_snailRenderer.setSeriesShapesFilled(series, true);
 		_snailRenderer.setSeriesShapesVisible(series, true);
+		_snailRenderer.setSeriesStroke(series, new BasicStroke(3));
 	}
 
 	public void addSelectionChangedListener(
@@ -309,13 +412,4 @@ public class CrossSectionViewer
 	{
 		this._plotId = _plotId;
 	}
-
-	static public final class CrossSectionViewerTest extends
-			junit.framework.TestCase
-	{
-		// TODO: test for null current time
-		// TODO: test for time stepping
-		// To write such test we'd need some Mock framework
-	}
-
 }
