@@ -34,6 +34,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -196,6 +197,20 @@ public class CrossSectionViewer
 				true, // tooltips
 				true // urs
 				);
+		
+		// get the XY plot
+    XYPlot plot = (XYPlot) _chart.getPlot();
+
+    // do some basic plot formatting
+    BasicStroke stroke =
+        new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
+            new float[]
+            {8.0f, 2.0f}, 0);
+    plot.setDomainGridlineStroke(stroke);
+    plot.setRangeGridlineStroke(stroke);	
+    plot.setDomainGridlinePaint(Color.LIGHT_GRAY);
+    plot.setRangeGridlinePaint(Color.LIGHT_GRAY);
+    plot.setBackgroundPaint(Color.white);
 
 		// Fix the axes start at zero
 		final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis();
