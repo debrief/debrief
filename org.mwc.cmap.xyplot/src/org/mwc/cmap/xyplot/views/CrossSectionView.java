@@ -233,6 +233,16 @@ public class CrossSectionView extends ViewPart implements
               final ISelectionProvider iS = (ISelectionProvider) part;
               if (!iS.equals(_selectionProvider))
               {
+                // are we already listening to something?
+                if (_selectionProvider != null)
+                {
+
+                  // ok, stop listening
+                  _selectionProvider
+                      .removeSelectionChangedListener(_selectionChangeListener);
+                  _selectionProvider = null;
+                }
+
                 _selectionProvider = iS;
                 if (_selectionChangeListener != null)
                 {
@@ -243,61 +253,55 @@ public class CrossSectionView extends ViewPart implements
             }
           }
         });
-    _partMonitor.addPartListener(ISelectionProvider.class,
-        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+    _partMonitor.addPartListener(ISelectionProvider.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
         {
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            // aah, just check it's not us
-            if (part != _viewer)
+            // ok, if it's our time provider, stop listening to it
+            if (part == _selectionProvider)
             {
-              // ok, if it's our time provider, stop listening to it
-              if (part == _selectionProvider)
-              {
-                _selectionProvider
-                    .removeSelectionChangedListener(_selectionChangeListener);
-              }
+              _selectionProvider
+                  .removeSelectionChangedListener(_selectionChangeListener);
             }
           }
         });
 
-
-    _partMonitor.addPartListener(TimeProvider.class,
-        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+    _partMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
+        new PartMonitor.ICallback()
         {
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
             // is it our current one?
-            if(part != _timeProvider)
+            if (part != _timeProvider)
             {
               // ok, do we have a time provider?
-              if(_timeProvider != null)
+              if (_timeProvider != null)
               {
                 clearTimeListener();
               }
-              
+
               // ok, now listen to the new one
               setUpTimeProvider((TimeProvider) part);
             }
           }
         });
-    _partMonitor.addPartListener(TimeProvider.class,
-        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+    _partMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
         {
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            // aah, just check it's not us
-//            if (part == _timeProvider)
-//            {
-//              clearTimeListener();
-//            }
+            // aah, just check if it's our provider
+            if (part == _timeProvider)
+            {
+              clearTimeListener();
+            }
           }
-        });    
-    
-    
+        });
+
     // ok we're all ready now. just try and see if the current part is valid
     _partMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
   }
@@ -344,10 +348,11 @@ public class CrossSectionView extends ViewPart implements
         return;
       }
     }
-    
+
     // ok, now do time listening
-    TimeProvider provider = (TimeProvider) editor.getAdapter(TimeProvider.class);
-    if(provider != null)
+    TimeProvider provider =
+        (TimeProvider) editor.getAdapter(TimeProvider.class);
+    if (provider != null)
     {
       setUpTimeProvider(provider);
     }
