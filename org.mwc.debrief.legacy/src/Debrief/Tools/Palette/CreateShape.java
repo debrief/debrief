@@ -138,7 +138,7 @@ abstract public class CreateShape extends PlainTool
     {
 
       // get centre of area (at zero depth)
-      final WorldLocation centre = wa.getCentreAtSurface();
+      final WorldLocation centre = new WorldLocation(wa.getCentreAtSurface());
 
       final ShapeWrapper theWrapper = getShape(centre);
 
