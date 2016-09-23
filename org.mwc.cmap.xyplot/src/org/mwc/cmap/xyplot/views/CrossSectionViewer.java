@@ -237,6 +237,11 @@ public class CrossSectionViewer
 		_chart.getXYPlot().clearAnnotations();
 	}
 
+	public Composite getControl()
+	{
+	  return _chartFrame;
+	}
+	
 	public void fillPlot(final Layers theLayers, final LineShape line,
 			final ICrossSectionDatasetProvider prov)
 	{
