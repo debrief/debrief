@@ -59,6 +59,8 @@ public class CrossSectionViewer
     private static final long serialVersionUID = 1L;
 
     private ArrayList<ArrayList<Double>> rows = new ArrayList<ArrayList<Double>>();
+
+    private boolean _doFade = true;
     
     public void reset()
     {
@@ -93,16 +95,19 @@ public class CrossSectionViewer
     @Override
     public Paint getItemPaint(int row, int column)
     {
-      double proportion = getProportionFor(row, column);
-      
       // ok, get the series color
       Paint seriesColor = super.getItemPaint(row, column);
       
-      if(seriesColor instanceof Color)
+      if(_doFade)
       {
-        Color thisC = (Color) seriesColor;
-        float[] parts = thisC.getColorComponents(new float[3]);
-        seriesColor = new Color(parts[0], parts[1], parts[2], 1-(float)proportion);
+        if(seriesColor instanceof Color)
+        {
+          final double proportion = getProportionFor(row, column);
+          
+          final Color thisC = (Color) seriesColor;
+          final float[] parts = thisC.getColorComponents(new float[3]);
+          seriesColor = new Color(parts[0], parts[1], parts[2], 1-(float)proportion);
+        }
       }
       
       return seriesColor;
@@ -113,6 +118,11 @@ public class CrossSectionViewer
       List<Double> thisRow = rows.get(row);
       double proportion = thisRow.get(column);
       return proportion;
+    }
+
+    public void setSnailFade(boolean doFade)
+    {
+      _doFade = doFade;
     }
     
   }
@@ -362,10 +372,10 @@ public class CrossSectionViewer
 
 	private void setDiscreteRenderer(final int series, final Color paint)
 	{
-		_discreteRenderer.setSeriesShape(series, null);
-		_discreteRenderer.setSeriesFillPaint(series, Color.green);
-		_discreteRenderer.setSeriesPaint(series, Color.yellow);
-		_discreteRenderer.setSeriesShapesVisible(series, false);
+		_discreteRenderer.setSeriesShape(series, _markerShape);
+		_discreteRenderer.setSeriesFillPaint(series, paint);
+		_discreteRenderer.setSeriesPaint(series, paint);
+		_discreteRenderer.setSeriesShapesVisible(series, true);
 	}
 
 	private void setSnailRenderer(final int series, final Color paint)
@@ -432,4 +442,12 @@ public class CrossSectionViewer
 	{
 		this._plotId = _plotId;
 	}
+
+  public void setSnailFade(boolean doFade)
+  {
+    _snailRenderer.setSnailFade(doFade);
+    
+    // and force repaint
+    _chart.fireChartChanged();
+  }
 }
