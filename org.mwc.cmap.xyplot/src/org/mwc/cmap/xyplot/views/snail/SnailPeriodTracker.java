@@ -40,7 +40,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	
 	public static interface TIME_PERIODS
 	{
-		final String ZERO = "0 (the current/nearest position)";
+		final String ZERO = "0 (current position)";
 		final String FIVE_MIN = "5 minutes";
 		final String TEN_MIN = "10 minutes";
 		final String THIRTY_MIN = "30 minutes";
@@ -76,7 +76,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	   
 	    final GridData glReader = new GridData(SWT.FILL, 
 	    		SWT.FILL, false, false, 1, 1);
-	    glReader.widthHint = 250;	   
+	    glReader.widthHint = 160;	   
 	    _reader = new Combo(container, SWT.BORDER| SWT.READ_ONLY
 	            | SWT.DROP_DOWN);
 	    _reader.setLayoutData(glReader);
@@ -106,7 +106,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	@Override
 	protected int computeWidth(final Control control) 
 	{
-	    return 350;
+	    return 250;
 	}
 	
 	public void addSnailPeriodChangedListener(final ISnailPeriodChangedListener listener) 

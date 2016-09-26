@@ -49,14 +49,27 @@ public class LocationCalculator implements ILocationCalculator
 	}
 	
 		
+	/** find the distance from the watch location to the nearest
+	 * point on the line from start to end
+	 * @param start
+	 * @param end
+	 * @param watchableLocation
+	 * @return
+	 */
 	private double getDistance(final WorldLocation start, final WorldLocation end,
 			final WorldLocation watchableLocation)
 	{
-		// perpendicular distance from watchable to the line
-		final double leg = watchableLocation.rangeFrom(start, end).getValueIn(_units);
-		final double hypotenus = new WorldDistance(watchableLocation.subtract(end)).getValueIn(_units);
-		final double angleA = Math.asin(leg / hypotenus);		
-		return hypotenus * Math.cos(angleA);
+	  final double hyp = new WorldDistance( watchableLocation.rangeFrom(start), WorldDistance.DEGS).getValueIn(_units);
+	  
+		// angle from start to end
+		final double lineBrg = end.bearingFrom(start);
+		final double pointBrg = watchableLocation.bearingFrom(start);
+		final double delta = pointBrg - lineBrg;
+		
+		// how far along x-section?
+		final double along = hyp * Math.cos(delta);
+		
+		return along;
 	}
 	
 	
@@ -71,6 +84,25 @@ public class LocationCalculator implements ILocationCalculator
 			// set the earth model we are expecting
 			MWC.GenericData.WorldLocation.setModel(new CompletelyFlatEarth());	
 		}
+		
+    public void testGetSampleDistance()
+    {
+      // NOTE: this scenario is as described here: http://i.imgur.com/26orkaR.png      
+      start = new WorldLocation(0, 6, 0);
+      end = new WorldLocation(8, 8, 0);     
+      watch = new WorldLocation(2, 4, 0); 
+      
+      final double lineLen = new WorldDistance(end.subtract(start))
+        .getValueIn(WorldDistance.DEGS);
+      assertEquals(8.24621, lineLen, 0.001);
+      
+      final double perpendicular = watch.rangeFrom(start, end).getValueIn(WorldDistance.DEGS);
+      assertEquals(2.4253, perpendicular, 0.001);
+    
+      LocationCalculator calc2 = new LocationCalculator(WorldDistance.DEGS);
+      final double d = calc2.getDistance(start, end, watch);
+      assertEquals(1.4552, d, 0.00001);
+    } 
 		
 		public void testGetDistanceMiddle()
 		{
