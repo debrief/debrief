@@ -199,7 +199,7 @@ public class CrossSectionViewer
 			}
 		};
 
-		_chart = ChartFactory.createXYLineChart("Cross Section", // Title
+		_chart = ChartFactory.createXYLineChart(null, // Title
 				"Distance (km)", // X-Axis label
 				"Elevation (m)", // Y-Axis label
 				_dataset, // Dataset,
@@ -276,6 +276,15 @@ public class CrossSectionViewer
 	public void fillPlot(final Layers theLayers, final LineShape line,
 			final ICrossSectionDatasetProvider prov, final long timePeriod)
 	{
+	  // clear the chart
+    _chart.setTitle("");
+	  
+	  // do some state checking
+	  if(line == null)
+	  {
+	    _chart.setTitle("Waiting for line");
+	  }
+	  
 		if (theLayers != null && line != null)
 		{
 			_timePeriod = timePeriod;
@@ -308,6 +317,10 @@ public class CrossSectionViewer
 					_chart.getXYPlot().setRenderer(_discreteRenderer);
 				}
 
+			}
+			else
+			{
+			  _chart.setTitle("Waiting for time change");
 			}
 
 			_chart.getXYPlot().setDataset(_dataset);			
