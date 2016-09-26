@@ -17,12 +17,14 @@ package org.mwc.cmap.xyplot.views;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
@@ -37,6 +39,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -110,6 +113,11 @@ public class CrossSectionView extends ViewPart implements
    */
   private SnailPeriodTracker _snailMode = new SnailPeriodTracker();
 
+  /** whether to fade the trace
+   * 
+   */
+  private Action _fadeSnail;
+
   public CrossSectionView()
   {
     // create our listener
@@ -180,7 +188,24 @@ public class CrossSectionView extends ViewPart implements
 
   private void fillLocalToolBar(final IToolBarManager manager)
   {
+    
+    _fadeSnail = new Action("Fade", SWT.TOGGLE)
+    {
+
+      @Override
+      public void run()
+      {
+        super.run();
+        
+        _viewer.setSnailFade(_fadeSnail.isChecked());
+        
+      }      
+    };
+    _fadeSnail.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/snail.png"));
+    _fadeSnail.setChecked(true);
+    
     manager.add(_snailMode);
+    manager.add(_fadeSnail);
   }
 
   @Override
