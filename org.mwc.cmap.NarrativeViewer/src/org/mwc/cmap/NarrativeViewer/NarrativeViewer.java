@@ -19,6 +19,7 @@ import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
@@ -45,66 +46,60 @@ public class NarrativeViewer
   final NarrativeViewerModel myModel;
   private NarrativeViewerActions myActions;
 
-  private final GridTableViewer viewer;
-  private final FilteredGrid filterGrid;
+  final GridTableViewer viewer;
+  private FilteredGrid filterGrid;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
-    GridColumnLayout layout = new GridColumnLayout(); 
- 
-     filterGrid = new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, new PatternFilter(){
-       
-       @Override
-      public boolean isElementVisible(final Viewer viewer, final Object element)
-      {
-        return isLeafMatch(viewer, element);
-      }
-      
-      @Override
-      protected boolean isLeafMatch(final Viewer viewer, final Object element)
-      {
-        
-        final AbstractColumn[] allColumns = myModel.getAllColumns();
-        for (AbstractColumn abstractColumn : allColumns)
-        {
-          if(abstractColumn.isVisible())
-          {
-            final Object content = abstractColumn.getProperty((NarrativeEntry) element);
-            
-            // anything in this column?
-            if(content != null)
+    GridColumnLayout layout = new GridColumnLayout();
+
+    filterGrid =
+        new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI,
+            new PatternFilter()
             {
-              final String text = content.toString();
-              if(text!=null && wordMatches(text))
+
+              @Override
+              public boolean isElementVisible(Viewer viewer, Object element)
               {
-                return true;
+                return isLeafMatch(viewer, element);
               }
-            }
-          }
-        }
-        
-        return false;
-      }
-      
-    }, true) ;
-     filterGrid.getGridComposite().setLayout(layout);
+
+              @Override
+              protected boolean isLeafMatch(Viewer viewer, Object element)
+              {
+
+                AbstractColumn[] allColumns = myModel.getAllColumns();
+                for (AbstractColumn abstractColumn : allColumns)
+                {
+                  if (abstractColumn.isVisible())
+                  {
+                    Object property =
+                        abstractColumn.getProperty((NarrativeEntry) element);
+                    String text = property != null ? property.toString() : null;
+                    if (text != null && wordMatches(text))
+                    {
+                      return true;
+                    }
+                  }
+                }
+
+                return false;
+              }
+
+            }, true);
+    filterGrid.getGridComposite().setLayout(layout);
     viewer = filterGrid.getViewer();
     viewer.getGrid().setHeaderVisible(true);
     viewer.getGrid().setLinesVisible(true);
-    viewer.getGrid().addControlListener(new ControlAdapter() {
-      @Override
-      public void controlResized(ControlEvent e) {
-        calculateGridRawHeight();
-      }
-    });
-    
+
+  
+    viewer.setAutoPreferredHeight(true);
+
     myModel = new NarrativeViewerModel(preferenceStore);
 
-   
-    myModel.createTable(this,layout);
- 
-    
+    myModel.createTable(this, layout);
+
     //
     // addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
     // {
@@ -121,13 +116,17 @@ public class NarrativeViewer
     // });
   }
 
- 
-
   public GridTableViewer getViewer()
   {
     return viewer;
   }
+
   public Composite getControl()
+  {
+    return filterGrid;
+  }
+
+  FilteredGrid getFilterGrid()
   {
     return filterGrid;
   }
@@ -180,35 +179,19 @@ public class NarrativeViewer
   public void refresh()
   {
     // check we're not closing
-    if(!viewer.getControl().isDisposed())
+    if (!viewer.getControl().isDisposed())
     {
       viewer.setInput(new Object());
-      calculateGridRawHeight();
     }
   }
 
   private void calculateGridRawHeight()
   {
-    Display.getDefault().asyncExec(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        final Grid grid = getViewer().getGrid();
-        if(grid.isDisposed())
-          return;
-        
-        final GridColumn[] columns = grid.getColumns();
-        for (final GridColumn gridColumn : columns)
-        {
-          // only do resize if this column is visible
-          if(gridColumn.isVisible() )
-          {
-            NarrativeViewerModel.calculateHeight(grid,gridColumn);
-          }
-        }        
-      }
-    });
+    ISelection selection = viewer.getSelection();
+    viewer.getGrid().setRedraw(false);
+    viewer.setInput(new Object());
+    viewer.setSelection(selection);
+    viewer.getGrid().setRedraw(true);
   }
 
   public boolean isWrappingEntries()
@@ -280,7 +263,7 @@ public class NarrativeViewer
   {
     // select this item
     viewer.setSelection(new StructuredSelection(entry));
-    
+
     // make sure the new item is visible
     viewer.reveal(entry);
   }

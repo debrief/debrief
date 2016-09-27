@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
@@ -43,6 +44,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.dialogs.PatternFilter;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 
@@ -223,6 +225,9 @@ public class NarrativeViewerModel
 
   private static abstract class AbstractTextColumn extends AbstractColumn
   {
+    private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+    private static final Color WHITE = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+
     public AbstractTextColumn(final int index, final String name,
         final IPreferenceStore store)
     {
@@ -264,9 +269,13 @@ public class NarrativeViewerModel
               swtColorMap.put(color, swtColor);
             }
 
+            if(swtColor.getRGB().equals(WHITE.getRGB()))
+            {
+              return BLACK;
+            }
             return swtColor;
           }
-          return super.getForeground(element);
+          return BLACK;
         }
 
         @Override
@@ -716,14 +725,32 @@ public class NarrativeViewerModel
     });
 
     {
+      
+      
       for (final AbstractColumn column : myAllColumns)
       {
+        CellLabelProvider cellRenderer = column.getCellRenderer(viewer.getViewer());
+        
+       
         final GridViewerColumn viewerColumn =
             factory.createColumn(column.getColumnName(), column
-                .getColumnWidth(), column.getCellRenderer(viewer.getViewer()),column.isWrap());
+                .getColumnWidth(), cellRenderer,column.isWrap());
 
         
         final GridColumn gridColumn = viewerColumn.getColumn();
+        FilterTextCellRenderer styledTextCellRenderer = new FilterTextCellRenderer(viewer.viewer){
+          
+          @Override
+          protected String getFilterText()
+          {
+           
+            return viewer.getFilterGrid().getFilterString();
+          }
+          
+          
+        }; 
+        styledTextCellRenderer.setWordWrap(column.isWrap());
+        gridColumn.setCellRenderer(styledTextCellRenderer);
         gridColumn.setData(VARYING_HEIGHT, column.isWrapSupport());
         gridColumn.addControlListener(new ControlAdapter() {
           @Override
