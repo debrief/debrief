@@ -1,7 +1,6 @@
 package org.mwc.cmap.NarrativeViewer;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.jface.gridviewer.GridViewerColumn;
 import org.eclipse.nebula.widgets.grid.GridColumn;
