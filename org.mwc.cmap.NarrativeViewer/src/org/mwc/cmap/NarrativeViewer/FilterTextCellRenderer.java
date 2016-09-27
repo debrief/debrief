@@ -3,10 +3,8 @@ package org.mwc.cmap.NarrativeViewer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
-import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.nebula.widgets.grid.internal.CheckBoxRenderer;
@@ -23,7 +21,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.dialogs.PatternFilter;
 
 public abstract class FilterTextCellRenderer extends DefaultCellRenderer
 {
@@ -48,8 +45,6 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
 
   private TextLayout textLayout;
 
-  private GridTableViewer viewer;
-
   private final Styler STYLER;
 
   /**
@@ -58,11 +53,10 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
    * @param viewer
    *          the viewer
    */
-  public FilterTextCellRenderer(GridTableViewer viewer)
+  public FilterTextCellRenderer()
   {
-    this.viewer = viewer;
-    final Color systemColor =
-        Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
+    final Color systemColor = new Color(Display.getDefault(), 255, 251, 204);
+
     STYLER = new Styler()
     {
 
