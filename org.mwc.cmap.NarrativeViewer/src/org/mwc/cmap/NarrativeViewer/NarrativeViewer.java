@@ -27,6 +27,7 @@ import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
@@ -89,27 +90,12 @@ public class NarrativeViewer
     viewer.getGrid().setHeaderVisible(true);
     viewer.getGrid().setLinesVisible(true);
 
-  
     viewer.setAutoPreferredHeight(true);
 
     myModel = new NarrativeViewerModel(preferenceStore);
 
     myModel.createTable(this, layout);
 
-    //
-    // addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
-    // {
-    // public void fixedCellDoubleClicked(final int col, final int row, final int statemask)
-    // {
-    // final Column column = myModel.getVisibleColumn(col);
-    // showFilterDialog(column);
-    // final ColumnFilter filter = column.getFilter();
-    // if (filter != null)
-    // {
-    //
-    // }
-    // }
-    // });
   }
 
   public GridTableViewer getViewer()
@@ -163,7 +149,16 @@ public class NarrativeViewer
   public void setInput(final IRollingNarrativeProvider entryWrapper)
   {
     myModel.setInput(entryWrapper);
-    refresh();
+    Display.getDefault().asyncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        refresh();
+
+      }
+    });
   }
 
   public void setTimeFormatter(final TimeFormatter timeFormatter)
@@ -175,7 +170,8 @@ public class NarrativeViewer
   public void refresh()
   {
     // check we're not closing
-    if (!viewer.getControl().isDisposed())
+    if (!viewer.getControl().isDisposed()
+        && viewer.getContentProvider() != null)
     {
       viewer.setInput(new Object());
     }

@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Display;
 public abstract class FilterTextCellRenderer extends DefaultCellRenderer
 {
 
+  static final Color MATCH_YELLOW = new Color(Display.getDefault(), 255, 251, 204);
   int leftMargin = 4;
 
   int rightMargin = 4;
@@ -55,7 +56,7 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
    */
   public FilterTextCellRenderer()
   {
-    final Color systemColor = new Color(Display.getDefault(), 255, 251, 204);
+    
 
     STYLER = new Styler()
     {
@@ -63,12 +64,14 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
       @Override
       public void applyStyles(TextStyle textStyle)
       {
-        textStyle.background = systemColor;
+        textStyle.background = MATCH_YELLOW;
 
       }
     };
   }
 
+  
+  
   protected abstract String getFilterText();
 
   protected StyledString getFilterStyledString(String text)
@@ -76,7 +79,6 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
     String filterText = getFilterText();
     if (filterText != null && !filterText.trim().isEmpty())
     {
-
       Pattern pattern = Pattern.compile(filterText, Pattern.CASE_INSENSITIVE);
       Matcher matcher = pattern.matcher(text);
       boolean found = false;
@@ -296,7 +298,8 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
         {
           public void widgetDisposed(DisposeEvent e)
           {
-            textLayout.dispose();
+            if(textLayout!=null)
+              textLayout.dispose();
           }
         });
       }
@@ -323,6 +326,8 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
 
       textLayout.draw(gc, getBounds().x + x, getBounds().y + textTopMargin
           + topMargin);
+      textLayout.dispose();
+      textLayout = null;
     }
     else
     {
@@ -333,7 +338,8 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
         {
           public void widgetDisposed(DisposeEvent e)
           {
-            textLayout.dispose();
+            if(textLayout!=null)
+              textLayout.dispose();
           }
         });
       }
@@ -392,6 +398,8 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
       }
       textLayout.draw(gc, getBounds().x + x, getBounds().y + textTopMargin
           + topMargin);
+      textLayout.dispose();
+      textLayout = null;
     }
 
     if (item.getParent().getLinesVisible())
