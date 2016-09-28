@@ -102,24 +102,24 @@ public class ImportWord
      */
     private static String parseTrack(final String str)
     {
-      final String longTrackId = "[A-Z]{1,4}(\\d{3})";
-      final Pattern longPattern = Pattern.compile(longTrackId);
+      final String shortTrackId = "(M\\d{2})";
+      final Pattern shortPattern = Pattern.compile(shortTrackId);
 
-      final Matcher matcher1 = longPattern.matcher(str);
+      final Matcher matcher = shortPattern.matcher(str);
       final String res;
-      if (matcher1.find())
+      if (matcher.find())
       {
-        res = matcher1.group(1);
+        res = matcher.group(1);
       }
       else
       {
-        final String shortTrackId = "(M\\d{2})";
-        final Pattern shortPattern = Pattern.compile(shortTrackId);
+        final String longTrackId = "[A-Z]{1,4}(\\d{3})";
+        final Pattern longPattern = Pattern.compile(longTrackId);
 
-        final Matcher matcher = shortPattern.matcher(str);
-        if (matcher.find())
+        final Matcher matcher1 = longPattern.matcher(str);
+        if (matcher1.find())
         {
-          res = matcher.group(1);
+          res = matcher1.group(1);
         }
         else
         {
@@ -187,6 +187,11 @@ public class ImportWord
      */
     private static String lastDay;
 
+    /**
+     * don#t assume a decreasing day is wrong if the month has incremented
+     */
+    private static String lastMonth;
+
     static public NarrEntry create(final String msg, final int lineNum)
     {
       NarrEntry res = null;
@@ -229,6 +234,7 @@ public class ImportWord
       lastPlatform = null;
       lastEntry = null;
       lastDay = null;
+      lastMonth = null;
     }
 
     @SuppressWarnings("deprecation")
@@ -237,6 +243,11 @@ public class ImportWord
       final String trimmed = entry.trim();
       final String[] parts = trimmed.split(",");
       int ctr = 0;
+      
+//      if(entry.contains("SEARCH STRING"))
+//      {
+//        System.out.println("here");
+//      }
 
       // sort out our date formats
       final DateFormat fourBlock = new SimpleDateFormat("HHmm");
@@ -277,15 +288,21 @@ public class ImportWord
          * special processing, to overcome the previous day being used
          * 
          */
-        if (lastDay != null
-            && Integer.parseInt(dayStr) < Integer.parseInt(lastDay))
+        boolean dayDecreased = lastDay != null
+            && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
+        boolean monthIncreased = lastMonth != null
+            && Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
+        
+        if (dayDecreased && !monthIncreased)
         {
+          // ok, the day has dropped, but the month hasn't increased
           dayStr = lastDay;
         }
         else
         {
           // it's valid, update the last day
           lastDay = dayStr;
+          lastMonth = monStr;
         }
 
         // hmm, on occasion we don't get the closing comma on the entry type
@@ -389,7 +406,7 @@ public class ImportWord
 
             // ok, we can go for it
             final Date newDate =
-                new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg
+                new Date(lastDtg.getYear(), lastDtg.getMonth()-1, lastDtg
                     .getDate());
 
             // ok, we're ready for the DTG
@@ -402,10 +419,10 @@ public class ImportWord
             text = trimmed.substring(dateStr.length()).trim();
 
             // see if we can recognise the first word as a track number
-            if (text.length() == 0)
-            {
-              System.out.println("here");
-            }
+//            if (text.length() == 0)
+//            {
+//              System.out.println("here");
+//            }
 
             final String startOfLine =
                 text.substring(0, Math.min(20, text.length() - 1));
@@ -519,7 +536,7 @@ public class ImportWord
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
     private final static String valid_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/FCS_narrative.doc";
-
+    
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
@@ -705,6 +722,9 @@ public class ImportWord
       final String str2 =
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 
+      final String str3 =
+          "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
+
       // try our special identifier
       assertEquals("first bearing", 123d, FCSEntry.getElement("B-", str1));
       assertEquals("first course", 321d, FCSEntry.getElement("C-", str1));
@@ -735,6 +755,9 @@ public class ImportWord
       assertEquals("got speed:", 0d, fe2.spdKts);
       assertEquals("got name:", "AAAAAA CCCCCC AAAAAA.", fe2.tgtType);
 
+      ne = new NarrEntry(str3);
+      final FCSEntry fe3 = new FCSEntry(ne, ne.text);
+      assertEquals("processed master id before other id:", "M02", fe3.contact);
     }
 
     public void testParseTrackNumber()
@@ -745,15 +768,12 @@ public class ImportWord
       final String str2a = "asdfads M00 adf ag a";
       final String str3 = "asdfads adf ag a";
       final String str5 = "M00 0000";
-      final String str6 = "popopo M01 0000";
 
       assertEquals("right id", "000", FCSEntry.parseTrack(str1));
       assertEquals("right id", "000", FCSEntry.parseTrack(str1a));
       assertEquals("right id", "000", FCSEntry.parseTrack(str2));
       assertEquals("right id", "M00", FCSEntry.parseTrack(str2a));
-      assertEquals("right id", null, FCSEntry.parseTrack(str3));
       assertEquals("right id", "M00", FCSEntry.parseTrack(str5));
-      assertEquals("right id", "M01", FCSEntry.parseTrack(str6));
       assertNull("right id", FCSEntry.parseTrack(str3));
     }
   }
@@ -837,6 +857,12 @@ public class ImportWord
     // ok, parse the message
     final FCSEntry fe = new FCSEntry(thisN, thisN.text);
 
+    // do we have enough data to create a solution?
+    if(fe.brgDegs == 0 && fe.rangYds == 0)
+    {
+      return;
+    }
+    
     // find the host
     final TrackWrapper host =
         (TrackWrapper) _layers.findLayer(trackFor(thisN.platform));
@@ -870,6 +896,12 @@ public class ImportWord
         final Fix newF =
             new Fix(thisN.dtg, loc, Math.toRadians(fe.crseDegs), yds_per_sec);
         final FixWrapper newFw = new FixWrapper(newF);
+        
+        // lastly, reset the label, so it's legible
+        newFw.resetName();
+        
+        // oh, and switch the symbol on
+        newFw.setSymbolShowing(true);
 
         // and store it
         hisTrack.add(newFw);
@@ -969,6 +1001,8 @@ public class ImportWord
         // check it's in the currently loaded time period
         if (!outerPeriod.contains(thisN.dtg))
         {
+//          System.out.println(thisN.dtg.getDate() + " is not between " + outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+          
           // ok, it's not in our period
           continue;
         }
