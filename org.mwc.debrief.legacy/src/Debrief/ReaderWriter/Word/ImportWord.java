@@ -692,7 +692,7 @@ public class ImportWord
       // ok, get the narrative type
       final NarrEntry thisN2 = NarrEntry.create(testDate2, 1);
       assertEquals("year", 116, thisN2.dtg.getDate().getYear());
-      assertEquals("month", 8, thisN2.dtg.getDate().getMonth());
+      assertEquals("month", 7, thisN2.dtg.getDate().getMonth());
       assertEquals("day", 16, thisN2.dtg.getDate().getDate());
       assertEquals("hour", 10, thisN2.dtg.getDate().getHours());
       assertEquals("min", 6, thisN2.dtg.getDate().getMinutes());
