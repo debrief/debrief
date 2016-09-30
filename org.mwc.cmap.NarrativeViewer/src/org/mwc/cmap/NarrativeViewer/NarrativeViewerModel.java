@@ -60,7 +60,7 @@ public class NarrativeViewerModel
 
   private final ColumnFilter mySourceFilter;
   private final ColumnFilter myTypeFilter;
-  private final TextFilter textFilter;
+  private final EntryFilter textFilter;
 
   // private Map<Color, KTableCellRenderer> renderers = new HashMap<Color, KTableCellRenderer>();
   // private List<org.eclipse.swt.graphics.Color> swtColors = new
@@ -77,7 +77,7 @@ public class NarrativeViewerModel
     return myAllColumns;
   }
 
-  public NarrativeViewerModel(final IPreferenceStore store,TextFilter textFilter)
+  public NarrativeViewerModel(final IPreferenceStore store,EntryFilter textFilter)
   {
 
     this.textFilter = textFilter;
