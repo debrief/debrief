@@ -58,6 +58,7 @@ public class NarrativeViewer
           @Override
           protected void updateGridData(String text)
           {
+            
             myModel.updateFilters();
             refresh();
 
@@ -185,7 +186,7 @@ public class NarrativeViewer
   public void refresh()
   {
     // check we're not closing
-    if (!viewer.getControl().isDisposed()
+    if (!viewer.getGrid().isDisposed()
         && viewer.getContentProvider() != null)
     {
       viewer.setInput(new Object());
