@@ -40,11 +40,11 @@ import MWC.TacticalData.NarrativeEntry;
 public class NarrativeViewer
 {
 
-  final NarrativeViewerModel myModel;
-  private NarrativeViewerActions myActions;
+  private final NarrativeViewerModel myModel;
+  private final NarrativeViewerActions myActions;
 
-  final GridTableViewer viewer;
-  private FilteredGrid filterGrid;
+  private final GridTableViewer viewer;
+  private final FilteredGrid filterGrid;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -71,6 +71,8 @@ public class NarrativeViewer
     viewer.getGrid().setLinesVisible(true);
 
     viewer.setAutoPreferredHeight(true);
+    
+    myActions = new NarrativeViewerActions(this);
 
     myModel = new NarrativeViewerModel(preferenceStore, new EntryFilter()
     {
@@ -131,10 +133,6 @@ public class NarrativeViewer
 
   public NarrativeViewerActions getViewerActions()
   {
-    if (myActions == null)
-    {
-      myActions = new NarrativeViewerActions(this);
-    }
     return myActions;
   }
 
@@ -167,12 +165,10 @@ public class NarrativeViewer
     myModel.setInput(entryWrapper);
     Display.getDefault().asyncExec(new Runnable()
     {
-
       @Override
       public void run()
       {
         refresh();
-
       }
     });
   }

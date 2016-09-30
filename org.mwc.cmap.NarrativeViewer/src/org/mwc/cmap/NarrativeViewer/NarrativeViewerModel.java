@@ -62,10 +62,6 @@ public class NarrativeViewerModel
   private final ColumnFilter myTypeFilter;
   private final EntryFilter textFilter;
 
-  // private Map<Color, KTableCellRenderer> renderers = new HashMap<Color, KTableCellRenderer>();
-  // private List<org.eclipse.swt.graphics.Color> swtColors = new
-  // ArrayList<org.eclipse.swt.graphics.Color>();
-
   final LinkedList<NarrativeEntry> myVisibleRows =
       new LinkedList<NarrativeEntry>();
   private NarrativeEntry[] myAllEntries = NO_ENTRIES;
