@@ -41,7 +41,7 @@ public class NarrativeViewer
 {
 
   private final NarrativeViewerModel myModel;
-  private final NarrativeViewerActions myActions;
+  private NarrativeViewerActions myActions;
 
   private final GridTableViewer viewer;
   private final FilteredGrid filterGrid;
@@ -72,8 +72,6 @@ public class NarrativeViewer
 
     viewer.setAutoPreferredHeight(true);
     
-    myActions = new NarrativeViewerActions(this);
-
     myModel = new NarrativeViewerModel(preferenceStore, new EntryFilter()
     {
 
@@ -133,6 +131,10 @@ public class NarrativeViewer
 
   public NarrativeViewerActions getViewerActions()
   {
+    if(myActions == null)
+    {
+      myActions = new NarrativeViewerActions(this);
+    }
     return myActions;
   }
 
