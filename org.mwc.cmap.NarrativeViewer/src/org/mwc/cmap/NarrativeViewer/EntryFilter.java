@@ -16,11 +16,13 @@ package org.mwc.cmap.NarrativeViewer;
 
 import MWC.TacticalData.NarrativeEntry;
 
-public abstract class TextFilter {
-	
+public interface EntryFilter {
 
-	public abstract boolean accept(final NarrativeEntry entry);
-
-
+  /** is this entry suitable?
+   * 
+   * @param entry
+   * @return
+   */
+	public boolean accept(final NarrativeEntry entry);
 
 }
