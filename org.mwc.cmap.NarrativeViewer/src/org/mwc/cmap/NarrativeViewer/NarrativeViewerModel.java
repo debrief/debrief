@@ -26,9 +26,10 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
+import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.jface.gridviewer.GridViewerColumn;
 import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
@@ -59,10 +60,7 @@ public class NarrativeViewerModel
 
   private final ColumnFilter mySourceFilter;
   private final ColumnFilter myTypeFilter;
-
-  // private Map<Color, KTableCellRenderer> renderers = new HashMap<Color, KTableCellRenderer>();
-  // private List<org.eclipse.swt.graphics.Color> swtColors = new
-  // ArrayList<org.eclipse.swt.graphics.Color>();
+  private final EntryFilter textFilter;
 
   final LinkedList<NarrativeEntry> myVisibleRows =
       new LinkedList<NarrativeEntry>();
@@ -75,9 +73,10 @@ public class NarrativeViewerModel
     return myAllColumns;
   }
 
-  public NarrativeViewerModel(final IPreferenceStore store)
+  public NarrativeViewerModel(final IPreferenceStore store,EntryFilter textFilter)
   {
 
+    this.textFilter = textFilter;
     myColumnVisible = new ColumnVisible(store);
     myColumnVisible.setVisible(false);
     myColumnTime = new ColumnTime(store);
@@ -170,11 +169,13 @@ public class NarrativeViewerModel
     {
       return;
     }
+    
+    
     for (final NarrativeEntry entry : myAllEntries)
     {
-      if (mySourceFilter.accept(entry) && myTypeFilter.accept(entry))
+      if (mySourceFilter.accept(entry) && myTypeFilter.accept(entry) && textFilter.accept(entry))
       {
-        myVisibleRows.add(entry);
+         myVisibleRows.add(entry);
       }
     }
   }
@@ -659,15 +660,22 @@ public class NarrativeViewerModel
   public void createTable(final NarrativeViewer viewer,
       final GridColumnLayout layout)
   {
+    viewer.getViewer().setItemCount(0);
     TableViewerColumnFactory factory =
         new TableViewerColumnFactory(viewer.getViewer());
-    viewer.getViewer().setContentProvider(new ITreeContentProvider()
+    viewer.getViewer().setContentProvider(new ILazyContentProvider()
     {
 
+      Object [] elements ;
+      private GridTableViewer gridTableViewer;
       @Override
       public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
       {
 
+        elements =  myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
+        gridTableViewer = (GridTableViewer) viewer;
+        gridTableViewer.setItemCount(0);
+        gridTableViewer.setItemCount(elements.length);
       }
 
       @Override
@@ -676,30 +684,37 @@ public class NarrativeViewerModel
 
       }
 
-      @Override
-      public Object[] getElements(Object inputElement)
-      {
-        return myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
-      }
+//      @Override
+//      public Object[] getElements(Object inputElement)
+//      {
+//        return ;
+//      }
+//
+//      @Override
+//      public Object[] getChildren(Object parentElement)
+//      {
+//
+//        return new Object[0];
+//      }
+//
+//      @Override
+//      public Object getParent(Object element)
+//      {
+//
+//        return null;
+//      }
+//
+//      @Override
+//      public boolean hasChildren(Object element)
+//      {
+//        return false;
+//      }
 
       @Override
-      public Object[] getChildren(Object parentElement)
+      public void updateElement(int index)
       {
-
-        return new Object[0];
-      }
-
-      @Override
-      public Object getParent(Object element)
-      {
-
-        return null;
-      }
-
-      @Override
-      public boolean hasChildren(Object element)
-      {
-        return false;
+        gridTableViewer.replace(elements[index], index);
+        
       }
     });
 
