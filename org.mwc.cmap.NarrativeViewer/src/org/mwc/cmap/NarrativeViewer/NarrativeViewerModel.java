@@ -29,19 +29,13 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
-import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.jface.gridviewer.GridViewerColumn;
 import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
-import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -52,7 +46,6 @@ import MWC.TacticalData.NarrativeEntry;
 
 public class NarrativeViewerModel
 {
-  private static final String VARYING_HEIGHT = "VARYING_HEIGHT";
   private static final NarrativeEntry[] NO_ENTRIES = new NarrativeEntry[0];
   protected static final org.eclipse.swt.graphics.Color SWT_WHITE =
       new org.eclipse.swt.graphics.Color(Display.getCurrent(), 255, 255, 254);
@@ -223,6 +216,9 @@ public class NarrativeViewerModel
 
   private static abstract class AbstractTextColumn extends AbstractColumn
   {
+    private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+    private static final Color WHITE = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+
     public AbstractTextColumn(final int index, final String name,
         final IPreferenceStore store)
     {
@@ -264,9 +260,13 @@ public class NarrativeViewerModel
               swtColorMap.put(color, swtColor);
             }
 
+            if(swtColor.getRGB().equals(WHITE.getRGB()))
+            {
+              return BLACK;
+            }
             return swtColor;
           }
-          return super.getForeground(element);
+          return BLACK;
         }
 
         @Override
@@ -653,19 +653,7 @@ public class NarrativeViewerModel
     }
   };
 
-  static void calculateHeight(Grid fGrid,GridColumn gridColumn) 
-  {   
-    final Boolean HEIGHT_DATA = (Boolean) gridColumn.getData(VARYING_HEIGHT);
-    if((HEIGHT_DATA!=null && HEIGHT_DATA))
-    {
-      for (final GridItem item : fGrid.getItems()) {
-        final GC gc = new GC(item.getDisplay());        
-        final Point textBounds = gridColumn.getCellRenderer().computeSize(gc, gridColumn.getWidth(), SWT.DEFAULT, item);
-        gc.dispose();
-        item.setHeight(textBounds.y);
-      }
-    }
-  }
+
   
   
   public void createTable(final NarrativeViewer viewer,
@@ -716,36 +704,32 @@ public class NarrativeViewerModel
     });
 
     {
+      
+      
       for (final AbstractColumn column : myAllColumns)
       {
+        CellLabelProvider cellRenderer = column.getCellRenderer(viewer.getViewer());
+        
+       
         final GridViewerColumn viewerColumn =
             factory.createColumn(column.getColumnName(), column
-                .getColumnWidth(), column.getCellRenderer(viewer.getViewer()),column.isWrap());
+                .getColumnWidth(), cellRenderer,column.isWrap());
 
         
         final GridColumn gridColumn = viewerColumn.getColumn();
-        gridColumn.setData(VARYING_HEIGHT, column.isWrapSupport());
-        gridColumn.addControlListener(new ControlAdapter() {
-          @Override
-          public void controlResized(ControlEvent e) {
-            Display.getDefault().asyncExec(new Runnable()
+        FilterTextCellRenderer styledTextCellRenderer =
+            new FilterTextCellRenderer()
             {
+
               @Override
-              public void run()
+              protected String getFilterText()
               {
-                GridTableViewer gridTableViewer = viewer.getViewer();
-                if(gridTableViewer.getGrid().isDisposed())
-                  return;
-                GridColumn[] columns = gridTableViewer.getGrid().getColumns();
-                for (GridColumn gridColumn : columns)
-                {
-                  if(gridColumn.isVisible() )
-                    NarrativeViewerModel.calculateHeight(gridTableViewer.getGrid(),gridColumn);
-                }
+                return viewer.getFilterGrid().getFilterString();
               }
-            });
-          }
-        });
+            };
+        styledTextCellRenderer.setWordWrap(column.isWrap());
+        gridColumn.setCellRenderer(styledTextCellRenderer);
+       
         gridColumn.addSelectionListener(new SelectionAdapter()
         {
           @Override
