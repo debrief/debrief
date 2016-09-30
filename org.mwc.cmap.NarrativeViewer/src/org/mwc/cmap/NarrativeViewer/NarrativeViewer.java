@@ -16,6 +16,7 @@ package org.mwc.cmap.NarrativeViewer;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -65,7 +66,7 @@ public class NarrativeViewer
               @Override
               protected boolean isLeafMatch(Viewer viewer, Object element)
               {
-
+                Pattern pattern = Pattern.compile(getFilterGrid().getFilterString(), Pattern.CASE_INSENSITIVE);
                 AbstractColumn[] allColumns = myModel.getAllColumns();
                 for (AbstractColumn abstractColumn : allColumns)
                 {
@@ -74,7 +75,7 @@ public class NarrativeViewer
                     Object property =
                         abstractColumn.getProperty((NarrativeEntry) element);
                     String text = property != null ? property.toString() : null;
-                    if (text != null && wordMatches(text))
+                    if (text != null && pattern.matcher(text).find())
                     {
                       return true;
                     }
