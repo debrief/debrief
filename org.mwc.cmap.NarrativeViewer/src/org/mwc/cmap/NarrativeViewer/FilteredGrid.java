@@ -419,7 +419,8 @@ public abstract class FilteredGrid extends Composite {
             Control redrawFalseControl = gridComposite != null ? gridComposite
                 : gridViewer.getControl();
             try {
-              redrawFalseControl.setRedraw(false);
+              if(!redrawFalseControl.isDisposed())
+                redrawFalseControl.setRedraw(false);
               
               updateGridData(text);
 
@@ -437,8 +438,8 @@ public abstract class FilteredGrid extends Composite {
               }
             } finally {
               // done updating the grid - set redraw back to true
-              
-              redrawFalseControl.setRedraw(true);
+              if(!redrawFalseControl.isDisposed())
+                redrawFalseControl.setRedraw(true);
             }
           }
         });
