@@ -399,39 +399,49 @@ public abstract class FilteredGrid extends Composite {
 				  return Status.CANCEL_STATUS;
 				}
 				
-				String text = getFilterString();
+			final 	String text = getFilterString();
 				if (text == null) {
 					return Status.OK_STATUS;
 				}
 
-				boolean initial = initialText != null
-						&& initialText.equals(text);
-			
+				
+				
+				Display.getDefault().asyncExec(new Runnable()
+        {
+          
+          @Override
+          public void run()
+          {
+            boolean initial = initialText != null
+                && initialText.equals(text);
+          
 
-				Control redrawFalseControl = gridComposite != null ? gridComposite
-						: gridViewer.getControl();
-				try {
-					redrawFalseControl.setRedraw(false);
-					
-					updateGridData(text);
+            Control redrawFalseControl = gridComposite != null ? gridComposite
+                : gridViewer.getControl();
+            try {
+              redrawFalseControl.setRedraw(false);
+              
+              updateGridData(text);
 
-					if (text.length() > 0 && !initial) {
-						
+              if (text.length() > 0 && !initial) {
+                
 
-						// enabled toolbar - there is text to clear
-						// and the list is currently being filtered
-						updateToolbar(true);
-						
-					} else {
-						// disabled toolbar - there is no text to clear
-						// and the list is currently not filtered
-						updateToolbar(false);
-					}
-				} finally {
-					// done updating the grid - set redraw back to true
-					
-					redrawFalseControl.setRedraw(true);
-				}
+                // enabled toolbar - there is text to clear
+                // and the list is currently being filtered
+                updateToolbar(true);
+                
+              } else {
+                // disabled toolbar - there is no text to clear
+                // and the list is currently not filtered
+                updateToolbar(false);
+              }
+            } finally {
+              // done updating the grid - set redraw back to true
+              
+              redrawFalseControl.setRedraw(true);
+            }
+          }
+        });
 				return Status.OK_STATUS;
 			}
 
