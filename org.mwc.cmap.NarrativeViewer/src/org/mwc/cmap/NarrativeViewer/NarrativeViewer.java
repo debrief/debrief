@@ -16,20 +16,19 @@ package org.mwc.cmap.NarrativeViewer;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.dialogs.PatternFilter;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -53,39 +52,18 @@ public class NarrativeViewer
     GridColumnLayout layout = new GridColumnLayout();
 
     filterGrid =
-        new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI,
-            new PatternFilter()
-            {
+        new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, true)
+        {
 
-              @Override
-              public boolean isElementVisible(Viewer viewer, Object element)
-              {
-                return isLeafMatch(viewer, element);
-              }
+          @Override
+          protected void updateGridData(String text)
+          {
+            myModel.updateFilters();
+            refresh();
 
-              @Override
-              protected boolean isLeafMatch(Viewer viewer, Object element)
-              {
-                Pattern pattern = Pattern.compile(getFilterGrid().getFilterString(), Pattern.CASE_INSENSITIVE);
-                AbstractColumn[] allColumns = myModel.getAllColumns();
-                for (AbstractColumn abstractColumn : allColumns)
-                {
-                  if (abstractColumn.isVisible())
-                  {
-                    Object property =
-                        abstractColumn.getProperty((NarrativeEntry) element);
-                    String text = property != null ? property.toString() : null;
-                    if (text != null && pattern.matcher(text).find())
-                    {
-                      return true;
-                    }
-                  }
-                }
+          }
 
-                return false;
-              }
-
-            }, true);
+        };
     filterGrid.getGridComposite().setLayout(layout);
     viewer = filterGrid.getViewer();
     viewer.getGrid().setHeaderVisible(true);
@@ -93,7 +71,43 @@ public class NarrativeViewer
 
     viewer.setAutoPreferredHeight(true);
 
-    myModel = new NarrativeViewerModel(preferenceStore);
+    myModel = new NarrativeViewerModel(preferenceStore, new TextFilter()
+    {
+
+      @Override
+      public boolean accept(NarrativeEntry entry)
+      {
+
+        
+        if (viewer != null && !viewer.getGrid().isDisposed())
+        {
+          String filterString = filterGrid.getFilterString();
+          if (filterString != null && !filterString.trim().isEmpty())
+          {
+            Pattern pattern = Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
+          
+            AbstractColumn[] allColumns = myModel.getAllColumns();
+            for (AbstractColumn abstractColumn : allColumns)
+            {
+              if (abstractColumn.isVisible())
+              {
+                Object property = abstractColumn.getProperty(entry);
+                if(property instanceof String)
+                {
+                  Matcher matcher = pattern.matcher((CharSequence) property);
+                  if(matcher.find())
+                    return true;
+                        
+                }
+              }
+            }
+            return false;
+          }
+        }
+
+        return true;
+      }
+    });
 
     myModel.createTable(this, layout);
 

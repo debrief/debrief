@@ -59,6 +59,7 @@ public class NarrativeViewerModel
 
   private final ColumnFilter mySourceFilter;
   private final ColumnFilter myTypeFilter;
+  private final TextFilter textFilter;
 
   // private Map<Color, KTableCellRenderer> renderers = new HashMap<Color, KTableCellRenderer>();
   // private List<org.eclipse.swt.graphics.Color> swtColors = new
@@ -75,9 +76,10 @@ public class NarrativeViewerModel
     return myAllColumns;
   }
 
-  public NarrativeViewerModel(final IPreferenceStore store)
+  public NarrativeViewerModel(final IPreferenceStore store,TextFilter textFilter)
   {
 
+    this.textFilter = textFilter;
     myColumnVisible = new ColumnVisible(store);
     myColumnVisible.setVisible(false);
     myColumnTime = new ColumnTime(store);
@@ -170,11 +172,13 @@ public class NarrativeViewerModel
     {
       return;
     }
+    
+    
     for (final NarrativeEntry entry : myAllEntries)
     {
-      if (mySourceFilter.accept(entry) && myTypeFilter.accept(entry))
+      if (mySourceFilter.accept(entry) && myTypeFilter.accept(entry) && textFilter.accept(entry))
       {
-        myVisibleRows.add(entry);
+         myVisibleRows.add(entry);
       }
     }
   }

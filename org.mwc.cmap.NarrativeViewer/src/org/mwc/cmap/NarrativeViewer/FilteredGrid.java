@@ -53,7 +53,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
 
@@ -69,7 +68,7 @@ import org.eclipse.ui.progress.WorkbenchJob;
  *     }
  *
  */
-public class FilteredGrid extends Composite {
+public abstract class FilteredGrid extends Composite {
 
 	/**
 	 * The filter text widget to be used by this grid. This value may be
@@ -114,10 +113,7 @@ public class FilteredGrid extends Composite {
 	 */
 	protected Composite filterComposite;
 
-	/**
-	 * The pattern filter for the grid. This value must not be <code>null</code>.
-	 */
-	private PatternFilter patternFilter;
+
 
 	/**
 	 * The text to initially show in the filter text control.
@@ -205,11 +201,11 @@ public class FilteredGrid extends Composite {
 	 *            <code>true</code> if the new 3.5 look should be used
 	 * @since 3.5
 	 */
-	public FilteredGrid(Composite parent, int gridStyle, PatternFilter filter, boolean useNewLook) {
+	public FilteredGrid(Composite parent, int gridStyle,  boolean useNewLook) {
 		super(parent, SWT.NONE);
 		this.parent = parent;
 		this.useNewLook= useNewLook;
-		init(gridStyle, filter);
+		init(gridStyle);
 	}
 
 
@@ -223,8 +219,7 @@ public class FilteredGrid extends Composite {
 	 * 
 	 * @since 3.3
 	 */
-	protected void init(int gridStyle, PatternFilter filter) {
-		patternFilter = filter;
+	protected void init(int gridStyle) {
 		showFilterControls = PlatformUI.getPreferenceStore().getBoolean(
 				IWorkbenchPreferenceConstants.SHOW_FILTERED_TEXTS);
 		createControl(parent, gridStyle);
@@ -354,7 +349,7 @@ public class FilteredGrid extends Composite {
 			}
 		});
 		
-		gridViewer.addFilter(patternFilter);
+		//gridViewer.addFilter(patternFilter);
 		return gridViewer.getControl();
 	}
 
@@ -406,18 +401,14 @@ public class FilteredGrid extends Composite {
 
 				boolean initial = initialText != null
 						&& initialText.equals(text);
-				if (initial) {
-					patternFilter.setPattern(null);
-				} else if (text != null) {
-					patternFilter.setPattern(text);
-				}
+			
 
 				Control redrawFalseControl = gridComposite != null ? gridComposite
 						: gridViewer.getControl();
 				try {
 					redrawFalseControl.setRedraw(false);
 					
-					gridViewer.refresh(true);
+					updateGridData(text);
 
 					if (text.length() > 0 && !initial) {
 						
@@ -444,7 +435,11 @@ public class FilteredGrid extends Composite {
 		};
 	}
 
-	protected void updateToolbar(boolean visible) {
+	protected abstract void updateGridData(String text);
+ 
+
+
+  protected void updateToolbar(boolean visible) {
 		if (clearButtonControl != null) {
 			clearButtonControl.setVisible(visible);
 		}
@@ -796,14 +791,6 @@ public class FilteredGrid extends Composite {
 		}
 	}
 
-	/**
-	 * Returns the pattern filter used by this grid.
-	 * 
-	 * @return The pattern filter; never <code>null</code>.
-	 */
-	public final PatternFilter getPatternFilter() {
-		return patternFilter;
-	}
 
 	/**
 	 * Get the grid viewer of the receiver.
