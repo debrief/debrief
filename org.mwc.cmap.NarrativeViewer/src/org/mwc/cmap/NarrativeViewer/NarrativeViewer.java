@@ -52,7 +52,7 @@ public class NarrativeViewer
     GridColumnLayout layout = new GridColumnLayout();
 
     filterGrid =
-        new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI, true)
+        new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI |SWT.VIRTUAL , true)
         {
 
           @Override

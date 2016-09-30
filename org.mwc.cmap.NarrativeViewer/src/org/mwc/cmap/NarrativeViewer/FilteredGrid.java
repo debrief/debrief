@@ -23,6 +23,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -365,7 +367,18 @@ public abstract class FilteredGrid extends Composite {
 	 * @since 3.3
 	 */
 	protected GridTableViewer doCreateGridViewer(Composite parent, int style) {
-		return new GridTableViewer(parent, style);
+		return new GridTableViewer(parent, style){
+		  
+		  @Override
+		  public ISelection getSelection()
+		  {
+		    if(getGrid().isDisposed())
+		    {
+		      return new StructuredSelection();
+		    }
+		    return super.getSelection();
+		  }
+		};
 	}
 
 
