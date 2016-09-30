@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.NarrativeViewer;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -23,7 +25,11 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
+import org.eclipse.nebula.jface.gridviewer.internal.SelectionWithFocusRow;
+import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -365,7 +371,24 @@ public abstract class FilteredGrid extends Composite {
 	 * @since 3.3
 	 */
 	protected GridTableViewer doCreateGridViewer(Composite parent, int style) {
-		return new GridTableViewer(parent, style);
+		return new GridTableViewer(parent, style){
+		  
+		  @Override
+		  public ISelection getSelection() {
+		    Grid grid = getGrid();
+		    if (!grid.isCellSelectionEnabled()) {
+		      List<?> list = getSelectionFromWidget();
+		      Object el = null;
+		      if (grid.getFocusItem() != null && !grid.getFocusItem().isDisposed()) {
+		        el = grid.getFocusItem().getData();
+		      }
+		      return new SelectionWithFocusRow(list, el, getComparer());
+		    } else {
+		      return super.getSelection();
+		    }
+		  }
+		  
+		};
 	}
 
 
