@@ -373,6 +373,10 @@ public abstract class FilteredGrid extends Composite {
 	protected GridTableViewer doCreateGridViewer(Composite parent, int style) {
 		return new GridTableViewer(parent, style){
 		  
+		  /**
+		   * override getSelection in GridTableViewer to avoid bug with ILazyContentProvider and GridTableViewer
+		   *  as it need to check grid.getFocusItem() before access getData()
+		   */
 		  @Override
 		  public ISelection getSelection() {
 		    Grid grid = getGrid();
