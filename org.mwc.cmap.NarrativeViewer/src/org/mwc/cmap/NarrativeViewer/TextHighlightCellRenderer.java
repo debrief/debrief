@@ -14,11 +14,7 @@
  */
 package org.mwc.cmap.NarrativeViewer;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.nebula.widgets.grid.internal.CheckBoxRenderer;
@@ -33,16 +29,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
-import org.eclipse.swt.graphics.TextStyle;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * A new cell renderer instance able to deal with styled text information
  */
-public abstract class FilterTextCellRenderer extends DefaultCellRenderer
+public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
 {
 
-  static final Color MATCH_YELLOW = new Color(Display.getDefault(), 255, 251, 204);
   int leftMargin = 4;
 
   int rightMargin = 4;
@@ -63,67 +56,15 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
 
   private TextLayout textLayout;
 
-  private final Styler STYLER;
+ 
 
-  /**
-   * A new cell renderer instance able to deal with styled text information
-   */
-  public FilterTextCellRenderer()
-  {
-    
-
-    STYLER = new Styler()
-    {
-
-      @Override
-      public void applyStyles(TextStyle textStyle)
-      {
-        textStyle.background = MATCH_YELLOW;
-
-      }
-    };
-  }
 
   
   
-  protected abstract String getFilterText();
+ 
+  protected abstract StyledString getStyledString(String text);
 
-  protected StyledString getFilterStyledString(String text)
-  {
-    String filterText = getFilterText();
-    if (filterText != null && !filterText.trim().isEmpty())
-    {
-      Pattern pattern = Pattern.compile(filterText, Pattern.CASE_INSENSITIVE);
-      Matcher matcher = pattern.matcher(text);
-      boolean found = false;
-      StyledString string = new StyledString();
-
-      int lastindex = 0;
-      while (matcher.find())
-      {
-        found = true;
-        if (lastindex != matcher.start())
-        {
-          string.append(text.substring(lastindex, matcher.start()));
-        }
-        string.append(text.substring(matcher.start(), matcher.end()), STYLER);
-        lastindex = matcher.end();
-      }
-      if (lastindex < text.length())
-        string.append(text.substring(lastindex));
-
-      if (!found)
-      {
-        return null;
-      }
-      else
-      {
-        return string;
-      }
-
-    }
-    return null;
-  }
+  
 
   public Point computeSize(GC gc, int wHint, int hHint, Object value)
   {
@@ -323,7 +264,7 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
       textLayout.setAlignment(getAlignment());
       textLayout.setWidth(width < 1 ? 1 : width);
 
-      StyledString styledString = getFilterStyledString(text);
+      StyledString styledString = getStyledString(text);
       if (styledString != null)
       {
         StyleRange[] styleRanges = styledString.getStyleRanges();
@@ -363,7 +304,7 @@ public abstract class FilterTextCellRenderer extends DefaultCellRenderer
       textLayout.setText(text);
       textLayout.setAlignment(getAlignment());
       textLayout.setWidth(width < 1 ? 1 : width);
-      StyledString styledString = getFilterStyledString(text);
+      StyledString styledString = getStyledString(text);
       if (styledString != null)
       {
         StyleRange[] styleRanges = styledString.getStyleRanges();
