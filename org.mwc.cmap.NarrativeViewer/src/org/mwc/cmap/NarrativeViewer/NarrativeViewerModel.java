@@ -17,7 +17,6 @@ package org.mwc.cmap.NarrativeViewer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +45,7 @@ import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
+import org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -98,6 +98,7 @@ public class NarrativeViewerModel
 
     }
   };
+  private IPreferenceStore store;
 
   public NarrativeViewerModel(final IPreferenceStore store,
       EntryFilter textFilter)
@@ -147,6 +148,7 @@ public class NarrativeViewerModel
 
     myColumnSource.setFilter(mySourceFilter);
     myColumnType.setFilter(myTypeFilter);
+    this.store = store;
 
   }
 
@@ -171,10 +173,22 @@ public class NarrativeViewerModel
 
   protected String[] getPhrases()
   {
-    // TODO: read from pref store
+    String phrasesText = store.getString(NarrativeViewerPrefsPage.PreferenceConstants.HIGHLIGHT_PHRASES);
 
-    return new String[]
-    {"important", "urgent", "track"};
+    if(phrasesText!=null && !phrasesText.trim().isEmpty())
+    {
+      String[] split = phrasesText.split(",");
+      String[] phrases = new String[split.length];
+      for (int i = 0; i < phrases.length; i++)
+      {
+        phrases[i] = split[i].trim().toLowerCase();
+        
+      }
+      return phrases;
+    }
+    
+    
+    return new String[]{};
   }
 
   protected Styler[] getPhraseStyles()

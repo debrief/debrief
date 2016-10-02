@@ -34,6 +34,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -52,6 +53,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.NarrativeViewer;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -281,8 +283,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     rootPanel.setLayout(rootPanelLayout);
 
     myViewer =
-        new NarrativeViewer(rootPanel, Activator.getInstance()
-            .getPreferenceStore());
+        new NarrativeViewer(rootPanel, CorePlugin.getDefault().getPreferenceStore());
     rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
@@ -443,9 +444,23 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     // and the DTG formatter
     addDateFormats(menuManager);
 
+    
+    
+    menuManager.add(new Separator());
+    menuManager.add(new Action("Edit Highlight Phrases")
+    {
+      @Override
+      public void run()
+      {
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage", null, null);
+        dialog.open();
+      }
+    });
     menuManager.add(new Separator());
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
+    
+    
 
   }
 
