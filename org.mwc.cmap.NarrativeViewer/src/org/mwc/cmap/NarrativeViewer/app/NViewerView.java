@@ -389,6 +389,20 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     // view action bar
     myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
 
+    menuManager.add(new Separator());
+    final Action editPhrases = new Action("Edit Highlight Phrases")
+    {
+      @Override
+      public void run()
+      {
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage", null, null);
+        dialog.open();
+      }
+    };
+    editPhrases.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/properties.png"));
+    menuManager.add(editPhrases);
+    toolManager.add(editPhrases);
+    
     // and another separator
     menuManager.add(new Separator());
 
@@ -405,7 +419,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         .getImageDescriptor("icons/16/search.png"));
     _search.setToolTipText("Toggle search mode");
     _search.setChecked(true);
-    menuManager.add(_search);
     toolManager.add(_search);
     
     // add some more actions
@@ -434,7 +447,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _followTime.setChecked(true);
 
     menuManager.add(_followTime);
-    toolManager.add(_followTime);
 
     _controlTime = new Action("Control current time", Action.AS_CHECK_BOX)
     {
@@ -444,12 +456,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _controlTime.setToolTipText("Whether to control the current time");
     _controlTime.setChecked(true);
     menuManager.add(_controlTime);
-    toolManager.add(_controlTime);
-    
-    
-    
-    
-    
 
     // now the add-bookmark item
     _setAsBookmarkAction =
@@ -469,18 +475,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     // and the DTG formatter
     addDateFormats(menuManager);
 
-    
-    
-    menuManager.add(new Separator());
-    menuManager.add(new Action("Edit Highlight Phrases")
-    {
-      @Override
-      public void run()
-      {
-        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage", null, null);
-        dialog.open();
-      }
-    });
     menuManager.add(new Separator());
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
