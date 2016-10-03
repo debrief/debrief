@@ -64,7 +64,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
-		bottomPanel.addPlaceholder(CorePlugin.NARRATIVES2);
+		bottomPanel.addPlaceholder(CorePlugin.NARRATIVE_VIEWER);
 
 		// RIGHT: SATC contributions
 		final IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.6f,
@@ -76,7 +76,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		
 		// and our view shortcuts
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
-		layout.addShowViewShortcut(CorePlugin.NARRATIVES2);
+		layout.addShowViewShortcut(CorePlugin.NARRATIVE_VIEWER);
 		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
 		layout.addShowViewShortcut(CorePlugin.TIME_BAR);
 		layout.addShowViewShortcut(CorePlugin.TOTE);

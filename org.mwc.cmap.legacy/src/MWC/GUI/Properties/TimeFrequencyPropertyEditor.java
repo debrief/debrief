@@ -118,6 +118,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       "6 Hours",
       "12 Hours",
       "24 Hours",
+      "48 Hours",
+      "73 Hours",
       "None"};
 
   /**
@@ -142,6 +144,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       6 * _60_MINS,
       12 * _60_MINS,
       24 * _60_MINS,
+      48 * _60_MINS,
+      72 * _60_MINS,
       0};
 
 

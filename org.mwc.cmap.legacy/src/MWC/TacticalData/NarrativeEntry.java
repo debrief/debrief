@@ -295,24 +295,81 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 		return getName();
 	}
 	
-	public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj == this)
-            return true;
-        if (!(obj instanceof NarrativeEntry))
-            return false;
-        
-        NarrativeEntry other = (NarrativeEntry) obj;
-        return (other.getSource().equals(getSource())) &&
-               (other.getType().equals(getType())) &&
-               (other.getDTG().equals(getDTG())) &&
-               (other.getEntry().equals(getEntry()));
-        
-	}
+	
+	
+//	public boolean equals(Object obj) {
+//        if (obj == null)
+//            return false;
+//        if (obj == this)
+//            return true;
+//        if (!(obj instanceof NarrativeEntry))
+//            return false;
+//        
+//        NarrativeEntry other = (NarrativeEntry) obj;
+//        return (other.getSource().equals(getSource())) &&
+//               (other.getType().equals(getType())) &&
+//               (other.getDTG().equals(getDTG())) &&
+//               (other.getEntry().equals(getEntry()));
+//        
+//	}
 
 
-	// ////////////////////////////////////////////////////
+	@Override
+  public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((_DTG == null) ? 0 : _DTG.hashCode());
+    result = prime * result + ((_entry == null) ? 0 : _entry.hashCode());
+    result = prime * result + ((_track == null) ? 0 : _track.hashCode());
+    result = prime * result + ((_type == null) ? 0 : _type.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    NarrativeEntry other = (NarrativeEntry) obj;
+    if (_DTG == null)
+    {
+      if (other._DTG != null)
+        return false;
+    }
+    else if (!_DTG.equals(other._DTG))
+      return false;
+    if (_entry == null)
+    {
+      if (other._entry != null)
+        return false;
+    }
+    else if (!_entry.equals(other._entry))
+      return false;
+    if (_track == null)
+    {
+      if (other._track != null)
+        return false;
+    }
+    else if (!_track.equals(other._track))
+      return false;
+    if (_type == null)
+    {
+      if (other._type != null)
+        return false;
+    }
+    else if (!_type.equals(other._type))
+      return false;
+    return true;
+  }
+
+
+
+  // ////////////////////////////////////////////////////
 	// bean info for this class
 	// ///////////////////////////////////////////////////
 	public final class NarrativeEntryInfo extends Editable.EditorType

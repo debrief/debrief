@@ -24,7 +24,6 @@ import org.mwc.cmap.NarrativeViewer.NarrativeViewerModel;
 
 
 public class NarrativeViewerActions extends ActionGroup {
-	private final AbstractDynamicAction myShowVisibleColumn;
 	private final AbstractDynamicAction myShowSourceColumn;
 	private final AbstractDynamicAction myShowTypeColumn;
 	
@@ -34,8 +33,6 @@ public class NarrativeViewerActions extends ActionGroup {
 	public NarrativeViewerActions(final NarrativeViewer viewer){
 		final NarrativeViewerModel model = viewer.getModel();
 		myShowSourceColumn = new SwitchColumnVisibilityAction(model.getColumnSource(), "Show source");
-		myShowVisibleColumn = new SwitchColumnVisibilityAction(model.getColumnVisible(), "Show visible");
-		myShowVisibleColumn.setChecked(false);
 		myShowTypeColumn = new SwitchColumnVisibilityAction(model.getColumnType(), "Show type");
 		
 		myFilterSource = new OpenFilterAction(viewer, model.getColumnSource(), "Set source filter...");
@@ -52,7 +49,6 @@ public class NarrativeViewerActions extends ActionGroup {
 	public void fillActionBars(final IActionBars actionBars) {
 		super.fillActionBars(actionBars);
 		final IMenuManager menu = actionBars.getMenuManager();
-		menu.add(myShowVisibleColumn);
 		menu.add(myShowSourceColumn);
 		menu.add(myShowTypeColumn);
 		menu.add(new Separator());
@@ -71,7 +67,6 @@ public class NarrativeViewerActions extends ActionGroup {
 		myFilterType.refresh();
 		myShowSourceColumn.refresh();
 		myShowTypeColumn.refresh();
-		myShowVisibleColumn.refresh();
 	}
 	
 }

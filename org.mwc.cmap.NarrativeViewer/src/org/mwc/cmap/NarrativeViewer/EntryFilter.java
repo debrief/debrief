@@ -12,16 +12,17 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package de.kupzog.ktable;
+package org.mwc.cmap.NarrativeViewer;
 
-/**
- * @author Friederich Kupzog
- */
-public class KTableCellResizeAdapter implements KTableCellResizeListener {
+import MWC.TacticalData.NarrativeEntry;
 
-	public void columnResized(int col, int newWidth) {
-	}
+public interface EntryFilter {
 
-	public void rowResized(int row, int newHeight) {
-	}
+  /** is this entry suitable?
+   * 
+   * @param entry
+   * @return
+   */
+	public boolean accept(final NarrativeEntry entry);
+
 }

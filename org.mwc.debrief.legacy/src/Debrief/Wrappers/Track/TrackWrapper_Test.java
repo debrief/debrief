@@ -38,7 +38,9 @@ import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.MockCanvasType;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
@@ -1555,6 +1557,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final Layers theLayers = new Layers();
 		theLayers.addThisLayer(tw3);
 		theLayers.addThisLayer(_tw);
+		
+		_tw.setSymbolType(SymbolFactory.SCALED_FRIGATE);
+		_tw.setSymbolLength(new WorldDistance(200, WorldDistance.METRES));
+		_tw.setSymbolWidth(new WorldDistance(40, WorldDistance.METRES));
+		_tw.setSymbolColor(DebriefColors.CYAN);
 
 		// check startup status
 		assertEquals("track starts correctly", 6, trackLength());
@@ -1577,6 +1584,14 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("new track has correct name", "Merged", newTarget.getName());
 		assertEquals("original fix still in place", "test track", _fw1
 				.getTrackWrapper().getName());
+		
+		
+		assertEquals(SymbolFactory.SCALED_FRIGATE, newTarget.getSymbolType());
+    assertEquals(new WorldDistance(200, WorldDistance.METRES), newTarget.getSymbolLength());
+    assertEquals(new WorldDistance(40, WorldDistance.METRES), newTarget.getSymbolWidth());
+    assertEquals(DebriefColors.CYAN,newTarget.getSymbolColor());
+		
+		
 	}
 
 	public void testTrackMerge2()
@@ -1598,6 +1613,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("track starts correctly", 6, trackLength());
 		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
 		assertEquals("have right num tracks", 2, theLayers.size());
+    assertEquals("segment is correct length", 5, ts2.size());
 
 		// do a merge
 		final Editable[] subjects = new Editable[]
@@ -1605,11 +1621,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		TrackWrapper.mergeTracks(_tw, theLayers, subjects);
 
 		// have a look at the results
-		assertEquals("track is longer", 11, _tw.numFixes());
+		assertEquals("track is longer", 17, _tw.numFixes());
 		assertEquals("track got ditched", 2, theLayers.size());
 		final TrackSegment sl = (TrackSegment) _tw.getSegments().elements()
 				.nextElement();
-		assertEquals("just the one segment - with all our points", 11, sl.size());
+		assertEquals("just the one segment - with all our points", 17, sl.size());
 
 	}
 

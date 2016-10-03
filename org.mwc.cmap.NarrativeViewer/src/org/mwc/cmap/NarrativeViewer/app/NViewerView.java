@@ -34,6 +34,9 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -50,6 +53,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.NarrativeViewer;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -60,6 +64,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -70,13 +75,10 @@ import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import MWC.TacticalData.NarrativeEntry;
-import de.kupzog.ktable.KTableCellDoubleClickAdapter;
 
 public class NViewerView extends ViewPart implements PropertyChangeListener,
     ISelectionProvider
 {
-  public static final String VIEW_ID = "com.borlander.ianmayo.nviewer.app.view";
-
   NarrativeViewer myViewer;
 
   /**
@@ -114,6 +116,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * 
    */
   private Action _controlTime;
+  
+  private Action _search;
+  
+  
 
   protected TimeProvider _myTemporalDataset;
 
@@ -160,7 +166,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       {
         Display.getDefault().syncExec(new Runnable()
         {
-
           @Override
           public void run()
           {
@@ -172,7 +177,28 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void dataExtended(final Layers theData)
       {
+        // nope, see if there is one
+        final Layer match = theData.findLayer(ImportReplay.NARRATIVE_LAYER);
 
+        // ok, do we already have a narrative?
+        if (_myRollingNarrative == null)
+        {
+          if (match instanceof IRollingNarrativeProvider)
+          {
+            setInput((IRollingNarrativeProvider) match);
+          }
+        }
+        else
+        {
+          // hmm, has our narrative been deleted?
+          if (match == null)
+          {
+            setInput(null);
+          }
+        }
+        
+        // oh, oooh, see if we've learned some more colors
+        refreshColors();
       }
 
       @Override
@@ -183,7 +209,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         {
           uiUpdate();
         }
-        refreshColor(changedLayer);
+        
+        // do we have a rolling narrative?
+        if(_myRollingNarrative != null)
+        {
+          // ok, try to refresh the colors based on the new data
+          refreshColor(changedLayer);
+        }
       }
 
     };
@@ -197,16 +229,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
         {
           myViewer.setInput(_myRollingNarrative);
-          Display.getCurrent().asyncExec(new Runnable()
-          {
-            
-            @Override
-            public void run()
-            {
-              myViewer.refresh();
-              
-            }
-          });
+
         }
         else
           myViewer.setInput(null);
@@ -264,9 +287,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     rootPanel.setLayout(rootPanelLayout);
 
     myViewer =
-        new NarrativeViewer(rootPanel, Activator.getInstance()
-            .getPreferenceStore());
-    rootPanelLayout.topControl = myViewer;
+        new NarrativeViewer(rootPanel, CorePlugin.getDefault().getPreferenceStore());
+    rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
 
@@ -292,15 +314,19 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
      * 
      */
     setupPartListeners();
-
-    myViewer.addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
+    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
     {
-      public void cellDoubleClicked(final int col, final int row,
-          final int statemask)
+
+      @Override
+      public void doubleClick(DoubleClickEvent event)
       {
-        final NarrativeEntry theEntry =
-            myViewer.getModel().getEntryAt(col, row);
-        fireNewSeletion(theEntry);
+        StructuredSelection selection =
+            (StructuredSelection) event.getSelection();
+        if (selection.getFirstElement() instanceof NarrativeEntry)
+        {
+          fireNewSeletion((NarrativeEntry) selection.getFirstElement());
+        }
+
       }
     });
 
@@ -359,10 +385,39 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     final IToolBarManager toolManager =
         getViewSite().getActionBars().getToolBarManager();
 
+    _search = new Action("Search", Action.AS_CHECK_BOX)
+    {
+      
+      @Override
+      public void run()
+      {
+        myViewer.setSearchMode(isChecked());
+      }
+    };
+    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/search.png"));
+    _search.setToolTipText("Toggle search mode");
+    _search.setChecked(true);
+    toolManager.add(_search);
+
     // the line below contributes the predefined viewer actions onto the
     // view action bar
     myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
 
+    menuManager.add(new Separator());
+    final Action editPhrases = new Action("Edit Highlight Phrases")
+    {
+      @Override
+      public void run()
+      {
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage", null, null);
+        dialog.open();
+      }
+    };
+    editPhrases.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/properties.png"));
+    menuManager.add(editPhrases);
+    toolManager.add(editPhrases);
+    
     // and another separator
     menuManager.add(new Separator());
 
@@ -380,7 +435,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _clipText.setToolTipText("Whether to clip to visible space");
     _clipText.setChecked(true);
 
-
     menuManager.add(_clipText);
     toolManager.add(_clipText);
 
@@ -393,7 +447,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _followTime.setChecked(true);
 
     menuManager.add(_followTime);
-    toolManager.add(_followTime);
 
     _controlTime = new Action("Control current time", Action.AS_CHECK_BOX)
     {
@@ -403,7 +456,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _controlTime.setToolTipText("Whether to control the current time");
     _controlTime.setChecked(true);
     menuManager.add(_controlTime);
-    toolManager.add(_controlTime);
 
     // now the add-bookmark item
     _setAsBookmarkAction =
@@ -426,6 +478,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     menuManager.add(new Separator());
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
+    
+    
 
   }
 
@@ -477,7 +531,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   public void setFocus()
   {
-    myViewer.setFocus();
+    myViewer.getViewer().getGrid().setFocus();
   }
 
   /**
@@ -535,27 +589,24 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
       }
 
-      // ok remember the new provider
+      // ok remember the new provider (even if it's null)
       _myRollingNarrative = newNarr;
 
-      // ok, register as a listener
-      _myRollingNarrative.addNarrativeListener(
-          IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-      
-      // ok - show the narrative.  We can't rely on
-      // listening to the rolling narrative, since we 
-      // may be switching back to a previous plot.
-      myViewer.setInput(_myRollingNarrative);
-      Display.getCurrent().asyncExec(new Runnable()
+      // is the new one a real object?
+      if (newNarr != null)
       {
-        
-        @Override
-        public void run()
-        {
-          myViewer.refresh();
-          
-        }
-      });
+        // ok, register as a listener
+        _myRollingNarrative.addNarrativeListener(
+            IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+
+        // also sort out the colors
+        refreshColors();
+
+        // ok - show the narrative. We can't rely on
+        // listening to the rolling narrative, since we
+        // may be switching back to a previous plot.
+        myViewer.setInput(_myRollingNarrative);
+      }
     }
   }
 
@@ -566,58 +617,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
 
     final NViewerView me = this;
-
-    _myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
-        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final IRollingNarrativeProvider newNarr =
-                (IRollingNarrativeProvider) part;
-            if (newNarr != _myRollingNarrative)
-            {
-              setInput(newNarr);
-            }
-          }
-        });
-
-    // unusually, we are also going to track the open event for narrative
-    // data so that we can start off with some data
-    _myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
-        PartMonitor.OPENED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final IRollingNarrativeProvider newNarr =
-                (IRollingNarrativeProvider) part;
-            if (newNarr != _myRollingNarrative)
-            {
-              setInput(newNarr);
-            }
-          }
-
-        });
-
-    _myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
-        PartMonitor.CLOSED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final IRollingNarrativeProvider newNarr =
-                (IRollingNarrativeProvider) part;
-            if (newNarr == _myRollingNarrative)
-            {
-              // stop listening to old narrative
-              _myRollingNarrative.removeNarrativeListener(
-                  IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-              myViewer.setInput(null);
-              _myRollingNarrative = null;
-            }
-          }
-        });
 
     // //////////////////////////////////////////
     // and the layers - to hear about refresh
@@ -636,10 +635,15 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
               ditchOldLayers();
 
               _myLayers = layer;
-              refreshColors();
+
+              // and sort out the listeners
               _myLayers.addDataModifiedListener(_layerListener);
               _myLayers.addDataReformattedListener(_layerListener);
               _myLayers.addDataExtendedListener(_layerListener);
+
+              // fire the extended listener once, just in case
+              // we need to empty the narrative
+              _layerListener.dataExtended(_myLayers);
             }
           }
 
@@ -719,6 +723,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             {
               _myTemporalDataset.removeListener(_temporalListener,
                   TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+              
+              // and clear the pointer
+              _myTemporalDataset = null;
             }
           }
         });
@@ -790,6 +797,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       _myLayers.removeDataReformattedListener(_layerListener);
       _myLayers.removeDataExtendedListener(_layerListener);
       _myLayers = null;
+      
+      setInput(null);
     }
   }
 
@@ -802,11 +811,14 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
     if (_controllableTime != null)
     {
+      _controllableTime = null;
+    }
+    
+    if(_myTemporalDataset != null)
+    {
       _myTemporalDataset.removeListener(_temporalListener,
           TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
       _myTemporalDataset = null;
-      _controllableTime = null;
     }
 
     ditchOldLayers();
@@ -920,7 +932,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             {
               // ok, tell the model to move to the relevant item
               myViewer.setDTG(dtg);
-              
+
               // clear the updating lock
               _amUpdating = false;
             }
@@ -947,12 +959,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         final IFileEditorInput ife = (IFileEditorInput) input;
         final IResource file = ife.getFile();
 
-        // check we have a selection
-        final int[] rows = myViewer.getRowSelection();
-        if (rows.length == 1)
+        StructuredSelection selection =
+            (StructuredSelection) myViewer.getViewer().getSelection();
+        if (selection.getFirstElement() instanceof NarrativeEntry)
         {
+
           final NarrativeEntry entry =
-              myViewer.getModel().getEntryAt(0, rows[0]);
+              (NarrativeEntry) selection.getFirstElement();
           final long tNow = entry.getDTG().getMicros();
           final String currentText = FormatDateTime.toString(tNow / 1000);
           if (file != null)
@@ -994,7 +1007,12 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     {
       return;
     }
+    if (_myRollingNarrative == null)
+    {
+      return;
+    }
     Enumeration<Editable> elements = _myLayers.elements();
+    
     while (elements.hasMoreElements())
     {
       Editable element = elements.nextElement();
@@ -1025,7 +1043,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           {
             if (color == null)
             {
-              entry.setColor(Color.white);
+              entry.setColor(Color.DARK_GRAY);
             }
             else
             {

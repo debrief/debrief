@@ -100,7 +100,7 @@ public final class NarrativeHandler extends
 	public final void elementClosed()
 	{
 		// is this one of those funny narratives?
-		if (_myNarrative.getName() != ImportReplay.NARRATIVE_LAYER)
+		if (!_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
 		{
 			// yes, better put the narrative name into the type field, since the user won't see it 
 			// in the layer manager

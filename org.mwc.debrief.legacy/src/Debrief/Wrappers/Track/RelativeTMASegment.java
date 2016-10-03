@@ -654,12 +654,18 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 	public String getHostName()
 	{
-		return _referenceTrackName;
+    final String res = _referenceTrack != null ? _referenceTrack.getName()
+        : _referenceTrackName;
+	  
+		return res;
 	}
 
 	public String getSensorName()
 	{
-		return _referenceSensorName;
+    final String res = _referenceSensor != null ? _referenceSensor.getName()
+        : _referenceSensorName;
+
+    return res;
 	}
 
 	@Override

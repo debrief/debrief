@@ -103,10 +103,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
   public static final String PLUGIN_ID = "org.mwc.cmap.core";
 
-  public static final String NARRATIVES =
-      "org.mwc.cmap.narrative.views.NarrativeView";
-  public static final String NARRATIVES2 =
-      "com.borlander.ianmayo.nviewer.app.view";
+  public static final String NARRATIVE_VIEWER =
+      "org.mwc.cmap.narrative.views.NarrativeViewer";
 
   public static final String TOTE = "org.mwc.cmap.tote.views.ToteView";
 

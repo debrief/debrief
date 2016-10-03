@@ -50,7 +50,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		// get centre of area
-		final WorldLocation centre = getCentre(theChart);
+		final WorldLocation centre = new WorldLocation(getCentre(theChart));
 
 		// create the shape, based on the centre
 		final PlainShape shape = getShape(centre);
