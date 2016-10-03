@@ -34,6 +34,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -52,6 +53,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.NarrativeViewer;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -114,6 +116,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * 
    */
   private Action _controlTime;
+  
+  private Action _search;
+  
+  
 
   protected TimeProvider _myTemporalDataset;
 
@@ -281,8 +287,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     rootPanel.setLayout(rootPanelLayout);
 
     myViewer =
-        new NarrativeViewer(rootPanel, Activator.getInstance()
-            .getPreferenceStore());
+        new NarrativeViewer(rootPanel, CorePlugin.getDefault().getPreferenceStore());
     rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
@@ -384,9 +389,38 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     // view action bar
     myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
 
+    menuManager.add(new Separator());
+    final Action editPhrases = new Action("Edit Highlight Phrases")
+    {
+      @Override
+      public void run()
+      {
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage", null, null);
+        dialog.open();
+      }
+    };
+    editPhrases.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/properties.png"));
+    menuManager.add(editPhrases);
+    toolManager.add(editPhrases);
+    
     // and another separator
     menuManager.add(new Separator());
 
+    _search = new Action("Search", Action.AS_CHECK_BOX)
+    {
+      
+      @Override
+      public void run()
+      {
+        myViewer.setSearchMode(isChecked());
+      }
+    };
+    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/search.png"));
+    _search.setToolTipText("Toggle search mode");
+    _search.setChecked(true);
+    toolManager.add(_search);
+    
     // add some more actions
     _clipText = new Action("Wrap entry text", Action.AS_CHECK_BOX)
     {
@@ -413,7 +447,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _followTime.setChecked(true);
 
     menuManager.add(_followTime);
-    toolManager.add(_followTime);
 
     _controlTime = new Action("Control current time", Action.AS_CHECK_BOX)
     {
@@ -423,7 +456,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _controlTime.setToolTipText("Whether to control the current time");
     _controlTime.setChecked(true);
     menuManager.add(_controlTime);
-    toolManager.add(_controlTime);
 
     // now the add-bookmark item
     _setAsBookmarkAction =
@@ -446,6 +478,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     menuManager.add(new Separator());
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
+    
+    
 
   }
 
