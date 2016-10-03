@@ -193,10 +193,8 @@ public class NarrativeViewer
 
   private void calculateGridRawHeight()
   {
-    ISelection selection = viewer.getSelection();
     viewer.getGrid().setRedraw(false);
     viewer.setInput(new Object());
-    viewer.setSelection(selection);
     viewer.getGrid().setRedraw(true);
   }
 

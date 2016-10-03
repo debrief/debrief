@@ -56,83 +56,10 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
 
   private TextLayout textLayout;
 
- 
 
-
-  
-  
- 
   protected abstract StyledString getStyledString(String text);
 
   
-
-  public Point computeSize(GC gc, int wHint, int hHint, Object value)
-  {
-    GridItem item = (GridItem) value;
-
-    gc.setFont(item.getFont(getColumn()));
-
-    int x = 0;
-
-    x += leftMargin;
-
-    if (isCheck())
-    {
-      x += checkRenderer.getBounds().width + insideMargin;
-    }
-
-    int y = 0;
-
-    Image image = item.getImage(getColumn());
-    if (image != null)
-    {
-      y = topMargin + image.getBounds().height + bottomMargin;
-
-      x += image.getBounds().width + insideMargin;
-    }
-
-    //
-    // x += gc.stringExtent(item.getText(getColumn())).x + rightMargin;
-    //
-    // y = Math.max(y,topMargin + gc.getFontMetrics().getHeight() + bottomMargin);
-
-    int textHeight = 0;
-    if (!isWordWrap())
-    {
-      x += gc.textExtent(item.getText(getColumn())).x + rightMargin;
-
-      textHeight =
-          topMargin + textTopMargin + gc.getFontMetrics().getHeight()
-              + textBottomMargin + bottomMargin;
-    }
-    else
-    {
-      int plainTextWidth;
-      if (wHint == SWT.DEFAULT)
-        plainTextWidth = gc.textExtent(item.getText(getColumn())).x;
-      else
-        plainTextWidth = wHint - x - rightMargin;
-
-      TextLayout currTextLayout = new TextLayout(gc.getDevice());
-      currTextLayout.setFont(gc.getFont());
-      currTextLayout.setText(item.getText(getColumn()));
-      currTextLayout.setAlignment(getAlignment());
-      currTextLayout.setWidth(plainTextWidth < 1 ? 1 : plainTextWidth);
-
-      x += plainTextWidth + rightMargin;
-
-      textHeight += topMargin + textTopMargin;
-      for (int cnt = 0; cnt < currTextLayout.getLineCount(); cnt++)
-        textHeight += currTextLayout.getLineBounds(cnt).height;
-      textHeight += textBottomMargin + bottomMargin;
-
-      currTextLayout.dispose();
-    }
-
-    y = Math.max(y, textHeight);
-
-    return new Point(x, y);
-  }
 
   /**
    * {@inheritDoc}
@@ -300,7 +227,7 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
       }
 
       textLayout.setFont(gc.getFont());
-      String text = item.getText(getColumn());
+      final String text = item.getText(getColumn());
       textLayout.setText(text);
       textLayout.setAlignment(getAlignment());
       textLayout.setWidth(width < 1 ? 1 : width);
@@ -321,21 +248,9 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
 
       if (item.getParent().isAutoHeight())
       {
-        // Look through all columns (except this one) to get the max height needed for this item
-        int columnCount = item.getParent().getColumnCount();
+        //get already calculated height from TextLayout 
         int maxHeight =
             textLayout.getBounds().height + textTopMargin + textBottomMargin;
-        for (int i = 0; i < columnCount; i++)
-        {
-          GridColumn column = item.getParent().getColumn(i);
-          if (i != getColumn() && column.getWordWrap())
-          {
-            int height =
-                column.getCellRenderer().computeSize(gc, column.getWidth(),
-                    SWT.DEFAULT, item).y;
-            maxHeight = Math.max(maxHeight, height);
-          }
-        }
 
         // Also look at the row header if necessary
         if (item.getParent().isWordWrapHeader())
