@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.core.preferences;
+package org.mwc.cmap.NarrativeViewer.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -29,7 +29,7 @@ public class NarrativeViewerPrefsPage
 	public NarrativeViewerPrefsPage() {
 		super("Narrative Viewer", CorePlugin.getImageDescriptor("icons/16/narrative_viewer.png"), GRID);
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-		setDescription("Narrative viewer highlight phrases.");
+		setDescription("Provide the phrases to be highlighted (comma delimeted).");
 	}
 
 
@@ -41,7 +41,7 @@ public class NarrativeViewerPrefsPage
 	 */
 	public void createFieldEditors() {
 		addField(new StringFieldEditor(PreferenceConstants.HIGHLIGHT_PHRASES, 
-				"&Highlight Phrases:", getFieldEditorParent()));
+				"&Words/phrases:", getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
