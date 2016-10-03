@@ -385,6 +385,21 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     final IToolBarManager toolManager =
         getViewSite().getActionBars().getToolBarManager();
 
+    _search = new Action("Search", Action.AS_CHECK_BOX)
+    {
+      
+      @Override
+      public void run()
+      {
+        myViewer.setSearchMode(isChecked());
+      }
+    };
+    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/search.png"));
+    _search.setToolTipText("Toggle search mode");
+    _search.setChecked(true);
+    toolManager.add(_search);
+
     // the line below contributes the predefined viewer actions onto the
     // view action bar
     myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
@@ -406,21 +421,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     // and another separator
     menuManager.add(new Separator());
 
-    _search = new Action("Search", Action.AS_CHECK_BOX)
-    {
-      
-      @Override
-      public void run()
-      {
-        myViewer.setSearchMode(isChecked());
-      }
-    };
-    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-        .getImageDescriptor("icons/16/search.png"));
-    _search.setToolTipText("Toggle search mode");
-    _search.setChecked(true);
-    toolManager.add(_search);
-    
     // add some more actions
     _clipText = new Action("Wrap entry text", Action.AS_CHECK_BOX)
     {
