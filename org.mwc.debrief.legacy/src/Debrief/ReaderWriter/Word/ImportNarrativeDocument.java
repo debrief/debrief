@@ -406,7 +406,7 @@ public class ImportNarrativeDocument
 
             // ok, we can go for it
             final Date newDate =
-                new Date(lastDtg.getYear(), lastDtg.getMonth()-1, lastDtg
+                new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg
                     .getDate());
 
             // ok, we're ready for the DTG
