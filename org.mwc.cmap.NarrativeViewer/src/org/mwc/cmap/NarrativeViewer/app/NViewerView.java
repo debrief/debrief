@@ -395,7 +395,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage", null, null);
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage", null, null);
         dialog.open();
       }
     };

@@ -60,19 +60,10 @@
            id="org.mwc.cmap.core.preferences.WMFExportPrefsPage"
            category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
            name="WMF Export directory"/>
-     <page
-           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
-           class="org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage"
-           id="org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage"
-           name="Narrative Viewer">
-     </page>
   </extension>
   <extension
         point="org.eclipse.core.runtime.preferences">
      <initializer class="org.mwc.cmap.core.preferences.WMFExportPreferenceInitializer"/>
-     <initializer
-           class="org.mwc.cmap.core.preferences.NarrativeViewerPreferenceInitializer">
-     </initializer>
   </extension>
   
   <extension

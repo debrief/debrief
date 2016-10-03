@@ -45,7 +45,7 @@ import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
-import org.mwc.cmap.core.preferences.NarrativeViewerPrefsPage;
+import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
