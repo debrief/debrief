@@ -8,7 +8,7 @@ import java.util.TimeZone;
 
 import MWC.GenericData.HiResDate;
 
-class NarrEntry
+class NarrEntry_Legacy
 {
   HiResDate dtg;
   String type;
@@ -24,19 +24,19 @@ class NarrEntry
 
   private static Date lastDtg;
   private static String lastPlatform;
-  private static NarrEntry lastEntry;
+  private static NarrEntry_Legacy lastEntry;
   /**
    * we've encountered circumstances where copy/paste has ended up with the day being earlier than
    * the current one When we can detect this, we'll use the previous day.
    */
   private static String lastDay;
 
-  static public NarrEntry create(final String msg, final int lineNum)
+  static public NarrEntry_Legacy create(final String msg, final int lineNum)
   {
-    NarrEntry res = null;
+    NarrEntry_Legacy res = null;
     try
     {
-      res = new NarrEntry(msg);
+      res = new NarrEntry_Legacy(msg);
 
       if (res.appendedToPrevious && res.text != null)
       {
@@ -76,7 +76,7 @@ class NarrEntry
   }
 
   @SuppressWarnings("deprecation")
-  public NarrEntry(final String entry) throws ParseException
+  public NarrEntry_Legacy(final String entry) throws ParseException
   {
     final String trimmed = entry.trim();
     final String[] parts = trimmed.split(",");
@@ -253,7 +253,7 @@ class NarrEntry
 
           final String startOfLine =
               text.substring(0, Math.min(20, text.length() - 1));
-          final String trackNum = FCSEntry.parseTrack(startOfLine);
+          final String trackNum = FCSEntry_Legacy.parseTrack(startOfLine);
           if (trackNum != null)
           {
             type = "FCS";

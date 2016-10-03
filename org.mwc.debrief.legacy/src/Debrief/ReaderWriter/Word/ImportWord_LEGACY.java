@@ -48,7 +48,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 
-public class ImportNarrativeDocument
+public class ImportWord_LEGACY
 {
 
   private static class FCSEntry
@@ -576,9 +576,8 @@ public class ImportNarrativeDocument
 
       final InputStream is = new FileInputStream(testI);
 
-      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-      ArrayList<String> strings = importer.importFromWord(testFile, is);
-      importer.processThese(strings);
+      final ImportWord_LEGACY importer = new ImportWord_LEGACY(tLayers);
+      importer.importThis(testFile, is);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 6, tLayers.size());
@@ -604,9 +603,8 @@ public class ImportNarrativeDocument
 
       final Layers tLayers = new Layers();
 
-      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-      ArrayList<String> strings = importer.importFromWord(testFile, is);
-      importer.processThese(strings);
+      final ImportWord_LEGACY importer = new ImportWord_LEGACY(tLayers);
+      importer.importThis(testFile, is);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 1, tLayers.size());
@@ -645,7 +643,7 @@ public class ImportNarrativeDocument
       final TrackWrapper track2 = new TrackWrapper();
       track2.setName("Iron Duck");
       layers.addThisLayer(track2);
-      final ImportNarrativeDocument iw = new ImportNarrativeDocument(layers);
+      final ImportWord_LEGACY iw = new ImportWord_LEGACY(layers);
       String match = iw.trackFor("HMS Boat", "HMS Boat");
       assertNull("not found match", match);
       match = iw.trackFor("HMS Nelson", "HMS Nelson");
@@ -724,9 +722,6 @@ public class ImportNarrativeDocument
       final String str2 =
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 
-      final String str3 =
-          "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
-
       // try our special identifier
       assertEquals("first bearing", 123d, FCSEntry.getElement("B-", str1));
       assertEquals("first course", 321d, FCSEntry.getElement("C-", str1));
@@ -757,9 +752,6 @@ public class ImportNarrativeDocument
       assertEquals("got speed:", 0d, fe2.spdKts);
       assertEquals("got name:", "AAAAAA CCCCCC AAAAAA.", fe2.tgtType);
 
-      ne = new NarrEntry(str3);
-      final FCSEntry fe3 = new FCSEntry(ne, ne.text);
-      assertEquals("processed master id before other id:", "M02", fe3.contact);
     }
 
     public void testParseTrackNumber()
@@ -786,9 +778,9 @@ public class ImportNarrativeDocument
    * match a 6 figure DTG
    * 
    */
-  static final String DATE_MATCH_SIX = "(\\d{6})";
+  private static final String DATE_MATCH_SIX = "(\\d{6})";
 
-  static final String DATE_MATCH_FOUR = "(\\d{4})";
+  private static final String DATE_MATCH_FOUR = "(\\d{4})";
 
   public static void logThisError(final String msg, final Exception e)
   {
@@ -802,17 +794,14 @@ public class ImportNarrativeDocument
   private final Layers _layers;
 
   /**
-   * keep track of the last successfully imported narrative entry if we've just received a plain
+   * keep track of the last successfully imported narrateive entry if we've just received a plain
    * text block, we'll add it to the previous one *
    */
   private NarrativeEntry _lastEntry;
 
-  /** keep track of track names that we have matched
-   * 
-   */
   Map<String, String> nameMatches = new HashMap<String, String>();
 
-  public ImportNarrativeDocument(final Layers target)
+  public ImportWord_LEGACY(final Layers target)
   {
     _layers = target;
 
@@ -932,44 +921,20 @@ public class ImportNarrativeDocument
     return nw;
   }
 
-  public ArrayList<String> importFromWord(final String fName, final InputStream is)
+  public void importThis(final String fName, final InputStream is)
   {
-    ArrayList<String> strings  = new ArrayList<String>();
-    
+    HWPFDocument doc = null;
     try
     {
-      HWPFDocument doc = new HWPFDocument(is);
-
-      final Range r = doc.getRange();
-
-      // clear the stored data in the MS Word importer
-      NarrEntry.reset();
-      
-      final int lenParagraph = r.numParagraphs();
-      for (int x = 0; x < lenParagraph; x++)
-      {
-        final Paragraph p = r.getParagraph(x);
-        strings.add(p.text());
-      }
+      doc = new HWPFDocument(is);
     }
     catch (final IOException e)
     {
       e.printStackTrace();
     }
 
-    return strings;
-  }
-
-  /** parse a list of strings
-   * 
-   * @param strings
-   */
-  public void processThese(ArrayList<String> strings)
-  {
-    if (strings.isEmpty())
-    {
+    if (doc == null)
       return;
-    }
 
     // keep track of if we've added anything
     boolean dataAdded = false;
@@ -1000,22 +965,23 @@ public class ImportNarrativeDocument
       }
     }
 
-    // ok, now we can loop through the strings
-    int ctr = 0;
-    for(String raw_text: strings)
+    final Range r = doc.getRange();
+
+    // clear the stored data in the MS Word importer
+    NarrEntry.reset();
+
+    final int lenParagraph = r.numParagraphs();
+    for (int x = 0; x < lenParagraph; x++)
     {
-      ctr++;
-    
-      if (raw_text.trim().length() == 0)
+      final Paragraph p = r.getParagraph(x);
+      final String text = p.text();
+      if (text.trim().length() == 0)
       {
         continue;
       }
 
-      // ok, replace any soft newlines with hard ones
-      final String text = raw_text.replace('\u000B', '\n');
-      
       // ok, get the narrative type
-      final NarrEntry thisN = NarrEntry.create(text, ctr);
+      final NarrEntry thisN = NarrEntry.create(text, x);
 
       if (thisN == null)
       {
@@ -1146,17 +1112,5 @@ public class ImportNarrativeDocument
     }
 
     return match;
-  }
-
-  public ArrayList<String> importFromPdf(String fileName,
-      InputStream inputStream)
-  {
-    throw new RuntimeException("PDF import not implemented");
-  }
-
-  public ArrayList<String> importFromWordX(String fileName,
-      InputStream inputStream)
-  {
-    throw new RuntimeException("Docx import not implemented");
   }
 }

@@ -3,7 +3,7 @@ package Debrief.ReaderWriter.Word;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class FCSEntry
+class FCSEntry_Legacy
 {
   static String getClassified(final String input)
   {
@@ -92,7 +92,7 @@ class FCSEntry
 
   final double spdKts;
 
-  public FCSEntry(final NarrEntry thisN, final String msg)
+  public FCSEntry_Legacy(final NarrEntry_Legacy thisN, final String msg)
   {
     // pull out the matching strings
     final Double bVal = getElement("B-", msg);
