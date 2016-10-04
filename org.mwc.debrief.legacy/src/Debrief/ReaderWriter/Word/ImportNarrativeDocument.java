@@ -48,7 +48,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 
-public class ImportWord
+public class ImportNarrativeDocument
 {
 
   private static class FCSEntry
@@ -94,6 +94,41 @@ public class ImportWord
       return res;
     }
 
+    private static WorldDistance getRange(final String input)
+    {
+      final WorldDistance res;
+
+      final String regexp = ".*R-(?<RANGE>\\d+\\.?\\d?)(?<UNITS>\\w*?)(\\..|\\s).*";      
+      Matcher m = Pattern.compile(regexp).matcher(input);
+      if (m.matches()) 
+      {
+        final double range = Double.valueOf(m.group("RANGE"));
+        final String units = m.group("UNITS");
+        if (units.toUpperCase().equals("KYDS"))
+        {
+          res = new WorldDistance(range, WorldDistance.KYDS);
+        }
+        else if (units.toUpperCase().equals("YDS"))
+        {
+          res = new WorldDistance(range, WorldDistance.YARDS);
+        }
+        else if (units.toUpperCase().equals("M"))
+        {
+          res = new WorldDistance(range, WorldDistance.METRES);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+
+      return res;
+    }
+   
     /**
      * extract the track number from the provided string
      * 
@@ -144,7 +179,7 @@ public class ImportWord
     {
       // pull out the matching strings
       final Double bVal = getElement("B-", msg);
-      final Double rVal = getElement("R-", msg);
+      final WorldDistance rVal = getRange(msg);
       final Double cVal = getElement("C-", msg);
       final Double sVal = getElement("S-", msg);
 
@@ -156,7 +191,7 @@ public class ImportWord
 
       this.crseDegs = cVal != null ? cVal : 0d;
       this.brgDegs = bVal != null ? bVal : 0d;
-      this.rangYds = rVal != null ? rVal * 1000d : 0d;
+      this.rangYds = rVal != null ? rVal.getValueIn(WorldDistance.YARDS): 0d;
       this.spdKts = sVal != null ? sVal : 0d;
       this.tgtType = classStr != null ? classStr : "N/A";
       this.contact = trackId != null ? trackId : "N/A";
@@ -406,7 +441,7 @@ public class ImportWord
 
             // ok, we can go for it
             final Date newDate =
-                new Date(lastDtg.getYear(), lastDtg.getMonth()-1, lastDtg
+                new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg
                     .getDate());
 
             // ok, we're ready for the DTG
@@ -576,8 +611,9 @@ public class ImportWord
 
       final InputStream is = new FileInputStream(testI);
 
-      final ImportWord importer = new ImportWord(tLayers);
-      importer.importThis(testFile, is);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+      ArrayList<String> strings = importer.importFromWord(testFile, is);
+      importer.processThese(strings);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 6, tLayers.size());
@@ -603,8 +639,9 @@ public class ImportWord
 
       final Layers tLayers = new Layers();
 
-      final ImportWord importer = new ImportWord(tLayers);
-      importer.importThis(testFile, is);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+      ArrayList<String> strings = importer.importFromWord(testFile, is);
+      importer.processThese(strings);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 1, tLayers.size());
@@ -643,7 +680,7 @@ public class ImportWord
       final TrackWrapper track2 = new TrackWrapper();
       track2.setName("Iron Duck");
       layers.addThisLayer(track2);
-      final ImportWord iw = new ImportWord(layers);
+      final ImportNarrativeDocument iw = new ImportNarrativeDocument(layers);
       String match = iw.trackFor("HMS Boat", "HMS Boat");
       assertNull("not found match", match);
       match = iw.trackFor("HMS Nelson", "HMS Nelson");
@@ -692,7 +729,7 @@ public class ImportWord
       // ok, get the narrative type
       final NarrEntry thisN2 = NarrEntry.create(testDate2, 1);
       assertEquals("year", 116, thisN2.dtg.getDate().getYear());
-      assertEquals("month", 7, thisN2.dtg.getDate().getMonth());
+      assertEquals("month", 8, thisN2.dtg.getDate().getMonth());
       assertEquals("day", 16, thisN2.dtg.getDate().getDate());
       assertEquals("hour", 10, thisN2.dtg.getDate().getHours());
       assertEquals("min", 6, thisN2.dtg.getDate().getMinutes());
@@ -714,6 +751,30 @@ public class ImportWord
 
     }
 
+    public void testParseFCSRange() throws ParseException
+    {
+      final String str1 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str1a =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str2 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str3 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800m C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str4 =
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+
+      
+      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(WorldDistance.KYDS), 0.1);
+      assertEquals("got kyds", 5.1, FCSEntry.getRange(str1).getValueIn(WorldDistance.KYDS), 0.1);
+      assertEquals("got kyds", 5, FCSEntry.getRange(str1a).getValueIn(WorldDistance.KYDS), 0.1);
+      assertEquals("got yds", 800, FCSEntry.getRange(str2).getValueIn(WorldDistance.YARDS), 0.1);
+      assertEquals("got m", 800, FCSEntry.getRange(str3).getValueIn(WorldDistance.METRES), 0.1);
+      
+    }
+    
+
+    
     public void testParseFCS() throws ParseException
     {
       final String str1 =
@@ -739,7 +800,7 @@ public class ImportWord
 
       NarrEntry ne = new NarrEntry(str1);
       final FCSEntry fe1 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 5000d, fe1.rangYds);
+      assertEquals("got range:", 5000d, fe1.rangYds, 0.00001);
       assertEquals("got brg:", 123d, fe1.brgDegs);
       assertEquals("got contact:", "023", fe1.contact);
       assertEquals("got course:", 321d, fe1.crseDegs);
@@ -748,7 +809,7 @@ public class ImportWord
 
       ne = new NarrEntry(str2);
       final FCSEntry fe2 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 12400d, fe2.rangYds);
+      assertEquals("got range:", 12400d, fe2.rangYds, 0.00001);
       assertEquals("got brg:", 311d, fe2.brgDegs);
       assertEquals("got contact:", "M01", fe2.contact);
       assertEquals("got course:", 0d, fe2.crseDegs);
@@ -784,9 +845,9 @@ public class ImportWord
    * match a 6 figure DTG
    * 
    */
-  private static final String DATE_MATCH_SIX = "(\\d{6})";
+  static final String DATE_MATCH_SIX = "(\\d{6})";
 
-  private static final String DATE_MATCH_FOUR = "(\\d{4})";
+  static final String DATE_MATCH_FOUR = "(\\d{4})";
 
   public static void logThisError(final String msg, final Exception e)
   {
@@ -800,14 +861,17 @@ public class ImportWord
   private final Layers _layers;
 
   /**
-   * keep track of the last successfully imported narrateive entry if we've just received a plain
+   * keep track of the last successfully imported narrative entry if we've just received a plain
    * text block, we'll add it to the previous one *
    */
   private NarrativeEntry _lastEntry;
 
+  /** keep track of track names that we have matched
+   * 
+   */
   Map<String, String> nameMatches = new HashMap<String, String>();
 
-  public ImportWord(final Layers target)
+  public ImportNarrativeDocument(final Layers target)
   {
     _layers = target;
 
@@ -927,20 +991,44 @@ public class ImportWord
     return nw;
   }
 
-  public void importThis(final String fName, final InputStream is)
+  public ArrayList<String> importFromWord(final String fName, final InputStream is)
   {
-    HWPFDocument doc = null;
+    ArrayList<String> strings  = new ArrayList<String>();
+    
     try
     {
-      doc = new HWPFDocument(is);
+      HWPFDocument doc = new HWPFDocument(is);
+
+      final Range r = doc.getRange();
+
+      // clear the stored data in the MS Word importer
+      NarrEntry.reset();
+      
+      final int lenParagraph = r.numParagraphs();
+      for (int x = 0; x < lenParagraph; x++)
+      {
+        final Paragraph p = r.getParagraph(x);
+        strings.add(p.text());
+      }
     }
     catch (final IOException e)
     {
       e.printStackTrace();
     }
 
-    if (doc == null)
+    return strings;
+  }
+
+  /** parse a list of strings
+   * 
+   * @param strings
+   */
+  public void processThese(ArrayList<String> strings)
+  {
+    if (strings.isEmpty())
+    {
       return;
+    }
 
     // keep track of if we've added anything
     boolean dataAdded = false;
@@ -971,23 +1059,22 @@ public class ImportWord
       }
     }
 
-    final Range r = doc.getRange();
-
-    // clear the stored data in the MS Word importer
-    NarrEntry.reset();
-
-    final int lenParagraph = r.numParagraphs();
-    for (int x = 0; x < lenParagraph; x++)
+    // ok, now we can loop through the strings
+    int ctr = 0;
+    for(String raw_text: strings)
     {
-      final Paragraph p = r.getParagraph(x);
-      final String text = p.text();
-      if (text.trim().length() == 0)
+      ctr++;
+    
+      if (raw_text.trim().length() == 0)
       {
         continue;
       }
 
+      // ok, replace any soft newlines with hard ones
+      final String text = raw_text.replace('\u000B', '\n');
+      
       // ok, get the narrative type
-      final NarrEntry thisN = NarrEntry.create(text, x);
+      final NarrEntry thisN = NarrEntry.create(text, ctr);
 
       if (thisN == null)
       {
@@ -1118,5 +1205,17 @@ public class ImportWord
     }
 
     return match;
+  }
+
+  public ArrayList<String> importFromPdf(String fileName,
+      InputStream inputStream)
+  {
+    throw new RuntimeException("PDF import not implemented");
+  }
+
+  public ArrayList<String> importFromWordX(String fileName,
+      InputStream inputStream)
+  {
+    throw new RuntimeException("Docx import not implemented");
   }
 }

@@ -8,12 +8,9 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -21,7 +18,7 @@ import org.mwc.debrief.core.interfaces.IPlotLoader;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import MWC.GUI.Layers;
 
-public class MsDocLoader extends IPlotLoader.BaseLoader
+public class MsDocXLoader extends IPlotLoader.BaseLoader
 {
 
   @Override
@@ -51,35 +48,16 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
             try
             {
               // ok, get reading
-              if (fileName.endsWith(".doc"))
+              if (fileName.endsWith(".docx"))
               {
                 ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
-                ArrayList<String> strings = iw.importFromWord(fileName, inputStream);
+                ArrayList<String> strings = iw.importFromWordX(fileName, inputStream);
                 iw.processThese(strings);
               }
 
               // and inform the plot editor
               thePlot.loadingComplete(this);
 
-              // hey, it worked. now nvopen the narrative viewer
-              Display.getDefault().asyncExec(new Runnable()
-              {
-
-                @Override
-                public void run()
-                {
-                  try
-                  {
-                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(CorePlugin.NARRATIVE_VIEWER);
-                  }
-                  catch (PartInitException e)
-                  {
-                    CorePlugin.logError(Status.ERROR,
-                        "Failed opening narrative viewer", e);
-                    e.printStackTrace();
-                  }
-                }
-              });
             }
             catch (final RuntimeException e)
             {
@@ -104,17 +82,17 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
     }
     catch (final InvocationTargetException e)
     {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
+      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word XML document:"
           + fileName, e);
     }
     catch (final InterruptedException e)
     {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
+      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word XML document:"
           + fileName, e);
     }
     catch (final IOException e)
     {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
+      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word XML document:"
           + fileName, e);
     }
     finally
@@ -122,7 +100,7 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
     }
     // }
     // ok, load the data...
-    DebriefPlugin.logError(Status.INFO, "Successfully loaded MS Word document", null);
+    DebriefPlugin.logError(Status.INFO, "Successfully loaded MS Word XML document", null);
   }
 
 }

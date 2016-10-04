@@ -350,7 +350,7 @@ public class ImportWordDummy
     }
   }
 
-  public static class TestImportAIS extends TestCase
+  public static class TestImportDummyWord extends TestCase
   {
     private final static String doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/narrative.doc";
