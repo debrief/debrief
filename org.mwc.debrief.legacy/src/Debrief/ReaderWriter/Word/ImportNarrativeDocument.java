@@ -94,6 +94,41 @@ public class ImportNarrativeDocument
       return res;
     }
 
+    private static WorldDistance getRange(final String input)
+    {
+      final WorldDistance res;
+
+      final String regexp = ".*R-(?<RANGE>\\d+\\.?\\d?)(?<UNITS>\\w*?)(\\..|\\s).*";      
+      Matcher m = Pattern.compile(regexp).matcher(input);
+      if (m.matches()) 
+      {
+        final double range = Double.valueOf(m.group("RANGE"));
+        final String units = m.group("UNITS");
+        if (units.toUpperCase().equals("KYDS"))
+        {
+          res = new WorldDistance(range, WorldDistance.KYDS);
+        }
+        else if (units.toUpperCase().equals("YDS"))
+        {
+          res = new WorldDistance(range, WorldDistance.YARDS);
+        }
+        else if (units.toUpperCase().equals("M"))
+        {
+          res = new WorldDistance(range, WorldDistance.METRES);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+
+      return res;
+    }
+   
     /**
      * extract the track number from the provided string
      * 
@@ -144,7 +179,7 @@ public class ImportNarrativeDocument
     {
       // pull out the matching strings
       final Double bVal = getElement("B-", msg);
-      final Double rVal = getElement("R-", msg);
+      final WorldDistance rVal = getRange(msg);
       final Double cVal = getElement("C-", msg);
       final Double sVal = getElement("S-", msg);
 
@@ -156,7 +191,7 @@ public class ImportNarrativeDocument
 
       this.crseDegs = cVal != null ? cVal : 0d;
       this.brgDegs = bVal != null ? bVal : 0d;
-      this.rangYds = rVal != null ? rVal * 1000d : 0d;
+      this.rangYds = rVal != null ? rVal.getValueIn(WorldDistance.YARDS): 0d;
       this.spdKts = sVal != null ? sVal : 0d;
       this.tgtType = classStr != null ? classStr : "N/A";
       this.contact = trackId != null ? trackId : "N/A";
@@ -716,6 +751,30 @@ public class ImportNarrativeDocument
 
     }
 
+    public void testParseFCSRange() throws ParseException
+    {
+      final String str1 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str1a =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str2 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str3 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800m C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str4 =
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+
+      
+      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(WorldDistance.KYDS), 0.1);
+      assertEquals("got kyds", 5.1, FCSEntry.getRange(str1).getValueIn(WorldDistance.KYDS), 0.1);
+      assertEquals("got kyds", 5, FCSEntry.getRange(str1a).getValueIn(WorldDistance.KYDS), 0.1);
+      assertEquals("got yds", 800, FCSEntry.getRange(str2).getValueIn(WorldDistance.YARDS), 0.1);
+      assertEquals("got m", 800, FCSEntry.getRange(str3).getValueIn(WorldDistance.METRES), 0.1);
+      
+    }
+    
+
+    
     public void testParseFCS() throws ParseException
     {
       final String str1 =
@@ -741,7 +800,7 @@ public class ImportNarrativeDocument
 
       NarrEntry ne = new NarrEntry(str1);
       final FCSEntry fe1 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 5000d, fe1.rangYds);
+      assertEquals("got range:", 5000d, fe1.rangYds, 0.00001);
       assertEquals("got brg:", 123d, fe1.brgDegs);
       assertEquals("got contact:", "023", fe1.contact);
       assertEquals("got course:", 321d, fe1.crseDegs);
@@ -750,7 +809,7 @@ public class ImportNarrativeDocument
 
       ne = new NarrEntry(str2);
       final FCSEntry fe2 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 12400d, fe2.rangYds);
+      assertEquals("got range:", 12400d, fe2.rangYds, 0.00001);
       assertEquals("got brg:", 311d, fe2.brgDegs);
       assertEquals("got contact:", "M01", fe2.contact);
       assertEquals("got course:", 0d, fe2.crseDegs);
