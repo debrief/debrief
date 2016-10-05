@@ -134,7 +134,7 @@ public class ImportNarrativeDocument
     {
       final WorldDistance res;
 
-      final String regexp = ".*R-(?<RANGE>\\d+\\.?\\d?)(?<UNITS>\\w*?)(\\..|\\s).*";      
+      final String regexp = ".*R-(?<RANGE>\\d+\\.?\\d?)(?:\\s*)(?<UNITS>\\w*?)(?:\\.|\\s).*";      
       Matcher m = Pattern.compile(regexp).matcher(input);
       if (m.matches()) 
       {
@@ -753,7 +753,7 @@ public class ImportNarrativeDocument
       final String str2 =
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str3 =
-          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800m C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str4 =
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
       
@@ -770,7 +770,7 @@ public class ImportNarrativeDocument
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
       final String str2 =
-          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12600yds. Classified AAAAAA CCCCCC AAAAAA.";
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12600 yds. Classified AAAAAA CCCCCC AAAAAA.";
 
       final String str3 =
           "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
