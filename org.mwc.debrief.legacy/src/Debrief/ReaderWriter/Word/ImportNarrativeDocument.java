@@ -765,11 +765,11 @@ public class ImportNarrativeDocument
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 
       
-      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(WorldDistance.KYDS), 0.1);
       assertEquals("got kyds", 5.1, FCSEntry.getRange(str1).getValueIn(WorldDistance.KYDS), 0.1);
       assertEquals("got kyds", 5, FCSEntry.getRange(str1a).getValueIn(WorldDistance.KYDS), 0.1);
       assertEquals("got yds", 800, FCSEntry.getRange(str2).getValueIn(WorldDistance.YARDS), 0.1);
       assertEquals("got m", 800, FCSEntry.getRange(str3).getValueIn(WorldDistance.METRES), 0.1);
+      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(WorldDistance.KYDS), 0.1);
       
     }
     
@@ -926,6 +926,8 @@ public class ImportNarrativeDocument
     {
       return;
     }
+    
+    System.out.println("yds:" + fe.rangYds);
     
     // find the host
     final TrackWrapper host =
