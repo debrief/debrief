@@ -94,41 +94,6 @@ public class ImportNarrativeDocument
       return res;
     }
 
-    private static WorldDistance getRange(final String input)
-    {
-      final WorldDistance res;
-
-      final String regexp = ".*R-(?<RANGE>\\d+\\.?\\d?)(?<UNITS>\\w*?)(\\..|\\s).*";      
-      Matcher m = Pattern.compile(regexp).matcher(input);
-      if (m.matches()) 
-      {
-        final double range = Double.valueOf(m.group("RANGE"));
-        final String units = m.group("UNITS");
-        if (units.toUpperCase().equals("KYDS"))
-        {
-          res = new WorldDistance(range, WorldDistance.KYDS);
-        }
-        else if (units.toUpperCase().equals("YDS"))
-        {
-          res = new WorldDistance(range, WorldDistance.YARDS);
-        }
-        else if (units.toUpperCase().equals("M"))
-        {
-          res = new WorldDistance(range, WorldDistance.METRES);
-        }
-        else
-        {
-          res = null;
-        }
-      }
-      else
-      {
-        res = null;
-      }
-
-      return res;
-    }
-   
     /**
      * extract the track number from the provided string
      * 
@@ -164,6 +129,42 @@ public class ImportNarrativeDocument
 
       return res;
     }
+    
+    private static WorldDistance getRange(final String input)
+    {
+      final WorldDistance res;
+
+      final String regexp = ".*R-(?<RANGE>\\d+\\.?\\d?)(?<UNITS>\\w*?)(\\..|\\s).*";      
+      Matcher m = Pattern.compile(regexp).matcher(input);
+      if (m.matches()) 
+      {
+        final double range = Double.valueOf(m.group("RANGE"));
+        final String units = m.group("UNITS");
+        if (units.toUpperCase().equals("KYDS"))
+        {
+          res = new WorldDistance(range, WorldDistance.KYDS);
+        }
+        else if (units.toUpperCase().equals("YDS"))
+        {
+          res = new WorldDistance(range, WorldDistance.YARDS);
+        }
+        else if (units.toUpperCase().equals("M"))
+        {
+          res = new WorldDistance(range, WorldDistance.METRES);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+
+      return res;
+    }
+   
 
     final double brgDegs;
     final double rangYds;
@@ -653,14 +654,6 @@ public class ImportNarrativeDocument
       // hey, let's have a look tthem
       final AbstractCollection<Editable> items = narrLayer.getData();
       final Object[] arr = items.toArray();
-      // final NarrativeEntry first = (NarrativeEntry) arr[0];
-      // final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
-      //
-      // final DateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
-      // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-      // assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
-      // assertEquals("correct first", "160916 093700", sdf.format(last.getDTG().getDate()));
 
       // check array item
       final NarrativeEntry multiLine = (NarrativeEntry) arr[9];
@@ -763,17 +756,13 @@ public class ImportNarrativeDocument
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800m C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str4 =
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
-
       
       assertEquals("got kyds", 5.1, FCSEntry.getRange(str1).getValueIn(WorldDistance.KYDS), 0.1);
       assertEquals("got kyds", 5, FCSEntry.getRange(str1a).getValueIn(WorldDistance.KYDS), 0.1);
       assertEquals("got yds", 800, FCSEntry.getRange(str2).getValueIn(WorldDistance.YARDS), 0.1);
       assertEquals("got m", 800, FCSEntry.getRange(str3).getValueIn(WorldDistance.METRES), 0.1);
-      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(WorldDistance.KYDS), 0.1);
-      
+      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(WorldDistance.KYDS), 0.1);      
     }
-    
-
     
     public void testParseFCS() throws ParseException
     {
@@ -781,7 +770,7 @@ public class ImportNarrativeDocument
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
       final String str2 =
-          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12600yds. Classified AAAAAA CCCCCC AAAAAA.";
 
       final String str3 =
           "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
@@ -793,14 +782,14 @@ public class ImportNarrativeDocument
       assertEquals("first speed", 6d, FCSEntry.getElement("S-", str1));
 
       assertEquals("second bearing", 311d, FCSEntry.getElement("B-", str2));
-      assertEquals("second range", 12.4, FCSEntry.getElement("R-", str2));
+      assertEquals("second range", 12600d, FCSEntry.getElement("R-", str2));
 
       assertEquals("correct classified", "AAAAAA BBBBBB AAAAAA.", FCSEntry
           .getClassified(str1));
 
       NarrEntry ne = new NarrEntry(str1);
       final FCSEntry fe1 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 5000d, fe1.rangYds, 0.00001);
+      assertEquals("got range:", 5000d, fe1.rangYds, 0.001);
       assertEquals("got brg:", 123d, fe1.brgDegs);
       assertEquals("got contact:", "023", fe1.contact);
       assertEquals("got course:", 321d, fe1.crseDegs);
@@ -809,7 +798,7 @@ public class ImportNarrativeDocument
 
       ne = new NarrEntry(str2);
       final FCSEntry fe2 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 12400d, fe2.rangYds, 0.00001);
+      assertEquals("got range:", 12600d, fe2.rangYds, 0.001);
       assertEquals("got brg:", 311d, fe2.brgDegs);
       assertEquals("got contact:", "M01", fe2.contact);
       assertEquals("got course:", 0d, fe2.crseDegs);
@@ -926,8 +915,6 @@ public class ImportNarrativeDocument
     {
       return;
     }
-    
-    System.out.println("yds:" + fe.rangYds);
     
     // find the host
     final TrackWrapper host =
