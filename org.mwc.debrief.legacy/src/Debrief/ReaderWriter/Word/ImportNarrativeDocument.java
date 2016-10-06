@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2016, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 package Debrief.ReaderWriter.Word;
 
 import java.io.File;
@@ -51,6 +65,11 @@ import MWC.TacticalData.NarrativeEntry;
 public class ImportNarrativeDocument
 {
 
+  /** collection of fields for an FCS entry
+   * 
+   * @author ian
+   *
+   */
   private static class FCSEntry
   {
     private static String getClassified(final String input)
@@ -69,6 +88,13 @@ public class ImportNarrativeDocument
       return res;
     }
 
+    /**
+     * get the element that starts with the provided identifier
+     * 
+     * @param identifier
+     * @param input
+     * @return
+     */
     private static Double
         getElement(final String identifier, final String input)
     {
@@ -94,16 +120,29 @@ public class ImportNarrativeDocument
       return res;
     }
 
+    /**
+     * special element handler that can accommodate a range of types of units
+     * 
+     * @param tidied
+     * @return
+     */
     private static WorldDistance getRange(final String input)
     {
       final WorldDistance res;
+      
+      // replace newline control characters
+      String tidied = input.replace("\n", "");
+      tidied = tidied.replace("\r", "");
 
-      final String regexp = ".*R-(?<RANGE>\\d+\\.?\\d?)(?<UNITS>\\w*?)(\\..|\\s).*";      
-      Matcher m = Pattern.compile(regexp).matcher(input);
-      if (m.matches()) 
+      final String regexp =
+          ".*R-(?<RANGE>\\d+\\.?\\d?)(?:\\s*)(?<UNITS>\\w*?)(?:\\.|\\s).*";
+      final Matcher m = Pattern.compile(regexp).matcher(tidied);
+      if (m.matches())
       {
         final double range = Double.valueOf(m.group("RANGE"));
         final String units = m.group("UNITS");
+
+        // ok, create the relevant object
         if (units.toUpperCase().equals("KYDS"))
         {
           res = new WorldDistance(range, WorldDistance.KYDS);
@@ -128,7 +167,7 @@ public class ImportNarrativeDocument
 
       return res;
     }
-   
+
     /**
      * extract the track number from the provided string
      * 
@@ -137,6 +176,13 @@ public class ImportNarrativeDocument
      */
     private static String parseTrack(final String str)
     {
+      // note: we try to match the master track first, since sometimes
+      // both are referred to in the FCS entry
+
+      // NOTE: if we continue to get "thrown" by multiple references in the line,
+      // then we should use a more prescriptive regexp, that starts with the
+      // FCS marker
+
       final String shortTrackId = "(M\\d{2})";
       final Pattern shortPattern = Pattern.compile(shortTrackId);
 
@@ -167,6 +213,7 @@ public class ImportNarrativeDocument
 
     final double brgDegs;
     final double rangYds;
+
     final String tgtType;
 
     final String contact;
@@ -175,7 +222,7 @@ public class ImportNarrativeDocument
 
     final double spdKts;
 
-    public FCSEntry(final NarrEntry thisN, final String msg)
+    public FCSEntry(final String msg)
     {
       // pull out the matching strings
       final Double bVal = getElement("B-", msg);
@@ -191,7 +238,7 @@ public class ImportNarrativeDocument
 
       this.crseDegs = cVal != null ? cVal : 0d;
       this.brgDegs = bVal != null ? bVal : 0d;
-      this.rangYds = rVal != null ? rVal.getValueIn(WorldDistance.YARDS): 0d;
+      this.rangYds = rVal != null ? rVal.getValueIn(WorldDistance.YARDS) : 0d;
       this.spdKts = sVal != null ? sVal : 0d;
       this.tgtType = classStr != null ? classStr : "N/A";
       this.contact = trackId != null ? trackId : "N/A";
@@ -213,8 +260,19 @@ public class ImportNarrativeDocument
     // NOTE: any new ones should be included in the "reset() processing
     // ///////////////////
 
+    /** what is the last valid time we have. if time fields are missing
+     * we will extend from the last DTG
+     */
     private static Date lastDtg;
+    
+    /** what was the last platform we read in, in case the platform is missing
+     * 
+     */
     private static String lastPlatform;
+    
+    /** what was the last entry? We remember it, so we can append ourselves to it
+     * 
+     */
     private static NarrEntry lastEntry;
     /**
      * we've encountered circumstances where copy/paste has ended up with the day being earlier than
@@ -278,11 +336,11 @@ public class ImportNarrativeDocument
       final String trimmed = entry.trim();
       final String[] parts = trimmed.split(",");
       int ctr = 0;
-      
-//      if(entry.contains("SEARCH STRING"))
-//      {
-//        System.out.println("here");
-//      }
+
+      // if(entry.contains("SEARCH STRING"))
+      // {
+      // System.out.println("here");
+      // }
 
       // sort out our date formats
       final DateFormat fourBlock = new SimpleDateFormat("HHmm");
@@ -323,11 +381,13 @@ public class ImportNarrativeDocument
          * special processing, to overcome the previous day being used
          * 
          */
-        boolean dayDecreased = lastDay != null
-            && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
-        boolean monthIncreased = lastMonth != null
-            && Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
-        
+        final boolean dayDecreased =
+            lastDay != null
+                && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
+        final boolean monthIncreased =
+            lastMonth != null
+                && Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
+
         if (dayDecreased && !monthIncreased)
         {
           // ok, the day has dropped, but the month hasn't increased
@@ -454,10 +514,10 @@ public class ImportNarrativeDocument
             text = trimmed.substring(dateStr.length()).trim();
 
             // see if we can recognise the first word as a track number
-//            if (text.length() == 0)
-//            {
-//              System.out.println("here");
-//            }
+            // if (text.length() == 0)
+            // {
+            // System.out.println("here");
+            // }
 
             final String startOfLine =
                 text.substring(0, Math.min(20, text.length() - 1));
@@ -571,7 +631,7 @@ public class ImportNarrativeDocument
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
     private final static String valid_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/FCS_narrative.doc";
-    
+
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
@@ -611,8 +671,9 @@ public class ImportNarrativeDocument
 
       final InputStream is = new FileInputStream(testI);
 
-      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-      ArrayList<String> strings = importer.importFromWord(testFile, is);
+      final ImportNarrativeDocument importer =
+          new ImportNarrativeDocument(tLayers);
+      final ArrayList<String> strings = importer.importFromWord(testFile, is);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -639,8 +700,9 @@ public class ImportNarrativeDocument
 
       final Layers tLayers = new Layers();
 
-      final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-      ArrayList<String> strings = importer.importFromWord(testFile, is);
+      final ImportNarrativeDocument importer =
+          new ImportNarrativeDocument(tLayers);
+      final ArrayList<String> strings = importer.importFromWord(testFile, is);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -653,14 +715,6 @@ public class ImportNarrativeDocument
       // hey, let's have a look tthem
       final AbstractCollection<Editable> items = narrLayer.getData();
       final Object[] arr = items.toArray();
-      // final NarrativeEntry first = (NarrativeEntry) arr[0];
-      // final NarrativeEntry last = (NarrativeEntry) arr[arr.length - 1];
-      //
-      // final DateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
-      // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-      // assertEquals("correct first", "160916 080900", sdf.format(first.getDTG().getDate()));
-      // assertEquals("correct first", "160916 093700", sdf.format(last.getDTG().getDate()));
 
       // check array item
       final NarrativeEntry multiLine = (NarrativeEntry) arr[9];
@@ -751,37 +805,13 @@ public class ImportNarrativeDocument
 
     }
 
-    public void testParseFCSRange() throws ParseException
-    {
-      final String str1 =
-          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
-      final String str1a =
-          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
-      final String str2 =
-          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
-      final String str3 =
-          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800m C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
-      final String str4 =
-          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
-
-      
-      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(WorldDistance.KYDS), 0.1);
-      assertEquals("got kyds", 5.1, FCSEntry.getRange(str1).getValueIn(WorldDistance.KYDS), 0.1);
-      assertEquals("got kyds", 5, FCSEntry.getRange(str1a).getValueIn(WorldDistance.KYDS), 0.1);
-      assertEquals("got yds", 800, FCSEntry.getRange(str2).getValueIn(WorldDistance.YARDS), 0.1);
-      assertEquals("got m", 800, FCSEntry.getRange(str3).getValueIn(WorldDistance.METRES), 0.1);
-      
-    }
-    
-
-    
     public void testParseFCS() throws ParseException
     {
       final String str1 =
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
       final String str2 =
-          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12600 yds. Classified AAAAAA CCCCCC AAAAAA.";
 
       final String str3 =
           "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
@@ -793,14 +823,14 @@ public class ImportNarrativeDocument
       assertEquals("first speed", 6d, FCSEntry.getElement("S-", str1));
 
       assertEquals("second bearing", 311d, FCSEntry.getElement("B-", str2));
-      assertEquals("second range", 12.4, FCSEntry.getElement("R-", str2));
+      assertEquals("second range", 12600d, FCSEntry.getElement("R-", str2));
 
       assertEquals("correct classified", "AAAAAA BBBBBB AAAAAA.", FCSEntry
           .getClassified(str1));
 
       NarrEntry ne = new NarrEntry(str1);
-      final FCSEntry fe1 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 5000d, fe1.rangYds, 0.00001);
+      final FCSEntry fe1 = new FCSEntry(ne.text);
+      assertEquals("got range:", 5000d, fe1.rangYds, 0.001);
       assertEquals("got brg:", 123d, fe1.brgDegs);
       assertEquals("got contact:", "023", fe1.contact);
       assertEquals("got course:", 321d, fe1.crseDegs);
@@ -808,8 +838,8 @@ public class ImportNarrativeDocument
       assertEquals("got name:", "AAAAAA BBBBBB AAAAAA.", fe1.tgtType);
 
       ne = new NarrEntry(str2);
-      final FCSEntry fe2 = new FCSEntry(ne, ne.text);
-      assertEquals("got range:", 12400d, fe2.rangYds, 0.00001);
+      final FCSEntry fe2 = new FCSEntry(ne.text);
+      assertEquals("got range:", 12600d, fe2.rangYds, 0.001);
       assertEquals("got brg:", 311d, fe2.brgDegs);
       assertEquals("got contact:", "M01", fe2.contact);
       assertEquals("got course:", 0d, fe2.crseDegs);
@@ -817,8 +847,33 @@ public class ImportNarrativeDocument
       assertEquals("got name:", "AAAAAA CCCCCC AAAAAA.", fe2.tgtType);
 
       ne = new NarrEntry(str3);
-      final FCSEntry fe3 = new FCSEntry(ne, ne.text);
+      final FCSEntry fe3 = new FCSEntry(ne.text);
       assertEquals("processed master id before other id:", "M02", fe3.contact);
+    }
+
+    public void testParseFCSRange() throws ParseException
+    {
+      final String str1 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str1a =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str2 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA \r BBBBBB AAAAAA.";
+      final String str3 =
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA \nBBBBBB AAAAAA.";
+      final String str4 =
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+
+      assertEquals("got kyds", 5.1, FCSEntry.getRange(str1).getValueIn(
+          WorldDistance.KYDS), 0.1);
+      assertEquals("got kyds", 5, FCSEntry.getRange(str1a).getValueIn(
+          WorldDistance.KYDS), 0.1);
+      assertEquals("got yds", 800, FCSEntry.getRange(str2).getValueIn(
+          WorldDistance.YARDS), 0.1);
+      assertEquals("got m", 800, FCSEntry.getRange(str3).getValueIn(
+          WorldDistance.METRES), 0.1);
+      assertEquals("got kyds", 12.4, FCSEntry.getRange(str4).getValueIn(
+          WorldDistance.KYDS), 0.1);
     }
 
     public void testParseTrackNumber()
@@ -866,7 +921,8 @@ public class ImportNarrativeDocument
    */
   private NarrativeEntry _lastEntry;
 
-  /** keep track of track names that we have matched
+  /**
+   * keep track of track names that we have matched
    * 
    */
   Map<String, String> nameMatches = new HashMap<String, String>();
@@ -919,14 +975,14 @@ public class ImportNarrativeDocument
   private void addFCS(final NarrEntry thisN)
   {
     // ok, parse the message
-    final FCSEntry fe = new FCSEntry(thisN, thisN.text);
+    final FCSEntry fe = new FCSEntry(thisN.text);
 
     // do we have enough data to create a solution?
-    if(fe.brgDegs == 0 && fe.rangYds == 0)
+    if (fe.brgDegs == 0 && fe.rangYds == 0)
     {
       return;
     }
-    
+
     // find the host
     final TrackWrapper host =
         (TrackWrapper) _layers.findLayer(trackFor(thisN.platform));
@@ -960,10 +1016,10 @@ public class ImportNarrativeDocument
         final Fix newF =
             new Fix(thisN.dtg, loc, Math.toRadians(fe.crseDegs), yds_per_sec);
         final FixWrapper newFw = new FixWrapper(newF);
-        
+
         // lastly, reset the label, so it's legible
         newFw.resetName();
-        
+
         // oh, and switch the symbol on
         newFw.setSymbolShowing(true);
 
@@ -991,19 +1047,26 @@ public class ImportNarrativeDocument
     return nw;
   }
 
-  public ArrayList<String> importFromWord(final String fName, final InputStream is)
+  public ArrayList<String> importFromPdf(final String fileName,
+      final InputStream inputStream)
   {
-    ArrayList<String> strings  = new ArrayList<String>();
-    
+    throw new RuntimeException("PDF import not implemented");
+  }
+
+  public ArrayList<String> importFromWord(final String fName,
+      final InputStream is)
+  {
+    final ArrayList<String> strings = new ArrayList<String>();
+
     try
     {
-      HWPFDocument doc = new HWPFDocument(is);
+      final HWPFDocument doc = new HWPFDocument(is);
 
       final Range r = doc.getRange();
 
       // clear the stored data in the MS Word importer
       NarrEntry.reset();
-      
+
       final int lenParagraph = r.numParagraphs();
       for (int x = 0; x < lenParagraph; x++)
       {
@@ -1019,11 +1082,23 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  /** parse a list of strings
+  public ArrayList<String> importFromWordX(final String fileName,
+      final InputStream inputStream)
+  {
+    throw new RuntimeException("Docx import not implemented");
+  }
+
+  public void logError(final String msg, final Exception e)
+  {
+    logThisError(msg, e);
+  }
+
+  /**
+   * parse a list of strings
    * 
    * @param strings
    */
-  public void processThese(ArrayList<String> strings)
+  public void processThese(final ArrayList<String> strings)
   {
     if (strings.isEmpty())
     {
@@ -1061,10 +1136,10 @@ public class ImportNarrativeDocument
 
     // ok, now we can loop through the strings
     int ctr = 0;
-    for(String raw_text: strings)
+    for (final String raw_text : strings)
     {
       ctr++;
-    
+
       if (raw_text.trim().length() == 0)
       {
         continue;
@@ -1072,7 +1147,7 @@ public class ImportNarrativeDocument
 
       // ok, replace any soft newlines with hard ones
       final String text = raw_text.replace('\u000B', '\n');
-      
+
       // ok, get the narrative type
       final NarrEntry thisN = NarrEntry.create(text, ctr);
 
@@ -1088,8 +1163,9 @@ public class ImportNarrativeDocument
         // check it's in the currently loaded time period
         if (!outerPeriod.contains(thisN.dtg))
         {
-//          System.out.println(thisN.dtg.getDate() + " is not between " + outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
-          
+          // System.out.println(thisN.dtg.getDate() + " is not between " +
+          // outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+
           // ok, it's not in our period
           continue;
         }
@@ -1160,11 +1236,6 @@ public class ImportNarrativeDocument
     }
   }
 
-  public void logError(final String msg, final Exception e)
-  {
-    logThisError(msg, e);
-  }
-
   private String trackFor(final String originalName)
   {
     return trackFor(originalName, null);
@@ -1205,17 +1276,5 @@ public class ImportNarrativeDocument
     }
 
     return match;
-  }
-
-  public ArrayList<String> importFromPdf(String fileName,
-      InputStream inputStream)
-  {
-    throw new RuntimeException("PDF import not implemented");
-  }
-
-  public ArrayList<String> importFromWordX(String fileName,
-      InputStream inputStream)
-  {
-    throw new RuntimeException("Docx import not implemented");
   }
 }
