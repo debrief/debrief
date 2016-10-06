@@ -259,7 +259,19 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     // ok, has there been a change?
     if(updated)
     {
-      this.firePropertyChange(FILTERED, null, this);
+      this.firePropertyChange(FILTERED, null, this);      
+      
+      // and the narrative listeners, if we have one
+      if (_myListeners != null)
+      {
+        for (final Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
+            .hasNext();)
+        {
+          final INarrativeListener thisL = iter.next();
+          thisL.filtered();
+        }
+      }
+
     }
   }
   

@@ -77,8 +77,6 @@ public class NarrativeViewer
       @Override
       public boolean accept(NarrativeEntry entry)
       {
-
-        
         if (viewer != null && !viewer.getGrid().isDisposed())
         {
           String filterString = filterGrid.getFilterString();
