@@ -108,6 +108,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
@@ -131,6 +132,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -179,7 +181,13 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
    */
   public final static String CONTENTS_CHANGED = "CONTENTS_CHANGED";
 
-  // //////////////////////////////////////
+
+  /**
+   * property type to signify data being filtered
+   */
+  public final static String FILTERED = "FILTERED";
+
+// //////////////////////////////////////
   // constructors
   // //////////////////////////////////////
   /**
@@ -222,6 +230,39 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     _myName = name;
   }
 
+
+  /**
+   * filter the list to the specified time period
+   */
+  public void filterListTo(TimePeriod period)
+  {
+    boolean updated = false;
+    final Enumeration<Editable> enumer = elements();
+    while(enumer.hasMoreElements())
+    {
+      final Plottable thisP = (Plottable) enumer.nextElement();
+      if(thisP instanceof NarrativeEntry)
+      {
+        final NarrativeEntry wl = (NarrativeEntry) thisP;
+
+        boolean isVisible = period.contains(wl.getDTG());
+        
+        if(!updated && wl.getVisible() != isVisible)
+        {
+          updated = true;
+        }
+        
+        wl.setVisible(isVisible);
+      }
+    }
+    
+    // ok, has there been a change?
+    if(updated)
+    {
+      this.firePropertyChange(FILTERED, null, this);
+    }
+  }
+  
   /**
    * the line thickness (convenience wrapper around width)
    * 
