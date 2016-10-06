@@ -145,7 +145,6 @@ public class NarrativeViewerModel
         updateFilters();
       }
     };
-
     myColumnSource.setFilter(mySourceFilter);
     myColumnType.setFilter(myTypeFilter);
     this.store = store;

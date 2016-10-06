@@ -257,6 +257,19 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           }
         });
       }
+
+      @Override
+      public void filtered()
+      {
+        // update our list...
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            updated();
+          }
+        });
+      }
     };
 
   }
