@@ -123,16 +123,20 @@ public class ImportNarrativeDocument
     /**
      * special element handler that can accommodate a range of types of units
      * 
-     * @param input
+     * @param tidied
      * @return
      */
     private static WorldDistance getRange(final String input)
     {
       final WorldDistance res;
+      
+      // replace newline control characters
+      String tidied = input.replace("\n", "");
+      tidied = tidied.replace("\r", "");
 
       final String regexp =
           ".*R-(?<RANGE>\\d+\\.?\\d?)(?:\\s*)(?<UNITS>\\w*?)(?:\\.|\\s).*";
-      final Matcher m = Pattern.compile(regexp).matcher(input);
+      final Matcher m = Pattern.compile(regexp).matcher(tidied);
       if (m.matches())
       {
         final double range = Double.valueOf(m.group("RANGE"));
@@ -854,9 +858,9 @@ public class ImportNarrativeDocument
       final String str1a =
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str2 =
-          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA \r BBBBBB AAAAAA.";
       final String str3 =
-          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA \nBBBBBB AAAAAA.";
       final String str4 =
           "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 
