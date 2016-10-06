@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -52,6 +53,7 @@ public class ImportNMEADialog extends TitleAreaDialog
 
       comboViewer.getCombo().setLayoutData(
           new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
+      comboViewer.setSelection(new StructuredSelection(Long.valueOf(ownshipFreq)));
       comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
       {
 
@@ -75,6 +77,7 @@ public class ImportNMEADialog extends TitleAreaDialog
       comboViewer.setInput(getDataSet());
       comboViewer.getCombo().setLayoutData(
           new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
+      comboViewer.setSelection(new StructuredSelection(Long.valueOf(thirdPartyFreq)));
       comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
       {
 
