@@ -145,7 +145,6 @@ public class NarrativeViewerModel
         updateFilters();
       }
     };
-
     myColumnSource.setFilter(mySourceFilter);
     myColumnType.setFilter(myTypeFilter);
     this.store = store;
@@ -244,7 +243,7 @@ public class NarrativeViewerModel
 
     for (final NarrativeEntry entry : myAllEntries)
     {
-      if (mySourceFilter.accept(entry) && myTypeFilter.accept(entry)
+      if (entry.getVisible() && mySourceFilter.accept(entry) && myTypeFilter.accept(entry)
           && textFilter.accept(entry))
       {
         myVisibleRows.add(entry);

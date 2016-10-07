@@ -42,6 +42,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	private HiResDate _DTG;
 	private String _entry;
 	private String _type;
+	private boolean _visible = true;
 	String _DTGString = null;
 
 	private transient NarrativeEntryInfo _myInfo;
@@ -240,14 +241,16 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	 */
 	public final boolean getVisible()
 	{
-		return true;
+		return _visible;
 	}
 
 	/**
 	 * set the visibility (although we ignore this)
 	 */
+  @FireReformatted	
 	public final void setVisible(final boolean val)
 	{
+	  _visible = val;
 	}
 
 	/**
