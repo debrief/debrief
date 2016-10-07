@@ -23,44 +23,70 @@ import org.mwc.cmap.core.CorePlugin;
 public class ImportNMEADialog extends TitleAreaDialog
 {
 
-  private long ownshipFreq;
-  private long thirdPartyFreq;
-
-  public ImportNMEADialog(Shell parentShell)
+  /**
+   * @param args
+   */
+  public static void main(final String[] args)
   {
-    super(parentShell);
+
+    Display display = Display.getDefault();
+    if (display.isDisposed())
+      display = new Display();
+    final Shell shell = new Shell(display, SWT.NO_TRIM);
+    final ImportNMEADialog dialog = new ImportNMEADialog(shell);
+    dialog.open();
   }
+
+  private long ownshipFreq;
+
+  private long thirdPartyFreq;
 
   public ImportNMEADialog()
   {
     this(Display.getDefault().getActiveShell());
   }
 
-  @Override
-  protected Control createDialogArea(Composite parent)
+  public ImportNMEADialog(final Shell parentShell)
   {
-    Composite base = (Composite) super.createDialogArea(parent);
-    Composite composite = new Composite(base, SWT.NONE);
+    super(parentShell);
+  }
+
+  @Override
+  public void create()
+  {
+    super.create();
+    setTitle("Import NMEA Data");
+    getButton(IDialogConstants.OK_ID).setText("Import");
+    setTitleImage(CorePlugin.extendedGetImageFromRegistry("icons/48/NMEA.png"));
+    setMessage("Please choose the frequency at which data will be imported (or 'none' to not import that type).");
+  }
+
+  @Override
+  protected Control createDialogArea(final Composite parent)
+  {
+    final Composite base = (Composite) super.createDialogArea(parent);
+    final Composite composite = new Composite(base, SWT.NONE);
     composite.setLayoutData(new GridData(GridData.FILL_BOTH
         | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
     composite.setLayout(new GridLayout(2, false));
     {
-      new Label(composite, SWT.NONE).setText("Ownship postion frequency:");
-      ComboViewer comboViewer = new ComboViewer(composite);
+      new Label(composite, SWT.NONE).setText("Ownship position frequency:");
+      final ComboViewer comboViewer = new ComboViewer(composite);
       comboViewer.setContentProvider(new ArrayContentProvider());
       comboViewer.setLabelProvider(newLabelProvider());
       comboViewer.setInput(getDataSet());
 
       comboViewer.getCombo().setLayoutData(
           new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
-      comboViewer.setSelection(new StructuredSelection(Long.valueOf(ownshipFreq)));
+      comboViewer.setSelection(new StructuredSelection(Long
+          .valueOf(ownshipFreq)));
       comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
       {
 
         @Override
-        public void selectionChanged(SelectionChangedEvent event)
+        public void selectionChanged(final SelectionChangedEvent event)
         {
-          IStructuredSelection selection =
+          final IStructuredSelection selection =
               (IStructuredSelection) event.getSelection();
           if (selection.getFirstElement() instanceof Long)
           {
@@ -70,21 +96,22 @@ public class ImportNMEADialog extends TitleAreaDialog
       });
     }
     {
-      new Label(composite, SWT.NONE).setText("Third Party postion frequency:");
-      ComboViewer comboViewer = new ComboViewer(composite);
+      new Label(composite, SWT.NONE).setText("AIS position frequency:");
+      final ComboViewer comboViewer = new ComboViewer(composite);
       comboViewer.setContentProvider(new ArrayContentProvider());
       comboViewer.setLabelProvider(newLabelProvider());
       comboViewer.setInput(getDataSet());
       comboViewer.getCombo().setLayoutData(
           new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
-      comboViewer.setSelection(new StructuredSelection(Long.valueOf(thirdPartyFreq)));
+      comboViewer.setSelection(new StructuredSelection(Long
+          .valueOf(thirdPartyFreq)));
       comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
       {
 
         @Override
-        public void selectionChanged(SelectionChangedEvent event)
+        public void selectionChanged(final SelectionChangedEvent event)
         {
-          IStructuredSelection selection =
+          final IStructuredSelection selection =
               (IStructuredSelection) event.getSelection();
           if (selection.getFirstElement() instanceof Long)
           {
@@ -93,7 +120,6 @@ public class ImportNMEADialog extends TitleAreaDialog
         }
       });
     }
-
     return composite;
   }
 
@@ -103,17 +129,27 @@ public class ImportNMEADialog extends TitleAreaDialog
     {0l, 5000l, 15000l, 60000l, 300000l, 600000l, 3600000l, Long.MAX_VALUE};
   }
 
+  public long getOwnshipFreq()
+  {
+    return ownshipFreq;
+  }
+
+  public long getThirdPartyFreq()
+  {
+    return thirdPartyFreq;
+  }
+
   private IBaseLabelProvider newLabelProvider()
   {
     return new ColumnLabelProvider()
     {
 
       @Override
-      public String getText(Object element)
+      public String getText(final Object element)
       {
         if (element instanceof Long)
         {
-          long longValue = ((Long) element).longValue();
+          final long longValue = ((Long) element).longValue();
           if (longValue == 0)
             return "All";
 
@@ -131,47 +167,10 @@ public class ImportNMEADialog extends TitleAreaDialog
             return "10 Minute";
           if (longValue == 3600000)
             return "1 Hour";
-
         }
         return super.getText(element);
       }
-
     };
-  }
-
-  @Override
-  public void create()
-  {
-    super.create();
-    setTitle("Import NMEA Data");
-    getButton(IDialogConstants.OK_ID).setText("Import");
-    setTitleImage(CorePlugin.getImageFromRegistry("icons/48/NMEA.png"));
-    setMessage("please choose the frequency at which data will be imported.");
-  }
-
-  public long getOwnshipFreq()
-  {
-    return ownshipFreq;
-  }
-
-  public long getThirdPartyFreq()
-  {
-    return thirdPartyFreq;
-  }
-
-  /**
-   * @param args
-   */
-  public static void main(String[] args)
-  {
-
-    Display display = Display.getDefault();
-    if (display.isDisposed())
-      display = new Display();
-    Shell shell = new Shell(display, SWT.NO_TRIM);
-    ImportNMEADialog dialog = new ImportNMEADialog(shell);
-
-    dialog.open();
   }
 
 }
