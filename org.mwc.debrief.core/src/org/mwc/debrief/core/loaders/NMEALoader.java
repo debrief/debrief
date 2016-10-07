@@ -21,10 +21,12 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.dialogs.ImportNMEADialog;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -35,101 +37,119 @@ import MWC.GUI.Layers;
  */
 public class NMEALoader extends IPlotLoader.BaseLoader
 {
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
-	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
-	 */
-	@Override
-	public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
-			final String fileName)
-	{
 
-		// ok, we'll need somewhere to put the data
-		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
+   * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
+   */
+  @Override
+  public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
+      final String fileName)
+  {
 
-		try
-		{
-			// hmm, is there anything in the file?
-			final int numAvailable = inputStream.available();
-			if (numAvailable > 0)
-			{
+    // ok, we'll need somewhere to put the data
+    final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
-				final IWorkbench wb = PlatformUI.getWorkbench();
-				final IProgressService ps = wb.getProgressService();
-				ps.busyCursorWhile(new IRunnableWithProgress()
-				{
-					@Override
-					public void run(final IProgressMonitor pm)
-					{
-						// right, better suspend the LayerManager extended updates from
-						// firing
-						theLayers.suspendFiringExtended(true);
+    try
+    {
+      // hmm, is there anything in the file?
+      final int numAvailable = inputStream.available();
+      if (numAvailable > 0)
+      {
 
-						try
-						{
-							DebriefPlugin.logError(Status.INFO, "about to start loading:"
-									+ fileName, null);
+        final IWorkbench wb = PlatformUI.getWorkbench();
+        final IProgressService ps = wb.getProgressService();
+        ps.busyCursorWhile(new IRunnableWithProgress()
+        {
+          @Override
+          public void run(final IProgressMonitor pm)
+          {
+            // right, better suspend the LayerManager extended updates from
+            // firing
+            theLayers.suspendFiringExtended(true);
 
-							// ok - get loading going
-							ImportNMEA importer = new ImportNMEA(theLayers);
-							importer.importThis(fileName, inputStream);
-							
-							DebriefPlugin.logError(Status.INFO, "completed loading:"
-									+ fileName, null);
+            // ok, we need to run in the display thread
+            Display.getDefault().syncExec(new Runnable()
+            {
+              public void run()
+              {
 
-						}
-						catch (final RuntimeException e)
-						{
-							DebriefPlugin.logError(Status.ERROR, "Problem loading AIS datafile:"
-									+ fileName, e);
-						}
-						catch (final Exception e)
-						{
-							DebriefPlugin.logError(Status.ERROR, "Problem loading AIS datafile:"
-									+ fileName, e);
-						}
-						finally
-						{
-							// and inform the plot editor
-							thePlot.loadingComplete(this);
+                try
+                {
+                  DebriefPlugin.logError(Status.INFO, "about to start loading:"
+                      + fileName, null);
 
-							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
+                  final ImportNMEADialog dialog = new ImportNMEADialog();
+                  if (dialog.open() != ImportNMEADialog.CANCEL)
+                  {
+                    // get the selected values
+                    final long osFreq = dialog.getOwnshipFreq();
+                    final long tgtFreq = dialog.getThirdPartyFreq();
 
-							// ok, allow the layers object to inform anybody what's
-							// happening
-							// again
-							theLayers.suspendFiringExtended(false);
+                    // ok - get loading going
+                    ImportNMEA importer = new ImportNMEA(theLayers);
+                    importer.importThis(fileName, inputStream, osFreq, tgtFreq);
 
-							// and trigger an update ourselves
-							// theLayers.fireExtended();
-						}
-					}
-				});
+                    DebriefPlugin.logError(Status.INFO,
+                        "Successfully completed loading:" + fileName, null);
+                  }
+                  else
+                  {
+                    DebriefPlugin.logError(Status.INFO,
+                        "User cancelled loading:" + fileName, null);
+                  }
+                }
+                catch (final RuntimeException e)
+                {
+                  DebriefPlugin.logError(Status.ERROR,
+                      "Problem loading AIS datafile:" + fileName, e);
+                }
+                catch (final Exception e)
+                {
+                  DebriefPlugin.logError(Status.ERROR,
+                      "Problem loading AIS datafile:" + fileName, e);
+                }
+                finally
+                {
+                  // and inform the plot editor
+                  thePlot.loadingComplete(this);
 
-			}
+                  DebriefPlugin.logError(Status.INFO, "parent plot informed",
+                      null);
 
-		}
-		catch (final InvocationTargetException e)
-		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-					+ fileName, e);
-		}
-		catch (final InterruptedException e)
-		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-					+ fileName, e);
-		}
-		catch (final IOException e)
-		{
-			DebriefPlugin
-					.logError(Status.ERROR, "Problem loading AIS:" + fileName, e);
-		}
+                  // ok, allow the layers object to inform anybody what's
+                  // happening
+                  // again
+                  theLayers.suspendFiringExtended(false);
 
-		// ok, load the data...
-		DebriefPlugin.logError(Status.INFO, "Successfully loaded AIS file", null);
-	}
+                  // and trigger an update ourselves
+                  // theLayers.fireExtended();
+                }
+              }
+            });
+          }
+        });
+      }
+    }
+    catch (final InvocationTargetException e)
+    {
+      DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+          + fileName, e);
+    }
+    catch (final InterruptedException e)
+    {
+      DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+          + fileName, e);
+    }
+    catch (final IOException e)
+    {
+      DebriefPlugin
+          .logError(Status.ERROR, "Problem loading AIS:" + fileName, e);
+    }
+
+    // ok, load the data...
+    DebriefPlugin.logError(Status.INFO, "Successfully loaded AIS file", null);
+  }
 }
