@@ -112,19 +112,17 @@ public class ImportNMEA
     }
   }
 
-  public void importThis(final String fName, final InputStream is)
+  public void importThis(final String fName, final InputStream is,
+      final long osFreq, final long aisFreq)
       throws Exception
   {
     String myName = null;
     double myDepth = 0d;
     Date date = null;
 
-    final long OS_FREQ = 1000 * 5;
-    final long AIS_FREQ = 1000 * 60;
-
-    final boolean importOS = true;
-    final boolean importAIS = true;
-    final boolean importContacts = true;
+    final boolean importOS = (osFreq != Long.MAX_VALUE);
+    final boolean importAIS = (aisFreq != Long.MAX_VALUE);
+    final boolean importContacts = false;
 
     // reset our list of tracks
     tracks.clear();
@@ -192,7 +190,7 @@ public class ImportNMEA
           if (state != null && date != null)
           {
             // now store the ownship location
-            storeLocation(date, state, OS_FREQ, DebriefColors.BLUE, myDepth);
+            storeLocation(date, state, osFreq, DebriefColors.BLUE, myDepth);
           }
         }
 
@@ -210,7 +208,7 @@ public class ImportNMEA
           else
           {
             // now store the ownship location
-            storeLocation(hisState.date, hisState, AIS_FREQ,
+            storeLocation(hisState.date, hisState, aisFreq,
                 DebriefColors.GREEN, null);
           }
         }
@@ -230,7 +228,7 @@ public class ImportNMEA
             if (date != null)
             {
               // now store the ownship location
-              storeLocation(date, hisState, AIS_FREQ, DebriefColors.YELLOW, null);
+              storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW, null);
             }
           }
         }
