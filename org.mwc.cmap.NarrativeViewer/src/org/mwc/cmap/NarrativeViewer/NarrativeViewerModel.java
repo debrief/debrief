@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -41,11 +42,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
+import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -304,9 +308,14 @@ public class NarrativeViewerModel
     {
       return new ColumnLabelProvider()
       {
+        private IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 
         private Map<java.awt.Color, Color> swtColorMap =
             new HashMap<java.awt.Color, Color>();
+
+        private Font prefFont;
+
+        private String prefFontStr;
 
         @Override
         public void dispose()
@@ -317,6 +326,44 @@ public class NarrativeViewerModel
           }
           super.dispose();
         }
+        
+        @Override
+        public Font getFont(Object element)
+        {
+          String fontStr = store.getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+          if(fontStr==null)
+          {
+            if(prefFont!=null)
+            {
+              prefFont.dispose();
+            
+            }
+            prefFont = null;
+            prefFontStr = null;
+          }
+          else if(fontStr.equals(prefFontStr) && prefFont!=null )
+          {
+            return (prefFont);
+          }
+          else
+          {
+            if(prefFont!=null)
+            {
+              prefFont.dispose();
+              prefFont = null;
+            }
+            prefFontStr =fontStr;
+            FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
+            if(readFontData!=null)
+            {
+              prefFont = new Font(Display.getDefault(), readFontData);
+              return prefFont;
+            }
+          }
+          return super.getFont(element);
+        }
+        
+      
 
         @Override
         public Color getForeground(Object element)
