@@ -30,7 +30,7 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
     super("Narrative Viewer", CorePlugin
         .getImageDescriptor("icons/16/narrative_viewer.png"), GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-    setDescription("Provide the phrases to be highlighted (comma delimeted) and Fonts for narrative viewer.");
+    setDescription("Provide the phrases to be highlighted (comma delimited) and Fonts for narrative viewer.");
   }
 
   /**
@@ -42,7 +42,7 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
   {
     addField(new StringFieldEditor(PreferenceConstants.HIGHLIGHT_PHRASES,
         "&Words/phrases:", getFieldEditorParent()));
-    addField(new FontFieldEditor(PreferenceConstants.FONT, "Font",getFieldEditorParent()));
+    addField(new FontFieldEditor(PreferenceConstants.FONT, "Font:",getFieldEditorParent()));
   }
 
   /*
