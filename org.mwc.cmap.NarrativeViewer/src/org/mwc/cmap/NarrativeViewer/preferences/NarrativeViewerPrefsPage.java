@@ -18,6 +18,8 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -53,7 +55,7 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
     addField(new StringFieldEditor(PreferenceConstants.HIGHLIGHT_PHRASES,
         "&Words/phrases:", getFieldEditorParent()));
 
-    addField(new FontFieldEditor(PreferenceConstants.FONT, "Font:",
+    FontFieldEditor fontEditor = new FontFieldEditor(PreferenceConstants.FONT, "Font:",
         getFieldEditorParent())
     {
 
@@ -67,14 +69,7 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
         updatePreview();
       }
 
-      @Override
-      protected void doStore()
-      {
-
-        super.doStore();
-        updatePreview();
-      }
-
+     
       @Override
       protected void doLoadDefault()
       {
@@ -112,8 +107,34 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
         }
 
       }
+      
+      @Override
+      public void setPropertyChangeListener(final IPropertyChangeListener listener)
+      {
+        super.setPropertyChangeListener(new IPropertyChangeListener()
+        {
+          
+          @Override
+          public void propertyChange(PropertyChangeEvent event)
+          {
+            listener.propertyChange(event);
+            if (prefFont != null)
+            {
+              prefFont.dispose();
+              prefFont = null;
+            }
+            FontData[] readFontData = new FontData[]{ (FontData)event.getNewValue()};
+            if (readFontData != null)
+            {
+              prefFont = new Font(Display.getDefault(), readFontData);
+              previewText.setFont(prefFont);
+            }
+          }
+        });
+      }
 
-    });
+    };
+    addField(fontEditor);
     Label label = new Label(getFieldEditorParent(), SWT.NONE);
 
     label.setText("Preview:");
