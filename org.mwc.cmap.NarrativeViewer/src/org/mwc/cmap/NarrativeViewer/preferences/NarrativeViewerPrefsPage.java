@@ -24,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -34,6 +35,100 @@ import org.mwc.cmap.core.CorePlugin;
 public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage
 {
+
+  final private class MyFontFieldEditor extends FontFieldEditor
+  {
+    private Font prefFont;
+
+    public MyFontFieldEditor(final String font, final String string,
+        final Composite fieldEditorParent)
+    {
+      super(font, string, fieldEditorParent);
+    }
+
+    @Override
+    public void dispose()
+    {
+      super.dispose();
+      if (prefFont != null)
+      {
+        prefFont.dispose();
+        prefFont = null;
+      }
+    }
+
+    @Override
+    protected void doLoad()
+    {
+
+      super.doLoad();
+      updatePreview();
+    }
+
+    @Override
+    protected void doLoadDefault()
+    {
+
+      super.doLoadDefault();
+      updatePreview();
+    }
+
+    @Override
+    public void
+        setPropertyChangeListener(final IPropertyChangeListener listener)
+    {
+      super.setPropertyChangeListener(new IPropertyChangeListener()
+      {
+        @Override
+        public void propertyChange(final PropertyChangeEvent event)
+        {
+          listener.propertyChange(event);
+          if (prefFont != null)
+          {
+            prefFont.dispose();
+            prefFont = null;
+          }
+          final FontData[] readFontData = new FontData[]
+          {(FontData) event.getNewValue()};
+          if (readFontData != null)
+          {
+            prefFont = new Font(Display.getDefault(), readFontData);
+            previewText.setFont(prefFont);
+          }
+        }
+      });
+    }
+
+    protected void updatePreview()
+    {
+      if (prefFont != null)
+      {
+        prefFont.dispose();
+        prefFont = null;
+      }
+      final FontData[] readFontData =
+          PreferenceConverter.readFontData(CorePlugin.getDefault()
+              .getPreferenceStore().getString(
+                  NarrativeViewerPrefsPage.PreferenceConstants.FONT));
+      if (readFontData != null)
+      {
+        prefFont = new Font(Display.getDefault(), readFontData);
+        previewText.setFont(prefFont);
+      }
+    }
+
+  }
+
+  /**
+   * Constant definitions for plug-in preferences
+   */
+  public final static class PreferenceConstants
+  {
+
+    public static final String HIGHLIGHT_PHRASES =
+        "narrative_viewer_highlight_phrases";
+    public static final String FONT = "narrative_viewer_font";
+  }
 
   private Text previewText;
 
@@ -50,103 +145,28 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
    * manipulate various types of preferences. Each field editor knows how to save and restore
    * itself.
    */
+  @Override
   public void createFieldEditors()
   {
     addField(new StringFieldEditor(PreferenceConstants.HIGHLIGHT_PHRASES,
         "&Words/phrases:", getFieldEditorParent()));
 
-    FontFieldEditor fontEditor = new FontFieldEditor(PreferenceConstants.FONT, "Font:",
-        getFieldEditorParent())
-    {
+    final FontFieldEditor fontEditor =
+        new MyFontFieldEditor(PreferenceConstants.FONT, "Font:",
+            getFieldEditorParent());
 
-      private Font prefFont;
-
-      @Override
-      protected void doLoad()
-      {
-
-        super.doLoad();
-        updatePreview();
-      }
-
-     
-      @Override
-      protected void doLoadDefault()
-      {
-
-        super.doLoadDefault();
-        updatePreview();
-      }
-
-      @Override
-      public void dispose()
-      {
-        super.dispose();
-        if (prefFont != null)
-        {
-          prefFont.dispose();
-          prefFont = null;
-        }
-      }
-
-      protected void updatePreview()
-      {
-        if (prefFont != null)
-        {
-          prefFont.dispose();
-          prefFont = null;
-        }
-        FontData[] readFontData =
-            PreferenceConverter.readFontData(CorePlugin.getDefault()
-                .getPreferenceStore().getString(
-                    NarrativeViewerPrefsPage.PreferenceConstants.FONT));
-        if (readFontData != null)
-        {
-          prefFont = new Font(Display.getDefault(), readFontData);
-          previewText.setFont(prefFont);
-        }
-
-      }
-      
-      @Override
-      public void setPropertyChangeListener(final IPropertyChangeListener listener)
-      {
-        super.setPropertyChangeListener(new IPropertyChangeListener()
-        {
-          
-          @Override
-          public void propertyChange(PropertyChangeEvent event)
-          {
-            listener.propertyChange(event);
-            if (prefFont != null)
-            {
-              prefFont.dispose();
-              prefFont = null;
-            }
-            FontData[] readFontData = new FontData[]{ (FontData)event.getNewValue()};
-            if (readFontData != null)
-            {
-              prefFont = new Font(Display.getDefault(), readFontData);
-              previewText.setFont(prefFont);
-            }
-          }
-        });
-      }
-
-    };
     addField(fontEditor);
-    Label label = new Label(getFieldEditorParent(), SWT.NONE);
+    final Label label = new Label(getFieldEditorParent(), SWT.NONE);
 
-    label.setText("Preview:");
+    label.setText("Font Preview:");
     previewText =
-        new Text(getFieldEditorParent(),  SWT.BORDER | SWT.MULTI|  SWT.WRAP);
-    GridData gd =
+        new Text(getFieldEditorParent(), SWT.BORDER | SWT.MULTI | SWT.WRAP);
+    final GridData gd =
         new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
-    gd.heightHint = 80;
+    gd.heightHint = 30;
     gd.horizontalSpan = 4;
     previewText.setLayoutData(gd);
-    previewText
-        .setText("nartive text preview");
+    previewText.setText("Sample text");
   }
 
   /*
@@ -154,19 +174,9 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
    * 
    * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
    */
+  @Override
   public void init(final IWorkbench workbench)
   {
-  }
-
-  /**
-   * Constant definitions for plug-in preferences
-   */
-  public static class PreferenceConstants
-  {
-
-    public static final String HIGHLIGHT_PHRASES =
-        "narrative_viewer_highlight_phrases";
-    public static final String FONT = "narrative_viewer_font";
   }
 
 }
