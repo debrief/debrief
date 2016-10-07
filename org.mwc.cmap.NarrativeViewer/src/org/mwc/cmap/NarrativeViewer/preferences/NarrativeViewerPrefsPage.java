@@ -15,47 +15,54 @@
 package org.mwc.cmap.NarrativeViewer.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 
+public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage
+{
 
+  public NarrativeViewerPrefsPage()
+  {
+    super("Narrative Viewer", CorePlugin
+        .getImageDescriptor("icons/16/narrative_viewer.png"), GRID);
+    setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
+    setDescription("Provide the phrases to be highlighted (comma delimeted) and Fonts for narrative viewer.");
+  }
 
-public class NarrativeViewerPrefsPage
-	extends FieldEditorPreferencePage
-	implements IWorkbenchPreferencePage {
+  /**
+   * Creates the field editors. Field editors are abstractions of the common GUI blocks needed to
+   * manipulate various types of preferences. Each field editor knows how to save and restore
+   * itself.
+   */
+  public void createFieldEditors()
+  {
+    addField(new StringFieldEditor(PreferenceConstants.HIGHLIGHT_PHRASES,
+        "&Words/phrases:", getFieldEditorParent()));
+    addField(new FontFieldEditor(PreferenceConstants.FONT, "Font",getFieldEditorParent()));
+  }
 
-	public NarrativeViewerPrefsPage() {
-		super("Narrative Viewer", CorePlugin.getImageDescriptor("icons/16/narrative_viewer.png"), GRID);
-		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-		setDescription("Provide the phrases to be highlighted (comma delimeted).");
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+   */
+  public void init(final IWorkbench workbench)
+  {
+  }
 
+  /**
+   * Constant definitions for plug-in preferences
+   */
+  public static class PreferenceConstants
+  {
 
-	/**
-	 * Creates the field editors. Field editors are abstractions of
-	 * the common GUI blocks needed to manipulate various types
-	 * of preferences. Each field editor knows how to save and
-	 * restore itself.
-	 */
-	public void createFieldEditors() {
-		addField(new StringFieldEditor(PreferenceConstants.HIGHLIGHT_PHRASES, 
-				"&Words/phrases:", getFieldEditorParent()));
-	}
+    public static final String HIGHLIGHT_PHRASES =
+        "narrative_viewer_highlight_phrases";
+    public static final String FONT = "narrative_viewer_font";
+  }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(final IWorkbench workbench) {
-	}
-	
-	/**
-	 * Constant definitions for plug-in preferences
-	 */
-	public static class PreferenceConstants {
-
-		public static final String HIGHLIGHT_PHRASES = "narrative_viewer_highlight_phrases";
-	}
-	
 }

@@ -33,6 +33,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -411,13 +412,26 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       public void run()
       {
         PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage", null, null);
-        dialog.open();
+        if(dialog.open()==IDialogConstants.OK_ID)
+          myViewer.refresh();
       }
     };
     editPhrases.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/properties.png"));
     menuManager.add(editPhrases);
     toolManager.add(editPhrases);
     
+    
+    final Action fontSize = new Action("Font Size")
+    {
+      @Override
+      public void run()
+      {
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage", null, null);
+        if(dialog.open()==IDialogConstants.OK_ID)
+          myViewer.refresh();
+      }
+    };
+    menuManager.add(fontSize);
     // and another separator
     menuManager.add(new Separator());
 
