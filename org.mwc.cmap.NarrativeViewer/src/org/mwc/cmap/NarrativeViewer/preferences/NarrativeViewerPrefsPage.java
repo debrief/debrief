@@ -16,7 +16,15 @@ package org.mwc.cmap.NarrativeViewer.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
+import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
@@ -24,6 +32,8 @@ import org.mwc.cmap.core.CorePlugin;
 public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage
 {
+
+  private Text previewText;
 
   public NarrativeViewerPrefsPage()
   {
@@ -42,7 +52,80 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
   {
     addField(new StringFieldEditor(PreferenceConstants.HIGHLIGHT_PHRASES,
         "&Words/phrases:", getFieldEditorParent()));
-    addField(new FontFieldEditor(PreferenceConstants.FONT, "Font",getFieldEditorParent()));
+
+    addField(new FontFieldEditor(PreferenceConstants.FONT, "Font:",
+        getFieldEditorParent())
+    {
+
+      private Font prefFont;
+
+      @Override
+      protected void doLoad()
+      {
+
+        super.doLoad();
+        updatePreview();
+      }
+
+      @Override
+      protected void doStore()
+      {
+
+        super.doStore();
+        updatePreview();
+      }
+
+      @Override
+      protected void doLoadDefault()
+      {
+
+        super.doLoadDefault();
+        updatePreview();
+      }
+
+      @Override
+      public void dispose()
+      {
+        super.dispose();
+        if (prefFont != null)
+        {
+          prefFont.dispose();
+          prefFont = null;
+        }
+      }
+
+      protected void updatePreview()
+      {
+        if (prefFont != null)
+        {
+          prefFont.dispose();
+          prefFont = null;
+        }
+        FontData[] readFontData =
+            PreferenceConverter.readFontData(CorePlugin.getDefault()
+                .getPreferenceStore().getString(
+                    NarrativeViewerPrefsPage.PreferenceConstants.FONT));
+        if (readFontData != null)
+        {
+          prefFont = new Font(Display.getDefault(), readFontData);
+          previewText.setFont(prefFont);
+        }
+
+      }
+
+    });
+    Label label = new Label(getFieldEditorParent(), SWT.NONE);
+
+    label.setText("Preview:");
+    previewText =
+        new Text(getFieldEditorParent(),  SWT.BORDER | SWT.MULTI|  SWT.WRAP);
+    GridData gd =
+        new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+    gd.heightHint = 80;
+    gd.horizontalSpan = 4;
+    previewText.setLayoutData(gd);
+    previewText
+        .setText("nartive text preview");
   }
 
   /*
