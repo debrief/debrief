@@ -221,6 +221,61 @@ public class ImportNMEA
     }
   }
 
+  /**
+   * $POSL,AIS,564166000,1212.1234,N,12312.1234,W,0,7.8,327.9,0,330.0,AIS1,0,0*06
+   */
+  final private static Pattern aisPattern =
+      Pattern
+          .compile("\\$POSL,AIS,(?<MMSI>\\d+?),"
+              + "(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*,AIS1,.*");
+
+  /**
+   * $POSL,CONTACT,OC,DELETE,AIS 5,AIS
+   * 5,1.0,125.3,T,20160720,010059.897,FS,SFSP------^2a^2a^2a^2a^2a
+   * ,0.0,M,1212.1313,N,12312.1234,W,0,,,*6E"
+   */
+  final private static Pattern contactPattern = Pattern
+      .compile("\\$POSL,CONTACT,OC,\\w*,(?<NAME>.*?),.*"
+          + ",(?<DATE>\\d{8}),(?<TIME>\\d{6}.\\d{3}),.*,"
+          + "(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*");
+  /**
+   * $POSL,VEL,GPS,276.3,4.6,,,*35
+   */
+  final private static Pattern coursePattern = Pattern
+      .compile("\\$POSL,VEL,GPS,(?<COURSE>\\d+.\\d+),.*");
+
+  /**
+   * $POSL,DZA,20160720,000000.859,0007328229*42
+   */
+  final private static Pattern datePattern = Pattern
+      .compile("\\$POSL,DZA,(?<DATE>\\d{8}),(?<TIME>\\d{6}.\\d{3}),.*");
+
+  /**
+   * $POSL,PDS,9.2,M*0
+   */
+  final private static Pattern depthPattern = Pattern
+      .compile("\\$POSL,PDS,(?<DEPTH>\\d+.\\d+),.*");
+  /**
+   * "$POSL,VNM,HMS NONSUCH*03";
+   */
+  final private static Pattern namePattern = Pattern
+      .compile("\\$POSL,VNM,(?<NAME>.*)\\*\\d\\d");
+  /**
+   * $POSL,VEL,GPS,276.3,4.6,,,*35
+   */
+  final private static Pattern speedPattern = Pattern
+      .compile("\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*");
+
+  /**
+   * "$POSL,POS,GPS,1122.2222,N,12312.1234,W,0.00,,Center of Rotation,N,,,,,*41";
+   */
+  final private static Pattern osPattern =
+      Pattern
+          .compile("\\$POSL,(?<SOURCE>\\w?POS\\d?,.*),(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*");
+
+  final private static Pattern typePattern = Pattern
+      .compile("\\$POSL,(?<TYPE1>\\w*),(?<TYPE2>\\w*),*.*");
+
   private static double degsFor(final String text)
   {
     final int dec = text.indexOf(".");
@@ -277,14 +332,7 @@ public class ImportNMEA
   static private State parseAIS(final String nmea_sentence)
   {
 
-    // $POSL,AIS,564166000,1212.1234,N,12312.1234,W,0,7.8,327.9,0,330.0,AIS1,0,0*06
-
-    final Matcher m =
-        Pattern
-            .compile(
-                "\\$POSL,AIS,(?<MMSI>\\d+?),"
-                    + "(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*,AIS1,.*")
-            .matcher(nmea_sentence);
+    final Matcher m = aisPattern.matcher(nmea_sentence);
     final State res;
     if (m.matches())
     {
@@ -303,16 +351,8 @@ public class ImportNMEA
 
   static private State parseContact(final String nmea_sentence)
   {
-    // $POSL,CONTACT,OC,DELETE,AIS 5,AIS
-    // 5,1.0,125.3,T,20160720,010059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1313,N,12312.1234,W,0,,,*6E"
 
-    final Matcher m =
-        Pattern
-            .compile(
-                "\\$POSL,CONTACT,OC,\\w*,(?<NAME>.*?),.*"
-                    + ",(?<DATE>\\d{8}),(?<TIME>\\d{6}.\\d{3}),.*,"
-                    + "(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*")
-            .matcher(nmea_sentence);
+    final Matcher m = contactPattern.matcher(nmea_sentence);
     final State res;
     if (m.matches())
     {
@@ -333,10 +373,7 @@ public class ImportNMEA
 
   static private double parseMyCourse(final String nmea_sentence)
   {
-    // $POSL,VEL,GPS,276.3,4.6,,,*35
-    final Matcher m =
-        Pattern.compile("\\$POSL,VEL,GPS,(?<COURSE>\\d+.\\d+),.*").matcher(
-            nmea_sentence);
+    final Matcher m = coursePattern.matcher(nmea_sentence);
     final double res;
     if (m.matches())
     {
@@ -351,11 +388,7 @@ public class ImportNMEA
 
   private static Date parseMyDate(final String nmea_sentence)
   {
-    // $POSL,DZA,20160720,000000.859,0007328229*42
-    final Matcher m =
-        Pattern
-            .compile("\\$POSL,DZA,(?<DATE>\\d{8}),(?<TIME>\\d{6}.\\d{3}),.*")
-            .matcher(nmea_sentence);
+    final Matcher m = datePattern.matcher(nmea_sentence);
     final Date res;
     if (m.matches())
     {
@@ -373,11 +406,8 @@ public class ImportNMEA
 
   static private double parseMyDepth(final String nmea_sentence)
   {
-    // $POSL,PDS,9.2,M*0
 
-    final Matcher m =
-        Pattern.compile("\\$POSL,PDS,(?<DEPTH>\\d+.\\d+),.*").matcher(
-            nmea_sentence);
+    final Matcher m = depthPattern.matcher(nmea_sentence);
     final double res;
     if (m.matches())
     {
@@ -392,11 +422,8 @@ public class ImportNMEA
 
   static private String parseMyName(final String nmea_sentence)
   {
-    // "$POSL,VNM,HMS NONSUCH*03";
 
-    final Matcher m =
-        Pattern.compile("\\$POSL,VNM,(?<NAME>.*)\\*\\d\\d").matcher(
-            nmea_sentence);
+    final Matcher m = namePattern.matcher(nmea_sentence);
     final String res;
     if (m.matches())
     {
@@ -411,10 +438,7 @@ public class ImportNMEA
 
   static private double parseMySpeed(final String nmea_sentence)
   {
-    // $POSL,VEL,GPS,276.3,4.6,,,*35
-    final Matcher m =
-        Pattern.compile("\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*").matcher(
-            nmea_sentence);
+    final Matcher m = speedPattern.matcher(nmea_sentence);
     final double res;
     if (m.matches())
     {
@@ -430,12 +454,7 @@ public class ImportNMEA
   static private State parseOwnship(final String nmea_sentence,
       final String myName)
   {
-    // "$POSL,POS,GPS,1122.2222,N,12312.1234,W,0.00,,Center of Rotation,N,,,,,*41";
-    final Matcher m =
-        Pattern
-            .compile(
-                "\\$POSL,(?<SOURCE>\\w?POS\\d?,.*),(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*")
-            .matcher(nmea_sentence);
+    final Matcher m = osPattern.matcher(nmea_sentence);
     final State res;
     if (m.matches())
     {
@@ -455,9 +474,7 @@ public class ImportNMEA
 
   static private MsgType parseType(final String nmea_sentence)
   {
-    final Matcher m =
-        Pattern.compile("\\$POSL,(?<TYPE1>\\w*),(?<TYPE2>\\w*),*.*").matcher(
-            nmea_sentence);
+    final Matcher m = typePattern.matcher(nmea_sentence);
     final MsgType res;
     if (m.matches())
     {
