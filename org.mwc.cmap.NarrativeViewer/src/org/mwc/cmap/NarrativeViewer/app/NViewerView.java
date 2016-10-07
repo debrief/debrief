@@ -116,10 +116,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * 
    */
   private Action _controlTime;
-  
+
   private Action _search;
-  
-  
 
   protected TimeProvider _myTemporalDataset;
 
@@ -196,7 +194,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             setInput(null);
           }
         }
-        
+
         // oh, oooh, see if we've learned some more colors
         refreshColors();
       }
@@ -209,9 +207,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         {
           uiUpdate();
         }
-        
+
         // do we have a rolling narrative?
-        if(_myRollingNarrative != null)
+        if (_myRollingNarrative != null)
         {
           // ok, try to refresh the colors based on the new data
           refreshColor(changedLayer);
@@ -224,38 +222,45 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _myRollingNarrListener = new INarrativeListener()
     {
 
+      /** force UI update
+       * 
+       */
       private void updated()
       {
-        if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
+        Display.getDefault().asyncExec(new Runnable()
         {
-          myViewer.setInput(_myRollingNarrative);
+          @Override
+          public void run()
+          {
+            if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
+            {
+              myViewer.setInput(_myRollingNarrative);
 
-        }
-        else
-          myViewer.setInput(null);
+            }
+            else
+            {
+              myViewer.setInput(null);
+            }
+          }
+        });
       }
 
+      @Override
       public void newEntry(final NarrativeEntry entry)
       {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-          public void run()
-          {
-            updated();
-          }
-        });
+        updated();
       }
 
+      @Override
       public void entryRemoved(final NarrativeEntry entry)
       {
-        // update our list...
-        Display.getDefault().asyncExec(new Runnable()
-        {
-          public void run()
-          {
-            updated();
-          }
-        });
+        updated();
+      }
+
+      @Override
+      public void filtered()
+      {
+        updated();
       }
     };
 
@@ -287,7 +292,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     rootPanel.setLayout(rootPanelLayout);
 
     myViewer =
-        new NarrativeViewer(rootPanel, CorePlugin.getDefault().getPreferenceStore());
+        new NarrativeViewer(rootPanel, CorePlugin.getDefault()
+            .getPreferenceStore());
     rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
@@ -387,7 +393,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
     _search = new Action("Search", Action.AS_CHECK_BOX)
     {
-      
+
       @Override
       public void run()
       {
@@ -410,14 +416,18 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(), "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage", null, null);
+        PreferenceDialog dialog =
+            PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
+                "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
+                null, null);
         dialog.open();
       }
     };
-    editPhrases.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/properties.png"));
+    editPhrases.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/properties.png"));
     menuManager.add(editPhrases);
     toolManager.add(editPhrases);
-    
+
     // and another separator
     menuManager.add(new Separator());
 
@@ -478,8 +488,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     menuManager.add(new Separator());
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
-    
-    
 
   }
 
@@ -723,7 +731,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             {
               _myTemporalDataset.removeListener(_temporalListener,
                   TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-              
+
               // and clear the pointer
               _myTemporalDataset = null;
             }
@@ -797,7 +805,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       _myLayers.removeDataReformattedListener(_layerListener);
       _myLayers.removeDataExtendedListener(_layerListener);
       _myLayers = null;
-      
+
       setInput(null);
     }
   }
@@ -813,8 +821,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     {
       _controllableTime = null;
     }
-    
-    if(_myTemporalDataset != null)
+
+    if (_myTemporalDataset != null)
     {
       _myTemporalDataset.removeListener(_temporalListener,
           TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -1012,7 +1020,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       return;
     }
     Enumeration<Editable> elements = _myLayers.elements();
-    
+
     while (elements.hasMoreElements())
     {
       Editable element = elements.nextElement();

@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
@@ -78,8 +77,6 @@ public class NarrativeViewer
       @Override
       public boolean accept(NarrativeEntry entry)
       {
-
-        
         if (viewer != null && !viewer.getGrid().isDisposed())
         {
           String filterString = filterGrid.getFilterString();
