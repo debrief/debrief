@@ -74,6 +74,11 @@ public interface IRollingNarrativeProvider
 		/** a narrative entry has been removed
 		 */
 		public void entryRemoved(NarrativeEntry entry);
+		
+		/** the narrative has been filtered
+		 * 
+		 */
+		public void filtered();
 	}
 	
 }

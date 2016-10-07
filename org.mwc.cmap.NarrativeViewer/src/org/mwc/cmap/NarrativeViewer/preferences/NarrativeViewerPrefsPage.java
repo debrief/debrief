@@ -40,7 +40,7 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
     super("Narrative Viewer", CorePlugin
         .getImageDescriptor("icons/16/narrative_viewer.png"), GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-    setDescription("Provide the phrases to be highlighted (comma delimeted) and Fonts for narrative viewer.");
+    setDescription("Provide the phrases to be highlighted (comma delimited) and Fonts for narrative viewer.");
   }
 
   /**
