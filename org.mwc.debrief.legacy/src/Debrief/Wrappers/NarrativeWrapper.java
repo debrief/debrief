@@ -181,12 +181,6 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
    */
   public final static String CONTENTS_CHANGED = "CONTENTS_CHANGED";
 
-
-  /**
-   * property type to signify data being filtered
-   */
-  public final static String FILTERED = "FILTERED";
-
 // //////////////////////////////////////
   // constructors
   // //////////////////////////////////////
@@ -259,8 +253,6 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     // ok, has there been a change?
     if(updated)
     {
-      this.firePropertyChange(FILTERED, null, this);      
-      
       // and the narrative listeners, if we have one
       if (_myListeners != null)
       {
