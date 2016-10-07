@@ -758,7 +758,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     return res;
   }
 
-  public static Image getImageFromRegistry(final String name)
+
+  public static Image extendedGetImageFromRegistry(final String name)
   {
     Image res = null;
 
@@ -773,7 +774,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
     if (res == null)
     {
-      ImageDescriptor desc = getImageDescriptor("icons/16/" + name);
+      ImageDescriptor desc = getImageDescriptor(name);
       if (desc == null)
       {
         final Status status =
@@ -788,6 +789,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
     // and return it..
     return res;
+  }
+
+  
+  public static Image getImageFromRegistry(final String name)
+  {
+    return extendedGetImageFromRegistry("icons/16/" + name);
   }
 
   /**
