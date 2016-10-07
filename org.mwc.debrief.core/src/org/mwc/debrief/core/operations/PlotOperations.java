@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
@@ -80,6 +81,13 @@ public class PlotOperations implements ControllablePeriod
 					wa.filterListTo(period.getStartDTG(), period.getEndDTG());
 					useThis = (Layer) wa;
 				}
+        else if(thisO instanceof NarrativeWrapper)
+        {
+          // hey, pass through this layer
+          final NarrativeWrapper thisL = (NarrativeWrapper) thisO;
+          thisL.filterListTo(period);
+          useThis = thisL;
+        }
 				else if(thisO instanceof Layer)
 				{
 					// hey, pass through this layer
@@ -95,7 +103,6 @@ public class PlotOperations implements ControllablePeriod
 							
 							if(useThis == null)
 								useThis = thisL;
-							
 						}
 					}
 				}
