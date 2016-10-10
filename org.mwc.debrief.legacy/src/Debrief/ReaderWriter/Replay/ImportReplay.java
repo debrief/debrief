@@ -127,6 +127,7 @@ public class ImportReplay extends PlainImporterBase
    * 
    */
   public final static String TRACK_IMPORT_MODE = "TRACK_IMPORT_MODE";
+  public final static String RESAMPLE_FREQUENCY = "RESAMPLE_FREQUENCY";
 
   /**
    * the property values for importing modes

@@ -15,6 +15,13 @@
 package org.mwc.cmap.core.ui_support;
 
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -42,6 +49,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
   private boolean _rememberIt;
   private String _mode = ImportReplay.IMPORT_AS_OTG;
   
+  private long _resampleFrequency;
 
   /**
    * InputDialog constructor
@@ -109,11 +117,13 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     // Return the entered value (will be null if user cancelled)
     return _mode;
   }
+  
+  public long getResampleFrequency()
+  {
+    return _resampleFrequency;
+  }
 
-  private static void storeModePreference(final String mode)
-	{
-  	CorePlugin.getToolParent().setProperty(ImportReplay.TRACK_IMPORT_MODE, mode);
-	}
+ 
 
 	/**
    * Creates the dialog's contents
@@ -149,6 +159,65 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     radios[1].setSelection(true);
     
 
+    {
+      
+      new Label(shell, SWT.NONE).setText("Resample frequency:");
+      final ComboViewer comboViewer = new ComboViewer(shell);
+      comboViewer.setContentProvider(new ArrayContentProvider());
+      comboViewer.setLabelProvider( new ColumnLabelProvider()
+      {
+
+        @Override
+        public String getText(final Object element)
+        {
+          if (element instanceof Long)
+          {
+            final long longValue = ((Long) element).longValue();
+            if (longValue == 0)
+              return "All";
+
+            if (longValue == Long.MAX_VALUE)
+              return "None";
+            if (longValue == 5000)
+              return "5 Second";
+            if (longValue == 15000)
+              return "15 Second";
+            if (longValue == 60000)
+              return "1 Minute";
+            if (longValue == 300000)
+              return "5 Minute";
+            if (longValue == 600000)
+              return "10 Minute";
+            if (longValue == 3600000)
+              return "1 Hour";
+          }
+          return super.getText(element);
+        }
+      });
+      comboViewer.setInput( new Long[]
+          {0l, 5000l, 15000l, 60000l, 300000l, 600000l, 3600000l, Long.MAX_VALUE});
+
+      comboViewer.getCombo().setLayoutData(
+          new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
+      comboViewer.setSelection(new StructuredSelection(Long
+          .valueOf(_resampleFrequency)));
+      comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
+      {
+
+        @Override
+        public void selectionChanged(final SelectionChangedEvent event)
+        {
+          final IStructuredSelection selection =
+              (IStructuredSelection) event.getSelection();
+          if (selection.getFirstElement() instanceof Long)
+          {
+            _resampleFrequency = (Long) selection.getFirstElement();
+          }
+        }
+      });
+      
+    }
+    
     final Button rememberBtn = new Button(shell, SWT.CHECK);
     rememberBtn.setText("Automatically use this mode next time");
     rememberBtn.addSelectionListener(new SelectionListener(){
@@ -180,7 +249,8 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
         if(_rememberIt)
         {
         	// put it into the prefs.
-        	storeModePreference(_mode);
+          CorePlugin.getToolParent().setProperty(ImportReplay.TRACK_IMPORT_MODE, _mode);
+          CorePlugin.getToolParent().setProperty(ImportReplay.RESAMPLE_FREQUENCY, Long.toString(_resampleFrequency));
         }
         
         shell.close();
