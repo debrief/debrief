@@ -974,11 +974,12 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
             public void run()
             {
-              if (_pendingTime.get() != INVALID_TIME)
+              // quick, capture the time
+              final long safeTime = _pendingTime.get();
+              
+              // do we have a pending time value
+              if (safeTime != INVALID_TIME)
               {
-                // quick, capture the time
-                final Long safeTime = _pendingTime.get();
-                
                 _pendingTime.set(INVALID_TIME);
                 
                 // now create the time object
