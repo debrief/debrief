@@ -297,7 +297,7 @@ public class ImportReplay extends PlainImporterBase
   private HiResDate processReplayFix(final ReplayFix rf)
   {
     final HiResDate res = rf.theFix.getTime();
-
+    
     // ok, are we re-sampling the data?
     if (_importSettings != null)
     {
@@ -314,8 +314,7 @@ public class ImportReplay extends PlainImporterBase
         if (lastTime == null
             || (!isMax && res.getDate().getTime() >= lastTime + sampleFreq))
         {
-          final long thisTime = res.getDate().getTime();
-          _lastImportedItem.put(rf.theTrackName, thisTime);
+          // ok, carry on
         }
         else
         {
@@ -323,6 +322,10 @@ public class ImportReplay extends PlainImporterBase
         }
       }
     }
+
+    // ok, we're processing this one. Remember it.
+    final long thisTime = res.getDate().getTime();
+    _lastImportedItem.put(rf.theTrackName, thisTime);
 
     // find the track name
     final String theTrack = rf.theTrackName;
@@ -1486,12 +1489,12 @@ public class ImportReplay extends PlainImporterBase
 
     public final void testOTGimport2()
     {
-      doReadRep(ImportReplay.IMPORT_AS_OTG, 300000L, 3, 6, false);
+      doReadRep(ImportReplay.IMPORT_AS_OTG, 300000L, 3, 5, false);
     }
 
     public final void testOTGimport3()
     {
-      doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 2, false);
+      doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
     }
 
     private final void doReadRep(String mode, Long freq, int LAYER_COUNT,
