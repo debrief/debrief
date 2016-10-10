@@ -50,7 +50,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	/** convenience object, used to get selected import mode back from the popup dialog
 	 * 
 	 */
-	private static String _selectedImportMode = null;
+	private static ImportSettings _selectedImportSettings = null;
 	
 
 	
@@ -159,9 +159,11 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	/** popup a dialog to let the user select the import mode
 	 * @return selected mode, from ImportReplay
 	 */
-	public String getSelectedImportMode(final String trackName)
+	@Override
+	public ImportSettings getSelectedImportMode(final String trackName)
 	{
-		_selectedImportMode= null;
+	  _selectedImportSettings = null;
+		
 		final Display current = Display.getDefault();
 		current.syncExec(new Runnable(){
 			public void run()
@@ -170,9 +172,9 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 				// ok, popup our custom dialog, let user decide
 				final SelectImportModeDialog dialog = new SelectImportModeDialog(active, trackName);
 				// store the value
-				_selectedImportMode = dialog.open();
+				_selectedImportSettings = dialog.open();
 			}});
-		return _selectedImportMode;
+    return _selectedImportSettings ;
 	}
 
   @Override
