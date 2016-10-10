@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -111,6 +112,19 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * 
    */
   private Action _followTime;
+  
+
+  /** value we use for null-time
+   * 
+   */
+  private final long INVALID_TIME = -1L;
+
+  /** we don't want to process all new-time events,
+   * only the most recent one.  So, take a note of the
+   * most recent one
+   */
+  AtomicLong _pendingTime = new AtomicLong(INVALID_TIME);
+  
 
   /**
    * whether to control the controllable time
@@ -949,6 +963,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         // ok, remember that we're updating
         _amUpdating = true;
 
+        // remember the new one
+        _pendingTime.set(dtg.getMicros());
+
         // get on with the update
         try
         {
@@ -957,11 +974,26 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
             public void run()
             {
-              // ok, tell the model to move to the relevant item
-              myViewer.setDTG(dtg);
-
-              // clear the updating lock
-              _amUpdating = false;
+              // quick, capture the time
+              final long safeTime = _pendingTime.get();
+              
+              // do we have a pending time value
+              if (safeTime != INVALID_TIME)
+              {
+                _pendingTime.set(INVALID_TIME);
+                
+                // now create the time object
+                final HiResDate theDTG = new HiResDate(0, safeTime);
+                
+                // ok, tell the model to move to the relevant item
+                myViewer.setDTG(theDTG);
+              }
+              else
+              {
+                // ok, there isn't a pending date, we can just skip the update
+              }
+              
+              // Note: we don't need to clear the lock, we do it in the finally block
             }
           });
         }
