@@ -111,6 +111,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * 
    */
   private Action _followTime;
+  
+
+  /** we don't want to process all new-time events,
+   * only the most recent one.  So, take a note of the
+   * most recent one
+   */
+  Long _pendingTime = null;
 
   /**
    * whether to control the controllable time
@@ -949,6 +956,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         // ok, remember that we're updating
         _amUpdating = true;
 
+        // remember the new one
+        _pendingTime = dtg.getMicros();
+
         // get on with the update
         try
         {
@@ -957,11 +967,24 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
             public void run()
             {
-              // ok, tell the model to move to the relevant item
-              myViewer.setDTG(dtg);
-
-              // clear the updating lock
-              _amUpdating = false;
+              if (_pendingTime != null)
+              {
+                // quick, capture the time
+                final Long safeTime = _pendingTime;
+                _pendingTime = null;
+                
+                // now create the time object
+                final HiResDate theDTG = new HiResDate(0, safeTime);
+                
+                // ok, tell the model to move to the relevant item
+                myViewer.setDTG(theDTG);
+              }
+              else
+              {
+                // ok, there isn't a pending date, we can just skip the update
+              }
+              
+              // Note: we don't need to clear the lock, we do it in the finally block
             }
           });
         }
