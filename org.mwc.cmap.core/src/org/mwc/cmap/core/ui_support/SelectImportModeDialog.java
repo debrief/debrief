@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
 
 /**
  * This class demonstrates how to create your own dialog classes. It allows users to input a String
@@ -111,7 +112,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
    * 
    * @return String
    */
-  public String open()
+  public ImportSettings open()
   {
     // Create the dialog window
     final Shell shell = new Shell(getParent(), getStyle());
@@ -129,18 +130,22 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
     }
 
     // Return the entered value (will be null if user cancelled)
-    return _mode;
-  }
-
-  public Long getResampleFrequency()
-  {
-    // note: return null freq if in DR mode
-    final Long res;
-    if(ImportReplay.IMPORT_AS_OTG.equals(_mode))
-      res = _resampleFrequency;
-    else
+    ImportSettings res;
+    if (_mode == null)
+    {
       res = null;
-    
+    }
+    else
+    {
+      // note: return null freq if in DR mode
+      final Long freq;
+      if (ImportReplay.IMPORT_AS_OTG.equals(_mode))
+        freq = _resampleFrequency;
+      else
+        freq = null;
+      res = new ImportSettings(_mode, freq);
+    }
+
     return res;
   }
 
@@ -309,11 +314,11 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
   {
     final Button btn = (Button) e.widget;
     _mode = (String) btn.getData();
-    
+
     // ok, we only enable the frequency if it's OTG
     boolean isOTG = (_mode == ImportReplay.IMPORT_AS_OTG);
-    
+
     comboViewer.getCombo().setEnabled(isOTG);
-    
+
   }
 }

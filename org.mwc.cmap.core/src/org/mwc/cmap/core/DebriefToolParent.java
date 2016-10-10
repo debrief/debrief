@@ -172,12 +172,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 				// ok, popup our custom dialog, let user decide
 				final SelectImportModeDialog dialog = new SelectImportModeDialog(active, trackName);
 				// store the value
-				String modeStr = dialog.open();
-				Long freq = dialog.getResampleFrequency();
-				if(modeStr != null)
-				{
-	        _selectedImportSettings = new ImportSettings(modeStr, freq);
-				}
+				_selectedImportSettings = dialog.open();
 			}});
     return _selectedImportSettings ;
 	}
