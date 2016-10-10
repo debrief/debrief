@@ -50,7 +50,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
-import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -578,55 +577,6 @@ public class ImportNarrativeDocument
 
   public static class TestImportWord extends TestCase
   {
-
-    private class DummyParent implements ToolParent
-    {
-
-      @Override
-      public void addActionToBuffer(final Action theAction)
-      {
-      }
-
-      @Override
-      public Map<String, String> getPropertiesLike(final String pattern)
-      {
-        return null;
-      }
-
-      @Override
-      public String getProperty(final String name)
-      {
-        return ImportReplay.IMPORT_AS_OTG;
-      }
-
-      @Override
-      public void logError(final int status, final String text,
-          final Exception e)
-      {
-      }
-
-      @Override
-      public void logStack(final int status, final String text)
-      {
-      }
-
-      @Override
-      public void restoreCursor()
-      {
-      }
-
-      @Override
-      public void setCursor(final int theCursor)
-      {
-      }
-
-      @Override
-      public void setProperty(final String name, final String value)
-      {
-      }
-
-    }
-
     private final static String dummy_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
     private final static String valid_doc_path =
@@ -660,7 +610,7 @@ public class ImportNarrativeDocument
       final InputStream bs = new FileInputStream(boatFile);
 
       final ImportReplay trackImporter = new ImportReplay();
-      ImportReplay.initialise(new DummyParent());
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
