@@ -460,6 +460,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           myViewer.refresh();
       }
     };
+    fontSize.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/font.png"));
     menuManager.add(fontSize);
     // and another separator
     menuManager.add(new Separator());
