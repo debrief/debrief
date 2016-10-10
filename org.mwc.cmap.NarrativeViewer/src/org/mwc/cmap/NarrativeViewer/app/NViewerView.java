@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -113,11 +114,17 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   private Action _followTime;
   
 
+  /** value we use for null-time
+   * 
+   */
+  private final long INVALID_TIME = -1L;
+
   /** we don't want to process all new-time events,
    * only the most recent one.  So, take a note of the
    * most recent one
    */
-  Long _pendingTime = null;
+  AtomicLong _pendingTime = new AtomicLong(INVALID_TIME);
+  
 
   /**
    * whether to control the controllable time
@@ -957,7 +964,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         _amUpdating = true;
 
         // remember the new one
-        _pendingTime = dtg.getMicros();
+        _pendingTime.set(dtg.getMicros());
 
         // get on with the update
         try
@@ -967,11 +974,12 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
             public void run()
             {
-              if (_pendingTime != null)
+              if (_pendingTime.get() != INVALID_TIME)
               {
                 // quick, capture the time
-                final Long safeTime = _pendingTime;
-                _pendingTime = null;
+                final Long safeTime = _pendingTime.get();
+                
+                _pendingTime.set(INVALID_TIME);
                 
                 // now create the time object
                 final HiResDate theDTG = new HiResDate(0, safeTime);
