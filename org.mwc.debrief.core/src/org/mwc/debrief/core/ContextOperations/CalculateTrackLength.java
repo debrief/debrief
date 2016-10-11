@@ -14,6 +14,10 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
 
@@ -26,8 +30,18 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
@@ -142,9 +156,10 @@ public class CalculateTrackLength implements RightClickContextItemGenerator
       String res = df.format(range) + " " + units;
 
       // and show the message dialog
-      MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-          "Calculate length of visible parts of track", _subject.getName()
-              + " has length " + res);
+      final Shell shell = Display.getDefault().getActiveShell();
+
+      Dialog dlg = new LengthDialog(shell, res, _subject.getName());
+      dlg.open();
 
       // return CANCEL so this event doesn't get put onto the undo buffer,
       // and unnecessarily block the undo queue
@@ -172,4 +187,72 @@ public class CalculateTrackLength implements RightClickContextItemGenerator
       return null;
     }
   }
+
+  public static class LengthDialog extends Dialog implements ClipboardOwner
+  {
+
+    private final String _dist;
+    private final String _track;
+
+    public LengthDialog(Shell parentShell, String res, String track)
+    {
+      super(parentShell);
+      _dist = res;
+      _track = track;
+    }
+
+    @Override
+    protected Control createDialogArea(Composite parent)
+    {
+      Composite container = (Composite) super.createDialogArea(parent);
+      Label label = new Label(container, SWT.NONE);
+      label.setText("Length of track " + _track + " is " + _dist);
+      Button button = new Button(container, SWT.PUSH);
+      button
+          .setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+      button.setText("Copy to clipboard");
+      final ClipboardOwner owner = this;
+      button.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          final Clipboard clip =
+              java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+
+          // put the string in a holder
+          final StringSelection sel =
+              new java.awt.datatransfer.StringSelection(_dist);
+
+          // and put it on the clipboard
+          clip.setContents(sel, owner);
+        }
+      });
+
+      return container;
+    }
+
+    // overriding this methods allows you to set the
+    // title of the custom dialog
+    @Override
+    protected void configureShell(Shell newShell)
+    {
+      super.configureShell(newShell);
+      newShell.setText("Calculate track length");
+    }
+
+    @Override
+    protected Point getInitialSize()
+    {
+      return new Point(450, 200);
+    }
+
+    @Override
+    public void lostOwnership(Clipboard clipboard, Transferable contents)
+    {
+      // don't worrh - it doesn't matter to us
+    }
+
+  }
+
 }
