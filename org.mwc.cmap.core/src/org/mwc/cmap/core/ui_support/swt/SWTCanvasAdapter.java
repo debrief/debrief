@@ -1031,6 +1031,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// final BasicStroke bs = new BasicStroke(_lineWidth);
 		// final Graphics2D g2 = (Graphics2D) _theDest;
 		// g2.setStroke(bs);
+		
+		// set the stroke so that the pointy corner doesn't go past the symbol
+		if(!_theDest.isDisposed())
+		{
+		  _theDest.setLineJoin(SWT.JOIN_BEVEL);
+		}
+		
 	}
 
 	public final void endDraw(final Object theVal)
