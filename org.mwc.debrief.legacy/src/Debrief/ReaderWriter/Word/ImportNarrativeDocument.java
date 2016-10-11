@@ -1095,9 +1095,9 @@ public class ImportNarrativeDocument
         continue;
       }
 
-      // ok, replace any soft newlines with hard ones
-      final String text = raw_text.replace('\u000B', '\n');
-
+      // also remove any other control chars that may throw MS Word
+      final String text = removeBadChars(raw_text);
+      
       // ok, get the narrative type
       final NarrEntry thisN = NarrEntry.create(text, ctr);
 
@@ -1184,6 +1184,29 @@ public class ImportNarrativeDocument
     {
       _layers.fireModified(getNarrativeLayer());
     }
+  }
+
+  /** do some pre-processing of text, to protect robustness
+   * of data written to file
+   * @param raw_text
+   * @return text with some control chars removed
+   */
+  private String removeBadChars(String raw_text)
+  {
+    // swap soft returns for hard ones
+    String res = raw_text.replace('\u000B', '\n');
+
+    // we learned that whilst MS Word includes the following
+    // control chars, and we can persist them via XML, we
+    // can't restore them via SAX.  So, swap them for
+    // spaces
+    res = res.replace((char)1, (char)32);
+    res = res.replace((char)19, (char)32);
+    res = res.replace((char)20, (char)32);
+    res = res.replace((char)21, (char)32);
+    
+    // done.
+    return res;
   }
 
   private String trackFor(final String originalName)
