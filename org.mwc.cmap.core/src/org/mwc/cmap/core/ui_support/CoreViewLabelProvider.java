@@ -172,19 +172,6 @@ public class CoreViewLabelProvider extends LabelProvider implements
     final Editable editable = item.getEditable();
     Image res = null;
 
-    // see if this image isn't color-coded, and if we have a cached image for it
-    // is this a special case that doesn't want color?
-    String hisId = editable.getClass().toString();
-    if (!(editable instanceof ColoredWatchable))
-    {
-      // hmm, see if we already have it.
-      Image image = getLocallyCachedImage(hisId);
-      if (image != null)
-      {
-        return image;
-      }
-    }
-
     // try our helpers first
     ImageDescriptor thirdPartyImageDescriptor = null;
     if (imageHelpers != null)
@@ -208,9 +195,6 @@ public class CoreViewLabelProvider extends LabelProvider implements
       }
     }
 
-    // remember if we've generated a color-specific icon for this object
-    boolean colorImageCreated = false;
-
     if (thirdPartyImageDescriptor != null)
     {
       // is this a special case that doesn't want color?
@@ -231,7 +215,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
           res = getLocallyCachedImage(thisId);
 
           // have a look
-          if (res == null)
+          if (res == null || res.isDisposed())
           {
             // nope, better generate one
             res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
@@ -312,10 +296,6 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
               // and store the new image
               storeLocallyCachedImage(thisId, res);
-
-              // remember we've created it
-              colorImageCreated = true;
-
             }
           }
         }
@@ -355,15 +335,10 @@ public class CoreViewLabelProvider extends LabelProvider implements
       }
     }
 
+    // are we still trying to find it?
     if (res == null && thirdPartyImageDescriptor != null)
     {
       res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
-    }
-
-    // ok, store it, if it's not color coded
-    if (!colorImageCreated)
-    {
-      storeLocallyCachedImage(hisId, res);
     }
 
     return res;
