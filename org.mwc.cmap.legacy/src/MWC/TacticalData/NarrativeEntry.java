@@ -49,8 +49,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
    * cache the hashcode, it's an expensive operation
    */
   private transient Integer _hashCode = null;
-  
-  /** also cache the String representation, it's quite expensive to re-create
+
+  /**
+   * also cache the String representation, it's quite expensive to re-create
    * 
    */
   private transient String _cachedString = null;
@@ -151,7 +152,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
   public void setDTG(final HiResDate date)
   {
     _DTG = date;
-    
+
     // clear the cached string, since it dependds on the DTG
     _cachedString = null;
 
@@ -316,10 +317,10 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
     // NOTE: if the name representation uses more than
     // the DTG, we need to clear the _cachedString
     // when that field is modified
-    
-    if(_cachedString == null)
+
+    if (_cachedString == null)
     {
-      _cachedString = DebriefFormatDateTime.toStringHiRes(_DTG); 
+      _cachedString = DebriefFormatDateTime.toStringHiRes(_DTG);
     }
     return _cachedString;
   }
