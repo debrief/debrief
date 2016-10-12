@@ -2640,12 +2640,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // have a look at the last fix. we defer painting the fix label,
         // because we want to know the id of the last visible fix, since
         // we may need to paint it's label in 6 DTG
-        if (getPositionsVisible() && lastFix != null && lastFix.getVisible())
+        if ((getPositionsVisible() && lastFix != null && lastFix.getVisible()) || seg.size() == 1)
         {
           // is this the first visible fix?
           boolean isFirstVisibleFix = endPoints.size() == 1;
+          
+          // special handling. if we only have one point in the segment,
+          // we treat it as the last fix
+          final FixWrapper newLastFix;
+          if(lastFix == null)
+          {
+            newLastFix = fw;
+          }
+          else
+          {
+            newLastFix = lastFix;
+          }
 
-          paintIt(dest, lastFix, getEndTimeLabels() && isFirstVisibleFix);
+          paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix);
         }
 
         // now there's a chance that our fix has forgotten it's
