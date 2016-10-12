@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.core.resources.IMarker;
@@ -112,19 +113,18 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * 
    */
   private Action _followTime;
-  
 
-  /** value we use for null-time
+  /**
+   * value we use for null-time
    * 
    */
   private final long INVALID_TIME = -1L;
 
-  /** we don't want to process all new-time events,
-   * only the most recent one.  So, take a note of the
+  /**
+   * we don't want to process all new-time events, only the most recent one. So, take a note of the
    * most recent one
    */
   AtomicLong _pendingTime = new AtomicLong(INVALID_TIME);
-  
 
   /**
    * whether to control the controllable time
@@ -237,28 +237,48 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _myRollingNarrListener = new INarrativeListener()
     {
 
+      private AtomicBoolean updatePending = new AtomicBoolean(false);
+
       /**
        * force UI update
        * 
        */
       private void updated()
       {
-        Display.getDefault().asyncExec(new Runnable()
+        // is there already a pending update?
+        if (updatePending.get())
         {
-          @Override
-          public void run()
-          {
-            if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
-            {
-              myViewer.setInput(_myRollingNarrative);
+          // hey, we don't need to fire another!
+        }
+        else
+        {
+          // ok, indicate that there is an update pending
+          updatePending.set(true);
 
-            }
-            else
+          // queue up a screen refresh
+          Display.getDefault().asyncExec(new Runnable()
+          {
+            @Override
+            public void run()
             {
-              myViewer.setInput(null);
+              // is there a pending UI update (and clear the flag)
+              boolean isPending = updatePending.getAndSet(false);
+
+              if (isPending)
+              {
+                if (_myRollingNarrative != null
+                    && _myRollingNarrative.size() > 0)
+                {
+                  myViewer.setInput(_myRollingNarrative);
+                }
+                else
+                {
+                  myViewer.setInput(null);
+                }
+              }
             }
-          }
-        });
+          });
+        }
       }
 
       @Override
@@ -978,15 +998,15 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             {
               // quick, capture the time
               final long safeTime = _pendingTime.get();
-              
+
               // do we have a pending time value
               if (safeTime != INVALID_TIME)
               {
                 _pendingTime.set(INVALID_TIME);
-                
+
                 // now create the time object
                 final HiResDate theDTG = new HiResDate(0, safeTime);
-                
+
                 // ok, tell the model to move to the relevant item
                 myViewer.setDTG(theDTG);
               }
@@ -994,7 +1014,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
               {
                 // ok, there isn't a pending date, we can just skip the update
               }
-              
+
               // Note: we don't need to clear the lock, we do it in the finally block
             }
           });
