@@ -413,9 +413,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
           @Override
           public boolean isEnabled()
           {
-            final StructuredSelection sel =
-                (StructuredSelection) _treeViewer.getSelection();
-            return !sel.isEmpty();
+            Tree control = (Tree) _treeViewer.getControl();
+            int count = control.getSelectionCount();
+            return count > 0;
           }
 
         });
@@ -446,9 +446,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       @Override
       public boolean isEnabled()
       {
-        final StructuredSelection sel =
-            (StructuredSelection) _treeViewer.getSelection();
-        return !sel.isEmpty();
+        Tree control = (Tree) _treeViewer.getControl();
+        int count = control.getSelectionCount();
+        return count > 0;
       }
       
     });
@@ -479,9 +479,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       @Override
       public boolean isEnabled()
       {
-        final StructuredSelection sel =
-            (StructuredSelection) _treeViewer.getSelection();
-        return !sel.isEmpty();
+        Tree control = (Tree) _treeViewer.getControl();
+        int count = control.getSelectionCount();
+        return count > 0;
       }
       
     });
