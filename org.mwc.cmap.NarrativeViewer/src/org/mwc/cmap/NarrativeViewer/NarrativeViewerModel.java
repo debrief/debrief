@@ -373,7 +373,7 @@ public class NarrativeViewerModel
             NarrativeEntry entry = (NarrativeEntry) element;
             java.awt.Color color = entry.getColor();
             Color swtColor = swtColorMap.get(color);
-            if (swtColor == null || !swtColor.isDisposed())
+            if (swtColor == null || swtColor.isDisposed())
             {
               swtColor =
                   new Color(Display.getCurrent(), color.getRed(), color

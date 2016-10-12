@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
@@ -127,921 +128,933 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public abstract class CorePlotEditor extends EditorPart implements
-		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
-		IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider,
-		INameablePart
+    IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
+    IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider,
+    INameablePart
 {
 
-	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
-	// //////////////////////////////
-	// member data
-	// //////////////////////////////
+  private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
+  // //////////////////////////////
+  // member data
+  // //////////////////////////////
 
-	/**
-	 * the chart we store/manager
-	 */
-	protected SWTChart _myChart = null;
+  /**
+   * the chart we store/manager
+   */
+  protected SWTChart _myChart = null;
 
-	/**
-	 * we may learn the background color of the canvas before it has loaded.
-	 * temporarily store the color here, and set the background color when we load
-	 * the canvas
-	 */
-	private Color _pendingCanvasBackgroundColor;
+  /**
+   * we may learn the background color of the canvas before it has loaded. temporarily store the
+   * color here, and set the background color when we load the canvas
+   */
+  private Color _pendingCanvasBackgroundColor;
 
-	/**
-	 * the graphic data we know about
-	 */
-	protected Layers _myLayers;
+  /**
+   * the graphic data we know about
+   */
+  protected Layers _myLayers;
 
-	/**
-	 * the object which listens to time-change events. we remember it so that it
-	 * can be deleted when we close
-	 */
-	protected PropertyChangeListener _timeListener;
+  /**
+   * the object which listens to time-change events. we remember it so that it can be deleted when
+   * we close
+   */
+  protected PropertyChangeListener _timeListener;
 
-	/**
-	 * store a pending projection. we do this because sometimes we may learn about
-	 * the projection before we create our child components, you see.
-	 */
-	protected PlainProjection _pendingProjection;
+  /**
+   * store a pending projection. we do this because sometimes we may learn about the projection
+   * before we create our child components, you see.
+   */
+  protected PlainProjection _pendingProjection;
 
-	// drag-drop bits
+  // drag-drop bits
 
-	protected DropTarget target;
+  protected DropTarget target;
 
-	Vector<ISelectionChangedListener> _selectionListeners;
+  Vector<ISelectionChangedListener> _selectionListeners;
 
-	ISelectionChangedListener _selectionChangeListener;
+  ISelectionChangedListener _selectionChangeListener;
 
-	ISelection _currentSelection;
+  ISelection _currentSelection;
 
-	CanvasType.PaintListener _selectionPainter;
+  CanvasType.PaintListener _selectionPainter;
 
-	/**
-	 * keep track of whether the current plot is dirty...
-	 */
-	public boolean _plotIsDirty = false;
+  /**
+   * keep track of whether the current plot is dirty...
+   */
+  public boolean _plotIsDirty = false;
 
-	// ///////////////////////////////////////////////
-	// dummy bits applicable for our dummy interface
-	// ///////////////////////////////////////////////
-	Button _myButton;
+  /**
+   * keep track of if we need to update the property sheet
+   * 
+   */
+  private AtomicBoolean _propsNeedsRefresh = new AtomicBoolean(false);
 
-	Label _myLabel;
+  // ///////////////////////////////////////////////
+  // dummy bits applicable for our dummy interface
+  // ///////////////////////////////////////////////
+  Button _myButton;
 
-	protected DataListener2 _listenForMods;
+  Label _myLabel;
 
-	private boolean _ignoreDirtyCalls;
+  protected DataListener2 _listenForMods;
 
-	protected PartMonitor _myPartMonitor;
+  private boolean _ignoreDirtyCalls;
 
-	protected GeoToolsHandler _myGeoHandler;
-	protected IContextActivation _myActivation;
+  protected PartMonitor _myPartMonitor;
 
-	protected IResourceChangeListener resourceChangeListener = new IResourceChangeListener()
-	{
+  protected GeoToolsHandler _myGeoHandler;
+  protected IContextActivation _myActivation;
 
-		@Override
-		public void resourceChanged(IResourceChangeEvent event)
-		{
-			IResourceDelta delta = event.getDelta();
-			final int eventType = event.getType();
-			if (delta != null)
-			{
-				try
-				{
-					delta.accept(new IResourceDeltaVisitor()
-					{
+  protected IResourceChangeListener resourceChangeListener =
+      new IResourceChangeListener()
+      {
 
-						@Override
-						public boolean visit(IResourceDelta delta) throws CoreException
-						{
-							IResource resource = delta.getResource();
-							if (resource instanceof IWorkspaceRoot)
-							{
-								return true;
-							}
-							if (resource instanceof IProject)
-							{
-								IEditorInput input = getEditorInput();
-								if (input instanceof IFileEditorInput)
-								{
-									IProject project = ((IFileEditorInput) input).getFile()
-											.getProject();
-									if (resource.equals(project)
-											&& (eventType == IResourceChangeEvent.PRE_DELETE || eventType == IResourceChangeEvent.PRE_CLOSE))
-									{
-										closeEditor(false);
-										return false;
-									}
-								}
-								return true;
-							}
-							if (resource instanceof IFolder)
-							{
-								return true;
-							}
-							if (resource instanceof IFile)
-							{
-								IEditorInput input = getEditorInput();
-								if (input instanceof IFileEditorInput)
-								{
-									IFile file = ((IFileEditorInput) input).getFile();
-									if (resource.equals(file)
-											&& delta.getKind() == IResourceDelta.REMOVED)
-									{
-										IPath movedToPath = delta.getMovedToPath();
-										if (movedToPath != null)
-										{
-											IResource path = ResourcesPlugin.getWorkspace().getRoot()
-													.findMember(movedToPath);
-											if (path instanceof IFile)
-											{
-												final FileEditorInput newInput = new FileEditorInput(
-														(IFile) path);
-												Display.getDefault().asyncExec(new Runnable()
-												{
+        @Override
+        public void resourceChanged(IResourceChangeEvent event)
+        {
+          IResourceDelta delta = event.getDelta();
+          final int eventType = event.getType();
+          if (delta != null)
+          {
+            try
+            {
+              delta.accept(new IResourceDeltaVisitor()
+              {
 
-													@Override
-													public void run()
-													{
-														setInputWithNotify(newInput);
-													}
-												});
-											}
-										}
-										else
-										{
-											closeEditor(false);
-										}
-									} 
-									if (resource.equals(file) && 
-											(delta.getKind() == IResourceDelta.CHANGED && (delta.getFlags() & IResourceDelta.CONTENT) != 0))
-									{
-										reload(file);
-									}
-								}
-							}
-							return false;
-						}
+                @Override
+                public boolean visit(IResourceDelta delta) throws CoreException
+                {
+                  IResource resource = delta.getResource();
+                  if (resource instanceof IWorkspaceRoot)
+                  {
+                    return true;
+                  }
+                  if (resource instanceof IProject)
+                  {
+                    IEditorInput input = getEditorInput();
+                    if (input instanceof IFileEditorInput)
+                    {
+                      IProject project =
+                          ((IFileEditorInput) input).getFile().getProject();
+                      if (resource.equals(project)
+                          && (eventType == IResourceChangeEvent.PRE_DELETE || eventType == IResourceChangeEvent.PRE_CLOSE))
+                      {
+                        closeEditor(false);
+                        return false;
+                      }
+                    }
+                    return true;
+                  }
+                  if (resource instanceof IFolder)
+                  {
+                    return true;
+                  }
+                  if (resource instanceof IFile)
+                  {
+                    IEditorInput input = getEditorInput();
+                    if (input instanceof IFileEditorInput)
+                    {
+                      IFile file = ((IFileEditorInput) input).getFile();
+                      if (resource.equals(file)
+                          && delta.getKind() == IResourceDelta.REMOVED)
+                      {
+                        IPath movedToPath = delta.getMovedToPath();
+                        if (movedToPath != null)
+                        {
+                          IResource path =
+                              ResourcesPlugin.getWorkspace().getRoot()
+                                  .findMember(movedToPath);
+                          if (path instanceof IFile)
+                          {
+                            final FileEditorInput newInput =
+                                new FileEditorInput((IFile) path);
+                            Display.getDefault().asyncExec(new Runnable()
+                            {
 
-					});
-				}
-				catch (CoreException e)
-				{
-					IStatus status = new Status(IStatus.INFO, PlotViewerPlugin.PLUGIN_ID,
-							e.getLocalizedMessage(), e);
-					PlotViewerPlugin.getDefault().getLog().log(status);
-				}
-			}
-		}
-	};
+                              @Override
+                              public void run()
+                              {
+                                setInputWithNotify(newInput);
+                              }
+                            });
+                          }
+                        }
+                        else
+                        {
+                          closeEditor(false);
+                        }
+                      }
+                      if (resource.equals(file)
+                          && (delta.getKind() == IResourceDelta.CHANGED && (delta
+                              .getFlags() & IResourceDelta.CONTENT) != 0))
+                      {
+                        reload(file);
+                      }
+                    }
+                  }
+                  return false;
+                }
 
-	// //////////////////////////////
-	// constructor
-	// //////////////////////////////
+              });
+            }
+            catch (CoreException e)
+            {
+              IStatus status =
+                  new Status(IStatus.INFO, PlotViewerPlugin.PLUGIN_ID, e
+                      .getLocalizedMessage(), e);
+              PlotViewerPlugin.getDefault().getLog().log(status);
+            }
+          }
+        }
+      };
 
-	public CorePlotEditor()
-	{
-		super();
+  // //////////////////////////////
+  // constructor
+  // //////////////////////////////
 
-		// create the projection, we're going to need it to load the data, before we
-		// have the chart created
-		_myGeoHandler = new GtProjection();
+  public CorePlotEditor()
+  {
+    super();
 
-		_myLayers = new Layers()
-		{
+    // create the projection, we're going to need it to load the data, before we
+    // have the chart created
+    _myGeoHandler = new GtProjection();
 
-			/**
+    _myLayers = new Layers()
+    {
+
+      /**
 			 * 
 			 */
-			private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-			@Override
-			public void addThisLayer(final Layer theLayer)
-			{
-				Layer wrappedLayer = null;
+      @Override
+      public void addThisLayer(final Layer theLayer)
+      {
+        Layer wrappedLayer = null;
 
-				// ok, if this is an externally managed layer (and we're doing
-				// GT-plotting, we will wrap it, and actually add the wrapped layer
-				if (theLayer instanceof ExternallyManagedDataLayer)
-				{
-					final ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
-					if (dl.getDataType().equals(
-							MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
-					{
-						final GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
-								dl.getFilename());
+        // ok, if this is an externally managed layer (and we're doing
+        // GT-plotting, we will wrap it, and actually add the wrapped layer
+        if (theLayer instanceof ExternallyManagedDataLayer)
+        {
+          final ExternallyManagedDataLayer dl =
+              (ExternallyManagedDataLayer) theLayer;
+          if (dl.getDataType().equals(
+              MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
+          {
+            final GeoToolsLayer gt =
+                new WorldImageLayer(dl.getName(), dl.getFilename());
 
-						gt.setVisible(dl.getVisible());
-						_myGeoHandler.addGeoToolsLayer(gt);
-						wrappedLayer = gt;
-					}
-					else if (dl.getDataType().equals(
-							MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE))
-					{
-						// just see if it's a raster extent layer (special processing)
-						if (dl.getName().equals(WorldImageLayer.RASTER_FILE))
-						{
-							// special processing - wrap it.
-							wrappedLayer = WorldImageLayer.RasterExtentHelper.loadRasters(
-									dl.getFilename(), this);
-						}
-						else
-						{
-							// ok, it's a normal shapefile: load it.
-							final GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
-									dl.getFilename());
-							gt.setVisible(dl.getVisible());
-							_myGeoHandler.addGeoToolsLayer(gt);
-							wrappedLayer = gt;
-						}
-					}
-					else if (ChartBoundsWrapper.NELAYER_TYPE.equals(dl.getDataType()))
-					{
-						final NELayer gt = new NELayer(Activator.getDefault()
-								.getDefaultStyleSet());
-						gt.setVisible(dl.getVisible());
-						_myGeoHandler.addGeoToolsLayer(gt);
-						wrappedLayer = gt;
-					}
-					if (wrappedLayer != null)
-						super.addThisLayer(wrappedLayer);
-				}
-				else
-					super.addThisLayer(theLayer);
-			}
+            gt.setVisible(dl.getVisible());
+            _myGeoHandler.addGeoToolsLayer(gt);
+            wrappedLayer = gt;
+          }
+          else if (dl.getDataType().equals(
+              MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE))
+          {
+            // just see if it's a raster extent layer (special processing)
+            if (dl.getName().equals(WorldImageLayer.RASTER_FILE))
+            {
+              // special processing - wrap it.
+              wrappedLayer =
+                  WorldImageLayer.RasterExtentHelper.loadRasters(dl
+                      .getFilename(), this);
+            }
+            else
+            {
+              // ok, it's a normal shapefile: load it.
+              final GeoToolsLayer gt =
+                  new ShapeFileLayer(dl.getName(), dl.getFilename());
+              gt.setVisible(dl.getVisible());
+              _myGeoHandler.addGeoToolsLayer(gt);
+              wrappedLayer = gt;
+            }
+          }
+          else if (ChartBoundsWrapper.NELAYER_TYPE.equals(dl.getDataType()))
+          {
+            final NELayer gt =
+                new NELayer(Activator.getDefault().getDefaultStyleSet());
+            gt.setVisible(dl.getVisible());
+            _myGeoHandler.addGeoToolsLayer(gt);
+            wrappedLayer = gt;
+          }
+          if (wrappedLayer != null)
+            super.addThisLayer(wrappedLayer);
+        }
+        else
+          super.addThisLayer(theLayer);
+      }
 
-			@Override
-			public void removeThisLayer(final Layer theLayer)
-			{
-				if (theLayer instanceof GeoToolsLayer)
-				{
-					// get the content
-					final GtProjection gp = (GtProjection) _myChart.getCanvas()
-							.getProjection();
-					final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
-					gt.clearMap();
+      @Override
+      public void removeThisLayer(final Layer theLayer)
+      {
+        if (theLayer instanceof GeoToolsLayer)
+        {
+          // get the content
+          final GtProjection gp =
+              (GtProjection) _myChart.getCanvas().getProjection();
+          final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
+          gt.clearMap();
 
-					if (gp.numLayers() == 0)
-					{
-						// ok - we've got to force the data rea
-						final WorldArea area = _myChart.getCanvas().getProjection()
-								.getDataArea();
-						_myChart.getCanvas().getProjection().setDataArea(area);
-					}
+          if (gp.numLayers() == 0)
+          {
+            // ok - we've got to force the data rea
+            final WorldArea area =
+                _myChart.getCanvas().getProjection().getDataArea();
+            _myChart.getCanvas().getProjection().setDataArea(area);
+          }
 
-				}
+        }
 
-				// and remove from the actual list
-				super.removeThisLayer(theLayer);
+        // and remove from the actual list
+        super.removeThisLayer(theLayer);
 
-			}
+      }
 
-		};
+    };
 
-		_listenForMods = new DataListener2()
-		{
+    _listenForMods = new DataListener2()
+    {
 
-			public void dataModified(final Layers theData, final Layer changedLayer)
-			{
-				fireDirty();
-			}
+      public void dataModified(final Layers theData, final Layer changedLayer)
+      {
+        fireDirty();
+      }
 
-			public void dataExtended(final Layers theData)
-			{
-				layersExtended();
-				fireDirty();
-			}
+      public void dataExtended(final Layers theData)
+      {
+        layersExtended();
+        fireDirty();
+      }
 
-			public void dataReformatted(final Layers theData, final Layer changedLayer)
-			{
-				fireDirty();
-			}
+      public void
+          dataReformatted(final Layers theData, final Layer changedLayer)
+      {
+        fireDirty();
+      }
 
-			@Override
-			public void dataExtended(final Layers theData, final Plottable newItem,
-					final Layer parent)
-			{
-				layersExtended();
-				fireDirty();
-			}
+      @Override
+      public void dataExtended(final Layers theData, final Plottable newItem,
+          final Layer parent)
+      {
+        layersExtended();
+        fireDirty();
+      }
 
-		};
-		_myLayers.addDataExtendedListener(_listenForMods);
-		_myLayers.addDataModifiedListener(_listenForMods);
-		_myLayers.addDataReformattedListener(_listenForMods);
+    };
+    _myLayers.addDataExtendedListener(_listenForMods);
+    _myLayers.addDataModifiedListener(_listenForMods);
+    _myLayers.addDataReformattedListener(_listenForMods);
 
-		// and listen for new times
-		_timeListener = new PropertyChangeListener()
-		{
-			public void propertyChange(final PropertyChangeEvent arg0)
-			{
+    // and listen for new times
+    _timeListener = new PropertyChangeListener()
+    {
+      public void propertyChange(final PropertyChangeEvent arg0)
+      {
 
-				// right, retrieve the time
-				final HiResDate newDTG = (HiResDate) arg0.getNewValue();
-				timeChanged(newDTG);
+        // right, retrieve the time
+        final HiResDate newDTG = (HiResDate) arg0.getNewValue();
+        timeChanged(newDTG);
 
-				// now make a note that the current DTG has changed
-				fireDirty();
-			}
-		};
+        // now make a note that the current DTG has changed
+        fireDirty();
+      }
+    };
 
-		_selectionChangeListener = new ISelectionChangedListener()
-		{
+    _selectionChangeListener = new ISelectionChangedListener()
+    {
 
-			@Override
-			public void selectionChanged(final SelectionChangedEvent event)
-			{
-				final ISelection sel = event.getSelection();
-				if (!(sel instanceof IStructuredSelection))
-					return;
+      @Override
+      public void selectionChanged(final SelectionChangedEvent event)
+      {
+        final ISelection sel = event.getSelection();
+        if (!(sel instanceof IStructuredSelection))
+          return;
 
-				final IStructuredSelection ss = (IStructuredSelection) sel;
-				SWTChart theChart = getChart();
-				if (theChart == null)
-					return;
+        final IStructuredSelection ss = (IStructuredSelection) sel;
+        SWTChart theChart = getChart();
+        if (theChart == null)
+          return;
 
-				final CanvasType can = theChart.getCanvas();
+        final CanvasType can = theChart.getCanvas();
 
-				// unselect the current selection
-				if (_currentSelection != null
-						&& _currentSelection instanceof IStructuredSelection)
-				{
-					can.removePainter(_selectionPainter);
-					final List<EditableWrapper> eds = getSelItems((IStructuredSelection) _currentSelection);
-					for (EditableWrapper ed : eds)
-					{
-						getChart().update(ed.getTopLevelLayer());
-					}
-				}
-				// store the new selection
-				_currentSelection = ss;
+        // unselect the current selection
+        if (_currentSelection != null
+            && _currentSelection instanceof IStructuredSelection)
+        {
+          can.removePainter(_selectionPainter);
+          final List<EditableWrapper> eds =
+              getSelItems((IStructuredSelection) _currentSelection);
+          for (EditableWrapper ed : eds)
+          {
+            getChart().update(ed.getTopLevelLayer());
+          }
+        }
+        // store the new selection
+        _currentSelection = ss;
 
-				// select the current selection
-				can.addPainter(_selectionPainter);
-				final List<EditableWrapper> eds = getSelItems(ss);
-				for (EditableWrapper ed : eds)
-				{
-					getChart().update(ed.getTopLevelLayer());
-				}
-			}
-		};
+        // select the current selection
+        can.addPainter(_selectionPainter);
+        final List<EditableWrapper> eds = getSelItems(ss);
+        for (EditableWrapper ed : eds)
+        {
+          getChart().update(ed.getTopLevelLayer());
+        }
+      }
+    };
 
-		_selectionPainter = new CanvasType.PaintAdaptor()
-		{
-			@Override
-			public void paintMe(CanvasType dest)
-			{
-				if (_currentSelection != null
-						&& _currentSelection instanceof IStructuredSelection)
-				{
-					List<EditableWrapper> selItems = getSelItems((IStructuredSelection) _currentSelection);
-					for (EditableWrapper ed : selItems)
-					{
-						if (ed != null)
-						{
-							Plottable theE = (Plottable) ed.getEditable();
-							if (theE.getVisible())
-							{
-								// if (!(theE instanceof DoNotHighlightMe))
-								drawHighlightedBorder(dest, theE.getBounds());
-							}
-						}
-					}
-				}
-			}
+    _selectionPainter = new CanvasType.PaintAdaptor()
+    {
+      @Override
+      public void paintMe(CanvasType dest)
+      {
+        if (_currentSelection != null
+            && _currentSelection instanceof IStructuredSelection)
+        {
+          List<EditableWrapper> selItems =
+              getSelItems((IStructuredSelection) _currentSelection);
+          for (EditableWrapper ed : selItems)
+          {
+            if (ed != null)
+            {
+              Plottable theE = (Plottable) ed.getEditable();
+              if (theE.getVisible())
+              {
+                // if (!(theE instanceof DoNotHighlightMe))
+                drawHighlightedBorder(dest, theE.getBounds());
+              }
+            }
+          }
+        }
+      }
 
-			@Override
-			public String getName()
-			{
-				return "SELECTION PAINTER";
-			}
-		};
-	}
+      @Override
+      public String getName()
+      {
+        return "SELECTION PAINTER";
+      }
+    };
+  }
 
-	/**
-	 * get the first NNN valid items from the selection
-	 * 
-	 * @param ss
-	 *          the current structured selection
-	 * @return the first 20 items
-	 */
-	private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
-	{
-		List<EditableWrapper> res = new ArrayList<EditableWrapper>();
-		final Iterator<?> selIterator = ss.iterator();
+  /**
+   * get the first NNN valid items from the selection
+   * 
+   * @param ss
+   *          the current structured selection
+   * @return the first 20 items
+   */
+  private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
+  {
+    List<EditableWrapper> res = new ArrayList<EditableWrapper>();
+    final Iterator<?> selIterator = ss.iterator();
 
-		// limit how many entities to highlight
-		final int MAX_HIGHLIGHT = 20;
+    // limit how many entities to highlight
+    final int MAX_HIGHLIGHT = 20;
 
-		while (selIterator.hasNext() && res.size() < MAX_HIGHLIGHT)
-		{
-			final Object o = selIterator.next();
-			if (o instanceof EditableWrapper)
-			{
-				final EditableWrapper pw = (EditableWrapper) o;
-				if (pw.getEditable() instanceof Plottable)
-				{
-					res.add(pw);
-				}
-			}
-		}
-		return res;
-	}
+    while (selIterator.hasNext() && res.size() < MAX_HIGHLIGHT)
+    {
+      final Object o = selIterator.next();
+      if (o instanceof EditableWrapper)
+      {
+        final EditableWrapper pw = (EditableWrapper) o;
+        if (pw.getEditable() instanceof Plottable)
+        {
+          res.add(pw);
+        }
+      }
+    }
+    return res;
+  }
 
-	private IPartListener partListener = new IPartListener()
-	{
+  private IPartListener partListener = new IPartListener()
+  {
 
-		@Override
-		public void partOpened(IWorkbenchPart part)
-		{
-			activateContext(part);
-		}
+    @Override
+    public void partOpened(IWorkbenchPart part)
+    {
+      activateContext(part);
+    }
 
-		@Override
-		public void partDeactivated(IWorkbenchPart part)
-		{
-			deactivateContext(part);
-		}
+    @Override
+    public void partDeactivated(IWorkbenchPart part)
+    {
+      deactivateContext(part);
+    }
 
-		@Override
-		public void partClosed(IWorkbenchPart part)
-		{
-			deactivateContext(part);
-		}
+    @Override
+    public void partClosed(IWorkbenchPart part)
+    {
+      deactivateContext(part);
+    }
 
-		@Override
-		public void partBroughtToTop(IWorkbenchPart part)
-		{
-			activateContext(part);
-		}
+    @Override
+    public void partBroughtToTop(IWorkbenchPart part)
+    {
+      activateContext(part);
+    }
 
-		@Override
-		public void partActivated(IWorkbenchPart part)
-		{
-			activateContext(part);
-		}
+    @Override
+    public void partActivated(IWorkbenchPart part)
+    {
+      activateContext(part);
+    }
 
-		private void activateContext(IWorkbenchPart part)
-		{
-			if (part == CorePlotEditor.this)
-			{
-				if (_myActivation == null)
-				{
-					_myActivation = getContextService().activateContext(CONTEXT_ID);
-				}
-			}
-		}
+    private void activateContext(IWorkbenchPart part)
+    {
+      if (part == CorePlotEditor.this)
+      {
+        if (_myActivation == null)
+        {
+          _myActivation = getContextService().activateContext(CONTEXT_ID);
+        }
+      }
+    }
 
-		private void deactivateContext(IWorkbenchPart part)
-		{
-			if (part == CorePlotEditor.this)
-			{
-				if (_myActivation != null)
-				{
-					getContextService().deactivateContext(_myActivation);
-					_myActivation = null;
-				}
-			}
-		}
-	};
+    private void deactivateContext(IWorkbenchPart part)
+    {
+      if (part == CorePlotEditor.this)
+      {
+        if (_myActivation != null)
+        {
+          getContextService().deactivateContext(_myActivation);
+          _myActivation = null;
+        }
+      }
+    }
+  };
 
-	private ObjectUndoContext undoContext;
+  private ObjectUndoContext undoContext;
 
-	private UndoActionHandler undoAction;
+  private UndoActionHandler undoAction;
 
-	private RedoActionHandler redoAction;
+  private RedoActionHandler redoAction;
 
-	public void dispose()
-	{
-		// ok, tell the chart to self-destruct (And dispose/release of any objects)
-		_myChart.close();
-		_myChart = null;
-		undoAction.dispose();
-		redoAction.dispose();
-		OperationHistoryFactory.getOperationHistory().dispose(undoContext, true, true, true);
+  public void dispose()
+  {
+    // ok, tell the chart to self-destruct (And dispose/release of any objects)
+    _myChart.close();
+    _myChart = null;
+    undoAction.dispose();
+    redoAction.dispose();
+    OperationHistoryFactory.getOperationHistory().dispose(undoContext, true,
+        true, true);
 
-		super.dispose();
+    super.dispose();
 
-		getSite().getPage().removePartListener(partListener);
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(
-				resourceChangeListener);
+    getSite().getPage().removePartListener(partListener);
+    ResourcesPlugin.getWorkspace().removeResourceChangeListener(
+        resourceChangeListener);
 
-		// empty the part monitor
-		if (_myPartMonitor != null)
-		{
-			_myPartMonitor.ditch();
-			_myPartMonitor = null;
-		}
+    // empty the part monitor
+    if (_myPartMonitor != null)
+    {
+      _myPartMonitor.ditch();
+      _myPartMonitor = null;
+    }
 
-		// and the layers
-		_myLayers.close();
-		_myLayers = null;
+    // and the layers
+    _myLayers.close();
+    _myLayers = null;
 
-		if (_myGeoHandler != null)
-		{
-			_myGeoHandler.dispose();
-			_myGeoHandler = null;
-		}
+    if (_myGeoHandler != null)
+    {
+      _myGeoHandler.dispose();
+      _myGeoHandler = null;
+    }
 
-		// some other items
-		_timeListener = null;
-	}
+    // some other items
+    _timeListener = null;
+  }
 
-	protected void closeEditor(final boolean save)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+  protected void closeEditor(final boolean save)
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
 
-			@Override
-			public void run()
-			{
-				getSite().getPage().closeEditor(CorePlotEditor.this, save);
-			}
-		});
-	}
+      @Override
+      public void run()
+      {
+        getSite().getPage().closeEditor(CorePlotEditor.this, save);
+      }
+    });
+  }
 
-	public void createPartControl(final Composite parent)
-	{
-		// hey, create the chart
-		_myChart = createTheChart(parent);
+  public void createPartControl(final Composite parent)
+  {
+    // hey, create the chart
+    _myChart = createTheChart(parent);
 
-		// set the chart color, if we have one
-		if (_pendingCanvasBackgroundColor != null)
-		{
-			_myChart.getCanvas().setBackgroundColor(_pendingCanvasBackgroundColor);
-			// and promptly forget it
-			_pendingCanvasBackgroundColor = null;
-		}
+    // set the chart color, if we have one
+    if (_pendingCanvasBackgroundColor != null)
+    {
+      _myChart.getCanvas().setBackgroundColor(_pendingCanvasBackgroundColor);
+      // and promptly forget it
+      _pendingCanvasBackgroundColor = null;
+    }
 
-		// and update the projection, if we have one
-		if (_pendingProjection != null)
-		{
-			_myChart.getCanvas().setProjection(_pendingProjection);
-			_pendingProjection = null;
-		}
+    // and update the projection, if we have one
+    if (_pendingProjection != null)
+    {
+      _myChart.getCanvas().setProjection(_pendingProjection);
+      _pendingProjection = null;
+    }
 
-		// and the drop support
-		configureFileDropSupport();
+    // and the drop support
+    configureFileDropSupport();
 
-		// and add our dbl click listener
-		// and add our dbl click listener
-		getChart().addCursorDblClickedListener(new DblClickEdit(null)
-		{
-			/**
+    // and add our dbl click listener
+    // and add our dbl click listener
+    getChart().addCursorDblClickedListener(new DblClickEdit(null)
+    {
+      /**
 			 * 
 			 */
-			private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-			protected void addEditor(final Plottable res, final EditorType e,
-					final Layer parentLayer)
-			{
-				selectPlottable(res, parentLayer);
-			}
+      protected void addEditor(final Plottable res, final EditorType e,
+          final Layer parentLayer)
+      {
+        selectPlottable(res, parentLayer);
+      }
 
-			protected void handleItemNotFound(final PlainProjection projection)
-			{
-				putBackdropIntoProperties();
-			}
-		});
+      protected void handleItemNotFound(final PlainProjection projection)
+      {
+        putBackdropIntoProperties();
+      }
+    });
 
-		getSite().setSelectionProvider(this);
+    getSite().setSelectionProvider(this);
 
-		// and over-ride the undo button
-		undoContext = new ObjectUndoContext(this, "CMAP");
-		undoAction = new UndoActionHandler(getEditorSite(),
-				undoContext);
-		undoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_UNDO);
-		redoAction = new RedoActionHandler(getEditorSite(),
-				undoContext);
-		redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
-		
-		getEditorSite().getActionBars().setGlobalActionHandler(
-				ActionFactory.UNDO.getId(), undoAction);
-		getEditorSite().getActionBars().setGlobalActionHandler(
-				ActionFactory.REDO.getId(), redoAction);
+    // and over-ride the undo button
+    undoContext = new ObjectUndoContext(this, "CMAP");
+    undoAction = new UndoActionHandler(getEditorSite(), undoContext);
+    undoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_UNDO);
+    redoAction = new RedoActionHandler(getEditorSite(), undoContext);
+    redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
 
-		// put in the plot-copy support
+    getEditorSite().getActionBars().setGlobalActionHandler(
+        ActionFactory.UNDO.getId(), undoAction);
+    getEditorSite().getActionBars().setGlobalActionHandler(
+        ActionFactory.REDO.getId(), redoAction);
 
-		final IAction _copyClipboardAction = new Action()
-		{
-			public void runWithEvent(final Event event)
-			{
-				SWTCanvas canvas = (SWTCanvas) getChart().getCanvas();
-				Image image = null;
-				try
-				{
-					image = canvas.getImage();
-					if (image != null)
-					{
-						final BufferedImage _awtImage = PlotViewerPlugin.convertToAWT(image
-								.getImageData());
-						Transferable t = new Transferable()
-						{
+    // put in the plot-copy support
 
-							public DataFlavor[] getTransferDataFlavors()
-							{
-								return new DataFlavor[]
-								{ DataFlavor.imageFlavor };
-							}
+    final IAction _copyClipboardAction = new Action()
+    {
+      public void runWithEvent(final Event event)
+      {
+        SWTCanvas canvas = (SWTCanvas) getChart().getCanvas();
+        Image image = null;
+        try
+        {
+          image = canvas.getImage();
+          if (image != null)
+          {
+            final BufferedImage _awtImage =
+                PlotViewerPlugin.convertToAWT(image.getImageData());
+            Transferable t = new Transferable()
+            {
 
-							public boolean isDataFlavorSupported(DataFlavor flavor)
-							{
-								if (flavor == DataFlavor.imageFlavor)
-									return true;
-								return false;
-							}
+              public DataFlavor[] getTransferDataFlavors()
+              {
+                return new DataFlavor[]
+                {DataFlavor.imageFlavor};
+              }
 
-							public Object getTransferData(DataFlavor flavor)
-									throws UnsupportedFlavorException, IOException
-							{
-								if (isDataFlavorSupported(flavor))
-								{
-									return _awtImage;
-								}
-								return null;
-							}
+              public boolean isDataFlavorSupported(DataFlavor flavor)
+              {
+                if (flavor == DataFlavor.imageFlavor)
+                  return true;
+                return false;
+              }
 
-						};
+              public Object getTransferData(DataFlavor flavor)
+                  throws UnsupportedFlavorException, IOException
+              {
+                if (isDataFlavorSupported(flavor))
+                {
+                  return _awtImage;
+                }
+                return null;
+              }
 
-						ClipboardOwner co = new ClipboardOwner()
-						{
+            };
 
-							public void lostOwnership(Clipboard clipboard,
-									Transferable contents)
-							{
-							}
+            ClipboardOwner co = new ClipboardOwner()
+            {
 
-						};
-						Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-						cb.setContents(t, co);
-					}
-				}
-				finally
-				{
-					if (image != null)
-					{
-						image.dispose();
-					}
-				}
-			}
-		};
+              public void lostOwnership(Clipboard clipboard,
+                  Transferable contents)
+              {
+              }
 
-		final IActionBars actionBars = getEditorSite().getActionBars();
-		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
-				_copyClipboardAction);
+            };
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(t, co);
+          }
+        }
+        finally
+        {
+          if (image != null)
+          {
+            image.dispose();
+          }
+        }
+      }
+    };
 
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
+    final IActionBars actionBars = getEditorSite().getActionBars();
+    actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+        _copyClipboardAction);
 
-		// listen out for us gaining focus - so we can set the cursort tracker
-		listenForMeGainingLosingFocus();
+    _myPartMonitor =
+        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 
-		listenForSelectionChange();
+    // listen out for us gaining focus - so we can set the cursort tracker
+    listenForMeGainingLosingFocus();
 
-		getSite().getPage().addPartListener(partListener);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE|IResourceChangeEvent.PRE_DELETE|IResourceChangeEvent.POST_CHANGE);
-	}
+    listenForSelectionChange();
 
-	
-	private IContextService getContextService()
-	{
-		return (IContextService) getSite().getService(IContextService.class);
-	}
+    getSite().getPage().addPartListener(partListener);
+    ResourcesPlugin.getWorkspace().addResourceChangeListener(
+        resourceChangeListener,
+        IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
+            | IResourceChangeEvent.POST_CHANGE);
+  }
 
-	private void listenForMeGainingLosingFocus()
-	{
-		final EditorPart linkToMe = this;
-		_myPartMonitor.addPartListener(CorePlotEditor.class,
-				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object instance,
-							final IWorkbenchPart parentPart)
-					{
-						if (linkToMe.equals(instance))
-							_currentSelection = null;
-					}
-				});
-		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object instance,
-							final IWorkbenchPart parentPart)
-					{
-						if (linkToMe.equals(instance))
-						{
-							// tell the cursor track that we're it's bitch.
-							RangeTracker.displayResultsIn(linkToMe);
-							CursorTracker.trackThisChart(_myChart, linkToMe);
-						}
-					}
-				});
-	}
+  private IContextService getContextService()
+  {
+    return (IContextService) getSite().getService(IContextService.class);
+  }
+
+  private void listenForMeGainingLosingFocus()
+  {
+    final EditorPart linkToMe = this;
+    _myPartMonitor.addPartListener(CorePlotEditor.class,
+        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+        {
+          public void eventTriggered(final String type, final Object instance,
+              final IWorkbenchPart parentPart)
+          {
+            if (linkToMe.equals(instance))
+              _currentSelection = null;
+          }
+        });
+    _myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED,
+        new PartMonitor.ICallback()
+        {
+          public void eventTriggered(final String type, final Object instance,
+              final IWorkbenchPart parentPart)
+          {
+            if (linkToMe.equals(instance))
+            {
+              // tell the cursor track that we're it's bitch.
+              RangeTracker.displayResultsIn(linkToMe);
+              CursorTracker.trackThisChart(_myChart, linkToMe);
+            }
+          }
+        });
+  }
 
   @SuppressWarnings("unused")
-	private void listenForSelectionChange()
-	{
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-				{
+  private void listenForSelectionChange()
+  {
+    _myPartMonitor.addPartListener(ISelectionProvider.class,
+        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+        {
           public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						final ISelectionProvider iS = (ISelectionProvider) part;
-						// TODO- make it possible for use to indicate if highlights get
-						// plotted (prob via Layer Manager)
-						// iS.addSelectionChangedListener(_selectionChangeListener);
-					}
-				});
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						final ISelectionProvider iS = (ISelectionProvider) part;
-						// TODO- make it possible for use to indicate if highlights get
-						// plotted (prob via Layer Manager)
-						// iS.removeSelectionChangedListener(_selectionChangeListener);
-					}
-				});
-	}
+              final IWorkbenchPart parentPart)
+          {
+            final ISelectionProvider iS = (ISelectionProvider) part;
+            // TODO- make it possible for use to indicate if highlights get
+            // plotted (prob via Layer Manager)
+            // iS.addSelectionChangedListener(_selectionChangeListener);
+          }
+        });
+    _myPartMonitor.addPartListener(ISelectionProvider.class,
+        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+        {
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            final ISelectionProvider iS = (ISelectionProvider) part;
+            // TODO- make it possible for use to indicate if highlights get
+            // plotted (prob via Layer Manager)
+            // iS.removeSelectionChangedListener(_selectionChangeListener);
+          }
+        });
+  }
 
-	/**
-	 * ok - let somebody else select an item on the plot. The initial reason for
-	 * making this public was so that when a new item is created, we can select it
-	 * on the plot. The plot then fires a 'selected' event, and the new item is
-	 * shown in the properties window. Cool.
-	 * 
-	 * @param target1
-	 *          - the item to select
-	 * @param parentLayer
-	 *          - the item's parent layer. Used to decide which layers to update.
-	 */
-	public void selectPlottable(final Plottable target1, final Layer parentLayer)
-	{
-		CorePlugin.logError(Status.INFO,
-				"Double-click processed, opening property editor for:" + target1, null);
-		final EditableWrapper parentP = new EditableWrapper(parentLayer, null,
-				getChart().getLayers());
-		final EditableWrapper wrapped = new EditableWrapper(target1, parentP,
-				getChart().getLayers());
-		final ISelection selected = new StructuredSelection(wrapped);
-		fireSelectionChanged(selected);
-	}
+  /**
+   * ok - let somebody else select an item on the plot. The initial reason for making this public
+   * was so that when a new item is created, we can select it on the plot. The plot then fires a
+   * 'selected' event, and the new item is shown in the properties window. Cool.
+   * 
+   * @param target1
+   *          - the item to select
+   * @param parentLayer
+   *          - the item's parent layer. Used to decide which layers to update.
+   */
+  public void selectPlottable(final Plottable target1, final Layer parentLayer)
+  {
+    CorePlugin.logError(Status.INFO,
+        "Double-click processed, opening property editor for:" + target1, null);
+    final EditableWrapper parentP =
+        new EditableWrapper(parentLayer, null, getChart().getLayers());
+    final EditableWrapper wrapped =
+        new EditableWrapper(target1, parentP, getChart().getLayers());
+    final ISelection selected = new StructuredSelection(wrapped);
+    fireSelectionChanged(selected);
+  }
 
-	private void drawHighlightedBorder(final CanvasType can,
-			final WorldArea worldArea)
-	{
-		if (worldArea == null)
-			return;
+  private void drawHighlightedBorder(final CanvasType can,
+      final WorldArea worldArea)
+  {
+    if (worldArea == null)
+      return;
 
-		can.setColor(new Color(255, 255, 255, 45));
-		can.setLineStyle(CanvasType.DOT_DASH);
-		can.setLineWidth(2);
+    can.setColor(new Color(255, 255, 255, 45));
+    can.setLineStyle(CanvasType.DOT_DASH);
+    can.setLineWidth(2);
 
-		// ok, get the TL & BR coordinates
-		WorldLocation tl = worldArea.getTopLeft();
-		WorldLocation br = worldArea.getBottomRight();
+    // ok, get the TL & BR coordinates
+    WorldLocation tl = worldArea.getTopLeft();
+    WorldLocation br = worldArea.getBottomRight();
 
-		// now put them into a rectangle in screen coords
-		Rectangle rect = new Rectangle(can.toScreen(tl));
-		rect.add(can.toScreen(br));
+    // now put them into a rectangle in screen coords
+    Rectangle rect = new Rectangle(can.toScreen(tl));
+    rect.add(can.toScreen(br));
 
-		// now expand the rectangle
-		final int BORDER = 3;
-		rect.grow(BORDER, BORDER);
+    // now expand the rectangle
+    final int BORDER = 3;
+    rect.grow(BORDER, BORDER);
 
-		// and draw the rectangle
-		can.drawRect(rect.x, rect.y, rect.width, rect.height);
+    // and draw the rectangle
+    can.drawRect(rect.x, rect.y, rect.width, rect.height);
 
-		// lastly, loop through the points
-		PathIterator pi = rect.getPathIterator(new AffineTransform());
-		double[] coords = new double[2];
-		while (!pi.isDone())
-		{
-			int code = pi.currentSegment(coords);
-			// is this a new coordinate?
-			if (code == PathIterator.SEG_LINETO)
-			{
-				// yes, draw a corner marker
-				can.fillRect((int) coords[0] - 2, (int) coords[1] - 2, 4, 4);
-			}
-			// and move to the next
-			pi.next();
-		}
+    // lastly, loop through the points
+    PathIterator pi = rect.getPathIterator(new AffineTransform());
+    double[] coords = new double[2];
+    while (!pi.isDone())
+    {
+      int code = pi.currentSegment(coords);
+      // is this a new coordinate?
+      if (code == PathIterator.SEG_LINETO)
+      {
+        // yes, draw a corner marker
+        can.fillRect((int) coords[0] - 2, (int) coords[1] - 2, 4, 4);
+      }
+      // and move to the next
+      pi.next();
+    }
 
-	}
+  }
 
-	/**
-	 * place the chart in the properties window
-	 * 
-	 */
-	final void putBackdropIntoProperties()
-	{
-		final SWTCanvas can = (SWTCanvas) getChart().getCanvas();
-		final EditableWrapper wrapped = new EditableWrapper(can, getChart()
-				.getLayers());
-		final ISelection sel = new StructuredSelection(wrapped);
-		fireSelectionChanged(sel);
+  /**
+   * place the chart in the properties window
+   * 
+   */
+  final void putBackdropIntoProperties()
+  {
+    final SWTCanvas can = (SWTCanvas) getChart().getCanvas();
+    final EditableWrapper wrapped =
+        new EditableWrapper(can, getChart().getLayers());
+    final ISelection sel = new StructuredSelection(wrapped);
+    fireSelectionChanged(sel);
 
-	}
+  }
 
-	/**
-	 * create the chart we're after
-	 * 
-	 * @param parent
-	 *          the parent object to stick it into
-	 */
-	protected SWTChart createTheChart(final Composite parent)
-	{
-		final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
-		{
+  /**
+   * create the chart we're after
+   * 
+   * @param parent
+   *          the parent object to stick it into
+   */
+  protected SWTChart createTheChart(final Composite parent)
+  {
+    final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
+    {
 
-			/**
+      /**
 			 * 
 			 */
-			private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-			public void chartFireSelectionChanged(final ISelection sel)
-			{
-				fireSelectionChanged(sel);
-			}
-		};
-		return res;
-	}
+      public void chartFireSelectionChanged(final ISelection sel)
+      {
+        fireSelectionChanged(sel);
+      }
+    };
+    return res;
+  }
 
-	/**
-	 * sort out the file-drop target
-	 */
-	private void configureFileDropSupport()
-	{
-		final int dropOperation = DND.DROP_COPY;
-		final Transfer[] dropTypes =
-		{ FileTransfer.getInstance() };
+  /**
+   * sort out the file-drop target
+   */
+  private void configureFileDropSupport()
+  {
+    final int dropOperation = DND.DROP_COPY;
+    final Transfer[] dropTypes =
+    {FileTransfer.getInstance()};
 
-		target = new DropTarget(_myChart.getCanvasControl(), dropOperation);
-		target.setTransfer(dropTypes);
-		target.addDropListener(new DropTargetListener()
-		{
-			public void dragEnter(final DropTargetEvent event)
-			{
-				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
-				{
-					if (event.detail != DND.DROP_COPY)
-					{
-						event.detail = DND.DROP_COPY;
-					}
-				}
-			}
+    target = new DropTarget(_myChart.getCanvasControl(), dropOperation);
+    target.setTransfer(dropTypes);
+    target.addDropListener(new DropTargetListener()
+    {
+      public void dragEnter(final DropTargetEvent event)
+      {
+        if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
+        {
+          if (event.detail != DND.DROP_COPY)
+          {
+            event.detail = DND.DROP_COPY;
+          }
+        }
+      }
 
-			public void dragLeave(final DropTargetEvent event)
-			{
-			}
+      public void dragLeave(final DropTargetEvent event)
+      {
+      }
 
-			public void dragOperationChanged(final DropTargetEvent event)
-			{
-			}
+      public void dragOperationChanged(final DropTargetEvent event)
+      {
+      }
 
-			public void dragOver(final DropTargetEvent event)
-			{
-			}
+      public void dragOver(final DropTargetEvent event)
+      {
+      }
 
-			public void dropAccept(final DropTargetEvent event)
-			{
-			}
+      public void dropAccept(final DropTargetEvent event)
+      {
+      }
 
-			public void drop(final DropTargetEvent event)
-			{
-				String[] fileNames = null;
-				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
-				{
-					fileNames = (String[]) event.data;
-				}
-				if (fileNames != null)
-				{
-					filesDropped(fileNames);
-				}
-			}
+      public void drop(final DropTargetEvent event)
+      {
+        String[] fileNames = null;
+        if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
+        {
+          fileNames = (String[]) event.data;
+        }
+        if (fileNames != null)
+        {
+          filesDropped(fileNames);
+        }
+      }
 
-		});
+    });
 
-	}
+  }
 
-	/**
-	 * process the files dropped onto this panel
-	 * 
-	 * @param fileNames
-	 *          list of filenames
-	 */
-	protected void filesDropped(final String[] fileNames)
-	{
-		System.out.println("Files dropped");
-	}
-	
-	
+  /**
+   * process the files dropped onto this panel
+   * 
+   * @param fileNames
+   *          list of filenames
+   */
+  protected void filesDropped(final String[] fileNames)
+  {
+    System.out.println("Files dropped");
+  }
 
   @Override
   public void setName(final String name)
@@ -1054,7 +1067,7 @@ public abstract class CorePlotEditor extends EditorPart implements
         setPartName(name);
       }
     };
-    
+
     // are we in the display thread?
     if (Display.getCurrent() == null)
     {
@@ -1068,29 +1081,29 @@ public abstract class CorePlotEditor extends EditorPart implements
   }
 
   public void setFocus()
-	{
-		// just put some kind of blank object into the properties window
-		// putBackdropIntoProperties();
+  {
+    // just put some kind of blank object into the properties window
+    // putBackdropIntoProperties();
 
-		// ok, set the drag mode to whatever our common "mode" is.
-		// - start off by getting the current mode
-		final PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
+    // ok, set the drag mode to whatever our common "mode" is.
+    // - start off by getting the current mode
+    final PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
 
-		// has one been set?
-		if (curMode != null)
-		{
-			// yup, better observe it then
-			_myChart.setDragMode(curMode);
-		}
-		_myChart.getCanvasControl().forceFocus();
+    // has one been set?
+    if (curMode != null)
+    {
+      // yup, better observe it then
+      _myChart.setDragMode(curMode);
+    }
+    _myChart.getCanvasControl().forceFocus();
 
-	}
+  }
 
-	@SuppressWarnings(
-	{ "rawtypes" })
-	public Object getAdapter(final Class adapter)
-	{
-		final Object res;
+  @SuppressWarnings(
+  {"rawtypes"})
+  public Object getAdapter(final Class adapter)
+  {
+    final Object res;
 
     // so, is he looking for the layers?
     if (adapter == CorePlotEditor.class)
@@ -1126,84 +1139,83 @@ public abstract class CorePlotEditor extends EditorPart implements
       res = null;
     }
 
-		return res;
-	}
+    return res;
+  }
 
-	protected void timeChanged(final HiResDate newDTG)
-	{
-	}
+  protected void timeChanged(final HiResDate newDTG)
+  {
+  }
 
-	/**
-	 * return the file representing where this plot is stored
-	 * 
-	 * @return the file location
-	 */
-	public IResource getResource()
-	{
-		// have we been saved yet?
-		return null;
-	}
+  /**
+   * return the file representing where this plot is stored
+   * 
+   * @return the file location
+   */
+  public IResource getResource()
+  {
+    // have we been saved yet?
+    return null;
+  }
 
-	public WorldArea getViewport()
-	{
-		return getChart().getCanvas().getProjection().getDataArea();
-	}
+  public WorldArea getViewport()
+  {
+    return getChart().getCanvas().getProjection().getDataArea();
+  }
 
-	public void setViewport(final WorldArea target)
-	{
-		getChart().getCanvas().getProjection().setDataArea(target);
-	}
+  public void setViewport(final WorldArea target)
+  {
+    getChart().getCanvas().getProjection().setDataArea(target);
+  }
 
-	public PlainProjection getProjection()
-	{
-		return getChart().getCanvas().getProjection();
-	}
+  public PlainProjection getProjection()
+  {
+    return getChart().getCanvas().getProjection();
+  }
 
-	public void setProjection(final PlainProjection proj)
-	{
-		// do we have a chart yet?
-		if (_myChart == null)
-		{
-			// nope, better remember it
-			_pendingProjection = proj;
-		}
-		else
-		{
-			// yes, just update it.
-			_myChart.getCanvas().setProjection(proj);
-		}
+  public void setProjection(final PlainProjection proj)
+  {
+    // do we have a chart yet?
+    if (_myChart == null)
+    {
+      // nope, better remember it
+      _pendingProjection = proj;
+    }
+    else
+    {
+      // yes, just update it.
+      _myChart.getCanvas().setProjection(proj);
+    }
 
-	}
+  }
 
-	public SWTChart getChart()
-	{
-		return _myChart;
-	}
+  public SWTChart getChart()
+  {
+    return _myChart;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener
-	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
-	 */
-	public void addSelectionChangedListener(
-			final ISelectionChangedListener listener)
-	{
-		if (_selectionListeners == null)
-			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener
+   * (org.eclipse.jface.viewers.ISelectionChangedListener)
+   */
+  public void addSelectionChangedListener(
+      final ISelectionChangedListener listener)
+  {
+    if (_selectionListeners == null)
+      _selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
-		// see if we don't already contain it..
-		if (!_selectionListeners.contains(listener))
-			_selectionListeners.add(listener);
-	}
+    // see if we don't already contain it..
+    if (!_selectionListeners.contains(listener))
+      _selectionListeners.add(listener);
+  }
 
-
-	/** let someone listen to screen updates
-	 * 
-	 * @param listener
-	 */
-	@Override
+  /**
+   * let someone listen to screen updates
+   * 
+   * @param listener
+   */
+  @Override
   public void addScreenUpdateListener(SWTCanvas.ScreenUpdateListener listener)
   {
     if (getChart() != null)
@@ -1212,13 +1224,14 @@ public abstract class CorePlotEditor extends EditorPart implements
     }
   }
 
-
-  /** let someone listen to screen updates
+  /**
+   * let someone listen to screen updates
    * 
    * @param listener
    */
   @Override
-  public void removeScreenUpdateListener(SWTCanvas.ScreenUpdateListener listener)
+  public void
+      removeScreenUpdateListener(SWTCanvas.ScreenUpdateListener listener)
   {
     if (getChart() != null)
     {
@@ -1226,193 +1239,209 @@ public abstract class CorePlotEditor extends EditorPart implements
     }
   }
 
-	/**
-	 * Returns the ActionbarContributor for the Editor. ISelectionChangedListener
-	 * 
-	 * @return the ActionbarContributor for the Editor.
-	 */
-	public SubActionBars2 getActionbar()
-	{
-		return (SubActionBars2) getEditorSite().getActionBars();
-	}
+  /**
+   * Returns the ActionbarContributor for the Editor. ISelectionChangedListener
+   * 
+   * @return the ActionbarContributor for the Editor.
+   */
+  public SubActionBars2 getActionbar()
+  {
+    return (SubActionBars2) getEditorSite().getActionBars();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
-	 */
-	public ISelection getSelection()
-	{
-		return _currentSelection;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
+   */
+  public ISelection getSelection()
+  {
+    return _currentSelection;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener
-	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
-	 */
-	public void removeSelectionChangedListener(
-			final ISelectionChangedListener listener)
-	{
-		_selectionListeners.remove(listener);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener
+   * (org.eclipse.jface.viewers.ISelectionChangedListener)
+   */
+  public void removeSelectionChangedListener(
+      final ISelectionChangedListener listener)
+  {
+    _selectionListeners.remove(listener);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface
-	 * .viewers.ISelection)
-	 */
-	public void setSelection(final ISelection selection)
-	{
-		_currentSelection = selection;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface
+   * .viewers.ISelection)
+   */
+  public void setSelection(final ISelection selection)
+  {
+    _currentSelection = selection;
+  }
 
-	public void fireSelectionChanged(final ISelection sel)
-	{
-		// just double-check that we're not already processing this
-		if (sel != _currentSelection)
-		{
-			_currentSelection = sel;
-			if (_selectionListeners != null)
-			{
-				final SelectionChangedEvent sEvent = new SelectionChangedEvent(this,
-						sel);
-				for (final Iterator<ISelectionChangedListener> stepper = _selectionListeners
-						.iterator(); stepper.hasNext();)
-				{
-					final ISelectionChangedListener thisL = stepper.next();
-					if (thisL != null)
-					{
-						thisL.selectionChanged(sEvent);
-					}
-				}
-			}
-		}
-	}
+  public void fireSelectionChanged(final ISelection sel)
+  {
+    // just double-check that we're not already processing this
+    if (sel != _currentSelection)
+    {
+      _currentSelection = sel;
+      if (_selectionListeners != null)
+      {
+        final SelectionChangedEvent sEvent =
+            new SelectionChangedEvent(this, sel);
+        for (final Iterator<ISelectionChangedListener> stepper =
+            _selectionListeners.iterator(); stepper.hasNext();)
+        {
+          final ISelectionChangedListener thisL = stepper.next();
+          if (thisL != null)
+          {
+            thisL.selectionChanged(sEvent);
+          }
+        }
+      }
+    }
+  }
 
-	/**
-	 * hmm, are we dirty?
-	 * 
-	 * @return
-	 */
-	public boolean isDirty()
-	{
-		return _plotIsDirty;
-	}
+  /**
+   * hmm, are we dirty?
+   * 
+   * @return
+   */
+  public boolean isDirty()
+  {
+    return _plotIsDirty;
+  }
 
-	/**
-	 * make a note that the data is now dirty, and needs saving.
-	 */
-	public void fireDirty()
-	{
-		if (!_ignoreDirtyCalls)
-		{
-			_plotIsDirty = true;
-			Display.getDefault().asyncExec(new Runnable()
-			{
+  /**
+   * make a note that the data is now dirty, and needs saving.
+   */
+  public void fireDirty()
+  {
+    if (!_ignoreDirtyCalls)
+    {
+      _plotIsDirty = true;
 
-				@SuppressWarnings("synthetic-access")
-				public void run()
-				{
-					firePropertyChange(PROP_DIRTY);
-					final PropertySheet propertiesView = (PropertySheet) CorePlugin
-							.findView(IPageLayout.ID_PROP_SHEET);
-					if (propertiesView != null)
-					{
-						final PropertySheetPage propertySheetPage = (PropertySheetPage) propertiesView
-								.getCurrentPage();
-						if (propertySheetPage != null
-								&& !propertySheetPage.getControl().isDisposed())
-						{
-							propertySheetPage.refresh();
-						}
-					}
-				}
-			});
-		}
-	}
+      // ok, are we already updating?
+      if (_propsNeedsRefresh.get())
+      {
+        // ok, we've already got an update event pending
+      }
+      else
+      {
+        // clear the flag
+        _propsNeedsRefresh.set(true);
 
-	/**
-	 * new data has been added - have a look at the times
-	 */
-	protected void layersExtended()
-	{
+        // ok, submit the async refresh job
+        Display.getDefault().asyncExec(new Runnable()
+        {
 
-	}
+          @SuppressWarnings("synthetic-access")
+          public void run()
+          {
+            final boolean isPending = _propsNeedsRefresh.getAndSet(false);
 
-	/**
-	 * start ignoring dirty calls, since we're loading the initial data (for
-	 * instance)
-	 */
-	public void startIgnoringDirtyCalls()
-	{
-		_ignoreDirtyCalls = true;
-	}
+            if (isPending)
+            {
+              firePropertyChange(PROP_DIRTY);
+              final PropertySheet propertiesView =
+                  (PropertySheet) CorePlugin
+                      .findView(IPageLayout.ID_PROP_SHEET);
+              if (propertiesView != null)
+              {
+                final PropertySheetPage propertySheetPage =
+                    (PropertySheetPage) propertiesView.getCurrentPage();
+                if (propertySheetPage != null
+                    && !propertySheetPage.getControl().isDisposed())
+                {
+                  propertySheetPage.refresh();
+                }
+              }
+            }
+          }
+        });
+      }
+      ;
+    }
+  }
 
-	/**
-	 * start ignoring dirty calls, since we're loading the initial data (for
-	 * instance)
-	 */
-	public void stopIgnoringDirtyCalls()
-	{
-		_ignoreDirtyCalls = false;
-	}
+  /**
+   * new data has been added - have a look at the times
+   */
+  protected void layersExtended()
+  {
 
-	/**
-	 * @return
-	 */
-	public Color getBackgroundColor()
-	{
-		return _myChart.getCanvas().getBackgroundColor();
-	}
+  }
 
-	/**
-	 * @param theColor
-	 */
-	public void setBackgroundColor(final Color theColor)
-	{
-		if (_myChart == null)
-			_pendingCanvasBackgroundColor = theColor;
-		else
-			_myChart.getCanvas().setBackgroundColor(theColor);
-	}
+  /**
+   * start ignoring dirty calls, since we're loading the initial data (for instance)
+   */
+  public void startIgnoringDirtyCalls()
+  {
+    _ignoreDirtyCalls = true;
+  }
 
-	public void update()
-	{
-		_myChart.update();
-	}
+  /**
+   * start ignoring dirty calls, since we're loading the initial data (for instance)
+   */
+  public void stopIgnoringDirtyCalls()
+  {
+    _ignoreDirtyCalls = false;
+  }
 
-	/**
-	 * get the chart to fit to window
-	 * 
-	 */
-	public void rescale()
-	{
-		_myChart.rescale();
-	}
-	
-	public IAction getRedoAction()
-	{
-		return redoAction;
-	}
-	
-	public IAction getUndoAction()
-	{
-		return undoAction;
-	}
+  /**
+   * @return
+   */
+  public Color getBackgroundColor()
+  {
+    return _myChart.getCanvas().getBackgroundColor();
+  }
 
-	public IUndoContext getUndoContext()
-	{
-		return undoContext;
-	}
-	
-	public void reload(IFile file)
-	{
-		// not implemented
-	}
-	
+  /**
+   * @param theColor
+   */
+  public void setBackgroundColor(final Color theColor)
+  {
+    if (_myChart == null)
+      _pendingCanvasBackgroundColor = theColor;
+    else
+      _myChart.getCanvas().setBackgroundColor(theColor);
+  }
+
+  public void update()
+  {
+    _myChart.update();
+  }
+
+  /**
+   * get the chart to fit to window
+   * 
+   */
+  public void rescale()
+  {
+    _myChart.rescale();
+  }
+
+  public IAction getRedoAction()
+  {
+    return redoAction;
+  }
+
+  public IAction getUndoAction()
+  {
+    return undoAction;
+  }
+
+  public IUndoContext getUndoContext()
+  {
+    return undoContext;
+  }
+
+  public void reload(IFile file)
+  {
+    // not implemented
+  }
+
 }
