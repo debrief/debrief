@@ -977,6 +977,41 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 3, segs.lastElement().size());
 	}
 
+	public void testPaintSinglePointSegment()
+	{
+	  TrackWrapper tw = new TrackWrapper();
+	  tw.setName("Test Track");
+	  Fix theFix = new Fix(new HiResDate(1000), new WorldLocation(2,2,2), 1, 5);
+    FixWrapper fw = new FixWrapper(theFix){
+
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void
+          paintMe(CanvasType dest, WorldLocation centre, Color theColor)
+      {
+        // TODO Auto-generated method stub
+        super.paintMe(dest, centre, theColor);
+        
+        _ctr++;
+      }
+      
+    };
+    tw.add(fw);
+    
+    _ctr = 0;
+    
+    // ok, now try to paint
+    TestMockCanvas canvas = new TestMockCanvas();
+    tw.paint(canvas);
+    
+    assertEquals("single point segment got painted", 1, _ctr);
+    
+	}
+	
 	public void testSegmentList()
 	{
 
