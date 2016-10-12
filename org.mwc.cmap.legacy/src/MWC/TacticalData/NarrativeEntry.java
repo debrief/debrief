@@ -45,6 +45,11 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	private boolean _visible = true;
 	String _DTGString = null;
 
+	/** cache the hashcode, it's an expensive operation
+	 * 
+	 */
+	private Integer _hashCode = null;
+	
 	private transient NarrativeEntryInfo _myInfo;
 
 	private Color _color = DEFAULT_COLOR;
@@ -113,6 +118,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	public final void setSource(final String track)
 	{
 		_track = track;
+
+    // and clear the hash code
+    clearHash();
 	}
 
 	public final String getEntry()
@@ -124,6 +132,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	public void setEntry(final String val)
 	{
 		_entry = val;
+
+    // and clear the hash code
+    clearHash();
 	}
 
 	public final HiResDate getDTG()
@@ -135,6 +146,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	public void setDTG(final HiResDate date)
 	{
 		_DTG = date;
+
+		// and clear the hash code
+		clearHash();
 	}
 
 	public final String getType()
@@ -146,6 +160,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	public void setType(final String type)
 	{
 		_type = type;
+
+    // and clear the hash code
+    clearHash();
 	}
 
 	public final String getDTGString()
@@ -317,16 +334,26 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 //	}
 
 
+	protected void clearHash()
+	{
+	  _hashCode = null;
+	}
+	
 	@Override
   public int hashCode()
   {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((_DTG == null) ? 0 : _DTG.hashCode());
-    result = prime * result + ((_entry == null) ? 0 : _entry.hashCode());
-    result = prime * result + ((_track == null) ? 0 : _track.hashCode());
-    result = prime * result + ((_type == null) ? 0 : _type.hashCode());
-    return result;
+	  if(_hashCode == null)
+	  {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((_DTG == null) ? 0 : _DTG.hashCode());
+	    result = prime * result + ((_entry == null) ? 0 : _entry.hashCode());
+	    result = prime * result + ((_track == null) ? 0 : _track.hashCode());
+	    result = prime * result + ((_type == null) ? 0 : _type.hashCode());
+	    _hashCode = result;
+	  }
+	  
+    return _hashCode;
   }
 
   @Override
