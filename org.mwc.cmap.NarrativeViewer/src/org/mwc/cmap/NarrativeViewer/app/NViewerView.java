@@ -245,33 +245,40 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
        */
       private void updated()
       {
-        // indicate that there is an update pending
-        updatePending.set(true);
-
-        // queue up a screen refresh
-        Display.getDefault().asyncExec(new Runnable()
+        // is there already a pending update?
+        if (updatePending.get())
         {
-          @Override
-          public void run()
+          // hey, we don't need to fire another!
+        }
+        else
+        {
+          // ok, indicate that there is an update pending
+          updatePending.set(true);
+
+          // queue up a screen refresh
+          Display.getDefault().asyncExec(new Runnable()
           {
-            // is there a pending UI update (and clear the flag)
-            boolean isPending = updatePending.getAndSet(false);
-
-            if (isPending)
+            @Override
+            public void run()
             {
+              // is there a pending UI update (and clear the flag)
+              boolean isPending = updatePending.getAndSet(false);
 
-              if (_myRollingNarrative != null && _myRollingNarrative.size() > 0)
+              if (isPending)
               {
-                myViewer.setInput(_myRollingNarrative);
-
-              }
-              else
-              {
-                myViewer.setInput(null);
+                if (_myRollingNarrative != null
+                    && _myRollingNarrative.size() > 0)
+                {
+                  myViewer.setInput(_myRollingNarrative);
+                }
+                else
+                {
+                  myViewer.setInput(null);
+                }
               }
             }
-          }
-        });
+          });
+        }
       }
 
       @Override
