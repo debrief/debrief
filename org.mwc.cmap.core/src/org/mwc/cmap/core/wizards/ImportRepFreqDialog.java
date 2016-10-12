@@ -1,11 +1,22 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 package org.mwc.cmap.core.wizards;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -18,7 +29,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-public class ImportRepFreqDialog extends TitleAreaDialog
+public class ImportRepFreqDialog extends CoreFreqImportDialog
 {
 
   private long sampleFreq;
@@ -47,76 +58,34 @@ public class ImportRepFreqDialog extends TitleAreaDialog
     composite.setLayoutData(new GridData(GridData.FILL_BOTH
         | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
     composite.setLayout(new GridLayout(2, false));
+    new Label(composite, SWT.NONE).setText("Sampling frequency for "
+        + _trackName + ":");
+    final ComboViewer comboViewer = new ComboViewer(composite);
+    comboViewer.setContentProvider(new ArrayContentProvider());
+    comboViewer.setLabelProvider(newLabelProvider());
+    comboViewer.setInput(getDataSet());
+    comboViewer.getCombo().setLayoutData(
+        new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
+    comboViewer.setSelection(new StructuredSelection(Long.valueOf(sampleFreq)));
+    comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
     {
-      new Label(composite, SWT.NONE).setText("Sampling frequency for " + _trackName + ":");
-      final ComboViewer comboViewer = new ComboViewer(composite);
-      comboViewer.setContentProvider(new ArrayContentProvider());
-      comboViewer.setLabelProvider(newLabelProvider());
-      comboViewer.setInput(getDataSet());
-
-      comboViewer.getCombo().setLayoutData(
-          new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
-      comboViewer.setSelection(new StructuredSelection(Long
-          .valueOf(sampleFreq)));
-      comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
+      @Override
+      public void selectionChanged(final SelectionChangedEvent event)
       {
-        @Override
-        public void selectionChanged(final SelectionChangedEvent event)
+        final IStructuredSelection selection =
+            (IStructuredSelection) event.getSelection();
+        if (selection.getFirstElement() instanceof Long)
         {
-          final IStructuredSelection selection =
-              (IStructuredSelection) event.getSelection();
-          if (selection.getFirstElement() instanceof Long)
-          {
-            sampleFreq = (Long) selection.getFirstElement();
-          }
+          sampleFreq = (Long) selection.getFirstElement();
         }
-      });
-    }
+      }
+    });
     return composite;
-  }
-
-  private Object[] getDataSet()
-  {
-    return new Long[]
-    {0l, 5000l, 15000l, 60000l, 300000l, 600000l, 3600000l, Long.MAX_VALUE};
   }
 
   public long getSampleFreq()
   {
     return sampleFreq;
   }
-
-  private IBaseLabelProvider newLabelProvider()
-  {
-    return new ColumnLabelProvider()
-    {
-      @Override
-      public String getText(final Object element)
-      {
-        if (element instanceof Long)
-        {
-          final long longValue = ((Long) element).longValue();
-          if (longValue == 0)
-            return "All";
-
-          if (longValue == Long.MAX_VALUE)
-            return "None";
-          if (longValue == 5000)
-            return "5 Second";
-          if (longValue == 15000)
-            return "15 Second";
-          if (longValue == 60000)
-            return "1 Minute";
-          if (longValue == 300000)
-            return "5 Minute";
-          if (longValue == 600000)
-            return "10 Minute";
-          if (longValue == 3600000)
-            return "1 Hour";
-        }
-        return super.getText(element);
-      }
-    };
-  }
-
+ 
 }
