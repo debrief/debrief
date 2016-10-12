@@ -48,9 +48,14 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
   /**
    * cache the hashcode, it's an expensive operation
    */
-  private Integer _hashCode = null;
+  private transient Integer _hashCode = null;
+  
+  /** also cache the String representation, it's quite expensive to re-create
+   * 
+   */
+  private transient String _cachedString = null;
 
-  private transient NarrativeEntryInfo _myInfo;
+  private static transient NarrativeEntryInfo _myInfo;
 
   private Color _color = DEFAULT_COLOR;
 
@@ -146,6 +151,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
   public void setDTG(final HiResDate date)
   {
     _DTG = date;
+    
+    // clear the cached string, since it dependds on the DTG
+    _cachedString = null;
 
     // and clear the hash code
     clearHash();
@@ -305,7 +313,15 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
    */
   public final String getName()
   {
-    return DebriefFormatDateTime.toStringHiRes(_DTG);
+    // NOTE: if the name representation uses more than
+    // the DTG, we need to clear the _cachedString
+    // when that field is modified
+    
+    if(_cachedString == null)
+    {
+      _cachedString = DebriefFormatDateTime.toStringHiRes(_DTG); 
+    }
+    return _cachedString;
   }
 
   public final String toString()
@@ -379,8 +395,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
   // ////////////////////////////////////////////////////
   // bean info for this class
   // ///////////////////////////////////////////////////
-  public final class NarrativeEntryInfo extends Editable.EditorType
+  public final static class NarrativeEntryInfo extends Editable.EditorType
   {
+    private PropertyDescriptor[] _cachedProps = null;
 
     public NarrativeEntryInfo(final NarrativeEntry data, final String theName)
     {
@@ -391,15 +408,19 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
     {
       try
       {
-        final PropertyDescriptor[] myRes =
-            {prop("Type", "the type of entry", FORMAT),
-                prop("Source", "the source for this entry", FORMAT),
-                prop(DTG, "the time this entry was recorded", FORMAT),
-                prop("Color", "the color for this narrative entry", FORMAT),
-                prop("Entry", "the content of this entry", FORMAT)};
+        if (_cachedProps == null)
+        {
+          final PropertyDescriptor[] myRes =
+              {prop("Type", "the type of entry", FORMAT),
+                  prop("Source", "the source for this entry", FORMAT),
+                  prop(DTG, "the time this entry was recorded", FORMAT),
+                  prop("Color", "the color for this narrative entry", FORMAT),
+                  prop("Entry", "the content of this entry", FORMAT)};
 
-        return myRes;
+          _cachedProps = myRes;
+        }
 
+        return _cachedProps;
       }
       catch (final IntrospectionException e)
       {
