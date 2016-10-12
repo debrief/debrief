@@ -114,7 +114,19 @@ public class ImportReplay extends PlainImporterBase
 
     }
 
+    /** find out how the user wants to import the new REP file
+     * 
+     * @param trackName
+     * @return
+     */
     public ImportSettings getSelectedImportMode(final String trackName);
+    
+    /** find out the sample frequency for adding this data
+     * 
+     * @param trackName
+     * @return
+     */
+    public Long getSelectedImportFrequency(final String trackName);
   }
 
   /**
@@ -352,6 +364,25 @@ public class ImportReplay extends PlainImporterBase
       if (!_existingTracksThatMoved.contains(trkWrapper))
       {
         _existingTracksThatMoved.add(trkWrapper);
+        
+        // ok, this must be the first fix for this new track
+        
+        // ask the user if he wants it resampled.
+        if (_myParent instanceof ProvidesModeSelector && _importSettings == null)
+        {
+          final ProvidesModeSelector selector =
+              (ProvidesModeSelector) _myParent;
+          Long freq = selector.getSelectedImportFrequency(theTrack);
+          if(freq == null)
+          {
+            // ok, skip the data
+            _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE);
+          }
+          else
+          {
+            _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
+          }
+        }
       }
     }
     else
@@ -1417,10 +1448,12 @@ public class ImportReplay extends PlainImporterBase
     public static class TestParent implements ToolParent, ProvidesModeSelector
     {
       final ImportSettings settings;
+      final Long freq;
 
       public TestParent(String mode, Long freq)
       {
         settings = new ImportSettings(mode, freq);
+        this.freq = freq;
       }
 
       public void addActionToBuffer(final Action theAction)
@@ -1474,6 +1507,12 @@ public class ImportReplay extends PlainImporterBase
       public ImportSettings getSelectedImportMode(String trackName)
       {
         return settings;
+      }
+
+      @Override
+      public Long getSelectedImportFrequency(String trackName)
+      {
+        return null;
       }
     }
 

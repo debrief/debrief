@@ -19,13 +19,16 @@ import java.util.*;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.SelectImportModeDialog;
+import org.mwc.cmap.core.wizards.ImportRepFreqDialog;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
@@ -177,6 +180,45 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
     return _selectedImportSettings ;
 	}
 
+	 /** popup a dialog to let the user select the import mode
+   * @return selected mode, from ImportReplay
+   */
+  @Override
+  public Long getSelectedImportFrequency(final String trackName)
+  {
+    _selectedImportSettings = null;
+    
+    final Display current = Display.getDefault();
+    current.syncExec(new Runnable(){
+      public void run()
+      {
+        final Shell active = PlatformUI.getWorkbench().getWorkbenchWindows()[0].getShell();
+        // ok, popup our custom dialog, let user decide
+        final ImportRepFreqDialog dialog = new ImportRepFreqDialog(active, trackName);
+        
+        int sel = dialog.open();
+        
+        if(sel != Dialog.CANCEL)
+        {
+          // store the value
+          long freq = dialog.getSampleFreq();
+          _selectedImportSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
+        }
+      }});
+    
+
+    Long res;
+    if(_selectedImportSettings != null)
+    {
+      res = _selectedImportSettings.sampleFrequency;
+    }
+    else
+    {
+      res = null;
+    }
+    return res;
+  }
+	
   @Override
   public void logStack(int status, String text)
   {

@@ -20,13 +20,14 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.mwc.cmap.core.wizards.ImportNMEADialog;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.dialogs.ImportNMEADialog;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -82,7 +83,7 @@ public class NMEALoader extends IPlotLoader.BaseLoader
                       + fileName, null);
 
                   final ImportNMEADialog dialog = new ImportNMEADialog();
-                  if (dialog.open() != ImportNMEADialog.CANCEL)
+                  if (dialog.open() != Dialog.CANCEL)
                   {
                     // get the selected values
                     final long osFreq = dialog.getOwnshipFreq();
