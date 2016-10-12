@@ -136,10 +136,13 @@ public class ImportNMEA
         final Layers tLayers = new Layers();
 
         final ImportNMEA importer = new ImportNMEA(tLayers);
-        importer.importThis(testFile, is);
+        importer.importThis(testFile, is, 0l, 0l);
 
         assertEquals("got tracks", 416, tLayers.size());
       }
+
+      // TODO: also test that we use correct sample frequency - though that's prob best done on a
+      // smaller file.
     }
 
     @SuppressWarnings(
@@ -529,18 +532,15 @@ public class ImportNMEA
     _layers = target;
   }
 
-  public void importThis(final String fName, final InputStream is)
-      throws Exception
+  public void importThis(final String fName, final InputStream is,
+      final long osFreq, final long aisFreq) throws Exception
   {
     String myName = null;
     double myDepth = 0d;
     Date date = null;
 
-    final long OS_FREQ = 1000 * 30;
-    final long AIS_FREQ = 1000 * 60 * 1;
-
-    final boolean importOS = true;
-    final boolean importAIS = true;
+    final boolean importOS = !(osFreq == Long.MAX_VALUE);
+    final boolean importAIS = !(aisFreq == Long.MAX_VALUE);
     final boolean importContacts = false;
 
     // reset our list of tracks
@@ -588,25 +588,27 @@ public class ImportNMEA
         myName = parseMyName(nmea_sentence);
         break;
       case OS_DEPTH:
-        // ok, extract the rest of the body
-        myDepth = parseMyDepth(nmea_sentence);
+        if (importOS)
+        {
+          // ok, extract the rest of the body
+          myDepth = parseMyDepth(nmea_sentence);
+        }
         break;
       case OS_COURSE_SPEED:
-        // ok, extract the rest of the body
-        final double myCourseDegs = parseMyCourse(nmea_sentence);
-        final double mySpeedKts = parseMySpeed(nmea_sentence);
-
-        // ok, create a DR cut
-
-        // do we know our origin?
-        if (origin != null)
+        if (importOS)
         {
-          // ok, grow the DR track
-          storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName, myDepth,
-              DebriefColors.PURPLE);
-        }
+          // ok, extract the rest of the body
+          final double myCourseDegs = parseMyCourse(nmea_sentence);
+          final double mySpeedKts = parseMySpeed(nmea_sentence);
 
-        // and remember the name
+          // do we know our origin?
+          if (origin != null)
+          {
+            // ok, grow the DR track
+            storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName, myDepth,
+                DebriefColors.PURPLE);
+          }
+        }
         break;
       case OS_POS:
         if (importOS)
@@ -631,7 +633,7 @@ public class ImportNMEA
           if (state != null && date != null)
           {
             // now store the ownship location
-            storeLocation(date, state, OS_FREQ, DebriefColors.BLUE, myDepth);
+            storeLocation(date, state, osFreq, DebriefColors.BLUE, myDepth);
           }
         }
 
@@ -649,7 +651,7 @@ public class ImportNMEA
           else
           {
             // now store the ownship location
-            storeLocation(hisState.date, hisState, AIS_FREQ,
+            storeLocation(hisState.date, hisState, aisFreq,
                 DebriefColors.GREEN, null);
           }
         }
@@ -669,8 +671,7 @@ public class ImportNMEA
             if (date != null)
             {
               // now store the ownship location
-              storeLocation(date, hisState, AIS_FREQ, DebriefColors.YELLOW,
-                  null);
+              storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW, null);
             }
           }
         }
@@ -708,7 +709,7 @@ public class ImportNMEA
           delta = thisTime - lastTime;
         }
 
-        if ((!resample) || lastTime == null || delta >= OS_FREQ)
+        if ((!resample) || lastTime == null || delta >= osFreq)
         {
           tr.add(fix);
           lastTime = thisTime;

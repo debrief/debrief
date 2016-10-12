@@ -16,7 +16,7 @@ import org.mwc.cmap.core.CorePlugin;
  *
  */
 @SuppressWarnings("restriction")
-public class SATCContentDescriber extends TextContentDescriber
+public class NMEAContentDescriber extends TextContentDescriber
 {
 
 	@Override
@@ -28,14 +28,14 @@ public class SATCContentDescriber extends TextContentDescriber
 		{
 			r = new BufferedReader(new InputStreamReader(contents));
 			String firstLine = r.readLine();
-			if (firstLine != null && firstLine.contains("//X, Y, Time"))
+			if (firstLine != null && firstLine.contains("$POSL"))
 			{
 				return VALID;
 			}
 		}
 		catch (Exception e)
 		{
-			CorePlugin.logError(Status.ERROR, "SATC content type error", e);
+			CorePlugin.logError(Status.ERROR, "NMEA content type error", e);
 		}
 		finally
 		{
