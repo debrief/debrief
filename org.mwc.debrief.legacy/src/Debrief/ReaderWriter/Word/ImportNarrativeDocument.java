@@ -970,8 +970,10 @@ public class ImportNarrativeDocument
         // lastly, reset the label, so it's legible
         newFw.resetName();
 
-        // oh, and switch the symbol on
-        newFw.setSymbolShowing(true);
+        // oh, and do some more formatting
+        newFw.setSymbolShowing(false);
+        newFw.setArrowShowing(true);
+        newFw.setLabelShowing(true);
 
         // and store it
         hisTrack.add(newFw);
