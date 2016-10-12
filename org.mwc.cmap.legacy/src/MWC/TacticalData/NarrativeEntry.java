@@ -416,6 +416,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
                   prop("Source", "the source for this entry", FORMAT),
                   prop(DTG, "the time this entry was recorded", FORMAT),
                   prop("Color", "the color for this narrative entry", FORMAT),
+                  prop("Visible", "whether to display this narrative entry", FORMAT),
                   prop("Entry", "the content of this entry", FORMAT)};
 
           _cachedProps = myRes;
