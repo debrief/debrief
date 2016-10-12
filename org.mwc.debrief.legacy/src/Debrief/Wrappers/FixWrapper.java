@@ -647,7 +647,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
    * @param dest
    * @param centre
    */
-  public final void paintMe(final CanvasType dest, final WorldLocation centre,
+  public void paintMe(final CanvasType dest, final WorldLocation centre,
       final Color theColor)
   {
 
