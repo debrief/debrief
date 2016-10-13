@@ -135,7 +135,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
 		
-		if (modelEntry.getChildren().size() > 0)
+		if (!modelEntry.getChildren().isEmpty())
 		{
 			evt.setScope(true);
 			evt.setTextFont(new Font(null, "Arial", 12, SWT.BOLD ));

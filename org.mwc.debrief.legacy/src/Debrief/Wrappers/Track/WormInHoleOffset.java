@@ -310,7 +310,7 @@ public class WormInHoleOffset
 		{
 			final FixWrapper thisP = (FixWrapper) enumer.nextElement();
 
-			if ((backTrack.size() == 0) && (thisP.getDateTimeGroup().equals(dtg)))
+			if ((backTrack.isEmpty()) && (thisP.getDateTimeGroup().equals(dtg)))
 			{
 				// right, this is the first point, and we've matched it already. Just
 				// produce
@@ -334,7 +334,7 @@ public class WormInHoleOffset
 		}
 
 		// right, we have a back track. double-check we have our next point
-		if (backTrack.size() > 0)
+		if (!backTrack.isEmpty())
 		{
 			// yup, we've bracketed the point. work out where ownship is at this DTG
 			nextPoint = FixWrapper.interpolateFix(backTrack.lastElement(), nextPoint,

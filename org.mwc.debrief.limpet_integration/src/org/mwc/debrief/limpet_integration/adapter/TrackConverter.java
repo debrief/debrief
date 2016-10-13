@@ -87,7 +87,7 @@ public class TrackConverter
         dataset.getMeasurements().add(item);
       }
 
-      if (dataset.getMeasurements().size() > 0)
+      if (!dataset.getMeasurements().isEmpty())
       {
         if (res == null)
         {

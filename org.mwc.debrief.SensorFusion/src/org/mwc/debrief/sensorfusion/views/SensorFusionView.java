@@ -775,7 +775,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			wrappers.add(ed);
 		}
 
-		if (wrappers.size() > 0)
+		if (!wrappers.isEmpty())
 		{
 			// and provide the selection object
 			final StructuredSelection trackSelection = new StructuredSelection(

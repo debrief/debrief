@@ -74,7 +74,7 @@ public class SensorConverter
     }
 
     // did we find any?
-    if (dataset.getMeasurements().size() > 0)
+    if (!dataset.getMeasurements().isEmpty())
     {
       if (res == null)
       {
