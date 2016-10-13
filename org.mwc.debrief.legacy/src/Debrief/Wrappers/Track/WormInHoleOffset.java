@@ -310,7 +310,7 @@ public class WormInHoleOffset
 		{
 			final FixWrapper thisP = (FixWrapper) enumer.nextElement();
 
-			if ((!backTrack.isEmpty()) && (thisP.getDateTimeGroup().equals(dtg)))
+			if ((backTrack.isEmpty()) && (thisP.getDateTimeGroup().equals(dtg)))
 			{
 				// right, this is the first point, and we've matched it already. Just
 				// produce
