@@ -268,6 +268,15 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	{
 		return _thePlottables.size();
 	}
+	
+	/** whether this list contains elements
+	 * 
+	 * @return
+	 */
+	public boolean isEmpty()
+	{
+	  return _thePlottables.isEmpty();
+	}
 
 	/**
 	 * paint this list to the canvas
