@@ -39,6 +39,8 @@ import org.eclipse.nebula.jface.gridviewer.GridViewerColumn;
 import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -664,6 +666,23 @@ public class NarrativeViewerModel
                 .getColumnWidth(), cellRenderer, column.isWrap());
 
         final GridColumn gridColumn = viewerColumn.getColumn();
+        gridColumn.addControlListener(new ControlListener()
+        {
+          
+          @Override
+          public void controlResized(ControlEvent e)
+          {
+            //trigger cells to recalculate heights  
+            viewer.refresh();
+          }
+          
+          @Override
+          public void controlMoved(ControlEvent e)
+          {
+            //ignore
+            
+          }
+        });
         TextHighlightCellRenderer styledTextCellRenderer =
             new TextHighlightCellRenderer()
             {
