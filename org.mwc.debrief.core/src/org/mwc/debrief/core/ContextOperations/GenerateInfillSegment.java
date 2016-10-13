@@ -199,7 +199,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
             new DynamicInfillSegment(trackOne, trackTwo);
 
         // aah, but, no but, are there points in the segment
-        if (newSeg.getData().size() > 0)
+        if (!newSeg.getData().isEmpty())
         {
           storeSegment(newSeg);
         }

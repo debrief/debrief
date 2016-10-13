@@ -887,7 +887,7 @@ public class ShowTacticalOverview extends AbstractHandler
     {
       final TrackWrapper track = (TrackWrapper) pri;
       final BaseLayer sensors = track.getSensors();
-      if (sensors.size() > 0)
+      if (!sensors.isEmpty())
       {
         final Enumeration<Editable> numer = sensors.elements();
         while (numer.hasMoreElements())

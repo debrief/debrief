@@ -421,7 +421,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     NarrativeEntry res = null;
 
     // ahh, do we have data?
-    if (_myEntries.size() > 0)
+    if (!_myEntries.isEmpty())
     {
       final NarrativeEntry firstN = (NarrativeEntry) _myEntries.first();
       final NarrativeEntry lastN = (NarrativeEntry) _myEntries.last();

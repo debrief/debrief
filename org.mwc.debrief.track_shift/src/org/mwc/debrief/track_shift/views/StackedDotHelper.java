@@ -165,7 +165,7 @@ public final class StackedDotHelper
 									}
 								}
 
-								if (_theSegments.size() > 0)
+								if (!_theSegments.isEmpty())
 								{
 									final Iterator<TrackSegment> iter = _theSegments.iterator();
 									while (iter.hasNext())
@@ -184,7 +184,7 @@ public final class StackedDotHelper
 
 											// and find any matching items
 											final SortedSet<Editable> items = ts.tailSet(index);
-											if (items.size() > 0)
+											if (!items.isEmpty())
 											{
 												targetFix = (FixWrapper) items.first();
 											}

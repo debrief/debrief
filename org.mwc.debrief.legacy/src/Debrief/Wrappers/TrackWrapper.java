@@ -1279,17 +1279,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     final TreeSet<Editable> res = new TreeSet<Editable>();
 
-    if (_mySensors.size() > 0)
+    if (!_mySensors.isEmpty())
     {
       res.add(_mySensors);
     }
 
-    if (_myDynamicShapes.size() > 0)
+    if (!_myDynamicShapes.isEmpty())
     {
       res.add(_myDynamicShapes);
     }
 
-    if (_mySolutions.size() > 0)
+    if (!_mySolutions.isEmpty())
     {
       res.add(_mySolutions);
     }
@@ -2044,7 +2044,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final TrackSegment firstSeg = (TrackSegment) _thePositions.first();
       final TrackSegment lastSeg = (TrackSegment) _thePositions.last();
 
-      if ((firstSeg != null) && (firstSeg.size() > 0))
+      if ((firstSeg != null) && (!firstSeg.isEmpty()))
       {
 
         // see if this DTG is inside our data range
@@ -2098,11 +2098,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               TreeSet<Editable> tmpSet = new TreeSet<Editable>(set);
 
               // ok, start looping back until we find one
-              while ((!res.getVisible()) && (tmpSet.size() > 0))
+              while ((!res.getVisible()) && (!tmpSet.isEmpty()))
               {
                 // the first one wasn't, remove it
                 tmpSet.remove(res);
-                if (tmpSet.size() > 0)
+                if (!tmpSet.isEmpty())
                 {
                   res = (FixWrapper) tmpSet.first();
                 }
@@ -3032,7 +3032,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // let the fixes draw themselves in
     // ///////////////////////////////////////////
     List<FixWrapper> endPoints = paintFixes(dest);
-    final boolean plotted_anything = endPoints.size() > 0;
+    final boolean plotted_anything = !endPoints.isEmpty();
 
     // and draw the track label
     // still, we only plot the track label if we have plotted any
@@ -4447,7 +4447,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     boolean res = false;
     if (_thePositions != null)
-      if (_thePositions.size() > 0)
+      if (!_thePositions.isEmpty())
         if (_thePositions.first() instanceof CoreTMASegment)
         {
           res = true;

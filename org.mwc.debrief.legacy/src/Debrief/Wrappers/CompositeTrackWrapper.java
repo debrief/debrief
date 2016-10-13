@@ -524,7 +524,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
       theCalc.construct(seg, thisOrigin, thisDate);
 
       // did we generate anything?
-      if (seg.size() > 0)
+      if (!seg.isEmpty())
       {
         // ok, now update the date/location
         thisOrigin = seg.last().getBounds().getCentre();

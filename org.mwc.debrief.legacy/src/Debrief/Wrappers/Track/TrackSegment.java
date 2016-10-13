@@ -613,7 +613,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	{
 		HiResDate res = null;
 		final Collection<Editable> items = getData();
-		if ((items != null && (items.size() > 0)))
+		if ((items != null && (!items.isEmpty())))
 		{
 			final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
 			final Editable last = sortedItems.last();
@@ -925,7 +925,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	public void sortOutDateLabel(final HiResDate startDTG)
 	{
 		HiResDate theStartDTG = startDTG;
-		if (getData().size() > 0)
+		if (!getData().isEmpty())
 		{
 			if (theStartDTG == null)
 			{
@@ -946,7 +946,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		HiResDate res = null;
 		final Collection<Editable> items = getData();
 		final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
-		if ((sortedItems != null) && (sortedItems.size() > 0))
+		if ((sortedItems != null) && (!sortedItems.isEmpty()))
 		{
 			final Editable first = sortedItems.first();
 			final FixWrapper fw = (FixWrapper) first;
