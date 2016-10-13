@@ -2610,6 +2610,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       final TrackSegment seg = (TrackSegment) segments.nextElement();
 
+      // is it a single point segment?
+      final boolean singlePointSegment = seg.size() == 1;
+
       // how shall we plot this segment?
       final int thisLineStyle;
 
@@ -2640,7 +2643,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // have a look at the last fix. we defer painting the fix label,
         // because we want to know the id of the last visible fix, since
         // we may need to paint it's label in 6 DTG
-        final boolean singlePointSegment = seg.size() == 1;
         if ((getPositionsVisible() && lastFix != null && lastFix.getVisible()) || singlePointSegment)
         {
           // is this the first visible fix?
