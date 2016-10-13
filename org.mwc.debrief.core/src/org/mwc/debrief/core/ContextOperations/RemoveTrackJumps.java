@@ -182,7 +182,7 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 				double lastSpdKts = prev.getSpeed();
 
 				// is this so fast that it can only be a jump?
-				if (thisSpeedKts > 3 * lastSpdKts)
+				if (thisSpeedKts > 3 * lastSpdKts && prevprev != null)
 				{
 					// ok, we've found a jump
 					legs.add(new Leg(startP, prevprev, prev, fix));
