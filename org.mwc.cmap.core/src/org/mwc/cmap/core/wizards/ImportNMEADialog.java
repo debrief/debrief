@@ -52,6 +52,10 @@ public class ImportNMEADialog extends CoreFreqImportDialog
 
   private long thirdPartyFreq;
 
+  public final String OS_FREQ = "NMEA_OwnshipFreq";
+  public final String TGT_FREQ = "NMEA_TargetFreq";
+
+  
   public ImportNMEADialog()
   {
     this(Display.getDefault().getActiveShell());
@@ -60,6 +64,20 @@ public class ImportNMEADialog extends CoreFreqImportDialog
   public ImportNMEADialog(final Shell parentShell)
   {
     super(parentShell);
+    
+    // retrieve the sample frequency
+    final String freqO = CorePlugin.getToolParent().getProperty(OS_FREQ);
+    if(freqO != null && freqO.length() > 0)
+    {
+      ownshipFreq = Long.valueOf(freqO);
+    }
+    
+    String freq = CorePlugin.getToolParent().getProperty(TGT_FREQ);
+    if(freq != null && freq.length() > 0)
+    {
+      thirdPartyFreq = Long.valueOf(freq);
+    }
+
   }
 
   @Override
@@ -102,6 +120,9 @@ public class ImportNMEADialog extends CoreFreqImportDialog
           if (selection.getFirstElement() instanceof Long)
           {
             ownshipFreq = (Long) selection.getFirstElement();
+            
+            // ok, remember this value
+            CorePlugin.getToolParent().setProperty(OS_FREQ, "" + ownshipFreq);
           }
         }
       });
@@ -127,6 +148,9 @@ public class ImportNMEADialog extends CoreFreqImportDialog
           if (selection.getFirstElement() instanceof Long)
           {
             thirdPartyFreq = (Long) selection.getFirstElement();
+            
+            // ok, remember this value
+            CorePlugin.getToolParent().setProperty(TGT_FREQ, "" + thirdPartyFreq);
           }
         }
       });

@@ -28,17 +28,27 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.mwc.cmap.core.CorePlugin;
 
 public class ImportRepFreqDialog extends CoreFreqImportDialog
 {
 
   private long sampleFreq;
   private final String _trackName;
+  public final String IMPORT_FREQ = "RepImportFreq";
 
   public ImportRepFreqDialog(final Shell parentShell, final String trackName)
   {
     super(parentShell);
     _trackName = trackName;
+
+    // retrieve the sample frequency
+    // ok, remember this value
+    String freq = CorePlugin.getToolParent().getProperty(IMPORT_FREQ);
+    if(freq != null && freq.length() > 0)
+    {
+      sampleFreq = Long.valueOf(freq);
+    }
   }
 
   @Override
@@ -77,6 +87,10 @@ public class ImportRepFreqDialog extends CoreFreqImportDialog
         if (selection.getFirstElement() instanceof Long)
         {
           sampleFreq = (Long) selection.getFirstElement();
+
+          // ok, remember this value
+          CorePlugin.getToolParent().setProperty(IMPORT_FREQ, "" + sampleFreq);
+
         }
       }
     });
@@ -87,5 +101,5 @@ public class ImportRepFreqDialog extends CoreFreqImportDialog
   {
     return sampleFreq;
   }
- 
+
 }

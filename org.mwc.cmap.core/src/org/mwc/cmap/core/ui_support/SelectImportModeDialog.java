@@ -48,6 +48,8 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
 
   private boolean _rememberIt;
   private String _mode = ImportReplay.IMPORT_AS_OTG;
+  
+  private final String RESAMPLE_FREQ = "ReplayResample";
 
   private long _resampleFrequency;
   private ComboViewer comboViewer;
@@ -84,6 +86,13 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
             + trackName
             + "."
             + "\nYou can override your choice using the CMAP tab of Windows/Preferences";
+    
+    // ok, remember this value
+    String freq = CorePlugin.getToolParent().getProperty(RESAMPLE_FREQ);
+    if(freq != null && freq.length() > 0)
+    {
+      _resampleFrequency = Long.valueOf(freq);
+    }
   }
 
   /**
@@ -235,6 +244,10 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
         if (selection.getFirstElement() instanceof Long)
         {
           _resampleFrequency = (Long) selection.getFirstElement();
+          
+          // ok, remember this value
+          CorePlugin.getToolParent().setProperty(RESAMPLE_FREQ, "" + _resampleFrequency);
+
         }
       }
     });
