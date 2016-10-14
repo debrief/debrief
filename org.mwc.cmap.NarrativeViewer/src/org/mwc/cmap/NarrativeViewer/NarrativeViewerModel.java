@@ -39,6 +39,8 @@ import org.eclipse.nebula.jface.gridviewer.GridViewerColumn;
 import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -572,13 +574,6 @@ public class NarrativeViewerModel
       return true;
     }
 
-    // @Override
-    // public CellEditor getCellEditor(Grid table)
-    // {
-    // return new TextCellEditor(table,
-    // SWT.WRAP);
-    // }
-
     public boolean setWrapping(final boolean shouldWrap)
     {
       final boolean changed = myIsWrapping ^ shouldWrap;
@@ -656,7 +651,7 @@ public class NarrativeViewerModel
 
       for (final AbstractColumn column : myAllColumns)
       {
-        CellLabelProvider cellRenderer =
+        final CellLabelProvider cellRenderer =
             column.getCellRenderer(viewer.getViewer());
 
         final GridViewerColumn viewerColumn =
@@ -664,25 +659,39 @@ public class NarrativeViewerModel
                 .getColumnWidth(), cellRenderer, column.isWrap());
 
         final GridColumn gridColumn = viewerColumn.getColumn();
-        TextHighlightCellRenderer styledTextCellRenderer =
+        gridColumn.addControlListener(new ControlListener()
+        {
+          
+          @Override
+          public void controlResized(ControlEvent e)
+          {
+            //trigger cells to recalculate heights  
+            viewer.refresh();
+          }
+          
+          @Override
+          public void controlMoved(ControlEvent e)
+          {
+            //ignore
+            
+          }
+        });
+        final TextHighlightCellRenderer styledTextCellRenderer =
             new TextHighlightCellRenderer()
             {
 
               protected StyledString getStyledString(String text)
               {
-                String filterText = getFilterText();
+                final String filterText = getFilterText();
                 boolean hasTextFilter =
                     filterText != null && !filterText.trim().isEmpty();
 
-                String[] phrases = getPhrases();
+                final String[] phrases = getPhrases();
                 if (hasTextFilter || phrases.length > 0)
                 {
+                  final Map<String,Styler> stylerReg = new HashMap<String,Styler>();
 
-                  boolean found = false;
-                  
-                  Map<String,Styler> stylerReg = new HashMap<String,Styler>();
-
-                  StringBuilder group = new StringBuilder();
+                  final StringBuilder group = new StringBuilder();
 
                   boolean addOR = hasTextFilter;
                   if (hasTextFilter)
@@ -693,7 +702,7 @@ public class NarrativeViewerModel
                     stylerReg.put(filterText.toLowerCase(), SEARCH_STYLE);
                   }
 
-                  Styler[] phraseStyles = getPhraseStyles();
+                  final Styler[] phraseStyles = getPhraseStyles();
                   int index = 0;
                   for (String phrase : phrases)
                   {
@@ -709,12 +718,12 @@ public class NarrativeViewerModel
                     stylerReg.put(phrase.toLowerCase(), phraseStyles[index]);
                     index++;
                   }
-                  StyledString string = new StyledString();
-                  Pattern pattern =
+                  final StyledString string = new StyledString();
+                  final Pattern pattern =
                       Pattern.compile(group.toString(), Pattern.CASE_INSENSITIVE);
-                  Matcher matcher = pattern.matcher(text);
+                  final Matcher matcher = pattern.matcher(text);
 
-                  found = matchRanges(text, matcher, string, stylerReg);
+                  final boolean found = matchRanges(text, matcher, string, stylerReg);
 
                   if (!found)
                   {
@@ -724,7 +733,6 @@ public class NarrativeViewerModel
                   {
                     return string;
                   }
-
                 }
                 return null;
               }
