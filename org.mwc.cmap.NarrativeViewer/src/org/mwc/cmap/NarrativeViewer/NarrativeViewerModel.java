@@ -574,13 +574,6 @@ public class NarrativeViewerModel
       return true;
     }
 
-    // @Override
-    // public CellEditor getCellEditor(Grid table)
-    // {
-    // return new TextCellEditor(table,
-    // SWT.WRAP);
-    // }
-
     public boolean setWrapping(final boolean shouldWrap)
     {
       final boolean changed = myIsWrapping ^ shouldWrap;
@@ -658,7 +651,7 @@ public class NarrativeViewerModel
 
       for (final AbstractColumn column : myAllColumns)
       {
-        CellLabelProvider cellRenderer =
+        final CellLabelProvider cellRenderer =
             column.getCellRenderer(viewer.getViewer());
 
         final GridViewerColumn viewerColumn =
@@ -683,25 +676,22 @@ public class NarrativeViewerModel
             
           }
         });
-        TextHighlightCellRenderer styledTextCellRenderer =
+        final TextHighlightCellRenderer styledTextCellRenderer =
             new TextHighlightCellRenderer()
             {
 
               protected StyledString getStyledString(String text)
               {
-                String filterText = getFilterText();
+                final String filterText = getFilterText();
                 boolean hasTextFilter =
                     filterText != null && !filterText.trim().isEmpty();
 
-                String[] phrases = getPhrases();
+                final String[] phrases = getPhrases();
                 if (hasTextFilter || phrases.length > 0)
                 {
+                  final Map<String,Styler> stylerReg = new HashMap<String,Styler>();
 
-                  boolean found = false;
-                  
-                  Map<String,Styler> stylerReg = new HashMap<String,Styler>();
-
-                  StringBuilder group = new StringBuilder();
+                  final StringBuilder group = new StringBuilder();
 
                   boolean addOR = hasTextFilter;
                   if (hasTextFilter)
@@ -712,7 +702,7 @@ public class NarrativeViewerModel
                     stylerReg.put(filterText.toLowerCase(), SEARCH_STYLE);
                   }
 
-                  Styler[] phraseStyles = getPhraseStyles();
+                  final Styler[] phraseStyles = getPhraseStyles();
                   int index = 0;
                   for (String phrase : phrases)
                   {
@@ -728,12 +718,12 @@ public class NarrativeViewerModel
                     stylerReg.put(phrase.toLowerCase(), phraseStyles[index]);
                     index++;
                   }
-                  StyledString string = new StyledString();
-                  Pattern pattern =
+                  final StyledString string = new StyledString();
+                  final Pattern pattern =
                       Pattern.compile(group.toString(), Pattern.CASE_INSENSITIVE);
-                  Matcher matcher = pattern.matcher(text);
+                  final Matcher matcher = pattern.matcher(text);
 
-                  found = matchRanges(text, matcher, string, stylerReg);
+                  final boolean found = matchRanges(text, matcher, string, stylerReg);
 
                   if (!found)
                   {
@@ -743,7 +733,6 @@ public class NarrativeViewerModel
                   {
                     return string;
                   }
-
                 }
                 return null;
               }
