@@ -63,7 +63,8 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
   public SelectImportModeDialog(final Shell parent, final String trackName)
   {
     // Pass the default styles here
-    this(parent, trackName, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+    this(parent, trackName, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL|SWT.ON_TOP);
+    
   }
 
   /**
