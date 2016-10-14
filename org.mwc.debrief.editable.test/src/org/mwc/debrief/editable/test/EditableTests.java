@@ -738,10 +738,11 @@ public class EditableTests extends TestCase
    */
   public static void testTheseParameters(final Editable toBeTested)
   {
-    // check if we received an object
-  	System.out.println("testing " + toBeTested.getClass());
     if (toBeTested == null)
       return;
+
+    // check if we received an object
+  	System.out.println("testing " + toBeTested.getClass());
 
     Assert.assertNotNull("Found editable object", toBeTested);
 
