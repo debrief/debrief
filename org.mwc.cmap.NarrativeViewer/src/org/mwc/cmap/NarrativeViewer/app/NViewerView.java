@@ -31,6 +31,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -163,750 +164,17 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    */
   protected final DataListener _layerListener;
 
-  public NViewerView()
-  {
-    _layerListener = new DataListener()
-    {
-
-      @Override
-      public void dataModified(final Layers theData, final Layer changedLayer)
-      {
-        if (changedLayer == _myRollingNarrative)
-        {
-          uiUpdate();
-        }
-      }
-
-      private void uiUpdate()
-      {
-        Display.getDefault().syncExec(new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            setInput(_myRollingNarrative);
-          }
-        });
-      }
-
-      @Override
-      public void dataExtended(final Layers theData)
-      {
-        // nope, see if there is one
-        final Layer match = theData.findLayer(ImportReplay.NARRATIVE_LAYER);
-
-        // ok, do we already have a narrative?
-        if (_myRollingNarrative == null)
-        {
-          if (match instanceof IRollingNarrativeProvider)
-          {
-            setInput((IRollingNarrativeProvider) match);
-          }
-        }
-        else
-        {
-          // hmm, has our narrative been deleted?
-          if (match == null)
-          {
-            setInput(null);
-          }
-        }
-
-        // oh, oooh, see if we've learned some more colors
-        refreshColors();
-      }
-
-      @Override
-      public void
-          dataReformatted(final Layers theData, final Layer changedLayer)
-      {
-        if (changedLayer == _myRollingNarrative)
-        {
-          uiUpdate();
-        }
-
-        // do we have a rolling narrative?
-        if (_myRollingNarrative != null)
-        {
-          // ok, try to refresh the colors based on the new data
-          refreshColor(changedLayer);
-        }
-      }
-
-    };
-
-    // check if we have our rolling narrative listener
-    _myRollingNarrListener = new INarrativeListener()
-    {
-
-      private AtomicBoolean updatePending = new AtomicBoolean(false);
-
-      /**
-       * force UI update
-       * 
-       */
-      private void updated()
-      {
-        // is there already a pending update?
-        if (updatePending.get())
-        {
-          // hey, we don't need to fire another!
-        }
-        else
-        {
-          // ok, indicate that there is an update pending
-          updatePending.set(true);
-
-          // queue up a screen refresh
-          Display.getDefault().asyncExec(new Runnable()
-          {
-            @Override
-            public void run()
-            {
-              // is there a pending UI update (and clear the flag)
-              boolean isPending = updatePending.getAndSet(false);
-
-              if (isPending)
-              {
-                if (_myRollingNarrative != null
-                    && _myRollingNarrative.size() > 0)
-                {
-                  myViewer.setInput(_myRollingNarrative);
-                }
-                else
-                {
-                  myViewer.setInput(null);
-                }
-              }
-            }
-          });
-        }
-      }
-
-      @Override
-      public void newEntry(final NarrativeEntry entry)
-      {
-        updated();
-      }
-
-      @Override
-      public void entryRemoved(final NarrativeEntry entry)
-      {
-        updated();
-      }
-
-      @Override
-      public void filtered()
-      {
-        updated();
-      }
-    };
-
-  }
-
-  private boolean internalEquals(Color color1, Color color2)
-  {
-    if (color1 == null && color2 == null)
-    {
-      return true;
-    }
-    if (color1 != null)
-    {
-      return color1.equals(color2);
-    }
-    return color2.equals(color1);
-  }
-
-  public void createPartControl(final Composite parent)
-  {
-
-    _myPartMonitor =
-        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-
-    parent.setLayout(new GridLayout(1, false));
-    final Composite rootPanel = new Composite(parent, SWT.BORDER);
-    rootPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    final StackLayout rootPanelLayout = new StackLayout();
-    rootPanel.setLayout(rootPanelLayout);
-
-    myViewer =
-        new NarrativeViewer(rootPanel, CorePlugin.getDefault()
-            .getPreferenceStore());
-    rootPanelLayout.topControl = myViewer.getControl();
-
-    getSite().setSelectionProvider(this);
-
-    // sort out the initial time format
-    final String startFormat = DateFormatPropertyEditor.getTagList()[3];
-    myViewer.setTimeFormatter(new TimeFormatter()
-    {
-      public String format(final HiResDate time)
-      {
-        final String res = toStringHiRes(time, startFormat);
-        return res;
-      }
-    });
-
-    /**
-     * sort out the view menu & toolbar
-     * 
-     */
-    populateMenu();
-
-    /**
-     * and start listening out for new panels to open
-     * 
-     */
-    setupPartListeners();
-    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
-    {
-
-      @Override
-      public void doubleClick(DoubleClickEvent event)
-      {
-        StructuredSelection selection =
-            (StructuredSelection) event.getSelection();
-        if (selection.getFirstElement() instanceof NarrativeEntry)
-        {
-          fireNewSeletion((NarrativeEntry) selection.getFirstElement());
-        }
-
-      }
-    });
-
-    _selectionChangeListener = new ISelectionChangedListener()
-    {
-
-      public void selectionChanged(final SelectionChangedEvent event)
-      {
-        // right, see what it is
-        final ISelection sel = event.getSelection();
-        if (sel instanceof StructuredSelection)
-        {
-          final StructuredSelection ss = (StructuredSelection) sel;
-          final Object datum = ss.getFirstElement();
-          if (datum instanceof EditableWrapper)
-          {
-            final EditableWrapper pw = (EditableWrapper) datum;
-
-            // now see if it's a narrative entry
-            if (pw.getEditable() instanceof NarrativeEntry)
-            {
-              final NarrativeEntry entry = (NarrativeEntry) pw.getEditable();
-              timeUpdated(entry.getDTG());
-            }
-          }
-        }
-      }
-    };
-    
-    // listen out for the view resizing
-    parent.addControlListener(new ControlAdapter()
-    {
-      @Override
-      public void controlResized(final ControlEvent e)
-      {
-        myViewer.refresh();
-      }
-    });
-
-  }
-
-  /**
-   * send this new time to the time controller
-   * 
-   * @param newEntry
-   */
-  protected void fireNewSeletion(final NarrativeEntry newEntry)
-  {
-    // first update the time
-    if (_controlTime.isChecked())
-      if (_controllableTime != null)
-        _controllableTime.setTime(this, newEntry.getDTG(), true);
-
-    // now update the selection
-    final EditableWrapper wrappedEntry = new EditableWrapper(newEntry);
-    final StructuredSelection structuredItem =
-        new StructuredSelection(wrappedEntry);
-    setSelection(structuredItem);
-  }
-
-  private void populateMenu()
-  {
-    // clear the list
-    final IMenuManager menuManager =
-        getViewSite().getActionBars().getMenuManager();
-    final IToolBarManager toolManager =
-        getViewSite().getActionBars().getToolBarManager();
-
-    _search = new Action("Search", Action.AS_CHECK_BOX)
-    {
-
-      @Override
-      public void run()
-      {
-        myViewer.setSearchMode(isChecked());
-      }
-    };
-    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-        .getImageDescriptor("icons/16/search.png"));
-    _search.setToolTipText("Toggle search mode");
-    _search.setChecked(true);
-    toolManager.add(_search);
-
-    // the line below contributes the predefined viewer actions onto the
-    // view action bar
-    myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
-
-    menuManager.add(new Separator());
-    final Action editPhrases = new Action("Edit Highlight Phrases")
-    {
-      @Override
-      public void run()
-      {
-        PreferenceDialog dialog =
-            PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
-                "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
-                null, null);
-        if (dialog.open() == IDialogConstants.OK_ID)
-        {
-          myViewer.refresh();
-        }
-      }
-    };
-    editPhrases.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/properties.png"));
-    menuManager.add(editPhrases);
-    toolManager.add(editPhrases);
-
-    final Action fontSize = new Action("Font Size")
-    {
-      @Override
-      public void run()
-      {
-        PreferenceDialog dialog =
-            PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
-                "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
-                null, null);
-        if (dialog.open() == IDialogConstants.OK_ID)
-          myViewer.refresh();
-      }
-    };
-    fontSize.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/font.png"));
-    menuManager.add(fontSize);
-    // and another separator
-    menuManager.add(new Separator());
-
-    // add some more actions
-    _clipText = new Action("Wrap entry text", Action.AS_CHECK_BOX)
-    {
-      public void run()
-      {
-        super.run();
-        myViewer.setWrappingEntries(_clipText.isChecked());
-      }
-    };
-    _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-        .getImageDescriptor("icons/16/wrap.png"));
-    _clipText.setToolTipText("Whether to clip to visible space");
-    _clipText.setChecked(true);
-
-    menuManager.add(_clipText);
-    toolManager.add(_clipText);
-
-    _followTime = new Action("Follow current time", Action.AS_CHECK_BOX)
-    {
-    };
-    _followTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-        .getImageDescriptor("icons/16/follow_time.png"));
-    _followTime.setToolTipText("Whether to listen to the time controller");
-    _followTime.setChecked(true);
-
-    menuManager.add(_followTime);
-
-    _controlTime = new Action("Control current time", Action.AS_CHECK_BOX)
-    {
-    };
-    _controlTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-        .getImageDescriptor("icons/16/control_time.png"));
-    _controlTime.setToolTipText("Whether to control the current time");
-    _controlTime.setChecked(true);
-    menuManager.add(_controlTime);
-
-    // now the add-bookmark item
-    _setAsBookmarkAction =
-        new Action("Add DTG as bookmark", Action.AS_PUSH_BUTTON)
-        {
-          public void runWithEvent(final Event event)
-          {
-            addMarker();
-          }
-        };
-    _setAsBookmarkAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/add_bookmark.png"));
-    _setAsBookmarkAction
-        .setToolTipText("Add this DTG to the list of bookmarks");
-    menuManager.add(_setAsBookmarkAction);
-
-    // and the DTG formatter
-    addDateFormats(menuManager);
-
-    menuManager.add(new Separator());
-    menuManager.add(CorePlugin.createOpenHelpAction(
-        "org.mwc.debrief.help.Narrative", null, this));
-
-  }
-
-  /**
-   * @param menuManager
-   */
-  private void addDateFormats(final IMenuManager menuManager)
-  {
-    // ok, second menu for the DTG formats
-    final MenuManager formatMenu = new MenuManager("DTG Format");
-
-    // and store it
-    menuManager.add(formatMenu);
-
-    // and now the date formats
-    final String[] formats = DateFormatPropertyEditor.getTagList();
-    for (int i = 0; i < formats.length; i++)
-    {
-      final String thisFormat = formats[i];
-
-      // the properties manager is expecting the integer index of the new
-      // format, not the string value.
-      // so store it as an integer index
-      final Integer thisIndex = new Integer(i);
-
-      // and create a new action to represent the change
-      final Action newFormat = new Action(thisFormat, Action.AS_RADIO_BUTTON)
-      {
-        public void run()
-        {
-          super.run();
-          final String theFormat =
-              DateFormatPropertyEditor.getTagList()[thisIndex];
-
-          myViewer.setTimeFormatter(new TimeFormatter()
-          {
-            public String format(final HiResDate time)
-            {
-              final String res = toStringHiRes(time, theFormat);
-              return res;
-            }
-          });
-        }
-
-      };
-      formatMenu.add(newFormat);
-    }
-  }
-
-  public void setFocus()
-  {
-    myViewer.getViewer().getGrid().setFocus();
-  }
-
   /**
    * flag for if we're currently in update
    * 
    */
   private static boolean _amUpdating = false;
 
-  protected void entryUpdated(final NarrativeEntry entry)
-  {
-    if (_amUpdating)
-    {
-      // don't worry, we'll be finished soon
-      System.err.println("already doing update");
-    }
-    else
-    {
-      // ok, remember that we're updating
-      _amUpdating = true;
-
-      // get on with the update
-      try
-      {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-
-          public void run()
-          {
-            // ok, tell the model to move to the relevant item
-            myViewer.setEntry(entry);
-          }
-        });
-      }
-      finally
-      {
-        // clear the updating lock
-        _amUpdating = false;
-      }
-
-    }
-  }
-
-  protected void setInput(final IRollingNarrativeProvider newNarr)
-  {
-
-    if (newNarr != _myRollingNarrative)
-    {
-      if (_myRollingNarrative != null)
-      {
-        // clear what's displayed
-        myViewer.setInput(null);
-
-        // stop listening to old narrative
-        _myRollingNarrative.removeNarrativeListener(
-            IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-      }
-
-      // ok remember the new provider (even if it's null)
-      _myRollingNarrative = newNarr;
-
-      // is the new one a real object?
-      if (newNarr != null)
-      {
-        // ok, register as a listener
-        _myRollingNarrative.addNarrativeListener(
-            IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-
-        // also sort out the colors
-        refreshColors();
-
-        // ok - show the narrative. We can't rely on
-        // listening to the rolling narrative, since we
-        // may be switching back to a previous plot.
-        myViewer.setInput(_myRollingNarrative);
-      }
-    }
-  }
-
-  /**
-	 * 
-	 */
-  private void setupPartListeners()
-  {
-
-    final NViewerView me = this;
-
-    // //////////////////////////////////////////
-    // and the layers - to hear about refresh
-    // //////////////////////////////////////////
-
-    _myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final Layers layer = (Layers) part;
-            if (layer != _myLayers)
-            {
-              // ditch to old layers
-              ditchOldLayers();
-
-              _myLayers = layer;
-
-              // and sort out the listeners
-              _myLayers.addDataModifiedListener(_layerListener);
-              _myLayers.addDataReformattedListener(_layerListener);
-              _myLayers.addDataExtendedListener(_layerListener);
-
-              // fire the extended listener once, just in case
-              // we need to empty the narrative
-              _layerListener.dataExtended(_myLayers);
-            }
-          }
-
-        });
-
-    _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            final Layers layer = (Layers) part;
-            if (layer == _myLayers)
-            {
-              // ditch to old layers
-              ditchOldLayers();
-            }
-          }
-        });
-
-    // ///////////////////////////////////////////////
-    // now for time provider support
-    // ///////////////////////////////////////////////
-    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
-        new PartMonitor.ICallback()
-        {
-
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            // just check we're not already looking at it
-            if (part != _myTemporalDataset)
-            {
-              // ok, better stop listening to the old one
-              if (_myTemporalDataset != null)
-              {
-                // yup, better ignore it
-                _myTemporalDataset.removeListener(_temporalListener,
-                    TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-                _myTemporalDataset = null;
-              }
-
-              // implementation here.
-              _myTemporalDataset = (TimeProvider) part;
-              if (_temporalListener == null)
-              {
-                _temporalListener = new PropertyChangeListener()
-                {
-                  public void propertyChange(final PropertyChangeEvent event)
-                  {
-                    // ok, use the new time
-                    final HiResDate newDTG = (HiResDate) event.getNewValue();
-                    timeUpdated(newDTG);
-                  }
-                };
-              }
-              _myTemporalDataset.addListener(_temporalListener,
-                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-              // and is it an editor we want to remember?
-              // hmm, do we want to store this part?
-              if (parentPart instanceof IEditorPart)
-              {
-                _currentEditor = (IEditorPart) parentPart;
-              }
-            }
-          }
-        });
-    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            if (part == _myTemporalDataset)
-            {
-              _myTemporalDataset.removeListener(_temporalListener,
-                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-              // and clear the pointer
-              _myTemporalDataset = null;
-            }
-          }
-        });
-    _myPartMonitor.addPartListener(ControllableTime.class,
-        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            // implementation here.
-            _controllableTime = (ControllableTime) part;
-          }
-        });
-    _myPartMonitor.addPartListener(ControllableTime.class,
-        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            // no, don't bother clearing the controllable time when
-            // the plot is
-            // de-activated,
-            // - since with the highlight on the narrative, we want
-            // to be able
-            // to control the time still.
-            // _controllableTime = null;
-          }
-        });
-
-    _myPartMonitor.addPartListener(ISelectionProvider.class,
-        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            // aah, just check it's not is
-            if (part != me)
-            {
-              final ISelectionProvider iS = (ISelectionProvider) part;
-              iS.addSelectionChangedListener(_selectionChangeListener);
-            }
-          }
-        });
-    _myPartMonitor.addPartListener(ISelectionProvider.class,
-        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            // aah, just check it's not is
-            if (part != me)
-            {
-              final ISelectionProvider iS = (ISelectionProvider) part;
-              iS.removeSelectionChangedListener(_selectionChangeListener);
-            }
-          }
-        });
-
-    // ok we're all ready now. just try and see if the current part is valid
-    _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-        .getActivePage());
-  }
-
-  protected void ditchOldLayers()
-  {
-    if (_myLayers != null)
-    {
-      _myLayers.removeDataModifiedListener(_layerListener);
-      _myLayers.removeDataReformattedListener(_layerListener);
-      _myLayers.removeDataExtendedListener(_layerListener);
-      _myLayers = null;
-
-      setInput(null);
-    }
-  }
-
-  @Override
-  public void dispose()
-  {
-
-    // and stop listening for part activity
-    _myPartMonitor.ditch();
-
-    if (_controllableTime != null)
-    {
-      _controllableTime = null;
-    }
-
-    if (_myTemporalDataset != null)
-    {
-      _myTemporalDataset.removeListener(_temporalListener,
-          TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-      _myTemporalDataset = null;
-    }
-
-    ditchOldLayers();
-    // let the parent do it's bit
-    super.dispose();
-
-  }
-
   public synchronized static String toStringHiRes(final HiResDate time,
       final String pattern) throws IllegalArgumentException
   {
     // so, have a look at the data
-    long micros = time.getMicros();
+    final long micros = time.getMicros();
     // long wholeSeconds = micros / 1000000;
 
     final StringBuffer res = new StringBuffer();
@@ -940,103 +208,192 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     return res.toString();
   }
 
-  /**
-   * the user has selected a new time
-   * 
-   */
-  public void propertyChange(final PropertyChangeEvent evt)
+  public NViewerView()
   {
-    // are we syncing with time?
-    if (_followTime.isChecked())
+    _layerListener = new DataListener()
     {
 
-    }
-  }
-
-  public void addSelectionChangedListener(
-      final ISelectionChangedListener listener)
-  {
-    if (_selectionListeners == null)
-      _selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
-
-    // see if we don't already contain it..
-    if (!_selectionListeners.contains(listener))
-      _selectionListeners.add(listener);
-  }
-
-  public ISelection getSelection()
-  {
-    return null;
-  }
-
-  public void removeSelectionChangedListener(
-      final ISelectionChangedListener listener)
-  {
-    _selectionListeners.remove(listener);
-  }
-
-  public void setSelection(final ISelection selection)
-  {
-    // tell everybody about us
-    for (final Iterator<ISelectionChangedListener> iterator =
-        _selectionListeners.iterator(); iterator.hasNext();)
-    {
-      final ISelectionChangedListener type = iterator.next();
-      final SelectionChangedEvent event =
-          new SelectionChangedEvent(this, selection);
-      type.selectionChanged(event);
-    }
-  }
-
-  protected void timeUpdated(final HiResDate dtg)
-  {
-    if (_followTime.isChecked())
-    {
-      if (!_amUpdating)
+      @Override
+      public void dataExtended(final Layers theData)
       {
-        // ok, remember that we're updating
-        _amUpdating = true;
+        // nope, see if there is one
+        final Layer match = theData.findLayer(ImportReplay.NARRATIVE_LAYER);
 
-        // remember the new one
-        _pendingTime.set(dtg.getMicros());
-
-        // get on with the update
-        try
+        // ok, do we already have a narrative?
+        if (_myRollingNarrative == null)
         {
+          if (match instanceof IRollingNarrativeProvider)
+          {
+            setInput((IRollingNarrativeProvider) match);
+          }
+        }
+        else
+        {
+          // hmm, has our narrative been deleted?
+          if (match == null)
+          {
+            setInput(null);
+          }
+        }
+
+        // oh, oooh, see if we've learned some more colors
+        refreshColors();
+      }
+
+      @Override
+      public void dataModified(final Layers theData, final Layer changedLayer)
+      {
+        if (changedLayer == _myRollingNarrative)
+        {
+          uiUpdate();
+        }
+      }
+
+      @Override
+      public void
+          dataReformatted(final Layers theData, final Layer changedLayer)
+      {
+        if (changedLayer == _myRollingNarrative)
+        {
+          uiUpdate();
+        }
+
+        // do we have a rolling narrative?
+        if (_myRollingNarrative != null)
+        {
+          // ok, try to refresh the colors based on the new data
+          refreshColor(changedLayer);
+        }
+      }
+
+      private void uiUpdate()
+      {
+        Display.getDefault().syncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            setInput(_myRollingNarrative);
+          }
+        });
+      }
+
+    };
+
+    // check if we have our rolling narrative listener
+    _myRollingNarrListener = new INarrativeListener()
+    {
+
+      private final AtomicBoolean updatePending = new AtomicBoolean(false);
+
+      @Override
+      public void entryRemoved(final NarrativeEntry entry)
+      {
+        updated();
+      }
+
+      @Override
+      public void filtered()
+      {
+        updated();
+      }
+
+      @Override
+      public void newEntry(final NarrativeEntry entry)
+      {
+        updated();
+      }
+
+      /**
+       * force UI update
+       * 
+       */
+      private void updated()
+      {
+        // is there already a pending update?
+        if (updatePending.get())
+        {
+          // hey, we don't need to fire another!
+        }
+        else
+        {
+          // ok, indicate that there is an update pending
+          updatePending.set(true);
+
+          // queue up a screen refresh
           Display.getDefault().asyncExec(new Runnable()
           {
-
+            @Override
             public void run()
             {
-              // quick, capture the time
-              final long safeTime = _pendingTime.get();
+              // is there a pending UI update (and clear the flag)
+              final boolean isPending = updatePending.getAndSet(false);
 
-              // do we have a pending time value
-              if (safeTime != INVALID_TIME)
+              if (isPending)
               {
-                _pendingTime.set(INVALID_TIME);
-
-                // now create the time object
-                final HiResDate theDTG = new HiResDate(0, safeTime);
-
-                // ok, tell the model to move to the relevant item
-                myViewer.setDTG(theDTG);
+                if (_myRollingNarrative != null
+                    && _myRollingNarrative.size() > 0)
+                {
+                  myViewer.setInput(_myRollingNarrative);
+                }
+                else
+                {
+                  myViewer.setInput(null);
+                }
               }
-              else
-              {
-                // ok, there isn't a pending date, we can just skip the update
-              }
-
-              // Note: we don't need to clear the lock, we do it in the finally block
             }
           });
         }
-        finally
-        {
-          // clear the updating lock
-          _amUpdating = false;
-        }
       }
+    };
+
+  }
+
+  /**
+   * @param menuManager
+   */
+  private void addDateFormats(final IMenuManager menuManager)
+  {
+    // ok, second menu for the DTG formats
+    final MenuManager formatMenu = new MenuManager("DTG Format");
+
+    // and store it
+    menuManager.add(formatMenu);
+
+    // and now the date formats
+    final String[] formats = DateFormatPropertyEditor.getTagList();
+    for (int i = 0; i < formats.length; i++)
+    {
+      final String thisFormat = formats[i];
+
+      // the properties manager is expecting the integer index of the new
+      // format, not the string value.
+      // so store it as an integer index
+      final Integer thisIndex = new Integer(i);
+
+      // and create a new action to represent the change
+      final Action newFormat = new Action(thisFormat, IAction.AS_RADIO_BUTTON)
+      {
+        @Override
+        public void run()
+        {
+          super.run();
+          final String theFormat =
+              DateFormatPropertyEditor.getTagList()[thisIndex];
+
+          myViewer.setTimeFormatter(new TimeFormatter()
+          {
+            @Override
+            public String format(final HiResDate time)
+            {
+              final String res = toStringHiRes(time, theFormat);
+              return res;
+            }
+          });
+        }
+
+      };
+      formatMenu.add(newFormat);
     }
   }
 
@@ -1052,7 +409,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         final IFileEditorInput ife = (IFileEditorInput) input;
         final IResource file = ife.getFile();
 
-        StructuredSelection selection =
+        final StructuredSelection selection =
             (StructuredSelection) myViewer.getViewer().getSelection();
         if (selection.getFirstElement() instanceof NarrativeEntry)
         {
@@ -1094,41 +451,382 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   }
 
-  private void refreshColors()
+  @Override
+  public void addSelectionChangedListener(
+      final ISelectionChangedListener listener)
   {
-    if (_myLayers == null)
-    {
-      return;
-    }
-    if (_myRollingNarrative == null)
-    {
-      return;
-    }
-    Enumeration<Editable> elements = _myLayers.elements();
+    if (_selectionListeners == null)
+      _selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
-    while (elements.hasMoreElements())
+    // see if we don't already contain it..
+    if (!_selectionListeners.contains(listener))
+      _selectionListeners.add(listener);
+  }
+
+  @Override
+  public void createPartControl(final Composite parent)
+  {
+
+    _myPartMonitor =
+        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+
+    parent.setLayout(new GridLayout(1, false));
+    final Composite rootPanel = new Composite(parent, SWT.BORDER);
+    rootPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+    final StackLayout rootPanelLayout = new StackLayout();
+    rootPanel.setLayout(rootPanelLayout);
+
+    myViewer =
+        new NarrativeViewer(rootPanel, CorePlugin.getDefault()
+            .getPreferenceStore());
+    rootPanelLayout.topControl = myViewer.getControl();
+
+    getSite().setSelectionProvider(this);
+
+    // sort out the initial time format
+    final String startFormat = DateFormatPropertyEditor.getTagList()[3];
+    myViewer.setTimeFormatter(new TimeFormatter()
     {
-      Editable element = elements.nextElement();
-      if (element instanceof Layer)
+      @Override
+      public String format(final HiResDate time)
       {
-        refreshColor((Layer) element);
+        final String res = toStringHiRes(time, startFormat);
+        return res;
       }
+    });
+
+    /**
+     * sort out the view menu & toolbar
+     * 
+     */
+    populateMenu();
+
+    /**
+     * and start listening out for new panels to open
+     * 
+     */
+    setupPartListeners();
+    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
+    {
+
+      @Override
+      public void doubleClick(final DoubleClickEvent event)
+      {
+        final StructuredSelection selection =
+            (StructuredSelection) event.getSelection();
+        if (selection.getFirstElement() instanceof NarrativeEntry)
+        {
+          fireNewSeletion((NarrativeEntry) selection.getFirstElement());
+        }
+
+      }
+    });
+
+    _selectionChangeListener = new ISelectionChangedListener()
+    {
+
+      @Override
+      public void selectionChanged(final SelectionChangedEvent event)
+      {
+        // right, see what it is
+        final ISelection sel = event.getSelection();
+        if (sel instanceof StructuredSelection)
+        {
+          final StructuredSelection ss = (StructuredSelection) sel;
+          final Object datum = ss.getFirstElement();
+          if (datum instanceof EditableWrapper)
+          {
+            final EditableWrapper pw = (EditableWrapper) datum;
+
+            // now see if it's a narrative entry
+            if (pw.getEditable() instanceof NarrativeEntry)
+            {
+              final NarrativeEntry entry = (NarrativeEntry) pw.getEditable();
+              timeUpdated(entry.getDTG());
+            }
+          }
+        }
+      }
+    };
+
+    // listen out for the view resizing
+    parent.addControlListener(new ControlAdapter()
+    {
+      @Override
+      public void controlResized(final ControlEvent e)
+      {
+        myViewer.refresh();
+      }
+    });
+
+  }
+
+  @Override
+  public void dispose()
+  {
+
+    // and stop listening for part activity
+    _myPartMonitor.ditch();
+
+    if (_controllableTime != null)
+    {
+      _controllableTime = null;
     }
 
+    if (_myTemporalDataset != null)
+    {
+      _myTemporalDataset.removeListener(_temporalListener,
+          TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+      _myTemporalDataset = null;
+    }
+
+    ditchOldLayers();
+    // let the parent do it's bit
+    super.dispose();
+
+  }
+
+  protected void ditchOldLayers()
+  {
+    if (_myLayers != null)
+    {
+      _myLayers.removeDataModifiedListener(_layerListener);
+      _myLayers.removeDataReformattedListener(_layerListener);
+      _myLayers.removeDataExtendedListener(_layerListener);
+      _myLayers = null;
+
+      setInput(null);
+    }
+  }
+
+  protected void entryUpdated(final NarrativeEntry entry)
+  {
+    if (_amUpdating)
+    {
+      // don't worry, we'll be finished soon
+      System.err.println("already doing update");
+    }
+    else
+    {
+      // ok, remember that we're updating
+      _amUpdating = true;
+
+      // get on with the update
+      try
+      {
+        Display.getDefault().asyncExec(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            // ok, tell the model to move to the relevant item
+            myViewer.setEntry(entry);
+          }
+        });
+      }
+      finally
+      {
+        // clear the updating lock
+        _amUpdating = false;
+      }
+
+    }
+  }
+
+  /**
+   * send this new time to the time controller
+   * 
+   * @param newEntry
+   */
+  protected void fireNewSeletion(final NarrativeEntry newEntry)
+  {
+    // first update the time
+    if (_controlTime.isChecked())
+      if (_controllableTime != null)
+        _controllableTime.setTime(this, newEntry.getDTG(), true);
+
+    // now update the selection
+    final EditableWrapper wrappedEntry = new EditableWrapper(newEntry);
+    final StructuredSelection structuredItem =
+        new StructuredSelection(wrappedEntry);
+    setSelection(structuredItem);
+  }
+
+  @Override
+  public ISelection getSelection()
+  {
+    return null;
+  }
+
+  private boolean internalEquals(final Color color1, final Color color2)
+  {
+    if (color1 == null && color2 == null)
+    {
+      return true;
+    }
+    if (color1 != null)
+    {
+      return color1.equals(color2);
+    }
+    return color2.equals(color1);
+  }
+
+  private void populateMenu()
+  {
+    // clear the list
+    final IMenuManager menuManager =
+        getViewSite().getActionBars().getMenuManager();
+    final IToolBarManager toolManager =
+        getViewSite().getActionBars().getToolBarManager();
+
+    _search = new Action("Search", IAction.AS_CHECK_BOX)
+    {
+
+      @Override
+      public void run()
+      {
+        myViewer.setSearchMode(isChecked());
+      }
+    };
+    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/search.png"));
+    _search.setToolTipText("Toggle search mode");
+    _search.setChecked(true);
+    toolManager.add(_search);
+
+    // the line below contributes the predefined viewer actions onto the
+    // view action bar
+    myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
+
+    menuManager.add(new Separator());
+    final Action editPhrases = new Action("Edit Highlight Phrases")
+    {
+      @Override
+      public void run()
+      {
+        final PreferenceDialog dialog =
+            PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
+                "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
+                null, null);
+        if (dialog.open() == IDialogConstants.OK_ID)
+        {
+          myViewer.refresh();
+        }
+      }
+    };
+    editPhrases.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/properties.png"));
+    menuManager.add(editPhrases);
+    toolManager.add(editPhrases);
+
+    final Action fontSize = new Action("Font Size")
+    {
+      @Override
+      public void run()
+      {
+        final PreferenceDialog dialog =
+            PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
+                "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
+                null, null);
+        if (dialog.open() == IDialogConstants.OK_ID)
+          myViewer.refresh();
+      }
+    };
+    fontSize.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/font.png"));
+    menuManager.add(fontSize);
+    // and another separator
+    menuManager.add(new Separator());
+
+    // add some more actions
+    _clipText = new Action("Wrap entry text", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        myViewer.setWrappingEntries(_clipText.isChecked());
+      }
+    };
+    _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/wrap.png"));
+    _clipText.setToolTipText("Whether to clip to visible space");
+    _clipText.setChecked(true);
+
+    menuManager.add(_clipText);
+    toolManager.add(_clipText);
+
+    _followTime = new Action("Follow current time", IAction.AS_CHECK_BOX)
+    {
+    };
+    _followTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/follow_time.png"));
+    _followTime.setToolTipText("Whether to listen to the time controller");
+    _followTime.setChecked(true);
+
+    menuManager.add(_followTime);
+
+    _controlTime = new Action("Control current time", IAction.AS_CHECK_BOX)
+    {
+    };
+    _controlTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/control_time.png"));
+    _controlTime.setToolTipText("Whether to control the current time");
+    _controlTime.setChecked(true);
+    menuManager.add(_controlTime);
+
+    // now the add-bookmark item
+    _setAsBookmarkAction =
+        new Action("Add DTG as bookmark", IAction.AS_PUSH_BUTTON)
+        {
+          @Override
+          public void runWithEvent(final Event event)
+          {
+            addMarker();
+          }
+        };
+    _setAsBookmarkAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/add_bookmark.png"));
+    _setAsBookmarkAction
+        .setToolTipText("Add this DTG to the list of bookmarks");
+    menuManager.add(_setAsBookmarkAction);
+
+    // and the DTG formatter
+    addDateFormats(menuManager);
+
+    menuManager.add(new Separator());
+    menuManager.add(CorePlugin.createOpenHelpAction(
+        "org.mwc.debrief.help.Narrative", null, this));
+
+  }
+
+  /**
+   * the user has selected a new time
+   * 
+   */
+  @Override
+  public void propertyChange(final PropertyChangeEvent evt)
+  {
+    // are we syncing with time?
+    if (_followTime.isChecked())
+    {
+
+    }
   }
 
   private void refreshColor(final Layer layer)
   {
     if (layer instanceof TrackWrapper)
     {
-      TrackWrapper track = (TrackWrapper) layer;
-      String name = track.getName();
-      Color color = track.getColor();
+      final TrackWrapper track = (TrackWrapper) layer;
+      final String name = track.getName();
+      final Color color = track.getColor();
       boolean refresh = false;
-      NarrativeEntry[] entries =
+      final NarrativeEntry[] entries =
           _myRollingNarrative.getNarrativeHistory(new String[]
           {});
-      for (NarrativeEntry entry : entries)
+      for (final NarrativeEntry entry : entries)
       {
         if (entry.getTrackName() != null && entry.getTrackName().equals(name))
         {
@@ -1149,6 +847,333 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       if (refresh)
       {
         myViewer.refresh();
+      }
+    }
+  }
+
+  private void refreshColors()
+  {
+    if (_myLayers == null)
+    {
+      return;
+    }
+    if (_myRollingNarrative == null)
+    {
+      return;
+    }
+    final Enumeration<Editable> elements = _myLayers.elements();
+
+    while (elements.hasMoreElements())
+    {
+      final Editable element = elements.nextElement();
+      if (element instanceof Layer)
+      {
+        refreshColor((Layer) element);
+      }
+    }
+
+  }
+
+  @Override
+  public void removeSelectionChangedListener(
+      final ISelectionChangedListener listener)
+  {
+    _selectionListeners.remove(listener);
+  }
+
+  @Override
+  public void setFocus()
+  {
+    myViewer.getViewer().getGrid().setFocus();
+  }
+
+  protected void setInput(final IRollingNarrativeProvider newNarr)
+  {
+
+    if (newNarr != _myRollingNarrative)
+    {
+      if (_myRollingNarrative != null)
+      {
+        // clear what's displayed
+        myViewer.setInput(null);
+
+        // stop listening to old narrative
+        _myRollingNarrative.removeNarrativeListener(
+            IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+      }
+
+      // ok remember the new provider (even if it's null)
+      _myRollingNarrative = newNarr;
+
+      // is the new one a real object?
+      if (newNarr != null)
+      {
+        // ok, register as a listener
+        _myRollingNarrative.addNarrativeListener(
+            IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+
+        // also sort out the colors
+        refreshColors();
+
+        // ok - show the narrative. We can't rely on
+        // listening to the rolling narrative, since we
+        // may be switching back to a previous plot.
+        myViewer.setInput(_myRollingNarrative);
+      }
+    }
+  }
+
+  @Override
+  public void setSelection(final ISelection selection)
+  {
+    // tell everybody about us
+    for (final Iterator<ISelectionChangedListener> iterator =
+        _selectionListeners.iterator(); iterator.hasNext();)
+    {
+      final ISelectionChangedListener type = iterator.next();
+      final SelectionChangedEvent event =
+          new SelectionChangedEvent(this, selection);
+      type.selectionChanged(event);
+    }
+  }
+
+  /**
+	 * 
+	 */
+  private void setupPartListeners()
+  {
+
+    final NViewerView me = this;
+
+    // //////////////////////////////////////////
+    // and the layers - to hear about refresh
+    // //////////////////////////////////////////
+
+    _myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            final Layers layer = (Layers) part;
+            if (layer != _myLayers)
+            {
+              // ditch to old layers
+              ditchOldLayers();
+
+              _myLayers = layer;
+
+              // and sort out the listeners
+              _myLayers.addDataModifiedListener(_layerListener);
+              _myLayers.addDataReformattedListener(_layerListener);
+              _myLayers.addDataExtendedListener(_layerListener);
+
+              // fire the extended listener once, just in case
+              // we need to empty the narrative
+              _layerListener.dataExtended(_myLayers);
+            }
+          }
+
+        });
+
+    _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            final Layers layer = (Layers) part;
+            if (layer == _myLayers)
+            {
+              // ditch to old layers
+              ditchOldLayers();
+            }
+          }
+        });
+
+    // ///////////////////////////////////////////////
+    // now for time provider support
+    // ///////////////////////////////////////////////
+    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
+        new PartMonitor.ICallback()
+        {
+
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            // just check we're not already looking at it
+            if (part != _myTemporalDataset)
+            {
+              // ok, better stop listening to the old one
+              if (_myTemporalDataset != null)
+              {
+                // yup, better ignore it
+                _myTemporalDataset.removeListener(_temporalListener,
+                    TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+                _myTemporalDataset = null;
+              }
+
+              // implementation here.
+              _myTemporalDataset = (TimeProvider) part;
+              if (_temporalListener == null)
+              {
+                _temporalListener = new PropertyChangeListener()
+                {
+                  @Override
+                  public void propertyChange(final PropertyChangeEvent event)
+                  {
+                    // ok, use the new time
+                    final HiResDate newDTG = (HiResDate) event.getNewValue();
+                    timeUpdated(newDTG);
+                  }
+                };
+              }
+              _myTemporalDataset.addListener(_temporalListener,
+                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+              // and is it an editor we want to remember?
+              // hmm, do we want to store this part?
+              if (parentPart instanceof IEditorPart)
+              {
+                _currentEditor = (IEditorPart) parentPart;
+              }
+            }
+          }
+        });
+    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            if (part == _myTemporalDataset)
+            {
+              _myTemporalDataset.removeListener(_temporalListener,
+                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+              // and clear the pointer
+              _myTemporalDataset = null;
+            }
+          }
+        });
+    _myPartMonitor.addPartListener(ControllableTime.class,
+        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            // implementation here.
+            _controllableTime = (ControllableTime) part;
+          }
+        });
+    _myPartMonitor.addPartListener(ControllableTime.class,
+        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            // no, don't bother clearing the controllable time when
+            // the plot is
+            // de-activated,
+            // - since with the highlight on the narrative, we want
+            // to be able
+            // to control the time still.
+            // _controllableTime = null;
+          }
+        });
+
+    _myPartMonitor.addPartListener(ISelectionProvider.class,
+        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            // aah, just check it's not is
+            if (part != me)
+            {
+              final ISelectionProvider iS = (ISelectionProvider) part;
+              iS.addSelectionChangedListener(_selectionChangeListener);
+            }
+          }
+        });
+    _myPartMonitor.addPartListener(ISelectionProvider.class,
+        PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            // aah, just check it's not is
+            if (part != me)
+            {
+              final ISelectionProvider iS = (ISelectionProvider) part;
+              iS.removeSelectionChangedListener(_selectionChangeListener);
+            }
+          }
+        });
+
+    // ok we're all ready now. just try and see if the current part is valid
+    _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+        .getActivePage());
+  }
+
+  protected void timeUpdated(final HiResDate dtg)
+  {
+    if (_followTime.isChecked())
+    {
+      if (!_amUpdating)
+      {
+        // ok, remember that we're updating
+        _amUpdating = true;
+
+        // remember the new one
+        _pendingTime.set(dtg.getMicros());
+
+        // get on with the update
+        try
+        {
+          Display.getDefault().asyncExec(new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              // quick, capture the time
+              final long safeTime = _pendingTime.get();
+
+              // do we have a pending time value
+              if (safeTime != INVALID_TIME)
+              {
+                _pendingTime.set(INVALID_TIME);
+
+                // now create the time object
+                final HiResDate theDTG = new HiResDate(0, safeTime);
+
+                // ok, tell the model to move to the relevant item
+                myViewer.setDTG(theDTG);
+              }
+              else
+              {
+                // ok, there isn't a pending date, we can just skip the update
+              }
+
+              // Note: we don't need to clear the lock, we do it in the finally block
+            }
+          });
+        }
+        finally
+        {
+          // clear the updating lock
+          _amUpdating = false;
+        }
       }
     }
   }
