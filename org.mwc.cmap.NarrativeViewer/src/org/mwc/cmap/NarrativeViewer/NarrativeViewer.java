@@ -286,11 +286,19 @@ public class NarrativeViewer
    */
   public void setEntry(final NarrativeEntry entry)
   {
-    // select this item
-    viewer.setSelection(new StructuredSelection(entry));
-
-    // make sure the new item is visible
-    viewer.reveal(entry);
+    try
+    {
+      viewer.getGrid().setRedraw(false);
+      // select this item
+      viewer.setSelection(new StructuredSelection(entry));
+  
+      // make sure the new item is visible
+      viewer.reveal(entry);
+    }
+    finally
+    {
+      viewer.getGrid().setRedraw(true);
+    }
   }
 
   public NarrativeViewerModel getModel()
