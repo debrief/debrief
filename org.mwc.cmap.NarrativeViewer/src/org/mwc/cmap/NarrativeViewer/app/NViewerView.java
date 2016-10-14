@@ -47,6 +47,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -397,6 +399,16 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         }
       }
     };
+    
+    // listen out for the view resizing
+    parent.addControlListener(new ControlAdapter()
+    {
+      @Override
+      public void controlResized(final ControlEvent e)
+      {
+        myViewer.refresh();
+      }
+    });
 
   }
 
