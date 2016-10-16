@@ -72,7 +72,7 @@ public class NarrativeViewer
 
     viewer.setAutoPreferredHeight(true);
 
-    myModel = new NarrativeViewerModel(preferenceStore, new EntryFilter()
+    myModel = new NarrativeViewerModel(viewer,preferenceStore, new EntryFilter()
     {
 
       @Override
