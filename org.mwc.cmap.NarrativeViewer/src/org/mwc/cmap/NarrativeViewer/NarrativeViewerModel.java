@@ -167,6 +167,11 @@ public class NarrativeViewerModel
           return ;
         }
         
+        if(!event.getProperty().equals(NarrativeViewerPrefsPage.PreferenceConstants.FONT))
+        {
+          return;
+        }
+        
         try
         {
           viewer.getGrid().setRedraw(false);
