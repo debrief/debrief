@@ -60,6 +60,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -99,6 +100,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
@@ -215,6 +217,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
    * we keep the reference to our track-type adapter
    */
   TrackDataProvider _trackDataProvider;
+  
+
+  /**
+   * The job used to handle large changes in layers
+   */
+  private Job _refreshJob;
 
   /**
    * something to look after our layer painters
@@ -540,6 +548,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       this.setTitleImage(icon.createImage());
     }
+    
+    // ok, also sort out that refresh job
+    createRefreshJob();
   }
 
   /**
@@ -2022,26 +2033,61 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     firePropertyChange(PROP_DIRTY);
   }
 
+
   /**
+   * Create the refresh job for the receiver.
+   * 
+   */
+  private void createRefreshJob()
+  {
+    // Creates a workbench job that will update the UI.  But, it can be
+    // cancelled and re-scheduled
+    // may override.
+    _refreshJob = new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
+      public IStatus runInUIThread(IProgressMonitor monitor)
+      {
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            // inform our parent
+            PlotEditor.super.layersExtended();
+
+            // we should also recalculate the time period we cover
+            final TimePeriod timePeriod = getPeriodFor(_myLayers);
+
+            // and share the good news.
+            _timeManager.setPeriod(this, timePeriod);
+
+            // and tell the track data manager that something's happened. One of
+            // it's
+            // tracks may have been
+            // deleted!
+            _trackDataProvider.fireTracksChanged();            
+          }
+        });
+        return Status.OK_STATUS;
+      }
+    };
+    
+    _refreshJob.setSystem(true);
+  } 
+    
+  /** layers have been added/removed
 	 * 
 	 */
   @Override
   protected void layersExtended()
   {
-    // inform our parent
-    super.layersExtended();
+    // ok. this method (callback) may get called a lot.
+    // we can queue up these updates, since the method doesn't
+    // receive the id of specific layers, the processing
+    // applies itself to the current set of layers.  So,
+    // deferring processing to skip some updates will still be effective
 
-    // we should also recalculate the time period we cover
-    final TimePeriod timePeriod = getPeriodFor(_myLayers);
-
-    // and share the good news.
-    _timeManager.setPeriod(this, timePeriod);
-
-    // and tell the track data manager that something's happened. One of
-    // it's
-    // tracks may have been
-    // deleted!
-    _trackDataProvider.fireTracksChanged();
+    _refreshJob.cancel();
+    _refreshJob.schedule(200);
   }
 
   public boolean isSaveAsAllowed()
