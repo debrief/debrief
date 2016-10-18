@@ -17,11 +17,15 @@ package org.mwc.cmap.NarrativeViewer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -41,6 +45,8 @@ import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -63,6 +69,11 @@ public class NarrativeViewerModel
   protected static final org.eclipse.swt.graphics.Color SWT_WHITE =
       new org.eclipse.swt.graphics.Color(Display.getCurrent(), 255, 255, 254);
 
+  private  static  final Color BLACK = Display.getDefault().getSystemColor(
+      SWT.COLOR_BLACK);
+  private  static final Color WHITE = Display.getDefault().getSystemColor(
+      SWT.COLOR_WHITE);
+  
   private final ColumnVisible myColumnVisible;
   private final ColumnTime myColumnTime;
   private final ColumnSource myColumnSource;
@@ -74,11 +85,15 @@ public class NarrativeViewerModel
   private final ColumnFilter myTypeFilter;
   private final EntryFilter textFilter;
 
+  private Font prefFont;
+  private GridTableViewer viewer;
+  
   final LinkedList<NarrativeEntry> myVisibleRows =
       new LinkedList<NarrativeEntry>();
   private NarrativeEntry[] myAllEntries = NO_ENTRIES;
 
   private IRollingNarrativeProvider myInput;
+  private WeakHashMap<Object, String> formatCache = new WeakHashMap<Object, String>();
 
   public AbstractColumn[] getAllColumns()
   {
@@ -106,10 +121,11 @@ public class NarrativeViewerModel
   };
   private IPreferenceStore store;
 
-  public NarrativeViewerModel(final IPreferenceStore store,
+  public NarrativeViewerModel(final GridTableViewer viewer,final IPreferenceStore store,
       EntryFilter textFilter)
   {
 
+    this.viewer = viewer;
     this.textFilter = textFilter;
     myColumnVisible = new ColumnVisible(store);
     myColumnVisible.setVisible(false);
@@ -126,6 +142,76 @@ public class NarrativeViewerModel
         myColumnType, //
         myColumnEntry, //
     };
+    viewer.getGrid().addDisposeListener(new DisposeListener()
+    {
+      
+      @Override
+      public void widgetDisposed(DisposeEvent e)
+      {
+        if(prefFont!=null)
+        {
+          prefFont.dispose();
+        
+        }
+        
+      }
+    });
+    store.addPropertyChangeListener(new IPropertyChangeListener()
+    {
+      
+      @Override
+      public void propertyChange(PropertyChangeEvent event)
+      {
+
+        if(viewer.getGrid().isDisposed())
+        {
+          return ;
+        }
+        
+        if(!event.getProperty().equals(NarrativeViewerPrefsPage.PreferenceConstants.FONT))
+        {
+          return;
+        }
+        
+        try
+        {
+          viewer.getGrid().setRedraw(false);
+          String fontStr = store.getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+          if(fontStr==null)
+          {
+            if(prefFont!=null)
+            {
+              prefFont.dispose();
+            
+            }
+            prefFont = null;
+          }
+         
+          else
+          {
+            if(prefFont!=null)
+            {
+              prefFont.dispose();
+              prefFont = null;
+            }
+            
+            FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
+            if(readFontData!=null)
+            {
+              prefFont = new Font(Display.getDefault(), readFontData);
+             
+            }
+          }
+          viewer.refresh();
+        }
+        finally
+        {
+          viewer.getGrid().setRedraw(true);
+        }
+
+        
+      }
+    });
 
     mySourceFilter = new ColumnFilter()
     {
@@ -156,12 +242,20 @@ public class NarrativeViewerModel
     this.store = store;
 
   }
+  
+  void setViewerDataLoadProgress(ViewerDataLoadProgress loadProgress)
+  {
+    if(myColumnVisible!=null)
+    {
+      myColumnVisible.setViewerDataLoadProgress(loadProgress);
+    }
+  }
 
-  public void setInput(final IRollingNarrativeProvider entryWrapper)
+  public int setInput(final IRollingNarrativeProvider entryWrapper)
   {
     myInput = entryWrapper;
     myAllEntries = null;
-
+    formatCache.clear();
     if (entryWrapper != null)
     {
       // check it has some data.
@@ -174,6 +268,7 @@ public class NarrativeViewerModel
         myAllEntries = null;
     }
     updateFilters();
+    return myVisibleRows!=null? myVisibleRows.size() :0;
   }
 
   protected String[] getPhrases()
@@ -292,12 +387,14 @@ public class NarrativeViewerModel
     return true;
   }
 
-  private static abstract class AbstractTextColumn extends AbstractColumn
+  static interface ViewerDataLoadProgress
   {
-    private static final Color BLACK = Display.getDefault().getSystemColor(
-        SWT.COLOR_BLACK);
-    private static final Color WHITE = Display.getDefault().getSystemColor(
-        SWT.COLOR_WHITE);
+      void next();
+  }
+  
+  private  abstract class AbstractTextColumn extends AbstractColumn
+  {
+   
 
     public AbstractTextColumn(final int index, final String name,
         final IPreferenceStore store)
@@ -315,9 +412,8 @@ public class NarrativeViewerModel
         private Map<java.awt.Color, Color> swtColorMap =
             new HashMap<java.awt.Color, Color>();
 
-        private Font prefFont;
+      
 
-        private String prefFontStr;
 
         @Override
         public void dispose()
@@ -332,36 +428,8 @@ public class NarrativeViewerModel
         @Override
         public Font getFont(Object element)
         {
-          String fontStr = store.getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
-          if(fontStr==null)
-          {
-            if(prefFont!=null)
-            {
-              prefFont.dispose();
-            
-            }
-            prefFont = null;
-            prefFontStr = null;
-          }
-          else if(fontStr.equals(prefFontStr) && prefFont!=null )
-          {
-            return (prefFont);
-          }
-          else
-          {
-            if(prefFont!=null)
-            {
-              prefFont.dispose();
-              prefFont = null;
-            }
-            prefFontStr =fontStr;
-            FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-            if(readFontData!=null)
-            {
-              prefFont = new Font(Display.getDefault(), readFontData);
-              return prefFont;
-            }
-          }
+          if(prefFont!=null && !prefFont.isDisposed())
+            return prefFont;
           return super.getFont(element);
         }
         
@@ -383,10 +451,7 @@ public class NarrativeViewerModel
               swtColorMap.put(color, swtColor);
             }
 
-            if (swtColor.getRGB().equals(WHITE.getRGB()))
-            {
-              return BLACK;
-            }
+     
             return swtColor;
           }
           return BLACK;
@@ -410,10 +475,17 @@ public class NarrativeViewerModel
   private static class ColumnVisible extends AbstractColumn
   {
 
+    ViewerDataLoadProgress loadProgress;
     public ColumnVisible(final IPreferenceStore store)
     {
       super(0, "Visible", store);
 
+    }
+
+    public void setViewerDataLoadProgress(ViewerDataLoadProgress loadProgress)
+    {
+      this.loadProgress = loadProgress;
+      
     }
 
     public Object getProperty(final NarrativeEntry entry)
@@ -459,6 +531,8 @@ public class NarrativeViewerModel
         @Override
         public String getText(Object element)
         {
+          if(loadProgress!=null)
+            loadProgress.next();
           return getProperty((NarrativeEntry) element).toString();
         }
 
@@ -466,7 +540,7 @@ public class NarrativeViewerModel
     }
   }
 
-  private static class ColumnTime extends AbstractTextColumn
+  private  class ColumnTime extends AbstractTextColumn
   {
     private TimeFormatter myTimeFormatter = DEFAULT_TIME;
 
@@ -483,16 +557,26 @@ public class NarrativeViewerModel
 
     public Object getProperty(final NarrativeEntry entry)
     {
-      return myTimeFormatter.format(entry.getDTG());
+      HiResDate dtg = entry.getDTG();
+      String format = formatCache.get(dtg);
+      
+      if(format==null)
+      {
+        format = myTimeFormatter.format(dtg);
+        formatCache.put(dtg, format);
+      }
+      
+      return format;
     }
 
     public void setTimeFormatter(final TimeFormatter formatter)
     {
       myTimeFormatter = formatter;
+      formatCache.clear();
     }
   }
 
-  private static class ColumnSource extends AbstractTextColumn
+  private  class ColumnSource extends AbstractTextColumn
   {
     public ColumnSource(final IPreferenceStore store)
     {
@@ -517,7 +601,7 @@ public class NarrativeViewerModel
     }
   }
 
-  private static class ColumnType extends AbstractTextColumn
+  private  class ColumnType extends AbstractTextColumn
   {
     public ColumnType(final IPreferenceStore store)
     {
@@ -542,7 +626,7 @@ public class NarrativeViewerModel
     }
   }
 
-  private static class ColumnEntry extends AbstractTextColumn
+  private  class ColumnEntry extends AbstractTextColumn
   {
     private boolean myIsWrapping = true;
 
@@ -617,35 +701,45 @@ public class NarrativeViewerModel
     viewer.getViewer().setItemCount(0);
     TableViewerColumnFactory factory =
         new TableViewerColumnFactory(viewer.getViewer());
-    viewer.getViewer().setContentProvider(new ILazyContentProvider()
-    {
-
-      Object[] elements;
-      private GridTableViewer gridTableViewer;
-
+    
+    viewer.getViewer().setContentProvider(new ArrayContentProvider(){
       @Override
-      public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+      public Object[] getElements(Object inputElement)
       {
-
-        elements = myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
-        gridTableViewer = (GridTableViewer) viewer;
-        gridTableViewer.setItemCount(0);
-        gridTableViewer.setItemCount(elements.length);
+        return myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
       }
-
-      @Override
-      public void dispose()
-      {
-
-      }
-
-      @Override
-      public void updateElement(int index)
-      {
-        gridTableViewer.replace(elements[index], index);
-
-      }
+      
     });
+    
+//    viewer.getViewer().setContentProvider(new ILazyContentProvider()
+//    {
+//
+//      Object[] elements;
+//      private GridTableViewer gridTableViewer;
+//
+//      @Override
+//      public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+//      {
+//
+//        elements = 
+//        gridTableViewer = (GridTableViewer) viewer;
+//        gridTableViewer.setItemCount(0);
+//        gridTableViewer.setItemCount(elements.length);
+//      }
+//
+//      @Override
+//      public void dispose()
+//      {
+//
+//      }
+//
+//      @Override
+//      public void updateElement(int index)
+//      {
+//        gridTableViewer.replace(elements[index], index);
+//
+//      }
+//    });
 
     {
 

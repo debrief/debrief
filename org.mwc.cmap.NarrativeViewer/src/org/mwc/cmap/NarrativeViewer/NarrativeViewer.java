@@ -14,12 +14,16 @@
  */
 package org.mwc.cmap.NarrativeViewer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -29,6 +33,7 @@ import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.mwc.cmap.NarrativeViewer.NarrativeViewerModel.ViewerDataLoadProgress;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -52,7 +57,7 @@ public class NarrativeViewer
     GridColumnLayout layout = new GridColumnLayout();
 
     filterGrid =
-        new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI | SWT.VIRTUAL, true)
+        new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI , true)
         {
 
           @Override
@@ -72,7 +77,7 @@ public class NarrativeViewer
 
     viewer.setAutoPreferredHeight(true);
 
-    myModel = new NarrativeViewerModel(preferenceStore, new EntryFilter()
+    myModel = new NarrativeViewerModel(viewer,preferenceStore, new EntryFilter()
     {
 
       @Override
@@ -163,15 +168,62 @@ public class NarrativeViewer
 
   public void setInput(final IRollingNarrativeProvider entryWrapper)
   {
-    myModel.setInput(entryWrapper);
-    Display.getDefault().asyncExec(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        refresh();
-      }
-    });
+   final int rows = myModel.setInput(entryWrapper);
+   if(rows>0)
+   {
+     ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(viewer.getGrid().getShell());  
+     
+     try
+     {
+       progressDialog.run(false, false, new IRunnableWithProgress()
+       {
+
+          @Override
+          public void run(final IProgressMonitor monitor)
+              throws InvocationTargetException, InterruptedException
+          {
+            monitor.beginTask(String.format(
+                "Loading %d narratives into viewer", rows),
+                IProgressMonitor.UNKNOWN);
+
+            myModel.setViewerDataLoadProgress(new ViewerDataLoadProgress()
+            {
+              int index;
+
+              @Override
+              public void next()
+              {
+                monitor.worked(++index);
+                if (rows > 0 && index%500==0)
+                  monitor.setTaskName(String.format(
+                      "Loading %d/%d narratives into viewer", index, rows));
+              }
+            });
+
+            refresh();
+            myModel.setViewerDataLoadProgress(null);
+
+            monitor.done();
+
+          }
+        });
+     }
+     catch (InvocationTargetException e)
+     {
+       e.printStackTrace();
+     }
+     catch (InterruptedException e)
+     {
+       e.printStackTrace();
+     }
+   }
+   else
+   {
+     refresh();
+   }
+    
+    
+    
   }
 
   public void setTimeFormatter(final TimeFormatter timeFormatter)
@@ -290,7 +342,7 @@ public class NarrativeViewer
     {
       viewer.getGrid().setRedraw(false);
       // select this item
-      viewer.setSelection(new StructuredSelection(entry));
+      viewer.setSelection(new StructuredSelection(entry),false);
   
       // make sure the new item is visible
       viewer.reveal(entry);
