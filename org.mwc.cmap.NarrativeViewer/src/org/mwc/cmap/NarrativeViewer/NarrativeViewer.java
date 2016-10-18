@@ -33,6 +33,7 @@ import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.mwc.cmap.NarrativeViewer.NarrativeViewerModel.ViewerDataLoadProgress;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -168,43 +169,62 @@ public class NarrativeViewer
   public void setInput(final IRollingNarrativeProvider entryWrapper)
   {
    final int rows = myModel.setInput(entryWrapper);
-    ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(viewer.getGrid().getShell());  
+   if(rows>0)
+   {
+     ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(viewer.getGrid().getShell());  
      
-    try
-    {
-      progressDialog.run(false, false, new IRunnableWithProgress()
-      {
+     try
+     {
+       progressDialog.run(false, false, new IRunnableWithProgress()
+       {
 
-        @Override
-        public void run(final IProgressMonitor monitor)
-            throws InvocationTargetException, InterruptedException
-        {
-          monitor.beginTask(rows>0?  String.format("Loading %d narratives into viewer",rows):"Loading narratives into viewer", rows);
-          
-          Display.getDefault().syncExec(new Runnable()
-          {
-            @Override
-            public void run()
-            {
-             
-             
-              refresh();
+         @Override
+         public void run(final IProgressMonitor monitor)
+             throws InvocationTargetException, InterruptedException
+         {
+           monitor.beginTask(String.format("Loading %d narratives into viewer",rows), IProgressMonitor.UNKNOWN);
+           
+           Display.getDefault().syncExec(new Runnable()
+           {
+             @Override
+             public void run()
+             {
+               myModel.setViewerDataLoadProgress(new ViewerDataLoadProgress()
+               {
+                 int index;
+                 @Override
+                 public void next()
+                 {
+                   monitor.worked(++index);
+                   if(rows>0)
+                     monitor.setTaskName(String.format("Loading %d/%d narratives into viewer",index,rows));
+                 }
+               });
               
-            }
-          });
+               refresh();
+               myModel.setViewerDataLoadProgress(null);
+               
+             }
+           });
 
-          monitor.done();
-        }
-      });
-    }
-    catch (InvocationTargetException e)
-    {
-      e.printStackTrace();
-    }
-    catch (InterruptedException e)
-    {
-      e.printStackTrace();
-    }
+           monitor.done();
+         }
+       });
+     }
+     catch (InvocationTargetException e)
+     {
+       e.printStackTrace();
+     }
+     catch (InterruptedException e)
+     {
+       e.printStackTrace();
+     }
+   }
+   else
+   {
+     refresh();
+   }
+    
     
     
   }

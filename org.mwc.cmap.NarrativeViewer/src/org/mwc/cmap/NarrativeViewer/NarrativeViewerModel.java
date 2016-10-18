@@ -242,6 +242,14 @@ public class NarrativeViewerModel
     this.store = store;
 
   }
+  
+  void setViewerDataLoadProgress(ViewerDataLoadProgress loadProgress)
+  {
+    if(myColumnVisible!=null)
+    {
+      myColumnVisible.setViewerDataLoadProgress(loadProgress);
+    }
+  }
 
   public int setInput(final IRollingNarrativeProvider entryWrapper)
   {
@@ -379,6 +387,11 @@ public class NarrativeViewerModel
     return true;
   }
 
+  static interface ViewerDataLoadProgress
+  {
+      void next();
+  }
+  
   private  abstract class AbstractTextColumn extends AbstractColumn
   {
    
@@ -462,10 +475,17 @@ public class NarrativeViewerModel
   private static class ColumnVisible extends AbstractColumn
   {
 
+    ViewerDataLoadProgress loadProgress;
     public ColumnVisible(final IPreferenceStore store)
     {
       super(0, "Visible", store);
 
+    }
+
+    public void setViewerDataLoadProgress(ViewerDataLoadProgress loadProgress)
+    {
+      this.loadProgress = loadProgress;
+      
     }
 
     public Object getProperty(final NarrativeEntry entry)
@@ -511,6 +531,8 @@ public class NarrativeViewerModel
         @Override
         public String getText(Object element)
         {
+          if(loadProgress!=null)
+            loadProgress.next();
           return getProperty((NarrativeEntry) element).toString();
         }
 
