@@ -178,38 +178,35 @@ public class NarrativeViewer
        progressDialog.run(false, false, new IRunnableWithProgress()
        {
 
-         @Override
-         public void run(final IProgressMonitor monitor)
-             throws InvocationTargetException, InterruptedException
-         {
-           monitor.beginTask(String.format("Loading %d narratives into viewer",rows), IProgressMonitor.UNKNOWN);
-           
-           Display.getDefault().syncExec(new Runnable()
-           {
-             @Override
-             public void run()
-             {
-               myModel.setViewerDataLoadProgress(new ViewerDataLoadProgress()
-               {
-                 int index;
-                 @Override
-                 public void next()
-                 {
-                   monitor.worked(++index);
-                   if(rows>0)
-                     monitor.setTaskName(String.format("Loading %d/%d narratives into viewer",index,rows));
-                 }
-               });
-              
-               refresh();
-               myModel.setViewerDataLoadProgress(null);
-               
-             }
-           });
+          @Override
+          public void run(final IProgressMonitor monitor)
+              throws InvocationTargetException, InterruptedException
+          {
+            monitor.beginTask(String.format(
+                "Loading %d narratives into viewer", rows),
+                IProgressMonitor.UNKNOWN);
 
-           monitor.done();
-         }
-       });
+            myModel.setViewerDataLoadProgress(new ViewerDataLoadProgress()
+            {
+              int index;
+
+              @Override
+              public void next()
+              {
+                monitor.worked(++index);
+                if (rows > 0)
+                  monitor.setTaskName(String.format(
+                      "Loading %d/%d narratives into viewer", index, rows));
+              }
+            });
+
+            refresh();
+            myModel.setViewerDataLoadProgress(null);
+
+            monitor.done();
+
+          }
+        });
      }
      catch (InvocationTargetException e)
      {
