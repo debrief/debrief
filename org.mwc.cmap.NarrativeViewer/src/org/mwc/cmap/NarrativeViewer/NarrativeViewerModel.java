@@ -550,6 +550,7 @@ public class NarrativeViewerModel
     public void setTimeFormatter(final TimeFormatter formatter)
     {
       myTimeFormatter = formatter;
+      formatCache.clear();
     }
   }
 
