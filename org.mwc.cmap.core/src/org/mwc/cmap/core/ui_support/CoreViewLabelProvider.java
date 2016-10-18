@@ -355,7 +355,14 @@ public class CoreViewLabelProvider extends LabelProvider implements
   private String idFor(final ColoredWatchable thisW, Color color,
       String thirdPartyImageDescriptor)
   {
-    return thisW.getClass() + " " + color + " " + thirdPartyImageDescriptor;
+    // optimise the performance of this string building
+    StringBuffer buff = new StringBuffer();
+    buff.append(thisW.getClass());
+    buff.append(" ");
+    buff.append(color.toString());
+    buff.append(" ");
+    buff.append(thirdPartyImageDescriptor);
+    return buff.toString();
   }
 
   public Image getColumnImage(final Object element, final int columnIndex)
