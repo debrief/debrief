@@ -194,7 +194,7 @@ public class NarrativeViewer
               public void next()
               {
                 monitor.worked(++index);
-                if (rows > 0)
+                if (rows > 0 && index%500==0)
                   monitor.setTaskName(String.format(
                       "Loading %d/%d narratives into viewer", index, rows));
               }
