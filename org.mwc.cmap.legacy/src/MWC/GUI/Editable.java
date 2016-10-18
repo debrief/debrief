@@ -827,10 +827,12 @@ public interface Editable
      */
     protected final PropertyDescriptor displayExpertLongProp(final String name,
     		final String displayName,
-        final String description, final Class<?> editor)
+        final String description, String category, final Class<?> editor)
         throws IntrospectionException
     {
-      final PropertyDescriptor p = expertLongProp(name, description, editor);
+      final PropertyDescriptor p = new CategorisedPropertyDescriptor(category, name, _class);
+      p.setShortDescription(description);
+      p.setPropertyEditorClass(editor);
       p.setDisplayName(displayName);
       return p;
     }
