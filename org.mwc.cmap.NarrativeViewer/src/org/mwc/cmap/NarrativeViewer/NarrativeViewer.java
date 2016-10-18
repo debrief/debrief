@@ -14,12 +14,16 @@
  */
 package org.mwc.cmap.NarrativeViewer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -52,7 +56,7 @@ public class NarrativeViewer
     GridColumnLayout layout = new GridColumnLayout();
 
     filterGrid =
-        new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI | SWT.VIRTUAL, true)
+        new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI , true)
         {
 
           @Override
@@ -163,15 +167,46 @@ public class NarrativeViewer
 
   public void setInput(final IRollingNarrativeProvider entryWrapper)
   {
-    myModel.setInput(entryWrapper);
-    Display.getDefault().asyncExec(new Runnable()
+   final int rows = myModel.setInput(entryWrapper);
+    ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(viewer.getGrid().getShell());  
+     
+    try
     {
-      @Override
-      public void run()
+      progressDialog.run(false, false, new IRunnableWithProgress()
       {
-        refresh();
-      }
-    });
+
+        @Override
+        public void run(final IProgressMonitor monitor)
+            throws InvocationTargetException, InterruptedException
+        {
+          monitor.beginTask(rows>0?  String.format("Loading %d narratives into viewer",rows):"Loading narratives into viewer", rows);
+          
+          Display.getDefault().syncExec(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+             
+             
+              refresh();
+              
+            }
+          });
+
+          monitor.done();
+        }
+      });
+    }
+    catch (InvocationTargetException e)
+    {
+      e.printStackTrace();
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
+    }
+    
+    
   }
 
   public void setTimeFormatter(final TimeFormatter timeFormatter)
@@ -290,7 +325,7 @@ public class NarrativeViewer
     {
       viewer.getGrid().setRedraw(false);
       // select this item
-      viewer.setSelection(new StructuredSelection(entry));
+      viewer.setSelection(new StructuredSelection(entry),false);
   
       // make sure the new item is visible
       viewer.reveal(entry);

@@ -25,6 +25,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -242,7 +243,7 @@ public class NarrativeViewerModel
 
   }
 
-  public void setInput(final IRollingNarrativeProvider entryWrapper)
+  public int setInput(final IRollingNarrativeProvider entryWrapper)
   {
     myInput = entryWrapper;
     myAllEntries = null;
@@ -259,6 +260,7 @@ public class NarrativeViewerModel
         myAllEntries = null;
     }
     updateFilters();
+    return myVisibleRows!=null? myVisibleRows.size() :0;
   }
 
   protected String[] getPhrases()
@@ -676,35 +678,45 @@ public class NarrativeViewerModel
     viewer.getViewer().setItemCount(0);
     TableViewerColumnFactory factory =
         new TableViewerColumnFactory(viewer.getViewer());
-    viewer.getViewer().setContentProvider(new ILazyContentProvider()
-    {
-
-      Object[] elements;
-      private GridTableViewer gridTableViewer;
-
+    
+    viewer.getViewer().setContentProvider(new ArrayContentProvider(){
       @Override
-      public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+      public Object[] getElements(Object inputElement)
       {
-
-        elements = myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
-        gridTableViewer = (GridTableViewer) viewer;
-        gridTableViewer.setItemCount(0);
-        gridTableViewer.setItemCount(elements.length);
+        return myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
       }
-
-      @Override
-      public void dispose()
-      {
-
-      }
-
-      @Override
-      public void updateElement(int index)
-      {
-        gridTableViewer.replace(elements[index], index);
-
-      }
+      
     });
+    
+//    viewer.getViewer().setContentProvider(new ILazyContentProvider()
+//    {
+//
+//      Object[] elements;
+//      private GridTableViewer gridTableViewer;
+//
+//      @Override
+//      public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+//      {
+//
+//        elements = 
+//        gridTableViewer = (GridTableViewer) viewer;
+//        gridTableViewer.setItemCount(0);
+//        gridTableViewer.setItemCount(elements.length);
+//      }
+//
+//      @Override
+//      public void dispose()
+//      {
+//
+//      }
+//
+//      @Override
+//      public void updateElement(int index)
+//      {
+//        gridTableViewer.replace(elements[index], index);
+//
+//      }
+//    });
 
     {
 
