@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -75,6 +76,7 @@ import org.eclipse.ui.handlers.CollapseAllHandler;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
+import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -1717,45 +1719,114 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       _pendingLayers.clear();
     }
   }
+  
+
+  /**
+   * The job used to refresh the grid.
+   */
+  private Job refreshOnDeleteJob;
 
   void processNewData(final Layers theData, final Editable newItem,
       final Layer parentLayer)
   {
     if (!_treeViewer.getTree().isDisposed())
     {
-      Display.getDefault().asyncExec(new Runnable()
+      // hmm, if newItem is null, it's probably a delete operation, asking for a general
+      // refresh. Let's group up such updates
+      if (newItem == null)
       {
-        public void run()
+        // ok, we should probably schedule the delete on update job.
+        
+        // do we need to create the job?
+        if(refreshOnDeleteJob == null)
         {
-          if (_treeViewer.getControl().isDisposed())
-          {
-            return;
-          }
-          final TreePath[] paths = _treeViewer.getExpandedTreePaths();
-
-          // ok, fire the change in the UI thread
-          _treeViewer.setInput(theData);
-
-          // open up the paths that were previously open
-          _treeViewer.setExpandedTreePaths(paths);
-
-          // hmm, do we know about the new item? If so, better select it
-          if (newItem != null)
-          {
-            // wrap the plottable
-            final EditableWrapper parentWrapper =
-                new EditableWrapper(parentLayer, null, theData);
-            final EditableWrapper wrapped =
-                new EditableWrapper(newItem, parentWrapper, theData);
-            final ISelection selected = new StructuredSelection(wrapped);
-
-            // and select it
-            editableSelected(selected, wrapped);
-          }
+          // ok, create it
+          refreshOnDeleteJob = createRefreshOnDeleteJob();
         }
-      });
+        
+        // ok, cancel any existing scheduled instance
+        refreshOnDeleteJob.cancel();
+        
+        // and request one after a pause
+        refreshOnDeleteJob.schedule(200);
+      }
+      else
+      {
+        // ok, it's a specific new item that we wish to display. run
+        // a dedicated UI refresh
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            if (_treeViewer.getControl().isDisposed())
+            {
+              return;
+            }
+            final TreePath[] paths = _treeViewer.getExpandedTreePaths();
+
+            // ok, fire the change in the UI thread
+            _treeViewer.setInput(theData);
+
+            // open up the paths that were previously open
+            _treeViewer.setExpandedTreePaths(paths);
+
+            // hmm, do we know about the new item? If so, better select it
+            if (newItem != null)
+            {
+              // wrap the plottable
+              final EditableWrapper parentWrapper =
+                  new EditableWrapper(parentLayer, null, theData);
+              final EditableWrapper wrapped =
+                  new EditableWrapper(newItem, parentWrapper, theData);
+              final ISelection selected = new StructuredSelection(wrapped);
+
+              // and select it
+              editableSelected(selected, wrapped);
+            }
+          }
+        });
+      }
     }
 
+  }
+
+  /** produce a job to force an outline UI refresh
+   * 
+   * @return
+   */
+  private Job createRefreshOnDeleteJob()
+  {
+    return new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
+      public IStatus runInUIThread(IProgressMonitor monitor)
+      {
+        if (_treeViewer.getControl().isDisposed())
+        {
+          return Status.CANCEL_STATUS;
+        }
+
+        if (monitor.isCanceled())
+        {
+          return Status.CANCEL_STATUS;
+        }
+
+        Display.getDefault().asyncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            final TreePath[] paths = _treeViewer.getExpandedTreePaths();
+
+            // ok, fire the change in the UI thread
+            _treeViewer.setInput(_myLayers);
+
+            // open up the paths that were previously open
+            _treeViewer.setExpandedTreePaths(paths);
+          }
+        });
+        
+        return Status.OK_STATUS;
+      }
+    };
   }
 
   private void enableVisibilityActions(final StructuredSelection ss)
