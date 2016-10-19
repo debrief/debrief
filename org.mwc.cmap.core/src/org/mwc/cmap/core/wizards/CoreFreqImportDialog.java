@@ -17,6 +17,7 @@ package org.mwc.cmap.core.wizards;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -31,6 +32,7 @@ public class CoreFreqImportDialog extends TitleAreaDialog
   public CoreFreqImportDialog(final Shell parentShell)
   {
     super(parentShell);
+    setShellStyle(getShellStyle()|SWT.ON_TOP);//keep on top 
   }
 
   protected Object[] getDataSet()
