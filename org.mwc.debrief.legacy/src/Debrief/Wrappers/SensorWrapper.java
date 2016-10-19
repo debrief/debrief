@@ -734,7 +734,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
                 displayExpertProp("BaseFrequency", "Base frequency",
                     "The base frequency of the source for this sound", OPTIONAL),
                 displayExpertLongProp("ResampleDataAt", "Resample data at",
-                    "the sensor cut sample rate",
+                    "the sensor cut sample rate",TEMPORAL, 
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
 
         res[2]
