@@ -16,7 +16,7 @@ import org.mwc.cmap.core.CorePlugin;
  *
  */
 @SuppressWarnings("restriction")
-public class SATCContentDescriber extends TextContentDescriber
+public class SATCSampleContentDescriber extends TextContentDescriber
 {
 
 	@Override
@@ -28,7 +28,7 @@ public class SATCContentDescriber extends TextContentDescriber
 		{
 			r = new BufferedReader(new InputStreamReader(contents));
 			String firstLine = r.readLine();
-			if (firstLine != null && firstLine.contains("//X, Y, Time"))
+      if (firstLine != null && firstLine.contains("#Time of Validity,"))
 			{
 				return VALID;
 			}
