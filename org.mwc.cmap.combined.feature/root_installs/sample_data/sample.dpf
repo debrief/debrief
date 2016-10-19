@@ -6016,7 +6016,7 @@
 <property Name="Arc_Finish" Value="180"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="951212 102144"/>
+<property Name="CurrentTime" Value="951212 050000"/>
 <property Name="NumRings" Value="1"/>
 <property Name="Toolbox_Start_Time" Value="951212 050000"/>
 <property Name="PointSize" Value="5"/>

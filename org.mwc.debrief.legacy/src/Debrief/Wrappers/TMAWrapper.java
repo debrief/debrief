@@ -484,7 +484,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 
 				}
 
-				if (list.size() > 0)
+				if (!list.isEmpty())
 				{
 					final Watchable[] dummy = new Watchable[]
 					{ null };

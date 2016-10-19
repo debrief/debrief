@@ -189,9 +189,10 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 		Action _myAction = null;
 
 		// so, see if it's something we can do business with
-		if (subjects.length == 1)
+		if (subjects.length == 1 || subjects.length > 1000)
 		{
-			// hmm, let's not allow it for just one item
+			// hmm, let's not allow it for just one item, or more than a thousand,
+		  // since this is an expensive operation to calculate
 			// see the equivalent part of RelativeTMASegment if we wish to support
 			// this
 		}

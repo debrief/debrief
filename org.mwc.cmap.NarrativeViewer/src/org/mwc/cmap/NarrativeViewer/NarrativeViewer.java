@@ -52,13 +52,13 @@ public class NarrativeViewer
     GridColumnLayout layout = new GridColumnLayout();
 
     filterGrid =
-        new FilteredGrid(parent, SWT.V_SCROLL | SWT.BORDER | SWT.MULTI |SWT.VIRTUAL , true)
+        new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI | SWT.VIRTUAL, true)
         {
 
           @Override
           protected void updateGridData(String text)
           {
-            
+
             myModel.updateFilters();
             refresh();
 
@@ -71,34 +71,33 @@ public class NarrativeViewer
     viewer.getGrid().setLinesVisible(true);
 
     viewer.setAutoPreferredHeight(true);
-    
-    myModel = new NarrativeViewerModel(preferenceStore, new EntryFilter()
+
+    myModel = new NarrativeViewerModel(viewer,preferenceStore, new EntryFilter()
     {
 
       @Override
       public boolean accept(NarrativeEntry entry)
       {
-
-        
         if (viewer != null && !viewer.getGrid().isDisposed())
         {
           String filterString = filterGrid.getFilterString();
           if (filterString != null && !filterString.trim().isEmpty())
           {
-            Pattern pattern = Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
-          
+            Pattern pattern =
+                Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
+
             AbstractColumn[] allColumns = myModel.getAllColumns();
             for (AbstractColumn abstractColumn : allColumns)
             {
               if (abstractColumn.isVisible())
               {
                 Object property = abstractColumn.getProperty(entry);
-                if(property instanceof String)
+                if (property instanceof String)
                 {
                   Matcher matcher = pattern.matcher((CharSequence) property);
-                  if(matcher.find())
+                  if (matcher.find())
                     return true;
-                        
+
                 }
               }
             }
@@ -131,7 +130,7 @@ public class NarrativeViewer
 
   public NarrativeViewerActions getViewerActions()
   {
-    if(myActions == null)
+    if (myActions == null)
     {
       myActions = new NarrativeViewerActions(this);
     }
@@ -184,8 +183,7 @@ public class NarrativeViewer
   public void refresh()
   {
     // check we're not closing
-    if (!viewer.getGrid().isDisposed()
-        && viewer.getContentProvider() != null)
+    if (!viewer.getGrid().isDisposed() && viewer.getContentProvider() != null)
     {
       viewer.setInput(new Object());
     }
@@ -193,10 +191,8 @@ public class NarrativeViewer
 
   private void calculateGridRawHeight()
   {
-    ISelection selection = viewer.getSelection();
     viewer.getGrid().setRedraw(false);
     viewer.setInput(new Object());
-    viewer.setSelection(selection);
     viewer.getGrid().setRedraw(true);
   }
 
@@ -254,7 +250,30 @@ public class NarrativeViewer
     // ok, try to select this entry
     if (entry != null)
     {
-      setEntry(entry);
+      boolean needsChange = true;
+
+      ISelection curSel = getViewer().getSelection();
+      if (curSel instanceof StructuredSelection)
+      {
+        StructuredSelection sel = (StructuredSelection) curSel;
+        if (sel.size() == 1)
+        {
+          Object item = sel.getFirstElement();
+          if (item instanceof NarrativeEntry)
+          {
+            NarrativeEntry nw = (NarrativeEntry) item;
+            if (entry.equals(nw))
+            {
+              needsChange = false;
+            }
+          }
+        }
+      }
+
+      if (needsChange)
+      {
+        setEntry(entry);
+      }
     }
 
   }
@@ -267,16 +286,30 @@ public class NarrativeViewer
    */
   public void setEntry(final NarrativeEntry entry)
   {
-    // select this item
-    viewer.setSelection(new StructuredSelection(entry));
-
-    // make sure the new item is visible
-    viewer.reveal(entry);
+    try
+    {
+      viewer.getGrid().setRedraw(false);
+      // select this item
+      viewer.setSelection(new StructuredSelection(entry));
+  
+      // make sure the new item is visible
+      viewer.reveal(entry);
+    }
+    finally
+    {
+      viewer.getGrid().setRedraw(true);
+    }
   }
 
   public NarrativeViewerModel getModel()
   {
     return myModel;
+  }
+
+  public void setSearchMode(boolean checked)
+  {
+
+    filterGrid.setFilterMode(checked);
   }
 
 }

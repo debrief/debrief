@@ -115,16 +115,16 @@ public class CompositeTrackWrapper extends TrackWrapper implements
                     "the time this track starts", FORMAT),
 
                 displayExpertLongProp("LabelFrequency", "Label frequency",
-                    "the label frequency",
+                    "the label frequency", TEMPORAL, 
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
                 displayExpertLongProp("SymbolFrequency", "Symbol frequency",
-                    "the symbol frequency",
+                    "the symbol frequency",TEMPORAL, 
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
                 displayExpertLongProp("ResampleDataAt", "Resample data at",
-                    "the data sample rate",
+                    "the data sample rate",TEMPORAL, 
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
                 displayExpertLongProp("ArrowFrequency", "Arrow frequency",
-                    "the direction marker frequency",
+                    "the direction marker frequency",TEMPORAL, 
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
                 displayExpertProp("SymbolColor", "Symbol color",
                     "the color of the symbol (when used)", FORMAT),
@@ -143,7 +143,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
                     VISIBILITY),
                 expertProp("Name", "the track name", FORMAT),
                 displayExpertLongProp("SymbolType", "Symbol type",
-                    "the type of symbol plotted for this label",
+                    "the type of symbol plotted for this label", FORMAT,
                     MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class),
 
             };
@@ -524,7 +524,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
       theCalc.construct(seg, thisOrigin, thisDate);
 
       // did we generate anything?
-      if (seg.size() > 0)
+      if (!seg.isEmpty())
       {
         // ok, now update the date/location
         thisOrigin = seg.last().getBounds().getCentre();

@@ -732,62 +732,54 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
   private static ImageRegistry getRegistry()
   {
+    // create the registry, if necessary
+    if (plugin._imageRegistry == null)
+    {
+      plugin._imageRegistry = new ImageRegistry();
+    }
+    
+    // ok, done
     return plugin._imageRegistry;
   }
 
   public static Image getImageFromRegistry(final ImageDescriptor name)
   {
-    Image res = null;
-
-    // do we already have an image
-    if (getRegistry() == null)
-    {
-      plugin._imageRegistry = new ImageRegistry();
-    }
+    Image res = getRegistry().get(name.toString());
 
     // ok - do we have it already?
-    res = getRegistry().get(name.toString());
-
     if (res == null)
     {
+      // nope, add it
       getRegistry().put(name.toString(), name);
+      
+      // and retrieve it
       res = getRegistry().get(name.toString());
     }
 
-    // and return it..
+    // now return it..
     return res;
   }
 
+
+  public static Image extendedGetImageFromRegistry(final String name)
+  { 
+    ImageDescriptor desc = getImageDescriptor(name);
+    if (desc == null)
+    {
+      final Status status =
+          new Status(IStatus.ERROR, "org.mwc.cmap.core", "Missing image "
+              + name);
+      getDefault().getLog().log(status);
+      return null;
+    }
+
+    return getImageFromRegistry(desc);
+  }
+
+  
   public static Image getImageFromRegistry(final String name)
   {
-    Image res = null;
-
-    // do we already have an image
-    if (getRegistry() == null)
-    {
-      plugin._imageRegistry = new ImageRegistry();
-    }
-
-    // ok - do we have it already?
-    res = getRegistry().get(name);
-
-    if (res == null)
-    {
-      ImageDescriptor desc = getImageDescriptor("icons/16/" + name);
-      if (desc == null)
-      {
-        final Status status =
-            new Status(IStatus.ERROR, "org.mwc.cmap.core", "Missing image "
-                + name);
-        getDefault().getLog().log(status);
-        return null;
-      }
-      getRegistry().put(name, desc);
-      res = getRegistry().get(name);
-    }
-
-    // and return it..
-    return res;
+    return extendedGetImageFromRegistry("icons/16/" + name);
   }
 
   /**

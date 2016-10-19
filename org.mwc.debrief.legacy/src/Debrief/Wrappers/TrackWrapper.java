@@ -67,10 +67,12 @@ import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
+import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GUI.Shapes.TextLabel;
+import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -101,9 +103,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * class containing editable details of a track
    */
-  public final class trackInfo extends Editable.EditorType implements
+  public static final class trackInfo extends Editable.EditorType implements
       Editable.DynamicDescriptors
   {
+
+    /** we cache static collections of the property & method descriptors.
+     * The sets of descriptors are (mostly) identical for each 
+     * object of this type, so we can re-use them
+     */
+    private static PropertyDescriptor[] _coreDescriptors;   
+    private static MethodDescriptor[] _methodDescriptors;
+    private static PropertyDescriptor[] _coreDescriptorsWithSymbols;
 
     /**
      * constructor for this editor, takes the actual track as a parameter
@@ -119,17 +129,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     @Override
     public final MethodDescriptor[] getMethodDescriptors()
     {
-      // just add the reset color field first
-      final Class<TrackWrapper> c = TrackWrapper.class;
+      if (_methodDescriptors == null)
+      {
+        // just add the reset color field first
+        final Class<TrackWrapper> c = TrackWrapper.class;
+        _methodDescriptors =
+            new MethodDescriptor[]
+            {
+                method(c, "exportThis", null, "Export Shape"),
+                method(c, "resetLabels", null, "Reset DTG Labels"),
+                method(c, "calcCourseSpeed", null,
+                    "Generate calculated Course and Speed")};
 
-      final MethodDescriptor[] mds =
-          {
-              method(c, "exportThis", null, "Export Shape"),
-              method(c, "resetLabels", null, "Reset DTG Labels"),
-              method(c, "calcCourseSpeed", null/* no params */,
-                  "Generate calculated Course and Speed")};
+      }
 
-      return mds;
+      return _methodDescriptors;
     }
 
     @Override
@@ -143,64 +157,69 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       try
       {
-        PropertyDescriptor[] res =
-            {
-                displayExpertProp("SymbolType", "Symbol type",
-                    "the type of symbol plotted for this label", FORMAT),
-                displayExpertProp("LineThickness", "Line thickness",
-                    "the width to draw this track", FORMAT),
-                expertProp("Name", "the track name"),
-                displayExpertProp("InterpolatePoints", "Interpolate points",
-                    "whether to interpolate points between known data points",
-                    SPATIAL),
-                expertProp("Color", "the track color", FORMAT),
-                displayExpertProp("EndTimeLabels", "Start/End time labels",
-                    "Whether to label track start/end with 6-figure DTG",
-                    VISIBILITY),
-                displayExpertProp("SymbolColor", "Symbol color",
-                    "the color of the symbol (when used)", FORMAT),
-                displayExpertProp(
-                    "PlotArrayCentre",
-                    "Plot array centre",
-                    "highlight the sensor array centre when non-zero array length provided",
-                    VISIBILITY),
-                displayExpertProp("TrackFont", "Track font",
-                    "the track label font", FORMAT),
-                displayExpertProp("NameVisible", "Name visible",
-                    "show the track label", VISIBILITY),
-                displayExpertProp("PositionsVisible", "Positions visible",
-                    "show individual Positions", VISIBILITY),
-                displayExpertProp("NameAtStart", "Name at start",
-                    "whether to show the track name at the start (or end)",
-                    VISIBILITY),
-                displayExpertProp("LinkPositions", "Link positions",
-                    "whether to join the track points", VISIBILITY),
-                expertProp("Visible", "whether the track is visible",
-                    VISIBILITY),
-                displayExpertLongProp("NameLocation", "Name location",
-                    "relative location of track label",
-                    MWC.GUI.Properties.LocationPropertyEditor.class),
-                displayExpertLongProp("LabelFrequency", "Label frequency",
-                    "the label frequency",
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                displayExpertLongProp("SymbolFrequency", "Symbol frequency",
-                    "the symbol frequency",
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                displayExpertLongProp("ResampleDataAt", "Resample data at",
-                    "the data sample rate",
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                displayExpertLongProp("ArrowFrequency", "Arrow frequency",
-                    "the direction marker frequency",
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                displayExpertLongProp("LineStyle", "Line style",
-                    "the line style used to join track points",
-                    MWC.GUI.Properties.LineStylePropertyEditor.class),
+        // have we already cached the descriptors?
+        if (_coreDescriptors == null)
+        {
+          _coreDescriptors =
+              new PropertyDescriptor[]
+              {
+                  displayExpertLongProp("SymbolType", "Symbol type",
+                      "the type of symbol plotted for this label", FORMAT,
+                      SymbolFactoryPropertyEditor.class),
+                  displayExpertLongProp("LineThickness", "Line thickness",
+                      "the width to draw this track", FORMAT,
+                      LineWidthPropertyEditor.class),
+                  expertProp("Name", "the track name"),
+                  displayExpertProp(
+                      "InterpolatePoints",
+                      "Interpolate points",
+                      "whether to interpolate points between known data points",
+                      SPATIAL),
+                  expertProp("Color", "the track color", FORMAT),
+                  displayExpertProp("EndTimeLabels", "Start/End time labels",
+                      "Whether to label track start/end with 6-figure DTG",
+                      VISIBILITY),
+                  displayExpertProp("SymbolColor", "Symbol color",
+                      "the color of the symbol (when used)", FORMAT),
+                  displayExpertProp(
+                      "PlotArrayCentre",
+                      "Plot array centre",
+                      "highlight the sensor array centre when non-zero array length provided",
+                      VISIBILITY),
+                  displayExpertProp("TrackFont", "Track font",
+                      "the track label font", FORMAT),
+                  displayExpertProp("NameVisible", "Name visible",
+                      "show the track label", VISIBILITY),
+                  displayExpertProp("PositionsVisible", "Positions visible",
+                      "show individual Positions", VISIBILITY),
+                  displayExpertProp("NameAtStart", "Name at start",
+                      "whether to show the track name at the start (or end)",
+                      VISIBILITY),
+                  displayExpertProp("LinkPositions", "Link positions",
+                      "whether to join the track points", VISIBILITY),
+                  expertProp("Visible", "whether the track is visible",
+                      VISIBILITY),
+                  displayExpertLongProp("NameLocation", "Name location",
+                      "relative location of track label", FORMAT,
+                      MWC.GUI.Properties.LocationPropertyEditor.class),
+                  displayExpertLongProp("LabelFrequency", "Label frequency",
+                      "the label frequency", TEMPORAL,
+                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                  displayExpertLongProp("SymbolFrequency", "Symbol frequency",
+                      "the symbol frequency", TEMPORAL,
+                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                  displayExpertLongProp("ResampleDataAt", "Resample data at",
+                      "the data sample rate", TEMPORAL,
+                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                  displayExpertLongProp("ArrowFrequency", "Arrow frequency",
+                      "the direction marker frequency", TEMPORAL,
+                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                  displayExpertLongProp("LineStyle", "Line style",
+                      "the line style used to join track points", TEMPORAL,
+                      MWC.GUI.Properties.LineStylePropertyEditor.class)};
+        }
 
-            };
-        res[0]
-            .setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
-        res[1]
-            .setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+        final PropertyDescriptor[] res;
 
         // SPECIAL CASE: if we have a world scaled symbol, provide
         // editors for
@@ -209,19 +228,28 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (item._theSnailShape instanceof WorldScaledSym)
         {
           // yes = better create height/width editors
-          final PropertyDescriptor[] res2 =
-              new PropertyDescriptor[res.length + 2];
-          System.arraycopy(res, 0, res2, 2, res.length);
-          res2[0] =
-              displayExpertProp("SymbolLength", "Symbol length",
-                  "Length of symbol", FORMAT);
-          res2[1] =
-              displayExpertProp("SymbolWidth", "Symbol width",
-                  "Width of symbol", FORMAT);
+          if (_coreDescriptorsWithSymbols == null)
+          {
+            _coreDescriptorsWithSymbols =
+                new PropertyDescriptor[_coreDescriptors.length + 2];
+            System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols,
+                2, _coreDescriptors.length);
+            _coreDescriptorsWithSymbols[0] =
+                displayExpertProp("SymbolLength", "Symbol length",
+                    "Length of symbol", FORMAT);
+            _coreDescriptorsWithSymbols[1] =
+                displayExpertProp("SymbolWidth", "Symbol width",
+                    "Width of symbol", FORMAT);
+          }
 
           // and now use the new value
-          res = res2;
+          res = _coreDescriptorsWithSymbols;
         }
+        else
+        {
+          res = _coreDescriptors;
+        }
+
         return res;
       }
       catch (final IntrospectionException e)
@@ -474,7 +502,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public static int mergeTracks(final TrackWrapper newTrack,
       final Layers theLayers, final Editable[] subjects)
-  {   
+  {
     // check that the legs don't overlap
     String failedMsg = checkTheyAreNotOverlapping(subjects);
 
@@ -496,12 +524,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       if (thisL instanceof TrackWrapper)
       {
         // is this the first one? If so, we'll copy the symbol setup
-        if(i == 0)
+        if (i == 0)
         {
           TrackWrapper track = (TrackWrapper) thisL;
           copyStyling(newTrack, track);
         }
-        
+
         // pass down through the positions/segments
         final Enumeration<Editable> pts = thisL.elements();
 
@@ -538,9 +566,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // and add it to the new track
         newTrack.append(newT);
-        
+
         // is this the first one? If so, we'll copy the symbol setup
-        if(i ==0)
+        if (i == 0)
         {
           final TrackWrapper track = ts.getWrapper();
           copyStyling(newTrack, track);
@@ -551,7 +579,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final SegmentList sl = (SegmentList) thisL;
 
         // is this the first one? If so, we'll copy the symbol setup
-        if(i ==0)
+        if (i == 0)
         {
           final TrackWrapper track = sl.getWrapper();
           copyStyling(newTrack, track);
@@ -579,10 +607,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * 
    * @param newTrack
    * @param reference
-   * Note: these parameters are tested here
+   *          Note: these parameters are tested here
    * @see TrackWrapper_Test#testTrackMerge1()
    */
-  private static void copyStyling(TrackWrapper newTrack, TrackWrapper reference)
+  private static void
+      copyStyling(TrackWrapper newTrack, TrackWrapper reference)
   {
     // Note: see link in javadoc for where these are tested
     newTrack.setSymbolType(reference.getSymbolType());
@@ -591,7 +620,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     newTrack.setSymbolColor(reference.getSymbolColor());
   }
 
-  private static void duplicateFixes(final SegmentList sl, final TrackSegment target)
+  private static void duplicateFixes(final SegmentList sl,
+      final TrackSegment target)
   {
     final Enumeration<Editable> segs = sl.elements();
     while (segs.hasMoreElements())
@@ -611,7 +641,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
-  private static void duplicateFixes(final TrackSegment source, final TrackSegment target)
+  private static void duplicateFixes(final TrackSegment source,
+      final TrackSegment target)
   {
     // ok, retrieve the points in the track segment
     final Enumeration<Editable> tsPts = source.elements();
@@ -843,15 +874,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     };
     _childTrackMovedListener = new PropertyChangeListener()
     {
-      
+
       @Override
       public void propertyChange(PropertyChangeEvent evt)
       {
         // child track move. remember that we need to recalculate & redraw
         setRelativePending();
-        
+
         // also share the good news
-        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System.currentTimeMillis());
+        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System
+            .currentTimeMillis());
       }
     };
 
@@ -1096,15 +1128,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final PlainWrapper pw = (PlainWrapper) val;
         pw.closeMe();
       }
-      else if(val instanceof TrackSegment)
+      else if (val instanceof TrackSegment)
       {
         final TrackSegment ts = (TrackSegment) val;
-        
+
         // and clear the parent item
         ts.setWrapper(null);
 
         // we also need to stop listen for a child moving
-        ts.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _childTrackMovedListener);
+        ts.removePropertyChangeListener(CoreTMASegment.ADJUSTED,
+            _childTrackMovedListener);
       }
     }
 
@@ -1279,17 +1312,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     final TreeSet<Editable> res = new TreeSet<Editable>();
 
-    if (_mySensors.size() > 0)
+    if (!_mySensors.isEmpty())
     {
       res.add(_mySensors);
     }
 
-    if (_myDynamicShapes.size() > 0)
+    if (!_myDynamicShapes.isEmpty())
     {
       res.add(_myDynamicShapes);
     }
 
-    if (_mySolutions.size() > 0)
+    if (!_mySolutions.isEmpty())
     {
       res.add(_mySolutions);
     }
@@ -2044,7 +2077,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final TrackSegment firstSeg = (TrackSegment) _thePositions.first();
       final TrackSegment lastSeg = (TrackSegment) _thePositions.last();
 
-      if ((firstSeg != null) && (firstSeg.size() > 0))
+      if ((firstSeg != null) && (!firstSeg.isEmpty()))
       {
 
         // see if this DTG is inside our data range
@@ -2098,11 +2131,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               TreeSet<Editable> tmpSet = new TreeSet<Editable>(set);
 
               // ok, start looping back until we find one
-              while ((!res.getVisible()) && (tmpSet.size() > 0))
+              while ((!res.getVisible()) && (!tmpSet.isEmpty()))
               {
                 // the first one wasn't, remove it
                 tmpSet.remove(res);
-                if (tmpSet.size() > 0)
+                if (!tmpSet.isEmpty())
                 {
                   res = (FixWrapper) tmpSet.first();
                 }
@@ -2239,7 +2272,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     return _showPositions;
   }
-  
+
   private SortedSet<Editable> getRawPositions()
   {
     SortedSet<Editable> res = null;
@@ -2571,7 +2604,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     _relativeUpdatePending = true;
   }
-  
+
   /**
    * paint the fixes for this track
    * 
@@ -2582,7 +2615,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // collate a list of the start & end points
     final List<FixWrapper> endPoints = new ArrayList<FixWrapper>();
-    
+
     // we need an array to store the polyline of points in. Check it's big
     // enough
     checkPointsArray();
@@ -2609,6 +2642,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     while (segments.hasMoreElements())
     {
       final TrackSegment seg = (TrackSegment) segments.nextElement();
+
+      // is it a single point segment?
+      final boolean singlePointSegment = seg.size() == 1;
 
       // how shall we plot this segment?
       final int thisLineStyle;
@@ -2640,12 +2676,39 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // have a look at the last fix. we defer painting the fix label,
         // because we want to know the id of the last visible fix, since
         // we may need to paint it's label in 6 DTG
-        if (getPositionsVisible() && lastFix != null && lastFix.getVisible())
+        if ((getPositionsVisible() && lastFix != null && lastFix.getVisible())
+            || singlePointSegment)
         {
           // is this the first visible fix?
           boolean isFirstVisibleFix = endPoints.size() == 1;
 
-          paintIt(dest, lastFix, getEndTimeLabels() && isFirstVisibleFix);
+          // special handling. if we only have one point in the segment,
+          // we treat it as the last fix
+          final FixWrapper newLastFix;
+          if (lastFix == null)
+          {
+            newLastFix = fw;
+          }
+          else
+          {
+            newLastFix = lastFix;
+          }
+
+          // more special processing - for single-point segments
+          final boolean symWasVisible = newLastFix.getSymbolShowing();
+
+          if (singlePointSegment)
+          {
+            newLastFix.setSymbolShowing(true);
+          }
+
+          paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix);
+
+          if (singlePointSegment)
+          {
+            newLastFix.setSymbolShowing(symWasVisible);
+          }
+
         }
 
         // now there's a chance that our fix has forgotten it's
@@ -2721,7 +2784,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // colour change...
             if (thisCol != lastCol)
             {
-              
+
               // double check we haven't been modified
               if (_ptCtr > _myPts.length)
               {
@@ -2730,11 +2793,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
               // add our position to the list - we'll output
               // the polyline at the end
-              if (_ptCtr < _myPts.length -1)
+              if (_ptCtr < _myPts.length - 1)
               {
                 _myPts[_ptCtr++] = thisP.x;
                 _myPts[_ptCtr++] = thisP.y;
-              }              
+              }
 
               // yup, better get rid of the previous
               // polygon
@@ -2744,11 +2807,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // add our position to the list - we'll output
             // the polyline at the end
 
-            if (_ptCtr > _myPts.length -1)
+            if (_ptCtr > _myPts.length - 1)
             {
               continue;
             }
-            
+
             _myPts[_ptCtr++] = thisP.x;
             _myPts[_ptCtr++] = thisP.y;
           }
@@ -2780,7 +2843,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // ok - paint the label for the last visible point
       if (getPositionsVisible())
       {
-        if(endPoints.size() > 1)
+        if (endPoints.size() > 1)
         {
           paintIt(dest, endPoints.get(1), getEndTimeLabels());
         }
@@ -3003,7 +3066,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // let the fixes draw themselves in
     // ///////////////////////////////////////////
     List<FixWrapper> endPoints = paintFixes(dest);
-    final boolean plotted_anything = endPoints.size() > 0;
+    final boolean plotted_anything = !endPoints.isEmpty();
 
     // and draw the track label
     // still, we only plot the track label if we have plotted any
@@ -3240,8 +3303,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       ts.setWrapper(null);
 
       // we also need to stop listen for a child moving
-      ts.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _childTrackMovedListener);
-      
+      ts.removePropertyChangeListener(CoreTMASegment.ADJUSTED,
+          _childTrackMovedListener);
+
       // remember that we've made a change
       modified = true;
     }
@@ -3813,7 +3877,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     boolean handled = false;
     boolean updateAlreadyFired = false;
-    
+
     // check it contains a range
     if (vector.getRange() > 0d)
     {
@@ -3839,19 +3903,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           }
         }
       }
-      
+
       handled = true;
-      
+
       // ok, get the legs to re-generate themselves
       updateAlreadyFired = sortOutRelativePositions();
     }
 
-    // now update the other children - some 
+    // now update the other children - some
     // are sensitive to ownship track
     this.updateDependents(elements(), vector);
 
     // did we move any dependents
-    if(handled && !updateAlreadyFired)
+    if (handled && !updateAlreadyFired)
     {
       firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this._theLabel
           .getLocation());
@@ -3876,7 +3940,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         DynamicInfillSegment dd = (DynamicInfillSegment) thisO;
         dd.reconstruct();
-        
+
         // ok - job well done
         handledData = true;
       }
@@ -3885,7 +3949,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // special case = we handle this higher
         // up the call chain, since tracks
         // have to move before any dependent children
-        
+
         // ok - job well done
         handledData = true;
       }
@@ -3893,7 +3957,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         final SegmentList list = (SegmentList) thisO;
         final Collection<Editable> items = list.getData();
-        IteratorWrapper enumer = new Plottables.IteratorWrapper(items.iterator());
+        IteratorWrapper enumer =
+            new Plottables.IteratorWrapper(items.iterator());
         handledData = updateDependents(enumer, offset);
       }
       else if (thisO instanceof SensorWrapper)
@@ -4012,7 +4077,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (isRelative)
         {
           final long thisTime = fw.getDateTimeGroup().getDate().getTime();
-          
+
           // ok, is this our first location?
           if (tmaLastLoc == null)
           {
@@ -4026,7 +4091,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             {
               final double courseRads;
               final double speedKts;
-              if(seg instanceof CoreTMASegment)
+              if (seg instanceof CoreTMASegment)
               {
                 CoreTMASegment tmaSeg = (CoreTMASegment) seg;
                 courseRads = Math.toRadians(tmaSeg.getCourse());
@@ -4038,18 +4103,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 speedKts = lastFix.getSpeed();
               }
 
-              // check it has a location. 
+              // check it has a location.
               final double depthM;
-              if(fw.getLocation() != null)
+              if (fw.getLocation() != null)
               {
-                depthM= fw.getDepth();
+                depthM = fw.getDepth();
               }
               else
               {
                 // no location - we may be extending a TMA segment
                 depthM = tmaLastLoc.getDepth();
               }
-                
+
               // use the value of depth as read in from the file
               tmaLastLoc.setDepth(depthM);
               final WorldVector thisVec =
@@ -4064,7 +4129,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           if (!moved)
           {
             // see if this represents a change
-            if (fw.getLocation() != null && !fw.getLocation().equals(tmaLastLoc))
+            if (fw.getLocation() != null
+                && !fw.getLocation().equals(tmaLastLoc))
             {
               moved = true;
             }
@@ -4082,13 +4148,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // get the child components to update,
       // - including sending out a "moved" message
       updateDependents(elements(), new WorldVector(0, 0, 0));
-      
+
       // also share the good news
-      firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System.currentTimeMillis());
-      
+      firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System
+          .currentTimeMillis());
+
       updateFired = true;
     }
-    
+
     return updateFired;
   }
 
@@ -4418,7 +4485,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     boolean res = false;
     if (_thePositions != null)
-      if (_thePositions.size() > 0)
+      if (!_thePositions.isEmpty())
         if (_thePositions.first() instanceof CoreTMASegment)
         {
           res = true;

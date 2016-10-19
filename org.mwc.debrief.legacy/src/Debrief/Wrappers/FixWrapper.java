@@ -272,6 +272,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Properties.MyDateFormatPropertyEditor;
+import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
@@ -377,7 +378,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
    * repeatedly retrieve them (each time we do a property edit), yet they are identical across all
    * objects of this type
    */
-  private static PropertyDescriptor[] _myInfoPropertyDescriptors = null;
+  private static PropertyDescriptor[] _coreDescriptors;
+  private static PropertyDescriptor[] _griddableDescriptors;
+  private static MethodDescriptor[] _methodDescriptors;
 
   // //////////////////////////////////////
   // constructors
@@ -473,29 +476,28 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
         next.getLocation().getLong() - previous.getLocation().getLong();
     double dDepth =
         next.getLocation().getDepth() - previous.getLocation().getDepth();
-    
+
     double dCourse = next.getCourse() - previous.getCourse();
-    
+
     // SPECIAL HANDLING FOR COURSE - IN CASE IT'S WRAPPING THROUGH ZERO
-    if(Math.abs(dCourse) >  Math.PI)
+    if (Math.abs(dCourse) > Math.PI)
     {
       // ok, put them in the same domain
       double pCourse = previous.getCourse();
       double nCourse = next.getCourse();
-      
-      if(pCourse < Math.PI)
+
+      if (pCourse < Math.PI)
       {
         pCourse += 2 * Math.PI;
       }
-      if(nCourse < Math.PI)
+      if (nCourse < Math.PI)
       {
         nCourse += 2 * Math.PI;
       }
-      
+
       dCourse = nCourse - pCourse;
     }
-    
-    
+
     double dSpeed = next.getSpeed() - previous.getSpeed();
 
     // sort out the proportions
@@ -546,7 +548,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
   public final void setTrackWrapper(final TrackWrapper theTrack)
   {
-    if(_trackWrapper != theTrack)
+    if (_trackWrapper != theTrack)
     {
       _trackWrapper = theTrack;
     }
@@ -561,7 +563,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   public final void resetColor()
   {
     // do we know our parent?
-    if(_trackWrapper != null)
+    if (_trackWrapper != null)
     {
       // ok, revert to the parent color
       setColor(_trackWrapper.getColor());
@@ -631,11 +633,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   @FireReformatted
   public void setColor(final Color theColor)
   {
-    if(theColor != null && !theColor.equals(getColor()))
+    if (theColor != null && !theColor.equals(getColor()))
     {
       // let the parent do the business
       super.setColor(theColor);
-  
+
       // and update the color of the location wrapper
       _theLocationWrapper.setColor(getColor());
     }
@@ -647,7 +649,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
    * @param dest
    * @param centre
    */
-  public final void paintMe(final CanvasType dest, final WorldLocation centre,
+  public void paintMe(final CanvasType dest, final WorldLocation centre,
       final Color theColor)
   {
 
@@ -772,7 +774,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   {
     return _theFix;
   }
-  
+
   @FireReformatted
   public void resetName()
   {
@@ -1116,7 +1118,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     public fixInfo(final FixWrapper data, final String theName,
         final String trackName)
     {
-      super(data, theName, trackName + ": theName");
+      super(data, theName, trackName + ":" + theName);
     }
 
     @Override
@@ -1130,19 +1132,21 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     {
       try
       {
-        final PropertyDescriptor[] res =
-            {
-                prop("Label", "the label for this data item"),
-                prop("Depth", "depth of this position"),
-                prop("Visible", "whether this position is visible"),
-                displayProp("FixLocation", "Fix location",
-                    "the location for this position", OPTIONAL),
-                displayProp("CourseDegs", "Course(degs)",
-                    "current course of this platform (degs)", SPATIAL),
-                prop("Speed", "current speed of this vehicle", SPATIAL)};
-
-        return res;
-
+        if (_griddableDescriptors == null)
+        {
+          _griddableDescriptors =
+              new PropertyDescriptor[]
+              {
+                  prop("Label", "the label for this data item"),
+                  prop("Depth", "depth of this position"),
+                  prop("Visible", "whether this position is visible"),
+                  displayProp("FixLocation", "Fix location",
+                      "the location for this position", OPTIONAL),
+                  displayProp("CourseDegs", "Course(degs)",
+                      "current course of this platform (degs)", SPATIAL),
+                  prop("Speed", "current speed of this vehicle", SPATIAL)};
+        }
+        return _griddableDescriptors;
       }
       catch (final IntrospectionException e)
       {
@@ -1161,12 +1165,14 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     {
       try
       {
-        if (_myInfoPropertyDescriptors == null)
+        if (_coreDescriptors == null)
         {
-          final PropertyDescriptor[] res =
+          _coreDescriptors =
+              new PropertyDescriptor[]
               {
-                  displayProp("SymbolScale", "Symbol scale",
-                      "the scale of the symbol", FORMAT),
+                  displayExpertLongProp("SymbolScale", "Symbol scale",
+                      "the scale of the symbol", FORMAT,
+                      SymbolScalePropertyEditor.class),
                   displayProp("SymbolShowing", "Symbol showing",
                       "whether the symbol is showing", VISIBILITY),
                   displayProp("ArrowShowing", "Arrow showing",
@@ -1191,32 +1197,35 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
                   displayLongProp("LabelLocation", "Label location",
                       "the label location",
                       MWC.GUI.Properties.LocationPropertyEditor.class, FORMAT)};
-          res[0]
-              .setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
-          _myInfoPropertyDescriptors = res;
         }
       }
       catch (final IntrospectionException e)
       {
-        _myInfoPropertyDescriptors = super.getPropertyDescriptors();
+        _coreDescriptors = super.getPropertyDescriptors();
       }
-      return _myInfoPropertyDescriptors;
+      return _coreDescriptors;
     }
 
     public final MethodDescriptor[] getMethodDescriptors()
     {
-      // just add the reset color field first
-      final Class<FixWrapper> c = FixWrapper.class;
-      final MethodDescriptor[] mds =
-          {method(c, "resetColor", null, "Reset Color"),
-              method(c, "resetName", null, "Reset Label"),
-              method(c, "resetLabelLocation", null, "Reset label location"),
-              method(c, "exportThis", null, "Export Shape")};
-      return mds;
+      if (_methodDescriptors == null)
+      {
+        final Class<FixWrapper> c = FixWrapper.class;
+        _methodDescriptors =
+            new MethodDescriptor[]
+            {method(c, "resetColor", null, "Reset Color"),
+                method(c, "resetName", null, "Reset Label"),
+                method(c, "resetLabelLocation", null, "Reset label location"),
+                method(c, "exportThis", null, "Export Shape")};
+      }
+      return _methodDescriptors;
     }
 
     public final SubjectAction[] getUndoableActions()
     {
+      // NOTE: we aren't cacheing these, since they're unique
+      // to each instance.
+      
       final FixWrapper fw = (FixWrapper) getData();
       final String lbl = fw.getLabel();
       final SubjectAction[] res =
@@ -1377,18 +1386,18 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
       fw1 = TrackWrapper_Test.createFix(100, 60, 30, 0, 31, 0, 0, 2, 3);
       fw2 = TrackWrapper_Test.createFix(200, 60, 15, 0, 31, 30, 0, 2, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
-//
-//      System.out.println(fw1.getLocation() + ": " + fw1.getLocation().getLat()
-//          + ", " + fw1.getLocation().getLong());
-//      System.out.println(fw2.getLocation() + ": " + fw2.getLocation().getLat()
-//          + ", " + fw2.getLocation().getLong());
-//      System.out.println(fw3.getLocation() + ": " + fw3.getLocation().getLat()
-//          + ", " + fw3.getLocation().getLong());
+      //
+      // System.out.println(fw1.getLocation() + ": " + fw1.getLocation().getLat()
+      // + ", " + fw1.getLocation().getLong());
+      // System.out.println(fw2.getLocation() + ": " + fw2.getLocation().getLat()
+      // + ", " + fw2.getLocation().getLong());
+      // System.out.println(fw3.getLocation() + ": " + fw3.getLocation().getLat()
+      // + ", " + fw3.getLocation().getLong());
 
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
       assertEquals("right long", 31.25, fw3.getLocation().getLong(), 0.0001);
       assertEquals("right lat", 60.375, fw3.getLocation().getLat(), 0.001);
-      
+
       // handle the course passing through zero
       fw1 = TrackWrapper_Test.createFix(100, 1, 1, 0, 1);
       fw2 = TrackWrapper_Test.createFix(200, 2, 2, 10, 3);
@@ -1402,17 +1411,14 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
       fw2 = TrackWrapper_Test.createFix(200, 2, 2, 15, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
-      assertEquals("right course", 5, Math.toDegrees(fw3
-          .getCourse()), 0.001);
+      assertEquals("right course", 5, Math.toDegrees(fw3.getCourse()), 0.001);
 
       fw1 = TrackWrapper_Test.createFix(100, 1, 1, 315, 1);
       fw2 = TrackWrapper_Test.createFix(200, 2, 2, 15, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
-      assertEquals("right course", 345, Math.toDegrees(fw3
-          .getCourse()), 0.001);
+      assertEquals("right course", 345, Math.toDegrees(fw3.getCourse()), 0.001);
 
-      
     }
 
   }

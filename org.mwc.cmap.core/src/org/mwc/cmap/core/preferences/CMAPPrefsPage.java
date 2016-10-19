@@ -108,7 +108,7 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 
 		
 		addField(new RadioGroupFieldEditor(PreferenceConstants.IMPORT_MODE,
-				"Default &track import mode:", 1, _trackModeTags, getFieldEditorParent()));
+				"Default &track import mode: (use 'Ask user' to allow specification of import frequency)", 1, _trackModeTags, getFieldEditorParent()));
 		
 		addField(new RadioGroupFieldEditor(PreferenceConstants.RNG_UNITS,
 				"Default &range units:", 1, _distanceUnitTags, getFieldEditorParent()));

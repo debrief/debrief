@@ -189,7 +189,7 @@ public class GenerateTMASegmentFromInfillSegment implements
 		DynamicInfillSegment infill = null;
 
 		// so, see if it's something we can do business with
-		if (subjects.length == 1)
+		if (subjects.length == 1 || subjects.length > 1000)
 		{
 			// hmm, let's not allow it for just one item
 			// see the equivalent part of RelativeTMASegment if we wish to support

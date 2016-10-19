@@ -217,7 +217,7 @@ final class SnailDrawSWTTrack
 		// see if there are any points
 		if (dotPoints != null)
 		{
-			if (dotPoints.size() > 0)
+			if (!dotPoints.isEmpty())
 			{
 				final int _mySize = 5;
 				

@@ -32,6 +32,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
 import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
@@ -81,7 +82,51 @@ public class ImportReplay extends PlainImporterBase
    */
   public static interface ProvidesModeSelector
   {
-    public String getSelectedImportMode(final String trackName);
+    public static class ImportSettings
+    {
+      /**
+       * whether to use DR/OTG
+       * 
+       */
+      public final String importMode;
+
+      /**
+       * frequency to resample incoming data
+       * 
+       */
+      public final Long sampleFrequency;
+
+      public ImportSettings(String mode, Long freq)
+      {
+        importMode = mode;
+        sampleFrequency = freq;
+
+        if (ImportReplay.IMPORT_AS_DR.equals(mode))
+        {
+          if (freq != null)
+          {
+            // this isn't allowed, throw a wobbly
+            throw new RuntimeException(
+                "Resample frequency not supported for DR import, since essential data would be lost");
+          }
+        }
+      }
+
+    }
+
+    /** find out how the user wants to import the new REP file
+     * 
+     * @param trackName
+     * @return
+     */
+    public ImportSettings getSelectedImportMode(final String trackName);
+    
+    /** find out the sample frequency for adding this data
+     * 
+     * @param trackName
+     * @return
+     */
+    public Long getSelectedImportFrequency(final String trackName);
   }
 
   /**
@@ -116,17 +161,27 @@ public class ImportReplay extends PlainImporterBase
    */
   private HashMap<TrackWrapper, Vector<SensorWrapper>> _pendingSensors =
       new HashMap<TrackWrapper, Vector<SensorWrapper>>();
-  
-  /** a list of any exiting tracks that got modified (so we can tell people they've moved
-   * at the end of hte operation 
+
+  /**
+   * a list of any exiting tracks that got modified (so we can tell people they've moved at the end
+   * of hte operation
    */
-  private List<TrackWrapper> _existingTracksThatMoved = new ArrayList<TrackWrapper>();
+  private List<TrackWrapper> _existingTracksThatMoved =
+      new ArrayList<TrackWrapper>();
+
+  /**
+   * remember how the user wants this REP data imported
+   * 
+   */
+  private ImportSettings _importSettings;
+  private Map<String, Long> _lastImportedItem = new HashMap<String, Long>();
 
   /**
    * the property name we use for importing tracks (DR/ATG)
    * 
    */
   public final static String TRACK_IMPORT_MODE = "TRACK_IMPORT_MODE";
+  public final static String RESAMPLE_FREQUENCY = "RESAMPLE_FREQUENCY";
 
   /**
    * the property values for importing modes
@@ -254,19 +309,48 @@ public class ImportReplay extends PlainImporterBase
   private HiResDate processReplayFix(final ReplayFix rf)
   {
     final HiResDate res = rf.theFix.getTime();
+    
+    // ok, are we re-sampling the data?
+    if (_importSettings != null)
+    {
+      // are we in OTG mode?
+      if (ImportReplay.IMPORT_AS_OTG.equals(_importSettings.importMode))
+      {
+        final Long lastTime = _lastImportedItem.get(rf.theTrackName);
+
+        final Long sampleFreq = _importSettings.sampleFrequency;
+
+        final boolean isMax = (Long.MAX_VALUE == sampleFreq);
+
+        // ok, are we due to import this one?
+        if (lastTime == null
+            || (!isMax && res.getDate().getTime() >= lastTime + sampleFreq))
+        {
+          // ok, carry on
+        }
+        else
+        {
+          return null;
+        }
+      }
+    }
+
+    // ok, we're processing this one. Remember it.
+    final long thisTime = res.getDate().getTime();
+    _lastImportedItem.put(rf.theTrackName, thisTime);
 
     // find the track name
     final String theTrack = rf.theTrackName;
     final Color thisColor = replayColorFor(rf.theSymbology);
 
     // create the wrapper for this annotation
-    final FixWrapper thisWrapper = new FixWrapper(rf.theFix);
+    final FixWrapper thisFix = new FixWrapper(rf.theFix);
 
     // overwrite the label, if there's one there
     if (rf.label != null)
     {
-      thisWrapper.setLabel(rf.label);
-      thisWrapper.setUserLabelSupplied(true);
+      thisFix.setLabel(rf.label);
+      thisFix.setUserLabelSupplied(true);
     }
 
     // keep track of the wrapper for this track
@@ -274,21 +358,50 @@ public class ImportReplay extends PlainImporterBase
     TrackWrapper trkWrapper = (TrackWrapper) getLayerFor(theTrack);
 
     // have we found the layer?
-    if(trkWrapper != null)
+    if (trkWrapper != null)
     {
       // ok, remember that we've changed this track
-      if(!_existingTracksThatMoved.contains(trkWrapper))
+      if (!_existingTracksThatMoved.contains(trkWrapper))
       {
         _existingTracksThatMoved.add(trkWrapper);
+        
+        // ok, this must be the first fix for this new track
+        
+        // ask the user if he wants it resampled.
+        if (_myParent instanceof ProvidesModeSelector && _importSettings == null)
+        {
+          final ProvidesModeSelector selector =
+              (ProvidesModeSelector) _myParent;
+          Long freq = selector.getSelectedImportFrequency(theTrack);
+          if(freq == null)
+          {
+            // ok, skip the data
+            _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE);
+          }
+          else
+          {
+            _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
+          }
+        }
       }
     }
     else
     {
       // ok, see if we're importing it as DR or ATG (or ask the audience)
       String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
+      String freqStr = _myParent.getProperty(RESAMPLE_FREQUENCY);
+      Long importFreq;
+      if (freqStr != null && freqStr.length() > 0 && !freqStr.equals("null"))
+      {
+        importFreq = Long.valueOf(freqStr);
+      }
+      else
+      {
+        importFreq = null;
+      }
 
       // catch a missing import mode
-      if (importMode == null)
+      if (importMode == null || importFreq == null)
       {
         // belt & braces it is then...
         importMode = ImportReplay.ASK_THE_AUDIENCE;
@@ -300,12 +413,26 @@ public class ImportReplay extends PlainImporterBase
         {
           final ProvidesModeSelector selector =
               (ProvidesModeSelector) _myParent;
-          importMode = selector.getSelectedImportMode(theTrack);
+          _importSettings = selector.getSelectedImportMode(theTrack);
+          if (_importSettings != null)
+          {
+            importMode = _importSettings.importMode;
+          }
+          else
+          {
+            importMode = null;
+          }
         }
+      }
+      else
+      {
+        // create the artificial import settings
+        _importSettings = new ImportSettings(importMode, importFreq);
       }
 
       TrackSegment initialLayer = null;
 
+      // has the user cancelled?
       if (importMode == null)
       {
         // and drop out of the whole affair
@@ -372,17 +499,19 @@ public class ImportReplay extends PlainImporterBase
       }
     }
 
+    // ok, are we
+
     // add the fix to the track
-    trkWrapper.addFix(thisWrapper);
+    trkWrapper.addFix(thisFix);
 
     // let's also tell the fix about it's track
-    ((FixWrapper) thisWrapper).setTrackWrapper(trkWrapper);
+    ((FixWrapper) thisFix).setTrackWrapper(trkWrapper);
 
     // also, see if this fix is specifying a different colour to use
     if (thisColor != trkWrapper.getColor())
     {
       // give this fix it's unique colour
-      thisWrapper.setColor(thisColor);
+      thisFix.setColor(thisColor);
     }
 
     // lastly - see if the layers object has some formatters
@@ -391,7 +520,7 @@ public class ImportReplay extends PlainImporterBase
     while (newIiter.hasNext())
     {
       Layers.INewItemListener newI = (Layers.INewItemListener) newIiter.next();
-      newI.newItem(trkWrapper, thisWrapper, rf.theSymbology);
+      newI.newItem(trkWrapper, thisFix, rf.theSymbology);
     }
 
     return res;
@@ -415,17 +544,17 @@ public class ImportReplay extends PlainImporterBase
     {
       if (trackName.length() > 6)
       {
-        String tmpTrackName = trackName.substring(0,6);
+        String tmpTrackName = trackName.substring(0, 6);
         val = getLayerFor(tmpTrackName);
-        
-        if(val != null)
+
+        if (val != null)
         {
           // ok, adopt this track name
           trackName = tmpTrackName;
         }
       }
     }
-    
+
     // so, we've found a track - see if it holds this sensor
     // SPECIAL HANDLING: it may actually still be a null. This is ok,
     // because post-load the invite the user to select
@@ -858,6 +987,10 @@ public class ImportReplay extends PlainImporterBase
         _newLayers.clear();
         _existingTracksThatMoved.clear();
 
+        // clear the input settings
+        _importSettings = null;
+        _lastImportedItem.clear();
+
         thisLine = br.readLine();
 
         final long start = System.currentTimeMillis();
@@ -882,13 +1015,13 @@ public class ImportReplay extends PlainImporterBase
         {
           _myFormatters[k].formatLayers(_newLayers);
         }
-        
+
         // see if we've modified any existing tracks
         Iterator<TrackWrapper> tIter = _existingTracksThatMoved.iterator();
         while (tIter.hasNext())
         {
           TrackWrapper track = (TrackWrapper) tIter.next();
-          
+
           // tell it that it has changed
           track.sortOutRelativePositions();
         }
@@ -1079,7 +1212,7 @@ public class ImportReplay extends PlainImporterBase
         TrackWrapper parent = thisS.getHost();
 
         // now formally add the sensor, if we can
-        if(parent != null)
+        if (parent != null)
         {
           parent.add(thisS);
         }
@@ -1292,7 +1425,7 @@ public class ImportReplay extends PlainImporterBase
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    private static String fileName = "test.rep";
+    private String fileName = "test.rep";
 
     boolean fileFinished = false;
 
@@ -1312,57 +1445,105 @@ public class ImportReplay extends PlainImporterBase
       assertTrue("Test file not found", iFile.exists());
     }
 
-    public final void testReadREP()
+    public static class TestParent implements ToolParent, ProvidesModeSelector
+    {
+      final ImportSettings settings;
+      final Long freq;
+
+      public TestParent(String mode, Long freq)
+      {
+        settings = new ImportSettings(mode, freq);
+        this.freq = freq;
+      }
+
+      public void addActionToBuffer(final Action theAction)
+      {
+
+      }
+
+      @Override
+      public void logStack(int status, String text)
+      {
+        logError(status, "Stack requested:" + text, null);
+      }
+
+      public Map<String, String> getPropertiesLike(final String pattern)
+      {
+        return null;
+      }
+
+      public String getProperty(final String name)
+      {
+        if (name.equals(ImportReplay.TRACK_IMPORT_MODE))
+          return settings.importMode;
+        else if (name.equals(ImportReplay.RESAMPLE_FREQUENCY))
+          return "" + settings.sampleFrequency;
+        else
+          return null;
+      }
+
+      public void restoreCursor()
+      {
+
+      }
+
+      public void setCursor(final int theCursor)
+      {
+
+      }
+
+      public void setProperty(final String name, final String value)
+      {
+
+      }
+
+      public void logError(final int status, final String text,
+          final Exception e)
+      {
+
+      }
+
+      @Override
+      public ImportSettings getSelectedImportMode(String trackName)
+      {
+        return settings;
+      }
+
+      @Override
+      public Long getSelectedImportFrequency(String trackName)
+      {
+        return null;
+      }
+    }
+
+    public final void testDRimport()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_DR, null, 3, 25, true);
+    }
+
+    public final void testOTGimport1()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_OTG, 0L, 3, 25, true);
+    }
+
+    public final void testOTGimport2()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_OTG, 300000L, 3, 5, false);
+    }
+
+    public final void testOTGimport3()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
+    }
+
+    private final void doReadRep(String mode, Long freq, int LAYER_COUNT,
+        int NUM_FIXES, boolean checkArea)
     {
       java.io.File testFile = null;
 
       // specify the parent object - so our processing can retrieve the
       // OTG setting
-      ImportReplay.initialise(new ToolParent()
-      {
-
-        public void addActionToBuffer(final Action theAction)
-        {
-
-        }
-
-        @Override
-        public void logStack(int status, String text)
-        {
-          logError(status, "Stack requested:" + text, null);
-        }
-
-        public Map<String, String> getPropertiesLike(final String pattern)
-        {
-          return null;
-        }
-
-        public String getProperty(final String name)
-        {
-          return ImportReplay.IMPORT_AS_OTG;
-        }
-
-        public void restoreCursor()
-        {
-
-        }
-
-        public void setCursor(final int theCursor)
-        {
-
-        }
-
-        public void setProperty(final String name, final String value)
-        {
-
-        }
-
-        public void logError(final int status, final String text,
-            final Exception e)
-        {
-
-        }
-      });
+      ImportReplay.initialise(new TestParent(mode, freq));
 
       // can we load it directly
       testFile = new java.io.File(fileName);
@@ -1436,37 +1617,35 @@ public class ImportReplay extends PlainImporterBase
       assertTrue("File finished received", fileFinished);
       assertTrue("All Files finished received", allFilesFinished);
 
-      assertEquals("Count of layers", 3, _theLayers.size());
+      assertEquals("Count of layers", LAYER_COUNT, _theLayers.size());
 
-      // area of coverage
-      final MWC.GenericData.WorldArea area =
-          _theLayers.elementAt(0).getBounds();
-      super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
-          11.92276, 0.001);
-      super.assertEquals("tl long of first layer", area.getTopLeft().getLong(),
-          -11.59394, 0.00001);
-      super.assertEquals("tl depth of first layer", area.getTopLeft()
-          .getDepth(), 0, 0.00001);
+      TrackWrapper track = (TrackWrapper) _theLayers.elementAt(0);
+      int numFixes = track.numFixes();
+      assertEquals("got correct num fixes", NUM_FIXES, numFixes);
 
-      super.assertEquals("br lat of first layer", area.getBottomRight()
-          .getLat(), 11.89421, 0.001);
-      super.assertEquals("br long of first layer", area.getBottomRight()
-          .getLong(), -11.59376, 0.00001);
-      super.assertEquals("br depth of first layer", area.getBottomRight()
-          .getDepth(), 0, 0.00001);
+      if (checkArea)
+      {
+        // area of coverage
+        final MWC.GenericData.WorldArea area =
+            _theLayers.elementAt(0).getBounds();
+        super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
+            11.92276, 0.01);
+        super.assertEquals("tl long of first layer", area.getTopLeft()
+            .getLong(), -11.59394, 0.01);
+        super.assertEquals("tl depth of first layer", area.getTopLeft()
+            .getDepth(), 0, 0.00001);
+
+        super.assertEquals("br lat of first layer", area.getBottomRight()
+            .getLat(), 11.89421, 0.001);
+        super.assertEquals("br long of first layer", area.getBottomRight()
+            .getLong(), -11.59376, 0.00001);
+        super.assertEquals("br depth of first layer", area.getBottomRight()
+            .getDepth(), 0, 0.00001);
+      }
 
       // check those narrative lines got read in
       NarrativeWrapper narratives = (NarrativeWrapper) _theLayers.elementAt(2);
       assertEquals("have read in both narrative entries", 2, narratives.size());
     }
   }
-
-  public static void main(final String[] args)
-  {
-    System.setProperty("dataDir", "d:\\dev\\debrief\\src\\java\\Debrief");
-    final testImport ti = new testImport("some name");
-    ti.testReadREP();
-    System.exit(0);
-  }
-
 }

@@ -26,6 +26,7 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.LogTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEALogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
         </editor>
@@ -76,6 +77,11 @@
             name="AIS track file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.AISContentDescriber"/>
         </content-type>
+        <content-type id="org.mwc.debrief.contenttype.NMEALogFile"
+            file-extensions="log"
+            name="NMEA Log file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.NMEAContentDescriber"/>
+        </content-type>
         <content-type id="org.mwc.debrief.contenttype.SATCTrackFile"
             file-extensions="txt"
             name="SATC export file" priority="high">
@@ -117,6 +123,10 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.NMEALoader" extensions="log" first_line="$POSL" name="NMEA Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" first_line="!AIVDM" name="AIS Track File"        
         />
     </extension>
@@ -139,6 +149,14 @@
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.MsDocLoader" extensions="doc"
             name="MS Word Document"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.MsDocXLoader" extensions="docx"
+            name="MS Word XML Document"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.PdfLoader" extensions="pdf"
+            name="PDF Document"/>
     </extension>
 
     <extension point="org.eclipse.ui.menus">
@@ -1073,12 +1091,7 @@
     <extension point="org.mwc.cmap.core.RightClickSupport">
         <helper class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
         <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>
-    </extension>
-
-    <extension point="org.eclipse.wst.xml.core.catalogContributions">
-        <catalogContribution id="default">
-            <uri name="http://www.debrief.info/plot" uri="schema/debrief_plot.xsd"/>
-        </catalogContribution>
+        <helper class="org.mwc.debrief.core.ContextOperations.CalculateTrackLength"/>
     </extension>
     
     <extension

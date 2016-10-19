@@ -56,7 +56,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
@@ -222,9 +221,7 @@ public abstract class FilteredGrid extends Composite
    */
   protected void init(int gridStyle)
   {
-    showFilterControls =
-        PlatformUI.getPreferenceStore().getBoolean(
-            IWorkbenchPreferenceConstants.SHOW_FILTERED_TEXTS);
+    showFilterControls = true;
     createControl(parent, gridStyle);
     createRefreshJob();
     setInitialText(FilteredGrid_FilterMessage);
@@ -682,6 +679,11 @@ public abstract class FilteredGrid extends Composite
       });
     }
 
+    setFilterTextlayoutData();
+  }
+
+  private void setFilterTextlayoutData()
+  {
     GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
     // if the text widget supported cancel then it will have it's own
     // integrated button. We can take all of the space.
@@ -1014,6 +1016,26 @@ public abstract class FilteredGrid extends Composite
   protected String getInitialText()
   {
     return initialText;
+  }
+
+  public void setFilterMode(boolean checked)
+  {
+    clearText();
+    filterText.setVisible(checked);
+    filterComposite.setVisible(checked);
+    if(checked)
+    {
+      setFilterTextlayoutData();
+    }
+    else
+    {
+      GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
+      gridData.widthHint = 0;
+      gridData.heightHint = 0;
+      filterText.setLayoutData(gridData);
+    }
+    layout(true);
+    
   }
 
 }

@@ -201,7 +201,7 @@ public class Track implements Serializable {
 	 * @return yes/no
 	 */
 	public boolean hasFixes() {
-		return _theFixes.size() > 0;
+		return !_theFixes.isEmpty();
 	}
 
 	/**

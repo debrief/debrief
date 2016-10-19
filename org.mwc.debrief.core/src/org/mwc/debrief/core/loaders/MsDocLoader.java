@@ -3,6 +3,7 @@ package org.mwc.debrief.core.loaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -17,7 +18,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
-import Debrief.ReaderWriter.Word.ImportWord;
+import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import MWC.GUI.Layers;
 
 public class MsDocLoader extends IPlotLoader.BaseLoader
@@ -52,8 +53,9 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
               // ok, get reading
               if (fileName.endsWith(".doc"))
               {
-                ImportWord iw = new ImportWord(theLayers);
-                iw.importThis(fileName, inputStream);
+                ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
+                ArrayList<String> strings = iw.importFromWord(fileName, inputStream);
+                iw.processThese(strings);
               }
 
               // and inform the plot editor
