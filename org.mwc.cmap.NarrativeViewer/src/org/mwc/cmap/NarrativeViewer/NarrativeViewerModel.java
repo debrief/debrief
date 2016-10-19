@@ -56,7 +56,6 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.Column.VisibilityListener;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
-import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -70,8 +69,6 @@ public class NarrativeViewerModel
 
   private  static  final Color BLACK = Display.getDefault().getSystemColor(
       SWT.COLOR_BLACK);
-//  private  static final Color WHITE = Display.getDefault().getSystemColor(
-//      SWT.COLOR_WHITE);
   
   private final ColumnVisible myColumnVisible;
   private final ColumnTime myColumnTime;
@@ -109,12 +106,10 @@ public class NarrativeViewerModel
 
   private final Styler SEARCH_STYLE = new Styler()
   {
-
     @Override
     public void applyStyles(TextStyle textStyle)
     {
       textStyle.background = MATCH_YELLOW;
-
     }
   };
   private IPreferenceStore store;
@@ -131,34 +126,28 @@ public class NarrativeViewerModel
     myColumnEntry = new ColumnEntry(store);
     myAllColumns = new AbstractColumn[]
     {
-        //
         myColumnVisible, //
         myColumnTime, //
         myColumnSource, //
         myColumnType, //
-        myColumnEntry, //
+        myColumnEntry //
     };
     viewer.getGrid().addDisposeListener(new DisposeListener()
     {
-      
       @Override
       public void widgetDisposed(DisposeEvent e)
       {
         if(prefFont!=null)
         {
           prefFont.dispose();
-        
         }
-        
       }
     });
     store.addPropertyChangeListener(new IPropertyChangeListener()
     {
-      
       @Override
       public void propertyChange(PropertyChangeEvent event)
       {
-
         if(viewer.getGrid().isDisposed())
         {
           return ;
@@ -178,7 +167,6 @@ public class NarrativeViewerModel
             if(prefFont!=null)
             {
               prefFont.dispose();
-            
             }
             prefFont = null;
           }
@@ -195,7 +183,6 @@ public class NarrativeViewerModel
             if(readFontData!=null)
             {
               prefFont = new Font(Display.getDefault(), readFontData);
-             
             }
           }
           viewer.refresh();
@@ -204,8 +191,6 @@ public class NarrativeViewerModel
         {
           viewer.getGrid().setRedraw(true);
         }
-
-        
       }
     });
 
@@ -269,11 +254,9 @@ public class NarrativeViewerModel
       for (int i = 0; i < phrases.length; i++)
       {
         phrases[i] = split[i].trim().toLowerCase();
-        
       }
       return phrases;
     }
-    
     
     return new String[]{};
   }
@@ -287,12 +270,10 @@ public class NarrativeViewerModel
       final Color bg = PHRASES_COLORS[i % PHRASES_COLORS.length];
       stylers[i] = new Styler()
       {
-
         @Override
         public void applyStyles(TextStyle textStyle)
         {
           textStyle.background = bg;
-
         }
       };
 
@@ -376,8 +357,6 @@ public class NarrativeViewerModel
 
   private  abstract class AbstractTextColumn extends AbstractColumn
   {
-   
-
     public AbstractTextColumn(final int index, final String name,
         final IPreferenceStore store)
     {
@@ -484,13 +463,11 @@ public class NarrativeViewerModel
     {
       return new ColumnLabelProvider()
       {
-
         @Override
         public String getText(Object element)
         {
           return getProperty((NarrativeEntry) element).toString();
         }
-
       };
     }
   }
@@ -621,9 +598,7 @@ public class NarrativeViewerModel
       if (changed)
       {
         myIsWrapping = shouldWrap;
-
       }
-
       return changed;
     }
 
@@ -644,11 +619,6 @@ public class NarrativeViewerModel
     public String format(final HiResDate time)
     {
       return time.toString();
-      // Calendar calendar = Calendar.getInstance();
-      // calendar.setTimeInMillis(time);
-      // SimpleDateFormat simpleDateFormat = new
-      // SimpleDateFormat(DEFAULT_TIME_FORMAT);
-      // return simpleDateFormat.format(calendar.getTime());
     }
   };
 
@@ -667,7 +637,6 @@ public class NarrativeViewerModel
       @Override
       public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
       {
-
         elements = myVisibleRows == null ? NO_ENTRIES : myVisibleRows.toArray();
         gridTableViewer = (GridTableViewer) viewer;
         gridTableViewer.setItemCount(0);
@@ -677,208 +646,196 @@ public class NarrativeViewerModel
       @Override
       public void dispose()
       {
-
       }
 
       @Override
       public void updateElement(int index)
       {
         gridTableViewer.replace(elements[index], index);
-
       }
     });
 
+    for (final AbstractColumn column : myAllColumns)
     {
+      final CellLabelProvider cellRenderer =
+          column.getCellRenderer(viewer.getViewer());
 
-      for (final AbstractColumn column : myAllColumns)
+      final GridViewerColumn viewerColumn =
+          factory.createColumn(column.getColumnName(), column.getColumnWidth(),
+              cellRenderer, column.isWrap());
+
+      final GridColumn gridColumn = viewerColumn.getColumn();
+      gridColumn.addControlListener(new ControlListener()
       {
-        final CellLabelProvider cellRenderer =
-            column.getCellRenderer(viewer.getViewer());
-
-        final GridViewerColumn viewerColumn =
-            factory.createColumn(column.getColumnName(), column
-                .getColumnWidth(), cellRenderer, column.isWrap());
-
-        final GridColumn gridColumn = viewerColumn.getColumn();
-        gridColumn.addControlListener(new ControlListener()
+        @Override
+        public void controlResized(ControlEvent e)
         {
-          
-          @Override
-          public void controlResized(ControlEvent e)
-          {
-            //trigger cells to recalculate heights  
-            viewer.refresh();
-          }
-          
-          @Override
-          public void controlMoved(ControlEvent e)
-          {
-            //ignore
-            
-          }
-        });
-        final TextHighlightCellRenderer styledTextCellRenderer =
-            new TextHighlightCellRenderer()
-            {
-
-              protected StyledString getStyledString(String text)
-              {
-                final String filterText = getFilterText();
-                boolean hasTextFilter =
-                    filterText != null && !filterText.trim().isEmpty();
-
-                final String[] phrases = getPhrases();
-                if (hasTextFilter || phrases.length > 0)
-                {
-                  final Map<String,Styler> stylerReg = new HashMap<String,Styler>();
-
-                  final StringBuilder group = new StringBuilder();
-
-                  boolean addOR = hasTextFilter;
-                  if (hasTextFilter)
-                  {
-                    group.append("(");
-                    group.append(Pattern.quote(filterText));
-                    group.append(")");
-                    stylerReg.put(filterText.toLowerCase(), SEARCH_STYLE);
-                  }
-
-                  final Styler[] phraseStyles = getPhraseStyles();
-                  int index = 0;
-                  for (String phrase : phrases)
-                  {
-                    if(addOR)
-                    {
-                      group.append("|");
-                    }
-                    
-                    group.append("(");
-                    group.append(Pattern.quote(phrase));
-                    group.append(")");
-                    addOR = true;
-                    stylerReg.put(phrase.toLowerCase(), phraseStyles[index]);
-                    index++;
-                  }
-                  final StyledString string = new StyledString();
-                  final Pattern pattern =
-                      Pattern.compile(group.toString(), Pattern.CASE_INSENSITIVE);
-                  final Matcher matcher = pattern.matcher(text);
-
-                  final boolean found = matchRanges(text, matcher, string, stylerReg);
-
-                  if (!found)
-                  {
-                    return null;
-                  }
-                  else
-                  {
-                    return string;
-                  }
-                }
-                return null;
-              }
-
-              private boolean matchRanges(String text, Matcher matcher,
-                  StyledString string, Map<String,Styler> stylerReg)
-              {
-                boolean found = false;
-                int lastindex = 0;
-                while (matcher.find())
-                {
-
-                  found = true;
-                  if (lastindex != matcher.start())
-                  {
-                    string.append(text.substring(lastindex, matcher.start()));
-                  }
-                  string.append(text.substring(matcher.start(), matcher.end()),
-                      stylerReg.get(matcher.group().toLowerCase()));
-                  lastindex = matcher.end();
-                }
-                if (lastindex < text.length())
-                  string.append(text.substring(lastindex));
-                return found;
-              }
-
-              protected String getFilterText()
-              {
-                return viewer.getFilterGrid().getFilterString();
-              }
-            };
-        styledTextCellRenderer.setWordWrap(column.isWrap());
-        gridColumn.setCellRenderer(styledTextCellRenderer);
-
-        gridColumn.addSelectionListener(new SelectionAdapter()
-        {
-          @Override
-          public void widgetSelected(SelectionEvent e)
-          {
-            column.columnSelection(viewer);
-          }
-        });
-        final CellEditor cellEditor =
-            column.getCellEditor(viewer.getViewer().getGrid());
-        if (cellEditor != null)
-          viewerColumn.setEditingSupport(new EditingSupport(viewer.getViewer())
-          {
-
-            @Override
-            protected void setValue(Object element, Object value)
-            {
-              column.setProperty((NarrativeEntry) element, value);
-            }
-
-            @Override
-            protected Object getValue(Object element)
-            {
-              return column.getProperty((NarrativeEntry) element);
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element)
-            {
-              return cellEditor;
-            }
-
-            @Override
-            protected boolean canEdit(Object element)
-            {
-              return cellEditor != null;
-            }
-          });
-        column.addVisibilityListener(new VisibilityListener()
-        {
-
-          @Override
-          public void columnVisibilityChanged(Column column,
-              boolean actualIsVisible)
-          {
-            gridColumn.setVisible(column.isVisible());
-
-            if (column.isVisible())
-            {
-              layout.setColumnData(gridColumn, new ColumnWeightData(column
-                  .getColumnWidth()));
-            }
-            else
-            {
-              layout.setColumnData(gridColumn, new ColumnWeightData(0));
-            }
-          }
-        });
-        layout.setColumnData(gridColumn, new ColumnWeightData(column
-            .getColumnWidth(), column.isColumnWidthExpand()));
-
-        if (!column.isVisible())
-        {
-          gridColumn.setVisible(column.isVisible());
-          layout.setColumnData(gridColumn, new ColumnWeightData(0));
+          // trigger cells to recalculate heights
+          viewer.refresh();
         }
 
+        @Override
+        public void controlMoved(ControlEvent e)
+        {
+          // ignore
+        }
+      });
+      final TextHighlightCellRenderer styledTextCellRenderer =
+          new TextHighlightCellRenderer()
+          {
+            protected StyledString getStyledString(String text)
+            {
+              final String filterText = getFilterText();
+              boolean hasTextFilter =
+                  filterText != null && !filterText.trim().isEmpty();
+
+              final String[] phrases = getPhrases();
+              if (hasTextFilter || phrases.length > 0)
+              {
+                final Map<String, Styler> stylerReg =
+                    new HashMap<String, Styler>();
+
+                final StringBuilder group = new StringBuilder();
+
+                boolean addOR = hasTextFilter;
+                if (hasTextFilter)
+                {
+                  group.append("(");
+                  group.append(Pattern.quote(filterText));
+                  group.append(")");
+                  stylerReg.put(filterText.toLowerCase(), SEARCH_STYLE);
+                }
+
+                final Styler[] phraseStyles = getPhraseStyles();
+                int index = 0;
+                for (String phrase : phrases)
+                {
+                  if (addOR)
+                  {
+                    group.append("|");
+                  }
+
+                  group.append("(");
+                  group.append(Pattern.quote(phrase));
+                  group.append(")");
+                  addOR = true;
+                  stylerReg.put(phrase.toLowerCase(), phraseStyles[index]);
+                  index++;
+                }
+                final StyledString string = new StyledString();
+                final Pattern pattern =
+                    Pattern.compile(group.toString(), Pattern.CASE_INSENSITIVE);
+                final Matcher matcher = pattern.matcher(text);
+
+                final boolean found =
+                    matchRanges(text, matcher, string, stylerReg);
+
+                if (!found)
+                {
+                  return null;
+                }
+                else
+                {
+                  return string;
+                }
+              }
+              return null;
+            }
+
+            private boolean matchRanges(String text, Matcher matcher,
+                StyledString string, Map<String, Styler> stylerReg)
+            {
+              boolean found = false;
+              int lastindex = 0;
+              while (matcher.find())
+              {
+
+                found = true;
+                if (lastindex != matcher.start())
+                {
+                  string.append(text.substring(lastindex, matcher.start()));
+                }
+                string.append(text.substring(matcher.start(), matcher.end()),
+                    stylerReg.get(matcher.group().toLowerCase()));
+                lastindex = matcher.end();
+              }
+              if (lastindex < text.length())
+                string.append(text.substring(lastindex));
+              return found;
+            }
+
+            protected String getFilterText()
+            {
+              return viewer.getFilterGrid().getFilterString();
+            }
+          };
+      styledTextCellRenderer.setWordWrap(column.isWrap());
+      gridColumn.setCellRenderer(styledTextCellRenderer);
+
+      gridColumn.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          column.columnSelection(viewer);
+        }
+      });
+      final CellEditor cellEditor =
+          column.getCellEditor(viewer.getViewer().getGrid());
+      if (cellEditor != null)
+        viewerColumn.setEditingSupport(new EditingSupport(viewer.getViewer())
+        {
+          @Override
+          protected void setValue(Object element, Object value)
+          {
+            column.setProperty((NarrativeEntry) element, value);
+          }
+
+          @Override
+          protected Object getValue(Object element)
+          {
+            return column.getProperty((NarrativeEntry) element);
+          }
+
+          @Override
+          protected CellEditor getCellEditor(Object element)
+          {
+            return cellEditor;
+          }
+
+          @Override
+          protected boolean canEdit(Object element)
+          {
+            return cellEditor != null;
+          }
+        });
+      column.addVisibilityListener(new VisibilityListener()
+      {
+        @Override
+        public void columnVisibilityChanged(Column column,
+            boolean actualIsVisible)
+        {
+          gridColumn.setVisible(column.isVisible());
+
+          if (column.isVisible())
+          {
+            layout.setColumnData(gridColumn, new ColumnWeightData(column
+                .getColumnWidth()));
+          }
+          else
+          {
+            layout.setColumnData(gridColumn, new ColumnWeightData(0));
+          }
+        }
+      });
+      layout.setColumnData(gridColumn, new ColumnWeightData(column
+          .getColumnWidth(), column.isColumnWidthExpand()));
+
+      if (!column.isVisible())
+      {
+        gridColumn.setVisible(column.isVisible());
+        layout.setColumnData(gridColumn, new ColumnWeightData(0));
       }
-
     }
-
   }
-
 }
