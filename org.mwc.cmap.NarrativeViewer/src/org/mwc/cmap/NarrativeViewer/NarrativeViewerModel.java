@@ -92,7 +92,7 @@ public class NarrativeViewerModel
   private NarrativeEntry[] myAllEntries = NO_ENTRIES;
 
   private IRollingNarrativeProvider myInput;
-  private WeakHashMap<Object, String> formatCache = new WeakHashMap<Object, String>();
+  private WeakHashMap<Object, String> formattedDateCache = new WeakHashMap<Object, String>();
 
   public AbstractColumn[] getAllColumns()
   {
@@ -246,7 +246,7 @@ public class NarrativeViewerModel
   {
     myInput = entryWrapper;
     myAllEntries = null;
-    formatCache.clear();
+    formattedDateCache.clear();
     if (entryWrapper != null)
     {
       // check it has some data.
@@ -534,12 +534,12 @@ public class NarrativeViewerModel
     public Object getProperty(final NarrativeEntry entry)
     {
       HiResDate dtg = entry.getDTG();
-      String format = formatCache.get(dtg);
+      String format = formattedDateCache.get(dtg);
       
       if(format==null)
       {
         format = myTimeFormatter.format(dtg);
-        formatCache.put(dtg, format);
+        formattedDateCache.put(dtg, format);
       }
       
       return format;
@@ -548,6 +548,9 @@ public class NarrativeViewerModel
     public void setTimeFormatter(final TimeFormatter formatter)
     {
       myTimeFormatter = formatter;
+      
+      // and clear the cached formatting
+      formattedDateCache.clear();
     }
   }
 
