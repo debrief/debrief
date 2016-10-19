@@ -70,8 +70,8 @@ public class NarrativeViewerModel
 
   private  static  final Color BLACK = Display.getDefault().getSystemColor(
       SWT.COLOR_BLACK);
-  private  static final Color WHITE = Display.getDefault().getSystemColor(
-      SWT.COLOR_WHITE);
+//  private  static final Color WHITE = Display.getDefault().getSystemColor(
+//      SWT.COLOR_WHITE);
   
   private final ColumnVisible myColumnVisible;
   private final ColumnTime myColumnTime;
@@ -85,7 +85,6 @@ public class NarrativeViewerModel
   private final EntryFilter textFilter;
 
   private Font prefFont;
-  private GridTableViewer viewer;
   
   final LinkedList<NarrativeEntry> myVisibleRows =
       new LinkedList<NarrativeEntry>();
@@ -123,8 +122,6 @@ public class NarrativeViewerModel
   public NarrativeViewerModel(final GridTableViewer viewer,final IPreferenceStore store,
       EntryFilter textFilter)
   {
-
-    this.viewer = viewer;
     this.textFilter = textFilter;
     myColumnVisible = new ColumnVisible(store);
     myColumnVisible.setVisible(false);
@@ -392,13 +389,8 @@ public class NarrativeViewerModel
     {
       return new ColumnLabelProvider()
       {
-        private IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
-
         private Map<java.awt.Color, Color> swtColorMap =
             new HashMap<java.awt.Color, Color>();
-
-      
-
 
         @Override
         public void dispose()
@@ -417,8 +409,6 @@ public class NarrativeViewerModel
             return prefFont;
           return super.getFont(element);
         }
-        
-      
 
         @Override
         public Color getForeground(Object element)
@@ -435,8 +425,6 @@ public class NarrativeViewerModel
                       .getGreen(), color.getBlue());
               swtColorMap.put(color, swtColor);
             }
-
-     
             return swtColor;
           }
           return BLACK;
@@ -490,15 +478,6 @@ public class NarrativeViewerModel
 
       return checkboxCellEditor;
     }
-
-    // public KTableCellEditor getCellEditor()
-    // {
-    // final Rectangle imgBounds = CheckableCellRenderer.IMAGE_CHECKED
-    // .getBounds();
-    // final Point sensible = new Point(imgBounds.width, imgBounds.height);
-    // return new KTableCellEditorCheckbox2(sensible,
-    // SWTX.ALIGN_HORIZONTAL_CENTER, SWTX.ALIGN_VERTICAL_CENTER);
-    // }
 
     @Override
     protected ColumnLabelProvider createRenderer(ColumnViewer viewer)
