@@ -153,9 +153,21 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
     {
       Date dt = _df.parse(string);
 
+      // check the day
+      int day = Integer.parseInt(string.substring(0, 2));
+      
       // fill in the month & year
-      dt.setYear(99);
-      dt.setMonth(11);
+      if(day == 31)
+      {
+        dt.setYear(99);
+        dt.setMonth(11);
+      }
+      else
+      {
+        dt.setYear(100);
+        dt.setMonth(00);
+      }
+      
 
       HiResDate res = new HiResDate(dt);
       return res;
