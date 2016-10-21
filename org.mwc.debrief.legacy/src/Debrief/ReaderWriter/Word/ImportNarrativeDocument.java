@@ -46,7 +46,6 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -179,12 +178,60 @@ public class ImportNarrativeDocument
       final String regexp =
           ".*([A-Z]{1,4}\\d{3}|M\\d{2})(?<SOURCE>.*)B-.*";
       final Matcher m = Pattern.compile(regexp).matcher(tidied);
-      String res = null;
+      final String res;
       if (m.matches())
       {
-        res = m.group("SOURCE").trim();
+        String source = m.group("SOURCE").trim();
+        
+        // ok, special processing. We're getting unpredicable extra text
+        // in the source field (between FCS and "B-".  So
+        // do some inspection to decide what to show
+        if(source.contains("LOP"))
+        {
+          res = "LOP";
+        }
+        else if(source.contains("SMCS"))
+        {
+          res = "SMCS";
+        }
+        else if(source.contains("WECDIS"))
+        {
+          res = "WECDIS";
+        }
+        else if(source.contains("1936"))
+        {
+          res = "1936";
+        }
+        else if(source.contains("1959"))
+        {
+          res = "1959";
+        }
+        else if(source.contains("CMD"))
+        {
+          res = "CMD";
+        }
+        else if(source.contains("WECDIS"))
+        {
+          res = "WECDIS";
+        }
+        else if(source.toUpperCase().contains("TRIANGULATION"))
+        {
+          res = "Triangulation";
+        }
+        else if(source.contains("HDPR"))
+        {
+          res = "HDPR";
+        }
+        else
+        {
+          res = source;
+        }
       }
-      
+      else
+      {
+        res = null;
+      }
+
       return res;
     }
 
@@ -876,7 +923,7 @@ public class ImportNarrativeDocument
       final String str1 =
           "   SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str2 =
-          "SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+          "SR023 1936 GAINED FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str3 = 
           "M01 AAAA AAAA AAA (AAAA) B-173 R-3.7kyds C-271 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
@@ -884,8 +931,9 @@ public class ImportNarrativeDocument
       String match1 = FCSEntry.parseSource(str1);
       assertEquals("got source", "SOURCE_A FCS", match1);
 
+      // check we do our special pattern matching
       String match2 = FCSEntry.parseSource(str2);
-      assertEquals("got source", "SOURCE_B FCS (AAAA)", match2);
+      assertEquals("got source", "1936", match2);
 
       String match3 = FCSEntry.parseSource(str3);
       assertEquals("got source", "AAAA AAAA AAA (AAAA)", match3);
@@ -1405,6 +1453,7 @@ public class ImportNarrativeDocument
     res = res.replace((char)19, (char)32);
     res = res.replace((char)20, (char)32);
     res = res.replace((char)21, (char)32);
+    res = res.replace((char)5, (char)32); // MS Word comment marker
     
     // done.
     return res;
