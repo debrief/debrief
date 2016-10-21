@@ -699,7 +699,7 @@ public class ImportNarrativeDocument
       importer.processThese(strings);
 
       // hmmm, how many tracks
-      assertEquals("got new tracks", 7, tLayers.size());
+      assertEquals("got new tracks", 8, tLayers.size());
 
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
@@ -708,11 +708,11 @@ public class ImportNarrativeDocument
 
       // hey, let's have a look tthem
       TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
-      assertEquals("correct name", "M01_AAAA AAAA AAA (AAAA)", tw.getName());
-      assertEquals("got fixes", 1, tw.numFixes());
+      assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
 
       // hey, let's have a look tthem
-      tw = (TrackWrapper) tLayers.elementAt(5);
+      tw = (TrackWrapper) tLayers.elementAt(6);
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 4, tw.numFixes());
       
@@ -725,7 +725,7 @@ public class ImportNarrativeDocument
           bounds.toString());
 
       // hey, let's have a look tthem
-      tw = (TrackWrapper) tLayers.elementAt(6);
+      tw = (TrackWrapper) tLayers.elementAt(7);
       assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
       
