@@ -37,6 +37,10 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
@@ -1202,7 +1206,33 @@ public class ImportNarrativeDocument
   public ArrayList<String> importFromPdf(final String fileName,
       final InputStream inputStream)
   {
-    throw new RuntimeException("PDF import not implemented");
+    final ArrayList<String> strings = new ArrayList<String>();
+
+    try
+    {
+      PDDocument document = PDDocument.load(inputStream);
+
+      // clear the stored data in the importer
+      NarrEntry.reset();
+      PDFTextStripper textStripper = new PDFTextStripper(); 
+      PDPageTree pages = document.getPages();
+      for (int i = 1; i <= pages.getCount(); i++)
+      {
+        textStripper.setStartPage(i); 
+        textStripper.setEndPage(i);  
+        String pageText = textStripper.getText(document); 
+        String[] split = pageText.split(textStripper.getLineSeparator());
+        strings.addAll(Arrays.asList(split));
+        
+      }
+      document.close();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return strings;
   }
 
   public ArrayList<String> importFromWord(final String fName,

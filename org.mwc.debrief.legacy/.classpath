@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/fontbox-2.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/pdfbox-2.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-schemas-3.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-3.14.jar"/>
