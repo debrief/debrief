@@ -40,13 +40,14 @@ import junit.framework.TestCase;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -1233,10 +1234,32 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWordX(final String fileName,
-      final InputStream inputStream)
+  public ArrayList<String> importFromWordX(final String fName,
+      final InputStream is)
   {
-    throw new RuntimeException("Docx import not implemented");
+    final ArrayList<String> strings = new ArrayList<String>();
+
+    try
+    {
+      final XWPFDocument doc = new XWPFDocument(is);
+
+      List<XWPFParagraph> paragraphs = doc.getParagraphs();
+
+      // clear the stored data in the MS Word importer
+      NarrEntry.reset();
+
+      for (XWPFParagraph xwpfParagraph : paragraphs)
+      {
+        strings.add(xwpfParagraph.getText());
+      }
+      doc.close();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return strings;
   }
 
   public void logError(final String msg, final Exception e)
