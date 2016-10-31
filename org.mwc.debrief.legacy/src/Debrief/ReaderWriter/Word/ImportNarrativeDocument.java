@@ -239,9 +239,10 @@ public class ImportNarrativeDocument
      * extract the track number from the provided string
      * 
      * @param str
+     * @param parent 
      * @return
      */
-    private static String parseTrack(final String str)
+    private static String parseTrack(final String str, ToolParent parent)
     {
       // note: we try to match the master track first, since sometimes
       // both are referred to in the FCS entry
@@ -258,6 +259,11 @@ public class ImportNarrativeDocument
       if (matcher.find())
       {
         res = matcher.group(1);
+        
+        if(parent != null)
+        {
+          parent.logError(ToolParent.INFO, "Found master track", null);
+        }
       }
       else
       {
@@ -268,6 +274,12 @@ public class ImportNarrativeDocument
         if (matcher1.find())
         {
           res = matcher1.group(1);
+          
+          if(parent != null)
+          {
+            parent.logError(ToolParent.INFO, "Found SV track", null);
+          }
+
         }
         else
         {
@@ -275,6 +287,12 @@ public class ImportNarrativeDocument
         }
       }
 
+      if(res == null && parent != null)
+      {
+        parent.logError(ToolParent.INFO, "Couldn't find track number", null);
+      }
+
+      
       return res;
     }
 
@@ -291,7 +309,7 @@ public class ImportNarrativeDocument
     
     final String source;
 
-    public FCSEntry(final String msg)
+    public FCSEntry(final String msg, ToolParent logger)
     {
       // pull out the matching strings
       final Double bVal = getElement("B-", msg);
@@ -303,8 +321,26 @@ public class ImportNarrativeDocument
       final String classStr = getClassified(msg);
 
       // try to extract the track id
-      final String trackId = parseTrack(msg);
+      final String trackId = parseTrack(msg, logger);
       final String source = parseSource(msg);
+      
+      
+      StringBuffer thisLine = new StringBuffer();
+      thisLine.append("bVal:");
+      thisLine.append(bVal);
+      thisLine.append(", rVal:");
+      thisLine.append(rVal);
+      thisLine.append(", cVal:");
+      thisLine.append(cVal);
+      thisLine.append(", sVal:");
+      thisLine.append(sVal);
+      thisLine.append(", classStr:");
+      thisLine.append(classStr);
+      thisLine.append(", trackId:");
+      thisLine.append(trackId);
+      thisLine.append(", source:");
+      thisLine.append(source);
+      logger.logError(ToolParent.INFO, thisLine.toString(), null);
 
       this.crseDegs = cVal != null ? cVal : 0d;
       this.brgDegs = bVal != null ? bVal : 0d;
@@ -356,12 +392,12 @@ public class ImportNarrativeDocument
      */
     private static String lastMonth;
 
-    static public NarrEntry create(final String msg, final int lineNum)
+    static public NarrEntry create(final String msg, final int lineNum, ToolParent parent)
     {
       NarrEntry res = null;
       try
       {
-        res = new NarrEntry(msg);
+        res = new NarrEntry(msg, parent);
 
         if (res.appendedToPrevious && res.text != null)
         {
@@ -402,7 +438,7 @@ public class ImportNarrativeDocument
     }
 
     @SuppressWarnings("deprecation")
-    public NarrEntry(final String entry) throws ParseException
+    public NarrEntry(final String entry, ToolParent parent) throws ParseException
     {
       final String trimmed = entry.trim();
       final String[] parts = trimmed.split(",");
@@ -440,6 +476,11 @@ public class ImportNarrativeDocument
         {
           dtgStr = parts[ctr++].substring(2, 6);
         }
+        
+        if(parent != null)
+        {
+          parent.logError(ToolParent.INFO, "Has DTG:" + dtgStr, null);
+        }
 
         // ok, sort out the time first
         String dayStr = parts[ctr++];
@@ -448,6 +489,24 @@ public class ImportNarrativeDocument
         platform = parts[ctr++].trim();
         type = parts[ctr++].trim();
 
+        if(parent != null)
+        {
+          StringBuffer thisLine = new StringBuffer();
+          thisLine.append("dayStr:");
+          thisLine.append(dayStr);
+          thisLine.append(", monStr:");
+          thisLine.append(monStr);
+          thisLine.append(", yrStr:");
+          thisLine.append(yrStr);
+          thisLine.append(", platform:");
+          thisLine.append(platform);
+          thisLine.append(", type:");
+          thisLine.append(type);
+          
+          parent.logError(ToolParent.INFO, "Parsed:" + thisLine.toString(), null);
+        }
+
+        
         /**
          * special processing, to overcome the previous day being used
          * 
@@ -463,6 +522,11 @@ public class ImportNarrativeDocument
         {
           // ok, the day has dropped, but the month hasn't increased
           dayStr = lastDay;
+          
+          if(parent != null)
+          {
+            parent.logError(ToolParent.INFO, "Re-using last day:" + dtgStr, null);
+          }
         }
         else
         {
@@ -477,6 +541,12 @@ public class ImportNarrativeDocument
           final int firstSpace = type.indexOf(" ");
           // note: should actually be looking for non-alphanumeric, since it may be a tab
           type = type.substring(0, firstSpace - 1);
+          
+          if(parent != null)
+          {
+            parent.logError(ToolParent.INFO, "Using trimmed type:" + type, null);
+          }
+
         }
 
         final int year;
@@ -506,11 +576,21 @@ public class ImportNarrativeDocument
         final Date timePart = fourBlock.parse(dtgStr);
 
         dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
+        
+        if(parent != null)
+        {
+          parent.logError(ToolParent.INFO, "DTG to use:" + dtg, null);
+        }
 
         // ok, and the message part
         final int ind = entry.indexOf(type);
 
         text = entry.substring(ind + type.length() + 1).trim();
+        
+        if(parent != null)
+        {
+          parent.logError(ToolParent.INFO, "Trailing text is:" + text, null);
+        }
 
         // remember what's happening, so we can refer back to previous entries
         lastDtg = new Date(dtg.getDate().getTime());
@@ -519,6 +599,11 @@ public class ImportNarrativeDocument
       }
       else
       {
+
+        if(parent != null)
+        {
+          parent.logError(ToolParent.INFO, "Doesn't have proper DTG", null);
+        }
 
         final int firstTab = trimmed.indexOf("\t");
         int blockToUse = 6;
@@ -541,6 +626,12 @@ public class ImportNarrativeDocument
             @SuppressWarnings("unused")
             final int testInt = Integer.parseInt(dateStr);
             probIsDate = true;
+            
+            if(parent != null)
+            {
+              parent.logError(ToolParent.INFO, "But, prob does have date", null);
+            }
+
           }
         }
         catch (final NumberFormatException e)
@@ -552,10 +643,29 @@ public class ImportNarrativeDocument
         if (probIsDate && probHasContent)
         {
           // yes, go for it.
-
+          if(parent != null)
+          {
+            parent.logError(ToolParent.INFO, "Prob has date and content", null);
+          }
+          
+          // yes, go for it.
+          if (lastDtg == null || lastPlatform == null)
+          {
+            if (parent != null)
+            {
+              parent.logError(ToolParent.INFO,
+                  "Can't process - don't have previous DTG or platform", null);
+            }
+          }
+          
           // ooh, do we have some stored data?
           if (lastDtg != null && lastPlatform != null)
-          {
+          {            
+            if(parent != null)
+            {
+              parent.logError(ToolParent.INFO, "We have previous DTG & platform", null);
+            }
+           
             final String parseStr;
             if (dateStr.length() == 6)
             {
@@ -577,6 +687,11 @@ public class ImportNarrativeDocument
 
             // ok, we're ready for the DTG
             dtg = new HiResDate(newDate.getTime() + timePart.getTime());
+            
+            if(parent != null)
+            {
+              parent.logError(ToolParent.INFO, "Going to use this date:" + dtg, null);
+            }
 
             // stash the platform
             platform = lastPlatform;
@@ -584,15 +699,10 @@ public class ImportNarrativeDocument
             // and catch the rest of the text
             text = trimmed.substring(dateStr.length()).trim();
 
-            // see if we can recognise the first word as a track number
-            // if (text.length() == 0)
-            // {
-            // System.out.println("here");
-            // }
-
             final String startOfLine =
                 text.substring(0, Math.min(20, text.length() - 1));
-            final String trackNum = FCSEntry.parseTrack(startOfLine);
+            final String trackNum = FCSEntry.parseTrack(startOfLine, parent);
+
             if (trackNum != null)
             {
               type = "FCS";
@@ -602,7 +712,12 @@ public class ImportNarrativeDocument
               // explain we don't know what type of comment this is
               type = "N/A";
             }
-
+            
+            if(parent != null)
+            {
+              parent.logError(ToolParent.INFO, "Going to treat line as:" + type, null);
+            }
+            
             // try to replace soft returns with hard returns
             text = text.replace("\r", "\n");
           }
@@ -610,6 +725,11 @@ public class ImportNarrativeDocument
         else
         {
           // hmm, see if it's just text. If it is, stick it on the end of the previous one
+          
+          if(parent != null)
+          {
+            parent.logError(ToolParent.INFO, "Haven't handled properly, will try to append", null);
+          }
 
           // ooh, it may be a next day marker. have a check
           final DateFormat dtgBlock = new SimpleDateFormat("dd MMM yy");
@@ -630,6 +750,10 @@ public class ImportNarrativeDocument
           if (hasDate)
           {
             // ok. skip it. it's just a date
+            if(parent != null)
+            {
+              parent.logError(ToolParent.INFO, "Skipping, it's just a date marker", null);
+            }
           }
           else
           {
@@ -694,7 +818,7 @@ public class ImportNarrativeDocument
       final InputStream is = new FileInputStream(testI);
 
       final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(tLayers);
+          new ImportNarrativeDocument(tLayers, null);
       final ArrayList<String> strings = importer.importFromWord(testFile, is);
       importer.processThese(strings);
 
@@ -742,7 +866,7 @@ public class ImportNarrativeDocument
       final Layers tLayers = new Layers();
 
       final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(tLayers);
+          new ImportNarrativeDocument(tLayers, null);
       final ArrayList<String> strings = importer.importFromWord(testFile, is);
       importer.processThese(strings);
 
@@ -775,7 +899,7 @@ public class ImportNarrativeDocument
       final TrackWrapper track2 = new TrackWrapper();
       track2.setName("Iron Duck");
       layers.addThisLayer(track2);
-      final ImportNarrativeDocument iw = new ImportNarrativeDocument(layers);
+      final ImportNarrativeDocument iw = new ImportNarrativeDocument(layers, null);
       String match = iw.trackFor("HMS Boat", "HMS Boat");
       assertNull("not found match", match);
       match = iw.trackFor("HMS Nelson", "HMS Nelson");
@@ -809,7 +933,7 @@ public class ImportNarrativeDocument
           "160909,16,09,2016,HMS NONSUCH, CAT COMMENT, SOME COMMENT ";
 
       // ok, get the narrative type
-      final NarrEntry thisN1 = NarrEntry.create(testDate1, 1);
+      final NarrEntry thisN1 = NarrEntry.create(testDate1, 1, null);
       assertEquals("year", 116, thisN1.dtg.getDate().getYear());
       assertEquals("month", 8, thisN1.dtg.getDate().getMonth());
       assertEquals("day", 16, thisN1.dtg.getDate().getDate());
@@ -822,7 +946,7 @@ public class ImportNarrativeDocument
       // ok, now one with mangled (missing) date fields
       final String testDate2 = "161006\tSOME COMMENT 2 ";
       // ok, get the narrative type
-      final NarrEntry thisN2 = NarrEntry.create(testDate2, 1);
+      final NarrEntry thisN2 = NarrEntry.create(testDate2, 1, null);
       assertEquals("year", 116, thisN2.dtg.getDate().getYear());
       assertEquals("month", 8, thisN2.dtg.getDate().getMonth());
       assertEquals("day", 16, thisN2.dtg.getDate().getDate());
@@ -836,7 +960,7 @@ public class ImportNarrativeDocument
       // hey, what if it's just text?
       final String testDate3 = "SOME COMMENT ";
       // ok, get the narrative type
-      final NarrEntry thisN3 = NarrEntry.create(testDate3, 1);
+      final NarrEntry thisN3 = NarrEntry.create(testDate3, 1, null);
 
       // ok, should just be that text
       assertNull("year", thisN3.dtg);
@@ -869,8 +993,8 @@ public class ImportNarrativeDocument
       assertEquals("correct classified", "AAAAAA BBBBBB AAAAAA.", FCSEntry
           .getClassified(str1));
 
-      NarrEntry ne = new NarrEntry(str1);
-      final FCSEntry fe1 = new FCSEntry(ne.text);
+      NarrEntry ne = new NarrEntry(str1, null);
+      final FCSEntry fe1 = new FCSEntry(ne.text, null);
       assertEquals("got range:", 5000d, fe1.rangYds, 0.001);
       assertEquals("got brg:", 123d, fe1.brgDegs);
       assertEquals("got contact:", "023", fe1.contact);
@@ -878,8 +1002,8 @@ public class ImportNarrativeDocument
       assertEquals("got speed:", 6d, fe1.spdKts);
       assertEquals("got name:", "AAAAAA BBBBBB AAAAAA.", fe1.tgtType);
 
-      ne = new NarrEntry(str2);
-      final FCSEntry fe2 = new FCSEntry(ne.text);
+      ne = new NarrEntry(str2, null);
+      final FCSEntry fe2 = new FCSEntry(ne.text, null);
       assertEquals("got range:", 12600d, fe2.rangYds, 0.001);
       assertEquals("got brg:", 311d, fe2.brgDegs);
       assertEquals("got contact:", "M01", fe2.contact);
@@ -887,11 +1011,10 @@ public class ImportNarrativeDocument
       assertEquals("got speed:", 0d, fe2.spdKts);
       assertEquals("got name:", "AAAAAA CCCCCC AAAAAA.", fe2.tgtType);
 
-      ne = new NarrEntry(str3);
-      final FCSEntry fe3 = new FCSEntry(ne.text);
+      ne = new NarrEntry(str3, null);
+      final FCSEntry fe3 = new FCSEntry(ne.text, null);
       assertEquals("processed master id before other id:", "M02", fe3.contact);
     }
-
     public void testParseFCSRange() throws ParseException
     {
       final String str1 =
@@ -976,7 +1099,7 @@ public class ImportNarrativeDocument
       
       target.addThisLayer(nonsuch);
       
-      ImportNarrativeDocument importer = new ImportNarrativeDocument(target);
+      ImportNarrativeDocument importer = new ImportNarrativeDocument(target, null);
 
       assertEquals("one track", 1, target.size());
       
@@ -1031,7 +1154,7 @@ public class ImportNarrativeDocument
       
       target.addThisLayer(nonsuch);
       
-      ImportNarrativeDocument importer = new ImportNarrativeDocument(target);
+      ImportNarrativeDocument importer = new ImportNarrativeDocument(target, null);
 
       assertEquals("one track", 1, target.size());
       
@@ -1060,12 +1183,12 @@ public class ImportNarrativeDocument
       final String str3 = "asdfads adf ag a";
       final String str5 = "M00 0000";
 
-      assertEquals("right id", "000", FCSEntry.parseTrack(str1));
-      assertEquals("right id", "000", FCSEntry.parseTrack(str1a));
-      assertEquals("right id", "000", FCSEntry.parseTrack(str2));
-      assertEquals("right id", "M00", FCSEntry.parseTrack(str2a));
-      assertEquals("right id", "M00", FCSEntry.parseTrack(str5));
-      assertNull("right id", FCSEntry.parseTrack(str3));
+      assertEquals("right id", "000", FCSEntry.parseTrack(str1, null));
+      assertEquals("right id", "000", FCSEntry.parseTrack(str1a, null));
+      assertEquals("right id", "000", FCSEntry.parseTrack(str2, null));
+      assertEquals("right id", "M00", FCSEntry.parseTrack(str2a, null));
+      assertEquals("right id", "M00", FCSEntry.parseTrack(str5, null));
+      assertNull("right id", FCSEntry.parseTrack(str3, null));
     }
   }
 
@@ -1102,9 +1225,12 @@ public class ImportNarrativeDocument
    */
   Map<String, String> nameMatches = new HashMap<String, String>();
 
-  public ImportNarrativeDocument(final Layers target)
+  private final ToolParent _logger;
+
+  public ImportNarrativeDocument(final Layers target, ToolParent logger)
   {
     _layers = target;
+    _logger = logger;
 
     if (SkipNames == null)
     {
@@ -1114,6 +1240,14 @@ public class ImportNarrativeDocument
       SkipNames.add("USS");
       SkipNames.add("RNAS");
       SkipNames.add("HNLMS");
+    }
+  }
+  
+  private final void logThis(String text)
+  {
+    if(_logger != null)
+    {
+      _logger.logStack(ToolParent.INFO, text);
     }
   }
 
@@ -1126,6 +1260,8 @@ public class ImportNarrativeDocument
     if (hisTrack == null)
     {
       hisTrack = thisN.platform;
+      
+      logThis("Didn't find host track, using " + hisTrack);      
     }
 
     final NarrativeEntry ne =
@@ -1150,11 +1286,13 @@ public class ImportNarrativeDocument
   private void addFCS(final NarrEntry thisN)
   {
     // ok, parse the message
-    final FCSEntry fe = new FCSEntry(thisN.text);
+    final FCSEntry fe = new FCSEntry(thisN.text, _logger);
 
     // do we have enough data to create a solution?
     if (fe.brgDegs == 0 && fe.rangYds == 0)
-    {
+    {      
+      logThis("Don't have bearing or range, quitting");
+      
       return;
     }
 
@@ -1227,6 +1365,7 @@ public class ImportNarrativeDocument
       }
       else
       {
+        logThis("Host fix not present for FCS at:" + thisN.dtg.getDate());
         logError("Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
       }
     }
@@ -1333,6 +1472,16 @@ public class ImportNarrativeDocument
       }
     }
 
+    logThis("== Narrative import started. Have " + strings.size() + " lines to process");
+
+    
+    // log the outer period
+    if(outerPeriod != null)
+    {
+      String msg = "Debrief data covers:" + outerPeriod.toString();
+      logThis(msg);
+    }
+    
     // ok, now we can loop through the strings
     int ctr = 0;
     for (final String raw_text : strings)
@@ -1347,12 +1496,14 @@ public class ImportNarrativeDocument
       // also remove any other control chars that may throw MS Word
       final String text = removeBadChars(raw_text);
       
+      logThis(">|" + text + "|");
+      
       // ok, get the narrative type
-      final NarrEntry thisN = NarrEntry.create(text, ctr);
-
+      final NarrEntry thisN = NarrEntry.create(text, ctr, _logger);
+      
       if (thisN == null)
       {
-        // logError("Unable to parse line:" + text, null);
+        logThis("Unable to parse line:" + text);
         continue;
       }
 
@@ -1362,8 +1513,9 @@ public class ImportNarrativeDocument
         // check it's in the currently loaded time period
         if (!outerPeriod.contains(thisN.dtg))
         {
-          // System.out.println(thisN.dtg.getDate() + " is not between " +
-          // outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+          String msg = thisN.dtg.getDate() + " is not between " +
+           outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate();
+          logThis(msg);
 
           // ok, it's not in our period
           continue;
@@ -1375,12 +1527,18 @@ public class ImportNarrativeDocument
       {
         // hmm, just check if this is an FCS
 
+        logThis("Appending to previous");
+        
         // do we have a previous one?
         if (_lastEntry != null)
         {
           final String newText = thisN.text;
 
           _lastEntry.setEntry(_lastEntry.getEntry() + "\n" + newText);
+        }
+        else
+        {
+          logThis("Can't append to preivous, we don't have one");
         }
 
         // ok, we can't do any more. carry on
@@ -1391,6 +1549,9 @@ public class ImportNarrativeDocument
       {
       case "FCS":
       {
+        
+        logThis("Storing FCS into narrative entry");
+
         // add a narrative entry
         addEntry(thisN);
 

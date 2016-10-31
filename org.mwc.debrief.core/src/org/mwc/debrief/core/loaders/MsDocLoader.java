@@ -53,7 +53,7 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
               // ok, get reading
               if (fileName.endsWith(".doc"))
               {
-                ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
+                ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers, CorePlugin.getToolParent());                
                 ArrayList<String> strings = iw.importFromWord(fileName, inputStream);
                 iw.processThese(strings);
               }

@@ -11,6 +11,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -50,7 +51,7 @@ public class PdfLoader extends IPlotLoader.BaseLoader
               // ok, get reading
               if (fileName.endsWith(".pdf"))
               {
-                ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
+                ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers, CorePlugin.getToolParent());                
                 ArrayList<String> strings = iw.importFromPdf(fileName, inputStream);
                 iw.processThese(strings);
               }
