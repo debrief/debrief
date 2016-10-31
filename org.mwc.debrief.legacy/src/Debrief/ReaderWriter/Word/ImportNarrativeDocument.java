@@ -579,7 +579,7 @@ public class ImportNarrativeDocument
         
         if(parent != null)
         {
-          parent.logError(ToolParent.INFO, "DTG to use:" + dtg, null);
+          parent.logError(ToolParent.INFO, "DTG to use:" + dtg.getDate(), null);
         }
 
         // ok, and the message part
@@ -1247,7 +1247,7 @@ public class ImportNarrativeDocument
   {
     if(_logger != null)
     {
-      _logger.logStack(ToolParent.INFO, text);
+      _logger.logError(ToolParent.INFO, text, null);
     }
   }
 
