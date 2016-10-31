@@ -324,23 +324,25 @@ public class ImportNarrativeDocument
       final String trackId = parseTrack(msg, logger);
       final String source = parseSource(msg);
       
-      
-      StringBuffer thisLine = new StringBuffer();
-      thisLine.append("bVal:");
-      thisLine.append(bVal);
-      thisLine.append(", rVal:");
-      thisLine.append(rVal);
-      thisLine.append(", cVal:");
-      thisLine.append(cVal);
-      thisLine.append(", sVal:");
-      thisLine.append(sVal);
-      thisLine.append(", classStr:");
-      thisLine.append(classStr);
-      thisLine.append(", trackId:");
-      thisLine.append(trackId);
-      thisLine.append(", source:");
-      thisLine.append(source);
-      logger.logError(ToolParent.INFO, thisLine.toString(), null);
+      if (logger != null)
+      {
+        StringBuffer thisLine = new StringBuffer();
+        thisLine.append("bVal:");
+        thisLine.append(bVal);
+        thisLine.append(", rVal:");
+        thisLine.append(rVal);
+        thisLine.append(", cVal:");
+        thisLine.append(cVal);
+        thisLine.append(", sVal:");
+        thisLine.append(sVal);
+        thisLine.append(", classStr:");
+        thisLine.append(classStr);
+        thisLine.append(", trackId:");
+        thisLine.append(trackId);
+        thisLine.append(", source:");
+        thisLine.append(source);
+        logger.logError(ToolParent.INFO, thisLine.toString(), null);
+      }
 
       this.crseDegs = cVal != null ? cVal : 0d;
       this.brgDegs = bVal != null ? bVal : 0d;
