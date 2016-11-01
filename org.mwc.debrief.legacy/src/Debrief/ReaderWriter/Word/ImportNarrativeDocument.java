@@ -381,7 +381,7 @@ public class ImportNarrativeDocument
       }
       catch (final ParseException e)
       {
-        logThisError("Failed whilst parsing Word Document, at line:" + lineNum,
+        logThisError(ToolParent.WARNING, "Failed whilst parsing Word Document, at line:" + lineNum,
             e);
       }
 
@@ -463,6 +463,12 @@ public class ImportNarrativeDocument
         {
           // ok, the day has dropped, but the month hasn't increased
           dayStr = lastDay;
+          
+          // insert warning, since this may be a mangled DTG
+          final String msg =
+              "Day decreased, but month didn't increase: " + dtgStr
+                  + ". The previous entry may be a mangled cut/paste";
+          logThisError(ToolParent.ERROR, msg, null);
         }
         else
         {
@@ -1079,9 +1085,9 @@ public class ImportNarrativeDocument
 
   static final String DATE_MATCH_FOUR = "(\\d{4})";
 
-  public static void logThisError(final String msg, final Exception e)
+  public static void logThisError(final int status, final String msg, final Exception e)
   {
-    Application.logError2(ToolParent.WARNING, msg, e);
+    Application.logError2(status, msg, e);
   }
 
   /**
@@ -1227,7 +1233,7 @@ public class ImportNarrativeDocument
       }
       else
       {
-        logError("Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
+        logError(ToolParent.WARNING, "Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
       }
     }
   }
@@ -1287,9 +1293,9 @@ public class ImportNarrativeDocument
     throw new RuntimeException("Docx import not implemented");
   }
 
-  public void logError(final String msg, final Exception e)
+  public void logError(final int status, final String msg, final Exception e)
   {
-    logThisError(msg, e);
+    logThisError(status, msg, e);
   }
 
   /**
