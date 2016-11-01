@@ -46,7 +46,6 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -179,12 +178,60 @@ public class ImportNarrativeDocument
       final String regexp =
           ".*([A-Z]{1,4}\\d{3}|M\\d{2})(?<SOURCE>.*)B-.*";
       final Matcher m = Pattern.compile(regexp).matcher(tidied);
-      String res = null;
+      final String res;
       if (m.matches())
       {
-        res = m.group("SOURCE").trim();
+        String source = m.group("SOURCE").trim();
+        
+        // ok, special processing. We're getting unpredicable extra text
+        // in the source field (between FCS and "B-".  So
+        // do some inspection to decide what to show
+        if(source.contains("LOP"))
+        {
+          res = "LOP";
+        }
+        else if(source.contains("SMCS"))
+        {
+          res = "SMCS";
+        }
+        else if(source.contains("WECDIS"))
+        {
+          res = "WECDIS";
+        }
+        else if(source.contains("1936"))
+        {
+          res = "1936";
+        }
+        else if(source.contains("1959"))
+        {
+          res = "1959";
+        }
+        else if(source.contains("CMD"))
+        {
+          res = "CMD";
+        }
+        else if(source.contains("WECDIS"))
+        {
+          res = "WECDIS";
+        }
+        else if(source.toUpperCase().contains("TRIANGULATION"))
+        {
+          res = "Triangulation";
+        }
+        else if(source.contains("HDPR"))
+        {
+          res = "HDPR";
+        }
+        else
+        {
+          res = source;
+        }
       }
-      
+      else
+      {
+        res = null;
+      }
+
       return res;
     }
 
@@ -334,7 +381,7 @@ public class ImportNarrativeDocument
       }
       catch (final ParseException e)
       {
-        logThisError("Failed whilst parsing Word Document, at line:" + lineNum,
+        logThisError(ToolParent.WARNING, "Failed whilst parsing Word Document, at line:" + lineNum,
             e);
       }
 
@@ -416,6 +463,12 @@ public class ImportNarrativeDocument
         {
           // ok, the day has dropped, but the month hasn't increased
           dayStr = lastDay;
+          
+          // insert warning, since this may be a mangled DTG
+          final String msg =
+              "Day decreased, but month didn't increase: " + dtgStr
+                  + ". The previous entry may be a mangled cut/paste";
+          logThisError(ToolParent.ERROR, msg, null);
         }
         else
         {
@@ -652,7 +705,7 @@ public class ImportNarrativeDocument
       importer.processThese(strings);
 
       // hmmm, how many tracks
-      assertEquals("got new tracks", 7, tLayers.size());
+      assertEquals("got new tracks", 8, tLayers.size());
 
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
@@ -661,11 +714,11 @@ public class ImportNarrativeDocument
 
       // hey, let's have a look tthem
       TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
-      assertEquals("correct name", "M01_AAAA AAAA AAA (AAAA)", tw.getName());
-      assertEquals("got fixes", 1, tw.numFixes());
+      assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
 
       // hey, let's have a look tthem
-      tw = (TrackWrapper) tLayers.elementAt(5);
+      tw = (TrackWrapper) tLayers.elementAt(6);
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 4, tw.numFixes());
       
@@ -678,7 +731,7 @@ public class ImportNarrativeDocument
           bounds.toString());
 
       // hey, let's have a look tthem
-      tw = (TrackWrapper) tLayers.elementAt(6);
+      tw = (TrackWrapper) tLayers.elementAt(7);
       assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
       
@@ -876,7 +929,7 @@ public class ImportNarrativeDocument
       final String str1 =
           "   SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str2 =
-          "SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+          "SR023 1936 GAINED FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
       final String str3 = 
           "M01 AAAA AAAA AAA (AAAA) B-173 R-3.7kyds C-271 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
@@ -884,8 +937,9 @@ public class ImportNarrativeDocument
       String match1 = FCSEntry.parseSource(str1);
       assertEquals("got source", "SOURCE_A FCS", match1);
 
+      // check we do our special pattern matching
       String match2 = FCSEntry.parseSource(str2);
-      assertEquals("got source", "SOURCE_B FCS (AAAA)", match2);
+      assertEquals("got source", "1936", match2);
 
       String match3 = FCSEntry.parseSource(str3);
       assertEquals("got source", "AAAA AAAA AAA (AAAA)", match3);
@@ -1031,9 +1085,9 @@ public class ImportNarrativeDocument
 
   static final String DATE_MATCH_FOUR = "(\\d{4})";
 
-  public static void logThisError(final String msg, final Exception e)
+  public static void logThisError(final int status, final String msg, final Exception e)
   {
-    Application.logError2(ToolParent.WARNING, msg, e);
+    Application.logError2(status, msg, e);
   }
 
   /**
@@ -1179,7 +1233,7 @@ public class ImportNarrativeDocument
       }
       else
       {
-        logError("Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
+        logError(ToolParent.WARNING, "Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
       }
     }
   }
@@ -1239,9 +1293,9 @@ public class ImportNarrativeDocument
     throw new RuntimeException("Docx import not implemented");
   }
 
-  public void logError(final String msg, final Exception e)
+  public void logError(final int status, final String msg, final Exception e)
   {
-    logThisError(msg, e);
+    logThisError(status, msg, e);
   }
 
   /**
@@ -1405,6 +1459,7 @@ public class ImportNarrativeDocument
     res = res.replace((char)19, (char)32);
     res = res.replace((char)20, (char)32);
     res = res.replace((char)21, (char)32);
+    res = res.replace((char)5, (char)32); // MS Word comment marker
     
     // done.
     return res;
