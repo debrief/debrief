@@ -5,7 +5,13 @@ Bundle-SymbolicName: org.mwc.debrief.legacy;singleton:=true
 Bundle-Version: 1.0.327
 Bundle-ClassPath: debrief_legacy.jar,
  libs/poi-3.14-20160307.jar,
- libs/poi-scratchpad-3.14-20160307.jar
+ libs/poi-scratchpad-3.14-20160307.jar,
+ libs/xmlbeans-2.6.0.jar,
+ libs/poi-ooxml-3.14.jar,
+ libs/poi-ooxml-schemas-3.14.jar,
+ libs/pdfbox-2.0.3.jar,
+ libs/commons-logging-1.2.jar,
+ libs/fontbox-2.0.3.jar
 Bundle-Vendor: MWC
 Export-Package: 
  Debrief.GUI,

@@ -37,9 +37,15 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -1255,7 +1261,33 @@ public class ImportNarrativeDocument
   public ArrayList<String> importFromPdf(final String fileName,
       final InputStream inputStream)
   {
-    throw new RuntimeException("PDF import not implemented");
+    final ArrayList<String> strings = new ArrayList<String>();
+
+    try
+    {
+      PDDocument document = PDDocument.load(inputStream);
+
+      // clear the stored data in the importer
+      NarrEntry.reset();
+      PDFTextStripper textStripper = new PDFTextStripper(); 
+      PDPageTree pages = document.getPages();
+      for (int i = 1; i <= pages.getCount(); i++)
+      {
+        textStripper.setStartPage(i); 
+        textStripper.setEndPage(i);  
+        String pageText = textStripper.getText(document); 
+        String[] split = pageText.split(textStripper.getLineSeparator());
+        strings.addAll(Arrays.asList(split));
+        
+      }
+      document.close();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return strings;
   }
 
   public ArrayList<String> importFromWord(final String fName,
@@ -1287,10 +1319,32 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWordX(final String fileName,
-      final InputStream inputStream)
+  public ArrayList<String> importFromWordX(final String fName,
+      final InputStream is)
   {
-    throw new RuntimeException("Docx import not implemented");
+    final ArrayList<String> strings = new ArrayList<String>();
+
+    try
+    {
+      final XWPFDocument doc = new XWPFDocument(is);
+
+      List<XWPFParagraph> paragraphs = doc.getParagraphs();
+
+      // clear the stored data in the MS Word importer
+      NarrEntry.reset();
+
+      for (XWPFParagraph xwpfParagraph : paragraphs)
+      {
+        strings.add(xwpfParagraph.getText());
+      }
+      doc.close();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return strings;
   }
 
   public void logError(final int status, final String msg, final Exception e)
