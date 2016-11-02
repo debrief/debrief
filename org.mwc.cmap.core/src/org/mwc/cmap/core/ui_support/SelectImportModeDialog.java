@@ -25,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -124,12 +126,24 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
    */
   public ImportSettings open()
   {
+    
+    Shell activeShell = Display.getCurrent().getActiveShell();
+    if(activeShell==null)
+      activeShell = Display.getDefault().getShells()[0];//switch to default shell 
     // Create the dialog window
-    final Shell shell = new Shell(getParent(), getStyle());
+    final Shell shell = new Shell(activeShell, SWT.PRIMARY_MODAL|SWT.TITLE|SWT.SHELL_TRIM);
     shell.setText(getText());
     createContents(shell);
     shell.pack();
+    
+    //centreLocation
+    Rectangle shellBounds = activeShell.getBounds();
+    Point dialogSize = shell.getSize();
+    shell.setLocation(shellBounds.x + (shellBounds.width - dialogSize.x) / 2, shellBounds.y + (shellBounds.height - dialogSize.y) / 2);
+    
     shell.open();
+    
+   
     final Display display = getParent().getDisplay();
     while (!shell.isDisposed())
     {

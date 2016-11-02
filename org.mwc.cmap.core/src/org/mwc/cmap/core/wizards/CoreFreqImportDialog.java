@@ -31,9 +31,13 @@ public class CoreFreqImportDialog extends TitleAreaDialog
 
   public CoreFreqImportDialog(final Shell parentShell)
   {
-    super(parentShell);
-    setShellStyle(getShellStyle()|SWT.ON_TOP);//keep on top 
+    super(parentShell); 
   }
+  
+  @Override
+	protected int getShellStyle() {
+		return SWT.PRIMARY_MODAL|SWT.TITLE|SWT.SHELL_TRIM;
+	}
 
   protected Object[] getDataSet()
   {
