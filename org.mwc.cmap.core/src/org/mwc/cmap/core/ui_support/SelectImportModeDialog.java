@@ -129,7 +129,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
     
     Shell activeShell = Display.getCurrent().getActiveShell();
     // Create the dialog window
-    final Shell shell = new Shell(activeShell, getStyle());
+    final Shell shell = new Shell(activeShell, SWT.PRIMARY_MODAL|SWT.TITLE|SWT.SHELL_TRIM);
     shell.setText(getText());
     createContents(shell);
     shell.pack();
