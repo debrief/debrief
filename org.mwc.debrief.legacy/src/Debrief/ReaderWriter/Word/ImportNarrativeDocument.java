@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,9 +37,15 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -166,6 +173,73 @@ public class ImportNarrativeDocument
 
       return res;
     }
+    
+    private static String parseSource(final String str)
+    {
+      // replace newline control characters
+      String tidied = str.replace("\n", "");
+      tidied = tidied.replace("\r", "");
+      tidied = tidied.trim();
+
+      final String regexp =
+          ".*([A-Z]{1,4}\\d{3}|M\\d{2})(?<SOURCE>.*)B-.*";
+      final Matcher m = Pattern.compile(regexp).matcher(tidied);
+      final String res;
+      if (m.matches())
+      {
+        String source = m.group("SOURCE").trim();
+        
+        // ok, special processing. We're getting unpredicable extra text
+        // in the source field (between FCS and "B-".  So
+        // do some inspection to decide what to show
+        if(source.contains("LOP"))
+        {
+          res = "LOP";
+        }
+        else if(source.contains("SMCS"))
+        {
+          res = "SMCS";
+        }
+        else if(source.contains("WECDIS"))
+        {
+          res = "WECDIS";
+        }
+        else if(source.contains("1936"))
+        {
+          res = "1936";
+        }
+        else if(source.contains("1959"))
+        {
+          res = "1959";
+        }
+        else if(source.contains("CMD"))
+        {
+          res = "CMD";
+        }
+        else if(source.contains("WECDIS"))
+        {
+          res = "WECDIS";
+        }
+        else if(source.toUpperCase().contains("TRIANGULATION"))
+        {
+          res = "Triangulation";
+        }
+        else if(source.contains("HDPR"))
+        {
+          res = "HDPR";
+        }
+        else
+        {
+          res = source;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+
+      return res;
+    }
 
     /**
      * extract the track number from the provided string
@@ -220,6 +294,8 @@ public class ImportNarrativeDocument
     final double crseDegs;
 
     final double spdKts;
+    
+    final String source;
 
     public FCSEntry(final String msg)
     {
@@ -234,6 +310,7 @@ public class ImportNarrativeDocument
 
       // try to extract the track id
       final String trackId = parseTrack(msg);
+      final String source = parseSource(msg);
 
       this.crseDegs = cVal != null ? cVal : 0d;
       this.brgDegs = bVal != null ? bVal : 0d;
@@ -241,6 +318,7 @@ public class ImportNarrativeDocument
       this.spdKts = sVal != null ? sVal : 0d;
       this.tgtType = classStr != null ? classStr : "N/A";
       this.contact = trackId != null ? trackId : "N/A";
+      this.source = source != null ? source : "";
     }
 
   }
@@ -309,7 +387,7 @@ public class ImportNarrativeDocument
       }
       catch (final ParseException e)
       {
-        logThisError("Failed whilst parsing Word Document, at line:" + lineNum,
+        logThisError(ToolParent.WARNING, "Failed whilst parsing Word Document, at line:" + lineNum,
             e);
       }
 
@@ -391,6 +469,12 @@ public class ImportNarrativeDocument
         {
           // ok, the day has dropped, but the month hasn't increased
           dayStr = lastDay;
+          
+          // insert warning, since this may be a mangled DTG
+          final String msg =
+              "Day decreased, but month didn't increase: " + dtgStr
+                  + ". The previous entry may be a mangled cut/paste";
+          logThisError(ToolParent.ERROR, msg, null);
         }
         else
         {
@@ -627,7 +711,7 @@ public class ImportNarrativeDocument
       importer.processThese(strings);
 
       // hmmm, how many tracks
-      assertEquals("got new tracks", 6, tLayers.size());
+      assertEquals("got new tracks", 8, tLayers.size());
 
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
@@ -635,9 +719,28 @@ public class ImportNarrativeDocument
       assertEquals("Got num lines", 368, narrLayer.size());
 
       // hey, let's have a look tthem
-      final TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
-      assertEquals("got fixes", 4, tw.numFixes());
+      TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
+      assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
 
+      // hey, let's have a look tthem
+      tw = (TrackWrapper) tLayers.elementAt(6);
+      assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
+      assertEquals("got fixes", 4, tw.numFixes());
+      
+      TimePeriod bounds = tw.getVisiblePeriod();
+      // in our sample data we have several FCSs at the same time,
+      // so we have to increment the DTG (seconds) on successive points.
+      // so,the dataset should end at 08:11:01 - since the last point
+      // had a second added.
+      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081101",
+          bounds.toString());
+
+      // hey, let's have a look tthem
+      tw = (TrackWrapper) tLayers.elementAt(7);
+      assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
+      
     }
 
     public void testImportEmptyLayers() throws FileNotFoundException
@@ -826,6 +929,140 @@ public class ImportNarrativeDocument
           WorldDistance.KYDS), 0.1);
     }
 
+    public void testAdvancedParseFCS() throws ParseException
+    {
+      
+      final String str1 =
+          "   SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str2 =
+          "SR023 1936 GAINED FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str3 = 
+          "M01 AAAA AAAA AAA (AAAA) B-173 R-3.7kyds C-271 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+
+      // high level test of extracting source
+      String match1 = FCSEntry.parseSource(str1);
+      assertEquals("got source", "SOURCE_A FCS", match1);
+
+      // check we do our special pattern matching
+      String match2 = FCSEntry.parseSource(str2);
+      assertEquals("got source", "1936", match2);
+
+      String match3 = FCSEntry.parseSource(str3);
+      assertEquals("got source", "AAAA AAAA AAA (AAAA)", match3);
+    }
+
+    public void testAdvancedParseBulkFCS() throws ParseException
+    {
+      final String str1 =
+          "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str1a =
+          "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str2 =
+          "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_B FCS (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA \r BBBBBB AAAAAA.";
+      final String str3 =
+          "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA \nBBBBBB AAAAAA.";
+      final String str4 =
+          "160504,16,08,2016,NONSUCH,FCS,  SV023 SOURCE_A FCS B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+      
+      // create mock importer
+      final String[] strings = new String[]{str1, str1a, str2, str3, str4};
+      final ArrayList<String> strList = new ArrayList<String>(Arrays.asList(strings));
+      
+      final Layers target = new Layers();
+      
+      // create the ownship track
+      TrackWrapper nonsuch = new TrackWrapper();
+      nonsuch.setName("NONSUCH");
+      
+      // we also need fixes covering this period
+      SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+      HiResDate hd1 = new HiResDate(df.parse("08/16/2016 05:00:00"));
+      HiResDate hd2 = new HiResDate(df.parse("08/16/2016 06:00:00"));
+      WorldLocation loc1 = new WorldLocation(1,1,0);
+      WorldLocation loc2 = new WorldLocation(2,2,0);
+      Fix fx1 = new Fix(hd1, loc1, 12d, 5);
+      Fix fx2 = new Fix(hd2, loc2, 12d, 5);
+      
+      nonsuch.add(new FixWrapper(fx1));
+      nonsuch.add(new FixWrapper(fx2));
+      
+      target.addThisLayer(nonsuch);
+      
+      ImportNarrativeDocument importer = new ImportNarrativeDocument(target);
+
+      assertEquals("one track", 1, target.size());
+      
+      importer.processThese(strList);
+      
+      // check we have two tracks
+      assertEquals("all tracks", 4, target.size());
+      
+      // check the size
+      Layer t1 = target.elementAt(2);
+      Layer t2 = target.elementAt(3);
+      
+      assertEquals("correct name", "023_SOURCE_A FCS", t1.getName());
+      assertEquals("correct name", "023_SOURCE_B FCS (AAAA)", t2.getName());
+    }
+    
+
+    public void testParseFCSWithSameTime() throws ParseException
+    {
+      final String str1 =
+          "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str1a =
+          "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
+      final String str2 =
+          "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_B FCS (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA \r BBBBBB AAAAAA.";
+      final String str3 =
+          "160505,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA \nBBBBBB AAAAAA.";
+      final String str4 =
+          "160505,16,08,2016,NONSUCH,FCS,  SV023 SOURCE_B FCS (AAAA) B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+      
+      // create mock importer
+      final String[] strings = new String[]{str1, str1a, str2, str3, str4};
+      final ArrayList<String> strList = new ArrayList<String>(Arrays.asList(strings));
+      
+      final Layers target = new Layers();
+      
+      // create the ownship track
+      TrackWrapper nonsuch = new TrackWrapper();
+      nonsuch.setName("NONSUCH");
+      
+      // we also need fixes covering this period
+      SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+      HiResDate hd1 = new HiResDate(df.parse("08/16/2016 05:00:00"));
+      HiResDate hd2 = new HiResDate(df.parse("08/16/2016 06:00:00"));
+      WorldLocation loc1 = new WorldLocation(1,1,0);
+      WorldLocation loc2 = new WorldLocation(2,2,0);
+      Fix fx1 = new Fix(hd1, loc1, 12d, 5);
+      Fix fx2 = new Fix(hd2, loc2, 12d, 5);
+      
+      nonsuch.add(new FixWrapper(fx1));
+      nonsuch.add(new FixWrapper(fx2));
+      
+      target.addThisLayer(nonsuch);
+      
+      ImportNarrativeDocument importer = new ImportNarrativeDocument(target);
+
+      assertEquals("one track", 1, target.size());
+      
+      importer.processThese(strList);
+      
+      // check we have two tracks
+      assertEquals("all tracks", 4, target.size());
+      
+      // check the size
+      TrackWrapper t1 = (TrackWrapper) target.elementAt(2);
+      TrackWrapper t2 = (TrackWrapper) target.elementAt(3);
+      
+      assertEquals("correct name", "023_SOURCE_A FCS", t1.getName());
+      assertEquals("correct name", "023_SOURCE_B FCS (AAAA)", t2.getName());
+      
+      assertEquals("correct length", 2, t1.numFixes());
+      assertEquals("correct length", 3, t2.numFixes());
+    }
+    
     public void testParseTrackNumber()
     {
       final String str1 = "asdfads S000 adf ag a";
@@ -854,9 +1091,9 @@ public class ImportNarrativeDocument
 
   static final String DATE_MATCH_FOUR = "(\\d{4})";
 
-  public static void logThisError(final String msg, final Exception e)
+  public static void logThisError(final int status, final String msg, final Exception e)
   {
-    Application.logError2(ToolParent.WARNING, msg, e);
+    Application.logError2(status, msg, e);
   }
 
   /**
@@ -949,13 +1186,24 @@ public class ImportNarrativeDocument
                 fe.rangYds, WorldDistance.YARDS), new WorldDistance(0,
                 WorldDistance.METRES));
         final WorldLocation loc = fix.getLocation().add(vec);
+        
+        // build the track name
+        final String trackName;
+        if(fe.source != null)
+        {
+          trackName = fe.contact + "_" + fe.source;
+        }
+        else
+        {
+          trackName =fe.contact; 
+        }
 
         // find the track for this solution
-        TrackWrapper hisTrack = (TrackWrapper) _layers.findLayer(fe.contact);
+        TrackWrapper hisTrack = (TrackWrapper) _layers.findLayer(trackName);
         if (hisTrack == null)
         {
           hisTrack = new TrackWrapper();
-          hisTrack.setName(fe.contact);
+          hisTrack.setName(trackName);
           hisTrack.setColor(DebriefColors.RED);
           _layers.addThisLayer(hisTrack);
         }
@@ -974,13 +1222,24 @@ public class ImportNarrativeDocument
         newFw.setSymbolShowing(false);
         newFw.setArrowShowing(true);
         newFw.setLabelShowing(true);
+        
+        // ok, we may have multiple fixes at the same time
+        Watchable[] hisNearest = hisTrack.getNearestTo(thisN.dtg);
+        if(hisNearest != null && hisNearest.length > 0)
+        {
+          // ok, have a look at it.
+          while(hisNearest[0].getTime().equals(newF.getTime()))
+          {
+            newF.setTime(new HiResDate(newF.getTime().getDate().getTime() + 1000));
+          }
+        }
 
         // and store it
         hisTrack.add(newFw);
       }
       else
       {
-        logError("Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
+        logError(ToolParent.WARNING, "Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
       }
     }
   }
@@ -1002,7 +1261,33 @@ public class ImportNarrativeDocument
   public ArrayList<String> importFromPdf(final String fileName,
       final InputStream inputStream)
   {
-    throw new RuntimeException("PDF import not implemented");
+    final ArrayList<String> strings = new ArrayList<String>();
+
+    try
+    {
+      PDDocument document = PDDocument.load(inputStream);
+
+      // clear the stored data in the importer
+      NarrEntry.reset();
+      PDFTextStripper textStripper = new PDFTextStripper(); 
+      PDPageTree pages = document.getPages();
+      for (int i = 1; i <= pages.getCount(); i++)
+      {
+        textStripper.setStartPage(i); 
+        textStripper.setEndPage(i);  
+        String pageText = textStripper.getText(document); 
+        String[] split = pageText.split(textStripper.getLineSeparator());
+        strings.addAll(Arrays.asList(split));
+        
+      }
+      document.close();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return strings;
   }
 
   public ArrayList<String> importFromWord(final String fName,
@@ -1034,15 +1319,37 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWordX(final String fileName,
-      final InputStream inputStream)
+  public ArrayList<String> importFromWordX(final String fName,
+      final InputStream is)
   {
-    throw new RuntimeException("Docx import not implemented");
+    final ArrayList<String> strings = new ArrayList<String>();
+
+    try
+    {
+      final XWPFDocument doc = new XWPFDocument(is);
+
+      List<XWPFParagraph> paragraphs = doc.getParagraphs();
+
+      // clear the stored data in the MS Word importer
+      NarrEntry.reset();
+
+      for (XWPFParagraph xwpfParagraph : paragraphs)
+      {
+        strings.add(xwpfParagraph.getText());
+      }
+      doc.close();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return strings;
   }
 
-  public void logError(final String msg, final Exception e)
+  public void logError(final int status, final String msg, final Exception e)
   {
-    logThisError(msg, e);
+    logThisError(status, msg, e);
   }
 
   /**
@@ -1206,6 +1513,7 @@ public class ImportNarrativeDocument
     res = res.replace((char)19, (char)32);
     res = res.replace((char)20, (char)32);
     res = res.replace((char)21, (char)32);
+    res = res.replace((char)5, (char)32); // MS Word comment marker
     
     // done.
     return res;
