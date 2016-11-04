@@ -863,16 +863,24 @@ public class ShowTacticalOverview extends AbstractHandler
     depthAxis.setAxisType(depthAxisType);
     depthAxis.setName("Depth (m)");
     // don't add it - we won't bother until we have depth
-    // speedChart.getMaxAxes().add(speedAxis);
 
     // do the primary
     processTrack(pri, courseAxis, speedAxis, depthAxis, factory, period);
 
+    // and the secondaries
     for (int i = 0; i < secs.length; i++)
     {
       final WatchableList sec = secs[i];
       processTrack(sec, courseAxis, speedAxis, depthAxis, factory, period);
     }
+    
+    // did we find some depth data?
+    if(depthAxis.getDatasets().size() > 0)
+    {
+      speedChart.getMaxAxes().add(depthAxis);
+    }
+
+
   }
 
   @SuppressWarnings("unused")
