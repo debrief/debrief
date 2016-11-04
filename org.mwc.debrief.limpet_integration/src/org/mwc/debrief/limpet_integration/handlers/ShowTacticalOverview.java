@@ -861,7 +861,7 @@ public class ShowTacticalOverview extends AbstractHandler
     final NumberAxis depthAxisType = factory.createNumberAxis();
     depthAxisType.setUnits("m");
     depthAxis.setAxisType(depthAxisType);
-    depthAxis.setName("Depth (m)");
+    depthAxis.setName("Depth");
     // don't add it - we won't bother until we have depth
 
     // do the primary
