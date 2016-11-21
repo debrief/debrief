@@ -122,7 +122,7 @@ public class ZigDetector
 
 	final SimpleDateFormat dateF = new SimpleDateFormat("HH:mm:ss");
 
-	public static int getEnd(final int start, final int end, final int buffer,
+	private static int getEnd(final int start, final int end, final int buffer,
 			final int index)
 	{
 		int res = -1;
@@ -138,7 +138,7 @@ public class ZigDetector
 		return res;
 	}
 
-	public static int getStart(final int start, final int end, final int buffer,
+	private static int getStart(final int start, final int end, final int buffer,
 			final int index)
 	{
 		int res = -1;
