@@ -150,6 +150,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributio
 import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.widgets.ZoneChart;
 
 /**
  * mock class to test high level application flows
@@ -623,7 +624,13 @@ public class MaintainContributionsView extends ViewPart
 		performanceTab.setText("Performance");
 		Group perfG2 = initPerformanceGraph(graphTabs);
 		performanceTab.setControl(perfG2);
-
+		
+		//Zone Test
+		TabItem zoneTest	= new TabItem(graphTabs, SWT.NONE);
+		zoneTest.setText("Zone Chart Test");
+		ZoneChart zoneChart = new ZoneChart(); 
+		ChartComposite chartComposite = zoneChart.create(graphTabs, new ZoneChart.Zone[]{new ZoneChart.Zone(1,4),new ZoneChart.Zone(5,8)}, new long[]{1,12,13,24,45,66,77,98}, new long[]{5,2,3,6,7,8,1,2});
+		zoneTest.setControl(chartComposite);
 	}
 
 	private Group initPerformanceGraph(Composite parent)

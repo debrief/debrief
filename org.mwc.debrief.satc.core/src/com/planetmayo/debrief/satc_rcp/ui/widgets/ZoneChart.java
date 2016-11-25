@@ -1,0 +1,190 @@
+package com.planetmayo.debrief.satc_rcp.ui.widgets;
+
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.plot.IntervalMarker;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.ui.Layer;
+
+public class ZoneChart
+{
+  private Zone[] zones = new Zone[0];
+  private Map<Zone, IntervalMarker> zoneMarkers =
+      new HashMap<ZoneChart.Zone, IntervalMarker>();
+  private long[] timeValues = new long[0];
+  private long[] angleValues = new long[0];
+
+  public ChartComposite create(Composite parent, final Zone[] zones,
+      long[] timeValues, long[] angleValues)
+  {
+    this.zones = zones;
+    this.zoneMarkers.clear();
+    this.timeValues = timeValues;
+    this.angleValues = angleValues;
+
+    // build the jfreechart Plot
+    final XYSeries xySeries = new XYSeries("");
+
+    for (int i = 0; i < timeValues.length; i++)
+    {
+      xySeries.add(timeValues[i], angleValues[i]);
+    }
+
+    final XYSeriesCollection dataset = new XYSeriesCollection();
+    dataset.addSeries(xySeries);
+
+    JFreeChart xylineChart =
+        ChartFactory.createXYLineChart("", "Time", "Angle", dataset,
+            PlotOrientation.VERTICAL, true, true, false);
+
+    final XYPlot plot = (XYPlot) xylineChart.getPlot();
+    NumberAxis xAxis = new NumberAxis();
+    xAxis.setTickUnit(new NumberTickUnit(1));
+    plot.setDomainAxis(xAxis);
+    for (Zone zone : zones)
+    {
+      IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
+      plot.addDomainMarker(mrk, Layer.FOREGROUND);
+      zoneMarkers.put(zone, mrk);
+
+    }
+
+    ChartComposite chartComposite =
+        new ChartComposite(parent, SWT.NONE, xylineChart, 400, 600, 300, 200,
+            1800, 1800, true, false, true, true, true, true)
+        {
+          double dragStartX = -1;
+
+          List<Zone> dragZones = new ArrayList<Zone>();
+
+          @Override
+          public void mouseDown(MouseEvent event)
+          {
+            dragZones.clear();
+            dragStartX = findDomainX(event.x);
+            for (Zone zone : zones)
+            {
+              // find the drag area zones
+
+              if (zone.start <= dragStartX && zone.end >= dragStartX)
+              {
+                dragZones.add(zone);
+              }
+            }
+          
+            if (dragZones.isEmpty())
+              super.mouseDown(event);
+
+          }
+
+          @Override
+          public void mouseMove(MouseEvent event)
+          {
+            
+            if (!dragZones.isEmpty() && dragStartX > 0)
+            {
+              double currentX = findDomainX(event.x);
+              
+              double diff = Math.round(currentX - dragStartX);
+              if (diff != 0)
+              {
+                dragStartX = currentX;
+                for (Zone z : dragZones)
+                {
+                  z.start += diff;
+                  z.end += diff;
+
+                  IntervalMarker intervalMarker = zoneMarkers.get(z);
+                  assert intervalMarker!=null;
+                  intervalMarker.setStartValue(z.start);
+                  intervalMarker.setEndValue(z.end);
+                }
+
+              }
+
+            }
+
+            else
+              super.mouseMove(event);
+          }
+
+          @Override
+          public void mouseUp(MouseEvent event)
+          {
+            dragStartX = -1;
+            dragZones.clear();
+            super.mouseUp(event);
+          }
+
+          private double findDomainX(int x)
+          {
+            final Rectangle dataArea = getScreenDataArea();
+            final Rectangle2D d2 =
+                new Rectangle2D.Double(dataArea.x, dataArea.y, dataArea.width,
+                    dataArea.height);
+            final XYPlot plot = (XYPlot) getChart().getPlot();
+            final double chartX =
+                plot.getDomainAxis().java2DToValue(x, d2,
+                    plot.getDomainAxisEdge());
+            return chartX;
+          }
+
+        };
+    xylineChart.setAntiAlias(false);
+
+    chartComposite.setDomainZoomable(false);
+    chartComposite.setRangeZoomable(false);
+
+    return chartComposite;
+
+  }
+
+  public Zone[] getZones()
+  {
+    return zones;
+  }
+
+  public static class Zone
+  {
+    int start, end;
+
+    public Zone(int start, int end)
+    {
+      this.start = start;
+      this.end = end;
+    }
+
+    public int getStart()
+    {
+      return start;
+    }
+
+    public int getEnd()
+    {
+      return end;
+    }
+
+    @Override
+    public String toString()
+    {
+      return "Zone [start=" + start + ", end=" + end + "]";
+    }
+
+  }
+}
