@@ -216,8 +216,9 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
     // have we sorted? 
     if (res == 0)
     {
-      // nope, try the hashcode, as a fallback
-      res = Integer.compare(this.hashCode(), o.hashCode());
+    	// nope, try the hashcode, as a fallback
+    	res = Integer.valueOf(this.hashCode()).compareTo(
+    			Integer.valueOf(o.hashCode()));
     }
 
     return res;

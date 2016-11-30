@@ -590,7 +590,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		// use hashcode as fallback
 		if(res == 0)
 		{
-		  res = Integer.compare(this.hashCode(), other.hashCode());
+			res = Integer.valueOf(this.hashCode()).compareTo(
+					Integer.valueOf(other.hashCode()));
 		}
 		
 		return res;
