@@ -7,9 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -27,6 +33,7 @@ public class ZoneChart
   private Zone[] zones = new Zone[0];
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
+
   private long[] timeValues = new long[0];
   private long[] angleValues = new long[0];
 
@@ -65,7 +72,19 @@ public class ZoneChart
 
     }
 
-    ChartComposite chartComposite =
+    ChartComposite chartComposite = createChartUI(parent, zones, xylineChart);
+
+    return chartComposite;
+
+  }
+
+  private ChartComposite createChartUI(Composite parent, final Zone[] zones,
+      JFreeChart xylineChart)
+  {
+
+    final Cursor handCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+
+    final ChartComposite chartComposite =
         new ChartComposite(parent, SWT.NONE, xylineChart, 400, 600, 300, 200,
             1800, 1800, true, false, true, true, true, true)
         {
@@ -73,11 +92,13 @@ public class ZoneChart
 
           List<Zone> dragZones = new ArrayList<Zone>();
 
+          
+          
           @Override
           public void mouseDown(MouseEvent event)
           {
             dragZones.clear();
-            dragStartX = findDomainX(event.x);
+            dragStartX = findDomainX(this,event.x);
             for (Zone zone : zones)
             {
               // find the drag area zones
@@ -87,7 +108,7 @@ public class ZoneChart
                 dragZones.add(zone);
               }
             }
-          
+
             if (dragZones.isEmpty())
               super.mouseDown(event);
 
@@ -96,11 +117,24 @@ public class ZoneChart
           @Override
           public void mouseMove(MouseEvent event)
           {
+            double currentX = findDomainX(this,event.x);
+            for (Zone zone : zones)
+            {
+              // find the drag area zones
+
+              if (zone.start <= currentX && zone.end >= currentX)
+              {
+                this.setCursor(handCursor);
+               break;
+              }
+              this.setCursor(null);
+            }
+            
             
             if (!dragZones.isEmpty() && dragStartX > 0)
             {
-              double currentX = findDomainX(event.x);
               
+
               double diff = Math.round(currentX - dragStartX);
               if (diff != 0)
               {
@@ -111,7 +145,7 @@ public class ZoneChart
                   z.end += diff;
 
                   IntervalMarker intervalMarker = zoneMarkers.get(z);
-                  assert intervalMarker!=null;
+                  assert intervalMarker != null;
                   intervalMarker.setStartValue(z.start);
                   intervalMarker.setEndValue(z.end);
                 }
@@ -132,27 +166,38 @@ public class ZoneChart
             super.mouseUp(event);
           }
 
-          private double findDomainX(int x)
-          {
-            final Rectangle dataArea = getScreenDataArea();
-            final Rectangle2D d2 =
-                new Rectangle2D.Double(dataArea.x, dataArea.y, dataArea.width,
-                    dataArea.height);
-            final XYPlot plot = (XYPlot) getChart().getPlot();
-            final double chartX =
-                plot.getDomainAxis().java2DToValue(x, d2,
-                    plot.getDomainAxisEdge());
-            return chartX;
-          }
-
         };
+
     xylineChart.setAntiAlias(false);
 
     chartComposite.setDomainZoomable(false);
     chartComposite.setRangeZoomable(false);
 
+  
+    
+    chartComposite.addDisposeListener(new DisposeListener()
+    {
+      
+      @Override
+      public void widgetDisposed(DisposeEvent e)
+      {
+        handCursor.dispose();
+        
+      }
+    });
     return chartComposite;
+  }
 
+  private double findDomainX(ChartComposite composite, int x)
+  {
+    final Rectangle dataArea = composite.getScreenDataArea();
+    final Rectangle2D d2 =
+        new Rectangle2D.Double(dataArea.x, dataArea.y, dataArea.width,
+            dataArea.height);
+    final XYPlot plot = (XYPlot) composite.getChart().getPlot();
+    final double chartX =
+        plot.getDomainAxis().java2DToValue(x, d2, plot.getDomainAxisEdge());
+    return chartX;
   }
 
   public Zone[] getZones()
