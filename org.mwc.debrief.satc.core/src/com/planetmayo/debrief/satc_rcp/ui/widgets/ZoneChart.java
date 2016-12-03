@@ -30,6 +30,7 @@ import org.jfree.ui.Layer;
 
 public class ZoneChart
 {
+  private static final double OFFSET_RESIZE  = 0.5;
   private Zone[] zones = new Zone[0];
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
@@ -83,22 +84,25 @@ public class ZoneChart
   {
 
     final Cursor handCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+    final Cursor resizeCursor =
+        new Cursor(Display.getDefault(), SWT.CURSOR_SIZEWE);
 
     final ChartComposite chartComposite =
         new ChartComposite(parent, SWT.NONE, xylineChart, 400, 600, 300, 200,
             1800, 1800, true, false, true, true, true, true)
         {
           double dragStartX = -1;
+          boolean onDrag = false;
+          boolean move = false;
+          boolean resizeStart = true;
 
           List<Zone> dragZones = new ArrayList<Zone>();
 
-          
-          
           @Override
           public void mouseDown(MouseEvent event)
           {
             dragZones.clear();
-            dragStartX = findDomainX(this,event.x);
+            dragStartX = findDomainX(this, event.x);
             for (Zone zone : zones)
             {
               // find the drag area zones
@@ -106,6 +110,12 @@ public class ZoneChart
               if (zone.start <= dragStartX && zone.end >= dragStartX)
               {
                 dragZones.add(zone);
+                resizeStart = isResizeStart(zone, dragStartX);
+                move = !(resizeStart|| isResizeEnd(zone, dragStartX));
+                
+                  
+                onDrag = true;
+                break;
               }
             }
 
@@ -117,23 +127,24 @@ public class ZoneChart
           @Override
           public void mouseMove(MouseEvent event)
           {
-            double currentX = findDomainX(this,event.x);
-            for (Zone zone : zones)
-            {
-              // find the drag area zones
 
-              if (zone.start <= currentX && zone.end >= currentX)
+            double currentX = findDomainX(this, event.x);
+            if (!onDrag)
+              for (Zone zone : zones)
               {
-                this.setCursor(handCursor);
-               break;
+                // find the drag area zones
+
+                if (zone.start <= currentX && zone.end >= currentX)
+                {
+                  this.setCursor(isResizeStart(zone, currentX)||isResizeEnd(zone, currentX) ? resizeCursor
+                      : handCursor);
+                  break;
+                }
+                this.setCursor(null);
               }
-              this.setCursor(null);
-            }
-            
-            
-            if (!dragZones.isEmpty() && dragStartX > 0)
+
+            if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
             {
-              
 
               double diff = Math.round(currentX - dragStartX);
               if (diff != 0)
@@ -141,9 +152,17 @@ public class ZoneChart
                 dragStartX = currentX;
                 for (Zone z : dragZones)
                 {
-                  z.start += diff;
-                  z.end += diff;
+                  if (move)
+                  {
+                    z.start += diff;
+                    z.end += diff;
 
+                    
+                  }
+                  else
+                  {
+                    resize(z, dragStartX, diff);
+                  }
                   IntervalMarker intervalMarker = zoneMarkers.get(z);
                   assert intervalMarker != null;
                   intervalMarker.setStartValue(z.start);
@@ -158,11 +177,37 @@ public class ZoneChart
               super.mouseMove(event);
           }
 
+          private boolean isResizeStart(Zone zone, double x)
+          {
+            return (x - zone.start) < OFFSET_RESIZE ;
+          }
+          private boolean isResizeEnd(Zone zone, double x)
+          {
+            return (zone.end - x) < OFFSET_RESIZE;
+          }
+          private void resize(Zone zone, double startx,double diff)
+          {
+            if(resizeStart)
+            {
+              //use start 
+              if((zone.start+diff)<zone.end)
+                zone.start += diff;
+              
+            }
+            else
+            {
+              //use end
+              if((zone.end+diff)>zone.start)
+                zone.end += diff;
+            }
+          }
+
           @Override
           public void mouseUp(MouseEvent event)
           {
             dragStartX = -1;
             dragZones.clear();
+            onDrag = false;
             super.mouseUp(event);
           }
 
@@ -173,16 +218,14 @@ public class ZoneChart
     chartComposite.setDomainZoomable(false);
     chartComposite.setRangeZoomable(false);
 
-  
-    
     chartComposite.addDisposeListener(new DisposeListener()
     {
-      
+
       @Override
       public void widgetDisposed(DisposeEvent e)
       {
         handCursor.dispose();
-        
+        resizeCursor.dispose();
       }
     });
     return chartComposite;
