@@ -13,6 +13,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -28,9 +29,11 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.Layer;
 
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+
 public class ZoneChart
 {
-  private static final double OFFSET_RESIZE  = 0.5;
+  private static final double OFFSET_RESIZE = 0.5;
   private Zone[] zones = new Zone[0];
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
@@ -83,7 +86,16 @@ public class ZoneChart
       JFreeChart xylineChart)
   {
 
-    final Cursor handCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+    final Image handImg =
+        SATC_Activator.getImageDescriptor("/icons/hand.png").createImage();
+   
+    final  Image handFistImg =
+        SATC_Activator.getImageDescriptor("/icons/hand_fist.png").createImage();
+    
+    final Cursor handCursor =
+        new Cursor(Display.getDefault(), handImg.getImageData(), 0, 0);
+    final Cursor handCursorDrag =
+        new Cursor(Display.getDefault(), handFistImg.getImageData(), 0, 0);
     final Cursor resizeCursor =
         new Cursor(Display.getDefault(), SWT.CURSOR_SIZEWE);
 
@@ -111,10 +123,13 @@ public class ZoneChart
               {
                 dragZones.add(zone);
                 resizeStart = isResizeStart(zone, dragStartX);
-                move = !(resizeStart|| isResizeEnd(zone, dragStartX));
-                
-                  
+                move = !(resizeStart || isResizeEnd(zone, dragStartX));
+
                 onDrag = true;
+                if (move)
+                {
+                  setCursor(handCursorDrag);
+                }
                 break;
               }
             }
@@ -136,7 +151,8 @@ public class ZoneChart
 
                 if (zone.start <= currentX && zone.end >= currentX)
                 {
-                  this.setCursor(isResizeStart(zone, currentX)||isResizeEnd(zone, currentX) ? resizeCursor
+                  this.setCursor(isResizeStart(zone, currentX)
+                      || isResizeEnd(zone, currentX) ? resizeCursor
                       : handCursor);
                   break;
                 }
@@ -145,6 +161,11 @@ public class ZoneChart
 
             if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
             {
+
+              if (move)
+              {
+                setCursor(handCursorDrag);
+              }
 
               double diff = Math.round(currentX - dragStartX);
               if (diff != 0)
@@ -157,7 +178,6 @@ public class ZoneChart
                     z.start += diff;
                     z.end += diff;
 
-                    
                   }
                   else
                   {
@@ -179,25 +199,27 @@ public class ZoneChart
 
           private boolean isResizeStart(Zone zone, double x)
           {
-            return (x - zone.start) < OFFSET_RESIZE ;
+            return (x - zone.start) < OFFSET_RESIZE;
           }
+
           private boolean isResizeEnd(Zone zone, double x)
           {
             return (zone.end - x) < OFFSET_RESIZE;
           }
-          private void resize(Zone zone, double startx,double diff)
+
+          private void resize(Zone zone, double startx, double diff)
           {
-            if(resizeStart)
+            if (resizeStart)
             {
-              //use start 
-              if((zone.start+diff)<zone.end)
+              // use start
+              if ((zone.start + diff) < zone.end)
                 zone.start += diff;
-              
+
             }
             else
             {
-              //use end
-              if((zone.end+diff)>zone.start)
+              // use end
+              if ((zone.end + diff) > zone.start)
                 zone.end += diff;
             }
           }
@@ -225,7 +247,10 @@ public class ZoneChart
       public void widgetDisposed(DisposeEvent e)
       {
         handCursor.dispose();
+        handCursorDrag.dispose();
         resizeCursor.dispose();
+        handImg.dispose();
+        handFistImg.dispose();
       }
     });
     return chartComposite;
