@@ -628,9 +628,11 @@ public class MaintainContributionsView extends ViewPart
 		//Zone Test
 		TabItem zoneTest	= new TabItem(graphTabs, SWT.NONE);
 		zoneTest.setText("Zone Chart Test");
-		ZoneChart zoneChart = new ZoneChart(); 
-		ChartComposite chartComposite = zoneChart.create(graphTabs, new ZoneChart.Zone[]{new ZoneChart.Zone(1,4),new ZoneChart.Zone(5,8)}, new long[]{1,12,13,24,45,66,77,98}, new long[]{5,2,3,6,7,8,1,2});
-		zoneTest.setControl(chartComposite);
+    ZoneChart zoneChart = ZoneChart.create(graphTabs, new ZoneChart.Zone[]
+    {new ZoneChart.Zone(1, 4), new ZoneChart.Zone(5, 8)}, new long[]
+    {1, 12, 13, 24, 45, 66, 77, 98}, new long[]
+    {5, 2, 3, 6, 7, 8, 1, 2});
+    zoneTest.setControl(zoneChart);
 	}
 
 	private Group initPerformanceGraph(Composite parent)

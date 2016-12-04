@@ -2,16 +2,13 @@ package com.planetmayo.debrief.satc_rcp.ui.widgets;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -31,23 +28,58 @@ import org.jfree.ui.Layer;
 
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
-public class ZoneChart
+public class ZoneChart extends ChartComposite
 {
   private static final double OFFSET_RESIZE = 0.5;
-  private Zone[] zones = new Zone[0];
+  private List<Zone> zones = new ArrayList<Zone>();
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
 
-  private long[] timeValues = new long[0];
-  private long[] angleValues = new long[0];
+  private final Image handImg = SATC_Activator.getImageDescriptor(
+      "/icons/hand.png").createImage();
 
-  public ChartComposite create(Composite parent, final Zone[] zones,
+  private final Image handFistImg = SATC_Activator.getImageDescriptor(
+      "/icons/hand_fist.png").createImage();
+
+  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg
+      .getImageData(), 0, 0);
+  private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
+      handFistImg.getImageData(), 0, 0);
+  private final Cursor resizeCursor = new Cursor(Display.getDefault(),
+      SWT.CURSOR_SIZEWE);
+
+  private final JFreeChart chart;
+
+  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones)
+  {
+    super(parent, SWT.NONE, xylineChart, 400, 600, 300, 200, 1800, 1800, true,
+        false, false, false, false, true);
+    this.chart = xylineChart;
+    this.zones.addAll(Arrays.asList(zones));
+    this.zoneMarkers.clear();
+    xylineChart.setAntiAlias(false);
+
+    setDomainZoomable(false);
+    setRangeZoomable(false);
+
+    XYPlot plot = (XYPlot) xylineChart.getPlot();
+    for (Zone zone : zones)
+    {
+      addZone(plot, zone);
+
+    }
+  }
+
+  private void addZone(XYPlot plot, Zone zone)
+  {
+    IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
+    plot.addDomainMarker(mrk, Layer.FOREGROUND);
+    zoneMarkers.put(zone, mrk);
+  }
+
+  public static ZoneChart create(Composite parent, final Zone[] zones,
       long[] timeValues, long[] angleValues)
   {
-    this.zones = zones;
-    this.zoneMarkers.clear();
-    this.timeValues = timeValues;
-    this.angleValues = angleValues;
 
     // build the jfreechart Plot
     final XYSeries xySeries = new XYSeries("");
@@ -68,192 +100,155 @@ public class ZoneChart
     NumberAxis xAxis = new NumberAxis();
     xAxis.setTickUnit(new NumberTickUnit(1));
     plot.setDomainAxis(xAxis);
-    for (Zone zone : zones)
-    {
-      IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
-      plot.addDomainMarker(mrk, Layer.FOREGROUND);
-      zoneMarkers.put(zone, mrk);
 
-    }
+    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones);
 
-    ChartComposite chartComposite = createChartUI(parent, zones, xylineChart);
-
-    return chartComposite;
+    return zoneChart;
 
   }
 
-  private ChartComposite createChartUI(Composite parent, final Zone[] zones,
-      JFreeChart xylineChart)
+  // DnD---
+
+  double dragStartX = -1;
+  boolean onDrag = false;
+  boolean move = false;
+  boolean resizeStart = true;
+
+  List<Zone> dragZones = new ArrayList<Zone>();
+
+  @Override
+  public void mouseDown(MouseEvent event)
+  {
+    dragZones.clear();
+    dragStartX = findDomainX(this, event.x);
+    for (Zone zone : zones)
+    {
+      // find the drag area zones
+
+      if (zone.start <= dragStartX && zone.end >= dragStartX)
+      {
+        dragZones.add(zone);
+        resizeStart = isResizeStart(zone, dragStartX);
+        move = !(resizeStart || isResizeEnd(zone, dragStartX));
+
+        onDrag = true;
+        if (move)
+        {
+          setCursor(handCursorDrag);
+        }
+        break;
+      }
+    }
+
+    if (dragZones.isEmpty())
+      super.mouseDown(event);
+
+  }
+
+  @Override
+  public void mouseMove(MouseEvent event)
   {
 
-    final Image handImg =
-        SATC_Activator.getImageDescriptor("/icons/hand.png").createImage();
-   
-    final  Image handFistImg =
-        SATC_Activator.getImageDescriptor("/icons/hand_fist.png").createImage();
-    
-    final Cursor handCursor =
-        new Cursor(Display.getDefault(), handImg.getImageData(), 0, 0);
-    final Cursor handCursorDrag =
-        new Cursor(Display.getDefault(), handFistImg.getImageData(), 0, 0);
-    final Cursor resizeCursor =
-        new Cursor(Display.getDefault(), SWT.CURSOR_SIZEWE);
+    double currentX = findDomainX(this, event.x);
+    if (!onDrag)
+      for (Zone zone : zones)
+      {
+        // find the drag area zones
 
-    final ChartComposite chartComposite =
-        new ChartComposite(parent, SWT.NONE, xylineChart, 400, 600, 300, 200,
-            1800, 1800, true, false, true, true, true, true)
+        if (zone.start <= currentX && zone.end >= currentX)
         {
-          double dragStartX = -1;
-          boolean onDrag = false;
-          boolean move = false;
-          boolean resizeStart = true;
+          this.setCursor(isResizeStart(zone, currentX)
+              || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
+          break;
+        }
+        this.setCursor(null);
+      }
 
-          List<Zone> dragZones = new ArrayList<Zone>();
-
-          @Override
-          public void mouseDown(MouseEvent event)
-          {
-            dragZones.clear();
-            dragStartX = findDomainX(this, event.x);
-            for (Zone zone : zones)
-            {
-              // find the drag area zones
-
-              if (zone.start <= dragStartX && zone.end >= dragStartX)
-              {
-                dragZones.add(zone);
-                resizeStart = isResizeStart(zone, dragStartX);
-                move = !(resizeStart || isResizeEnd(zone, dragStartX));
-
-                onDrag = true;
-                if (move)
-                {
-                  setCursor(handCursorDrag);
-                }
-                break;
-              }
-            }
-
-            if (dragZones.isEmpty())
-              super.mouseDown(event);
-
-          }
-
-          @Override
-          public void mouseMove(MouseEvent event)
-          {
-
-            double currentX = findDomainX(this, event.x);
-            if (!onDrag)
-              for (Zone zone : zones)
-              {
-                // find the drag area zones
-
-                if (zone.start <= currentX && zone.end >= currentX)
-                {
-                  this.setCursor(isResizeStart(zone, currentX)
-                      || isResizeEnd(zone, currentX) ? resizeCursor
-                      : handCursor);
-                  break;
-                }
-                this.setCursor(null);
-              }
-
-            if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
-            {
-
-              if (move)
-              {
-                setCursor(handCursorDrag);
-              }
-
-              double diff = Math.round(currentX - dragStartX);
-              if (diff != 0)
-              {
-                dragStartX = currentX;
-                for (Zone z : dragZones)
-                {
-                  if (move)
-                  {
-                    z.start += diff;
-                    z.end += diff;
-
-                  }
-                  else
-                  {
-                    resize(z, dragStartX, diff);
-                  }
-                  IntervalMarker intervalMarker = zoneMarkers.get(z);
-                  assert intervalMarker != null;
-                  intervalMarker.setStartValue(z.start);
-                  intervalMarker.setEndValue(z.end);
-                }
-
-              }
-
-            }
-
-            else
-              super.mouseMove(event);
-          }
-
-          private boolean isResizeStart(Zone zone, double x)
-          {
-            return (x - zone.start) < OFFSET_RESIZE;
-          }
-
-          private boolean isResizeEnd(Zone zone, double x)
-          {
-            return (zone.end - x) < OFFSET_RESIZE;
-          }
-
-          private void resize(Zone zone, double startx, double diff)
-          {
-            if (resizeStart)
-            {
-              // use start
-              if ((zone.start + diff) < zone.end)
-                zone.start += diff;
-
-            }
-            else
-            {
-              // use end
-              if ((zone.end + diff) > zone.start)
-                zone.end += diff;
-            }
-          }
-
-          @Override
-          public void mouseUp(MouseEvent event)
-          {
-            dragStartX = -1;
-            dragZones.clear();
-            onDrag = false;
-            super.mouseUp(event);
-          }
-
-        };
-
-    xylineChart.setAntiAlias(false);
-
-    chartComposite.setDomainZoomable(false);
-    chartComposite.setRangeZoomable(false);
-
-    chartComposite.addDisposeListener(new DisposeListener()
+    if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
     {
 
-      @Override
-      public void widgetDisposed(DisposeEvent e)
+      if (move)
       {
-        handCursor.dispose();
-        handCursorDrag.dispose();
-        resizeCursor.dispose();
-        handImg.dispose();
-        handFistImg.dispose();
+        setCursor(handCursorDrag);
       }
-    });
-    return chartComposite;
+
+      double diff = Math.round(currentX - dragStartX);
+      if (diff != 0)
+      {
+        dragStartX = currentX;
+        for (Zone z : dragZones)
+        {
+          if (move)
+          {
+            z.start += diff;
+            z.end += diff;
+
+          }
+          else
+          {
+            resize(z, dragStartX, diff);
+          }
+          IntervalMarker intervalMarker = zoneMarkers.get(z);
+          assert intervalMarker != null;
+          intervalMarker.setStartValue(z.start);
+          intervalMarker.setEndValue(z.end);
+        }
+
+      }
+
+    }
+
+    else
+      super.mouseMove(event);
+  }
+
+  private boolean isResizeStart(Zone zone, double x)
+  {
+    return (x - zone.start) < OFFSET_RESIZE;
+  }
+
+  private boolean isResizeEnd(Zone zone, double x)
+  {
+    return (zone.end - x) < OFFSET_RESIZE;
+  }
+
+  private void resize(Zone zone, double startx, double diff)
+  {
+    if (resizeStart)
+    {
+      // use start
+      if ((zone.start + diff) < zone.end)
+        zone.start += diff;
+
+    }
+    else
+    {
+      // use end
+      if ((zone.end + diff) > zone.start)
+        zone.end += diff;
+    }
+  }
+
+  @Override
+  public void mouseUp(MouseEvent event)
+  {
+    dragStartX = -1;
+    dragZones.clear();
+    onDrag = false;
+    super.mouseUp(event);
+  }
+
+  // ---
+
+  @Override
+  public void dispose()
+  {
+    handCursor.dispose();
+    handCursorDrag.dispose();
+    resizeCursor.dispose();
+    handImg.dispose();
+    handFistImg.dispose();
+    super.dispose();
   }
 
   private double findDomainX(ChartComposite composite, int x)
@@ -270,7 +265,7 @@ public class ZoneChart
 
   public Zone[] getZones()
   {
-    return zones;
+    return zones.toArray(new Zone[zones.size()]);
   }
 
   public static class Zone
