@@ -37,7 +37,6 @@ public class ZoneChart extends ChartComposite
     MOVE, ADD, REMOVE
   }
 
-  private static final double OFFSET_RESIZE = 0.5;
   private static Color _zoneColor;
   private List<Zone> zones = new ArrayList<Zone>();
   private Map<Zone, IntervalMarker> zoneMarkers =
@@ -207,7 +206,7 @@ public class ZoneChart extends ChartComposite
           return;
         }
       }
-      adding = new Zone((int) dragStartX, (int) dragStartX);
+      adding = new Zone((long) dragStartX, (long) dragStartX);
       XYPlot plot = (XYPlot) chart.getPlot();
       addZone(plot, adding);
       break;
@@ -371,12 +370,13 @@ public class ZoneChart extends ChartComposite
 
   private boolean isResizeStart(Zone zone, double x)
   {
-    return (x - zone.start) < OFFSET_RESIZE;
+    
+    return (x - zone.start) < ((zone.end-zone.start)/4);
   }
 
   private boolean isResizeEnd(Zone zone, double x)
   {
-    return (zone.end - x) < OFFSET_RESIZE;
+    return (zone.end - x) < ((zone.end-zone.start)/4);
   }
 
   private void resize(Zone zone, double startx, double diff)
@@ -483,7 +483,7 @@ public class ZoneChart extends ChartComposite
     super.dispose();
   }
 
-  private double findDomainX(ChartComposite composite, int x)
+  private double findDomainX(ChartComposite composite, long x)
   {
     final Rectangle dataArea = composite.getScreenDataArea();
     final Rectangle2D d2 =
