@@ -269,85 +269,85 @@ public class ZoneChart extends ChartComposite
       }
 
       }
+    }
 
-      switch (mode)
-      {
-      case MOVE:
+    switch (mode)
+    {
+    case MOVE:
+    {
+
+      if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
       {
 
-        if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
+        if (move)
         {
-
-          if (move)
-          {
-            setCursor(handCursorDrag);
-          }
-
-          double diff = Math.round(currentX - dragStartX);
-          if (diff != 0)
-          {
-            dragStartX = currentX;
-            for (Zone z : dragZones)
-            {
-              if (move)
-              {
-                z.start += diff;
-                z.end += diff;
-
-              }
-              else
-              {
-                resize(z, dragStartX, diff);
-              }
-              IntervalMarker intervalMarker = zoneMarkers.get(z);
-              assert intervalMarker != null;
-              intervalMarker.setStartValue(z.start);
-              intervalMarker.setEndValue(z.end);
-
-            }
-
-          }
-
+          setCursor(handCursorDrag);
         }
 
-        else
-          super.mouseMove(event);
-
-        break;
-      }
-      case ADD:
-      {
-
-        if (adding != null && dragStartX > 0)
+        double diff = Math.round(currentX - dragStartX);
+        if (diff != 0)
         {
-
-          double diff = Math.round(currentX - dragStartX);
-          if (diff != 0)
+          dragStartX = currentX;
+          for (Zone z : dragZones)
           {
-            dragStartX = currentX;
-
-            resizeStart = false;
+            if (move)
             {
-              resize(adding, dragStartX, diff);
+              z.start += diff;
+              z.end += diff;
+
             }
-            IntervalMarker intervalMarker = zoneMarkers.get(adding);
+            else
+            {
+              resize(z, dragStartX, diff);
+            }
+            IntervalMarker intervalMarker = zoneMarkers.get(z);
             assert intervalMarker != null;
-            intervalMarker.setStartValue(adding.start);
-            intervalMarker.setEndValue(adding.end);
+            intervalMarker.setStartValue(z.start);
+            intervalMarker.setEndValue(z.end);
 
           }
 
         }
 
-        else
-          super.mouseMove(event);
-
-        break;
       }
 
-      default:
-        break;
+      else
+        super.mouseMove(event);
+
+      break;
+    }
+    case ADD:
+    {
+
+      if (adding != null && dragStartX > 0)
+      {
+
+        double diff = Math.round(currentX - dragStartX);
+        if (diff != 0)
+        {
+          dragStartX = currentX;
+
+          resizeStart = false;
+          {
+            resize(adding, dragStartX, diff);
+          }
+          IntervalMarker intervalMarker = zoneMarkers.get(adding);
+          assert intervalMarker != null;
+          intervalMarker.setStartValue(adding.start);
+          intervalMarker.setEndValue(adding.end);
+
+        }
+
       }
+
+      else
+        super.mouseMove(event);
+
+      break;
+    }
+
+    default:
+      break;
     }
 
   }

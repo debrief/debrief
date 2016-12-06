@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.math3.analysis.function.Add;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -629,11 +630,16 @@ public class MaintainContributionsView extends ViewPart
 		//Zone Test
 		TabItem zoneTest	= new TabItem(graphTabs, SWT.NONE);
 		zoneTest.setText("Zone Chart Test");
-    ZoneChart zoneChart = ZoneChart.create(graphTabs, new ZoneChart.Zone[]
+		
+		Composite zoneBase = new Composite(graphTabs, SWT.NONE);
+		zoneBase.setLayout(new GridLayout(2,false));
+		
+		
+   final ZoneChart zoneChart = ZoneChart.create(zoneBase, new ZoneChart.Zone[]
     {new ZoneChart.Zone(1, 4), new ZoneChart.Zone(5, 8)}, new long[]
     {1, 12, 13, 24, 45, 66, 77, 98}, new long[]
     {5, 2, 3, 6, 7, 8, 1, 2});
-    zoneChart.setMode(ZoneChart.EditMode.ADD);
+    zoneChart.setMode(ZoneChart.EditMode.MOVE);
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter(){
       
       @Override
@@ -651,7 +657,60 @@ public class MaintainContributionsView extends ViewPart
       }
       
     });
-    zoneTest.setControl(zoneChart);
+    
+    {
+      GridData data = new GridData(GridData.FILL_BOTH|GridData.GRAB_HORIZONTAL|GridData.GRAB_VERTICAL);
+      data.verticalSpan = 3;
+      zoneChart.setLayoutData(data);
+      
+    }
+    {//mode buttons
+      final Button add = new Button(zoneBase, SWT.TOGGLE);
+      add.setText("+");
+      add.setLayoutData(new GridData(GridData.END));
+      final Button remove = new Button(zoneBase, SWT.TOGGLE);
+      remove.setText("-");
+      remove.setLayoutData(new GridData(GridData.END));
+      final Button move = new Button(zoneBase, SWT.TOGGLE);
+      move.setText("<-->");
+      move.setLayoutData(new GridData(GridData.END));
+      move.setSelection(true);
+      add.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+         add.setSelection(true);
+         remove.setSelection(false);
+         move.setSelection(false);
+         zoneChart.setMode(ZoneChart.EditMode.ADD);
+        }
+      });
+      move.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          add.setSelection(false);
+          remove.setSelection(false);
+          move.setSelection(true);
+          zoneChart.setMode(ZoneChart.EditMode.MOVE);
+        }
+      });
+      remove.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          add.setSelection(false);
+          remove.setSelection(true);
+          move.setSelection(false);
+          zoneChart.setMode(ZoneChart.EditMode.REMOVE);
+        }
+      });
+      
+    }
+    zoneTest.setControl(zoneBase);
 	}
 
 	private Group initPerformanceGraph(Composite parent)
