@@ -219,7 +219,7 @@ public class ZoneChart extends ChartComposite
       {
       case MOVE:
       {
-
+        this.setCursor(null);
         for (Zone zone : zones)
         {
           // find the drag area zones
@@ -230,13 +230,13 @@ public class ZoneChart extends ChartComposite
                 || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
             break;
           }
-          this.setCursor(null);
+          
         }
         break;
       }
       case REMOVE:
       {
-
+        this.setCursor(null);
         for (Zone zone : zones)
         {
           // find the drag area zones
@@ -246,7 +246,7 @@ public class ZoneChart extends ChartComposite
             this.setCursor(removeCursor);
             break;
           }
-          this.setCursor(null);
+          
         }
         break;
       }
@@ -254,6 +254,8 @@ public class ZoneChart extends ChartComposite
       {
 
         if (adding == null)
+        {
+          this.setCursor(addCursor);
           for (Zone zone : zones)
           {
             // find the drag area zones
@@ -263,8 +265,9 @@ public class ZoneChart extends ChartComposite
               this.setCursor(null);
               break;
             }
-            this.setCursor(addCursor);
+            
           }
+        }
         break;
       }
 
