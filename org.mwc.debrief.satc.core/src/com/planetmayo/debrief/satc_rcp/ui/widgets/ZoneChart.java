@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc_rcp.ui.widgets;
 
+import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,18 +15,17 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Listener;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.IntervalMarker;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.Layer;
+import org.jfree.util.ShapeUtilities;
 
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
@@ -38,6 +38,7 @@ public class ZoneChart extends ChartComposite
   }
 
   private static final double OFFSET_RESIZE = 0.5;
+  private static Color _zoneColor;
   private List<Zone> zones = new ArrayList<Zone>();
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
@@ -70,6 +71,9 @@ public class ZoneChart extends ChartComposite
 
   private final JFreeChart chart;
 
+
+  final List<Zone> dragZones = new ArrayList<Zone>();
+  
   // DnD---
 
   private double dragStartX = -1;
@@ -87,55 +91,65 @@ public class ZoneChart extends ChartComposite
     this.zoneMarkers.clear();
     xylineChart.setAntiAlias(false);
 
-    setDomainZoomable(false);
-    setRangeZoomable(false);
+    setDomainZoomable(true);
+    setRangeZoomable(true);
 
     XYPlot plot = (XYPlot) xylineChart.getPlot();
     for (Zone zone : zones)
     {
       addZone(plot, zone);
-
     }
   }
 
   private void addZone(XYPlot plot, Zone zone)
   {
     IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
+    mrk.setPaint(_zoneColor);
+    mrk.setAlpha(0.5f);
     plot.addDomainMarker(mrk, Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
   }
 
-  public static ZoneChart create(Composite parent, final Zone[] zones,
-      long[] timeValues, long[] angleValues)
+  public static ZoneChart create(String chartTitle, String yTitle,
+      Composite parent, final Zone[] zones, long[] timeValues,
+      long[] angleValues, Color zoneColor, Color lineColor)
   {
-
+    _zoneColor = zoneColor;
+    
     // build the jfreechart Plot
-    final XYSeries xySeries = new XYSeries("");
+    final TimeSeries xySeries = new TimeSeries("");
 
     for (int i = 0; i < timeValues.length; i++)
     {
-      xySeries.add(timeValues[i], angleValues[i]);
+      xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
 
-    final XYSeriesCollection dataset = new XYSeriesCollection();
+    final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
 
-    JFreeChart xylineChart =
-        ChartFactory.createXYLineChart("", "Time", "Angle", dataset,
-            PlotOrientation.VERTICAL, true, true, false);
+    JFreeChart xylineChart = ChartFactory.createTimeSeriesChart(chartTitle, // String
+        "Time", // String timeAxisLabel
+        yTitle, // String valueAxisLabel,
+        dataset, false, true, false);
 
     final XYPlot plot = (XYPlot) xylineChart.getPlot();
-    NumberAxis xAxis = new NumberAxis();
-    xAxis.setTickUnit(new NumberTickUnit(1));
+    DateAxis xAxis = new DateAxis();
     plot.setDomainAxis(xAxis);
+    
+    plot.setBackgroundPaint( MWC.GUI.Properties.DebriefColors.WHITE);
+    plot.setRangeGridlinePaint( MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
+    plot.setDomainGridlinePaint( MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
+    
+    // and sort out the color for the line
+    plot.getRenderer().setSeriesPaint(0,  lineColor);
+    plot.getRenderer().setSeriesShape(0, ShapeUtilities.createDiagonalCross(3, 1));
 
+    // ok, wrap it in the zone chart
     ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones);
 
+    // done
     return zoneChart;
-
   }
-
-  List<Zone> dragZones = new ArrayList<Zone>();
 
   @Override
   public void mouseDown(MouseEvent event)
@@ -545,20 +559,20 @@ public class ZoneChart extends ChartComposite
 
   public static class Zone
   {
-    int start, end;
+    long start, end;
 
-    public Zone(int start, int end)
+    public Zone(long start, long end)
     {
       this.start = start;
       this.end = end;
     }
 
-    public int getStart()
+    public long getStart()
     {
       return start;
     }
 
-    public int getEnd()
+    public long getEnd()
     {
       return end;
     }

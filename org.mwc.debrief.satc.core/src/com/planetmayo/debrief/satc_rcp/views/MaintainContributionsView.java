@@ -633,12 +633,26 @@ public class MaintainContributionsView extends ViewPart
 		
 		Composite zoneBase = new Composite(graphTabs, SWT.NONE);
 		zoneBase.setLayout(new GridLayout(2,false));
-		
-		
-   final ZoneChart zoneChart = ZoneChart.create(zoneBase, new ZoneChart.Zone[]
-    {new ZoneChart.Zone(1, 4), new ZoneChart.Zone(5, 8)}, new long[]
-    {1, 12, 13, 24, 45, 66, 77, 98}, new long[]
-    {5, 2, 3, 6, 7, 8, 1, 2});
+				
+    @SuppressWarnings("deprecation")
+    final ZoneChart zoneChart =
+        ZoneChart.create("Ownship Legs", "Course", zoneBase, new ZoneChart.Zone[]
+        {
+            new ZoneChart.Zone(new Date("2016/10/10 11:20").getTime(),
+                new Date("2016/10/10 12:10").getTime()),
+            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
+                new Date("2016/10/10 13:23:12").getTime())}, new long[]
+        {new Date("2016/10/10 10:00:00").getTime(),
+            new Date("2016/10/10 10:21:00").getTime(),
+            new Date("2016/10/10 11:47:00").getTime(),
+            new Date("2016/10/10 11:55:00").getTime(),
+            new Date("2016/10/10 12:23:00").getTime(),
+            new Date("2016/10/10 12:44:00").getTime(),
+            new Date("2016/10/10 13:27:00").getTime(),
+            new Date("2016/10/10 14:10:00").getTime()}, new long[]
+        {115, 118, 119, 121, 118, 100, 98, 97}, java.awt.Color.BLUE, 
+        java.awt.Color.CYAN.darker().darker());
+
     zoneChart.setMode(ZoneChart.EditMode.MOVE);
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter(){
       
