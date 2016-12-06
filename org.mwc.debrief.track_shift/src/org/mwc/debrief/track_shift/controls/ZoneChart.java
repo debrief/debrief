@@ -178,8 +178,9 @@ public class ZoneChart extends Composite
                   return;
                 }
               }
-              adding = new Zone((long) dragStartX, (long) dragStartX);
               XYPlot plot = (XYPlot) chart.getPlot();
+              adding = new Zone((long) dragStartX, (long) dragStartX +(long)(1*((DateAxis)plot.getDomainAxis()).getTickUnit().getSize()));
+             
               addZone(plot, adding);
               break;
             }
