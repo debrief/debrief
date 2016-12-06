@@ -133,6 +133,7 @@ public class ZoneChart extends ChartComposite
   boolean onDrag = false;
   boolean move = false;
   boolean resizeStart = true;
+  Zone adding = null;
 
   List<Zone> dragZones = new ArrayList<Zone>();
 
@@ -179,6 +180,22 @@ public class ZoneChart extends ChartComposite
           break;
         }
       }
+      break;
+    }
+    case ADD:
+    {
+      for (Zone zone : zones)
+      {
+        // find the drag area zones
+
+        if (zone.start <= dragStartX && zone.end >= dragStartX)
+        {
+          return;
+        }
+      }
+      adding = new Zone((int) dragStartX, (int) dragStartX);
+      XYPlot plot = (XYPlot) chart.getPlot();
+      addZone(plot, adding);
       break;
     }
 
@@ -233,6 +250,23 @@ public class ZoneChart extends ChartComposite
         }
         break;
       }
+      case ADD:
+      {
+
+        if (adding == null)
+          for (Zone zone : zones)
+          {
+            // find the drag area zones
+
+            if (zone.start <= currentX && zone.end >= currentX)
+            {
+              this.setCursor(null);
+              break;
+            }
+            this.setCursor(addCursor);
+          }
+        break;
+      }
 
       }
 
@@ -271,6 +305,35 @@ public class ZoneChart extends ChartComposite
               intervalMarker.setEndValue(z.end);
 
             }
+
+          }
+
+        }
+
+        else
+          super.mouseMove(event);
+
+        break;
+      }
+      case ADD:
+      {
+
+        if (adding != null && dragStartX > 0)
+        {
+
+          double diff = Math.round(currentX - dragStartX);
+          if (diff != 0)
+          {
+            dragStartX = currentX;
+
+            resizeStart = false;
+            {
+              resize(adding, dragStartX, diff);
+            }
+            IntervalMarker intervalMarker = zoneMarkers.get(adding);
+            assert intervalMarker != null;
+            intervalMarker.setStartValue(adding.start);
+            intervalMarker.setEndValue(adding.end);
 
           }
 
@@ -359,6 +422,19 @@ public class ZoneChart extends ChartComposite
       break;
 
     }
+    case ADD:
+    {
+
+      if (adding != null)
+      {
+
+        zones.add(adding);
+        fireZoneAdded(adding);
+      }
+
+      break;
+
+    }
 
     default:
       break;
@@ -368,6 +444,7 @@ public class ZoneChart extends ChartComposite
     dragZones.clear();
     onDrag = false;
     move = false;
+    adding = null;
     super.mouseUp(event);
   }
 
