@@ -43,7 +43,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
@@ -404,19 +403,39 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {115, 118, 119, 121, 118, 100, 98, 97};
     // create the zone charts
     // TODO: pending
+    ZoneChart.ColorProvider blueProv =new ZoneChart.ColorProvider()
+    {
+      @Override
+      public Color getColorFor(Zone zone)
+      {
+        return DebriefColors.BLUE;
+      }
+    };
+    
     @SuppressWarnings("unused")
     ZoneChart ownZones =
         ZoneChart.create("Ownship Legs", "Course", parent, zones, timeValues,
-            angleValues, DebriefColors.BLUE, DebriefColors.BLUE.darker()
+            angleValues, blueProv, DebriefColors.BLUE.darker()
                 .darker());
 
     // assign the listeners
     // TODO: pending
+    ZoneChart.ColorProvider randomProv =new ZoneChart.ColorProvider()
+    {
+      @Override
+      public Color getColorFor(Zone zone)
+      {
+        float hue = (float) Math.random();
+        float sat = (float) Math.random();
+        return new Color(Color.HSBtoRGB(hue, sat,0.5f));
+      }
+    };
+
     @SuppressWarnings("unused")
     ZoneChart tgtZones =
         ZoneChart
             .create("Target Legs", "Course", parent, zones, timeValues,
-                angleValues, DebriefColors.RED, DebriefColors.RED.darker()
+                angleValues, randomProv, DebriefColors.RED.darker()
                     .darker());
   }
   

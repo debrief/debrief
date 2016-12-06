@@ -1,6 +1,7 @@
 package org.mwc.debrief.track_shift.controls;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,10 @@ import org.mwc.cmap.core.CorePlugin;
 
 public class ZoneChart extends Composite
 {
-
+  public interface ColorProvider {
+    java.awt.Color getColorFor(final Zone zone);
+  }
+  
   public enum EditMode
   {
     MOVE, ADD, REMOVE
@@ -96,9 +100,9 @@ public class ZoneChart extends Composite
   private boolean resizeStart = true;
   private Zone adding = null;
   private long[] timeValues ;
-  private final Color zoneColor;
+  private final ColorProvider colorProvider;
 
-  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones,final long[] timeValues, Color zoneColor)
+  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones,final long[] timeValues, ColorProvider colorProvider)
   {
     super(parent, SWT.NONE);
     this.chart = xylineChart;
@@ -107,7 +111,7 @@ public class ZoneChart extends Composite
     this.zones.addAll(Arrays.asList(zones));
     this.zoneMarkers.clear();
     xylineChart.setAntiAlias(false);
-    this.zoneColor = zoneColor;
+    this.colorProvider = colorProvider;
 
     XYPlot plot = (XYPlot) xylineChart.getPlot();
     for (Zone zone : zones)
@@ -538,8 +542,12 @@ public class ZoneChart extends Composite
 
   private void addZone(XYPlot plot, Zone zone)
   {
+    // get the color for this zone
+    Color zoneColor = colorProvider.getColorFor(zone);
+    zone.setColor(zoneColor);
+    
     IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
-    mrk.setPaint(zoneColor);
+    mrk.setPaint(zone.getColor());
     mrk.setAlpha(0.5f);
     plot.addDomainMarker(mrk, Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
@@ -547,7 +555,7 @@ public class ZoneChart extends Composite
 
   public static ZoneChart create(String chartTitle, String yTitle,
       Composite parent, final Zone[] zones, long[] timeValues,
-      long[] angleValues, Color zoneColor, Color lineColor)
+      long[] angleValues, ColorProvider blueProv, Color lineColor)
   {
     // build the jfreechart Plot
     final TimeSeries xySeries = new TimeSeries("");
@@ -579,7 +587,7 @@ public class ZoneChart extends Composite
         ShapeUtilities.createDiagonalCross(3, 1));
 
     // ok, wrap it in the zone chart
-    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones,timeValues, zoneColor);
+    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones,timeValues, blueProv);
 
     // done
     return zoneChart;
@@ -709,11 +717,22 @@ public class ZoneChart extends Composite
   public static class Zone
   {
     long start, end;
+    private Color color;
 
     public Zone(long start, long end)
     {
       this.start = start;
       this.end = end;
+    }
+
+    public Color getColor()
+    {
+      return color;
+    }
+
+    public void setColor(Color zoneColor)
+    {
+      this.color = zoneColor;
     }
 
     public long getStart()

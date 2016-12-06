@@ -602,7 +602,8 @@ public class MaintainContributionsView extends ViewPart
 
 	}
 
-	private void initGraphTabs(Composite parent)
+	@SuppressWarnings("deprecation")
+  private void initGraphTabs(Composite parent)
 	{
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
@@ -630,9 +631,15 @@ public class MaintainContributionsView extends ViewPart
 		TabItem zoneTest	= new TabItem(graphTabs, SWT.NONE);
 		zoneTest.setText("Zone Chart Test");
 		
-		
 				
-    @SuppressWarnings("deprecation")
+    ZoneChart.ColorProvider blueProvider = new ZoneChart.ColorProvider()
+    {
+      @Override
+      public java.awt.Color getColorFor(Zone zone)
+      {
+        return java.awt.Color.blue;
+      }
+    };
     final ZoneChart zoneChart =
         ZoneChart.create("Ownship Legs", "Course", graphTabs, new ZoneChart.Zone[]
         {
@@ -648,7 +655,7 @@ public class MaintainContributionsView extends ViewPart
             new Date("2016/10/10 12:44:00").getTime(),
             new Date("2016/10/10 13:27:00").getTime(),
             new Date("2016/10/10 14:10:00").getTime()}, new long[]
-        {115, 118, 119, 121, 118, 100, 98, 97}, java.awt.Color.BLUE, 
+        {115, 118, 119, 121, 118, 100, 98, 97}, blueProvider, 
         java.awt.Color.CYAN.darker().darker());
 
     zoneChart.setMode(ZoneChart.EditMode.MOVE);
