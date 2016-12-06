@@ -448,7 +448,7 @@ public class ZoneChart extends Composite
     GridData data =
         new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
             | GridData.GRAB_VERTICAL);
-    data.verticalSpan = 3;
+    data.verticalSpan = 5;
     chartComposite.setLayoutData(data);
     createToolbar();
   }
@@ -458,14 +458,28 @@ public class ZoneChart extends Composite
     {// mode buttons
       final Button add = new Button(this, SWT.TOGGLE);
       add.setImage(addImg24);
+      add.setToolTipText("Add new zones");
       add.setLayoutData(new GridData(GridData.FILL_VERTICAL));
       final Button remove = new Button(this, SWT.TOGGLE);
       remove.setImage(removeImg24);
       remove.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      remove.setToolTipText("Remove zones");
       final Button move = new Button(this, SWT.TOGGLE);
       move.setImage(handImg24);
       move.setLayoutData(new GridData(GridData.FILL_VERTICAL));
       move.setSelection(true);
+      move.setToolTipText("Resize zones");
+
+      final Button fitToWin = new Button(this, SWT.PUSH);
+      fitToWin.setImage(fitToWin24);
+      fitToWin.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      fitToWin.setToolTipText("Show all data");
+
+      final Button calculate = new Button(this, SWT.PUSH);
+      calculate.setImage(calculator24);
+      calculate.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      calculate.setToolTipText("Slice legs");
+
       add.addSelectionListener(new SelectionAdapter()
       {
         @Override
@@ -497,6 +511,23 @@ public class ZoneChart extends Composite
           remove.setSelection(true);
           move.setSelection(false);
           setMode(ZoneChart.EditMode.REMOVE);
+        }
+      });
+
+      fitToWin.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          // TODO: rescale to show all data
+        }
+      });
+      calculate.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          CorePlugin.showMessage("Manage legs", "Slicing happens here");
         }
       });
 
