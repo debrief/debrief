@@ -63,7 +63,7 @@ public class ZoneChart extends ChartComposite
   private final Image removeImg24 = CorePlugin.getImageDescriptor(
       "/icons/24/remove.png").createImage();
   private final Image fitToWin24 = CorePlugin.getImageDescriptor(
-      "/icons/24/fitToWin.png").createImage();
+      "/icons/24/fit_to_win.png").createImage();
   private final Image calculator24 = CorePlugin.getImageDescriptor(
       "/icons/24/calculator.png").createImage();
 
