@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc_rcp.ui.widgets;
+package org.mwc.debrief.track_shift.controls;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
@@ -26,8 +26,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.Layer;
 import org.jfree.util.ShapeUtilities;
-
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import org.mwc.cmap.core.CorePlugin;
 
 public class ZoneChart extends ChartComposite
 {
@@ -47,24 +46,35 @@ public class ZoneChart extends ChartComposite
   private volatile List<ZoneListener> listeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
 
-  private final Image handImg = SATC_Activator.getImageDescriptor(
-      "/icons/hand.png").createImage();
-  private final Image addImg = SATC_Activator.getImageDescriptor(
-      "/icons/add.png").createImage();
-  private final Image removeImg = SATC_Activator.getImageDescriptor(
-      "/icons/remove.png").createImage();
+  private final Image handImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand.png").createImage();
+  private final Image addImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/add.png").createImage();
+  private final Image removeImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/remove.png").createImage();
+  private final Image handFistImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand_fist.png").createImage();
 
-  private final Image handFistImg = SATC_Activator.getImageDescriptor(
-      "/icons/hand_fist.png").createImage();
+  /** 24px images for the buttons */
+  private final Image handImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/hand.png").createImage();
+  private final Image addImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/add.png").createImage();
+  private final Image removeImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/remove.png").createImage();
+  private final Image fitToWin24 = CorePlugin.getImageDescriptor(
+      "/icons/24/fitToWin.png").createImage();
+  private final Image calculator24 = CorePlugin.getImageDescriptor(
+      "/icons/24/calculator.png").createImage();
 
-  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg
+  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
-  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg
+  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
       .getImageData(), 0, 0);
   private final Cursor removeCursor = new Cursor(Display.getDefault(),
-      removeImg.getImageData(), 0, 0);
+      removeImg16.getImageData(), 0, 0);
   private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
-      handFistImg.getImageData(), 0, 0);
+      handFistImg16.getImageData(), 0, 0);
   private final Cursor resizeCursor = new Cursor(Display.getDefault(),
       SWT.CURSOR_SIZEWE);
 
@@ -473,12 +483,19 @@ public class ZoneChart extends ChartComposite
     handCursor.dispose();
     handCursorDrag.dispose();
     resizeCursor.dispose();
-    handImg.dispose();
-    handFistImg.dispose();
+    handImg16.dispose();
+    handFistImg16.dispose();
     addCursor.dispose();
-    addImg.dispose();
-    removeImg.dispose();
+    addImg16.dispose();
+    removeImg16.dispose();
     removeCursor.dispose();
+    
+    // and the 24px images
+    handImg24.dispose();
+    addImg24.dispose();
+    removeImg24.dispose();
+    fitToWin24.dispose();
+    calculator24.dispose();
 
     super.dispose();
   }

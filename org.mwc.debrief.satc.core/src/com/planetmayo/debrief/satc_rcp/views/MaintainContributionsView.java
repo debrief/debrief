@@ -94,6 +94,8 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.jfree.util.ShapeUtilities;
+import org.mwc.debrief.track_shift.controls.ZoneChart;
+import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;
@@ -150,8 +152,6 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributio
 import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
-import com.planetmayo.debrief.satc_rcp.ui.widgets.ZoneChart;
-import com.planetmayo.debrief.satc_rcp.ui.widgets.ZoneChart.Zone;
 
 /**
  * mock class to test high level application flows

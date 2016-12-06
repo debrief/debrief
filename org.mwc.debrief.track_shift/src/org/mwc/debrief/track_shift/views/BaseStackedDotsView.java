@@ -85,6 +85,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.Activator;
+import org.mwc.debrief.track_shift.controls.ZoneChart;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -372,7 +373,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the actions in the UI
     contributeToActionBars();
+    
+    // we will also listen out for zone changes
+    @SuppressWarnings("unused")
+    ZoneChart.ZoneListener ownshipListener = getOwnshipListener();
+    @SuppressWarnings("unused")
+    ZoneChart.ZoneListener targetListener = getTargetListener();
+    
+    // create the zone charts
+    // TODO: pending
+    
+    // assign the listeners
+    // TODO: pending
   }
+  
+  private ZoneChart.ZoneListener getOwnshipListener()
+  {
+    return new ZoneChart.ZoneAdapter();
+  }
+  
+  private ZoneChart.ZoneListener getTargetListener()
+  {
+    return new ZoneChart.ZoneAdapter();
+  }
+  
+  
 
   /**
    * method to create a working plot (to contain our data)
