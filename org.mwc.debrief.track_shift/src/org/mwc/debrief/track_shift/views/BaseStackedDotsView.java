@@ -389,11 +389,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   
   private ZoneChart.ZoneListener getOwnshipListener()
   {
+    // TODO: fire the ownship legs to the target zig generator
     return new ZoneChart.ZoneAdapter();
   }
   
   private ZoneChart.ZoneListener getTargetListener()
   {
+    // TODO reflect the new target legs on the bearing residuals
     return new ZoneChart.ZoneAdapter();
   }
   
