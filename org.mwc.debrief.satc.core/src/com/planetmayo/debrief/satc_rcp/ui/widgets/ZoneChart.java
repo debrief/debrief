@@ -70,6 +70,14 @@ public class ZoneChart extends ChartComposite
 
   private final JFreeChart chart;
 
+  // DnD---
+
+  private double dragStartX = -1;
+  private boolean onDrag = false;
+  private boolean move = false;
+  private boolean resizeStart = true;
+  private Zone adding = null;
+
   private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones)
   {
     super(parent, SWT.NONE, xylineChart, 400, 600, 300, 200, 1800, 1800, true,
@@ -126,14 +134,6 @@ public class ZoneChart extends ChartComposite
     return zoneChart;
 
   }
-
-  // DnD---
-
-  double dragStartX = -1;
-  boolean onDrag = false;
-  boolean move = false;
-  boolean resizeStart = true;
-  Zone adding = null;
 
   List<Zone> dragZones = new ArrayList<Zone>();
 
@@ -230,7 +230,7 @@ public class ZoneChart extends ChartComposite
                 || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
             break;
           }
-          
+
         }
         break;
       }
@@ -246,7 +246,7 @@ public class ZoneChart extends ChartComposite
             this.setCursor(removeCursor);
             break;
           }
-          
+
         }
         break;
       }
@@ -265,7 +265,7 @@ public class ZoneChart extends ChartComposite
               this.setCursor(null);
               break;
             }
-            
+
           }
         }
         break;
