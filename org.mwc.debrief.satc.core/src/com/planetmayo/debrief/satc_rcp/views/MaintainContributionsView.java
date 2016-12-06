@@ -630,12 +630,11 @@ public class MaintainContributionsView extends ViewPart
 		TabItem zoneTest	= new TabItem(graphTabs, SWT.NONE);
 		zoneTest.setText("Zone Chart Test");
 		
-		Composite zoneBase = new Composite(graphTabs, SWT.NONE);
-		zoneBase.setLayout(new GridLayout(2,false));
+		
 				
     @SuppressWarnings("deprecation")
     final ZoneChart zoneChart =
-        ZoneChart.create("Ownship Legs", "Course", zoneBase, new ZoneChart.Zone[]
+        ZoneChart.create("Ownship Legs", "Course", graphTabs, new ZoneChart.Zone[]
         {
             new ZoneChart.Zone(new Date("2016/10/10 11:20").getTime(),
                 new Date("2016/10/10 12:10").getTime()),
@@ -671,59 +670,9 @@ public class MaintainContributionsView extends ViewPart
       
     });
     
-    {
-      GridData data = new GridData(GridData.FILL_BOTH|GridData.GRAB_HORIZONTAL|GridData.GRAB_VERTICAL);
-      data.verticalSpan = 3;
-      zoneChart.setLayoutData(data);
-      
-    }
-    {//mode buttons
-      final Button add = new Button(zoneBase, SWT.TOGGLE);
-      add.setText("+");
-      add.setLayoutData(new GridData(GridData.END));
-      final Button remove = new Button(zoneBase, SWT.TOGGLE);
-      remove.setText("-");
-      remove.setLayoutData(new GridData(GridData.END));
-      final Button move = new Button(zoneBase, SWT.TOGGLE);
-      move.setText("<-->");
-      move.setLayoutData(new GridData(GridData.END));
-      move.setSelection(true);
-      add.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-         add.setSelection(true);
-         remove.setSelection(false);
-         move.setSelection(false);
-         zoneChart.setMode(ZoneChart.EditMode.ADD);
-        }
-      });
-      move.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-          add.setSelection(false);
-          remove.setSelection(false);
-          move.setSelection(true);
-          zoneChart.setMode(ZoneChart.EditMode.MOVE);
-        }
-      });
-      remove.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-          add.setSelection(false);
-          remove.setSelection(true);
-          move.setSelection(false);
-          zoneChart.setMode(ZoneChart.EditMode.REMOVE);
-        }
-      });
-      
-    }
-    zoneTest.setControl(zoneBase);
+    
+    
+    zoneTest.setControl(zoneChart);
 	}
 
 	private Group initPerformanceGraph(Composite parent)
