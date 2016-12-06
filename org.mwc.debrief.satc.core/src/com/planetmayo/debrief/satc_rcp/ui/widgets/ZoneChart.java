@@ -31,22 +31,38 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class ZoneChart extends ChartComposite
 {
+
+  public enum EditMode
+  {
+    MOVE, ADD, REMOVE
+  }
+
   private static final double OFFSET_RESIZE = 0.5;
   private List<Zone> zones = new ArrayList<Zone>();
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
+
+  private EditMode mode = EditMode.MOVE;
 
   private volatile List<ZoneListener> listeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
 
   private final Image handImg = SATC_Activator.getImageDescriptor(
       "/icons/hand.png").createImage();
+  private final Image addImg = SATC_Activator.getImageDescriptor(
+      "/icons/add.png").createImage();
+  private final Image removeImg = SATC_Activator.getImageDescriptor(
+      "/icons/remove.png").createImage();
 
   private final Image handFistImg = SATC_Activator.getImageDescriptor(
       "/icons/hand_fist.png").createImage();
 
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg
       .getImageData(), 0, 0);
+  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg
+      .getImageData(), 0, 0);
+  private final Cursor removeCursor = new Cursor(Display.getDefault(),
+      removeImg.getImageData(), 0, 0);
   private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
       handFistImg.getImageData(), 0, 0);
   private final Cursor resizeCursor = new Cursor(Display.getDefault(),
@@ -125,23 +141,49 @@ public class ZoneChart extends ChartComposite
   {
     dragZones.clear();
     dragStartX = findDomainX(this, event.x);
-    for (Zone zone : zones)
+
+    switch (mode)
     {
-      // find the drag area zones
-
-      if (zone.start <= dragStartX && zone.end >= dragStartX)
+    case MOVE:
+    {
+      for (Zone zone : zones)
       {
-        dragZones.add(zone);
-        resizeStart = isResizeStart(zone, dragStartX);
-        move = !(resizeStart || isResizeEnd(zone, dragStartX));
+        // find the drag area zones
 
-        onDrag = true;
-        if (move)
+        if (zone.start <= dragStartX && zone.end >= dragStartX)
         {
-          setCursor(handCursorDrag);
+          dragZones.add(zone);
+          resizeStart = isResizeStart(zone, dragStartX);
+          move = !(resizeStart || isResizeEnd(zone, dragStartX));
+
+          onDrag = true;
+          if (move)
+          {
+            setCursor(handCursorDrag);
+          }
+          break;
         }
-        break;
       }
+      break;
+    }
+    case REMOVE:
+    {
+      for (Zone zone : zones)
+      {
+        // find the drag area zones
+
+        if (zone.start <= dragStartX && zone.end >= dragStartX)
+        {
+          dragZones.add(zone);
+
+          break;
+        }
+      }
+      break;
+    }
+
+    default:
+      break;
     }
 
     if (dragZones.isEmpty())
@@ -155,56 +197,96 @@ public class ZoneChart extends ChartComposite
 
     double currentX = findDomainX(this, event.x);
     if (!onDrag)
-      for (Zone zone : zones)
-      {
-        // find the drag area zones
-
-        if (zone.start <= currentX && zone.end >= currentX)
-        {
-          this.setCursor(isResizeStart(zone, currentX)
-              || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
-          break;
-        }
-        this.setCursor(null);
-      }
-
-    if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
     {
-
-      if (move)
+      switch (mode)
       {
-        setCursor(handCursorDrag);
+      case MOVE:
+      {
+
+        for (Zone zone : zones)
+        {
+          // find the drag area zones
+
+          if (zone.start <= currentX && zone.end >= currentX)
+          {
+            this.setCursor(isResizeStart(zone, currentX)
+                || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
+            break;
+          }
+          this.setCursor(null);
+        }
+        break;
+      }
+      case REMOVE:
+      {
+
+        for (Zone zone : zones)
+        {
+          // find the drag area zones
+
+          if (zone.start <= currentX && zone.end >= currentX)
+          {
+            this.setCursor(removeCursor);
+            break;
+          }
+          this.setCursor(null);
+        }
+        break;
       }
 
-      double diff = Math.round(currentX - dragStartX);
-      if (diff != 0)
+      }
+
+      switch (mode)
       {
-        dragStartX = currentX;
-        for (Zone z : dragZones)
+      case MOVE:
+      {
+
+        if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
         {
+
           if (move)
           {
-            z.start += diff;
-            z.end += diff;
+            setCursor(handCursorDrag);
+          }
+
+          double diff = Math.round(currentX - dragStartX);
+          if (diff != 0)
+          {
+            dragStartX = currentX;
+            for (Zone z : dragZones)
+            {
+              if (move)
+              {
+                z.start += diff;
+                z.end += diff;
+
+              }
+              else
+              {
+                resize(z, dragStartX, diff);
+              }
+              IntervalMarker intervalMarker = zoneMarkers.get(z);
+              assert intervalMarker != null;
+              intervalMarker.setStartValue(z.start);
+              intervalMarker.setEndValue(z.end);
+
+            }
 
           }
-          else
-          {
-            resize(z, dragStartX, diff);
-          }
-          IntervalMarker intervalMarker = zoneMarkers.get(z);
-          assert intervalMarker != null;
-          intervalMarker.setStartValue(z.start);
-          intervalMarker.setEndValue(z.end);
 
         }
 
+        else
+          super.mouseMove(event);
+
+        break;
       }
 
+      default:
+        break;
+      }
     }
 
-    else
-      super.mouseMove(event);
   }
 
   private boolean isResizeStart(Zone zone, double x)
@@ -237,19 +319,49 @@ public class ZoneChart extends ChartComposite
   @Override
   public void mouseUp(MouseEvent event)
   {
-    if (onDrag)
+
+    switch (mode)
     {
+    case MOVE:
+    {
+      if (onDrag)
+      {
+        for (Zone z : dragZones)
+        {
+          if (move)
+          {
+            fireZoneMoved(z);
+          }
+          else
+          {
+            fireZoneResized(z);
+          }
+        }
+
+      }
+
+      break;
+
+    }
+
+    case REMOVE:
+    {
+      XYPlot plot = (XYPlot) chart.getPlot();
       for (Zone z : dragZones)
       {
-        if (move)
-        {
-          fireZoneMoved(z);
-        }
-        else
-        {
-          fireZoneResized(z);
-        }
+        IntervalMarker intervalMarker = zoneMarkers.get(z);
+        plot.removeDomainMarker(intervalMarker);
+        zoneMarkers.remove(z);
+        zones.remove(z);
+        fireZoneRemoved(z);
       }
+
+      break;
+
+    }
+
+    default:
+      break;
     }
 
     dragStartX = -1;
@@ -269,6 +381,11 @@ public class ZoneChart extends ChartComposite
     resizeCursor.dispose();
     handImg.dispose();
     handFistImg.dispose();
+    addCursor.dispose();
+    addImg.dispose();
+    removeImg.dispose();
+    removeCursor.dispose();
+
     super.dispose();
   }
 
@@ -282,6 +399,16 @@ public class ZoneChart extends ChartComposite
     final double chartX =
         plot.getDomainAxis().java2DToValue(x, d2, plot.getDomainAxisEdge());
     return chartX;
+  }
+
+  public EditMode getMode()
+  {
+    return mode;
+  }
+
+  public void setMode(EditMode mode)
+  {
+    this.mode = mode;
   }
 
   public Zone[] getZones()
@@ -332,7 +459,7 @@ public class ZoneChart extends ChartComposite
   {
     for (ZoneListener listener : getZoneListeners())
     {
-      listener.resized(zone);
+      listener.deleted(zone);
     }
   }
 

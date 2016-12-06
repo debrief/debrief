@@ -633,6 +633,7 @@ public class MaintainContributionsView extends ViewPart
     {new ZoneChart.Zone(1, 4), new ZoneChart.Zone(5, 8)}, new long[]
     {1, 12, 13, 24, 45, 66, 77, 98}, new long[]
     {5, 2, 3, 6, 7, 8, 1, 2});
+    zoneChart.setMode(ZoneChart.EditMode.REMOVE);
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter(){
       
       @Override
