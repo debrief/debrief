@@ -96,11 +96,13 @@ public class ZoneChart extends Composite
   private boolean move = false;
   private boolean resizeStart = true;
   private Zone adding = null;
+  private long[] timeValues ;
 
-  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones)
+  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones,final long[] timeValues)
   {
     super(parent, SWT.NONE);
     this.chart = xylineChart;
+    this.timeValues = timeValues;
     buildUI(xylineChart);
     this.zones.addAll(Arrays.asList(zones));
     this.zoneMarkers.clear();
@@ -547,7 +549,7 @@ public class ZoneChart extends Composite
         ShapeUtilities.createDiagonalCross(3, 1));
 
     // ok, wrap it in the zone chart
-    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones);
+    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones,timeValues);
 
     // done
     return zoneChart;
@@ -587,8 +589,30 @@ public class ZoneChart extends Composite
     final XYPlot plot = (XYPlot) composite.getChart().getPlot();
     final double chartX =
         plot.getDomainAxis().java2DToValue(x, d2, plot.getDomainAxisEdge());
+    
+    
+   
+    
     return chartX;
   }
+  
+  
+  private long toNearDomainValue(double x)
+  {
+    
+    
+    long distance = Math.abs(timeValues[0] - (long)x);
+    int idx = 0;
+    for(int c = 1; c < timeValues.length; c++){
+      long cdistance = Math.abs(timeValues[c] - (long)x);
+        if(cdistance < distance){
+            idx = c;
+            distance = cdistance;
+        }
+    }
+    return timeValues[idx];
+  }
+  
 
   public EditMode getMode()
   {
