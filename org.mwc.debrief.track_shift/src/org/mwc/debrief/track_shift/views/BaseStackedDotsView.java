@@ -42,6 +42,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
@@ -86,6 +88,7 @@ import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
+import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -300,9 +303,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
+  @SuppressWarnings("deprecation")
   @Override
   public void createPartControl(final Composite parent)
   {
+    parent.setLayout(new FillLayout(SWT.VERTICAL));
 
     _holder =
         new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200, 1800,
@@ -380,11 +385,39 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     @SuppressWarnings("unused")
     ZoneChart.ZoneListener targetListener = getTargetListener();
     
+    Zone[] zones = new ZoneChart.Zone[]
+        {
+        new ZoneChart.Zone(new Date("2016/10/10 11:20").getTime(),
+            new Date("2016/10/10 12:10").getTime()),
+        new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
+            new Date("2016/10/10 13:23:12").getTime())};
+    long[] timeValues = new long[]
+        {new Date("2016/10/10 10:00:00").getTime(),
+        new Date("2016/10/10 10:21:00").getTime(),
+        new Date("2016/10/10 11:47:00").getTime(),
+        new Date("2016/10/10 11:55:00").getTime(),
+        new Date("2016/10/10 12:23:00").getTime(),
+        new Date("2016/10/10 12:44:00").getTime(),
+        new Date("2016/10/10 13:27:00").getTime(),
+        new Date("2016/10/10 14:10:00").getTime()};
+    long[] angleValues = new long[]
+        {115, 118, 119, 121, 118, 100, 98, 97};
     // create the zone charts
     // TODO: pending
-    
+    @SuppressWarnings("unused")
+    ZoneChart ownZones =
+        ZoneChart.create("Ownship Legs", "Course", parent, zones, timeValues,
+            angleValues, DebriefColors.BLUE, DebriefColors.BLUE.darker()
+                .darker());
+
     // assign the listeners
     // TODO: pending
+    @SuppressWarnings("unused")
+    ZoneChart tgtZones =
+        ZoneChart
+            .create("Target Legs", "Course", parent, zones, timeValues,
+                angleValues, DebriefColors.RED, DebriefColors.RED.darker()
+                    .darker());
   }
   
   private ZoneChart.ZoneListener getOwnshipListener()

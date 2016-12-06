@@ -41,7 +41,6 @@ public class ZoneChart extends Composite
     MOVE, ADD, REMOVE
   }
 
-  private static Color _zoneColor;
   private List<Zone> zones = new ArrayList<Zone>();
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
@@ -97,8 +96,9 @@ public class ZoneChart extends Composite
   private boolean resizeStart = true;
   private Zone adding = null;
   private long[] timeValues ;
+  private final Color zoneColor;
 
-  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones,final long[] timeValues)
+  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones,final long[] timeValues, Color zoneColor)
   {
     super(parent, SWT.NONE);
     this.chart = xylineChart;
@@ -107,6 +107,7 @@ public class ZoneChart extends Composite
     this.zones.addAll(Arrays.asList(zones));
     this.zoneMarkers.clear();
     xylineChart.setAntiAlias(false);
+    this.zoneColor = zoneColor;
 
     XYPlot plot = (XYPlot) xylineChart.getPlot();
     for (Zone zone : zones)
@@ -538,7 +539,7 @@ public class ZoneChart extends Composite
   private void addZone(XYPlot plot, Zone zone)
   {
     IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
-    mrk.setPaint(_zoneColor);
+    mrk.setPaint(zoneColor);
     mrk.setAlpha(0.5f);
     plot.addDomainMarker(mrk, Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
@@ -548,8 +549,6 @@ public class ZoneChart extends Composite
       Composite parent, final Zone[] zones, long[] timeValues,
       long[] angleValues, Color zoneColor, Color lineColor)
   {
-    _zoneColor = zoneColor;
-
     // build the jfreechart Plot
     final TimeSeries xySeries = new TimeSeries("");
 
@@ -580,7 +579,7 @@ public class ZoneChart extends Composite
         ShapeUtilities.createDiagonalCross(3, 1));
 
     // ok, wrap it in the zone chart
-    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones,timeValues);
+    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones,timeValues, zoneColor);
 
     // done
     return zoneChart;
