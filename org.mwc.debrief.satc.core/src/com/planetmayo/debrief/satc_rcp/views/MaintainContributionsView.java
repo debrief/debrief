@@ -151,6 +151,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionV
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.widgets.ZoneChart;
+import com.planetmayo.debrief.satc_rcp.ui.widgets.ZoneChart.Zone;
 
 /**
  * mock class to test high level application flows
@@ -632,6 +633,23 @@ public class MaintainContributionsView extends ViewPart
     {new ZoneChart.Zone(1, 4), new ZoneChart.Zone(5, 8)}, new long[]
     {1, 12, 13, 24, 45, 66, 77, 98}, new long[]
     {5, 2, 3, 6, 7, 8, 1, 2});
+    zoneChart.addZoneListener(new ZoneChart.ZoneAdapter(){
+      
+      @Override
+      public void moved(Zone zone)
+      {
+       System.out
+          .println("MaintainContributionsView.initGraphTabs(...).new ZoneAdapter() {...}.moved()");
+      }
+      
+      @Override
+      public void resized(Zone zone)
+      {
+        System.out
+            .println("MaintainContributionsView.initGraphTabs(...).new ZoneAdapter() {...}.resized()");
+      }
+      
+    });
     zoneTest.setControl(zoneChart);
 	}
 

@@ -14,6 +14,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -34,6 +35,9 @@ public class ZoneChart extends ChartComposite
   private List<Zone> zones = new ArrayList<Zone>();
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
+
+  private volatile List<ZoneListener> listeners =
+      new ArrayList<ZoneChart.ZoneListener>(1);
 
   private final Image handImg = SATC_Activator.getImageDescriptor(
       "/icons/hand.png").createImage();
@@ -192,6 +196,14 @@ public class ZoneChart extends ChartComposite
           assert intervalMarker != null;
           intervalMarker.setStartValue(z.start);
           intervalMarker.setEndValue(z.end);
+          if (move)
+          {
+            fireZoneMoved(z);
+          }
+          else
+          {
+            fireZoneResized(z);
+          }
         }
 
       }
@@ -268,6 +280,53 @@ public class ZoneChart extends ChartComposite
     return zones.toArray(new Zone[zones.size()]);
   }
 
+  public void addZoneListener(ZoneListener listener)
+  {
+    listeners.add(listener);
+  }
+
+  public void removeZoneListener(ZoneListener listener)
+  {
+    listeners.remove(listener);
+  }
+
+  public List<ZoneListener> getZoneListeners()
+  {
+    return new ArrayList<ZoneListener>(listeners);
+  }
+
+  void fireZoneMoved(Zone zone)
+  {
+    for (ZoneListener listener : getZoneListeners())
+    {
+      listener.moved(zone);
+    }
+  }
+
+  void fireZoneResized(Zone zone)
+  {
+    for (ZoneListener listener : getZoneListeners())
+    {
+      listener.resized(zone);
+    }
+  }
+
+  void fireZoneAdded(Zone zone)
+  {
+    for (ZoneListener listener : getZoneListeners())
+    {
+      listener.added(zone);
+    }
+  }
+
+  void fireZoneRemoved(Zone zone)
+  {
+    for (ZoneListener listener : getZoneListeners())
+    {
+      listener.resized(zone);
+    }
+  }
+
   public static class Zone
   {
     int start, end;
@@ -295,4 +354,45 @@ public class ZoneChart extends ChartComposite
     }
 
   }
+
+  public static interface ZoneListener
+  {
+    void deleted(Zone zone);
+
+    void added(Zone zone);
+
+    void moved(Zone zone);
+
+    void resized(Zone zone);
+  }
+
+  public static class ZoneAdapter implements ZoneListener
+  {
+
+    @Override
+    public void deleted(Zone zone)
+    {
+
+    }
+
+    @Override
+    public void added(Zone zone)
+    {
+
+    }
+
+    @Override
+    public void moved(Zone zone)
+    {
+
+    }
+
+    @Override
+    public void resized(Zone zone)
+    {
+
+    }
+
+  }
+
 }
