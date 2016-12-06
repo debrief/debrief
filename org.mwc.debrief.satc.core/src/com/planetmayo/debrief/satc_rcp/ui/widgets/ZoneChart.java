@@ -196,14 +196,7 @@ public class ZoneChart extends ChartComposite
           assert intervalMarker != null;
           intervalMarker.setStartValue(z.start);
           intervalMarker.setEndValue(z.end);
-          if (move)
-          {
-            fireZoneMoved(z);
-          }
-          else
-          {
-            fireZoneResized(z);
-          }
+
         }
 
       }
@@ -244,9 +237,25 @@ public class ZoneChart extends ChartComposite
   @Override
   public void mouseUp(MouseEvent event)
   {
+    if (onDrag)
+    {
+      for (Zone z : dragZones)
+      {
+        if (move)
+        {
+          fireZoneMoved(z);
+        }
+        else
+        {
+          fireZoneResized(z);
+        }
+      }
+    }
+
     dragStartX = -1;
     dragZones.clear();
     onDrag = false;
+    move = false;
     super.mouseUp(event);
   }
 
