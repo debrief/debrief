@@ -139,341 +139,348 @@ public class ZoneChart extends Composite
     }
   }
 
+  protected class CustomChartComposite extends ChartComposite
+  {  
+    private CustomChartComposite(final Composite parent, final JFreeChart chart)
+    {
+      super(parent, SWT.NONE, chart, 400, 600, 300, 200,
+          1800, 1800, true, false, false, false, false, true);
+    }
+    
+
+    @Override
+    public void mouseDown(MouseEvent event)
+    {
+      dragZones.clear();
+      dragStartX = event.x;// findDomainX(this, event.x);
+
+      switch (mode)
+      {
+      case MOVE:
+      {
+        for (Zone zone : zones)
+        {
+          // find the drag area zones
+          if (findPixelX(this, zone.start) <= dragStartX
+              && findPixelX(this, zone.end) >= dragStartX)
+          {
+            dragZones.add(zone);
+            resizeStart = isResizeStart(zone, dragStartX);
+            move = !(resizeStart || isResizeEnd(zone, dragStartX));
+
+            onDrag = true;
+            if (move)
+            {
+              setCursor(handCursorDrag);
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case REMOVE:
+      {
+        for (Zone zone : zones)
+        {
+          // find the drag area zones
+
+          if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
+          {
+            dragZones.add(zone);
+
+            break;
+          }
+        }
+        break;
+      }
+      case ADD:
+      {
+        for (Zone zone : zones)
+        {
+          // find the drag area zones
+
+          if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
+          {
+            return;
+          }
+        }
+        XYPlot plot = (XYPlot) chart.getPlot();
+        adding =
+            new Zone((long)findDomainX(this,dragStartX), (long)findDomainX(this,dragStartX+5));
+
+        addZone(plot, adding);
+        break;
+      }
+
+      default:
+        break;
+      }
+
+      if (dragZones.isEmpty())
+        super.mouseDown(event);
+
+    }
+
+    @Override
+    public void mouseMove(MouseEvent event)
+    {
+
+      double currentX = event.x;// findDomainX(this, event.x);
+      if (!onDrag)
+      {
+        switch (mode)
+        {
+        case MOVE:
+        {
+          this.setCursor(null);
+          for (Zone zone : zones)
+          {
+            // find the drag area zones
+            if (findPixelX(this, zone.start) <= currentX
+                && findPixelX(this, zone.end) >= currentX)
+            {
+              this.setCursor(isResizeStart(zone, currentX)
+                  || isResizeEnd(zone, currentX) ? resizeCursor
+                  : handCursor);
+              break;
+            }
+
+          }
+          break;
+        }
+        case REMOVE:
+        {
+          this.setCursor(null);
+          for (Zone zone : zones)
+          {
+            // find the drag area zones
+
+            if (findPixelX(this,zone.start) <= currentX && findPixelX(this,zone.end) >= currentX)
+            {
+              this.setCursor(removeCursor);
+              break;
+            }
+
+          }
+          break;
+        }
+        case ADD:
+        {
+
+          if (adding == null)
+          {
+            this.setCursor(addCursor);
+            for (Zone zone : zones)
+            {
+              // find the drag area zones
+
+              if (findPixelX(this,zone.start )<= currentX && findPixelX(this,zone.end) >= currentX)
+              {
+                this.setCursor(null);
+                break;
+              }
+
+            }
+          }
+          break;
+        }
+
+        }
+      }
+
+      switch (mode)
+      {
+      case MOVE:
+      {
+
+        if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
+        {
+
+          if (move)
+          {
+            setCursor(handCursorDrag);
+          }
+
+          double diff = Math.round(currentX - dragStartX);
+          if (diff != 0)
+          {
+            dragStartX = currentX;
+            for (Zone z : dragZones)
+            {
+              if (move)
+              {
+                z.start =
+                    (long) findDomainX(this, findPixelX(this, z.start)
+                        + diff);
+                z.end =
+                    (long) findDomainX(this, findPixelX(this, z.end)
+                        + diff);
+
+              }
+              else
+              {
+                resize(z, dragStartX, diff);
+              }
+              IntervalMarker intervalMarker = zoneMarkers.get(z);
+              assert intervalMarker != null;
+              intervalMarker.setStartValue(z.start);
+              intervalMarker.setEndValue(z.end);
+            }
+
+          }
+
+        }
+
+        else
+          super.mouseMove(event);
+
+        break;
+      }
+      case ADD:
+      {
+
+        if (adding != null && dragStartX > 0)
+        {
+
+          double diff = Math.round(currentX - dragStartX);
+          if (diff != 0)
+          {
+            dragStartX = currentX;
+
+            resizeStart = false;
+            {
+              resize(adding, dragStartX, diff);
+            }
+            IntervalMarker intervalMarker = zoneMarkers.get(adding);
+            assert intervalMarker != null;
+            intervalMarker.setStartValue(adding.start);
+            intervalMarker.setEndValue(adding.end);
+
+          }
+
+        }
+
+        else
+          super.mouseMove(event);
+
+        break;
+      }
+
+      default:
+        break;
+      }
+
+    }
+
+    private boolean isResizeStart(Zone zone, double x)
+    {
+
+      long pixelXStart = findPixelX(this, zone.start);
+      return (x - pixelXStart) < 5 && (x - pixelXStart)>=0;
+    }
+
+    private boolean isResizeEnd(Zone zone, double x)
+    {
+      long pixelXEnd = findPixelX(this, zone.end);
+      return (pixelXEnd-x ) < 5 && (pixelXEnd - x )>=0;
+    }
+
+    private void resize(Zone zone, double startx, double diff)
+    {
+      long pixelXStart = findPixelX(this, zone.start);
+      long pixelXEnd = findPixelX(this, zone.end);
+      if (resizeStart)
+      {
+        // use start
+        if ((pixelXStart + diff) < pixelXEnd)
+          zone.start = (long) findDomainX(this, pixelXStart + diff);
+
+      }
+      else
+      {
+        // use end
+        if ((pixelXEnd + diff) > pixelXStart)
+          zone.end = (long) findDomainX(this, pixelXEnd + diff);
+      }
+    }
+
+    @Override
+    public void mouseUp(MouseEvent event)
+    {
+
+      switch (mode)
+      {
+      case MOVE:
+      {
+        if (onDrag)
+        {
+          for (Zone z : dragZones)
+          {
+            if (move)
+            {
+              fireZoneMoved(z);
+            }
+            else
+            {
+              fireZoneResized(z);
+            }
+          }
+
+        }
+
+        break;
+
+      }
+
+      case REMOVE:
+      {
+        XYPlot plot = (XYPlot) chart.getPlot();
+        for (Zone z : dragZones)
+        {
+          IntervalMarker intervalMarker = zoneMarkers.get(z);
+          plot.removeDomainMarker(intervalMarker);
+          zoneMarkers.remove(z);
+          zones.remove(z);
+          fireZoneRemoved(z);
+        }
+
+        break;
+
+      }
+      case ADD:
+      {
+
+        if (adding != null)
+        {
+
+          zones.add(adding);
+          fireZoneAdded(adding);
+        }
+
+        break;
+
+      }
+
+      default:
+        break;
+      }
+
+      dragStartX = -1;
+      dragZones.clear();
+      onDrag = false;
+      move = false;
+      adding = null;
+      super.mouseUp(event);
+    }
+
+  }
+  
   void buildUI(JFreeChart xylineChart)
   {
     setLayout((new GridLayout(2, false)));
 
-    chartComposite =
-        new ChartComposite(this, SWT.NONE, xylineChart, 400, 600, 300, 200,
-            1800, 1800, true, false, false, false, false, true)
-        {
-
-          @Override
-          public void mouseDown(MouseEvent event)
-          {
-            dragZones.clear();
-            dragStartX = event.x;// findDomainX(this, event.x);
-
-            switch (mode)
-            {
-            case MOVE:
-            {
-              for (Zone zone : zones)
-              {
-                // find the drag area zones
-                if (findPixelX(this, zone.start) <= dragStartX
-                    && findPixelX(this, zone.end) >= dragStartX)
-                {
-                  dragZones.add(zone);
-                  resizeStart = isResizeStart(zone, dragStartX);
-                  move = !(resizeStart || isResizeEnd(zone, dragStartX));
-
-                  onDrag = true;
-                  if (move)
-                  {
-                    setCursor(handCursorDrag);
-                  }
-                  break;
-                }
-              }
-              break;
-            }
-            case REMOVE:
-            {
-              for (Zone zone : zones)
-              {
-                // find the drag area zones
-
-                if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
-                {
-                  dragZones.add(zone);
-
-                  break;
-                }
-              }
-              break;
-            }
-            case ADD:
-            {
-              for (Zone zone : zones)
-              {
-                // find the drag area zones
-
-                if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
-                {
-                  return;
-                }
-              }
-              XYPlot plot = (XYPlot) chart.getPlot();
-              adding =
-                  new Zone((long)findDomainX(this,dragStartX), (long)findDomainX(this,dragStartX+5));
-
-              addZone(plot, adding);
-              break;
-            }
-
-            default:
-              break;
-            }
-
-            if (dragZones.isEmpty())
-              super.mouseDown(event);
-
-          }
-
-          @Override
-          public void mouseMove(MouseEvent event)
-          {
-
-            double currentX = event.x;// findDomainX(this, event.x);
-            if (!onDrag)
-            {
-              switch (mode)
-              {
-              case MOVE:
-              {
-                this.setCursor(null);
-                for (Zone zone : zones)
-                {
-                  // find the drag area zones
-                  if (findPixelX(this, zone.start) <= currentX
-                      && findPixelX(this, zone.end) >= currentX)
-                  {
-                    this.setCursor(isResizeStart(zone, currentX)
-                        || isResizeEnd(zone, currentX) ? resizeCursor
-                        : handCursor);
-                    break;
-                  }
-
-                }
-                break;
-              }
-              case REMOVE:
-              {
-                this.setCursor(null);
-                for (Zone zone : zones)
-                {
-                  // find the drag area zones
-
-                  if (findPixelX(this,zone.start) <= currentX && findPixelX(this,zone.end) >= currentX)
-                  {
-                    this.setCursor(removeCursor);
-                    break;
-                  }
-
-                }
-                break;
-              }
-              case ADD:
-              {
-
-                if (adding == null)
-                {
-                  this.setCursor(addCursor);
-                  for (Zone zone : zones)
-                  {
-                    // find the drag area zones
-
-                    if (findPixelX(this,zone.start )<= currentX && findPixelX(this,zone.end) >= currentX)
-                    {
-                      this.setCursor(null);
-                      break;
-                    }
-
-                  }
-                }
-                break;
-              }
-
-              }
-            }
-
-            switch (mode)
-            {
-            case MOVE:
-            {
-
-              if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
-              {
-
-                if (move)
-                {
-                  setCursor(handCursorDrag);
-                }
-
-                double diff = Math.round(currentX - dragStartX);
-                if (diff != 0)
-                {
-                  dragStartX = currentX;
-                  for (Zone z : dragZones)
-                  {
-                    if (move)
-                    {
-                      z.start =
-                          (long) findDomainX(this, findPixelX(this, z.start)
-                              + diff);
-                      z.end =
-                          (long) findDomainX(this, findPixelX(this, z.end)
-                              + diff);
-
-                    }
-                    else
-                    {
-                      resize(z, dragStartX, diff);
-                    }
-                    IntervalMarker intervalMarker = zoneMarkers.get(z);
-                    assert intervalMarker != null;
-                    intervalMarker.setStartValue(z.start);
-                    intervalMarker.setEndValue(z.end);
-                  }
-
-                }
-
-              }
-
-              else
-                super.mouseMove(event);
-
-              break;
-            }
-            case ADD:
-            {
-
-              if (adding != null && dragStartX > 0)
-              {
-
-                double diff = Math.round(currentX - dragStartX);
-                if (diff != 0)
-                {
-                  dragStartX = currentX;
-
-                  resizeStart = false;
-                  {
-                    resize(adding, dragStartX, diff);
-                  }
-                  IntervalMarker intervalMarker = zoneMarkers.get(adding);
-                  assert intervalMarker != null;
-                  intervalMarker.setStartValue(adding.start);
-                  intervalMarker.setEndValue(adding.end);
-
-                }
-
-              }
-
-              else
-                super.mouseMove(event);
-
-              break;
-            }
-
-            default:
-              break;
-            }
-
-          }
-
-          private boolean isResizeStart(Zone zone, double x)
-          {
-
-            long pixelXStart = findPixelX(this, zone.start);
-            return (x - pixelXStart) < 5 && (x - pixelXStart)>=0;
-          }
-
-          private boolean isResizeEnd(Zone zone, double x)
-          {
-            long pixelXEnd = findPixelX(this, zone.end);
-            return (pixelXEnd-x ) < 5 && (pixelXEnd - x )>=0;
-          }
-
-          private void resize(Zone zone, double startx, double diff)
-          {
-            long pixelXStart = findPixelX(this, zone.start);
-            long pixelXEnd = findPixelX(this, zone.end);
-            if (resizeStart)
-            {
-              // use start
-              if ((pixelXStart + diff) < pixelXEnd)
-                zone.start = (long) findDomainX(this, pixelXStart + diff);
-
-            }
-            else
-            {
-              // use end
-              if ((pixelXEnd + diff) > pixelXStart)
-                zone.end = (long) findDomainX(this, pixelXEnd + diff);
-            }
-          }
-
-          @Override
-          public void mouseUp(MouseEvent event)
-          {
-
-            switch (mode)
-            {
-            case MOVE:
-            {
-              if (onDrag)
-              {
-                for (Zone z : dragZones)
-                {
-                  if (move)
-                  {
-                    fireZoneMoved(z);
-                  }
-                  else
-                  {
-                    fireZoneResized(z);
-                  }
-                }
-
-              }
-
-              break;
-
-            }
-
-            case REMOVE:
-            {
-              XYPlot plot = (XYPlot) chart.getPlot();
-              for (Zone z : dragZones)
-              {
-                IntervalMarker intervalMarker = zoneMarkers.get(z);
-                plot.removeDomainMarker(intervalMarker);
-                zoneMarkers.remove(z);
-                zones.remove(z);
-                fireZoneRemoved(z);
-              }
-
-              break;
-
-            }
-            case ADD:
-            {
-
-              if (adding != null)
-              {
-
-                zones.add(adding);
-                fireZoneAdded(adding);
-              }
-
-              break;
-
-            }
-
-            default:
-              break;
-            }
-
-            dragStartX = -1;
-            dragZones.clear();
-            onDrag = false;
-            move = false;
-            adding = null;
-            super.mouseUp(event);
-          }
-
-        };
+    chartComposite = new CustomChartComposite(this, xylineChart);
+    
     chartComposite.setDomainZoomable(true);
     chartComposite.setRangeZoomable(true);
 
@@ -587,7 +594,10 @@ public class ZoneChart extends Composite
             zones.clear();
             zoneMarkers.clear();
             
-            // and add the new zones
+            // store the zones
+            zones.addAll(newZones);
+            
+            // and create the new intervals
             for(Zone thisZone: newZones)
             {
               addZone(thePlot, thisZone);
