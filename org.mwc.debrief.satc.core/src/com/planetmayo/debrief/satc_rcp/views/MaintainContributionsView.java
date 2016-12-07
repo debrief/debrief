@@ -102,6 +102,8 @@ import org.swtchart.IBarSeries;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
+import MWC.GUI.Properties.DebriefColors;
+
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -656,7 +658,7 @@ public class MaintainContributionsView extends ViewPart
             new Date("2016/10/10 13:27:00").getTime(),
             new Date("2016/10/10 14:10:00").getTime()}, new long[]
         {115, 118, 119, 121, 118, 100, 98, 97}, blueProvider, 
-        java.awt.Color.CYAN.darker().darker(), null);
+        DebriefColors.BLUE, null);
 
     zoneChart.setMode(ZoneChart.EditMode.MOVE);
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter(){
@@ -673,8 +675,7 @@ public class MaintainContributionsView extends ViewPart
       {
         System.out
             .println("MaintainContributionsView.initGraphTabs(...).new ZoneAdapter() {...}.resized()");
-      }
-      
+      }      
     });
     
     

@@ -450,7 +450,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }};
     ownshipZoneChart =
         ZoneChart.create("Ownship Legs", "Course", sashForm, osZones, ownshipCourseSeries,
-            osTimeValues, blueProv, DebriefColors.BLUE.darker().darker(), ownshipLegSlicer );
+            osTimeValues, blueProv, DebriefColors.BLUE, ownshipLegSlicer );
 
     // assign the listeners
     // TODO: pending
@@ -501,8 +501,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     @SuppressWarnings("unused")
     ZoneChart tgtZoneChart =
         ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
-            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED
-                .darker().darker(), null);
+            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, null);
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]{4,1,1});
@@ -526,7 +525,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       speeds[ctr] = 0;
       courses[ctr] = (Double) thisItem.getValue();
     }
-    List<LegOfData> legs = detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.MEDIUM);
+    List<LegOfData> legs = detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
     ArrayList<Zone> res = new ArrayList<Zone>();
     
     for(LegOfData leg : legs)

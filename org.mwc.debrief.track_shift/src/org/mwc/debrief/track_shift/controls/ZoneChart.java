@@ -25,6 +25,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -143,7 +145,7 @@ public class ZoneChart extends Composite
   {  
     private CustomChartComposite(final Composite parent, final JFreeChart chart)
     {
-      super(parent, SWT.NONE, chart, 400, 600, 300, 200,
+      super(parent, SWT.NONE, chart, 400, 600, 300, 100,
           1800, 1800, true, false, false, false, false, true);
     }
     
@@ -659,9 +661,11 @@ public class ZoneChart extends Composite
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
 
     // and sort out the color for the line
-    plot.getRenderer().setSeriesPaint(0, lineColor);
-    plot.getRenderer().setSeriesShape(0,
-        ShapeUtilities.createDiagonalCross(3, 1));
+    XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+    renderer.setSeriesPaint(0, lineColor);
+//    renderer.setSeriesShape(0,
+//        ShapeUtilities.createDiagonalCross(3, 1));
+    renderer.setSeriesShapesVisible(0, true);
 
     // ok, wrap it in the zone chart
     ZoneChart zoneChart =
