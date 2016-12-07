@@ -537,7 +537,12 @@ public class ZoneChart extends Composite
         @Override
         public void widgetSelected(SelectionEvent e)
         {
-          // TODO: rescale to show all data
+          XYPlot plot = (XYPlot) chart.getPlot();
+          
+          // NOTE: for some reason, we have to do the domain before the 
+          // range to get the full resize
+          plot.getDomainAxis().setAutoRange(true);
+          plot.getRangeAxis().setAutoRange(true);
         }
       });
       calculate.addSelectionListener(new SelectionAdapter()
@@ -566,6 +571,7 @@ public class ZoneChart extends Composite
     zoneMarkers.put(zone, mrk);
   }
 
+
   public static ZoneChart create(String chartTitle, String yTitle,
       Composite parent, final Zone[] zones, long[] timeValues,
       long[] angleValues, ColorProvider blueProv, Color lineColor)
@@ -578,6 +584,14 @@ public class ZoneChart extends Composite
       xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
 
+    return create(chartTitle, yTitle, parent, zones, xySeries, timeValues, blueProv, lineColor);
+  }
+  
+  public static ZoneChart create(String chartTitle, String yTitle,
+      Composite parent, final Zone[] zones, TimeSeries xySeries, long[] timeValues,
+       ColorProvider blueProv, Color lineColor)
+  {
+  
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
 

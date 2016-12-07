@@ -41,6 +41,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -73,6 +74,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
@@ -232,6 +235,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Vector<DraggableItem> _draggableSelection;
 
   protected boolean _itemSelectedPending = false;
+  private ZoneChart ownshipZoneChart;
 
   /**
    * 
@@ -307,9 +311,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   public void createPartControl(final Composite parent)
   {
     parent.setLayout(new FillLayout(SWT.VERTICAL));
+    
+    SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
 
     _holder =
-        new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200, 1800,
+        new ChartComposite(sashForm, SWT.NONE, null, 400, 600, 300, 200, 1800,
             1800, true, true, true, true, true, true)
         {
           @Override
@@ -377,33 +383,37 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the actions in the UI
     contributeToActionBars();
-    
+
     // we will also listen out for zone changes
     @SuppressWarnings("unused")
     ZoneChart.ZoneListener ownshipListener = getOwnshipListener();
     @SuppressWarnings("unused")
     ZoneChart.ZoneListener targetListener = getTargetListener();
-    
-    Zone[] zones = new ZoneChart.Zone[]
+
+    Zone[] osZones =
+        new ZoneChart.Zone[]
         {
-        new ZoneChart.Zone(new Date("2016/10/10 11:20").getTime(),
-            new Date("2016/10/10 12:10").getTime()),
-        new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
-            new Date("2016/10/10 13:23:12").getTime())};
-    long[] timeValues = new long[]
+            new ZoneChart.Zone(new Date("2016/10/10 11:05").getTime(),
+                new Date("2016/10/10 11:42").getTime()),
+            new ZoneChart.Zone(new Date("2016/10/10 12:25").getTime(),
+                new Date("2016/10/10 12:40").getTime()),
+            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
+                new Date("2016/10/10 13:23:12").getTime())};
+    long[] osTimeValues =
+        new long[]
         {new Date("2016/10/10 10:00:00").getTime(),
-        new Date("2016/10/10 10:21:00").getTime(),
-        new Date("2016/10/10 11:47:00").getTime(),
-        new Date("2016/10/10 11:55:00").getTime(),
-        new Date("2016/10/10 12:23:00").getTime(),
-        new Date("2016/10/10 12:44:00").getTime(),
-        new Date("2016/10/10 13:27:00").getTime(),
-        new Date("2016/10/10 14:10:00").getTime()};
-    long[] angleValues = new long[]
-        {115, 118, 119, 121, 118, 100, 98, 97};
+            new Date("2016/10/10 10:21:00").getTime(),
+            new Date("2016/10/10 11:47:00").getTime(),
+            new Date("2016/10/10 11:55:00").getTime(),
+            new Date("2016/10/10 12:23:00").getTime(),
+            new Date("2016/10/10 12:44:00").getTime(),
+            new Date("2016/10/10 13:27:00").getTime(),
+            new Date("2016/10/10 14:10:00").getTime()};
+    long[] osAngleValues = new long[]
+    {115, 118, 119, 121, 118, 100, 98, 97};
     // create the zone charts
     // TODO: pending
-    ZoneChart.ColorProvider blueProv =new ZoneChart.ColorProvider()
+    ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
     {
       @Override
       public Color getColorFor(Zone zone)
@@ -411,47 +421,74 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         return DebriefColors.BLUE;
       }
     };
-    
-    @SuppressWarnings("unused")
-    ZoneChart ownZones =
-        ZoneChart.create("Ownship Legs", "Course", parent, zones, timeValues,
-            angleValues, blueProv, DebriefColors.BLUE.darker()
-                .darker());
+
+    // put the courses into a TimeSeries
+    TimeSeries ownshipCourseSeries = new TimeSeries("Ownship course");
+    for (int i = 0; i < osTimeValues.length; i++)
+    {
+      ownshipCourseSeries.add(new FixedMillisecond(osTimeValues[i]), osAngleValues[i]);
+    }
+
+    ownshipZoneChart =
+        ZoneChart.create("Ownship Legs", "Course", sashForm, osZones, ownshipCourseSeries,
+            osTimeValues, blueProv, DebriefColors.BLUE.darker().darker());
 
     // assign the listeners
     // TODO: pending
-    ZoneChart.ColorProvider randomProv =new ZoneChart.ColorProvider()
+
+    Zone[] tgtZones =
+        new ZoneChart.Zone[]
+        {
+            new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
+                new Date("2016/10/10 10:40").getTime()),
+            new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
+                new Date("2016/10/10 12:23:12").getTime())};
+    long[] tgtTimeValues =
+        new long[]
+        {new Date("2016/10/10 10:00:00").getTime(),
+            new Date("2016/10/10 10:21:00").getTime(),
+            new Date("2016/10/10 11:47:00").getTime(),
+            new Date("2016/10/10 11:55:00").getTime(),
+            new Date("2016/10/10 12:23:00").getTime(),
+            new Date("2016/10/10 12:44:00").getTime(),
+            new Date("2016/10/10 13:27:00").getTime(),
+            new Date("2016/10/10 14:10:00").getTime()};
+    long[] tgtAngleValues = new long[]
+    {115, 118, 119, 121, 118, 100, 98, 97};
+
+    ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
     {
       @Override
       public Color getColorFor(Zone zone)
       {
         float hue = (float) Math.random();
         float sat = (float) Math.random();
-        return new Color(Color.HSBtoRGB(hue, sat,0.5f));
+        return new Color(Color.HSBtoRGB(hue, sat, 0.5f));
       }
     };
 
     @SuppressWarnings("unused")
-    ZoneChart tgtZones =
-        ZoneChart
-            .create("Target Legs", "Course", parent, zones, timeValues,
-                angleValues, randomProv, DebriefColors.RED.darker()
-                    .darker());
+    ZoneChart tgtZoneChart =
+        ZoneChart.create("Target Legs", "Course", sashForm, tgtZones,
+            tgtTimeValues, tgtAngleValues, randomProv, DebriefColors.RED
+                .darker().darker());
+
+    // and set the proportions of space allowed
+    sashForm.setWeights(new int[]{4,1,1});
+
   }
-  
+
   private ZoneChart.ZoneListener getOwnshipListener()
   {
     // TODO: fire the ownship legs to the target zig generator
     return new ZoneChart.ZoneAdapter();
   }
-  
+
   private ZoneChart.ZoneListener getTargetListener()
   {
     // TODO reflect the new target legs on the bearing residuals
     return new ZoneChart.ZoneAdapter();
   }
-  
-  
 
   /**
    * method to create a working plot (to contain our data)
@@ -1355,7 +1392,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         _onlyVisible.setChecked(showOnlyVis);
       }
-      if(showOverview != null)
+      if (showOverview != null)
       {
         _showTargetOverview.setChecked(showOverview);
       }
