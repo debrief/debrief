@@ -669,7 +669,7 @@ public class ZoneChart extends Composite
     final double chartX =
         plot.getDomainAxis().java2DToValue(x, d2, plot.getDomainAxisEdge());
 
-    return chartX;
+    return Math.ceil(chartX);
   }
 
   private long findPixelX(ChartComposite composite, double x)
@@ -682,7 +682,7 @@ public class ZoneChart extends Composite
     final double chartX =
         plot.getDomainAxis().valueToJava2D(x, d2, plot.getDomainAxisEdge());
 
-    return (long) chartX;
+    return (long) Math.ceil(chartX);
   }
 
   @SuppressWarnings("unused")
