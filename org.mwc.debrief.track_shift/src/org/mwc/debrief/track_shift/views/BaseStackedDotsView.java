@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -480,9 +481,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public Color getColorFor(Zone zone)
       {
-        float hue = (float) Math.random();
-        float sat = (float) Math.random();
-        return new Color(Color.HSBtoRGB(hue, sat, 0.5f));
+        Random random = new Random();
+        final float hue = random.nextFloat();
+        // Saturation between 0.1 and 0.3
+        final float saturation = (random.nextInt(2000) + 7000) / 10000f;
+        final float luminance = 0.9f;
+        final Color color = Color.getHSBColor(hue, saturation, luminance);
+        return color;
       }
     };
 
