@@ -236,6 +236,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected boolean _itemSelectedPending = false;
   private ZoneChart ownshipZoneChart;
+  protected TimeSeries ownshipCourseSeries;
+  protected TimeSeries targetBearingSeries;
 
   /**
    * 
@@ -423,7 +425,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the courses into a TimeSeries
-    TimeSeries ownshipCourseSeries = new TimeSeries("Ownship course");
+    ownshipCourseSeries = new TimeSeries("Ownship course");
     for (int i = 0; i < osTimeValues.length; i++)
     {
       ownshipCourseSeries.add(new FixedMillisecond(osTimeValues[i]), osAngleValues[i]);
@@ -467,15 +469,22 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
 
+    // put the bearings into a TimeSeries
+    targetBearingSeries = new TimeSeries("Bearing");
+    for (int i = 0; i < osTimeValues.length; i++)
+    {
+      targetBearingSeries.add(new FixedMillisecond(tgtTimeValues[i]), tgtAngleValues[i]);
+    }
+
     @SuppressWarnings("unused")
     ZoneChart tgtZoneChart =
-        ZoneChart.create("Target Legs", "Course", sashForm, tgtZones,
-            tgtTimeValues, tgtAngleValues, randomProv, DebriefColors.RED
+        ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
+            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED
                 .darker().darker());
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]{4,1,1});
-
+    sashForm.setBackground(sashForm.getDisplay().getSystemColor( SWT.COLOR_GRAY));
   }
 
   private ZoneChart.ZoneListener getOwnshipListener()
