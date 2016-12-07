@@ -22,9 +22,11 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -77,6 +79,7 @@ import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -91,6 +94,10 @@ import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
+import org.mwc.debrief.track_shift.zig_detector.LegOfData;
+import org.mwc.debrief.track_shift.zig_detector.OwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -235,6 +242,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Vector<DraggableItem> _draggableSelection;
 
   protected boolean _itemSelectedPending = false;
+  @SuppressWarnings("unused")
   private ZoneChart ownshipZoneChart;
   protected TimeSeries ownshipCourseSeries;
   protected TimeSeries targetBearingSeries;
@@ -395,12 +403,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     Zone[] osZones =
         new ZoneChart.Zone[]
         {
-            new ZoneChart.Zone(new Date("2016/10/10 11:05").getTime(),
-                new Date("2016/10/10 11:42").getTime()),
-            new ZoneChart.Zone(new Date("2016/10/10 12:25").getTime(),
-                new Date("2016/10/10 12:40").getTime()),
-            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
-                new Date("2016/10/10 13:23:12").getTime())};
+//            new ZoneChart.Zone(new Date("2016/10/10 11:05").getTime(),
+//                new Date("2016/10/10 11:42").getTime()),
+//            new ZoneChart.Zone(new Date("2016/10/10 12:25").getTime(),
+//                new Date("2016/10/10 12:40").getTime()),
+//            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
+//                new Date("2016/10/10 13:23:12").getTime())
+            };
     long[] osTimeValues =
         new long[]
         {new Date("2016/10/10 10:00:00").getTime(),
@@ -431,9 +440,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       ownshipCourseSeries.add(new FixedMillisecond(osTimeValues[i]), osAngleValues[i]);
     }
 
+    ZoneSlicer ownshipLegSlicer = new ZoneSlicer(){
+
+      @Override
+      public ArrayList<Zone> performSlicing()
+      {
+        return sliceOwnship(ownshipCourseSeries);
+      }};
     ownshipZoneChart =
         ZoneChart.create("Ownship Legs", "Course", sashForm, osZones, ownshipCourseSeries,
-            osTimeValues, blueProv, DebriefColors.BLUE.darker().darker());
+            osTimeValues, blueProv, DebriefColors.BLUE.darker().darker(), ownshipLegSlicer );
 
     // assign the listeners
     // TODO: pending
@@ -441,10 +457,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     Zone[] tgtZones =
         new ZoneChart.Zone[]
         {
-            new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
-                new Date("2016/10/10 10:40").getTime()),
-            new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
-                new Date("2016/10/10 12:23:12").getTime())};
+//            new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
+//                new Date("2016/10/10 10:40").getTime()),
+//            new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
+//                new Date("2016/10/10 12:23:12").getTime())
+            };
     long[] tgtTimeValues =
         new long[]
         {new Date("2016/10/10 10:00:00").getTime(),
@@ -480,11 +497,40 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ZoneChart tgtZoneChart =
         ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
             targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED
-                .darker().darker());
+                .darker().darker(), null);
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]{4,1,1});
     sashForm.setBackground(sashForm.getDisplay().getSystemColor( SWT.COLOR_GRAY));
+  }
+
+  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)
+  {
+    OwnshipLegDetector detector = new OwnshipLegDetector();
+    
+    final int num = osCourse.getItemCount();
+    long[] times = new long[num];
+    double[] speeds = new double[num];
+    double[] courses = new double[num];
+    
+    for(int ctr = 0;ctr<num;ctr++)
+    {
+      TimeSeriesDataItem thisItem = osCourse.getDataItem(ctr);
+      FixedMillisecond thisM = (FixedMillisecond) thisItem.getPeriod();
+      times[ctr] = thisM.getMiddleMillisecond();
+      speeds[ctr] = 0;
+      courses[ctr] = (Double) thisItem.getValue();
+    }
+    List<LegOfData> legs = detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.MEDIUM);
+    ArrayList<Zone> res = new ArrayList<Zone>();
+    
+    for(LegOfData leg : legs)
+    {
+      Zone newZone = new Zone(leg.getStart(), leg.getEnd());
+      res.add(newZone);
+    }
+    
+    return res;
   }
 
   private ZoneChart.ZoneListener getOwnshipListener()
