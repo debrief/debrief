@@ -362,14 +362,13 @@ public class ZoneChart extends Composite
           {
 
             long pixelXStart = findPixelX(this, zone.start);
-            long pixelXEnd = findPixelX(this, zone.end);
-            return (x - pixelXStart) < ((pixelXEnd - pixelXStart) / 4);
+            return (x - pixelXStart) < 5 && (x - pixelXStart)>=0;
           }
 
           private boolean isResizeEnd(Zone zone, double x)
           {
-            return (findPixelX(this, zone.end) - x) < ((findPixelX(this,
-                zone.end) - findPixelX(this, zone.start)) / 4);
+            long pixelXEnd = findPixelX(this, zone.end);
+            return (pixelXEnd-x ) < 5 && (pixelXEnd - x )>=0;
           }
 
           private void resize(Zone zone, double startx, double diff)
