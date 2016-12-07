@@ -411,18 +411,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 //            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
 //                new Date("2016/10/10 13:23:12").getTime())
             };
-    long[] osTimeValues =
-        new long[]
-        {new Date("2016/10/10 10:00:00").getTime(),
-            new Date("2016/10/10 10:21:00").getTime(),
-            new Date("2016/10/10 11:47:00").getTime(),
-            new Date("2016/10/10 11:55:00").getTime(),
-            new Date("2016/10/10 12:23:00").getTime(),
-            new Date("2016/10/10 12:44:00").getTime(),
-            new Date("2016/10/10 13:27:00").getTime(),
-            new Date("2016/10/10 14:10:00").getTime()};
-    long[] osAngleValues = new long[]
-    {115, 118, 119, 121, 118, 100, 98, 97};
+    long[] osTimeValues = new long[]{};
+    long[] osAngleValues = new long[]{};
     // create the zone charts
     // TODO: pending
     ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
@@ -436,10 +426,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the courses into a TimeSeries
     ownshipCourseSeries = new TimeSeries("Ownship course");
-    for (int i = 0; i < osTimeValues.length; i++)
-    {
-      ownshipCourseSeries.add(new FixedMillisecond(osTimeValues[i]), osAngleValues[i]);
-    }
 
     ZoneSlicer ownshipLegSlicer = new ZoneSlicer(){
 
@@ -464,17 +450,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 //                new Date("2016/10/10 12:23:12").getTime())
             };
     long[] tgtTimeValues =
-        new long[]
-        {new Date("2016/10/10 10:00:00").getTime(),
-            new Date("2016/10/10 10:21:00").getTime(),
-            new Date("2016/10/10 11:47:00").getTime(),
-            new Date("2016/10/10 11:55:00").getTime(),
-            new Date("2016/10/10 12:23:00").getTime(),
-            new Date("2016/10/10 12:44:00").getTime(),
-            new Date("2016/10/10 13:27:00").getTime(),
-            new Date("2016/10/10 14:10:00").getTime()};
+        new long[]{};
     long[] tgtAngleValues = new long[]
-    {115, 118, 119, 121, 118, 100, 98, 97};
+    {};
 
     ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
     {
@@ -493,10 +471,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the bearings into a TimeSeries
     targetBearingSeries = new TimeSeries("Bearing");
-    for (int i = 0; i < osTimeValues.length; i++)
-    {
-      targetBearingSeries.add(new FixedMillisecond(tgtTimeValues[i]), tgtAngleValues[i]);
-    }
 
     @SuppressWarnings("unused")
     ZoneChart tgtZoneChart =

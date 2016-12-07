@@ -1,6 +1,7 @@
 package org.mwc.debrief.track_shift.controls;
 
 import java.awt.Color;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -662,9 +663,9 @@ public class ZoneChart extends Composite
 
     // and sort out the color for the line
     XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+    Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, lineColor);
-//    renderer.setSeriesShape(0,
-//        ShapeUtilities.createDiagonalCross(3, 1));
+    renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
 
     // ok, wrap it in the zone chart
