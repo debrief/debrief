@@ -35,20 +35,22 @@ import org.mwc.cmap.core.CorePlugin;
 
 public class ZoneChart extends Composite
 {
-  /** helper class to provide color for zones
+  /**
+   * helper class to provide color for zones
    * 
    * @author Ian
-   *
+   * 
    */
   public interface ColorProvider
   {
     java.awt.Color getColorFor(final Zone zone);
   }
-  
-  /** helper class to slice data into zones
+
+  /**
+   * helper class to slice data into zones
    * 
    * @author Ian
-   *
+   * 
    */
   public interface ZoneSlicer
   {
@@ -57,7 +59,7 @@ public class ZoneChart extends Composite
 
   public enum EditMode
   {
-    MOVE, ADD, REMOVE
+    MOVE, EDIT
   }
 
   private List<Zone> zones = new ArrayList<Zone>();
@@ -140,13 +142,12 @@ public class ZoneChart extends Composite
   }
 
   protected class CustomChartComposite extends ChartComposite
-  {  
+  {
     private CustomChartComposite(final Composite parent, final JFreeChart chart)
     {
-      super(parent, SWT.NONE, chart, 400, 600, 300, 200,
-          1800, 1800, true, false, false, false, false, true);
+      super(parent, SWT.NONE, chart, 400, 600, 300, 200, 1800, 1800, true,
+          false, false, false, false, true);
     }
-    
 
     @Override
     public void mouseDown(MouseEvent event)
@@ -178,37 +179,31 @@ public class ZoneChart extends Composite
         }
         break;
       }
-      case REMOVE:
+      case EDIT:
       {
         for (Zone zone : zones)
         {
           // find the drag area zones
 
-          if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
+          if (findPixelX(this, zone.start) <= dragStartX
+              && findPixelX(this, zone.end) >= dragStartX)
           {
             dragZones.add(zone);
 
             break;
           }
         }
-        break;
-      }
-      case ADD:
-      {
-        for (Zone zone : zones)
+
+        if (dragZones.isEmpty())
         {
-          // find the drag area zones
+          XYPlot plot = (XYPlot) chart.getPlot();
+          adding =
+              new Zone((long) findDomainX(this, dragStartX),
+                  (long) findDomainX(this, dragStartX + 5));
 
-          if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
-          {
-            return;
-          }
+          addZone(plot, adding);
         }
-        XYPlot plot = (XYPlot) chart.getPlot();
-        adding =
-            new Zone((long)findDomainX(this,dragStartX), (long)findDomainX(this,dragStartX+5));
 
-        addZone(plot, adding);
         break;
       }
 
@@ -240,43 +235,27 @@ public class ZoneChart extends Composite
                 && findPixelX(this, zone.end) >= currentX)
             {
               this.setCursor(isResizeStart(zone, currentX)
-                  || isResizeEnd(zone, currentX) ? resizeCursor
-                  : handCursor);
+                  || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
               break;
             }
 
           }
           break;
         }
-        case REMOVE:
+        case EDIT:
         {
-          this.setCursor(null);
-          for (Zone zone : zones)
-          {
-            // find the drag area zones
-
-            if (findPixelX(this,zone.start) <= currentX && findPixelX(this,zone.end) >= currentX)
-            {
-              this.setCursor(removeCursor);
-              break;
-            }
-
-          }
-          break;
-        }
-        case ADD:
-        {
-
           if (adding == null)
           {
+
             this.setCursor(addCursor);
             for (Zone zone : zones)
             {
               // find the drag area zones
 
-              if (findPixelX(this,zone.start )<= currentX && findPixelX(this,zone.end) >= currentX)
+              if (findPixelX(this, zone.start) <= currentX
+                  && findPixelX(this, zone.end) >= currentX)
               {
-                this.setCursor(null);
+                this.setCursor(removeCursor);
                 break;
               }
 
@@ -310,11 +289,9 @@ public class ZoneChart extends Composite
               if (move)
               {
                 z.start =
-                    (long) findDomainX(this, findPixelX(this, z.start)
-                        + diff);
+                    (long) findDomainX(this, findPixelX(this, z.start) + diff);
                 z.end =
-                    (long) findDomainX(this, findPixelX(this, z.end)
-                        + diff);
+                    (long) findDomainX(this, findPixelX(this, z.end) + diff);
 
               }
               else
@@ -336,7 +313,7 @@ public class ZoneChart extends Composite
 
         break;
       }
-      case ADD:
+      case EDIT:
       {
 
         if (adding != null && dragStartX > 0)
@@ -376,13 +353,13 @@ public class ZoneChart extends Composite
     {
 
       long pixelXStart = findPixelX(this, zone.start);
-      return (x - pixelXStart) < 5 && (x - pixelXStart)>=0;
+      return (x - pixelXStart) < 5 && (x - pixelXStart) >= 0;
     }
 
     private boolean isResizeEnd(Zone zone, double x)
     {
       long pixelXEnd = findPixelX(this, zone.end);
-      return (pixelXEnd-x ) < 5 && (pixelXEnd - x )>=0;
+      return (pixelXEnd - x) < 5 && (pixelXEnd - x) >= 0;
     }
 
     private void resize(Zone zone, double startx, double diff)
@@ -432,22 +409,7 @@ public class ZoneChart extends Composite
 
       }
 
-      case REMOVE:
-      {
-        XYPlot plot = (XYPlot) chart.getPlot();
-        for (Zone z : dragZones)
-        {
-          IntervalMarker intervalMarker = zoneMarkers.get(z);
-          plot.removeDomainMarker(intervalMarker);
-          zoneMarkers.remove(z);
-          zones.remove(z);
-          fireZoneRemoved(z);
-        }
-
-        break;
-
-      }
-      case ADD:
+      case EDIT:
       {
 
         if (adding != null)
@@ -455,6 +417,18 @@ public class ZoneChart extends Composite
 
           zones.add(adding);
           fireZoneAdded(adding);
+        }
+        else
+        {
+          XYPlot plot = (XYPlot) chart.getPlot();
+          for (Zone z : dragZones)
+          {
+            IntervalMarker intervalMarker = zoneMarkers.get(z);
+            plot.removeDomainMarker(intervalMarker);
+            zoneMarkers.remove(z);
+            zones.remove(z);
+            fireZoneRemoved(z);
+          }
         }
 
         break;
@@ -474,13 +448,13 @@ public class ZoneChart extends Composite
     }
 
   }
-  
+
   void buildUI(JFreeChart xylineChart)
   {
     setLayout((new GridLayout(2, false)));
 
     chartComposite = new CustomChartComposite(this, xylineChart);
-    
+
     chartComposite.setDomainZoomable(true);
     chartComposite.setRangeZoomable(true);
 
@@ -496,13 +470,10 @@ public class ZoneChart extends Composite
   {
     {// mode buttons
       final Button add = new Button(this, SWT.TOGGLE);
-      add.setImage(addImg24);
-      add.setToolTipText("Add new zones");
+      add.setImage(addImg24);// TODO ADD EDIT ICON
+      add.setToolTipText("Add new zones/Remove zones");
       add.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      final Button remove = new Button(this, SWT.TOGGLE);
-      remove.setImage(removeImg24);
-      remove.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      remove.setToolTipText("Remove zones");
+
       final Button move = new Button(this, SWT.TOGGLE);
       move.setImage(handImg24);
       move.setLayoutData(new GridData(GridData.FILL_VERTICAL));
@@ -525,9 +496,9 @@ public class ZoneChart extends Composite
         public void widgetSelected(SelectionEvent e)
         {
           add.setSelection(true);
-          remove.setSelection(false);
+
           move.setSelection(false);
-          setMode(ZoneChart.EditMode.ADD);
+          setMode(ZoneChart.EditMode.EDIT);
         }
       });
       move.addSelectionListener(new SelectionAdapter()
@@ -536,20 +507,9 @@ public class ZoneChart extends Composite
         public void widgetSelected(SelectionEvent e)
         {
           add.setSelection(false);
-          remove.setSelection(false);
+
           move.setSelection(true);
           setMode(ZoneChart.EditMode.MOVE);
-        }
-      });
-      remove.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-          add.setSelection(false);
-          remove.setSelection(true);
-          move.setSelection(false);
-          setMode(ZoneChart.EditMode.REMOVE);
         }
       });
 
@@ -559,8 +519,8 @@ public class ZoneChart extends Composite
         public void widgetSelected(SelectionEvent e)
         {
           XYPlot plot = (XYPlot) chart.getPlot();
-          
-          // NOTE: for some reason, we have to do the domain before the 
+
+          // NOTE: for some reason, we have to do the domain before the
           // range to get the full resize
           plot.getDomainAxis().setAutoRange(true);
           plot.getRangeAxis().setAutoRange(true);
@@ -571,7 +531,7 @@ public class ZoneChart extends Composite
         @Override
         public void widgetSelected(SelectionEvent e)
         {
-          if(zoneSlicer == null)
+          if (zoneSlicer == null)
           {
             CorePlugin.showMessage("Manage legs", "Slicing happens here");
           }
@@ -583,7 +543,7 @@ public class ZoneChart extends Composite
             final XYPlot thePlot = (XYPlot) chart.getPlot();
 
             // and ditch the intervals
-            for(Zone thisZone: zones)
+            for (Zone thisZone : zones)
             {
               // remove this marker
               IntervalMarker thisM = zoneMarkers.get(thisZone);
@@ -593,12 +553,12 @@ public class ZoneChart extends Composite
             // ok, now ditch the old zone lists
             zones.clear();
             zoneMarkers.clear();
-            
+
             // store the zones
             zones.addAll(newZones);
-            
+
             // and create the new intervals
-            for(Zone thisZone: newZones)
+            for (Zone thisZone : newZones)
             {
               addZone(thePlot, thisZone);
             }
@@ -621,10 +581,10 @@ public class ZoneChart extends Composite
     zoneMarkers.put(zone, mrk);
   }
 
-
   public static ZoneChart create(String chartTitle, String yTitle,
       Composite parent, final Zone[] zones, long[] timeValues,
-      long[] angleValues, ColorProvider blueProv, Color lineColor, ZoneSlicer zoneSlicer)
+      long[] angleValues, ColorProvider blueProv, Color lineColor,
+      ZoneSlicer zoneSlicer)
   {
     // build the jfreechart Plot
     final TimeSeries xySeries = new TimeSeries("");
@@ -634,14 +594,16 @@ public class ZoneChart extends Composite
       xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
 
-    return create(chartTitle, yTitle, parent, zones, xySeries, timeValues, blueProv, lineColor, zoneSlicer);
+    return create(chartTitle, yTitle, parent, zones, xySeries, timeValues,
+        blueProv, lineColor, zoneSlicer);
   }
-  
+
   public static ZoneChart create(String chartTitle, String yTitle,
-      Composite parent, final Zone[] zones, TimeSeries xySeries, long[] timeValues,
-       ColorProvider blueProv, Color lineColor, ZoneSlicer zoneSlicer)
+      Composite parent, final Zone[] zones, TimeSeries xySeries,
+      long[] timeValues, ColorProvider blueProv, Color lineColor,
+      ZoneSlicer zoneSlicer)
   {
-  
+
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
 
@@ -665,7 +627,8 @@ public class ZoneChart extends Composite
 
     // ok, wrap it in the zone chart
     ZoneChart zoneChart =
-        new ZoneChart(parent, xylineChart, zones, timeValues, blueProv, zoneSlicer);
+        new ZoneChart(parent, xylineChart, zones, timeValues, blueProv,
+            zoneSlicer);
 
     // done
     return zoneChart;
