@@ -36,10 +36,11 @@ import org.mwc.cmap.core.CorePlugin;
 
 public class ZoneChart extends Composite
 {
-  public interface ColorProvider {
+  public interface ColorProvider
+  {
     java.awt.Color getColorFor(final Zone zone);
   }
-  
+
   public enum EditMode
   {
     MOVE, ADD, REMOVE
@@ -99,10 +100,11 @@ public class ZoneChart extends Composite
   private boolean move = false;
   private boolean resizeStart = true;
   private Zone adding = null;
-  private long[] timeValues ;
+  private long[] timeValues;
   private final ColorProvider colorProvider;
 
-  private ZoneChart(Composite parent, JFreeChart xylineChart, final Zone[] zones,final long[] timeValues, ColorProvider colorProvider)
+  private ZoneChart(Composite parent, JFreeChart xylineChart,
+      final Zone[] zones, final long[] timeValues, ColorProvider colorProvider)
   {
     super(parent, SWT.NONE);
     this.chart = xylineChart;
@@ -133,7 +135,7 @@ public class ZoneChart extends Composite
           public void mouseDown(MouseEvent event)
           {
             dragZones.clear();
-            dragStartX = findDomainX(this, event.x);
+            dragStartX = event.x;// findDomainX(this, event.x);
 
             switch (mode)
             {
@@ -143,7 +145,8 @@ public class ZoneChart extends Composite
               {
                 // find the drag area zones
 
-                if (zone.start <= dragStartX && zone.end >= dragStartX)
+                if (findPixelX(this, zone.start) <= dragStartX
+                    && findPixelX(this, zone.end) >= dragStartX)
                 {
                   dragZones.add(zone);
                   resizeStart = isResizeStart(zone, dragStartX);
@@ -165,7 +168,7 @@ public class ZoneChart extends Composite
               {
                 // find the drag area zones
 
-                if (zone.start <= dragStartX && zone.end >= dragStartX)
+                if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
                 {
                   dragZones.add(zone);
 
@@ -180,14 +183,15 @@ public class ZoneChart extends Composite
               {
                 // find the drag area zones
 
-                if (zone.start <= dragStartX && zone.end >= dragStartX)
+                if (findPixelX(this,zone.start) <= dragStartX && findPixelX(this,zone.end) >= dragStartX)
                 {
                   return;
                 }
               }
               XYPlot plot = (XYPlot) chart.getPlot();
-              adding = new Zone((long) dragStartX, (long) dragStartX +(long)(1*((DateAxis)plot.getDomainAxis()).getTickUnit().getSize()));
-             
+              adding =
+                  new Zone((long)findDomainX(this,dragStartX), (long)findDomainX(this,dragStartX+5));
+
               addZone(plot, adding);
               break;
             }
@@ -205,7 +209,7 @@ public class ZoneChart extends Composite
           public void mouseMove(MouseEvent event)
           {
 
-            double currentX = findDomainX(this, event.x);
+            double currentX = event.x;// findDomainX(this, event.x);
             if (!onDrag)
             {
               switch (mode)
@@ -217,7 +221,8 @@ public class ZoneChart extends Composite
                 {
                   // find the drag area zones
 
-                  if (zone.start <= currentX && zone.end >= currentX)
+                  if (findPixelX(this, zone.start) <= currentX
+                      && findPixelX(this, zone.end) >= currentX)
                   {
                     this.setCursor(isResizeStart(zone, currentX)
                         || isResizeEnd(zone, currentX) ? resizeCursor
@@ -235,7 +240,7 @@ public class ZoneChart extends Composite
                 {
                   // find the drag area zones
 
-                  if (zone.start <= currentX && zone.end >= currentX)
+                  if (findPixelX(this,zone.start) <= currentX && findPixelX(this,zone.end) >= currentX)
                   {
                     this.setCursor(removeCursor);
                     break;
@@ -254,7 +259,7 @@ public class ZoneChart extends Composite
                   {
                     // find the drag area zones
 
-                    if (zone.start <= currentX && zone.end >= currentX)
+                    if (findPixelX(this,zone.start )<= currentX && findPixelX(this,zone.end) >= currentX)
                     {
                       this.setCursor(null);
                       break;
@@ -289,8 +294,12 @@ public class ZoneChart extends Composite
                   {
                     if (move)
                     {
-                      z.start += diff;
-                      z.end += diff;
+                      z.start =
+                          (long) findDomainX(this, findPixelX(this, z.start)
+                              + diff);
+                      z.end =
+                          (long) findDomainX(this, findPixelX(this, z.end)
+                              + diff);
 
                     }
                     else
@@ -352,28 +361,33 @@ public class ZoneChart extends Composite
           private boolean isResizeStart(Zone zone, double x)
           {
 
-            return (x - zone.start) < ((zone.end - zone.start) / 4);
+            long pixelXStart = findPixelX(this, zone.start);
+            long pixelXEnd = findPixelX(this, zone.end);
+            return (x - pixelXStart) < ((pixelXEnd - pixelXStart) / 4);
           }
 
           private boolean isResizeEnd(Zone zone, double x)
           {
-            return (zone.end - x) < ((zone.end - zone.start) / 4);
+            return (findPixelX(this, zone.end) - x) < ((findPixelX(this,
+                zone.end) - findPixelX(this, zone.start)) / 4);
           }
 
           private void resize(Zone zone, double startx, double diff)
           {
+            long pixelXStart = findPixelX(this, zone.start);
+            long pixelXEnd = findPixelX(this, zone.end);
             if (resizeStart)
             {
               // use start
-              if ((zone.start + diff) < zone.end)
-                zone.start += diff;
+              if ((pixelXStart + diff) < pixelXEnd)
+                zone.start = (long) findDomainX(this, pixelXStart + diff);
 
             }
             else
             {
               // use end
-              if ((zone.end + diff) > zone.start)
-                zone.end += diff;
+              if ((pixelXEnd + diff) > pixelXStart)
+                zone.end = (long) findDomainX(this, pixelXEnd + diff);
             }
           }
 
@@ -545,7 +559,7 @@ public class ZoneChart extends Composite
     // get the color for this zone
     Color zoneColor = colorProvider.getColorFor(zone);
     zone.setColor(zoneColor);
-    
+
     IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
     mrk.setPaint(zone.getColor());
     mrk.setAlpha(0.5f);
@@ -587,7 +601,8 @@ public class ZoneChart extends Composite
         ShapeUtilities.createDiagonalCross(3, 1));
 
     // ok, wrap it in the zone chart
-    ZoneChart zoneChart = new ZoneChart(parent, xylineChart, zones,timeValues, blueProv);
+    ZoneChart zoneChart =
+        new ZoneChart(parent, xylineChart, zones, timeValues, blueProv);
 
     // done
     return zoneChart;
@@ -618,7 +633,7 @@ public class ZoneChart extends Composite
     super.dispose();
   }
 
-  private double findDomainX(ChartComposite composite, long x)
+  private double findDomainX(ChartComposite composite, double x)
   {
     final Rectangle dataArea = composite.getScreenDataArea();
     final Rectangle2D d2 =
@@ -627,30 +642,39 @@ public class ZoneChart extends Composite
     final XYPlot plot = (XYPlot) composite.getChart().getPlot();
     final double chartX =
         plot.getDomainAxis().java2DToValue(x, d2, plot.getDomainAxisEdge());
-    
-    
-   
-    
+
     return chartX;
   }
-  
-  
+
+  private long findPixelX(ChartComposite composite, double x)
+  {
+    final Rectangle dataArea = composite.getScreenDataArea();
+    final Rectangle2D d2 =
+        new Rectangle2D.Double(dataArea.x, dataArea.y, dataArea.width,
+            dataArea.height);
+    final XYPlot plot = (XYPlot) composite.getChart().getPlot();
+    final double chartX =
+        plot.getDomainAxis().valueToJava2D(x, d2, plot.getDomainAxisEdge());
+
+    return (long) chartX;
+  }
+
   private long toNearDomainValue(double x)
   {
-    
-    
-    long distance = Math.abs(timeValues[0] - (long)x);
+
+    long distance = Math.abs(timeValues[0] - (long) x);
     int idx = 0;
-    for(int c = 1; c < timeValues.length; c++){
-      long cdistance = Math.abs(timeValues[c] - (long)x);
-        if(cdistance < distance){
-            idx = c;
-            distance = cdistance;
-        }
+    for (int c = 1; c < timeValues.length; c++)
+    {
+      long cdistance = Math.abs(timeValues[c] - (long) x);
+      if (cdistance < distance)
+      {
+        idx = c;
+        distance = cdistance;
+      }
     }
     return timeValues[idx];
   }
-  
 
   public EditMode getMode()
   {
