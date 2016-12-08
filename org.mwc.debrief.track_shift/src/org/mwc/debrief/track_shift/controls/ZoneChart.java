@@ -80,6 +80,10 @@ public class ZoneChart extends Composite
       "/icons/16/remove.png").createImage();
   private final Image handFistImg16 = CorePlugin.getImageDescriptor(
       "/icons/16/hand_fist.png").createImage();
+  private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_1.png").createImage();
+  private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_2.png").createImage();
 
   /** 24px images for the buttons */
   private final Image handImg24 = CorePlugin.getImageDescriptor(
@@ -90,6 +94,8 @@ public class ZoneChart extends Composite
       "/icons/24/remove.png").createImage();
   private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
       "/icons/24/zoomin.png").createImage();
+  private final Image mergeImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/merge.png").createImage();
   private final Image fitToWin24 = CorePlugin.getImageDescriptor(
       "/icons/24/fit_to_win.png").createImage();
   private final Image calculator24 = CorePlugin.getImageDescriptor(
@@ -99,6 +105,10 @@ public class ZoneChart extends Composite
       .getImageData(), 0, 0);
   private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
       .getImageData(), 0, 0);
+  private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
+      merge_1Img16.getImageData(), 0, 0);
+  private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
+      merge_2Img16.getImageData(), 0, 0);
   private final Cursor removeCursor = new Cursor(Display.getDefault(),
       removeImg16.getImageData(), 0, 0);
   private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
@@ -120,6 +130,8 @@ public class ZoneChart extends Composite
   private boolean resizeStart = false;
   private boolean resizeEnd = false;
   private Zone adding = null;
+  private Zone merge_1 = null;
+  private Zone merge_2 = null;
   private long[] timeValues;
   private final ColorProvider colorProvider;
   private final ZoneSlicer zoneSlicer;
@@ -168,6 +180,32 @@ public class ZoneChart extends Composite
 
       switch (mode)
       {
+
+      case MERGE:
+      {
+        this.setCursor(null);
+        for (Zone zone : zones)
+        {
+          // find the drag area zones
+          if (findPixelX(this, zone.start) <= dragStartX
+              && findPixelX(this, zone.end) >= dragStartX)
+          {
+            if (merge_1 == null)
+            {
+              merge_1 = zone;
+              break;
+            }
+            else if (merge_1 != zone)
+            {
+              merge_2 = zone;
+              break;
+            }
+
+          }
+
+        }
+        break;
+      }
       case MOVE:
       {
         for (Zone zone : zones)
@@ -257,6 +295,23 @@ public class ZoneChart extends Composite
             {
               this.setCursor(isResizeStart(zone, currentX)
                   || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
+              break;
+            }
+
+          }
+          break;
+        }
+        case MERGE:
+        {
+          this.setCursor(null);
+          for (Zone zone : zones)
+          {
+            // find the drag area zones
+            if (findPixelX(this, zone.start) <= currentX
+                && findPixelX(this, zone.end) >= currentX)
+            {
+              setCursor(merge_1 == null || merge_1 == zone ? merge_1Cursor
+                  : merge_2Cursor);
               break;
             }
 
@@ -507,6 +562,39 @@ public class ZoneChart extends Composite
         break;
 
       }
+      case MERGE:
+      {
+
+        if (merge_1 != null && merge_2 != null && merge_1 != merge_2)
+        {
+          Zone resize = merge_1.start < merge_2.start ? merge_1 : merge_2;
+          Zone delete = merge_1.start < merge_2.start ? merge_2 : merge_1;
+          XYPlot plot = (XYPlot) chart.getPlot();
+          {
+            IntervalMarker intervalMarker = zoneMarkers.get(delete);
+            plot.removeDomainMarker(intervalMarker);
+            zoneMarkers.remove(delete);
+            zones.remove(delete);
+            fireZoneRemoved(delete);
+          }
+
+          if (resize.end < delete.end)
+            resize.end = delete.end;
+          {
+            
+            IntervalMarker intervalMarker = zoneMarkers.get(resize);
+            assert intervalMarker != null;
+            intervalMarker.setStartValue(resize.start);
+            intervalMarker.setEndValue(resize.end);
+          }
+          fireZoneResized(resize);
+          merge_1 = null;
+          merge_2 = null;
+        }
+
+        break;
+
+      }
 
       default:
         break;
@@ -519,6 +607,7 @@ public class ZoneChart extends Composite
       adding = null;
       resizeStart = false;
       resizeEnd = false;
+
       super.mouseUp(event);
     }
 
@@ -555,6 +644,12 @@ public class ZoneChart extends Composite
       zoom.setSelection(true);
       zoom.setToolTipText("Zoom");
 
+      final Button mrege = new Button(this, SWT.TOGGLE);
+      mrege.setImage(mergeImg24);
+      mrege.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+
+      mrege.setToolTipText("Merge");
+
       final Button fitToWin = new Button(this, SWT.PUSH);
       fitToWin.setImage(fitToWin24);
       fitToWin.setLayoutData(new GridData(GridData.FILL_VERTICAL));
@@ -573,6 +668,7 @@ public class ZoneChart extends Composite
           edit.setSelection(true);
 
           zoom.setSelection(false);
+          mrege.setSelection(false);
           setMode(ZoneChart.EditMode.EDIT);
         }
       });
@@ -582,9 +678,22 @@ public class ZoneChart extends Composite
         public void widgetSelected(SelectionEvent e)
         {
           edit.setSelection(false);
+          mrege.setSelection(false);
 
           zoom.setSelection(true);
           setMode(ZoneChart.EditMode.ZOOM);
+        }
+      });
+      mrege.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          edit.setSelection(false);
+          mrege.setSelection(true);
+
+          zoom.setSelection(false);
+          setMode(ZoneChart.EditMode.MERGE);
         }
       });
 
@@ -717,6 +826,8 @@ public class ZoneChart extends Composite
   @Override
   public void dispose()
   {
+    merge_1Cursor.dispose();
+    merge_2Cursor.dispose();
     handCursor.dispose();
     handCursorDrag.dispose();
     resizeCursor.dispose();
@@ -726,6 +837,8 @@ public class ZoneChart extends Composite
     addImg16.dispose();
     removeImg16.dispose();
     removeCursor.dispose();
+    merge_1Img16.dispose();
+    merge_2Img16.dispose();
 
     // and the 24px images
     handImg24.dispose();
@@ -734,6 +847,7 @@ public class ZoneChart extends Composite
     fitToWin24.dispose();
     calculator24.dispose();
     zoomInImg24.dispose();
+    mergeImg24.dispose();
     super.dispose();
   }
 
