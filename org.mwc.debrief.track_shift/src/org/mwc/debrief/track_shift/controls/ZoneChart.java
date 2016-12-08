@@ -191,6 +191,7 @@ public class ZoneChart extends Composite
           if (findPixelX(this, zone.start) <= dragStartX
               && findPixelX(this, zone.end) >= dragStartX)
           {
+            onDrag = true;
             resizeStart = isResizeStart(zone, dragStartX);
             resizeEnd = isResizeEnd(zone, dragStartX);
             dragZones.add(zone);
@@ -267,8 +268,12 @@ public class ZoneChart extends Composite
                 {
                   this.setCursor(resizeCursor);
                 }
-                else
+                else if(isDelete(zone, currentX))
                   this.setCursor(removeCursor);
+                else
+                {
+                  this.setCursor(null);
+                }
                 break;
               }
 
@@ -387,6 +392,13 @@ public class ZoneChart extends Composite
       long pixelXStart = findPixelX(this, zone.start);
       return (x - pixelXStart) < 5 && (x - pixelXStart) >= -1;
     }
+    private boolean isDelete(Zone zone, double x)
+    {
+      
+      long pixelXStart = findPixelX(this, zone.start);
+      long pixelXEnd = findPixelX(this, zone.end);
+      return ((x - pixelXStart) > 8 && (x - pixelXStart) >= 0) && ((pixelXEnd - x) >8 && (pixelXEnd - x) >= 0);
+    }
 
     private boolean isResizeEnd(Zone zone, double x)
     {
@@ -450,16 +462,24 @@ public class ZoneChart extends Composite
           zones.add(adding);
           fireZoneAdded(adding);
         }
-        else if(!(resizeStart|| resizeEnd))
+        
         {
           XYPlot plot = (XYPlot) chart.getPlot();
           for (Zone z : dragZones)
           {
-            IntervalMarker intervalMarker = zoneMarkers.get(z);
-            plot.removeDomainMarker(intervalMarker);
-            zoneMarkers.remove(z);
-            zones.remove(z);
-            fireZoneRemoved(z);
+            if(isDelete(z, event.x))
+            {
+              IntervalMarker intervalMarker = zoneMarkers.get(z);
+              plot.removeDomainMarker(intervalMarker);
+              zoneMarkers.remove(z);
+              zones.remove(z);
+              fireZoneRemoved(z);
+            }
+            else if (isResizeStart(z, event.x)|| isResizeEnd(z, event.x))
+            { 
+              fireZoneResized(z);
+              
+            }
           }
         }
 
