@@ -115,7 +115,8 @@ public class ZoneChart extends Composite
   private double dragStartX = -1;
   private boolean onDrag = false;
   private boolean move = false;
-  private boolean resizeStart = true;
+  private boolean resizeStart = false;
+  private boolean resizeEnd = false;
   private Zone adding = null;
   private long[] timeValues;
   private final ColorProvider colorProvider;
@@ -146,8 +147,8 @@ public class ZoneChart extends Composite
   {
     private CustomChartComposite(final Composite parent, final JFreeChart chart)
     {
-      super(parent, SWT.NONE, chart, 400, 600, 300, 100,
-          1800, 1800, true, false, false, false, false, true);
+      super(parent, SWT.NONE, chart, 400, 600, 300, 100, 1800, 1800, true,
+          false, false, false, false, true);
     }
 
     @Override
@@ -168,7 +169,8 @@ public class ZoneChart extends Composite
           {
             dragZones.add(zone);
             resizeStart = isResizeStart(zone, dragStartX);
-            move = !(resizeStart || isResizeEnd(zone, dragStartX));
+            resizeEnd = isResizeStart(zone, dragStartX);
+            move = !(resizeStart || resizeEnd);
 
             onDrag = true;
             if (move)
@@ -189,6 +191,8 @@ public class ZoneChart extends Composite
           if (findPixelX(this, zone.start) <= dragStartX
               && findPixelX(this, zone.end) >= dragStartX)
           {
+            resizeStart = isResizeStart(zone, dragStartX);
+            resizeEnd = isResizeEnd(zone, dragStartX);
             dragZones.add(zone);
 
             break;
@@ -247,6 +251,7 @@ public class ZoneChart extends Composite
         {
           if (adding == null)
           {
+            
 
             this.setCursor(addCursor);
             for (Zone zone : zones)
@@ -256,7 +261,14 @@ public class ZoneChart extends Composite
               if (findPixelX(this, zone.start) <= currentX
                   && findPixelX(this, zone.end) >= currentX)
               {
-                this.setCursor(removeCursor);
+                resizeStart = isResizeStart(zone, currentX);
+                resizeEnd = isResizeEnd(zone, currentX);
+                if (resizeStart || resizeEnd)
+                {
+                  this.setCursor(resizeCursor);
+                }
+                else
+                  this.setCursor(removeCursor);
                 break;
               }
 
@@ -337,6 +349,25 @@ public class ZoneChart extends Composite
           }
 
         }
+        else if (resizeStart || resizeEnd)
+        {
+          double diff = Math.round(currentX - dragStartX);
+          if (diff != 0)
+          {
+            dragStartX = currentX;
+            for (Zone z : dragZones)
+            {
+
+              resize(z, dragStartX, diff);
+
+              IntervalMarker intervalMarker = zoneMarkers.get(z);
+              assert intervalMarker != null;
+              intervalMarker.setStartValue(z.start);
+              intervalMarker.setEndValue(z.end);
+            }
+
+          }
+        }
 
         else
           super.mouseMove(event);
@@ -354,13 +385,13 @@ public class ZoneChart extends Composite
     {
 
       long pixelXStart = findPixelX(this, zone.start);
-      return (x - pixelXStart) < 5 && (x - pixelXStart) >= 0;
+      return (x - pixelXStart) < 5 && (x - pixelXStart) >= -1;
     }
 
     private boolean isResizeEnd(Zone zone, double x)
     {
       long pixelXEnd = findPixelX(this, zone.end);
-      return (pixelXEnd - x) < 5 && (pixelXEnd - x) >= 0;
+      return (pixelXEnd - x) < 5 && (pixelXEnd - x) >= -1;
     }
 
     private void resize(Zone zone, double startx, double diff)
@@ -419,7 +450,7 @@ public class ZoneChart extends Composite
           zones.add(adding);
           fireZoneAdded(adding);
         }
-        else
+        else if(!(resizeStart|| resizeEnd))
         {
           XYPlot plot = (XYPlot) chart.getPlot();
           for (Zone z : dragZones)
@@ -445,6 +476,8 @@ public class ZoneChart extends Composite
       onDrag = false;
       move = false;
       adding = null;
+      resizeStart = false;
+      resizeEnd = false;
       super.mouseUp(event);
     }
 
@@ -622,7 +655,8 @@ public class ZoneChart extends Composite
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
 
     // and sort out the color for the line
-    XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+    XYLineAndShapeRenderer renderer =
+        (XYLineAndShapeRenderer) plot.getRenderer();
     Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, lineColor);
     renderer.setSeriesShape(0, square);
