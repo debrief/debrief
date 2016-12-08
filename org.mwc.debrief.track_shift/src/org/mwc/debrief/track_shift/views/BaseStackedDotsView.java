@@ -217,6 +217,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Vector<Action> _customActions;
 
   protected Action _autoResize;
+  
+  protected Action _showSlices;
 
   private CombinedDomainXYPlot _combined;
 
@@ -243,8 +245,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Vector<DraggableItem> _draggableSelection;
 
   protected boolean _itemSelectedPending = false;
-  @SuppressWarnings("unused")
   private ZoneChart ownshipZoneChart;
+  private ZoneChart targetZoneChart;
   protected TimeSeries ownshipCourseSeries;
   protected TimeSeries targetBearingSeries;
 
@@ -290,9 +292,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_showLinePlot);
     toolBarManager.add(_showDotPlot);
     toolBarManager.add(_showTargetOverview);
+    toolBarManager.add(_showSlices);
 
     addExtras(toolBarManager);
-
+    
     // and a separator
     toolBarManager.add(new Separator());
 
@@ -472,8 +475,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // put the bearings into a TimeSeries
     targetBearingSeries = new TimeSeries("Bearing");
 
-    @SuppressWarnings("unused")
-    ZoneChart tgtZoneChart =
+    targetZoneChart =
         ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
             targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, null);
 
@@ -850,6 +852,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setToolTipText("Keep plot sized to show all data");
     _autoResize.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/fit_to_win.png"));
+    
+    _showSlices = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        if (_showSlices.isChecked())
+        {
+          // show the charts
+          // hide the charts
+          ownshipZoneChart.setVisible(true);
+          targetZoneChart.setVisible(true);
+          ownshipZoneChart.getParent().layout(true);
+        }
+        else
+        {
+          // hide the charts
+          ownshipZoneChart.setVisible(false);
+          targetZoneChart.setVisible(false);
+          ownshipZoneChart.getParent().layout(true);
+        }
+      }
+    };
+    _showSlices.setChecked(true);
+    _showSlices.setToolTipText("Show the slicing graphs");
+    _showSlices.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/GanttBars.png")); 
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {
