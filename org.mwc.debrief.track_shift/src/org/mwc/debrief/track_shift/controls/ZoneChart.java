@@ -60,14 +60,14 @@ public class ZoneChart extends Composite
 
   public enum EditMode
   {
-    MOVE, EDIT
+    MOVE, EDIT, ZOOM, MERGE
   }
 
   private List<Zone> zones = new ArrayList<Zone>();
   private Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
 
-  private EditMode mode = EditMode.MOVE;
+  private EditMode mode = EditMode.ZOOM;
 
   private volatile List<ZoneListener> listeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
@@ -88,6 +88,8 @@ public class ZoneChart extends Composite
       "/icons/24/add.png").createImage();
   private final Image removeImg24 = CorePlugin.getImageDescriptor(
       "/icons/24/remove.png").createImage();
+  private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/zoomin.png").createImage();
   private final Image fitToWin24 = CorePlugin.getImageDescriptor(
       "/icons/24/fit_to_win.png").createImage();
   private final Image calculator24 = CorePlugin.getImageDescriptor(
@@ -154,6 +156,13 @@ public class ZoneChart extends Composite
     @Override
     public void mouseDown(MouseEvent event)
     {
+      if (mode == EditMode.ZOOM)
+      {
+
+        super.mouseDown(event);
+        return;
+      }
+
       dragZones.clear();
       dragStartX = event.x;// findDomainX(this, event.x);
 
@@ -225,7 +234,13 @@ public class ZoneChart extends Composite
     @Override
     public void mouseMove(MouseEvent event)
     {
+      if (mode == EditMode.ZOOM)
+      {
 
+        super.mouseMove(event);
+        this.setCursor(null);
+        return;
+      }
       double currentX = event.x;// findDomainX(this, event.x);
       if (!onDrag)
       {
@@ -252,7 +267,6 @@ public class ZoneChart extends Composite
         {
           if (adding == null)
           {
-            
 
             this.setCursor(addCursor);
             for (Zone zone : zones)
@@ -268,7 +282,7 @@ public class ZoneChart extends Composite
                 {
                   this.setCursor(resizeCursor);
                 }
-                else if(isDelete(zone, currentX))
+                else if (isDelete(zone, currentX))
                   this.setCursor(removeCursor);
                 else
                 {
@@ -392,12 +406,14 @@ public class ZoneChart extends Composite
       long pixelXStart = findPixelX(this, zone.start);
       return (x - pixelXStart) < 5 && (x - pixelXStart) >= -1;
     }
+
     private boolean isDelete(Zone zone, double x)
     {
-      
+
       long pixelXStart = findPixelX(this, zone.start);
       long pixelXEnd = findPixelX(this, zone.end);
-      return ((x - pixelXStart) > 8 && (x - pixelXStart) >= 0) && ((pixelXEnd - x) >8 && (pixelXEnd - x) >= 0);
+      return ((x - pixelXStart) > 8 && (x - pixelXStart) >= 0)
+          && ((pixelXEnd - x) > 8 && (pixelXEnd - x) >= 0);
     }
 
     private boolean isResizeEnd(Zone zone, double x)
@@ -428,7 +444,12 @@ public class ZoneChart extends Composite
     @Override
     public void mouseUp(MouseEvent event)
     {
+      if (mode == EditMode.ZOOM)
+      {
 
+        super.mouseUp(event);
+        return;
+      }
       switch (mode)
       {
       case MOVE:
@@ -462,12 +483,12 @@ public class ZoneChart extends Composite
           zones.add(adding);
           fireZoneAdded(adding);
         }
-        
+
         {
           XYPlot plot = (XYPlot) chart.getPlot();
           for (Zone z : dragZones)
           {
-            if(isDelete(z, event.x))
+            if (isDelete(z, event.x))
             {
               IntervalMarker intervalMarker = zoneMarkers.get(z);
               plot.removeDomainMarker(intervalMarker);
@@ -475,10 +496,10 @@ public class ZoneChart extends Composite
               zones.remove(z);
               fireZoneRemoved(z);
             }
-            else if (isResizeStart(z, event.x)|| isResizeEnd(z, event.x))
-            { 
+            else if (isResizeStart(z, event.x) || isResizeEnd(z, event.x))
+            {
               fireZoneResized(z);
-              
+
             }
           }
         }
@@ -523,16 +544,16 @@ public class ZoneChart extends Composite
   protected void createToolbar()
   {
     {// mode buttons
-      final Button add = new Button(this, SWT.TOGGLE);
-      add.setImage(addImg24);// TODO ADD EDIT ICON
-      add.setToolTipText("Add new zones/Remove zones");
-      add.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      final Button edit = new Button(this, SWT.TOGGLE);
+      edit.setImage(addImg24);// TODO ADD EDIT ICON
+      edit.setToolTipText("Edit zones");
+      edit.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
-      final Button move = new Button(this, SWT.TOGGLE);
-      move.setImage(handImg24);
-      move.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      move.setSelection(true);
-      move.setToolTipText("Resize zones");
+      final Button zoom = new Button(this, SWT.TOGGLE);
+      zoom.setImage(zoomInImg24);
+      zoom.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      zoom.setSelection(true);
+      zoom.setToolTipText("Zoom");
 
       final Button fitToWin = new Button(this, SWT.PUSH);
       fitToWin.setImage(fitToWin24);
@@ -544,26 +565,26 @@ public class ZoneChart extends Composite
       calculate.setLayoutData(new GridData(GridData.FILL_VERTICAL));
       calculate.setToolTipText("Slice legs");
 
-      add.addSelectionListener(new SelectionAdapter()
+      edit.addSelectionListener(new SelectionAdapter()
       {
         @Override
         public void widgetSelected(SelectionEvent e)
         {
-          add.setSelection(true);
+          edit.setSelection(true);
 
-          move.setSelection(false);
+          zoom.setSelection(false);
           setMode(ZoneChart.EditMode.EDIT);
         }
       });
-      move.addSelectionListener(new SelectionAdapter()
+      zoom.addSelectionListener(new SelectionAdapter()
       {
         @Override
         public void widgetSelected(SelectionEvent e)
         {
-          add.setSelection(false);
+          edit.setSelection(false);
 
-          move.setSelection(true);
-          setMode(ZoneChart.EditMode.MOVE);
+          zoom.setSelection(true);
+          setMode(ZoneChart.EditMode.ZOOM);
         }
       });
 
@@ -712,7 +733,7 @@ public class ZoneChart extends Composite
     removeImg24.dispose();
     fitToWin24.dispose();
     calculator24.dispose();
-
+    zoomInImg24.dispose();
     super.dispose();
   }
 

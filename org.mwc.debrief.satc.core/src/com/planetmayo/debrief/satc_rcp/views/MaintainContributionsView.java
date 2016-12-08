@@ -660,7 +660,6 @@ public class MaintainContributionsView extends ViewPart
         {115, 118, 119, 121, 118, 100, 98, 97}, blueProvider, 
         DebriefColors.BLUE, null);
 
-    zoneChart.setMode(ZoneChart.EditMode.MOVE);
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter(){
       
       @Override
