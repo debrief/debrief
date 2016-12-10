@@ -16,6 +16,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.LONG;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -238,11 +239,11 @@ public class ZoneChart extends Composite
           if (findPixelX(this, zone.start) <= dragStartX
               && findPixelX(this, zone.end) >= dragStartX)
           {
-            onDrag = true;
+
             resizeStart = isResizeStart(zone, dragStartX);
             resizeEnd = isResizeEnd(zone, dragStartX);
             dragZones.add(zone);
-
+            onDrag = resizeStart || resizeEnd;
             break;
           }
         }
@@ -251,8 +252,8 @@ public class ZoneChart extends Composite
         {
           XYPlot plot = (XYPlot) chart.getPlot();
           adding =
-              new Zone((long) findDomainX(this, dragStartX),
-                  (long) findDomainX(this, dragStartX + 5));
+              new Zone(findDomainX(this, dragStartX), findDomainX(this,
+                  dragStartX + 5));
 
           addZone(plot, adding);
         }
@@ -370,20 +371,18 @@ public class ZoneChart extends Composite
           double diff = Math.round(currentX - dragStartX);
           if (diff != 0)
           {
-            dragStartX = currentX;
+           
             for (Zone z : dragZones)
             {
               if (move)
               {
-                z.start =
-                    (long) findDomainX(this, findPixelX(this, z.start) + diff);
-                z.end =
-                    (long) findDomainX(this, findPixelX(this, z.end) + diff);
+                z.start = findDomainX(this, findPixelX(this, z.start) + diff);
+                z.end = findDomainX(this, findPixelX(this, z.end) + diff);
 
               }
               else
               {
-                resize(z, dragStartX, diff);
+                resize(z, currentX);
               }
               IntervalMarker intervalMarker = zoneMarkers.get(z);
               assert intervalMarker != null;
@@ -406,14 +405,12 @@ public class ZoneChart extends Composite
         if (adding != null && dragStartX > 0)
         {
 
-          double diff = Math.round(currentX - dragStartX);
-          if (diff != 0)
+          
           {
-            dragStartX = currentX;
 
             resizeStart = false;
             {
-              resize(adding, dragStartX, diff);
+              resize(adding, currentX);
             }
             IntervalMarker intervalMarker = zoneMarkers.get(adding);
             assert intervalMarker != null;
@@ -425,15 +422,12 @@ public class ZoneChart extends Composite
         }
         else if (resizeStart || resizeEnd)
         {
-          double diff = Math.round(currentX - dragStartX);
-          if (diff != 0)
+          
           {
-            dragStartX = currentX;
             for (Zone z : dragZones)
             {
 
-              resize(z, dragStartX, diff);
-
+               resize(z, currentX);
               IntervalMarker intervalMarker = zoneMarkers.get(z);
               assert intervalMarker != null;
               intervalMarker.setStartValue(z.start);
@@ -477,23 +471,39 @@ public class ZoneChart extends Composite
       return (pixelXEnd - x) < 5 && (pixelXEnd - x) >= -1;
     }
 
-    private void resize(Zone zone, double startx, double diff)
+    private boolean resize(Zone zone, double startx)
     {
-      long pixelXStart = findPixelX(this, zone.start);
-      long pixelXEnd = findPixelX(this, zone.end);
+      
       if (resizeStart)
       {
         // use start
-        if ((pixelXStart + diff) < pixelXEnd)
-          zone.start = (long) findDomainX(this, pixelXStart + diff);
+        
+          long nearDomainValue =
+              toNearDomainValue((findDomainX(this, startx )));
+
+          if (nearDomainValue != Long.MIN_VALUE && nearDomainValue < zone.end)
+          {
+            zone.start = nearDomainValue;
+            return true;
+          }
+
+        
 
       }
       else
       {
-        // use end
-        if ((pixelXEnd + diff) > pixelXStart)
-          zone.end = (long) findDomainX(this, pixelXEnd + diff);
+        
+          long nearDomainValue =
+              toNearDomainValue((findDomainX(this, startx )));
+          if (nearDomainValue != Long.MIN_VALUE && nearDomainValue > zone.start)
+          {
+            zone.end = nearDomainValue;
+            return true;
+          }
+
+        
       }
+      return false;
     }
 
     @Override
@@ -543,7 +553,7 @@ public class ZoneChart extends Composite
           XYPlot plot = (XYPlot) chart.getPlot();
           for (Zone z : dragZones)
           {
-            if (isDelete(z, event.x))
+            if (!onDrag && isDelete(z, event.x))
             {
               IntervalMarker intervalMarker = zoneMarkers.get(z);
               plot.removeDomainMarker(intervalMarker);
@@ -581,7 +591,7 @@ public class ZoneChart extends Composite
           if (resize.end < delete.end)
             resize.end = delete.end;
           {
-            
+
             IntervalMarker intervalMarker = zoneMarkers.get(resize);
             assert intervalMarker != null;
             intervalMarker.setStartValue(resize.start);
@@ -851,7 +861,7 @@ public class ZoneChart extends Composite
     super.dispose();
   }
 
-  private double findDomainX(ChartComposite composite, double x)
+  private long findDomainX(ChartComposite composite, double x)
   {
     final Rectangle dataArea = composite.getScreenDataArea();
     final Rectangle2D d2 =
@@ -861,7 +871,7 @@ public class ZoneChart extends Composite
     final double chartX =
         plot.getDomainAxis().java2DToValue(x, d2, plot.getDomainAxisEdge());
 
-    return Math.ceil(chartX);
+    return (long) Math.ceil(chartX);
   }
 
   private long findPixelX(ChartComposite composite, double x)
@@ -878,21 +888,30 @@ public class ZoneChart extends Composite
   }
 
   @SuppressWarnings("unused")
-  private long toNearDomainValue(double x)
+  private long toNearDomainValue(long x)
   {
 
-    long distance = Math.abs(timeValues[0] - (long) x);
-    int idx = 0;
-    for (int c = 1; c < timeValues.length; c++)
+    long distance = Long.MAX_VALUE;
+    int idx = -1;
+    for (int c = 0; c < timeValues.length; c++)
     {
-      long cdistance = Math.abs(timeValues[c] - (long) x);
+
+      if (distance == Long.MAX_VALUE)
+      {
+        distance = Math.abs(timeValues[c] - x);
+        idx = c;
+        continue;
+      }
+
+      long cdistance = Math.abs(timeValues[c] - x);
       if (cdistance < distance)
       {
         idx = c;
         distance = cdistance;
       }
     }
-    return timeValues[idx];
+
+    return idx == -1 ? Long.MIN_VALUE : timeValues[idx];
   }
 
   public EditMode getMode()

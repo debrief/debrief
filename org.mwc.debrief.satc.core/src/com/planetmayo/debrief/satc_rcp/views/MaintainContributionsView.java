@@ -645,10 +645,10 @@ public class MaintainContributionsView extends ViewPart
     final ZoneChart zoneChart =
         ZoneChart.create("Ownship Legs", "Course", graphTabs, new ZoneChart.Zone[]
         {
-            new ZoneChart.Zone(new Date("2016/10/10 11:20").getTime(),
-                new Date("2016/10/10 12:10").getTime()),
-            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
-                new Date("2016/10/10 13:23:12").getTime())}, new long[]
+            new ZoneChart.Zone(new Date("2016/10/10 11:47:00").getTime(),
+                new Date("2016/10/10 12:23:00").getTime()),
+            new ZoneChart.Zone(new Date("2016/10/10 12:44:00").getTime(),
+                new Date("2016/10/10 14:10:00").getTime())}, new long[]
         {new Date("2016/10/10 10:00:00").getTime(),
             new Date("2016/10/10 10:21:00").getTime(),
             new Date("2016/10/10 11:47:00").getTime(),
