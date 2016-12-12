@@ -137,12 +137,12 @@ public class ZoneChart extends Composite
   private Zone merge_2 = null;
   private final ColorProvider colorProvider;
   private final ZoneSlicer zoneSlicer;
-  
+
   private final TimeSeries xySeries;
 
   private ZoneChart(Composite parent, JFreeChart xylineChart,
-      final Zone[] zones,  ColorProvider colorProvider,
-      ZoneSlicer zoneSlicer,TimeSeries xySeries)
+      final Zone[] zones, ColorProvider colorProvider, ZoneSlicer zoneSlicer,
+      TimeSeries xySeries)
   {
     super(parent, SWT.NONE);
     this.chart = xylineChart;
@@ -254,9 +254,10 @@ public class ZoneChart extends Composite
         if (dragZones.isEmpty())
         {
           XYPlot plot = (XYPlot) chart.getPlot();
+          long val1 = toNearDomainValue(findDomainX(this, dragStartX), false);
+          long val2 = toNearDomainValue(val1, true);
           adding =
-              new Zone(findDomainX(this, dragStartX), findDomainX(this,
-                  dragStartX + 5));
+              new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2);
 
           addZone(plot, adding);
         }
@@ -374,7 +375,7 @@ public class ZoneChart extends Composite
           double diff = Math.round(currentX - dragStartX);
           if (diff != 0)
           {
-           
+
             for (Zone z : dragZones)
             {
               if (move)
@@ -408,7 +409,6 @@ public class ZoneChart extends Composite
         if (adding != null && dragStartX > 0)
         {
 
-          
           {
 
             resizeStart = false;
@@ -425,12 +425,12 @@ public class ZoneChart extends Composite
         }
         else if (resizeStart || resizeEnd)
         {
-          
+
           {
             for (Zone z : dragZones)
             {
 
-               resize(z, currentX);
+              resize(z, currentX);
               IntervalMarker intervalMarker = zoneMarkers.get(z);
               assert intervalMarker != null;
               intervalMarker.setStartValue(z.start);
@@ -476,35 +476,32 @@ public class ZoneChart extends Composite
 
     private boolean resize(Zone zone, double startx)
     {
-      
+
       if (resizeStart)
       {
         // use start
-        
-          long nearDomainValue =
-              toNearDomainValue((findDomainX(this, startx )));
 
-          if (nearDomainValue != Long.MIN_VALUE && nearDomainValue < zone.end)
-          {
-            zone.start = nearDomainValue;
-            return true;
-          }
+        long nearDomainValue =
+            toNearDomainValue((findDomainX(this, startx)), false);
 
-        
+        if (nearDomainValue != Long.MIN_VALUE && nearDomainValue < zone.end)
+        {
+          zone.start = nearDomainValue;
+          return true;
+        }
 
       }
       else
       {
-        
-          long nearDomainValue =
-              toNearDomainValue((findDomainX(this, startx )));
-          if (nearDomainValue != Long.MIN_VALUE && nearDomainValue > zone.start)
-          {
-            zone.end = nearDomainValue;
-            return true;
-          }
 
-        
+        long nearDomainValue =
+            toNearDomainValue((findDomainX(this, startx)), false);
+        if (nearDomainValue != Long.MIN_VALUE && nearDomainValue > zone.start)
+        {
+          zone.end = nearDomainValue;
+          return true;
+        }
+
       }
       return false;
     }
@@ -827,8 +824,8 @@ public class ZoneChart extends Composite
 
     // ok, wrap it in the zone chart
     ZoneChart zoneChart =
-        new ZoneChart(parent, xylineChart, zones,  blueProv,
-            zoneSlicer,xySeries);
+        new ZoneChart(parent, xylineChart, zones, blueProv, zoneSlicer,
+            xySeries);
 
     // done
     return zoneChart;
@@ -891,27 +888,26 @@ public class ZoneChart extends Composite
   }
 
   @SuppressWarnings("unused")
-  private long toNearDomainValue(long x)
+  private long toNearDomainValue(long x, boolean ignoreZeroDistence)
   {
 
-    
     long distance = Long.MAX_VALUE;
     int idx = -1;
     for (int c = 0; c < xySeries.getItemCount(); c++)
     {
 
       RegularTimePeriod timePeriod = xySeries.getTimePeriod(c);
-      
 
       long cdistance = Math.abs(timePeriod.getLastMillisecond() - x);
-      if (cdistance < distance)
+      if ((!ignoreZeroDistence || cdistance != 0) && cdistance < distance)
       {
         idx = c;
         distance = cdistance;
       }
     }
 
-    return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx).getLastMillisecond();
+    return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
+        .getLastMillisecond();
   }
 
   public EditMode getMode()
