@@ -30,6 +30,7 @@ import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
@@ -893,22 +894,16 @@ public class ZoneChart extends Composite
   private long toNearDomainValue(long x)
   {
 
-    Collection<FixedMillisecond> timePeriods = xySeries.getTimePeriods();
     
-    FixedMillisecond []  timeValues = timePeriods.toArray(new  FixedMillisecond [timePeriods.size()] );
     long distance = Long.MAX_VALUE;
     int idx = -1;
-    for (int c = 0; c < timeValues.length; c++)
+    for (int c = 0; c < xySeries.getItemCount(); c++)
     {
 
-      if (distance == Long.MAX_VALUE)
-      {
-        distance = Math.abs(timeValues[c].getLastMillisecond() - x);
-        idx = c;
-        continue;
-      }
+      RegularTimePeriod timePeriod = xySeries.getTimePeriod(c);
+      
 
-      long cdistance = Math.abs(timeValues[c].getLastMillisecond() - x);
+      long cdistance = Math.abs(timePeriod.getLastMillisecond() - x);
       if (cdistance < distance)
       {
         idx = c;
@@ -916,7 +911,7 @@ public class ZoneChart extends Composite
       }
     }
 
-    return idx == -1 ? Long.MIN_VALUE : timeValues[idx].getLastMillisecond();
+    return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx).getLastMillisecond();
   }
 
   public EditMode getMode()
