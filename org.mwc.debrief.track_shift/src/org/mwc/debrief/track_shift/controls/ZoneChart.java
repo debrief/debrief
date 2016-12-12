@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,23 +134,24 @@ public class ZoneChart extends Composite
   private Zone adding = null;
   private Zone merge_1 = null;
   private Zone merge_2 = null;
-  private long[] timeValues;
   private final ColorProvider colorProvider;
   private final ZoneSlicer zoneSlicer;
+  
+  private final TimeSeries xySeries;
 
   private ZoneChart(Composite parent, JFreeChart xylineChart,
-      final Zone[] zones, final long[] timeValues, ColorProvider colorProvider,
-      ZoneSlicer zoneSlicer)
+      final Zone[] zones,  ColorProvider colorProvider,
+      ZoneSlicer zoneSlicer,TimeSeries xySeries)
   {
     super(parent, SWT.NONE);
     this.chart = xylineChart;
-    this.timeValues = timeValues;
     buildUI(xylineChart);
     this.zones.addAll(Arrays.asList(zones));
     this.zoneMarkers.clear();
     xylineChart.setAntiAlias(false);
     this.colorProvider = colorProvider;
     this.zoneSlicer = zoneSlicer;
+    this.xySeries = xySeries;
 
     XYPlot plot = (XYPlot) xylineChart.getPlot();
     for (Zone zone : zones)
@@ -824,8 +826,8 @@ public class ZoneChart extends Composite
 
     // ok, wrap it in the zone chart
     ZoneChart zoneChart =
-        new ZoneChart(parent, xylineChart, zones, timeValues, blueProv,
-            zoneSlicer);
+        new ZoneChart(parent, xylineChart, zones,  blueProv,
+            zoneSlicer,xySeries);
 
     // done
     return zoneChart;
@@ -891,6 +893,9 @@ public class ZoneChart extends Composite
   private long toNearDomainValue(long x)
   {
 
+    Collection<FixedMillisecond> timePeriods = xySeries.getTimePeriods();
+    
+    FixedMillisecond []  timeValues = timePeriods.toArray(new  FixedMillisecond [timePeriods.size()] );
     long distance = Long.MAX_VALUE;
     int idx = -1;
     for (int c = 0; c < timeValues.length; c++)
@@ -898,12 +903,12 @@ public class ZoneChart extends Composite
 
       if (distance == Long.MAX_VALUE)
       {
-        distance = Math.abs(timeValues[c] - x);
+        distance = Math.abs(timeValues[c].getLastMillisecond() - x);
         idx = c;
         continue;
       }
 
-      long cdistance = Math.abs(timeValues[c] - x);
+      long cdistance = Math.abs(timeValues[c].getLastMillisecond() - x);
       if (cdistance < distance)
       {
         idx = c;
@@ -911,7 +916,7 @@ public class ZoneChart extends Composite
       }
     }
 
-    return idx == -1 ? Long.MIN_VALUE : timeValues[idx];
+    return idx == -1 ? Long.MIN_VALUE : timeValues[idx].getLastMillisecond();
   }
 
   public EditMode getMode()
