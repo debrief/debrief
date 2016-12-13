@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class OwnshipLegDetector
+public class OwnshipLegDetector implements IOwnshipLegDetector
 {
 
 	private static final int MIN_OWNSHIP_LENGTH = 180000; // 3 minutes
@@ -19,6 +19,7 @@ public class OwnshipLegDetector
 	 * @param elapsedTimess
 	 * @return
 	 */
+	@Override
 	public List<LegOfData> identifyOwnshipLegs(final long[] times,
 			final double[] rawSpeeds, final double[] rawCourses,
 			final int minsOfAverage, Precision precision)
