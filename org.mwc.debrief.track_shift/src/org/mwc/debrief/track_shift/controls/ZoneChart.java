@@ -929,9 +929,7 @@ public class ZoneChart extends Composite
                     {
                       TrackWrapper thisT = (TrackWrapper) thisL;
                       Enumeration<Editable> posits = thisT.getPositions();
-                      final int limit = 3000;
-                      int ctr = 0;
-                      while (posits.hasMoreElements()  && ctr++ < limit)
+                      while (posits.hasMoreElements())
                       {
                         FixWrapper thisF = (FixWrapper) posits.nextElement();
                         TimeSeriesDataItem newItem = new TimeSeriesDataItem(new FixedMillisecond(thisF.getDateTimeGroup().getDate().getTime()), 
