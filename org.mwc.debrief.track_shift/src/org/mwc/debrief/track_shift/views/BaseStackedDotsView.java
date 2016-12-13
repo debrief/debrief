@@ -96,8 +96,10 @@ import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
+import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.LegOfData;
 import org.mwc.debrief.track_shift.zig_detector.OwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.PeakTrackingOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import Debrief.Wrappers.FixWrapper;
@@ -486,7 +488,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)
   {
-    OwnshipLegDetector detector = new OwnshipLegDetector();
+   // IOwnshipLegDetector detector = new OwnshipLegDetector();
+    IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();
     
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
