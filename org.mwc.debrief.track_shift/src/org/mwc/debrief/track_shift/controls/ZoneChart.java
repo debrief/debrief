@@ -5,10 +5,12 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -21,6 +23,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -31,9 +35,15 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.ui.Layer;
 import org.mwc.cmap.core.CorePlugin;
+
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 
 public class ZoneChart extends Composite
 {
@@ -776,7 +786,7 @@ public class ZoneChart extends Composite
     final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
     mrk.setPaint(zone.getColor());
     mrk.setAlpha(0.5f);
-    plot.addDomainMarker(mrk, Layer.FOREGROUND);
+    plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
   }
 
@@ -893,6 +903,50 @@ public class ZoneChart extends Composite
           }
           else
           {
+            
+            // do we have any data?
+            if(xySeries == null || xySeries.getItemCount() == 0)
+            {
+              // ok, populate the data
+              
+              IEditorPart curEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+              System.out.println(curEditor);
+              
+              if(curEditor instanceof IAdaptable)
+              {
+                Layers layers = (Layers) curEditor.getAdapter(Layers.class);
+                if(layers != null)
+                {
+                  // find hte track
+                  Enumeration<Editable> numer = layers.elements();
+                  
+                  TimeSeries newSeries = new TimeSeries("Course");
+                  
+                  while (numer.hasMoreElements())
+                  {
+                    Layer thisL = (Layer) numer.nextElement();
+                    if(thisL instanceof TrackWrapper)
+                    {
+                      TrackWrapper thisT = (TrackWrapper) thisL;
+                      Enumeration<Editable> posits = thisT.getPositions();
+                      final int limit = 3000;
+                      int ctr = 0;
+                      while (posits.hasMoreElements()  && ctr++ < limit)
+                      {
+                        FixWrapper thisF = (FixWrapper) posits.nextElement();
+                        TimeSeriesDataItem newItem = new TimeSeriesDataItem(new FixedMillisecond(thisF.getDateTimeGroup().getDate().getTime()), 
+                            MWC.Algorithms.Conversions.Rads2Degs(thisF.getCourse()));
+                        newSeries.add(newItem);
+                      }
+                    }
+                  }
+                  
+                  // ok now copy the values over
+                  xySeries.addAndOrUpdate(newSeries);
+                }
+              }
+            }
+            
             // ok, do the slicing
             final List<Zone> newZones = zoneSlicer.performSlicing();
 
@@ -903,7 +957,7 @@ public class ZoneChart extends Composite
             {
               // remove this marker
               final IntervalMarker thisM = zoneMarkers.get(thisZone);
-              thePlot.removeDomainMarker(thisM, Layer.FOREGROUND);
+              thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
             }
 
             // ok, now ditch the old zone lists
