@@ -35,50 +35,104 @@ public class OwnshipLegDetector2 implements IOwnshipLegDetector
     switch (precision)
     {
     case HIGH:
-      COURSE_TOLERANCE = 0.05; // degs / sec (just a guess!!)
-      SPEED_TOLERANCE = 0.0005; // ms / sec (just a guess!!)
-      break;
     case MEDIUM:
-      COURSE_TOLERANCE = 0.08; // degs / sec (just a guess!!)
-      SPEED_TOLERANCE = 0.001; // ms / sec (just a guess!!)
-      break;
     case LOW:
     default:
-      COURSE_TOLERANCE = 0.2; // degs / sec (just a guess!!)
-      SPEED_TOLERANCE = 0.04; // ms / sec (just a guess!!)
+      COURSE_TOLERANCE = 6; // degs 
       break;
     }		
 
     // 1. make continuous dataset
-    double[] newCourses = new double[rawCourses.length];
-    for(int i=0;i<rawCourses.length;i++)
+    double[] newCourses = makeContinuous(rawCourses);
+
+    // 2. find max & min
+    
+    long lastMinT, lastMaxT, thisMinT = 0, thisMaxT = 0;
+    double lastMinC = Double.MAX_VALUE, lastMaxC = Double.MIN_VALUE, thisMinC = Double.MAX_VALUE, thisMaxC = Double.MIN_VALUE;
+    double lastC = 0;
+    int lastDir = 0;
+    
+    for(int i=0;i<newCourses.length;i++)
     {
-      final double thisCourse = rawCourses[i];
+      final long thisT = times[i];
+      final double thisC = newCourses[i];
       
-      if(i == 0)
+      if(i == 0) 
       {
-        newCourses[i] = thisCourse;
+        // special handling, initialise some stuff
+        lastMinT = thisT;
+        lastMinC = thisC;
       }
       else
       {
-        final double lastCourse = rawCourses[i-1];
-        double thisDiff = thisCourse - lastCourse;
-        if (Math.abs(thisDiff) > 180d)
+        final int thisDir;
+        
+        if(thisC > lastC)
         {
-          // ok, we've flippped
-          if(thisDiff > 180)
+          thisDir = 1;
+        }
+        else if(thisC < lastC)
+        {
+          thisDir = -1;
+        }
+        else
+        {
+          thisDir = 0;
+        }
+        
+        // have we changed?
+        if(thisDir != lastDir)
+        {
+          if(thisDir > 1)
           {
-            // ok, deduct 360
-            newCourses[i] = thisCourse - 360d;
+            // ok, just passed peak
+            lastMaxC = thisMaxC;
+            lastMaxT = thisMaxT;
+            
+            thisMaxT = thisT;
+            thisMaxC = thisC;
+            
+            // do we already have a peak?
+            if(lastMaxC != Double.MIN_VALUE)
+            {
+              // is it more than threshold?
+              final double delta = Math.abs(thisMaxC - lastMaxC);
+              
+              if(delta > COURSE_TOLERANCE)
+              {
+                // ok, leg ended.
+                System.out.println("zig complete:" + thisT + " started at:" + thisMinT);
+              }
+            }            
           }
-          else
+          else if(thisDir < 1)
           {
-            // ok, deduct 360
-            newCourses[i] = thisCourse + 360d;
+            // ok, just passed peak
+            lastMinC = thisMinC;
+            lastMinT = thisMinT;
+            
+            thisMinT = thisT;
+            thisMinC = thisC;
+            
+            // do we already have a peak?
+            if(lastMinC != Double.MIN_VALUE)
+            {
+              // is it more than threshold?
+              final double delta = Math.abs(thisMinC - lastMinC);
+              
+              if(delta > COURSE_TOLERANCE)
+              {
+                // ok, leg ended.
+                System.out.println("zig complete:" + thisT + " started at:" + thisMaxT);
+              }
+            }            
           }
         }
       }
+      
+      lastC = thisC;
     }
+    
     
 		return legs;
 	}
@@ -109,7 +163,7 @@ public class OwnshipLegDetector2 implements IOwnshipLegDetector
           }
           else
           {
-            // ok, deduct 360
+            // ok, add 360
             res[i] = thisCourse + 360d;
           }
         }
