@@ -1,6 +1,7 @@
 package org.mwc.debrief.track_shift.zig_detector;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -26,6 +27,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 
     // ok, see if we can find the precision
     final double COURSE_TOLERANCE;
+    final long minLegLength = 120000;
 
     switch (precision)
     {
@@ -42,40 +44,45 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 
     // 2. find max & min
 
-    long thisMinT = 0, thisMaxT = 0;
+    long thisTroughTime = 0, thisPeakTime = 0;
     long thisLegStart = -1;
-    double lastMinC = Double.MAX_VALUE, lastMaxC = Double.MIN_VALUE, thisMinC =
-        Double.MAX_VALUE, thisMaxC = Double.MIN_VALUE;
-    double lastC = 0;
+    double lastTroughCourse = Double.MAX_VALUE, lastPeakCourse =
+        Double.MIN_VALUE, thisTroughCourse = Double.MAX_VALUE, thisPeakCourse =
+        Double.MIN_VALUE;
+    double lastCourse = 0;
     int lastDir = 0;
+    final long startTime = times[0];
+    long lastTime = Long.MIN_VALUE;
 
     for (int i = 0; i < newCourses.length; i++)
     {
       // handle this step
-      final long thisT = times[i];
-      final double thisC = newCourses[i];
+      final long thisTime = times[i];
+      final double thisCourse = newCourses[i];
+      
+//      if(Math.abs(thisCourse - 341.94) < 0.01)
+//      {        
+//        System.out.println("here at:" + new Date(thisTime));
+//      }
 
       // do we need a leg start?
       if (thisLegStart == -1)
       {
-        thisLegStart = thisT;
+        thisLegStart = thisTime;
       }
 
       if (i == 0)
       {
-        // special handling, initialise some stuff
-        thisMinT = thisT;
-        thisMinC = thisC;
       }
       else
       {
+        // sort out the direction of change
         final int thisDir;
-
-        if (thisC > lastC)
+        if (thisCourse > lastCourse)
         {
           thisDir = 1;
         }
-        else if (thisC < lastC)
+        else if (thisCourse < lastCourse)
         {
           thisDir = -1;
         }
@@ -88,69 +95,87 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
         if (thisDir != lastDir && thisDir != 0)
         {
           lastDir = thisDir;
-          
+
+          final double delta;
+          final long legEnd;
+
           if (thisDir == -1)
           {
             // ok, just passed peak
-            lastMaxC = thisMaxC;
+            lastPeakCourse = thisPeakCourse;
 
-            thisMaxT = thisT;
-            thisMaxC = thisC;
-
+            thisPeakTime = lastTime;
+            thisPeakCourse = lastCourse;
+            legEnd = thisTroughTime;
+            
             // do we already have a peak?
-            if (lastMaxC != Double.MIN_VALUE)
+            if (lastPeakCourse != Double.MIN_VALUE)
             {
               // is it more than threshold?
-              final double delta = Math.abs(thisMaxC - lastMaxC);
-
-              if (delta > COURSE_TOLERANCE)
-              {
-                // ok, leg ended.
-
-                legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart,
-                    thisMinT));
-
-                // clear the leg marker
-                thisLegStart = -1;
-
-                // clear the last min value, it will be wrong - since it's from the last leg
-                thisMinC = Double.MIN_VALUE;
-              }
+              delta = Math.abs(thisPeakCourse - lastPeakCourse);
+            }
+            else
+            {
+              delta = 0;
             }
           }
-          else if (thisDir == 1)
+          else
           {
             // ok, just passed peak
-            lastMinC = thisMinC;
+            lastTroughCourse = thisTroughCourse;
 
-            thisMinT = thisT;
-            thisMinC = thisC;
-
+            thisTroughTime = lastTime;
+            thisTroughCourse = lastCourse;
+            legEnd = thisPeakTime;
+            
             // do we already have a peak?
-            if (lastMinC != Double.MIN_VALUE)
+            if (lastTroughCourse != Double.MIN_VALUE)
             {
               // is it more than threshold?
-              final double delta = Math.abs(thisMinC - lastMinC);
+              delta = Math.abs(thisTroughCourse - lastTroughCourse);
+            }
+            else
+            {
+              delta = 0;
+            }
+          }
+          
+          // ok, are we in a turn?
+          if (delta > COURSE_TOLERANCE)
+          {
+            // just check the leg is long enough
+            final long legLength = legEnd - thisLegStart;
+            
+            if(legLength >= minLegLength)
+            {  
+              // ok, leg ended.
+              legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart, legEnd));
+              
+//              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " (" + new Date(thisLegStart) + ") to:" + (legEnd - startTime)/1000 + "(" + new Date(legEnd) + ")");
+              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " to:" + (legEnd - startTime)/1000);
+            }
+            
+            // clear the leg marker
+            thisLegStart = lastTime;
 
-              if (delta > COURSE_TOLERANCE)
-              {
-
-                legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart,
-                    thisMaxT));
-                // clear the leg marker
-                thisLegStart = -1;
-
-                // clear the last max value, it will be wrong - since it's from the last leg
-                thisMaxC = Double.MIN_VALUE;
-                // ok, leg ended.
-              }
+            // and a bit of clearing out
+            if (thisDir == -1)
+            {
+              // clear the last min value, it will be wrong - since it's from the last leg
+              thisTroughCourse = Double.MIN_VALUE;
+            }
+            else
+            {
+              // clear the last max value, it will be wrong - since it's from the last leg
+              thisPeakCourse = Double.MIN_VALUE;
             }
           }
         }
       }
-      lastC = thisC;
+      lastCourse = thisCourse;
+      lastTime = thisTime;
     }
-
+    
     return legs;
   }
 
