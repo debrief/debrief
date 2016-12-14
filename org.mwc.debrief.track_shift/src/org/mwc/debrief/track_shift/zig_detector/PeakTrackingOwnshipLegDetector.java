@@ -184,7 +184,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
     return legs;
   }
 
-  private double[] makeContinuous(final double[] raw)
+  public static double[] makeContinuous(final double[] raw)
   {
     final double[] res = new double[raw.length];
 
