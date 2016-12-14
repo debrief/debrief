@@ -697,13 +697,8 @@ public class ZoneChart extends Composite
   private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/merge_2.png").createImage();
   /** 24px images for the buttons */
-  private final Image handImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/hand.png").createImage();
-
-  private final Image addImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/add.png").createImage();
-  private final Image removeImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/remove.png").createImage();
+  private final Image editImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/edit.png").createImage();
   private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
       "/icons/24/zoomin.png").createImage();
   private final Image mergeImg24 = CorePlugin.getImageDescriptor(
@@ -712,6 +707,7 @@ public class ZoneChart extends Composite
       "/icons/24/fit_to_win.png").createImage();
   private final Image calculator24 = CorePlugin.getImageDescriptor(
       "/icons/24/calculator.png").createImage();
+  
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
 
@@ -816,7 +812,7 @@ public class ZoneChart extends Composite
   {
     {// mode buttons
       final Button edit = new Button(this, SWT.TOGGLE);
-      edit.setImage(addImg24);// TODO ADD EDIT ICON
+      edit.setImage(editImg24);
       edit.setToolTipText("Edit zones");
       edit.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
@@ -903,44 +899,44 @@ public class ZoneChart extends Composite
           }
           else
           {
-            
             // do we have any data?
             if(xySeries == null || xySeries.getItemCount() == 0)
             {
               // ok, populate the data
-              
               IEditorPart curEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-              System.out.println(curEditor);
-              
               if(curEditor instanceof IAdaptable)
               {
                 Layers layers = (Layers) curEditor.getAdapter(Layers.class);
                 if(layers != null)
                 {
-                  // find hte track
+                  // prob have some data - so we can clear the list
+                  xySeries.clear();
+                  
+                  // find the first track
                   Enumeration<Editable> numer = layers.elements();
-                  
-                  TimeSeries newSeries = new TimeSeries("Course");
-                  
                   while (numer.hasMoreElements())
                   {
                     Layer thisL = (Layer) numer.nextElement();
                     if(thisL instanceof TrackWrapper)
                     {
+                      // ok, go for it.
                       TrackWrapper thisT = (TrackWrapper) thisL;
                       Enumeration<Editable> posits = thisT.getPositions();
                       while (posits.hasMoreElements())
                       {
                         FixWrapper thisF = (FixWrapper) posits.nextElement();
-                        TimeSeriesDataItem newItem = new TimeSeriesDataItem(new FixedMillisecond(thisF.getDateTimeGroup().getDate().getTime()), 
-                            MWC.Algorithms.Conversions.Rads2Degs(thisF.getCourse()));
-                        newSeries.add(newItem);
+                        TimeSeriesDataItem newItem = new TimeSeriesDataItem(new FixedMillisecond(thisF.getDateTimeGroup().getDate().getTime()),
+                            thisF.getCourseDegs());
+                        xySeries.add(newItem, false);
                       }
+                      
+                      // ok, share the good news
+                      xySeries.fireSeriesChanged();
+                      
+                      // and we can stop looping
+                      break;
                     }
                   }
-                  
-                  // ok now copy the values over
-                  xySeries.addAndOrUpdate(newSeries);
                 }
               }
             }
@@ -994,9 +990,7 @@ public class ZoneChart extends Composite
     merge_2Img16.dispose();
 
     // and the 24px images
-    handImg24.dispose();
-    addImg24.dispose();
-    removeImg24.dispose();
+    editImg24.dispose();
     fitToWin24.dispose();
     calculator24.dispose();
     zoomInImg24.dispose();
