@@ -60,10 +60,11 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
       final long thisTime = times[i];
       final double thisCourse = newCourses[i];
       
-//      if(Math.abs(thisCourse - 341.94) < 0.01)
-//      {        
-//        System.out.println("here at:" + new Date(thisTime));
-//      }
+//      if(Math.abs(thisCourse - 82.38) < 0.1)
+      if(new Date(thisTime).toString().contains("Tue Oct 11 16:10:48 GMT 2016"))
+      {        
+        System.out.println("here at:" + new Date(thisTime));
+      }
 
       // do we need a leg start?
       if (thisLegStart == -1)
@@ -117,11 +118,12 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
             else
             {
               delta = 0;
+              thisLegStart = lastTime;
             }
           }
           else
           {
-            // ok, just passed peak
+            // ok, just passed trough
             lastTroughCourse = thisTroughCourse;
 
             thisTroughTime = lastTime;
@@ -137,6 +139,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
             else
             {
               delta = 0;
+              thisLegStart = lastTime;
             }
           }
           
@@ -151,8 +154,8 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
               // ok, leg ended.
               legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart, legEnd));
               
-//              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " (" + new Date(thisLegStart) + ") to:" + (legEnd - startTime)/1000 + "(" + new Date(legEnd) + ")");
-              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " to:" + (legEnd - startTime)/1000);
+              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " (" + new Date(thisLegStart) + ") to:" + (legEnd - startTime)/1000 + "(" + new Date(legEnd) + ")");
+//              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " to:" + (legEnd - startTime)/1000);
             }
             
             // clear the leg marker
@@ -163,11 +166,13 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
             {
               // clear the last min value, it will be wrong - since it's from the last leg
               thisTroughCourse = Double.MIN_VALUE;
+              lastTroughCourse = Double.MIN_VALUE;
             }
             else
             {
               // clear the last max value, it will be wrong - since it's from the last leg
               thisPeakCourse = Double.MIN_VALUE;
+              lastPeakCourse = Double.MIN_VALUE;
             }
           }
         }
