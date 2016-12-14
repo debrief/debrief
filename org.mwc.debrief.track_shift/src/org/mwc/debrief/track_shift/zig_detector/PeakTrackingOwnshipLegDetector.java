@@ -1,15 +1,12 @@
 package org.mwc.debrief.track_shift.zig_detector;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 {
-
-  private static final int MIN_OWNSHIP_LENGTH = 180000; // 3 minutes
 
   /**
    * slice this data into ownship legs, where the course and speed are relatively steady
@@ -151,7 +148,6 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
           }
         }
       }
-
       lastC = thisC;
     }
 

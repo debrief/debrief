@@ -900,8 +900,8 @@ public class ZoneChart extends Composite
           else
           {
             // do we have any data?
-            if(xySeries == null || xySeries.getItemCount() == 0)
-            {
+        //    if(xySeries == null || xySeries.getItemCount() == 0)
+         //   {
               // ok, populate the data
               IEditorPart curEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
               if(curEditor instanceof IAdaptable)
@@ -966,7 +966,7 @@ public class ZoneChart extends Composite
             {
               addZone(thePlot, thisZone);
             }
-          }
+       //   }
         }
       });
     }
