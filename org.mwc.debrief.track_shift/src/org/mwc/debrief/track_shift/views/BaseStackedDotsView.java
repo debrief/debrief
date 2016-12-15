@@ -36,6 +36,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -99,6 +100,7 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.zig_detector.CumulativeLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.LegOfData;
+import org.mwc.debrief.track_shift.zig_detector.OwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.PeakTrackingOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
 
@@ -132,6 +134,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
 
+  private enum SliceMode
+  {
+    ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE;
+  }
+  
   /**
    * helper application to help track creation/activation of new plots
    */
@@ -251,6 +258,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private ZoneChart targetZoneChart;
   protected TimeSeries ownshipCourseSeries;
   protected TimeSeries targetBearingSeries;
+  
+  private SliceMode _sliceMode = SliceMode.PEAK_FIT;
+  private Action _modeOne;
+  private Action _modeTwo;
+  private Action _modeThree;
 
   /**
    * 
@@ -322,7 +334,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
-  @SuppressWarnings("deprecation")
   @Override
   public void createPartControl(final Composite parent)
   {
@@ -417,7 +428,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 //                new Date("2016/10/10 13:23:12").getTime())
             };
     long[] osTimeValues = new long[]{};
-    long[] osAngleValues = new long[]{};
+//    long[] osAngleValues = new long[]{};
     // create the zone charts
     // TODO: pending
     ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
@@ -456,8 +467,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             };
     long[] tgtTimeValues =
         new long[]{};
-    long[] tgtAngleValues = new long[]
-    {};
+//    long[] tgtAngleValues = new long[]
+//    {};
 
     ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
     {
@@ -488,8 +499,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)
   {
+    final IOwnshipLegDetector detector;
+    switch(_sliceMode)
+    {
+    case ORIGINAL:
+      detector = new OwnshipLegDetector();
+      break;
+    case AREA_UNDER_CURVE:
+      detector = new CumulativeLegDetector();
+      break;
+    case PEAK_FIT:
+    default:
+      detector = new PeakTrackingOwnshipLegDetector();
+      break;
+    }
+    
    // IOwnshipLegDetector detector = new OwnshipLegDetector();
-    IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();    
+//    IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();    
 //    IOwnshipLegDetector detector = new CumulativeLegDetector();
     
     final int num = osCourse.getItemCount();
@@ -823,9 +849,59 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(_selectOnClick);
     // and the help link
     manager.add(new Separator());
+
+    // TEMPORARILY INTRODUCE SLICE MODE
+    MenuManager mm = new MenuManager("Slice mode");
+    manager.add(mm);
+    manager.add(new Separator());
+
+    
     manager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.TrackShifting", null, this));
-
+    
+    // ok - try to add modes for the slicing algorithm
+    _modeOne = new Action("Original", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.ORIGINAL;
+        _modeTwo.setChecked(false);
+        _modeThree.setChecked(false);
+        _modeOne.setChecked(true);
+//        _modeTwo.setChecked(false);
+      }
+    };
+    _modeTwo = new Action("Peak tracking", SWT.TOGGLE)
+    {      
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.PEAK_FIT;
+        _modeThree.setChecked(false);
+        _modeOne.setChecked(false);
+        _modeTwo.setChecked(true);
+      }
+    };
+    _modeThree = new Action("Area under curve", SWT.TOGGLE)
+    {      
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.AREA_UNDER_CURVE;
+        _modeTwo.setChecked(false);
+        _modeOne.setChecked(false);
+        _modeThree.setChecked(true);
+      }
+    };
+    _modeTwo.setChecked(true);
+    
+    mm.add(_modeOne);
+    mm.add(_modeTwo);
+    mm.add(_modeThree);
   }
 
   protected void makeActions()
