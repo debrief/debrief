@@ -228,8 +228,6 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
   {
     public void testContinuous()
     {
-      PeakTrackingOwnshipLegDetector tester =
-          new PeakTrackingOwnshipLegDetector();
       double[] test =
           new double[]
           {160, 170, 175, 180, -175, -200, -175, 180, 170, 150, 130, 110, 70,
