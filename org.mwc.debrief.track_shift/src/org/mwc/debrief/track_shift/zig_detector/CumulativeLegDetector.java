@@ -70,7 +70,7 @@ public class CumulativeLegDetector implements IOwnshipLegDetector
             }
             else
             {
-              System.out.println("skipping turn to right at " + (thisTime - startTime)/1000 + " area:" + leftArea + " crse" + thisCourse);
+//              System.out.println("skipping turn to right at " + (thisTime - startTime)/1000 + " area:" + leftArea + " crse" + thisCourse);
             }
             leftArea = 0;
           }
@@ -85,7 +85,7 @@ public class CumulativeLegDetector implements IOwnshipLegDetector
             }
             else
             {
-              System.out.println("skipping turn to left at " +  (thisTime - startTime)/1000 + " area:" + rightArea + " crse" + thisCourse);
+//              System.out.println("skipping turn to left at " +  (thisTime - startTime)/1000 + " area:" + rightArea + " crse" + thisCourse);
             }
             rightArea = 0;
           }
@@ -106,7 +106,7 @@ public class CumulativeLegDetector implements IOwnshipLegDetector
       }
       if(i % 450 == 0)
       {
-        System.out.println("here");
+ //       System.out.println("here");
       }
       
       lastTime = thisTime;
