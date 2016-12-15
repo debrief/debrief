@@ -51,7 +51,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
         Double.MIN_VALUE;
     double lastCourse = 0;
     int lastDir = 0;
-    final long startTime = times[0];
+//    final long startTime = times[0];
     long lastTime = Long.MIN_VALUE;
 
     for (int i = 0; i < newCourses.length; i++)
@@ -63,7 +63,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 //      if(Math.abs(thisCourse - 82.38) < 0.1)
       if(new Date(thisTime).toString().contains("Tue Oct 11 16:10:48 GMT 2016"))
       {        
-        System.out.println("here at:" + new Date(thisTime));
+   //     System.out.println("here at:" + new Date(thisTime));
       }
 
       // do we need a leg start?
@@ -154,7 +154,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
               // ok, leg ended.
               legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart, legEnd));
               
-              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " (" + new Date(thisLegStart) + ") to:" + (legEnd - startTime)/1000 + "(" + new Date(legEnd) + ")");
+   //           System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " (" + new Date(thisLegStart) + ") to:" + (legEnd - startTime)/1000 + "(" + new Date(legEnd) + ")");
 //              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " to:" + (legEnd - startTime)/1000);
             }
             
@@ -234,7 +234,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
           new double[]
           {160, 170, 175, 180, -175, -200, -175, 180, 170, 150, 130, 110, 70,
               20, 5, 355, 335};
-      double[] res = tester.makeContinuous(test);
+      double[] res = PeakTrackingOwnshipLegDetector.makeContinuous(test);
       assertEquals("correct side", 185d, res[4]);
       assertEquals("correct side", -5d, res[15]);
       System.out.println(res);
