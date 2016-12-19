@@ -10,7 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -418,7 +424,7 @@ public class ZoneChart extends Composite
           zones.add(adding);
           fireZoneAdded(adding);
         }
-
+        else
         {
           final XYPlot plot = (XYPlot) chart.getPlot();
           for (final Zone z : dragZones)
@@ -426,10 +432,65 @@ public class ZoneChart extends Composite
             if (!onDrag && isDelete(z, event.x))
             {
               final IntervalMarker intervalMarker = zoneMarkers.get(z);
-              plot.removeDomainMarker(intervalMarker);
-              zoneMarkers.remove(z);
-              zones.remove(z);
-              fireZoneRemoved(z);
+             
+              
+              AbstractOperation deleteOp = new AbstractOperation("Delete Zone")
+              {
+                
+                @Override
+                public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+                    throws ExecutionException
+                {
+                  plot.addDomainMarker(intervalMarker);
+                  zoneMarkers.put(z,intervalMarker);
+                  zones.add(z);
+                  fireZoneAdded(z);
+                  return Status.OK_STATUS;
+                }
+                
+                @Override
+                public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+                    throws ExecutionException
+                {
+                  plot.removeDomainMarker(intervalMarker);
+                  zoneMarkers.remove(z);
+                  zones.remove(z);
+                  fireZoneRemoved(z);
+                  return Status.OK_STATUS;
+                }
+                
+                @Override
+                public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+                    throws ExecutionException
+                {
+                  return redo(monitor, info);
+                }
+              }; 
+              
+              if(operationHistory!=null)
+              {
+                try
+                {
+                  operationHistory.execute(deleteOp, null, null);
+                }
+                catch (ExecutionException e)
+                {
+                  e.printStackTrace();
+                }
+              }
+              else
+              {
+                try
+                {
+                  deleteOp.execute(null, null);
+                }
+                catch (ExecutionException e)
+                {
+                  e.printStackTrace();
+                }
+              }
+              
+             
             }
             else if (isResizeStart(z, event.x) || isResizeEnd(z, event.x))
             {
@@ -620,7 +681,7 @@ public class ZoneChart extends Composite
     ArrayList<Zone> performSlicing();
   }
 
-  public static ZoneChart create(final String chartTitle, final String yTitle,
+  public static ZoneChart create(final IOperationHistory operationHistory, final String chartTitle, final String yTitle,
       final Composite parent, final Zone[] zones, final long[] timeValues,
       final long[] angleValues, final ColorProvider blueProv,
       final Color lineColor, final ZoneSlicer zoneSlicer)
@@ -633,11 +694,11 @@ public class ZoneChart extends Composite
       xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
 
-    return create(chartTitle, yTitle, parent, zones, xySeries, timeValues,
+    return create(operationHistory,chartTitle, yTitle, parent, zones, xySeries, timeValues,
         blueProv, lineColor, zoneSlicer);
   }
 
-  public static ZoneChart create(final String chartTitle, final String yTitle,
+  public static ZoneChart create(final IOperationHistory operationHistory,  final String chartTitle, final String yTitle,
       final Composite parent, final Zone[] zones, final TimeSeries xySeries,
       final long[] timeValues, final ColorProvider blueProv,
       final Color lineColor, final ZoneSlicer zoneSlicer)
@@ -670,7 +731,7 @@ public class ZoneChart extends Composite
 
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
-        new ZoneChart(parent, xylineChart, zones, blueProv, zoneSlicer,
+        new ZoneChart(parent, xylineChart,operationHistory, zones, blueProv, zoneSlicer,
             xySeries);
 
     // done
@@ -750,11 +811,14 @@ public class ZoneChart extends Composite
 
   private final TimeSeries xySeries;
 
-  private ZoneChart(final Composite parent, final JFreeChart xylineChart,
+  private final IOperationHistory operationHistory;
+  
+  private ZoneChart(final Composite parent, final JFreeChart xylineChart, IOperationHistory operationHistory,
       final Zone[] zones, final ColorProvider colorProvider,
       final ZoneSlicer zoneSlicer, final TimeSeries xySeries)
   {
     super(parent, SWT.NONE);
+    this.operationHistory =operationHistory;
     this.chart = xylineChart;
     buildUI(xylineChart);
     this.zones.addAll(Arrays.asList(zones));

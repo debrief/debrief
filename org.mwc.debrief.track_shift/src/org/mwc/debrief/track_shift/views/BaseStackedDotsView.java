@@ -31,6 +31,10 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.eclipse.core.commands.operations.IOperationApprover;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -60,6 +64,9 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.operations.RedoActionHandler;
+import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jfree.chart.ChartMouseEvent;
@@ -127,6 +134,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
 
+  
+  
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
 
@@ -134,11 +143,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
 
+  /*
+   * Undo and redo actions
+   */
+  private UndoActionHandler undoAction;
+
+  private RedoActionHandler redoAction;
+
+  private IUndoContext undoContext;
+
   private enum SliceMode
   {
     ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE;
   }
-  
+
   /**
    * helper application to help track creation/activation of new plots
    */
@@ -226,7 +244,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Vector<Action> _customActions;
 
   protected Action _autoResize;
-  
+
   protected Action _showSlices;
 
   private CombinedDomainXYPlot _combined;
@@ -258,7 +276,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private ZoneChart targetZoneChart;
   protected TimeSeries ownshipCourseSeries;
   protected TimeSeries targetBearingSeries;
-  
+
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Action _modeOne;
   private Action _modeTwo;
@@ -277,11 +295,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     _needBrg = needBrg;
     _needFreq = needFreq;
-
-    // create the actions - the 'centre-y axis' action may get called before
+ // create the actions - the 'centre-y axis' action may get called before
     // the
     // interface is shown
     makeActions();
+   
   }
 
   abstract protected String getUnits();
@@ -300,6 +318,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected void fillLocalToolBar(final IToolBarManager toolBarManager)
   {
     // fit to window
+    toolBarManager.add(undoAction);
+    toolBarManager.add(redoAction);
     toolBarManager.add(_autoResize);
     toolBarManager.add(_onlyVisible);
     toolBarManager.add(_selectOnClick);
@@ -309,7 +329,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_showSlices);
 
     addExtras(toolBarManager);
-    
+
     // and a separator
     toolBarManager.add(new Separator());
 
@@ -331,14 +351,45 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
   }
 
+  private void createGlobalActionHandlers()
+  {
+    // set up action handlers that operate on the current context
+    undoAction = new UndoActionHandler(this.getSite(), undoContext);
+    redoAction = new RedoActionHandler(this.getSite(), undoContext);
+    IActionBars actionBars = getViewSite().getActionBars();
+    actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
+    actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
+  }
+
+  /*
+   * Initialize the workbench operation history for our undo context.
+   */
+  private void initializeOperationHistory()
+  {
+    undoContext = new ObjectUndoContext(this);
+  }
+
+  /*
+   * Get the operation history from the workbench.
+   */
+  private IOperationHistory getOperationHistory()
+  {
+    return PlatformUI.getWorkbench().getOperationSupport()
+        .getOperationHistory();
+  }
+
   /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
   @Override
   public void createPartControl(final Composite parent)
   {
-    parent.setLayout(new FillLayout(SWT.VERTICAL));
+    initializeOperationHistory();
+    createGlobalActionHandlers();
     
+    
+    parent.setLayout(new FillLayout(SWT.VERTICAL));
+
     SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
 
     _holder =
@@ -417,18 +468,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     @SuppressWarnings("unused")
     ZoneChart.ZoneListener targetListener = getTargetListener();
 
-    Zone[] osZones =
-        new ZoneChart.Zone[]
-        {
-//            new ZoneChart.Zone(new Date("2016/10/10 11:05").getTime(),
-//                new Date("2016/10/10 11:42").getTime()),
-//            new ZoneChart.Zone(new Date("2016/10/10 12:25").getTime(),
-//                new Date("2016/10/10 12:40").getTime()),
-//            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
-//                new Date("2016/10/10 13:23:12").getTime())
-            };
-    long[] osTimeValues = new long[]{};
-//    long[] osAngleValues = new long[]{};
+    Zone[] osZones = new ZoneChart.Zone[]
+    {
+    // new ZoneChart.Zone(new Date("2016/10/10 11:05").getTime(),
+    // new Date("2016/10/10 11:42").getTime()),
+    // new ZoneChart.Zone(new Date("2016/10/10 12:25").getTime(),
+    // new Date("2016/10/10 12:40").getTime()),
+    // new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
+    // new Date("2016/10/10 13:23:12").getTime())
+        };
+    long[] osTimeValues = new long[]
+    {};
+    // long[] osAngleValues = new long[]{};
     // create the zone charts
     // TODO: pending
     ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
@@ -443,32 +494,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // put the courses into a TimeSeries
     ownshipCourseSeries = new TimeSeries("Ownship course");
 
-    ZoneSlicer ownshipLegSlicer = new ZoneSlicer(){
+    ZoneSlicer ownshipLegSlicer = new ZoneSlicer()
+    {
 
       @Override
       public ArrayList<Zone> performSlicing()
       {
         return sliceOwnship(ownshipCourseSeries);
-      }};
+      }
+    };
     ownshipZoneChart =
-        ZoneChart.create("Ownship Legs", "Course", sashForm, osZones, ownshipCourseSeries,
-            osTimeValues, blueProv, DebriefColors.BLUE, ownshipLegSlicer );
+        ZoneChart.create(getOperationHistory(),"Ownship Legs", "Course", sashForm, osZones,
+            ownshipCourseSeries, osTimeValues, blueProv, DebriefColors.BLUE,
+            ownshipLegSlicer);
 
     // assign the listeners
     // TODO: pending
 
-    Zone[] tgtZones =
-        new ZoneChart.Zone[]
-        {
-//            new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
-//                new Date("2016/10/10 10:40").getTime()),
-//            new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
-//                new Date("2016/10/10 12:23:12").getTime())
-            };
-    long[] tgtTimeValues =
-        new long[]{};
-//    long[] tgtAngleValues = new long[]
-//    {};
+    Zone[] tgtZones = new ZoneChart.Zone[]
+    {
+    // new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
+    // new Date("2016/10/10 10:40").getTime()),
+    // new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
+    // new Date("2016/10/10 12:23:12").getTime())
+        };
+    long[] tgtTimeValues = new long[]
+    {};
+    // long[] tgtAngleValues = new long[]
+    // {};
 
     ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
     {
@@ -489,18 +542,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     targetBearingSeries = new TimeSeries("Bearing");
 
     targetZoneChart =
-        ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
-            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, null);
+        ZoneChart.create(getOperationHistory(),"Target Legs", "Bearing", sashForm, tgtZones,
+            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED,
+            null);
 
     // and set the proportions of space allowed
-    sashForm.setWeights(new int[]{4,1,1});
-    sashForm.setBackground(sashForm.getDisplay().getSystemColor( SWT.COLOR_GRAY));
+    sashForm.setWeights(new int[]
+    {4, 1, 1});
+    sashForm
+        .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
   }
 
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)
   {
     final IOwnshipLegDetector detector;
-    switch(_sliceMode)
+    switch (_sliceMode)
     {
     case ORIGINAL:
       detector = new OwnshipLegDetector();
@@ -513,17 +569,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       detector = new PeakTrackingOwnshipLegDetector();
       break;
     }
-    
-   // IOwnshipLegDetector detector = new OwnshipLegDetector();
-//    IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();    
-//    IOwnshipLegDetector detector = new CumulativeLegDetector();
-    
+
+    // IOwnshipLegDetector detector = new OwnshipLegDetector();
+    // IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();
+    // IOwnshipLegDetector detector = new CumulativeLegDetector();
+
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
     double[] speeds = new double[num];
     double[] courses = new double[num];
-    
-    for(int ctr = 0;ctr<num;ctr++)
+
+    for (int ctr = 0; ctr < num; ctr++)
     {
       TimeSeriesDataItem thisItem = osCourse.getDataItem(ctr);
       FixedMillisecond thisM = (FixedMillisecond) thisItem.getPeriod();
@@ -531,15 +587,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       speeds[ctr] = 0;
       courses[ctr] = (Double) thisItem.getValue();
     }
-    List<LegOfData> legs = detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
+    List<LegOfData> legs =
+        detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
     ArrayList<Zone> res = new ArrayList<Zone>();
-    
-    for(LegOfData leg : legs)
+
+    for (LegOfData leg : legs)
     {
       Zone newZone = new Zone(leg.getStart(), leg.getEnd());
       res.add(newZone);
     }
-    
+
     return res;
   }
 
@@ -855,10 +912,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(mm);
     manager.add(new Separator());
 
-    
     manager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.TrackShifting", null, this));
-    
+
     // ok - try to add modes for the slicing algorithm
     _modeOne = new Action("Original", SWT.TOGGLE)
     {
@@ -870,11 +926,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         _modeTwo.setChecked(false);
         _modeThree.setChecked(false);
         _modeOne.setChecked(true);
-//        _modeTwo.setChecked(false);
+        // _modeTwo.setChecked(false);
       }
     };
     _modeTwo = new Action("Peak tracking", SWT.TOGGLE)
-    {      
+    {
       @Override
       public void run()
       {
@@ -886,7 +942,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     _modeThree = new Action("Area under curve", SWT.TOGGLE)
-    {      
+    {
       @Override
       public void run()
       {
@@ -898,7 +954,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     _modeTwo.setChecked(true);
-    
+
     mm.add(_modeOne);
     mm.add(_modeTwo);
     mm.add(_modeThree);
@@ -932,7 +988,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setToolTipText("Keep plot sized to show all data");
     _autoResize.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/fit_to_win.png"));
-    
+
     _showSlices = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
     {
       @Override
@@ -959,7 +1015,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showSlices.setChecked(true);
     _showSlices.setToolTipText("Show the slicing graphs");
     _showSlices.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/GanttBars.png")); 
+        .getImageDescriptor("icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {

@@ -643,7 +643,7 @@ public class MaintainContributionsView extends ViewPart
       }
     };
     final ZoneChart zoneChart =
-        ZoneChart.create("Ownship Legs", "Course", graphTabs, new ZoneChart.Zone[]
+        ZoneChart.create(null,"Ownship Legs", "Course", graphTabs, new ZoneChart.Zone[]
         {
             new ZoneChart.Zone(new Date("2016/10/10 11:47:00").getTime(),
                 new Date("2016/10/10 12:23:00").getTime()),
