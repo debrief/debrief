@@ -129,6 +129,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Transform;
@@ -646,6 +647,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			xmin = ymin = 0;
 			xmax = this.getSize().width;
 			ymax = this.getSize().height;
+			//workaround for issue_1906 to avoid GC ignore line styles
+			_theDest.setLineAttributes(new LineAttributes(_theDest.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, _theDest.getLineStyle(), null, 0, 10));
+      
 			SWTClipper.drawLine(_theDest, x1, y1, x2, y2, xmin, xmax, ymin, ymax);
 		}
 	}
