@@ -23,8 +23,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -32,10 +30,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
-import java.util.function.Function;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
@@ -555,7 +549,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     final double optimiseTolerance =  0.000001;
-    final double RMS_ZIG_RATIO = 2.8;
+    final double RMS_ZIG_RATIO = 0.4;
 
     // ok, loop through the ownship legs
     for (final Zone thisZ : ownshipLegs)
@@ -563,7 +557,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // get the bearings in this leg
       long wholeStart = thisZ.getStart();
       long wholeEnd = thisZ.getEnd();
-
+      
       List<Long> thisLegTimes = new ArrayList<Long>();
       List<Double> thisLegBearings = new ArrayList<Double>();
 
@@ -600,18 +594,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     
     long startTime = firstCut.getPeriod().getMiddleMillisecond();
     long endTime = lastCut.getPeriod().getMiddleMillisecond();
-//    
-    
-    // hmm, the zigs aren't in chronographical order, re-sort
-    Collections.sort(zigs, new Comparator<Zone>(){
-      @Override
-      public int compare(Zone arg0, Zone arg1)
-      {
-        return Long.compare(arg0.getStart(), arg1.getStart());
-      }
-    });
 
-    
     Zone lastZig = null;
     for(final Zone zig: zigs)
     {
@@ -632,7 +615,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
     
     // and insert a trailing leg
-    legs.add(new Zone(lastZig.getEnd(), endTime));
+    if(lastZig != null)
+    {
+      legs.add(new Zone(lastZig.getEnd(), endTime));
+    }
+    else
+    {
+      // ok, no zigs, just one leg
+      legs.add(new Zone(startTime, endTime));
+    }
     
     return legs;
   }
