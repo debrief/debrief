@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 
-
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
 

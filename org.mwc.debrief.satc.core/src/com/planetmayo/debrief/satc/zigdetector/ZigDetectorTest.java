@@ -92,13 +92,6 @@ public class ZigDetectorTest
 				System.out.println("Leg identified from " + new Date(tStart) + " to "
 						+ new Date(tEnd));
 			}
-
-			@Override
-			public ArrayList<StraightLegForecastContribution> getSlices()
-			{
-				// TODO Auto-generated method stub
-				return null;
-			}
 		};
 	
 		// get ready to store the results runs
@@ -422,7 +415,6 @@ public class ZigDetectorTest
 //			}
 		}
 
-		@Override
 		public ArrayList<StraightLegForecastContribution> getSlices()
 		{
 			// TODO Auto-generated method stub

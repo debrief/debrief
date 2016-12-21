@@ -580,9 +580,9 @@ public class BearingMeasurementContribution extends
 			zigConts = null;
 		}
 
-		ILegStorer legStorer = new MyLegStorer(legConts, this.getMeasurements(),
+		MyLegStorer legStorer = new MyLegStorer(legConts, this.getMeasurements(),
 				this.getName());
-		IZigStorer zigStorer = new MyZigStorer(zigConts, this.getMeasurements(),
+		MyZigStorer zigStorer = new MyZigStorer(zigConts, this.getMeasurements(),
 				this.getName(), states.get(0).time, states.get(states.size() - 1).time);
 
 		// ok, now collate the bearing data

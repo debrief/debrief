@@ -1,8 +1,5 @@
 package com.planetmayo.debrief.satc.zigdetector;
 
-import java.util.ArrayList;
-
-import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 
 /** interface for listener class that is told when a new leg is detected
  * 
@@ -22,8 +19,6 @@ public interface IZigStorer
 	 */
 	void storeZig(String scenarioName, long tStart, long tEnd, double rms);
 	
-	public ArrayList<StraightLegForecastContribution> getSlices();
-
 	/** the algorithm will probably have to produce once final straight leg, from the last
 	 * detected zig until the end of the data
 	 * 

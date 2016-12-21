@@ -1,8 +1,5 @@
 package com.planetmayo.debrief.satc.zigdetector;
 
-import java.util.ArrayList;
-
-import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 
 /** interface for listener class that is told when a new leg is detected
  * 
@@ -21,9 +18,5 @@ public interface ILegStorer
 	 * @param rms - the %age error from the RMS for the whole leg
 	 */
 	void storeLeg(String scenarioName, long tStart, long tEnd,
-			double rms);
-	
-	public ArrayList<StraightLegForecastContribution> getSlices();
-
-
+			double rms);	
 }
