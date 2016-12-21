@@ -244,14 +244,19 @@ public final class StackedDotHelper
 	 * @param logger
 	 * @param targetCourseSeries 
 	 * @param targetSpeedSeries 
+	 * @param ownshipCourseSeries 
+	 * @param targetBearingSeries 
 	 * 
 	 * @param currentOffset
 	 *          how far the current track has been dragged
 	 */
-	public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot, XYPlot targetPlot,
-			final TrackDataProvider tracks, final boolean onlyVis,
-			final boolean showCourse, final boolean flipAxes, final Composite holder,
-			final ErrorLogger logger, final boolean updateDoublets, TimeSeriesCollection targetCourseSeries, TimeSeriesCollection targetSpeedSeries)
+  public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot,
+      XYPlot targetPlot, final TrackDataProvider tracks, final boolean onlyVis,
+      final boolean showCourse, final boolean flipAxes, final Composite holder,
+      final ErrorLogger logger, final boolean updateDoublets,
+      TimeSeriesCollection targetCourseSeries,
+      TimeSeriesCollection targetSpeedSeries, TimeSeries ownshipCourseSeries,
+      TimeSeries targetBearingSeries)
 	{
 		// do we even have a primary track
 		if (_primaryTrack == null)
@@ -529,6 +534,31 @@ public final class StackedDotHelper
     {
       targetCourseSeries.addSeries(osCourseValues);
     }
+    
+    // and the course data for the zone chart
+    if(!osCourseValues.isEmpty())
+    {
+      if(ownshipCourseSeries != null)
+      {
+        // ok, clear it out
+        ownshipCourseSeries.clear();
+        
+        ownshipCourseSeries.addAndOrUpdate(osCourseValues);
+      }
+    }
+    
+    // and the bearing data for the zone chart
+    if(!measuredValues.isEmpty())
+    {
+      if(targetBearingSeries != null)
+      {
+        // ok, clear it out
+        targetBearingSeries.clear();
+        
+        targetBearingSeries.addAndOrUpdate(measuredValues);
+      }
+    }
+    
     
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);

@@ -22,9 +22,12 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -33,6 +36,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -41,7 +45,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
@@ -72,7 +78,10 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -85,6 +94,15 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.Activator;
+import org.mwc.debrief.track_shift.controls.ZoneChart;
+import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
+import org.mwc.debrief.track_shift.zig_detector.CumulativeLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.LegOfData;
+import org.mwc.debrief.track_shift.zig_detector.OwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.PeakTrackingOwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -116,6 +134,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
 
+  private enum SliceMode
+  {
+    ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE;
+  }
+  
   /**
    * helper application to help track creation/activation of new plots
    */
@@ -203,6 +226,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Vector<Action> _customActions;
 
   protected Action _autoResize;
+  
+  protected Action _showSlices;
 
   private CombinedDomainXYPlot _combined;
 
@@ -229,6 +254,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Vector<DraggableItem> _draggableSelection;
 
   protected boolean _itemSelectedPending = false;
+  private ZoneChart ownshipZoneChart;
+  private ZoneChart targetZoneChart;
+  protected TimeSeries ownshipCourseSeries;
+  protected TimeSeries targetBearingSeries;
+  
+  private SliceMode _sliceMode = SliceMode.PEAK_FIT;
+  private Action _modeOne;
+  private Action _modeTwo;
+  private Action _modeThree;
 
   /**
    * 
@@ -272,9 +306,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_showLinePlot);
     toolBarManager.add(_showDotPlot);
     toolBarManager.add(_showTargetOverview);
+    toolBarManager.add(_showSlices);
 
     addExtras(toolBarManager);
-
+    
     // and a separator
     toolBarManager.add(new Separator());
 
@@ -302,9 +337,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   @Override
   public void createPartControl(final Composite parent)
   {
+    parent.setLayout(new FillLayout(SWT.VERTICAL));
+    
+    SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
 
     _holder =
-        new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200, 1800,
+        new ChartComposite(sashForm, SWT.NONE, null, 400, 600, 300, 200, 1800,
             1800, true, true, true, true, true, true)
         {
           @Override
@@ -372,6 +410,149 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the actions in the UI
     contributeToActionBars();
+
+    // we will also listen out for zone changes
+    @SuppressWarnings("unused")
+    ZoneChart.ZoneListener ownshipListener = getOwnshipListener();
+    @SuppressWarnings("unused")
+    ZoneChart.ZoneListener targetListener = getTargetListener();
+
+    Zone[] osZones =
+        new ZoneChart.Zone[]
+        {
+//            new ZoneChart.Zone(new Date("2016/10/10 11:05").getTime(),
+//                new Date("2016/10/10 11:42").getTime()),
+//            new ZoneChart.Zone(new Date("2016/10/10 12:25").getTime(),
+//                new Date("2016/10/10 12:40").getTime()),
+//            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
+//                new Date("2016/10/10 13:23:12").getTime())
+            };
+    long[] osTimeValues = new long[]{};
+//    long[] osAngleValues = new long[]{};
+    // create the zone charts
+    // TODO: pending
+    ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
+    {
+      @Override
+      public Color getColorFor(Zone zone)
+      {
+        return DebriefColors.BLUE;
+      }
+    };
+
+    // put the courses into a TimeSeries
+    ownshipCourseSeries = new TimeSeries("Ownship course");
+
+    ZoneSlicer ownshipLegSlicer = new ZoneSlicer(){
+
+      @Override
+      public ArrayList<Zone> performSlicing()
+      {
+        return sliceOwnship(ownshipCourseSeries);
+      }};
+    ownshipZoneChart =
+        ZoneChart.create("Ownship Legs", "Course", sashForm, osZones, ownshipCourseSeries,
+            osTimeValues, blueProv, DebriefColors.BLUE, ownshipLegSlicer );
+
+    // assign the listeners
+    // TODO: pending
+
+    Zone[] tgtZones =
+        new ZoneChart.Zone[]
+        {
+//            new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
+//                new Date("2016/10/10 10:40").getTime()),
+//            new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
+//                new Date("2016/10/10 12:23:12").getTime())
+            };
+    long[] tgtTimeValues =
+        new long[]{};
+//    long[] tgtAngleValues = new long[]
+//    {};
+
+    ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
+    {
+      @Override
+      public Color getColorFor(Zone zone)
+      {
+        Random random = new Random();
+        final float hue = random.nextFloat();
+        // Saturation between 0.1 and 0.3
+        final float saturation = (random.nextInt(2000) + 7000) / 10000f;
+        final float luminance = 0.9f;
+        final Color color = Color.getHSBColor(hue, saturation, luminance);
+        return color;
+      }
+    };
+
+    // put the bearings into a TimeSeries
+    targetBearingSeries = new TimeSeries("Bearing");
+
+    targetZoneChart =
+        ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
+            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, null);
+
+    // and set the proportions of space allowed
+    sashForm.setWeights(new int[]{4,1,1});
+    sashForm.setBackground(sashForm.getDisplay().getSystemColor( SWT.COLOR_GRAY));
+  }
+
+  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)
+  {
+    final IOwnshipLegDetector detector;
+    switch(_sliceMode)
+    {
+    case ORIGINAL:
+      detector = new OwnshipLegDetector();
+      break;
+    case AREA_UNDER_CURVE:
+      detector = new CumulativeLegDetector();
+      break;
+    case PEAK_FIT:
+    default:
+      detector = new PeakTrackingOwnshipLegDetector();
+      break;
+    }
+    
+   // IOwnshipLegDetector detector = new OwnshipLegDetector();
+//    IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();    
+//    IOwnshipLegDetector detector = new CumulativeLegDetector();
+    
+    final int num = osCourse.getItemCount();
+    long[] times = new long[num];
+    double[] speeds = new double[num];
+    double[] courses = new double[num];
+    
+    for(int ctr = 0;ctr<num;ctr++)
+    {
+      TimeSeriesDataItem thisItem = osCourse.getDataItem(ctr);
+      FixedMillisecond thisM = (FixedMillisecond) thisItem.getPeriod();
+      times[ctr] = thisM.getMiddleMillisecond();
+      speeds[ctr] = 0;
+      courses[ctr] = (Double) thisItem.getValue();
+    }
+    List<LegOfData> legs = detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
+    ArrayList<Zone> res = new ArrayList<Zone>();
+    
+    for(LegOfData leg : legs)
+    {
+      Zone newZone = new Zone(leg.getStart(), leg.getEnd());
+      res.add(newZone);
+    }
+    
+    return res;
+  }
+
+  private ZoneChart.ZoneListener getOwnshipListener()
+  {
+    // TODO: fire the ownship legs to the target zig generator
+    return new ZoneChart.ZoneAdapter();
+  }
+
+  private ZoneChart.ZoneListener getTargetListener()
+  {
+    // TODO reflect the new target legs on the bearing residuals
+    return new ZoneChart.ZoneAdapter();
   }
 
   /**
@@ -668,9 +849,59 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(_selectOnClick);
     // and the help link
     manager.add(new Separator());
+
+    // TEMPORARILY INTRODUCE SLICE MODE
+    MenuManager mm = new MenuManager("Slice mode");
+    manager.add(mm);
+    manager.add(new Separator());
+
+    
     manager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.TrackShifting", null, this));
-
+    
+    // ok - try to add modes for the slicing algorithm
+    _modeOne = new Action("Original", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.ORIGINAL;
+        _modeTwo.setChecked(false);
+        _modeThree.setChecked(false);
+        _modeOne.setChecked(true);
+//        _modeTwo.setChecked(false);
+      }
+    };
+    _modeTwo = new Action("Peak tracking", SWT.TOGGLE)
+    {      
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.PEAK_FIT;
+        _modeThree.setChecked(false);
+        _modeOne.setChecked(false);
+        _modeTwo.setChecked(true);
+      }
+    };
+    _modeThree = new Action("Area under curve", SWT.TOGGLE)
+    {      
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.AREA_UNDER_CURVE;
+        _modeTwo.setChecked(false);
+        _modeOne.setChecked(false);
+        _modeThree.setChecked(true);
+      }
+    };
+    _modeTwo.setChecked(true);
+    
+    mm.add(_modeOne);
+    mm.add(_modeTwo);
+    mm.add(_modeThree);
   }
 
   protected void makeActions()
@@ -701,6 +932,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setToolTipText("Keep plot sized to show all data");
     _autoResize.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/fit_to_win.png"));
+    
+    _showSlices = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        if (_showSlices.isChecked())
+        {
+          // show the charts
+          // hide the charts
+          ownshipZoneChart.setVisible(true);
+          targetZoneChart.setVisible(true);
+          ownshipZoneChart.getParent().layout(true);
+        }
+        else
+        {
+          // hide the charts
+          ownshipZoneChart.setVisible(false);
+          targetZoneChart.setVisible(false);
+          ownshipZoneChart.getParent().layout(true);
+        }
+      }
+    };
+    _showSlices.setChecked(true);
+    _showSlices.setToolTipText("Show the slicing graphs");
+    _showSlices.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/GanttBars.png")); 
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {
@@ -1276,7 +1535,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         _onlyVisible.setChecked(showOnlyVis);
       }
-      if(showOverview != null)
+      if (showOverview != null)
       {
         _showTargetOverview.setChecked(showOverview);
       }

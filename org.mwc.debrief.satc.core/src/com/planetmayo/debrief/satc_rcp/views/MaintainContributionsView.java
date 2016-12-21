@@ -94,11 +94,15 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.jfree.util.ShapeUtilities;
+import org.mwc.debrief.track_shift.controls.ZoneChart;
+import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
+
+import MWC.GUI.Properties.DebriefColors;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
@@ -600,7 +604,8 @@ public class MaintainContributionsView extends ViewPart
 
 	}
 
-	private void initGraphTabs(Composite parent)
+	@SuppressWarnings("deprecation")
+  private void initGraphTabs(Composite parent)
 	{
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
@@ -623,7 +628,58 @@ public class MaintainContributionsView extends ViewPart
 		performanceTab.setText("Performance");
 		Group perfG2 = initPerformanceGraph(graphTabs);
 		performanceTab.setControl(perfG2);
+		
+		//Zone Test
+		TabItem zoneTest	= new TabItem(graphTabs, SWT.NONE);
+		zoneTest.setText("Zone Chart Test");
+		
+				
+    ZoneChart.ColorProvider blueProvider = new ZoneChart.ColorProvider()
+    {
+      @Override
+      public java.awt.Color getColorFor(Zone zone)
+      {
+        return java.awt.Color.blue;
+      }
+    };
+    final ZoneChart zoneChart =
+        ZoneChart.create("Ownship Legs", "Course", graphTabs, new ZoneChart.Zone[]
+        {
+            new ZoneChart.Zone(new Date("2016/10/10 11:47:00").getTime(),
+                new Date("2016/10/10 12:23:00").getTime()),
+            new ZoneChart.Zone(new Date("2016/10/10 12:44:00").getTime(),
+                new Date("2016/10/10 14:10:00").getTime())}, new long[]
+        {new Date("2016/10/10 10:00:00").getTime(),
+            new Date("2016/10/10 10:21:00").getTime(),
+            new Date("2016/10/10 11:47:00").getTime(),
+            new Date("2016/10/10 11:55:00").getTime(),
+            new Date("2016/10/10 12:23:00").getTime(),
+            new Date("2016/10/10 12:44:00").getTime(),
+            new Date("2016/10/10 13:27:00").getTime(),
+            new Date("2016/10/10 14:10:00").getTime()}, new long[]
+        {115, 118, 119, 121, 118, 100, 98, 97}, blueProvider, 
+        DebriefColors.BLUE, null);
 
+    zoneChart.addZoneListener(new ZoneChart.ZoneAdapter(){
+      
+      @Override
+      public void moved(Zone zone)
+      {
+       System.out
+          .println("MaintainContributionsView.initGraphTabs(...).new ZoneAdapter() {...}.moved()");
+      }
+      
+      @Override
+      public void resized(Zone zone)
+      {
+        System.out
+            .println("MaintainContributionsView.initGraphTabs(...).new ZoneAdapter() {...}.resized()");
+      }      
+    });
+    
+    
+    
+    zoneTest.setControl(zoneChart);
 	}
 
 	private Group initPerformanceGraph(Composite parent)
