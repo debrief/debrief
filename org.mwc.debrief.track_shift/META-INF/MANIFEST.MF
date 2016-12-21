@@ -20,4 +20,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.mwc.debrief.track_shift,
  org.mwc.debrief.track_shift.controls,
  org.mwc.debrief.track_shift.magic,
- org.mwc.debrief.track_shift.views
+ org.mwc.debrief.track_shift.views,
+ org.mwc.debrief.track_shift.zig_detector,
+ org.mwc.debrief.track_shift.zig_detector.moving_average

@@ -47,7 +47,6 @@ import com.planetmayo.debrief.satc.zigdetector.ILegStorer;
 import com.planetmayo.debrief.satc.zigdetector.IZigStorer;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
-import com.planetmayo.debrief.satc.zigdetector.Sensor;
 import com.planetmayo.debrief.satc.zigdetector.ZigDetector;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -640,13 +639,13 @@ public class BearingMeasurementContribution extends
 					// inject a target leg for the period spanning the ownship manouvre
 					long tStart = lastLegTimes.get(lastLegTimes.size()-1);
 					long tEnd = thisLegTimes.get(0);
-					zigStorer.storeZig("some name", tStart, tEnd, null, 0);
+					zigStorer.storeZig("some name", tStart, tEnd, 0);
 				}
 			}
 
 			double zigScore = ZIG_DETECTOR_RMS;
 			zigScore = 0.5;
-			detector.sliceThis("some name", legStart, legEnd, null, legStorer,
+			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
 					zigStorer, zigScore, 0.000001, thisLegTimes, thisLegBearings);
 
 			lastLegTimes = thisLegTimes;
@@ -888,9 +887,9 @@ public class BearingMeasurementContribution extends
 
 		@Override
 		public void storeZig(String scenarioName, long tStart, long tEnd,
-				Sensor sensor, double rms)
+				double rms)
 		{
-			storeLeg(scenarioName, _startTime, tStart, sensor, rms);
+			storeLeg(scenarioName, _startTime, tStart, rms);
 
 			// and move foward the end time
 			_startTime = tEnd;
@@ -911,7 +910,7 @@ public class BearingMeasurementContribution extends
 			if (_startTime != Long.MIN_VALUE)
 			{
 				// ok, append the last leg
-				storeLeg(null, _startTime, _endTime, null, 0);
+				storeLeg(null, _startTime, _endTime, 0);
 				_startTime = Long.MIN_VALUE;
 			}
 		}
@@ -956,8 +955,7 @@ public class BearingMeasurementContribution extends
 			return res;
 		}
 
-		public void storeLeg(String scenarioName, long tStart, long tEnd,
-				Sensor sensor, double rms)
+		public void storeLeg(String scenarioName, long tStart, long tEnd, double rms)
 		{
 			String name = "Tgt-" + ctr++;
 			

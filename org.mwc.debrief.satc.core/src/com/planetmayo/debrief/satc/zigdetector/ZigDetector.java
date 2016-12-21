@@ -6,16 +6,15 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
 
 public class ZigDetector
 {
-
 	static class FlanaganArctan implements MinimisationFunction
 	{
 		private static double calcForecast(final double B, final double P,
@@ -263,8 +262,8 @@ public class ZigDetector
 		return sum;
 	}
 
-	public void sliceThis(final String scenario, final long wholeStart,
-			final long wholeEnd, final Sensor sensor, final ILegStorer legStorer,
+	public void sliceThis(final ILog log, final String PLUGIN_ID, final String scenario, final long wholeStart,
+			final long wholeEnd, final ILegStorer legStorer,
 			IZigStorer zigStorer, final double RMS_ZIG_RATIO,
 			final double optimiseTolerance, final List<Long> thisLegTimes,
 			final List<Double> thisLegBearings)
@@ -327,13 +326,13 @@ public class ZigDetector
 			// is this slice acceptable?
 			if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
 			{
-				legStorer.storeLeg(scenario, wholeStart, bestLegOneEnd, sensor,
+				legStorer.storeLeg(scenario, wholeStart, bestLegOneEnd,
 						bestScore / wholeLegScore * 100);
-				legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd, sensor,
+				legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd,
 						bestScore / wholeLegScore * 100);
 				if (zigStorer != null)
 				{
-					zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart, sensor,
+					zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart,
 							bestScore / wholeLegScore * 100);
 				}
 			}
@@ -344,13 +343,13 @@ public class ZigDetector
 //						+ wholeLegScore + " best slice:" + bestScore, null);
 
 				// just store the whole slice
-				legStorer.storeLeg(scenario, wholeStart, wholeEnd, sensor,
+				legStorer.storeLeg(scenario, wholeStart, wholeEnd,
 						wholeLegScore / wholeLegScore * 100);
 			}
 		}
 		else
 		{
-			SATC_Activator.log(Status.INFO, "slicing complete, can't slice", null);
+		  log.log(new Status(Status.INFO, PLUGIN_ID, "slicing complete, can't slice", null));
 		}
 	}
 

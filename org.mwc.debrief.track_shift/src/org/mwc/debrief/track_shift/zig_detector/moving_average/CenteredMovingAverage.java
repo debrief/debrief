@@ -1,4 +1,4 @@
-package org.mwc.debrief.track_shift.zig_detector;
+package org.mwc.debrief.track_shift.zig_detector.moving_average;
 
 /**
  * Created by deft on 03/03/2015.

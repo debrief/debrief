@@ -18,10 +18,9 @@ public interface ILegStorer
 	 * @param scenario
 	 * @param tStart
 	 * @param tEnd
-	 * @param sensor - optional sensor object that produced the data
 	 * @param rms - the %age error from the RMS for the whole leg
 	 */
-	void storeLeg(String scenarioName, long tStart, long tEnd, Sensor sensor,
+	void storeLeg(String scenarioName, long tStart, long tEnd,
 			double rms);
 	
 	public ArrayList<StraightLegForecastContribution> getSlices();
