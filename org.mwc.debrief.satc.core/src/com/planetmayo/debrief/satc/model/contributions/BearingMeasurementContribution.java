@@ -29,6 +29,9 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Status;
 import org.jfree.data.statistics.Regression;
+import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -43,12 +46,8 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
-import com.planetmayo.debrief.satc.zigdetector.ILegStorer;
-import com.planetmayo.debrief.satc.zigdetector.IZigStorer;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
-import com.planetmayo.debrief.satc.zigdetector.Sensor;
-import com.planetmayo.debrief.satc.zigdetector.ZigDetector;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -581,9 +580,9 @@ public class BearingMeasurementContribution extends
 			zigConts = null;
 		}
 
-		ILegStorer legStorer = new MyLegStorer(legConts, this.getMeasurements(),
+		MyLegStorer legStorer = new MyLegStorer(legConts, this.getMeasurements(),
 				this.getName());
-		IZigStorer zigStorer = new MyZigStorer(zigConts, this.getMeasurements(),
+		MyZigStorer zigStorer = new MyZigStorer(zigConts, this.getMeasurements(),
 				this.getName(), states.get(0).time, states.get(states.size() - 1).time);
 
 		// ok, now collate the bearing data
@@ -640,13 +639,13 @@ public class BearingMeasurementContribution extends
 					// inject a target leg for the period spanning the ownship manouvre
 					long tStart = lastLegTimes.get(lastLegTimes.size()-1);
 					long tEnd = thisLegTimes.get(0);
-					zigStorer.storeZig("some name", tStart, tEnd, null, 0);
+					zigStorer.storeZig("some name", tStart, tEnd, 0);
 				}
 			}
 
 			double zigScore = ZIG_DETECTOR_RMS;
 			zigScore = 0.5;
-			detector.sliceThis("some name", legStart, legEnd, null, legStorer,
+			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
 					zigStorer, zigScore, 0.000001, thisLegTimes, thisLegBearings);
 
 			lastLegTimes = thisLegTimes;
@@ -888,9 +887,9 @@ public class BearingMeasurementContribution extends
 
 		@Override
 		public void storeZig(String scenarioName, long tStart, long tEnd,
-				Sensor sensor, double rms)
+				double rms)
 		{
-			storeLeg(scenarioName, _startTime, tStart, sensor, rms);
+			storeLeg(scenarioName, _startTime, tStart, rms);
 
 			// and move foward the end time
 			_startTime = tEnd;
@@ -911,7 +910,7 @@ public class BearingMeasurementContribution extends
 			if (_startTime != Long.MIN_VALUE)
 			{
 				// ok, append the last leg
-				storeLeg(null, _startTime, _endTime, null, 0);
+				storeLeg(null, _startTime, _endTime, 0);
 				_startTime = Long.MIN_VALUE;
 			}
 		}
@@ -956,8 +955,7 @@ public class BearingMeasurementContribution extends
 			return res;
 		}
 
-		public void storeLeg(String scenarioName, long tStart, long tEnd,
-				Sensor sensor, double rms)
+		public void storeLeg(String scenarioName, long tStart, long tEnd, double rms)
 		{
 			String name = "Tgt-" + ctr++;
 			

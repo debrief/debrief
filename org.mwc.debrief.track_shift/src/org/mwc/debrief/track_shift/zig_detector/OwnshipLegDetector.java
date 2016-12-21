@@ -3,6 +3,9 @@ package org.mwc.debrief.track_shift.zig_detector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mwc.debrief.track_shift.zig_detector.moving_average.CenteredMovingAverage;
+import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeBasedMovingAverage;
+
 
 public class OwnshipLegDetector implements IOwnshipLegDetector
 {
