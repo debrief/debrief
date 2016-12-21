@@ -138,7 +138,7 @@ public class ZigDetector
 
     // and the time of the last item in the first leg
     final long endTime = sliceAt - halfWid;
-
+    
     // ok, loop through
     for (int ctr = 0; ctr < thisLegTimes.size(); ctr++)
     {
@@ -379,11 +379,10 @@ public class ZigDetector
      * how long we allow for a turn (millis)
      * 
      */
-    final long BUFFER_SIZE = 300 * 1000;
+    final long BUFFER_SIZE = 200 * 1000;
 
     // find the optimal first slice
     for (int index = 0; index < thisLegTimes.size(); index++)
-    // for (int index = 12; index < 17; index++)
     {
       final int legOneEnd = getEnd(0, thisLegTimes, BUFFER_SIZE, index);
       final int legTwoStart = getStart(0, thisLegTimes, BUFFER_SIZE, index);
@@ -414,6 +413,8 @@ public class ZigDetector
     // right, how did we get on?
     if (sliceTime != -1)
     {
+//      System.out.println("Best score:" + bestScore + " whole score:" + wholeLegScore + " ratio:" + (bestScore / wholeLegScore));
+      
       // is this slice acceptable?
       if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
       {
