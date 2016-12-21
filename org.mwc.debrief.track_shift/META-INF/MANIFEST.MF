@@ -22,4 +22,5 @@ Export-Package: org.mwc.debrief.track_shift,
  org.mwc.debrief.track_shift.magic,
  org.mwc.debrief.track_shift.views,
  org.mwc.debrief.track_shift.zig_detector,
- org.mwc.debrief.track_shift.zig_detector.moving_average
+ org.mwc.debrief.track_shift.zig_detector.moving_average,
+ org.mwc.debrief.track_shift.zig_detector.target

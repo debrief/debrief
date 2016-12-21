@@ -23,6 +23,8 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -30,6 +32,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
@@ -103,6 +109,9 @@ import org.mwc.debrief.track_shift.zig_detector.LegOfData;
 import org.mwc.debrief.track_shift.zig_detector.OwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.PeakTrackingOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
+import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -133,6 +142,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
+
 
   private enum SliceMode
   {
@@ -488,13 +498,143 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // put the bearings into a TimeSeries
     targetBearingSeries = new TimeSeries("Bearing");
 
+    ZoneSlicer targetLegSlicer = new ZoneSlicer()
+    {
+
+      @Override
+      public ArrayList<Zone> performSlicing()
+      {
+        return sliceTarget(ownshipZoneChart.getZones(), targetBearingSeries.getItems());
+      }
+      
+    };
     targetZoneChart =
         ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
-            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, null);
+            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, targetLegSlicer);
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]{4,1,1});
     sashForm.setBackground(sashForm.getDisplay().getSystemColor( SWT.COLOR_GRAY));
+  }
+
+  /**
+   * slice the target bearings according to these zones
+   * 
+   * @param ownshipLegs
+   * @param targetBearingSeries2
+   * @return
+   */
+  protected ArrayList<Zone> sliceTarget(Zone[] ownshipLegs,
+      List<?> list)
+  {
+    ZigDetector slicer = new ZigDetector();
+    final ArrayList<Zone> zigs = new ArrayList<Zone>();
+    final ArrayList<Zone> legs = new ArrayList<Zone>();
+    final IZigStorer zigStorer = new IZigStorer()
+    {
+      @Override
+      public void storeZig(String scenarioName, long tStart, long tEnd, double rms)
+      {
+        System.out.println("New zig from:" + new Date(tStart) + " to:" + new Date(tEnd));
+        zigs.add(new Zone(tStart, tEnd));
+      }
+      
+      @Override
+      public void finish()
+      {
+      }
+    };
+    final ILegStorer legStorer = new ILegStorer()
+    {
+      
+      @Override
+      public void storeLeg(String scenarioName, long tStart, long tEnd, double rms)
+      {
+        // ok, just ignore it
+      }
+    };
+
+    final double optimiseTolerance =  0.000001;
+    final double RMS_ZIG_RATIO = 2.8;
+
+    // ok, loop through the ownship legs
+    for (final Zone thisZ : ownshipLegs)
+    {
+      // get the bearings in this leg
+      long wholeStart = thisZ.getStart();
+      long wholeEnd = thisZ.getEnd();
+
+      List<Long> thisLegTimes = new ArrayList<Long>();
+      List<Double> thisLegBearings = new ArrayList<Double>();
+
+      // get the bearings in this time period
+      Iterator<?> lIter = list.iterator();
+      while(lIter.hasNext())
+      {
+        TimeSeriesDataItem td = (TimeSeriesDataItem) lIter.next();
+        long thisTime = td.getPeriod().getMiddleMillisecond();
+        if(thisTime >= wholeStart)
+        {
+          if(thisTime <= wholeEnd)
+          {
+            thisLegTimes.add(thisTime);
+            thisLegBearings.add((Double) td.getValue());
+          }
+          else
+          {
+            // ok, we've passed the end
+            break;
+          }
+        }
+      }
+      
+      Activator host = new  Activator();
+      slicer.sliceThis(host.getLog(), Activator.PLUGIN_ID,
+          "Some scenario", wholeStart, wholeEnd, legStorer, zigStorer,
+          RMS_ZIG_RATIO, optimiseTolerance, thisLegTimes, thisLegBearings);
+    }
+
+    // ok, we've got to turn the zigs into legs
+    TimeSeriesDataItem firstCut = (TimeSeriesDataItem) list.get(0);
+    TimeSeriesDataItem lastCut = (TimeSeriesDataItem) list.get(list.size()-1);
+    
+    long startTime = firstCut.getPeriod().getMiddleMillisecond();
+    long endTime = lastCut.getPeriod().getMiddleMillisecond();
+//    
+    
+    // hmm, the zigs aren't in chronographical order, re-sort
+    Collections.sort(zigs, new Comparator<Zone>(){
+      @Override
+      public int compare(Zone arg0, Zone arg1)
+      {
+        return Long.compare(arg0.getStart(), arg1.getStart());
+      }
+    });
+
+    
+    Zone lastZig = null;
+    for(final Zone zig: zigs)
+    {
+      // first zig?
+      if(legs.size() == 0)
+      {
+        // ok, run from start time up to this
+        legs.add(new Zone(startTime, zig.getStart()));
+      }
+      else
+      {
+        // create a leg from the previous end to this start
+        legs.add(new Zone(lastZig.getEnd(), zig.getStart()));
+      }
+      
+      // remember the zig
+      lastZig = zig;
+    }
+    
+    // and insert a trailing leg
+    legs.add(new Zone(lastZig.getEnd(), endTime));
+    
+    return legs;
   }
 
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)

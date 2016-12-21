@@ -29,6 +29,9 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Status;
 import org.jfree.data.statistics.Regression;
+import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -43,11 +46,8 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
-import com.planetmayo.debrief.satc.zigdetector.ILegStorer;
-import com.planetmayo.debrief.satc.zigdetector.IZigStorer;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
-import com.planetmayo.debrief.satc.zigdetector.ZigDetector;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;

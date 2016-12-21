@@ -707,7 +707,7 @@ public class ZoneChart extends Composite
       "/icons/24/fit_to_win.png").createImage();
   private final Image calculator24 = CorePlugin.getImageDescriptor(
       "/icons/24/calculator.png").createImage();
-  
+
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
 
@@ -900,24 +900,26 @@ public class ZoneChart extends Composite
           else
           {
             // do we have any data?
-        //    if(xySeries == null || xySeries.getItemCount() == 0)
-         //   {
+            if (xySeries == null || xySeries.getItemCount() == 0)
+            {
               // ok, populate the data
-              IEditorPart curEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-              if(curEditor instanceof IAdaptable)
+              IEditorPart curEditor =
+                  PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                      .getActivePage().getActiveEditor();
+              if (curEditor instanceof IAdaptable)
               {
                 Layers layers = (Layers) curEditor.getAdapter(Layers.class);
-                if(layers != null)
+                if (layers != null)
                 {
                   // prob have some data - so we can clear the list
                   xySeries.clear();
-                  
+
                   // find the first track
                   Enumeration<Editable> numer = layers.elements();
                   while (numer.hasMoreElements())
                   {
                     Layer thisL = (Layer) numer.nextElement();
-                    if(thisL instanceof TrackWrapper)
+                    if (thisL instanceof TrackWrapper)
                     {
                       // ok, go for it.
                       TrackWrapper thisT = (TrackWrapper) thisL;
@@ -925,14 +927,16 @@ public class ZoneChart extends Composite
                       while (posits.hasMoreElements())
                       {
                         FixWrapper thisF = (FixWrapper) posits.nextElement();
-                        TimeSeriesDataItem newItem = new TimeSeriesDataItem(new FixedMillisecond(thisF.getDateTimeGroup().getDate().getTime()),
-                            thisF.getCourseDegs());
+                        TimeSeriesDataItem newItem =
+                            new TimeSeriesDataItem(new FixedMillisecond(thisF
+                                .getDateTimeGroup().getDate().getTime()), thisF
+                                .getCourseDegs());
                         xySeries.add(newItem, false);
                       }
-                      
+
                       // ok, share the good news
                       xySeries.fireSeriesChanged();
-                      
+
                       // and we can stop looping
                       break;
                     }
@@ -940,33 +944,38 @@ public class ZoneChart extends Composite
                 }
               }
             }
-            
+
             // ok, do the slicing
             final List<Zone> newZones = zoneSlicer.performSlicing();
 
-            final XYPlot thePlot = (XYPlot) chart.getPlot();
-
-            // and ditch the intervals
-            for (final Zone thisZone : zones)
+            // did it work?
+            if (newZones != null)
             {
-              // remove this marker
-              final IntervalMarker thisM = zoneMarkers.get(thisZone);
-              thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
+              final XYPlot thePlot = (XYPlot) chart.getPlot();
+
+              // and ditch the intervals
+              for (final Zone thisZone : zones)
+              {
+                // remove this marker
+                final IntervalMarker thisM = zoneMarkers.get(thisZone);
+                thePlot
+                    .removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
+              }
+
+              // ok, now ditch the old zone lists
+              zones.clear();
+              zoneMarkers.clear();
+
+              // store the zones
+              zones.addAll(newZones);
+
+              // and create the new intervals
+              for (final Zone thisZone : newZones)
+              {
+                addZone(thePlot, thisZone);
+              }
             }
-
-            // ok, now ditch the old zone lists
-            zones.clear();
-            zoneMarkers.clear();
-
-            // store the zones
-            zones.addAll(newZones);
-
-            // and create the new intervals
-            for (final Zone thisZone : newZones)
-            {
-              addZone(thePlot, thisZone);
-            }
-       //   }
+          }
         }
       });
     }

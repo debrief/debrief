@@ -35,6 +35,8 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
