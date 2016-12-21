@@ -945,27 +945,27 @@ public class ZoneChart extends Composite
               }
             }
 
+            final XYPlot thePlot = (XYPlot) chart.getPlot();
+
+            // clear the old zones
+            for (final Zone thisZone : zones)
+            {
+              // remove this marker
+              final IntervalMarker thisM = zoneMarkers.get(thisZone);
+              thePlot
+                  .removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
+            }
+
+            // ok, now ditch the old zone lists
+            zones.clear();
+            zoneMarkers.clear();
+            
             // ok, do the slicing
             final List<Zone> newZones = zoneSlicer.performSlicing();
 
             // did it work?
             if (newZones != null)
             {
-              final XYPlot thePlot = (XYPlot) chart.getPlot();
-
-              // and ditch the intervals
-              for (final Zone thisZone : zones)
-              {
-                // remove this marker
-                final IntervalMarker thisM = zoneMarkers.get(thisZone);
-                thePlot
-                    .removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
-              }
-
-              // ok, now ditch the old zone lists
-              zones.clear();
-              zoneMarkers.clear();
-
               // store the zones
               zones.addAll(newZones);
 
