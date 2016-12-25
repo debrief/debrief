@@ -106,7 +106,10 @@ public class ZoneChart extends Composite
         return;
       }
 
-      dragZones.clear();
+      dragZone = null;
+      dragZoneStartBefore = -1L;
+      dragZoneEndBefore = -1L;
+
       dragStartX = event.x;// findDomainX(this, event.x);
 
       switch (mode)
@@ -150,13 +153,15 @@ public class ZoneChart extends Composite
 
             resizeStart = isResizeStart(zone, dragStartX);
             resizeEnd = isResizeEnd(zone, dragStartX);
-            dragZones.add(zone);
+            dragZone = zone;
+            dragZoneStartBefore = zone.start;
+            dragZoneEndBefore = zone.end;
             onDrag = resizeStart || resizeEnd;
             break;
           }
         }
 
-        if (dragZones.isEmpty())
+        if (dragZone == null)
         {
           final XYPlot plot = (XYPlot) chart.getPlot();
           final long val1 =
@@ -175,7 +180,7 @@ public class ZoneChart extends Composite
         break;
       }
 
-      if (dragZones.isEmpty())
+      if (dragZone == null)
         super.mouseDown(event);
 
     }
@@ -280,14 +285,14 @@ public class ZoneChart extends Composite
         {
 
           {
-            for (final Zone z : dragZones)
+            if (dragZone != null)
             {
 
-              resize(z, currentX);
-              final IntervalMarker intervalMarker = zoneMarkers.get(z);
+              resize(dragZone, currentX);
+              final IntervalMarker intervalMarker = zoneMarkers.get(dragZone);
               assert intervalMarker != null;
-              intervalMarker.setStartValue(z.start);
-              intervalMarker.setEndValue(z.end);
+              intervalMarker.setStartValue(dragZone.start);
+              intervalMarker.setEndValue(dragZone.end);
             }
 
           }
@@ -326,7 +331,8 @@ public class ZoneChart extends Composite
           final Zone affect = adding;
           final IntervalMarker intervalMarker = zoneMarkers.get(affect);
 
-          AbstractOperation addOp = new AbstractOperation("Delete Zone"){
+          AbstractOperation addOp = new AbstractOperation("Delete Zone")
+          {
 
             @Override
             public IStatus execute(IProgressMonitor monitor, IAdaptable info)
@@ -347,8 +353,6 @@ public class ZoneChart extends Composite
               fireZoneAdded(affect);
               return Status.OK_STATUS;
             }
-            
-            
 
             @Override
             public IStatus undo(IProgressMonitor monitor, IAdaptable info)
@@ -360,20 +364,19 @@ public class ZoneChart extends Composite
               fireZoneRemoved(affect);
               return Status.OK_STATUS;
             }
-            
-            
+
           };
           undoRedoProvider.execute(addOp);
-         
+
         }
         else
         {
           final XYPlot plot = (XYPlot) chart.getPlot();
-          for (final Zone z : dragZones)
+          if (dragZone != null)
           {
-            if (!onDrag && isDelete(z, event.x))
+            if (!onDrag && isDelete(dragZone, event.x))
             {
-              final IntervalMarker intervalMarker = zoneMarkers.get(z);
+              final IntervalMarker intervalMarker = zoneMarkers.get(dragZone);
 
               AbstractOperation deleteOp = new AbstractOperation("Delete Zone")
               {
@@ -383,9 +386,9 @@ public class ZoneChart extends Composite
                     throws ExecutionException
                 {
                   plot.addDomainMarker(intervalMarker);
-                  zoneMarkers.put(z, intervalMarker);
-                  zones.add(z);
-                  fireZoneAdded(z);
+                  zoneMarkers.put(dragZone, intervalMarker);
+                  zones.add(dragZone);
+                  fireZoneAdded(dragZone);
                   return Status.OK_STATUS;
                 }
 
@@ -394,9 +397,9 @@ public class ZoneChart extends Composite
                     throws ExecutionException
                 {
                   plot.removeDomainMarker(intervalMarker);
-                  zoneMarkers.remove(z);
-                  zones.remove(z);
-                  fireZoneRemoved(z);
+                  zoneMarkers.remove(dragZone);
+                  zones.remove(dragZone);
+                  fireZoneRemoved(dragZone);
                   return Status.OK_STATUS;
                 }
 
@@ -412,9 +415,59 @@ public class ZoneChart extends Composite
               undoRedoProvider.execute(deleteOp);
 
             }
-            else if (isResizeStart(z, event.x) || isResizeEnd(z, event.x))
+            else if (isResizeStart(dragZone, event.x)
+                || isResizeEnd(dragZone, event.x))
             {
-              fireZoneResized(z);
+
+
+              final Zone affect = dragZone;
+              final long startBefore = dragZoneStartBefore;
+              final long endBefore = dragZoneEndBefore;
+
+              final long startAfter = dragZone.start;
+              final long endAfter = dragZone.end;
+              AbstractOperation resizeOp = new AbstractOperation("Resize Zone")
+              {
+
+                @Override
+                public IStatus
+                    execute(IProgressMonitor monitor, IAdaptable info)
+                        throws ExecutionException
+                {
+                  fireZoneResized(affect);
+                  return Status.OK_STATUS;
+                }
+
+                @Override
+                public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+                    throws ExecutionException
+                {
+                  final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+                  affect.start = startAfter;
+                  affect.end = endAfter;
+                  
+                  intervalMarker.setStartValue(affect.start);
+                  intervalMarker.setEndValue(affect.end);
+                  fireZoneResized(affect);
+                  return Status.OK_STATUS;
+                }
+
+                @Override
+                public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+                    throws ExecutionException
+                {
+                  final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+                  affect.start = startBefore;
+                  affect.end = endBefore;
+                  
+                  intervalMarker.setStartValue(affect.start);
+                  intervalMarker.setEndValue(affect.end);
+                  fireZoneResized(affect);
+                  return Status.OK_STATUS;
+                }
+
+              };
+              undoRedoProvider.execute(resizeOp);
 
             }
           }
@@ -462,7 +515,9 @@ public class ZoneChart extends Composite
       }
 
       dragStartX = -1;
-      dragZones.clear();
+      dragZone = null;
+      dragZoneEndBefore = -1;
+      dragZoneStartBefore = -1;
       onDrag = false;
       move = false;
       adding = null;
@@ -735,7 +790,9 @@ public class ZoneChart extends Composite
       SWT.CURSOR_SIZEWE);
   private final JFreeChart chart;
   private ChartComposite chartComposite;
-  final List<Zone> dragZones = new ArrayList<Zone>();
+  private Zone dragZone;
+  long dragZoneStartBefore = -1;
+  long dragZoneEndBefore = -1;
   private double dragStartX = -1;
   private boolean onDrag = false;
   private boolean move = false;
