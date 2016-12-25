@@ -322,9 +322,49 @@ public class ZoneChart extends Composite
 
         if (adding != null)
         {
+          final XYPlot plot = (XYPlot) chart.getPlot();
+          final Zone affect = adding;
+          final IntervalMarker intervalMarker = zoneMarkers.get(affect);
 
-          zones.add(adding);
-          fireZoneAdded(adding);
+          AbstractOperation addOp = new AbstractOperation("Delete Zone"){
+
+            @Override
+            public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+                throws ExecutionException
+            {
+              zones.add(affect);
+              fireZoneAdded(affect);
+              return Status.OK_STATUS;
+            }
+
+            @Override
+            public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+                throws ExecutionException
+            {
+              plot.addDomainMarker(intervalMarker);
+              zoneMarkers.put(affect, intervalMarker);
+              zones.add(affect);
+              fireZoneAdded(affect);
+              return Status.OK_STATUS;
+            }
+            
+            
+
+            @Override
+            public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+                throws ExecutionException
+            {
+              plot.removeDomainMarker(intervalMarker);
+              zoneMarkers.remove(affect);
+              zones.remove(affect);
+              fireZoneRemoved(affect);
+              return Status.OK_STATUS;
+            }
+            
+            
+          };
+          undoRedoProvider.execute(addOp);
+         
         }
         else
         {
