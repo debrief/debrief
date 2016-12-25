@@ -12,8 +12,6 @@ import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
-import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -419,7 +417,6 @@ public class ZoneChart extends Composite
                 || isResizeEnd(dragZone, event.x))
             {
 
-
               final Zone affect = dragZone;
               final long startBefore = dragZoneStartBefore;
               final long endBefore = dragZoneEndBefore;
@@ -445,7 +442,7 @@ public class ZoneChart extends Composite
                   final IntervalMarker intervalMarker = zoneMarkers.get(affect);
                   affect.start = startAfter;
                   affect.end = endAfter;
-                  
+
                   intervalMarker.setStartValue(affect.start);
                   intervalMarker.setEndValue(affect.end);
                   fireZoneResized(affect);
@@ -459,7 +456,7 @@ public class ZoneChart extends Composite
                   final IntervalMarker intervalMarker = zoneMarkers.get(affect);
                   affect.start = startBefore;
                   affect.end = endBefore;
-                  
+
                   intervalMarker.setStartValue(affect.start);
                   intervalMarker.setEndValue(affect.end);
                   fireZoneResized(affect);
@@ -481,29 +478,93 @@ public class ZoneChart extends Composite
 
         if (merge_1 != null && merge_2 != null && merge_1 != merge_2)
         {
+
           final Zone resize = merge_1.start < merge_2.start ? merge_1 : merge_2;
           final Zone delete = merge_1.start < merge_2.start ? merge_2 : merge_1;
+          final IntervalMarker deleteIntervalMarker = zoneMarkers.get(delete);
+          final IntervalMarker resizeIntervalMarker = zoneMarkers.get(resize);
           final XYPlot plot = (XYPlot) chart.getPlot();
-          {
-            final IntervalMarker intervalMarker = zoneMarkers.get(delete);
-            plot.removeDomainMarker(intervalMarker);
-            zoneMarkers.remove(delete);
-            zones.remove(delete);
-            fireZoneRemoved(delete);
-          }
-
-          if (resize.end < delete.end)
-            resize.end = delete.end;
+         
+          final long endBefore = resize.end;
+          AbstractOperation mergeOp = new AbstractOperation("Resize Zone")
           {
 
-            final IntervalMarker intervalMarker = zoneMarkers.get(resize);
-            assert intervalMarker != null;
-            intervalMarker.setStartValue(resize.start);
-            intervalMarker.setEndValue(resize.end);
-          }
-          fireZoneResized(resize);
-          merge_1 = null;
-          merge_2 = null;
+            @Override
+            public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+                throws ExecutionException
+            {
+
+              {
+
+                plot.removeDomainMarker(deleteIntervalMarker);
+                zoneMarkers.remove(delete);
+                zones.remove(delete);
+                fireZoneRemoved(delete);
+              }
+
+              resize.end = delete.end;
+
+              assert resizeIntervalMarker != null;
+              resizeIntervalMarker.setStartValue(resize.start);
+              resizeIntervalMarker.setEndValue(resize.end);
+
+              fireZoneResized(resize);
+              merge_1 = null;
+              merge_2 = null;
+              return Status.OK_STATUS;
+            }
+
+            @Override
+            public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+                throws ExecutionException
+            {
+              {
+
+                plot.removeDomainMarker(deleteIntervalMarker);
+                zoneMarkers.remove(delete);
+                zones.remove(delete);
+                fireZoneRemoved(delete);
+              }
+
+              resize.end = delete.end;
+
+              assert resizeIntervalMarker != null;
+              resizeIntervalMarker.setStartValue(resize.start);
+              resizeIntervalMarker.setEndValue(resize.end);
+
+              fireZoneResized(resize);
+              return Status.OK_STATUS;
+            }
+
+            @Override
+            public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+                throws ExecutionException
+            {
+
+              {
+
+                plot.addDomainMarker(deleteIntervalMarker);
+                zoneMarkers.put(delete,deleteIntervalMarker);
+                zones.add(delete);
+                fireZoneAdded(delete);
+              }
+
+              resize.end = endBefore;
+
+              assert resizeIntervalMarker != null;
+              resizeIntervalMarker.setStartValue(resize.start);
+              resizeIntervalMarker.setEndValue(resize.end);
+
+              fireZoneResized(resize);
+              
+              
+              
+              return Status.OK_STATUS;
+            }
+
+          };
+          undoRedoProvider.execute(mergeOp);
+
         }
 
         break;
