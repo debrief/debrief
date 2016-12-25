@@ -30,11 +30,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.core.commands.operations.IOperationApprover;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
+import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -57,6 +62,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -65,8 +72,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.operations.RedoActionHandler;
-import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jfree.chart.ChartMouseEvent;
@@ -104,6 +109,7 @@ import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
+import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
 import org.mwc.debrief.track_shift.zig_detector.CumulativeLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.LegOfData;
@@ -134,8 +140,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
 
-  
-  
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
 
@@ -146,11 +150,43 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /*
    * Undo and redo actions
    */
-  private UndoActionHandler undoAction;
+  private HandlerAction undoAction;
 
-  private RedoActionHandler redoAction;
+  private HandlerAction redoAction;
 
   private IUndoContext undoContext;
+
+  private final IOperationHistory operationHistory =
+      new DefaultOperationHistory();
+
+  private final ZoneUndoRedoProvider undoRedoProvider =
+      new ZoneUndoRedoProvider()
+      {
+
+        @Override
+        public void execute(IUndoableOperation operation)
+        {
+          operation.addContext(undoContext);
+          try
+          {
+            operationHistory.execute(operation, null, null);
+          }
+          catch (ExecutionException e)
+          {
+            e.printStackTrace();
+          }
+          finally
+          {
+            if (undoAction != null)
+              undoAction.refreah();
+            if (redoAction != null)
+              redoAction.refreah();
+
+            getViewSite().getActionBars().updateActionBars();
+          }
+
+        }
+      };
 
   private enum SliceMode
   {
@@ -295,11 +331,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     _needBrg = needBrg;
     _needFreq = needFreq;
- // create the actions - the 'centre-y axis' action may get called before
+    // create the actions - the 'centre-y axis' action may get called before
     // the
     // interface is shown
     makeActions();
-   
+
   }
 
   abstract protected String getUnits();
@@ -353,12 +389,162 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private void createGlobalActionHandlers()
   {
+    final IActionBars actionBars = getViewSite().getActionBars();
     // set up action handlers that operate on the current context
-    undoAction = new UndoActionHandler(this.getSite(), undoContext);
-    redoAction = new RedoActionHandler(this.getSite(), undoContext);
-    IActionBars actionBars = getViewSite().getActionBars();
-    actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-    actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
+    undoAction = new HandlerAction()
+    {
+
+      @Override
+      public void refreah()
+      {
+        setEnabled(operationHistory.canUndo(undoContext));
+
+      }
+
+      @Override
+      public void excecute()
+      {
+        try
+        {
+          operationHistory.undo(undoContext, null, null);
+        }
+        catch (ExecutionException e)
+        {
+          e.printStackTrace();
+        }
+
+      }
+    };
+    {
+      // todo:change to debrief version of icons
+      undoAction.setText("Undo");
+
+      undoAction.setImageDescriptor(CorePlugin
+          .getImageDescriptor("icons/24/undo.png"));
+      undoAction.setDisabledImageDescriptor(CorePlugin
+          .getImageDescriptor("icons/24/undo.png"));
+      undoAction.setActionDefinitionId(ActionFactory.UNDO.getCommandId());
+    }
+    redoAction = new HandlerAction()
+    {
+
+      @Override
+      public void refreah()
+      {
+        setEnabled(operationHistory.canRedo(undoContext));
+
+      }
+
+      @Override
+      public void excecute()
+      {
+        try
+        {
+          operationHistory.redo(undoContext, null, null);
+        }
+        catch (ExecutionException e)
+        {
+          e.printStackTrace();
+        }
+
+      }
+    };
+
+    {
+      // todo:change to debrief version of icons
+      redoAction.setText("Redo");
+      redoAction.setImageDescriptor(CorePlugin
+          .getImageDescriptor("icons/24/redo.png"));
+      redoAction.setDisabledImageDescriptor(CorePlugin
+          .getImageDescriptor("icons/24/redo.png"));
+      redoAction.setActionDefinitionId(ActionFactory.REDO.getCommandId());
+    }
+
+    getViewSite().getPage().addPartListener(new IPartListener()
+    {
+
+      @Override
+      public void partOpened(IWorkbenchPart part)
+      {
+        refresh(part);
+
+      }
+
+      @Override
+      public void partDeactivated(IWorkbenchPart part)
+      {
+        refresh(part);
+
+      }
+
+      @Override
+      public void partClosed(IWorkbenchPart part)
+      {
+        refresh(part);
+
+      }
+
+      @Override
+      public void partBroughtToTop(IWorkbenchPart part)
+      {
+        refresh(part);
+
+      }
+
+      @Override
+      public void partActivated(IWorkbenchPart part)
+      {
+        refresh(part);
+
+      }
+
+      AtomicBoolean activate = new AtomicBoolean(false);
+
+      void refresh(IWorkbenchPart part)
+      {
+        if (part == BaseStackedDotsView.this)
+        {
+          activate.set(true);
+          undoAction.refreah();
+          redoAction.refreah();
+          actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
+              undoAction);
+          actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(),
+              redoAction);
+          actionBars.updateActionBars();
+        }
+        else if (activate.getAndSet(false))
+        {
+          actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), null);
+          actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), null);
+          actionBars.updateActionBars();
+        }
+
+      }
+    });
+
+    operationHistory
+        .addOperationHistoryListener(new IOperationHistoryListener()
+        {
+
+          @Override
+          public void historyNotification(OperationHistoryEvent event)
+          {
+            if (event.getEventType() == OperationHistoryEvent.REDONE
+                || event.getEventType() == OperationHistoryEvent.UNDONE)
+            {
+              undoAction.refreah();
+              redoAction.refreah();
+              actionBars.updateActionBars();
+            }
+
+          }
+        });
+  }
+
+  public ISharedImages getSharedImages()
+  {
+    return getViewSite().getWorkbenchWindow().getWorkbench().getSharedImages();
   }
 
   /*
@@ -367,15 +553,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private void initializeOperationHistory()
   {
     undoContext = new ObjectUndoContext(this);
-  }
-
-  /*
-   * Get the operation history from the workbench.
-   */
-  private IOperationHistory getOperationHistory()
-  {
-    return PlatformUI.getWorkbench().getOperationSupport()
-        .getOperationHistory();
+    operationHistory.setLimit(undoContext, 100);// TODO: maybe store as application prefrence
   }
 
   /**
@@ -386,8 +564,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
     initializeOperationHistory();
     createGlobalActionHandlers();
-    
-    
+
     parent.setLayout(new FillLayout(SWT.VERTICAL));
 
     SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
@@ -504,9 +681,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     ownshipZoneChart =
-        ZoneChart.create(getOperationHistory(),"Ownship Legs", "Course", sashForm, osZones,
-            ownshipCourseSeries, osTimeValues, blueProv, DebriefColors.BLUE,
-            ownshipLegSlicer);
+        ZoneChart.create(undoRedoProvider, "Ownship Legs", "Course", sashForm,
+            osZones, ownshipCourseSeries, osTimeValues, blueProv,
+            DebriefColors.BLUE, ownshipLegSlicer);
 
     // assign the listeners
     // TODO: pending
@@ -542,9 +719,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     targetBearingSeries = new TimeSeries("Bearing");
 
     targetZoneChart =
-        ZoneChart.create(getOperationHistory(),"Target Legs", "Bearing", sashForm, tgtZones,
-            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED,
-            null);
+        ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
+            tgtZones, targetBearingSeries, tgtTimeValues, randomProv,
+            DebriefColors.RED, null);
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]

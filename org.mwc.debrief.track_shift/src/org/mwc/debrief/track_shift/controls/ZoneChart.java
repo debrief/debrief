@@ -13,6 +13,8 @@ import java.util.Map;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -135,29 +137,7 @@ public class ZoneChart extends Composite
         }
         break;
       }
-      case MOVE:
-      {
-        for (final Zone zone : zones)
-        {
-          // find the drag area zones
-          if (findPixelX(this, zone.start) <= dragStartX
-              && findPixelX(this, zone.end) >= dragStartX)
-          {
-            dragZones.add(zone);
-            resizeStart = isResizeStart(zone, dragStartX);
-            resizeEnd = isResizeStart(zone, dragStartX);
-            move = !(resizeStart || resizeEnd);
 
-            onDrag = true;
-            if (move)
-            {
-              setCursor(handCursorDrag);
-            }
-            break;
-          }
-        }
-        break;
-      }
       case EDIT:
       {
         for (final Zone zone : zones)
@@ -215,23 +195,7 @@ public class ZoneChart extends Composite
       {
         switch (mode)
         {
-        case MOVE:
-        {
-          this.setCursor(null);
-          for (final Zone zone : zones)
-          {
-            // find the drag area zones
-            if (findPixelX(this, zone.start) <= currentX
-                && findPixelX(this, zone.end) >= currentX)
-            {
-              this.setCursor(isResizeStart(zone, currentX)
-                  || isResizeEnd(zone, currentX) ? resizeCursor : handCursor);
-              break;
-            }
 
-          }
-          break;
-        }
         case MERGE:
         {
           this.setCursor(null);
@@ -291,48 +255,7 @@ public class ZoneChart extends Composite
 
       switch (mode)
       {
-      case MOVE:
-      {
 
-        if (onDrag && !dragZones.isEmpty() && dragStartX > 0)
-        {
-
-          if (move)
-          {
-            setCursor(handCursorDrag);
-          }
-
-          final double diff = Math.round(currentX - dragStartX);
-          if (diff != 0)
-          {
-
-            for (final Zone z : dragZones)
-            {
-              if (move)
-              {
-                z.start = findDomainX(this, findPixelX(this, z.start) + diff);
-                z.end = findDomainX(this, findPixelX(this, z.end) + diff);
-
-              }
-              else
-              {
-                resize(z, currentX);
-              }
-              final IntervalMarker intervalMarker = zoneMarkers.get(z);
-              assert intervalMarker != null;
-              intervalMarker.setStartValue(z.start);
-              intervalMarker.setEndValue(z.end);
-            }
-
-          }
-
-        }
-
-        else
-          super.mouseMove(event);
-
-        break;
-      }
       case EDIT:
       {
 
@@ -393,27 +316,6 @@ public class ZoneChart extends Composite
       }
       switch (mode)
       {
-      case MOVE:
-      {
-        if (onDrag)
-        {
-          for (final Zone z : dragZones)
-          {
-            if (move)
-            {
-              fireZoneMoved(z);
-            }
-            else
-            {
-              fireZoneResized(z);
-            }
-          }
-
-        }
-
-        break;
-
-      }
 
       case EDIT:
       {
@@ -432,22 +334,21 @@ public class ZoneChart extends Composite
             if (!onDrag && isDelete(z, event.x))
             {
               final IntervalMarker intervalMarker = zoneMarkers.get(z);
-             
-              
+
               AbstractOperation deleteOp = new AbstractOperation("Delete Zone")
               {
-                
+
                 @Override
                 public IStatus undo(IProgressMonitor monitor, IAdaptable info)
                     throws ExecutionException
                 {
                   plot.addDomainMarker(intervalMarker);
-                  zoneMarkers.put(z,intervalMarker);
+                  zoneMarkers.put(z, intervalMarker);
                   zones.add(z);
                   fireZoneAdded(z);
                   return Status.OK_STATUS;
                 }
-                
+
                 @Override
                 public IStatus redo(IProgressMonitor monitor, IAdaptable info)
                     throws ExecutionException
@@ -458,39 +359,18 @@ public class ZoneChart extends Composite
                   fireZoneRemoved(z);
                   return Status.OK_STATUS;
                 }
-                
+
                 @Override
-                public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-                    throws ExecutionException
+                public IStatus
+                    execute(IProgressMonitor monitor, IAdaptable info)
+                        throws ExecutionException
                 {
                   return redo(monitor, info);
                 }
-              }; 
-              
-              if(operationHistory!=null)
-              {
-                try
-                {
-                  operationHistory.execute(deleteOp, null, null);
-                }
-                catch (ExecutionException e)
-                {
-                  e.printStackTrace();
-                }
-              }
-              else
-              {
-                try
-                {
-                  deleteOp.execute(null, null);
-                }
-                catch (ExecutionException e)
-                {
-                  e.printStackTrace();
-                }
-              }
-              
-             
+              };
+
+              undoRedoProvider.execute(deleteOp);
+
             }
             else if (isResizeStart(z, event.x) || isResizeEnd(z, event.x))
             {
@@ -588,7 +468,7 @@ public class ZoneChart extends Composite
 
   public enum EditMode
   {
-    MOVE, EDIT, ZOOM, MERGE
+    EDIT, ZOOM, MERGE
   }
 
   public static class Zone
@@ -681,10 +561,11 @@ public class ZoneChart extends Composite
     ArrayList<Zone> performSlicing();
   }
 
-  public static ZoneChart create(final IOperationHistory operationHistory, final String chartTitle, final String yTitle,
-      final Composite parent, final Zone[] zones, final long[] timeValues,
-      final long[] angleValues, final ColorProvider blueProv,
-      final Color lineColor, final ZoneSlicer zoneSlicer)
+  public static ZoneChart create(final ZoneUndoRedoProvider undoRedoProvider,
+      final String chartTitle, final String yTitle, final Composite parent,
+      final Zone[] zones, final long[] timeValues, final long[] angleValues,
+      final ColorProvider blueProv, final Color lineColor,
+      final ZoneSlicer zoneSlicer)
   {
     // build the jfreechart Plot
     final TimeSeries xySeries = new TimeSeries("");
@@ -694,15 +575,38 @@ public class ZoneChart extends Composite
       xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
 
-    return create(operationHistory,chartTitle, yTitle, parent, zones, xySeries, timeValues,
-        blueProv, lineColor, zoneSlicer);
+    return create(undoRedoProvider, chartTitle, yTitle, parent, zones,
+        xySeries, timeValues, blueProv, lineColor, zoneSlicer);
   }
 
-  public static ZoneChart create(final IOperationHistory operationHistory,  final String chartTitle, final String yTitle,
-      final Composite parent, final Zone[] zones, final TimeSeries xySeries,
-      final long[] timeValues, final ColorProvider blueProv,
-      final Color lineColor, final ZoneSlicer zoneSlicer)
+  public static ZoneChart create(ZoneUndoRedoProvider undoRedoProvider,
+      final String chartTitle, final String yTitle, final Composite parent,
+      final Zone[] zones, final TimeSeries xySeries, final long[] timeValues,
+      final ColorProvider blueProv, final Color lineColor,
+      final ZoneSlicer zoneSlicer)
   {
+
+    if (undoRedoProvider == null)
+    {
+      // switch to dummy provider
+      undoRedoProvider = new ZoneUndoRedoProvider()
+      {
+
+        @Override
+        public void execute(IUndoableOperation operation)
+        {
+          try
+          {
+            operation.execute(null, null);
+          }
+          catch (ExecutionException e)
+          {
+            e.printStackTrace();
+          }
+
+        }
+      };
+    }
 
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
@@ -731,8 +635,8 @@ public class ZoneChart extends Composite
 
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
-        new ZoneChart(parent, xylineChart,operationHistory, zones, blueProv, zoneSlicer,
-            xySeries);
+        new ZoneChart(parent, xylineChart, undoRedoProvider, zones, blueProv,
+            zoneSlicer, xySeries);
 
     // done
     return zoneChart;
@@ -768,7 +672,7 @@ public class ZoneChart extends Composite
       "/icons/24/fit_to_win.png").createImage();
   private final Image calculator24 = CorePlugin.getImageDescriptor(
       "/icons/24/calculator.png").createImage();
-  
+
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
 
@@ -811,14 +715,15 @@ public class ZoneChart extends Composite
 
   private final TimeSeries xySeries;
 
-  private final IOperationHistory operationHistory;
-  
-  private ZoneChart(final Composite parent, final JFreeChart xylineChart, IOperationHistory operationHistory,
-      final Zone[] zones, final ColorProvider colorProvider,
-      final ZoneSlicer zoneSlicer, final TimeSeries xySeries)
+  private final ZoneUndoRedoProvider undoRedoProvider;
+
+  private ZoneChart(final Composite parent, final JFreeChart xylineChart,
+      ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
+      final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
+      final TimeSeries xySeries)
   {
     super(parent, SWT.NONE);
-    this.operationHistory =operationHistory;
+    this.undoRedoProvider = undoRedoProvider;
     this.chart = xylineChart;
     buildUI(xylineChart);
     this.zones.addAll(Arrays.asList(zones));
@@ -964,73 +869,77 @@ public class ZoneChart extends Composite
           else
           {
             // do we have any data?
-        //    if(xySeries == null || xySeries.getItemCount() == 0)
-         //   {
-              // ok, populate the data
-              IEditorPart curEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-              if(curEditor instanceof IAdaptable)
+            // if(xySeries == null || xySeries.getItemCount() == 0)
+            // {
+            // ok, populate the data
+            IEditorPart curEditor =
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                    .getActivePage().getActiveEditor();
+            if (curEditor instanceof IAdaptable)
+            {
+              Layers layers = (Layers) curEditor.getAdapter(Layers.class);
+              if (layers != null)
               {
-                Layers layers = (Layers) curEditor.getAdapter(Layers.class);
-                if(layers != null)
+                // prob have some data - so we can clear the list
+                xySeries.clear();
+
+                // find the first track
+                Enumeration<Editable> numer = layers.elements();
+                while (numer.hasMoreElements())
                 {
-                  // prob have some data - so we can clear the list
-                  xySeries.clear();
-                  
-                  // find the first track
-                  Enumeration<Editable> numer = layers.elements();
-                  while (numer.hasMoreElements())
+                  Layer thisL = (Layer) numer.nextElement();
+                  if (thisL instanceof TrackWrapper)
                   {
-                    Layer thisL = (Layer) numer.nextElement();
-                    if(thisL instanceof TrackWrapper)
+                    // ok, go for it.
+                    TrackWrapper thisT = (TrackWrapper) thisL;
+                    Enumeration<Editable> posits = thisT.getPositions();
+                    while (posits.hasMoreElements())
                     {
-                      // ok, go for it.
-                      TrackWrapper thisT = (TrackWrapper) thisL;
-                      Enumeration<Editable> posits = thisT.getPositions();
-                      while (posits.hasMoreElements())
-                      {
-                        FixWrapper thisF = (FixWrapper) posits.nextElement();
-                        TimeSeriesDataItem newItem = new TimeSeriesDataItem(new FixedMillisecond(thisF.getDateTimeGroup().getDate().getTime()),
-                            thisF.getCourseDegs());
-                        xySeries.add(newItem, false);
-                      }
-                      
-                      // ok, share the good news
-                      xySeries.fireSeriesChanged();
-                      
-                      // and we can stop looping
-                      break;
+                      FixWrapper thisF = (FixWrapper) posits.nextElement();
+                      TimeSeriesDataItem newItem =
+                          new TimeSeriesDataItem(new FixedMillisecond(thisF
+                              .getDateTimeGroup().getDate().getTime()), thisF
+                              .getCourseDegs());
+                      xySeries.add(newItem, false);
                     }
+
+                    // ok, share the good news
+                    xySeries.fireSeriesChanged();
+
+                    // and we can stop looping
+                    break;
                   }
                 }
               }
             }
-            
-            // ok, do the slicing
-            final List<Zone> newZones = zoneSlicer.performSlicing();
+          }
 
-            final XYPlot thePlot = (XYPlot) chart.getPlot();
+          // ok, do the slicing
+          final List<Zone> newZones = zoneSlicer.performSlicing();
 
-            // and ditch the intervals
-            for (final Zone thisZone : zones)
-            {
-              // remove this marker
-              final IntervalMarker thisM = zoneMarkers.get(thisZone);
-              thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
-            }
+          final XYPlot thePlot = (XYPlot) chart.getPlot();
 
-            // ok, now ditch the old zone lists
-            zones.clear();
-            zoneMarkers.clear();
+          // and ditch the intervals
+          for (final Zone thisZone : zones)
+          {
+            // remove this marker
+            final IntervalMarker thisM = zoneMarkers.get(thisZone);
+            thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
+          }
 
-            // store the zones
-            zones.addAll(newZones);
+          // ok, now ditch the old zone lists
+          zones.clear();
+          zoneMarkers.clear();
 
-            // and create the new intervals
-            for (final Zone thisZone : newZones)
-            {
-              addZone(thePlot, thisZone);
-            }
-       //   }
+          // store the zones
+          zones.addAll(newZones);
+
+          // and create the new intervals
+          for (final Zone thisZone : newZones)
+          {
+            addZone(thePlot, thisZone);
+          }
+          // }
         }
       });
     }
