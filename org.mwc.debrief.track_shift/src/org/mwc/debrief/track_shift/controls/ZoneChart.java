@@ -70,6 +70,44 @@ public class ZoneChart extends Composite
     {
       super(parent, SWT.NONE, chart, 400, 600, 300, 100, 1800, 1800, true,
           false, false, false, false, true);
+      
+      
+    }
+    @Override
+    public void zoom(final Rectangle selection)
+    {
+      AbstractOperation addOp = new AbstractOperation("Zoom")
+      {
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+            throws ExecutionException
+        {
+
+          CustomChartComposite.super.zoom(selection);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+            throws ExecutionException
+        {
+
+          CustomChartComposite.super.zoom(selection);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+            throws ExecutionException
+        {
+
+          CustomChartComposite.super.restoreAutoBounds();
+          return Status.OK_STATUS;
+        }
+
+      };
+      undoRedoProvider.execute(addOp);
     }
 
     private boolean isDelete(final Zone zone, final double x)
