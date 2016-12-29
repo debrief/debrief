@@ -398,6 +398,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void refreah()
       {
         setEnabled(operationHistory.canUndo(undoContext));
+       
+        if(isEnabled())
+        {
+          String toolTipText = "Undo " + operationHistory.getUndoOperation(undoContext).getLabel();
+          setText(toolTipText);
+          setToolTipText(toolTipText);
+        }
 
       }
 
@@ -432,6 +439,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void refreah()
       {
         setEnabled(operationHistory.canRedo(undoContext));
+        if(isEnabled())
+        {
+          String toolTipText = "Redo " + operationHistory.getRedoOperation(undoContext).getLabel();
+          setText(toolTipText);
+          setToolTipText(toolTipText);
+        }
 
       }
 
