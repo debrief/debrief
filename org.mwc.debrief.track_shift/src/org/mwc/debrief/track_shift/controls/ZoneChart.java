@@ -78,6 +78,54 @@ public class ZoneChart extends Composite
 
     private Stack<Rectangle> zoomHistory = new Stack<Rectangle>();
 
+    void fitToData()
+    {
+      final List<Rectangle> zoomRedoHistory = new ArrayList<>(zoomHistory);
+
+      AbstractOperation addOp = new AbstractOperation("Show all data")
+      {
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+            throws ExecutionException
+        {
+
+          zoomHistory.clear();
+
+          CustomChartComposite.super.restoreAutoBounds();
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+            throws ExecutionException
+        {
+          zoomHistory.clear();
+
+          CustomChartComposite.super.restoreAutoBounds();
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+            throws ExecutionException
+        {
+
+          CustomChartComposite.super.restoreAutoBounds();
+          zoomHistory.addAll(zoomRedoHistory);
+
+          for (Rectangle h : zoomHistory)
+          {
+            CustomChartComposite.super.zoom(h);
+          }
+
+          return Status.OK_STATUS;
+        }
+
+      };
+      undoRedoProvider.execute(addOp);
+    }
+
     @Override
     public void zoom(final Rectangle selection)
     {
@@ -110,8 +158,8 @@ public class ZoneChart extends Composite
             throws ExecutionException
         {
 
-          if (zoomHistory.isEmpty())
-            zoomHistory.pop();
+          if (!zoomHistory.isEmpty())
+                zoomHistory.pop();
           CustomChartComposite.super.restoreAutoBounds();
           for (Rectangle h : zoomHistory)
           {
@@ -902,7 +950,7 @@ public class ZoneChart extends Composite
   private final Cursor resizeCursor = new Cursor(Display.getDefault(),
       SWT.CURSOR_SIZEWE);
   private final JFreeChart chart;
-  private ChartComposite chartComposite;
+  private CustomChartComposite chartComposite;
   private Zone dragZone;
   long dragZoneStartBefore = -1;
   long dragZoneEndBefore = -1;
@@ -1059,12 +1107,9 @@ public class ZoneChart extends Composite
         @Override
         public void widgetSelected(final SelectionEvent e)
         {
-          final XYPlot plot = (XYPlot) chart.getPlot();
-
-          // NOTE: for some reason, we have to do the domain before the
-          // range to get the full resize
-          plot.getDomainAxis().setAutoRange(true);
-          plot.getRangeAxis().setAutoRange(true);
+          
+          chartComposite.fitToData();
+          
         }
       });
       calculate.addSelectionListener(new SelectionAdapter()
