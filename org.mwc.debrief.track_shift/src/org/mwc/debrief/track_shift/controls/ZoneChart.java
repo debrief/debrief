@@ -524,7 +524,7 @@ public class ZoneChart extends Composite
           final XYPlot plot = (XYPlot) chart.getPlot();
          
           final long endBefore = resize.end;
-          AbstractOperation mergeOp = new AbstractOperation("Resize Zone")
+          AbstractOperation mergeOp = new AbstractOperation("Merge Zone")
           {
 
             @Override
