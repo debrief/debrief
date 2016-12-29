@@ -414,6 +414,7 @@ public class ZoneChart extends Composite
             {
               final IntervalMarker intervalMarker = zoneMarkers.get(dragZone);
 
+              final Zone affect = dragZone;
               AbstractOperation deleteOp = new AbstractOperation("Delete Zone")
               {
 
@@ -422,9 +423,9 @@ public class ZoneChart extends Composite
                     throws ExecutionException
                 {
                   plot.addDomainMarker(intervalMarker);
-                  zoneMarkers.put(dragZone, intervalMarker);
-                  zones.add(dragZone);
-                  fireZoneAdded(dragZone);
+                  zoneMarkers.put(affect, intervalMarker);
+                  zones.add(affect);
+                  fireZoneAdded(affect);
                   return Status.OK_STATUS;
                 }
 
@@ -433,9 +434,9 @@ public class ZoneChart extends Composite
                     throws ExecutionException
                 {
                   plot.removeDomainMarker(intervalMarker);
-                  zoneMarkers.remove(dragZone);
-                  zones.remove(dragZone);
-                  fireZoneRemoved(dragZone);
+                  zoneMarkers.remove(affect);
+                  zones.remove(affect);
+                  fireZoneRemoved(affect);
                   return Status.OK_STATUS;
                 }
 
