@@ -367,7 +367,7 @@ public class ZoneChart extends Composite
           final Zone affect = adding;
           final IntervalMarker intervalMarker = zoneMarkers.get(affect);
 
-          AbstractOperation addOp = new AbstractOperation("Delete Zone")
+          AbstractOperation addOp = new AbstractOperation("Add Zone")
           {
 
             @Override
