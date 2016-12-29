@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Stack;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.commands.operations.ICompositeOperation;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,8 +47,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
-
-import com.sun.media.ui.Slider;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -159,7 +159,7 @@ public class ZoneChart extends Composite
         {
 
           if (!zoomHistory.isEmpty())
-                zoomHistory.pop();
+            zoomHistory.pop();
           CustomChartComposite.super.restoreAutoBounds();
           for (Rectangle h : zoomHistory)
           {
@@ -1107,9 +1107,9 @@ public class ZoneChart extends Composite
         @Override
         public void widgetSelected(final SelectionEvent e)
         {
-          
+
           chartComposite.fitToData();
-          
+
         }
       });
       calculate.addSelectionListener(new SelectionAdapter()
@@ -1123,6 +1123,10 @@ public class ZoneChart extends Composite
           }
           else
           {
+
+            final ReversibleOperation reversibleOperation =
+                new ReversibleOperation("Slice legs");
+
             // do we have any data?
             // if(xySeries == null || xySeries.getItemCount() == 0)
             // {
@@ -1132,11 +1136,14 @@ public class ZoneChart extends Composite
                     .getActivePage().getActiveEditor();
             if (curEditor instanceof IAdaptable)
             {
-              Layers layers = (Layers) curEditor.getAdapter(Layers.class);
+              final Layers layers = (Layers) curEditor.getAdapter(Layers.class);
               if (layers != null)
               {
-                // prob have some data - so we can clear the list
-                xySeries.clear();
+                @SuppressWarnings("unchecked")
+                final List<TimeSeriesDataItem> undoData =
+                    new ArrayList<TimeSeriesDataItem>(xySeries.getItems());
+                final List<TimeSeriesDataItem> data =
+                    new ArrayList<TimeSeriesDataItem>();
 
                 // find the first track
                 Enumeration<Editable> numer = layers.elements();
@@ -1155,46 +1162,151 @@ public class ZoneChart extends Composite
                           new TimeSeriesDataItem(new FixedMillisecond(thisF
                               .getDateTimeGroup().getDate().getTime()), thisF
                               .getCourseDegs());
-                      xySeries.add(newItem, false);
+                      data.add(newItem);
                     }
-
-                    // ok, share the good news
-                    xySeries.fireSeriesChanged();
 
                     // and we can stop looping
                     break;
                   }
                 }
+
+                reversibleOperation.add(new AbstractOperation("populate data")
+                {
+
+                  @Override
+                  public IStatus
+                      undo(IProgressMonitor monitor, IAdaptable info)
+                          throws ExecutionException
+                  {
+
+                    xySeries.clear();
+
+                    for (TimeSeriesDataItem item : undoData)
+                    {
+                      xySeries.add(item, false);
+                    }
+                    // ok, share the good news
+                    xySeries.fireSeriesChanged();
+
+                    return Status.OK_STATUS;
+                  }
+
+                  @Override
+                  public IStatus
+                      redo(IProgressMonitor monitor, IAdaptable info)
+                          throws ExecutionException
+                  {
+                    return execute(monitor, info);
+                  }
+
+                  @Override
+                  public IStatus execute(IProgressMonitor monitor,
+                      IAdaptable info) throws ExecutionException
+                  {
+
+                    // prob have some data - so we can clear the list
+                    xySeries.clear();
+
+                    for (TimeSeriesDataItem item : data)
+                    {
+                      xySeries.add(item, false);
+                    }
+                    // ok, share the good news
+                    xySeries.fireSeriesChanged();
+
+                    return Status.OK_STATUS;
+                  }
+                });
+
               }
             }
+
+            
+            
+            
+            // ok, do the slicing
+            final List<Zone> newZones = zoneSlicer.performSlicing();
+            
+            final List<Zone> undoZones = new ArrayList<>(zones);
+            final Map<Zone, IntervalMarker> undozoneMarkers =
+                new HashMap<ZoneChart.Zone, IntervalMarker>(zoneMarkers);
+
+            final XYPlot thePlot = (XYPlot) chart.getPlot();
+            
+            
+            
+            reversibleOperation.add(new AbstractOperation("populate new zones")
+            {
+
+              @Override
+              public IStatus
+                  undo(IProgressMonitor monitor, IAdaptable info)
+                      throws ExecutionException
+              {
+
+                // and ditch the intervals
+                for (final IntervalMarker marker : zoneMarkers.values())
+                {
+                  thePlot.removeDomainMarker(marker, org.jfree.ui.Layer.FOREGROUND);
+                }
+
+                
+                zones.clear();
+                zoneMarkers.clear();
+
+                // store the old zones
+                zones.addAll(undoZones);
+                zoneMarkers.putAll(undozoneMarkers);
+                for (IntervalMarker intervalMarker :  zoneMarkers.values())
+                {
+                  thePlot.addDomainMarker(intervalMarker);
+                }
+
+                return Status.OK_STATUS;
+              }
+
+              @Override
+              public IStatus
+                  redo(IProgressMonitor monitor, IAdaptable info)
+                      throws ExecutionException
+              {
+                return execute(monitor, info);
+              }
+
+              @Override
+              public IStatus execute(IProgressMonitor monitor,
+                  IAdaptable info) throws ExecutionException
+              {
+
+             // and ditch the intervals
+                for (final Zone thisZone : zones)
+                {
+                  // remove this marker
+                  final IntervalMarker thisM = zoneMarkers.get(thisZone);
+                  thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
+                }
+
+                // ok, now ditch the old zone lists
+                zones.clear();
+                zoneMarkers.clear();
+
+                // store the zones
+                zones.addAll(newZones);
+
+                // and create the new intervals
+                for (final Zone thisZone : newZones)
+                {
+                  addZone(thePlot, thisZone);
+                }
+
+                return Status.OK_STATUS;
+              }
+            });
+            
+
+            undoRedoProvider.execute(reversibleOperation);
+            
           }
-
-          // ok, do the slicing
-          final List<Zone> newZones = zoneSlicer.performSlicing();
-
-          final XYPlot thePlot = (XYPlot) chart.getPlot();
-
-          // and ditch the intervals
-          for (final Zone thisZone : zones)
-          {
-            // remove this marker
-            final IntervalMarker thisM = zoneMarkers.get(thisZone);
-            thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
-          }
-
-          // ok, now ditch the old zone lists
-          zones.clear();
-          zoneMarkers.clear();
-
-          // store the zones
-          zones.addAll(newZones);
-
-          // and create the new intervals
-          for (final Zone thisZone : newZones)
-          {
-            addZone(thePlot, thisZone);
-          }
-          // }
         }
       });
     }
