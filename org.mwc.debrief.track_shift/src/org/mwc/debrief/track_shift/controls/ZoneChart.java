@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
@@ -45,6 +46,8 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 
+import com.sun.media.ui.Slider;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -70,12 +73,15 @@ public class ZoneChart extends Composite
     {
       super(parent, SWT.NONE, chart, 400, 600, 300, 100, 1800, 1800, true,
           false, false, false, false, true);
-      
-      
+
     }
+
+    private Stack<Rectangle> zoomHistory = new Stack<Rectangle>();
+
     @Override
     public void zoom(final Rectangle selection)
     {
+
       AbstractOperation addOp = new AbstractOperation("Zoom")
       {
 
@@ -83,6 +89,8 @@ public class ZoneChart extends Composite
         public IStatus execute(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
+
+          zoomHistory.add(selection);
 
           CustomChartComposite.super.zoom(selection);
           return Status.OK_STATUS;
@@ -92,7 +100,7 @@ public class ZoneChart extends Composite
         public IStatus redo(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
-
+          zoomHistory.add(selection);
           CustomChartComposite.super.zoom(selection);
           return Status.OK_STATUS;
         }
@@ -102,7 +110,14 @@ public class ZoneChart extends Composite
             throws ExecutionException
         {
 
+          if (zoomHistory.isEmpty())
+            zoomHistory.pop();
           CustomChartComposite.super.restoreAutoBounds();
+          for (Rectangle h : zoomHistory)
+          {
+            CustomChartComposite.super.zoom(h);
+          }
+
           return Status.OK_STATUS;
         }
 
@@ -523,7 +538,7 @@ public class ZoneChart extends Composite
           final IntervalMarker deleteIntervalMarker = zoneMarkers.get(delete);
           final IntervalMarker resizeIntervalMarker = zoneMarkers.get(resize);
           final XYPlot plot = (XYPlot) chart.getPlot();
-         
+
           final long endBefore = resize.end;
           AbstractOperation mergeOp = new AbstractOperation("Merge Zone")
           {
@@ -583,7 +598,7 @@ public class ZoneChart extends Composite
               {
 
                 plot.addDomainMarker(deleteIntervalMarker);
-                zoneMarkers.put(delete,deleteIntervalMarker);
+                zoneMarkers.put(delete, deleteIntervalMarker);
                 zones.add(delete);
                 fireZoneAdded(delete);
               }
@@ -595,9 +610,7 @@ public class ZoneChart extends Composite
               resizeIntervalMarker.setEndValue(resize.end);
 
               fireZoneResized(resize);
-              
-              
-              
+
               return Status.OK_STATUS;
             }
 
