@@ -405,6 +405,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           setText(toolTipText);
           setToolTipText(toolTipText);
         }
+        else
+        {
+          setText("Undo");
+          setToolTipText("Undo");
+        }
 
       }
 
@@ -444,6 +449,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           String toolTipText = "Redo " + operationHistory.getRedoOperation(undoContext).getLabel();
           setText(toolTipText);
           setToolTipText(toolTipText);
+        }
+        else
+        {
+          setText("Redo");
+          setToolTipText("Redo");
         }
 
       }
