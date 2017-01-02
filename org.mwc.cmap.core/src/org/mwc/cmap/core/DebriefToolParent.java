@@ -160,6 +160,9 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	{
 		CorePlugin.logError(status, text, e);
 		//prompt Error Log view to user up on error report.
+		if( PlatformUI.getWorkbench()!=null 
+		    &&  PlatformUI.getWorkbench().getActiveWorkbenchWindow()!=null 
+		    &&  PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()!=null)
 		try
     {
       PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.eclipse.pde.runtime.LogView");
