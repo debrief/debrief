@@ -14,7 +14,8 @@
  */
 package org.mwc.cmap.core;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
@@ -23,6 +24,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.SelectImportModeDialog;
@@ -157,6 +159,15 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	public void logError(final int status, final String text, final Exception e)
 	{
 		CorePlugin.logError(status, text, e);
+		//prompt Error Log view to user up on error report.
+		try
+    {
+      PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.eclipse.pde.runtime.LogView");
+    }
+    catch (PartInitException e1)
+    {
+      e1.printStackTrace();
+    }
 	}
 
 	/** popup a dialog to let the user select the import mode
