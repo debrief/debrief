@@ -155,13 +155,18 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 
   }
 
-  public void logError(final int status, final String text, final Exception e)
+  @Override
+  public void
+      logError(final int status, final String text, final Exception e, final boolean revealLog)
   {
     CorePlugin.logError(status, text, e);
-    // prompt Error Log view to user up on error report.
-    if (PlatformUI.getWorkbench() != null
+    
+    // prompt Error Log view to user up on error report (if requested)
+    if (revealLog 
+        && PlatformUI.getWorkbench() != null
         && PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null
         && PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage() != null)
+    {
       try
       {
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
@@ -171,6 +176,12 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
       {
         e1.printStackTrace();
       }
+    }
+  }
+
+  public void logError(final int status, final String text, final Exception e)
+  {
+    logError(status, text, e, false);
   }
 
   /**
