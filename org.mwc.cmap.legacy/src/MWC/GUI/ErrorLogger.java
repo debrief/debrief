@@ -55,7 +55,22 @@ public interface ErrorLogger {
 	 * @param e any relevant exceptin
 	 */
 	  public void logError(int status, String text, Exception e);
-	  
+
+  /**
+   * log an error, somehow
+   * 
+   * @param status
+   *          the status code (error, warning, etc)
+   * @param text
+   *          the error message to display/record
+   * @param e
+   *          any relevant exceptin
+   * @param revealLog
+   *          whether to force the error log to be visible
+   */
+  public void
+      logError(int status, String text, Exception e, boolean revealLog);
+
 	/** show the current call stack
 	 * 
 	 */
