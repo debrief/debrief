@@ -165,7 +165,8 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 		    &&  PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()!=null)
 		try
     {
-      PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.eclipse.pde.runtime.LogView");
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+            .showView("org.eclipse.pde.runtime.LogView");
     }
     catch (PartInitException e1)
     {
