@@ -161,22 +161,39 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
   {
     CorePlugin.logError(status, text, e);
     
+    
     // prompt Error Log view to user up on error report (if requested)
-    if (revealLog 
-        && PlatformUI.getWorkbench() != null
-        && PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null
-        && PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage() != null)
+    if(revealLog)
     {
-      try
+      final Display current = Display.getDefault();
+      if(current!=null)
       {
-        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-            .showView("org.eclipse.pde.runtime.LogView");
-      }
-      catch (PartInitException e1)
-      {
-        e1.printStackTrace();
+        current.asyncExec(new Runnable()
+        {
+          
+          @Override
+          public void run()
+          {
+            if ( PlatformUI.getWorkbench() != null
+                && PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null
+                && PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage() != null)
+            {
+              try
+              {
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                    .showView("org.eclipse.pde.runtime.LogView");
+              }
+              catch (PartInitException e1)
+              {
+                e1.printStackTrace();
+              }
+            }
+            
+          }
+        });
       }
     }
+    
   }
 
   public void logError(final int status, final String text, final Exception e)
