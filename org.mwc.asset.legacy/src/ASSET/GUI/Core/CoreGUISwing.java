@@ -581,6 +581,14 @@ abstract public class CoreGUISwing extends CoreGUI implements
 			System.err.println("ASSET Problem:" + text);
 			e.printStackTrace();
 		}
+
+    @Override
+    public void
+        logError(int status, String text, Exception e, boolean revealLog)
+    {
+      logError(status, text, e);
+    }
+
 	}
 
 	protected void setTime(final String val)
