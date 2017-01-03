@@ -246,4 +246,11 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
   {
     logError(status, "Stack trace requestesd:" + text, null);
   }
+
+  @Override
+  public void
+      logError(int status, String text, Exception e, boolean revealLog)
+  {
+    logError(status, text, e);
+  }
 }

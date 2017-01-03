@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 import junit.framework.TestCase;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
@@ -1093,7 +1092,7 @@ public class ImportNarrativeDocument
 
   public static void logThisError(final int status, final String msg, final Exception e)
   {
-    Application.logError2(status, msg, e);
+    Application.logError3(status, msg, e, true);
   }
 
   /**

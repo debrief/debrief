@@ -1501,6 +1501,13 @@ public class ImportReplay extends PlainImporterBase
           final Exception e)
       {
 
+      } 
+
+      @Override
+      public void logError(int status, String text, Exception e,
+          boolean revealLog)
+      {
+        logError(status, text, e);
       }
 
       @Override

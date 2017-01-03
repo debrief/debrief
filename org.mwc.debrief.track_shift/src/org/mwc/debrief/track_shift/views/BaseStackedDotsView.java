@@ -1105,6 +1105,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       clearPlots();
     }
   }
+  
+  @Override
+  public void
+      logError(int status, String text, Exception e, boolean revealLog)
+  {
+    logError(status, text, e);
+  }
+
 
   @Override
   public void logStack(int status, String text)
