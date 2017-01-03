@@ -163,24 +163,25 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
     
     
     // prompt Error Log view to user up on error report (if requested)
-    if(revealLog)
+    if (revealLog)
     {
       final Display current = Display.getDefault();
-      if(current!=null)
+      if (current != null)
       {
-        current.asyncExec(new Runnable()
+        final Runnable showLog = new Runnable()
         {
-          
           @Override
           public void run()
           {
-            if ( PlatformUI.getWorkbench() != null
+            if (PlatformUI.getWorkbench() != null
                 && PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null
-                && PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage() != null)
+                && PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                    .getActivePage() != null)
             {
               try
               {
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                    .getActivePage()
                     .showView("org.eclipse.pde.runtime.LogView");
               }
               catch (PartInitException e1)
@@ -188,12 +189,11 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
                 e1.printStackTrace();
               }
             }
-            
           }
-        });
+        };
+        current.asyncExec(showLog);
       }
     }
-    
   }
 
   public void logError(final int status, final String text, final Exception e)
