@@ -9,7 +9,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
@@ -76,16 +75,13 @@ public class ZoneChart extends Composite
 
     void fitToData()
     {
-      final Stack<Rectangle2D> previousArea = new Stack<Rectangle2D>();
+      final Rectangle2D previousArea = getCurrentCoverage();
       final AbstractOperation addOp = new AbstractOperation("Show all data")
       {
         @Override
         public IStatus execute(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
         {
-          // get the current area
-          previousArea.add(getCurrentCoverage());
-
           CustomChartComposite.super.restoreAutoBounds();
           return Status.OK_STATUS;
         }
@@ -101,17 +97,10 @@ public class ZoneChart extends Composite
         public IStatus undo(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
         {
-          final Rectangle2D curArea = getCurrentCoverage();
-
           // restore the previous area
-          final Rectangle2D oldArea = previousArea.pop();
-          setCurrentCoverage(oldArea);
-
-          // store the area, for when we redo
-          previousArea.push(curArea);
+          setCurrentCoverage(previousArea);
           return Status.OK_STATUS;
         }
-
       };
       undoRedoProvider.execute(addOp);
     }
@@ -138,7 +127,6 @@ public class ZoneChart extends Composite
 
     private boolean isDelete(final Zone zone, final double x)
     {
-
       final long pixelXStart = findPixelX(this, zone.start);
       final long pixelXEnd = findPixelX(this, zone.end);
       return ((x - pixelXStart) > 8 && (x - pixelXStart) >= 0)
@@ -153,7 +141,6 @@ public class ZoneChart extends Composite
 
     private boolean isResizeStart(final Zone zone, final double x)
     {
-
       final long pixelXStart = findPixelX(this, zone.start);
       return (x - pixelXStart) < 5 && (x - pixelXStart) >= -1;
     }
@@ -161,22 +148,17 @@ public class ZoneChart extends Composite
     @Override
     public void mouseDown(final MouseEvent event)
     {
-      if (mode == EditMode.ZOOM)
-      {
-
-        super.mouseDown(event);
-        return;
-      }
-
       dragZone = null;
       dragZoneStartBefore = -1L;
       dragZoneEndBefore = -1L;
-
-      dragStartX = event.x;// findDomainX(this, event.x);
+      dragStartX = event.x;
 
       switch (mode)
       {
-
+        case ZOOM:
+        {
+          break;
+        }
         case MERGE:
         {
           this.setCursor(null);
@@ -196,23 +178,18 @@ public class ZoneChart extends Composite
                 merge_2 = zone;
                 break;
               }
-
             }
-
           }
           break;
         }
-
         case EDIT:
         {
           for (final Zone zone : zones)
           {
             // find the drag area zones
-
             if (findPixelX(this, zone.start) <= dragStartX
                 && findPixelX(this, zone.end) >= dragStartX)
             {
-
               resizeStart = isResizeStart(zone, dragStartX);
               resizeEnd = isResizeEnd(zone, dragStartX);
               dragZone = zone;
@@ -231,22 +208,15 @@ public class ZoneChart extends Composite
             final long val2 = toNearDomainValue(val1, true);
             adding =
                 new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2);
-
             addZone(plot, adding);
           }
-
           break;
         }
-
-        default:
-          break;
       }
-
       if (dragZone == null)
       {
         super.mouseDown(event);
       }
-
     }
 
     @Override
@@ -288,7 +258,6 @@ public class ZoneChart extends Composite
               for (final Zone zone : zones)
               {
                 // find the drag area zones
-
                 if (findPixelX(this, zone.start) <= currentX
                     && findPixelX(this, zone.end) >= currentX)
                 {
@@ -308,14 +277,11 @@ public class ZoneChart extends Composite
                   }
                   break;
                 }
-
               }
             }
             break;
           }
           case ZOOM:
-            break;
-          default:
             break;
         }
       }
@@ -328,9 +294,7 @@ public class ZoneChart extends Composite
           {
             {
               resizeStart = false;
-              {
-                resize(adding, currentX);
-              }
+              resize(adding, currentX);
               final IntervalMarker intervalMarker = zoneMarkers.get(adding);
               assert intervalMarker != null;
               intervalMarker.setStartValue(adding.start);
@@ -357,20 +321,23 @@ public class ZoneChart extends Composite
           break;
         }
         default:
+        {
           break;
+        }
       }
     }
 
     @Override
     public void mouseUp(final MouseEvent event)
     {
-      if (mode == EditMode.ZOOM)
-      {
-        super.mouseUp(event);
-        return;
-      }
       switch (mode)
       {
+        case ZOOM:
+        {
+          // we fire super.mouseUp at the end of the method, we don't
+          // need to do it here
+          break;
+        }
         case EDIT:
         {
           if (adding != null)
@@ -582,8 +549,6 @@ public class ZoneChart extends Composite
           }
           break;
         }
-        default:
-          break;
       }
 
       dragStartX = -1;
@@ -636,16 +601,13 @@ public class ZoneChart extends Composite
     @Override
     public void zoom(final Rectangle selection)
     {
-      final Stack<Rectangle2D> previousArea = new Stack<Rectangle2D>();
+      final Rectangle2D previousArea = getCurrentCoverage();
       final AbstractOperation addOp = new AbstractOperation("Zoom")
       {
         @Override
         public IStatus execute(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
         {
-          // store the existing area
-          previousArea.push(getCurrentCoverage());
-
           // resize to the new area
           CustomChartComposite.super.zoom(selection);
           return Status.OK_STATUS;
@@ -662,11 +624,8 @@ public class ZoneChart extends Composite
         public IStatus undo(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
         {
-          // get the previous area
-          final Rectangle2D rect = previousArea.pop();
-
-          // and display it.
-          setCurrentCoverage(rect);
+          // display previous area
+          setCurrentCoverage(previousArea);
           return Status.OK_STATUS;
         }
 
