@@ -24,6 +24,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -208,7 +209,8 @@ public class ZoneChart extends Composite
             final long val2 = toNearDomainValue(val1, true);
             final Color zoneColor = colorProvider.getZoneColor();
             adding =
-                new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2, zoneColor);
+                new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2,
+                    zoneColor);
             addZone(plot, adding);
           }
           break;
@@ -356,6 +358,7 @@ public class ZoneChart extends Composite
                 fireZoneAdded(affect);
                 return Status.OK_STATUS;
               }
+
               @Override
               public IStatus redo(final IProgressMonitor monitor,
                   final IAdaptable info) throws ExecutionException
@@ -366,6 +369,7 @@ public class ZoneChart extends Composite
                 fireZoneAdded(affect);
                 return Status.OK_STATUS;
               }
+
               @Override
               public IStatus undo(final IProgressMonitor monitor,
                   final IAdaptable info) throws ExecutionException
@@ -397,6 +401,7 @@ public class ZoneChart extends Composite
                       {
                         return redo(monitor, info);
                       }
+
                       @Override
                       public IStatus redo(final IProgressMonitor monitor,
                           final IAdaptable info) throws ExecutionException
@@ -439,6 +444,7 @@ public class ZoneChart extends Composite
                         fireZoneResized(affect);
                         return Status.OK_STATUS;
                       }
+
                       @Override
                       public IStatus redo(final IProgressMonitor monitor,
                           final IAdaptable info) throws ExecutionException
@@ -607,12 +613,14 @@ public class ZoneChart extends Composite
           CustomChartComposite.super.zoom(selection);
           return Status.OK_STATUS;
         }
+
         @Override
         public IStatus redo(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
         {
           return execute(monitor, info);
         }
+
         @Override
         public IStatus undo(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
@@ -626,7 +634,7 @@ public class ZoneChart extends Composite
     }
   }
 
-   public enum EditMode
+  public enum EditMode
   {
     EDIT, ZOOM, MERGE
   }
@@ -804,7 +812,7 @@ public class ZoneChart extends Composite
   private EditMode mode = EditMode.ZOOM;
   private volatile List<ZoneListener> listeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
-
+  
   private final Image handImg16 = CorePlugin.getImageDescriptor(
       "/icons/16/hand.png").createImage();
   private final Image addImg16 = CorePlugin.getImageDescriptor(
@@ -1008,90 +1016,92 @@ public class ZoneChart extends Composite
 
             // do we have any data?
 
-            // if(xySeries == null || xySeries.getItemCount() == 0)
-            // {
-            // ok, populate the data
-            final IEditorPart curEditor =
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                    .getActivePage().getActiveEditor();
-            if (curEditor instanceof IAdaptable)
+            if (xySeries.getItemCount() == 0)
             {
-              final Layers layers = (Layers) curEditor.getAdapter(Layers.class);
-              if (layers != null)
+              // ok, populate the data
+              final IEditorPart curEditor =
+                  PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                      .getActivePage().getActiveEditor();
+              if (curEditor instanceof IAdaptable)
               {
-                @SuppressWarnings("unchecked")
-                final List<TimeSeriesDataItem> undoData =
-                    new ArrayList<TimeSeriesDataItem>(xySeries.getItems());
-                final List<TimeSeriesDataItem> data =
-                    new ArrayList<TimeSeriesDataItem>();
-
-                // find the first track
-                final Enumeration<Editable> numer = layers.elements();
-                while (numer.hasMoreElements())
+                final Layers layers =
+                    (Layers) curEditor.getAdapter(Layers.class);
+                if (layers != null)
                 {
-                  final Layer thisL = (Layer) numer.nextElement();
-                  if (thisL instanceof TrackWrapper)
-                  {
-                    // ok, go for it.
-                    final TrackWrapper thisT = (TrackWrapper) thisL;
-                    final Enumeration<Editable> posits = thisT.getPositions();
-                    while (posits.hasMoreElements())
-                    {
-                      final FixWrapper thisF =
-                          (FixWrapper) posits.nextElement();
-                      final TimeSeriesDataItem newItem =
-                          new TimeSeriesDataItem(new FixedMillisecond(thisF
-                              .getDateTimeGroup().getDate().getTime()), thisF
-                              .getCourseDegs());
-                      data.add(newItem);
-                    }
+                  @SuppressWarnings("unchecked")
+                  final List<TimeSeriesDataItem> undoData =
+                      new ArrayList<TimeSeriesDataItem>(xySeries.getItems());
+                  final List<TimeSeriesDataItem> data =
+                      new ArrayList<TimeSeriesDataItem>();
 
-                    // and we can stop looping
-                    break;
+                  // find the first track
+                  final Enumeration<Editable> numer = layers.elements();
+                  while (numer.hasMoreElements())
+                  {
+                    final Layer thisL = (Layer) numer.nextElement();
+                    if (thisL instanceof TrackWrapper)
+                    {
+                      // ok, go for it.
+                      final TrackWrapper thisT = (TrackWrapper) thisL;
+                      final Enumeration<Editable> posits = thisT.getPositions();
+                      while (posits.hasMoreElements())
+                      {
+                        final FixWrapper thisF =
+                            (FixWrapper) posits.nextElement();
+                        final TimeSeriesDataItem newItem =
+                            new TimeSeriesDataItem(new FixedMillisecond(thisF
+                                .getDateTimeGroup().getDate().getTime()), thisF
+                                .getCourseDegs());
+                        data.add(newItem);
+                      }
+
+                      // and we can stop looping
+                      break;
+                    }
                   }
+
+                  reversibleOperation
+                      .add(new AbstractOperation("populate data")
+                      {
+                        @Override
+                        public IStatus execute(final IProgressMonitor monitor,
+                            final IAdaptable info) throws ExecutionException
+                        {
+
+                          // prob have some data - so we can clear the list
+                          xySeries.clear();
+                          for (final TimeSeriesDataItem item : data)
+                          {
+                            xySeries.add(item, false);
+                          }
+                          // ok, share the good news
+                          xySeries.fireSeriesChanged();
+                          return Status.OK_STATUS;
+                        }
+
+                        @Override
+                        public IStatus redo(final IProgressMonitor monitor,
+                            final IAdaptable info) throws ExecutionException
+                        {
+                          return execute(monitor, info);
+                        }
+
+                        @Override
+                        public IStatus undo(final IProgressMonitor monitor,
+                            final IAdaptable info) throws ExecutionException
+                        {
+
+                          xySeries.clear();
+                          for (final TimeSeriesDataItem item : undoData)
+                          {
+                            xySeries.add(item, false);
+                          }
+                          // ok, share the good news
+                          xySeries.fireSeriesChanged();
+                          return Status.OK_STATUS;
+                        }
+                      });
                 }
-
-                reversibleOperation.add(new AbstractOperation("populate data")
-                {
-                  @Override
-                  public IStatus execute(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-
-                    // prob have some data - so we can clear the list
-                    xySeries.clear();
-                    for (final TimeSeriesDataItem item : data)
-                    {
-                      xySeries.add(item, false);
-                    }
-                    // ok, share the good news
-                    xySeries.fireSeriesChanged();
-                    return Status.OK_STATUS;
-                  }
-
-                  @Override
-                  public IStatus redo(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-                    return execute(monitor, info);
-                  }
-
-                  @Override
-                  public IStatus undo(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-
-                    xySeries.clear();
-                    for (final TimeSeriesDataItem item : undoData)
-                    {
-                      xySeries.add(item, false);
-                    }
-                    // ok, share the good news
-                    xySeries.fireSeriesChanged();
-                    return Status.OK_STATUS;
-                  }
-                });
-
               }
             }
             // ok, do the slicing
