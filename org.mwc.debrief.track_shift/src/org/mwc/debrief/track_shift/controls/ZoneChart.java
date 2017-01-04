@@ -24,7 +24,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -722,6 +721,11 @@ public class ZoneChart extends Composite
    */
   public interface ZoneSlicer
   {
+    /**
+     * produce a list of slices from the current data
+     * 
+     * @return list of zones
+     */
     ArrayList<Zone> performSlicing();
   }
 
@@ -755,7 +759,6 @@ public class ZoneChart extends Composite
       // switch to dummy provider
       undoRedoProvider = new ZoneUndoRedoProvider()
       {
-
         @Override
         public void execute(final IUndoableOperation operation)
         {
@@ -767,7 +770,6 @@ public class ZoneChart extends Composite
           {
             e.printStackTrace();
           }
-
         }
       };
     }
@@ -812,7 +814,7 @@ public class ZoneChart extends Composite
   private EditMode mode = EditMode.ZOOM;
   private volatile List<ZoneListener> listeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
-  
+
   private final Image handImg16 = CorePlugin.getImageDescriptor(
       "/icons/16/hand.png").createImage();
   private final Image addImg16 = CorePlugin.getImageDescriptor(
@@ -839,18 +841,14 @@ public class ZoneChart extends Composite
 
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
-
   private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
       .getImageData(), 0, 0);
-
   private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
       merge_1Img16.getImageData(), 0, 0);
-
   private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
       merge_2Img16.getImageData(), 0, 0);
 
   // DnD---
-
   private final Cursor removeCursor = new Cursor(Display.getDefault(),
       removeImg16.getImageData(), 0, 0);
   private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
@@ -897,8 +895,6 @@ public class ZoneChart extends Composite
       addZone(plot, zone);
     }
   }
-
-  // ---
 
   private void addZone(final XYPlot plot, final Zone zone)
   {
@@ -1011,11 +1007,10 @@ public class ZoneChart extends Composite
           else
           {
 
-            final ReversibleOperation reversibleOperation =
+            final ReversibleOperation reversOp =
                 new ReversibleOperation("Slice legs");
 
             // do we have any data?
-
             if (xySeries.getItemCount() == 0)
             {
               // ok, populate the data
@@ -1060,47 +1055,46 @@ public class ZoneChart extends Composite
                     }
                   }
 
-                  reversibleOperation
-                      .add(new AbstractOperation("populate data")
+                  reversOp.add(new AbstractOperation("populate data")
+                  {
+                    @Override
+                    public IStatus execute(final IProgressMonitor monitor,
+                        final IAdaptable info) throws ExecutionException
+                    {
+
+                      // prob have some data - so we can clear the list
+                      xySeries.clear();
+                      for (final TimeSeriesDataItem item : data)
                       {
-                        @Override
-                        public IStatus execute(final IProgressMonitor monitor,
-                            final IAdaptable info) throws ExecutionException
-                        {
+                        xySeries.add(item, false);
+                      }
+                      // ok, share the good news
+                      xySeries.fireSeriesChanged();
+                      return Status.OK_STATUS;
+                    }
 
-                          // prob have some data - so we can clear the list
-                          xySeries.clear();
-                          for (final TimeSeriesDataItem item : data)
-                          {
-                            xySeries.add(item, false);
-                          }
-                          // ok, share the good news
-                          xySeries.fireSeriesChanged();
-                          return Status.OK_STATUS;
-                        }
+                    @Override
+                    public IStatus redo(final IProgressMonitor monitor,
+                        final IAdaptable info) throws ExecutionException
+                    {
+                      return execute(monitor, info);
+                    }
 
-                        @Override
-                        public IStatus redo(final IProgressMonitor monitor,
-                            final IAdaptable info) throws ExecutionException
-                        {
-                          return execute(monitor, info);
-                        }
+                    @Override
+                    public IStatus undo(final IProgressMonitor monitor,
+                        final IAdaptable info) throws ExecutionException
+                    {
 
-                        @Override
-                        public IStatus undo(final IProgressMonitor monitor,
-                            final IAdaptable info) throws ExecutionException
-                        {
-
-                          xySeries.clear();
-                          for (final TimeSeriesDataItem item : undoData)
-                          {
-                            xySeries.add(item, false);
-                          }
-                          // ok, share the good news
-                          xySeries.fireSeriesChanged();
-                          return Status.OK_STATUS;
-                        }
-                      });
+                      xySeries.clear();
+                      for (final TimeSeriesDataItem item : undoData)
+                      {
+                        xySeries.add(item, false);
+                      }
+                      // ok, share the good news
+                      xySeries.fireSeriesChanged();
+                      return Status.OK_STATUS;
+                    }
+                  });
                 }
               }
             }
@@ -1111,14 +1105,12 @@ public class ZoneChart extends Composite
                 new HashMap<ZoneChart.Zone, IntervalMarker>(zoneMarkers);
 
             final XYPlot thePlot = (XYPlot) chart.getPlot();
-            reversibleOperation.add(new AbstractOperation("populate new zones")
+            reversOp.add(new AbstractOperation("populate new zones")
             {
-
               @Override
               public IStatus execute(final IProgressMonitor monitor,
                   final IAdaptable info) throws ExecutionException
               {
-
                 // and ditch the intervals
                 for (final Zone thisZone : zones)
                 {
@@ -1155,14 +1147,12 @@ public class ZoneChart extends Composite
               public IStatus undo(final IProgressMonitor monitor,
                   final IAdaptable info) throws ExecutionException
               {
-
                 // and ditch the intervals
                 for (final IntervalMarker marker : zoneMarkers.values())
                 {
                   thePlot.removeDomainMarker(marker,
                       org.jfree.ui.Layer.FOREGROUND);
                 }
-
                 zones.clear();
                 zoneMarkers.clear();
 
@@ -1177,7 +1167,7 @@ public class ZoneChart extends Composite
                 return Status.OK_STATUS;
               }
             });
-            undoRedoProvider.execute(reversibleOperation);
+            undoRedoProvider.execute(reversOp);
           }
         }
       });
