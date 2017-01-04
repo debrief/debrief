@@ -46,6 +46,13 @@ public class LoggingService implements ErrorLogger
 
 	}
 
+  @Override
+  public void
+      logError(int status, String text, Exception e, boolean revealLog)
+  {
+    logError(status, text, e);
+  }
+
 
   @Override
   public void logStack(int status, String text)

@@ -509,6 +509,13 @@ public class ImportWord_LEGACY
           final Exception e)
       {
       }
+      
+      @Override
+      public void logError(int status, String text, Exception e,
+          boolean revealLog)
+      {
+        logError(status, text, e);
+      }
 
       @Override
       public void logStack(final int status, final String text)
