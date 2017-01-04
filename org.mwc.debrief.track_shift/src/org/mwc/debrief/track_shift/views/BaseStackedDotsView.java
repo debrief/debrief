@@ -30,7 +30,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.DefaultOperationHistory;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IOperationHistoryListener;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.commands.operations.ObjectUndoContext;
+import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -53,6 +62,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -60,6 +71,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jfree.chart.ChartMouseEvent;
@@ -97,6 +109,7 @@ import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
+import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
 import org.mwc.debrief.track_shift.zig_detector.CumulativeLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.LegOfData;
@@ -126,19 +139,53 @@ import MWC.GenericData.WatchableList;
 abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
-
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
-
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
+
+  /*
+   * Undo and redo actions
+   */
+  private HandlerAction undoAction;
+  private HandlerAction redoAction;
+  private IUndoContext undoContext;
+
+  private final IOperationHistory operationHistory =
+      new DefaultOperationHistory();
+
+  private final ZoneUndoRedoProvider undoRedoProvider =
+      new ZoneUndoRedoProvider()
+      {
+        @Override
+        public void execute(IUndoableOperation operation)
+        {
+          operation.addContext(undoContext);
+          try
+          {
+            operationHistory.execute(operation, null, null);
+          }
+          catch (ExecutionException e)
+          {
+            e.printStackTrace();
+          }
+          finally
+          {
+            if (undoAction != null)
+              undoAction.refreah();
+            if (redoAction != null)
+              redoAction.refreah();
+            getViewSite().getActionBars().updateActionBars();
+          }
+        }
+      };
 
   private enum SliceMode
   {
     ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE;
   }
-  
+
   /**
    * helper application to help track creation/activation of new plots
    */
@@ -194,8 +241,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   protected Action _showLinePlot;
   protected Action _showDotPlot;
-
   protected Action _showTargetOverview;
+  protected Action _showSlices;
 
   /**
    * flag indicating whether we should only show stacked dots for visible fixes
@@ -226,8 +273,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Vector<Action> _customActions;
 
   protected Action _autoResize;
-  
-  protected Action _showSlices;
 
   private CombinedDomainXYPlot _combined;
 
@@ -258,7 +303,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private ZoneChart targetZoneChart;
   protected TimeSeries ownshipCourseSeries;
   protected TimeSeries targetBearingSeries;
-  
+
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Action _modeOne;
   private Action _modeTwo;
@@ -274,10 +319,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected BaseStackedDotsView(final boolean needBrg, final boolean needFreq)
   {
     _myHelper = new StackedDotHelper();
-
     _needBrg = needBrg;
     _needFreq = needFreq;
-
     // create the actions - the 'centre-y axis' action may get called before
     // the
     // interface is shown
@@ -285,9 +328,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   }
 
   abstract protected String getUnits();
-
   abstract protected String getType();
-
   abstract protected void updateData(boolean updateDoublets);
 
   private void contributeToActionBars()
@@ -300,6 +341,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected void fillLocalToolBar(final IToolBarManager toolBarManager)
   {
     // fit to window
+    toolBarManager.add(undoAction);
+    toolBarManager.add(redoAction);
     toolBarManager.add(_autoResize);
     toolBarManager.add(_onlyVisible);
     toolBarManager.add(_selectOnClick);
@@ -309,7 +352,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_showSlices);
 
     addExtras(toolBarManager);
-    
+
     // and a separator
     toolBarManager.add(new Separator());
 
@@ -331,16 +374,190 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
   }
 
+  private void createGlobalActionHandlers()
+  {
+    final IActionBars actionBars = getViewSite().getActionBars();
+    // set up action handlers that operate on the current context
+    undoAction = new HandlerAction()
+    {
+      @Override
+      public void refreah()
+      {
+        setEnabled(operationHistory.canUndo(undoContext));
+        if(isEnabled())
+        {
+          String toolTipText = "Undo " + operationHistory.getUndoOperation(undoContext).getLabel();
+          setText(toolTipText);
+          setToolTipText(toolTipText);
+        }
+        else
+        {
+          setText("Undo");
+          setToolTipText("Undo");
+        }
+      }
+
+      @Override
+      public void excecute()
+      {
+        try
+        {
+          operationHistory.undo(undoContext, null, null);
+        }
+        catch (ExecutionException e)
+        {
+          e.printStackTrace();
+        }
+
+      }
+    };
+    // todo:change to debrief version of icons
+    undoAction.setText("Undo");
+    undoAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/undo.png"));
+    undoAction.setDisabledImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/undo.png"));
+    undoAction.setActionDefinitionId(ActionFactory.UNDO.getCommandId());
+    redoAction = new HandlerAction()
+    {
+
+      @Override
+      public void refreah()
+      {
+        setEnabled(operationHistory.canRedo(undoContext));
+        if(isEnabled())
+        {
+          String toolTipText = "Redo " + operationHistory.getRedoOperation(undoContext).getLabel();
+          setText(toolTipText);
+          setToolTipText(toolTipText);
+        }
+        else
+        {
+          setText("Redo");
+          setToolTipText("Redo");
+        }
+      }
+
+      @Override
+      public void excecute()
+      {
+        try
+        {
+          operationHistory.redo(undoContext, null, null);
+        }
+        catch (ExecutionException e)
+        {
+          e.printStackTrace();
+        }
+      }
+    };
+
+    // todo:change to debrief version of icons
+    redoAction.setText("Redo");
+    redoAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/redo.png"));
+    redoAction.setDisabledImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/redo.png"));
+    redoAction.setActionDefinitionId(ActionFactory.REDO.getCommandId());
+
+    getViewSite().getPage().addPartListener(new IPartListener()
+    {
+
+      @Override
+      public void partOpened(IWorkbenchPart part)
+      {
+        refresh(part);
+      }
+
+      @Override
+      public void partDeactivated(IWorkbenchPart part)
+      {
+        refresh(part);
+      }
+
+      @Override
+      public void partClosed(IWorkbenchPart part)
+      {
+        refresh(part);
+      }
+
+      @Override
+      public void partBroughtToTop(IWorkbenchPart part)
+      {
+        refresh(part);
+      }
+
+      @Override
+      public void partActivated(IWorkbenchPart part)
+      {
+        refresh(part);
+      }
+
+      AtomicBoolean activate = new AtomicBoolean(false);
+
+      void refresh(IWorkbenchPart part)
+      {
+        if (part == BaseStackedDotsView.this)
+        {
+          activate.set(true);
+          undoAction.refreah();
+          redoAction.refreah();
+          actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
+              undoAction);
+          actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(),
+              redoAction);
+          actionBars.updateActionBars();
+        }
+        else if (activate.getAndSet(false))
+        {
+          actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), null);
+          actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), null);
+          actionBars.updateActionBars();
+        }
+      }
+    });
+
+    operationHistory
+        .addOperationHistoryListener(new IOperationHistoryListener()
+        {
+          @Override
+          public void historyNotification(OperationHistoryEvent event)
+          {
+            if (event.getEventType() == OperationHistoryEvent.REDONE
+                || event.getEventType() == OperationHistoryEvent.UNDONE)
+            {
+              undoAction.refreah();
+              redoAction.refreah();
+              actionBars.updateActionBars();
+            }
+          }
+        });
+  }
+
+  public ISharedImages getSharedImages()
+  {
+    return getViewSite().getWorkbenchWindow().getWorkbench().getSharedImages();
+  }
+
+  /*
+   * Initialize the workbench operation history for our undo context.
+   */
+  private void initializeOperationHistory()
+  {
+    undoContext = new ObjectUndoContext(this);
+    operationHistory.setLimit(undoContext, 100);// TODO: maybe store as application prefrence
+  }
+
   /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
   @Override
   public void createPartControl(final Composite parent)
   {
+    initializeOperationHistory();
+    createGlobalActionHandlers();
     parent.setLayout(new FillLayout(SWT.VERTICAL));
-    
     SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
-
     _holder =
         new ChartComposite(sashForm, SWT.NONE, null, 400, 600, 300, 200, 1800,
             1800, true, true, true, true, true, true)
@@ -384,7 +601,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               final Editable item = ew.getEditable();
               if (item instanceof DraggableItem)
               {
-
                 dragees.add((DraggableItem) item);
               }
             }
@@ -417,24 +633,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     @SuppressWarnings("unused")
     ZoneChart.ZoneListener targetListener = getTargetListener();
 
-    Zone[] osZones =
-        new ZoneChart.Zone[]
-        {
-//            new ZoneChart.Zone(new Date("2016/10/10 11:05").getTime(),
-//                new Date("2016/10/10 11:42").getTime()),
-//            new ZoneChart.Zone(new Date("2016/10/10 12:25").getTime(),
-//                new Date("2016/10/10 12:40").getTime()),
-//            new ZoneChart.Zone(new Date("2016/10/10 12:55:01").getTime(),
-//                new Date("2016/10/10 13:23:12").getTime())
-            };
+    Zone[] osZones = new ZoneChart.Zone[]{};
     long[] osTimeValues = new long[]{};
-//    long[] osAngleValues = new long[]{};
-    // create the zone charts
-    // TODO: pending
-    ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
+    final ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
     {
       @Override
-      public Color getColorFor(Zone zone)
+      public Color getZoneColor()
       {
         return DebriefColors.BLUE;
       }
@@ -443,37 +647,28 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // put the courses into a TimeSeries
     ownshipCourseSeries = new TimeSeries("Ownship course");
 
-    ZoneSlicer ownshipLegSlicer = new ZoneSlicer(){
-
+    ZoneSlicer ownshipLegSlicer = new ZoneSlicer()
+    {
       @Override
       public ArrayList<Zone> performSlicing()
       {
-        return sliceOwnship(ownshipCourseSeries);
-      }};
+        return sliceOwnship(ownshipCourseSeries, blueProv);
+      }
+    };
+
     ownshipZoneChart =
-        ZoneChart.create("Ownship Legs", "Course", sashForm, osZones, ownshipCourseSeries,
-            osTimeValues, blueProv, DebriefColors.BLUE, ownshipLegSlicer );
+        ZoneChart.create(undoRedoProvider, "Ownship Legs", "Course", sashForm,
+            osZones, ownshipCourseSeries, osTimeValues, blueProv,
+            DebriefColors.BLUE, ownshipLegSlicer);
 
-    // assign the listeners
-    // TODO: pending
+    final Zone[] tgtZones = new ZoneChart.Zone[]{};
+    final long[] tgtTimeValues = new long[]{};
 
-    Zone[] tgtZones =
-        new ZoneChart.Zone[]
-        {
-//            new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
-//                new Date("2016/10/10 10:40").getTime()),
-//            new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
-//                new Date("2016/10/10 12:23:12").getTime())
-            };
-    long[] tgtTimeValues =
-        new long[]{};
-//    long[] tgtAngleValues = new long[]
-//    {};
-
-    ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
+    // we need a color provider for the target legs
+    final ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
     {
       @Override
-      public Color getColorFor(Zone zone)
+      public Color getZoneColor()
       {
         Random random = new Random();
         final float hue = random.nextFloat();
@@ -487,20 +682,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the bearings into a TimeSeries
     targetBearingSeries = new TimeSeries("Bearing");
-
     targetZoneChart =
-        ZoneChart.create("Target Legs", "Bearing", sashForm, tgtZones,
-            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, null);
+        ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
+            tgtZones, targetBearingSeries, tgtTimeValues, randomProv,
+            DebriefColors.RED, null);
 
     // and set the proportions of space allowed
-    sashForm.setWeights(new int[]{4,1,1});
-    sashForm.setBackground(sashForm.getDisplay().getSystemColor( SWT.COLOR_GRAY));
+    sashForm.setWeights(new int[]{4, 1, 1});
+    sashForm
+        .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
   }
 
-  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)
+  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse, ZoneChart.ColorProvider colorProvider)
   {
     final IOwnshipLegDetector detector;
-    switch(_sliceMode)
+    switch (_sliceMode)
     {
     case ORIGINAL:
       detector = new OwnshipLegDetector();
@@ -513,17 +709,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       detector = new PeakTrackingOwnshipLegDetector();
       break;
     }
-    
-   // IOwnshipLegDetector detector = new OwnshipLegDetector();
-//    IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();    
-//    IOwnshipLegDetector detector = new CumulativeLegDetector();
-    
+
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
     double[] speeds = new double[num];
     double[] courses = new double[num];
-    
-    for(int ctr = 0;ctr<num;ctr++)
+
+    for (int ctr = 0; ctr < num; ctr++)
     {
       TimeSeriesDataItem thisItem = osCourse.getDataItem(ctr);
       FixedMillisecond thisM = (FixedMillisecond) thisItem.getPeriod();
@@ -531,15 +723,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       speeds[ctr] = 0;
       courses[ctr] = (Double) thisItem.getValue();
     }
-    List<LegOfData> legs = detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
+    List<LegOfData> legs =
+        detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
     ArrayList<Zone> res = new ArrayList<Zone>();
-    
-    for(LegOfData leg : legs)
+
+    for (LegOfData leg : legs)
     {
-      Zone newZone = new Zone(leg.getStart(), leg.getEnd());
+      Zone newZone = new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
       res.add(newZone);
     }
-    
+
     return res;
   }
 
@@ -563,7 +756,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   @SuppressWarnings("deprecation")
   protected void createStackedPlot()
   {
-
     // first create the x (time) axis
     final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
     _df.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -573,7 +765,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     Font tickLabelFont = new Font("Courier", Font.PLAIN, 13);
     xAxis.setTickLabelFont(tickLabelFont);
     xAxis.setTickLabelPaint(Color.BLACK);
-
     xAxis.setStandardTickUnits(DateAxisEditor
         .createStandardDateTickUnitsAsTickUnits());
     xAxis.setAutoTickUnitSelection(true);
@@ -619,7 +810,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _linePlot.setRangeCrosshairPaint(Color.GRAY);
     _linePlot.setDomainCrosshairStroke(new BasicStroke(3.0f));
     _linePlot.setRangeCrosshairStroke(new BasicStroke(3.0f));
-
     _linePlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
     _linePlot.setRangeGridlineStroke(new BasicStroke(2));
     _linePlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
@@ -628,7 +818,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverviewPlot = new XYPlot();
     final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)")
     {
-
       /**
        * 
        */
@@ -691,7 +880,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverviewPlot.mapDatasetToRangeAxis(1, 1);
     _targetOverviewPlot.setRangeAxisLocation(0, AxisLocation.TOP_OR_LEFT);
     _targetOverviewPlot.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);
-
     _targetOverviewPlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
     _targetOverviewPlot.setRangeGridlineStroke(new BasicStroke(2));
     _targetOverviewPlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
@@ -718,11 +906,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverviewPlot.getRangeAxis().setAutoRange(true);
 
     _combined = new CombinedDomainXYPlot(xAxis);
-
     _combined.add(_linePlot);
     _combined.add(_dotPlot);
     _combined.add(_targetOverviewPlot);
-
     _combined.setOrientation(PlotOrientation.HORIZONTAL);
 
     // put the plot into a chart
@@ -782,7 +968,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (_itemSelectedPending && _selectOnClick.isChecked())
         {
           _itemSelectedPending = false;
-
           showFixAtThisTime(newDate);
         }
       }
@@ -855,10 +1040,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(mm);
     manager.add(new Separator());
 
-    
     manager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.TrackShifting", null, this));
-    
+
     // ok - try to add modes for the slicing algorithm
     _modeOne = new Action("Original", SWT.TOGGLE)
     {
@@ -870,11 +1054,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         _modeTwo.setChecked(false);
         _modeThree.setChecked(false);
         _modeOne.setChecked(true);
-//        _modeTwo.setChecked(false);
+        // _modeTwo.setChecked(false);
       }
     };
     _modeTwo = new Action("Peak tracking", SWT.TOGGLE)
-    {      
+    {
       @Override
       public void run()
       {
@@ -886,7 +1070,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     _modeThree = new Action("Area under curve", SWT.TOGGLE)
-    {      
+    {
       @Override
       public void run()
       {
@@ -898,7 +1082,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     _modeTwo.setChecked(true);
-    
+
     mm.add(_modeOne);
     mm.add(_modeTwo);
     mm.add(_modeThree);
@@ -906,7 +1090,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected void makeActions()
   {
-
     _autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
     {
       @Override
@@ -932,7 +1115,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setToolTipText("Keep plot sized to show all data");
     _autoResize.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/fit_to_win.png"));
-    
+
     _showSlices = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
     {
       @Override
@@ -959,7 +1142,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showSlices.setChecked(true);
     _showSlices.setToolTipText("Show the slicing graphs");
     _showSlices.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/GanttBars.png")); 
+        .getImageDescriptor("icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {
@@ -1038,7 +1221,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // get an error logger
     final ErrorLogger logger = this;
-
     _onlyVisible =
         new Action("Only draw dots for visible data points",
             IAction.AS_CHECK_BOX)
@@ -1518,10 +1700,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       throws PartInitException
   {
     super.init(site, memento);
-
     if (memento != null)
     {
-
       final Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
       final Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
       final Boolean showOverview = memento.getBoolean(SHOW_OVERVIEW);
@@ -1561,7 +1741,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     memento.putBoolean(SHOW_OVERVIEW, _showTargetOverview.isChecked());
     memento.putBoolean(SELECT_ON_CLICK, _selectOnClick.isChecked());
     memento.putBoolean(SHOW_ONLY_VIS, _onlyVisible.isChecked());
-
   }
 
   private void showFixAtThisTime(final Date newDate)
@@ -1572,7 +1751,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         return;
 
       HiResDate theDate = new HiResDate(newDate);
-
       EditableWrapper subject = null;
 
       // ok, get the editor
