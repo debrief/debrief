@@ -637,7 +637,7 @@ public class MaintainContributionsView extends ViewPart
     ZoneChart.ColorProvider blueProvider = new ZoneChart.ColorProvider()
     {
       @Override
-      public java.awt.Color getColorFor(Zone zone)
+      public java.awt.Color getZoneColor()
       {
         return java.awt.Color.blue;
       }
@@ -646,9 +646,10 @@ public class MaintainContributionsView extends ViewPart
         ZoneChart.create(null,"Ownship Legs", "Course", graphTabs, new ZoneChart.Zone[]
         {
             new ZoneChart.Zone(new Date("2016/10/10 11:47:00").getTime(),
-                new Date("2016/10/10 12:23:00").getTime()),
+                new Date("2016/10/10 12:23:00").getTime(), blueProvider.getZoneColor()),
             new ZoneChart.Zone(new Date("2016/10/10 12:44:00").getTime(),
-                new Date("2016/10/10 14:10:00").getTime())}, new long[]
+                new Date("2016/10/10 14:10:00").getTime(), blueProvider.getZoneColor())}, 
+                new long[]
         {new Date("2016/10/10 10:00:00").getTime(),
             new Date("2016/10/10 10:21:00").getTime(),
             new Date("2016/10/10 11:47:00").getTime(),

@@ -682,10 +682,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // long[] osAngleValues = new long[]{};
     // create the zone charts
     // TODO: pending
-    ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
+    final ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
     {
       @Override
-      public Color getColorFor(Zone zone)
+      public Color getZoneColor()
       {
         return DebriefColors.BLUE;
       }
@@ -693,40 +693,30 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the courses into a TimeSeries
     ownshipCourseSeries = new TimeSeries("Ownship course");
+    
 
     ZoneSlicer ownshipLegSlicer = new ZoneSlicer()
     {
-
       @Override
       public ArrayList<Zone> performSlicing()
       {
-        return sliceOwnship(ownshipCourseSeries);
+        return sliceOwnship(ownshipCourseSeries, blueProv);
       }
     };
+
     ownshipZoneChart =
         ZoneChart.create(undoRedoProvider, "Ownship Legs", "Course", sashForm,
             osZones, ownshipCourseSeries, osTimeValues, blueProv,
             DebriefColors.BLUE, ownshipLegSlicer);
 
-    // assign the listeners
-    // TODO: pending
+    final Zone[] tgtZones = new ZoneChart.Zone[]{};
+    final long[] tgtTimeValues = new long[]{};
 
-    Zone[] tgtZones = new ZoneChart.Zone[]
-    {
-    // new ZoneChart.Zone(new Date("2016/10/10 10:17").getTime(),
-    // new Date("2016/10/10 10:40").getTime()),
-    // new ZoneChart.Zone(new Date("2016/10/10 12:02:01").getTime(),
-    // new Date("2016/10/10 12:23:12").getTime())
-        };
-    long[] tgtTimeValues = new long[]
-    {};
-    // long[] tgtAngleValues = new long[]
-    // {};
-
-    ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
+    // we need a color provider for the target legs
+    final ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
     {
       @Override
-      public Color getColorFor(Zone zone)
+      public Color getZoneColor()
       {
         Random random = new Random();
         final float hue = random.nextFloat();
@@ -740,20 +730,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // put the bearings into a TimeSeries
     targetBearingSeries = new TimeSeries("Bearing");
-
     targetZoneChart =
         ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
             tgtZones, targetBearingSeries, tgtTimeValues, randomProv,
             DebriefColors.RED, null);
 
     // and set the proportions of space allowed
-    sashForm.setWeights(new int[]
-    {4, 1, 1});
+    sashForm.setWeights(new int[]{4, 1, 1});
     sashForm
         .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
   }
 
-  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse)
+  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse, ZoneChart.ColorProvider colorProvider)
   {
     final IOwnshipLegDetector detector;
     switch (_sliceMode)
@@ -769,10 +757,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       detector = new PeakTrackingOwnshipLegDetector();
       break;
     }
-
-    // IOwnshipLegDetector detector = new OwnshipLegDetector();
-    // IOwnshipLegDetector detector = new PeakTrackingOwnshipLegDetector();
-    // IOwnshipLegDetector detector = new CumulativeLegDetector();
 
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
@@ -793,7 +777,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     for (LegOfData leg : legs)
     {
-      Zone newZone = new Zone(leg.getStart(), leg.getEnd());
+      Zone newZone = new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
       res.add(newZone);
     }
 

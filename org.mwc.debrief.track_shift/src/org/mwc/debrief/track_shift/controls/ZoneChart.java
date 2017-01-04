@@ -62,7 +62,7 @@ public class ZoneChart extends Composite
    */
   public interface ColorProvider
   {
-    java.awt.Color getColorFor(final Zone zone);
+    java.awt.Color getZoneColor();
   }
 
   protected class CustomChartComposite extends ChartComposite
@@ -206,8 +206,9 @@ public class ZoneChart extends Composite
             final long val1 =
                 toNearDomainValue(findDomainX(this, dragStartX), false);
             final long val2 = toNearDomainValue(val1, true);
+            final Color zoneColor = colorProvider.getZoneColor();
             adding =
-                new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2);
+                new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2, zoneColor);
             addZone(plot, adding);
           }
           break;
@@ -493,12 +494,10 @@ public class ZoneChart extends Composite
                   public IStatus execute(final IProgressMonitor monitor,
                       final IAdaptable info) throws ExecutionException
                   {
-                    {
-                      plot.removeDomainMarker(deleteIntervalMarker);
-                      zoneMarkers.remove(delete);
-                      zones.remove(delete);
-                      fireZoneRemoved(delete);
-                    }
+                    plot.removeDomainMarker(deleteIntervalMarker);
+                    zoneMarkers.remove(delete);
+                    zones.remove(delete);
+                    fireZoneRemoved(delete);
                     resize.end = delete.end;
                     assert resizeIntervalMarker != null;
                     resizeIntervalMarker.setStartValue(resize.start);
@@ -513,12 +512,10 @@ public class ZoneChart extends Composite
                   public IStatus redo(final IProgressMonitor monitor,
                       final IAdaptable info) throws ExecutionException
                   {
-                    {
-                      plot.removeDomainMarker(deleteIntervalMarker);
-                      zoneMarkers.remove(delete);
-                      zones.remove(delete);
-                      fireZoneRemoved(delete);
-                    }
+                    plot.removeDomainMarker(deleteIntervalMarker);
+                    zoneMarkers.remove(delete);
+                    zones.remove(delete);
+                    fireZoneRemoved(delete);
                     resize.end = delete.end;
                     assert resizeIntervalMarker != null;
                     resizeIntervalMarker.setStartValue(resize.start);
@@ -531,12 +528,10 @@ public class ZoneChart extends Composite
                   public IStatus undo(final IProgressMonitor monitor,
                       final IAdaptable info) throws ExecutionException
                   {
-                    {
-                      plot.addDomainMarker(deleteIntervalMarker);
-                      zoneMarkers.put(delete, deleteIntervalMarker);
-                      zones.add(delete);
-                      fireZoneAdded(delete);
-                    }
+                    plot.addDomainMarker(deleteIntervalMarker);
+                    zoneMarkers.put(delete, deleteIntervalMarker);
+                    zones.add(delete);
+                    fireZoneAdded(delete);
                     resize.end = endBefore;
                     assert resizeIntervalMarker != null;
                     resizeIntervalMarker.setStartValue(resize.start);
@@ -612,14 +607,12 @@ public class ZoneChart extends Composite
           CustomChartComposite.super.zoom(selection);
           return Status.OK_STATUS;
         }
-
         @Override
         public IStatus redo(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
         {
           return execute(monitor, info);
         }
-
         @Override
         public IStatus undo(final IProgressMonitor monitor,
             final IAdaptable info) throws ExecutionException
@@ -628,26 +621,26 @@ public class ZoneChart extends Composite
           setCurrentCoverage(previousArea);
           return Status.OK_STATUS;
         }
-
       };
       undoRedoProvider.execute(addOp);
     }
   }
 
-  public enum EditMode
+   public enum EditMode
   {
     EDIT, ZOOM, MERGE
   }
 
-  public static class Zone
+  final public static class Zone
   {
     long start, end;
     private Color color;
 
-    public Zone(final long start, final long end)
+    public Zone(final long start, final long end, final Color color)
     {
       this.start = start;
       this.end = end;
+      this.color = color;
     }
 
     public Color getColor()
@@ -663,11 +656,6 @@ public class ZoneChart extends Composite
     public long getStart()
     {
       return start;
-    }
-
-    public void setColor(final Color zoneColor)
-    {
-      this.color = zoneColor;
     }
 
     @Override
@@ -906,10 +894,6 @@ public class ZoneChart extends Composite
 
   private void addZone(final XYPlot plot, final Zone zone)
   {
-    // get the color for this zone
-    final Color zoneColor = colorProvider.getColorFor(zone);
-    zone.setColor(zoneColor);
-
     final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
     mrk.setPaint(zone.getColor());
     mrk.setAlpha(0.5f);
