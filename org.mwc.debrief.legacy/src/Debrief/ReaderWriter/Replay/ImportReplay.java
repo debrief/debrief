@@ -426,8 +426,19 @@ public class ImportReplay extends PlainImporterBase
       }
       else
       {
+        // don't pass a frequency for DR import, since it will be ignored
+        final Long theFreq;
+        if(importMode.equals(IMPORT_AS_DR))
+        {
+          theFreq = null;
+        }
+        else
+        {
+          theFreq = importFreq;
+        }
+        
         // create the artificial import settings
-        _importSettings = new ImportSettings(importMode, importFreq);
+        _importSettings = new ImportSettings(importMode, theFreq);
       }
 
       TrackSegment initialLayer = null;
