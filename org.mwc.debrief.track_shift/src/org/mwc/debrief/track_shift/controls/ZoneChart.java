@@ -5,7 +5,6 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.Stack;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
-import org.eclipse.core.commands.operations.ICompositeOperation;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -40,6 +38,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
@@ -76,11 +75,39 @@ public class ZoneChart extends Composite
 
     }
 
-    private Stack<Rectangle> zoomHistory = new Stack<Rectangle>();
+    private Rectangle2D getCurrentCoverage()
+    {
+      // get the the xy plot
+      XYPlot plot = getChart().getXYPlot();
+
+      // get the ranges of the two axis
+      Range rangeR = plot.getRangeAxis().getRange();
+      Range domainR = plot.getDomainAxis().getRange();
+
+      // store the ranges in a rectangle
+      final Rectangle2D res =
+          new Rectangle2D.Double(domainR.getLowerBound(), 
+              rangeR.getLowerBound(),
+              domainR.getUpperBound() - domainR.getLowerBound(), 
+              rangeR.getUpperBound() - rangeR.getLowerBound());
+
+      // done
+      return res;
+    }
+
+    private void setCurrentCoverage(Rectangle2D area)
+    {
+      // get the the xy plot
+      XYPlot plot = getChart().getXYPlot();
+      
+      // set the ranges of the two axis
+      plot.getDomainAxis().setRange(area.getMinX(), area.getMaxX());
+      plot.getRangeAxis().setRange(area.getMinY(), area.getMaxY());
+    }
 
     void fitToData()
     {
-      final List<Rectangle> zoomRedoHistory = new ArrayList<>(zoomHistory);
+      final Stack<Rectangle2D> previousArea = new Stack<Rectangle2D>();
 
       AbstractOperation addOp = new AbstractOperation("Show all data")
       {
@@ -89,8 +116,13 @@ public class ZoneChart extends Composite
         public IStatus execute(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
-
-          zoomHistory.clear();
+          if(previousArea.size() > 0)
+          {
+            System.out.println("buffer not empty!");
+          }
+          
+          // get the current area
+          previousArea.add(getCurrentCoverage());
 
           CustomChartComposite.super.restoreAutoBounds();
           return Status.OK_STATUS;
@@ -100,25 +132,21 @@ public class ZoneChart extends Composite
         public IStatus redo(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
-          zoomHistory.clear();
-
-          CustomChartComposite.super.restoreAutoBounds();
-          return Status.OK_STATUS;
+          return execute(monitor, info);
         }
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
+          Rectangle2D curArea = getCurrentCoverage();
+          
+          // restore the previous area
+          Rectangle2D oldArea = previousArea.pop();
+          setCurrentCoverage(oldArea);
 
-          CustomChartComposite.super.restoreAutoBounds();
-          zoomHistory.addAll(zoomRedoHistory);
-
-          for (Rectangle h : zoomHistory)
-          {
-            CustomChartComposite.super.zoom(h);
-          }
-
+          // store the area, for when we redo
+          previousArea.push(curArea);
           return Status.OK_STATUS;
         }
 
@@ -129,6 +157,7 @@ public class ZoneChart extends Composite
     @Override
     public void zoom(final Rectangle selection)
     {
+      final Stack<Rectangle2D> previousArea = new Stack<Rectangle2D>();
 
       AbstractOperation addOp = new AbstractOperation("Zoom")
       {
@@ -137,9 +166,10 @@ public class ZoneChart extends Composite
         public IStatus execute(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
-
-          zoomHistory.add(selection);
-
+          // store the existing area
+          previousArea.push(getCurrentCoverage());
+          
+          // resize to the new area
           CustomChartComposite.super.zoom(selection);
           return Status.OK_STATUS;
         }
@@ -148,24 +178,19 @@ public class ZoneChart extends Composite
         public IStatus redo(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
-          zoomHistory.add(selection);
-          CustomChartComposite.super.zoom(selection);
-          return Status.OK_STATUS;
+          return execute(monitor, info);
         }
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info)
             throws ExecutionException
         {
+          // get the previous area
+          Rectangle2D rect = previousArea.pop();
 
-          if (!zoomHistory.isEmpty())
-            zoomHistory.pop();
-          CustomChartComposite.super.restoreAutoBounds();
-          for (Rectangle h : zoomHistory)
-          {
-            CustomChartComposite.super.zoom(h);
-          }
-
+          // and display it.
+          setCurrentCoverage(rect);
+          
           return Status.OK_STATUS;
         }
 
@@ -680,7 +705,6 @@ public class ZoneChart extends Composite
       dragZoneEndBefore = -1;
       dragZoneStartBefore = -1;
       onDrag = false;
-      move = false;
       adding = null;
       resizeStart = false;
       resizeEnd = false;
@@ -956,7 +980,6 @@ public class ZoneChart extends Composite
   long dragZoneEndBefore = -1;
   private double dragStartX = -1;
   private boolean onDrag = false;
-  private boolean move = false;
   private boolean resizeStart = false;
 
   private boolean resizeEnd = false;
