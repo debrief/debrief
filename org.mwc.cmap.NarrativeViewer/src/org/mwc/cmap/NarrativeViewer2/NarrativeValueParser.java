@@ -11,9 +11,9 @@ public class NarrativeValueParser {
 	public static List<NarrativeEntry> getInput() {
 		List<NarrativeEntry> result = new ArrayList<NarrativeEntry>();
 		
-		try (InputStreamReader ir = new InputStreamReader(NarrativeValueParser.class.getResourceAsStream("test.rep"));
-				BufferedReader br = new BufferedReader(ir);) {
-			
+		try  {
+		  InputStreamReader ir = new InputStreamReader(NarrativeValueParser.class.getResourceAsStream("test.rep"));
+      BufferedReader br = new BufferedReader(ir);
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				line = line.substring(line.indexOf(":")+2);
@@ -30,6 +30,7 @@ public class NarrativeValueParser {
 				
 				result.add(new NarrativeEntry(values[0], values[1], values[2], values[3], log));
 			}
+			ir.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
