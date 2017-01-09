@@ -10,6 +10,13 @@
             id="org.mwc.cmap.narrative.views.NarrativeViewer"
             name="Narrative Viewer">
       </view>
+      <view
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.cmap.NarrativeViewer2.NarrativeViewerPart"
+            icon="icons/16/narrative_viewer.png"
+            id="org.mwc.cmap.narrative.views.NarrativeViewer2"
+            name="Narrative Viewer 2 (demo)">
+      </view>
    </extension>
 
   <extension

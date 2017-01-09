@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.part.ViewPart;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -60,7 +61,7 @@ import ca.odell.glazedlists.TextFilterator;
 import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 
-public class NarrativeViewerPart {
+public class NarrativeViewerPart extends ViewPart{
   
   public NarrativeViewerPart()
   {
@@ -361,4 +362,19 @@ public class NarrativeViewerPart {
         shell.dispose();
         display.dispose();
 	}
+
+  @Override
+  public void createPartControl(Composite parent)
+  {
+    parent.setLayout(new FillLayout());
+    createExampleControl(parent);
+    
+  }
+
+  @Override
+  public void setFocus()
+  {
+    // TODO Auto-generated method stub
+    
+  }
 }
