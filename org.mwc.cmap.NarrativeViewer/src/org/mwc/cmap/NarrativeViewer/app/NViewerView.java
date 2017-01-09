@@ -46,7 +46,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextCellPainter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ControlAdapter;
@@ -54,7 +53,6 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorInput;
@@ -65,7 +63,6 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.NarrativeViewer;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
-import org.mwc.cmap.NarrativeViewer2.NarrativeViewerPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -88,7 +85,7 @@ import MWC.TacticalData.NarrativeEntry;
 public class NViewerView extends ViewPart implements PropertyChangeListener,
     ISelectionProvider
 {
-  NarrativeViewerPart myViewer;
+  NarrativeViewer myViewer;
 
   /**
    * helper application to help track creation/activation of new plots
@@ -337,13 +334,11 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
                 if (_myRollingNarrative != null
                     && _myRollingNarrative.size() > 0)
                 {
-               // TODO: implement this
-//                  myViewer.setInput(_myRollingNarrative);
+                  myViewer.setInput(_myRollingNarrative);
                 }
                 else
                 {
-               // TODO: implement this
-//                  myViewer.setInput(null);
+                  myViewer.setInput(null);
                 }
               }
             }
@@ -386,16 +381,15 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           final String theFormat =
               DateFormatPropertyEditor.getTagList()[thisIndex];
 
-       // TODO: implement this
-//          myViewer.setTimeFormatter(new TimeFormatter()
-//          {
-//            @Override
-//            public String format(final HiResDate time)
-//            {
-//              final String res = toStringHiRes(time, theFormat);
-//              return res;
-//            }
-//          });
+          myViewer.setTimeFormatter(new TimeFormatter()
+          {
+            @Override
+            public String format(final HiResDate time)
+            {
+              final String res = toStringHiRes(time, theFormat);
+              return res;
+            }
+          });
         }
 
       };
@@ -405,56 +399,55 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   protected void addMarker()
   {
- // TODO: implement this
-//    try
-//    {
-//      // right, do we have an editor with a file?
-//      final IEditorInput input = _currentEditor.getEditorInput();
-//      if (input instanceof IFileEditorInput)
-//      {
-//        // aaah, and is there a file present?
-//        final IFileEditorInput ife = (IFileEditorInput) input;
-//        final IResource file = ife.getFile();
-//
-//        final StructuredSelection selection =
-//            (StructuredSelection) myViewer.getViewer().getSelection();
-//        if (selection.getFirstElement() instanceof NarrativeEntry)
-//        {
-//
-//          final NarrativeEntry entry =
-//              (NarrativeEntry) selection.getFirstElement();
-//          final long tNow = entry.getDTG().getMicros();
-//          final String currentText = FormatDateTime.toString(tNow / 1000);
-//          if (file != null)
-//          {
-//            // yup, get the description
-//            final InputDialog inputD =
-//                new InputDialog(getViewSite().getShell(),
-//                    "Add bookmark at this DTG",
-//                    "Enter description of this bookmark", currentText, null);
-//            inputD.open();
-//
-//            final String content = inputD.getValue();
-//            if (content != null)
-//            {
-//              final IMarker marker = file.createMarker(IMarker.BOOKMARK);
-//              final Map<String, Object> attributes =
-//                  new HashMap<String, Object>(4);
-//              attributes.put(IMarker.MESSAGE, content);
-//              attributes.put(IMarker.LOCATION, currentText);
-//              attributes.put(IMarker.LINE_NUMBER, "" + tNow);
-//              attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
-//              marker.setAttributes(attributes);
-//            }
-//          }
-//        }
-//
-//      }
-//    }
-//    catch (final CoreException e)
-//    {
-//      e.printStackTrace();
-//    }
+    try
+    {
+      // right, do we have an editor with a file?
+      final IEditorInput input = _currentEditor.getEditorInput();
+      if (input instanceof IFileEditorInput)
+      {
+        // aaah, and is there a file present?
+        final IFileEditorInput ife = (IFileEditorInput) input;
+        final IResource file = ife.getFile();
+
+        final StructuredSelection selection =
+            (StructuredSelection) myViewer.getViewer().getSelection();
+        if (selection.getFirstElement() instanceof NarrativeEntry)
+        {
+
+          final NarrativeEntry entry =
+              (NarrativeEntry) selection.getFirstElement();
+          final long tNow = entry.getDTG().getMicros();
+          final String currentText = FormatDateTime.toString(tNow / 1000);
+          if (file != null)
+          {
+            // yup, get the description
+            final InputDialog inputD =
+                new InputDialog(getViewSite().getShell(),
+                    "Add bookmark at this DTG",
+                    "Enter description of this bookmark", currentText, null);
+            inputD.open();
+
+            final String content = inputD.getValue();
+            if (content != null)
+            {
+              final IMarker marker = file.createMarker(IMarker.BOOKMARK);
+              final Map<String, Object> attributes =
+                  new HashMap<String, Object>(4);
+              attributes.put(IMarker.MESSAGE, content);
+              attributes.put(IMarker.LOCATION, currentText);
+              attributes.put(IMarker.LINE_NUMBER, "" + tNow);
+              attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
+              marker.setAttributes(attributes);
+            }
+          }
+        }
+
+      }
+    }
+    catch (final CoreException e)
+    {
+      e.printStackTrace();
+    }
 
   }
 
@@ -482,32 +475,25 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     rootPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     final StackLayout rootPanelLayout = new StackLayout();
     rootPanel.setLayout(rootPanelLayout);
-    
-    // try to create a rich text painter (to diagnose build problem)
-    RichTextCellPainter rtp = new RichTextCellPainter();
-    
-    myViewer = new NarrativeViewerPart();
-    Control viewControl = myViewer.createExampleControl(rootPanel);
 
-//    myViewer =
-//        new NarrativeViewer(rootPanel, CorePlugin.getDefault()
-//            .getPreferenceStore());
-    rootPanelLayout.topControl = viewControl;
+    myViewer =
+        new NarrativeViewer(rootPanel, CorePlugin.getDefault()
+            .getPreferenceStore());
+    rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
 
     // sort out the initial time format
-// TODO: implement this
-//    final String startFormat = DateFormatPropertyEditor.getTagList()[3];
-//    myViewer.setTimeFormatter(new TimeFormatter()
-//    {
-//      @Override
-//      public String format(final HiResDate time)
-//      {
-//        final String res = toStringHiRes(time, startFormat);
-//        return res;
-//      }
-//    });
+    final String startFormat = DateFormatPropertyEditor.getTagList()[3];
+    myViewer.setTimeFormatter(new TimeFormatter()
+    {
+      @Override
+      public String format(final HiResDate time)
+      {
+        final String res = toStringHiRes(time, startFormat);
+        return res;
+      }
+    });
 
     /**
      * sort out the view menu & toolbar
@@ -520,22 +506,21 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
      * 
      */
     setupPartListeners();
-// TODO: implement this
-//    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
-//    {
-//
-//      @Override
-//      public void doubleClick(final DoubleClickEvent event)
-//      {
-//        final StructuredSelection selection =
-//            (StructuredSelection) event.getSelection();
-//        if (selection.getFirstElement() instanceof NarrativeEntry)
-//        {
-//          fireNewSeletion((NarrativeEntry) selection.getFirstElement());
-//        }
-//
-//      }
-//    });
+    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
+    {
+
+      @Override
+      public void doubleClick(final DoubleClickEvent event)
+      {
+        final StructuredSelection selection =
+            (StructuredSelection) event.getSelection();
+        if (selection.getFirstElement() instanceof NarrativeEntry)
+        {
+          fireNewSeletion((NarrativeEntry) selection.getFirstElement());
+        }
+
+      }
+    });
 
     _selectionChangeListener = new ISelectionChangedListener()
     {
@@ -570,8 +555,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void controlResized(final ControlEvent e)
       {
-     // TODO: implement this
-//        myViewer.refresh();
+        myViewer.refresh();
       }
     });
 
@@ -637,8 +621,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           public void run()
           {
             // ok, tell the model to move to the relevant item
-         // TODO: implement this
-//            myViewer.setEntry(entry);
+            myViewer.setEntry(entry);
           }
         });
       }
@@ -703,8 +686,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-     // TODO: implement this
-//        myViewer.setSearchMode(isChecked());
+        myViewer.setSearchMode(isChecked());
       }
     };
     _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
@@ -715,8 +697,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
     // the line below contributes the predefined viewer actions onto the
     // view action bar
- // TODO: implement this
-//    myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
+    myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
 
     menuManager.add(new Separator());
     final Action editPhrases = new Action("Edit Highlight Phrases")
@@ -730,8 +711,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
                 null, null);
         if (dialog.open() == IDialogConstants.OK_ID)
         {
-       // TODO: implement this
-//          myViewer.refresh();
+          myViewer.refresh();
         }
       }
     };
@@ -749,9 +729,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
                 "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
                 null, null);
-     // TODO: implement this
-//        if (dialog.open() == IDialogConstants.OK_ID)
-//          myViewer.refresh();
+        if (dialog.open() == IDialogConstants.OK_ID)
+          myViewer.refresh();
       }
     };
     fontSize.setImageDescriptor(CorePlugin
@@ -767,8 +746,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       public void run()
       {
         super.run();
-     // TODO: implement this
-//        myViewer.setWrappingEntries(_clipText.isChecked());
+        myViewer.setWrappingEntries(_clipText.isChecked());
       }
     };
     _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
@@ -868,8 +846,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       }
       if (refresh)
       {
-     // TODO: implement this
-//        myViewer.refresh();
+        myViewer.refresh();
       }
     }
   }
@@ -907,8 +884,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   @Override
   public void setFocus()
   {
- // TODO: implement this
-//    myViewer.getViewer().getGrid().setFocus();
+    myViewer.getViewer().getGrid().setFocus();
   }
 
   protected void setInput(final IRollingNarrativeProvider newNarr)
@@ -919,8 +895,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       if (_myRollingNarrative != null)
       {
         // clear what's displayed
-     // TODO: implement this
-//        myViewer.setInput(null);
+        myViewer.setInput(null);
 
         // stop listening to old narrative
         _myRollingNarrative.removeNarrativeListener(
@@ -943,8 +918,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         // ok - show the narrative. We can't rely on
         // listening to the rolling narrative, since we
         // may be switching back to a previous plot.
-     // TODO: implement this
-//        myViewer.setInput(_myRollingNarrative);
+        myViewer.setInput(_myRollingNarrative);
       }
     }
   }
@@ -964,8 +938,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private void setupPartListeners()
   {
 
@@ -1184,8 +1158,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
                 final HiResDate theDTG = new HiResDate(0, safeTime);
 
                 // ok, tell the model to move to the relevant item
-             // TODO: implement this
-//                myViewer.setDTG(theDTG);
+                myViewer.setDTG(theDTG);
               }
               else
               {
