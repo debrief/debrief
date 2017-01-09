@@ -118,26 +118,31 @@ public class PartMonitor implements IPartListener
 		// right stop listening
 		_myPartService.removePartListener(this);
 		
-		// hey, ditch our lists aswell
-		final Iterator<HashMap<Class<?>, Vector<ICallback>>> iter = _myEvents.values().iterator();
-		while(iter.hasNext())
-		{
-			final HashMap<Class<?>, Vector<ICallback>> thisEventList = iter.next();
-			final Iterator<Vector<ICallback>> iter2 = thisEventList.values().iterator();
-			while(iter2.hasNext())
-			{
-				final Vector<ICallback> callbacks =  iter2.next();
-				
-				// right. ditch the callbacks
-				callbacks.clear();
-			}
-			
-			// ok, now ditch this list of events
-			thisEventList.clear();
-		}
-		
-		// and ditch the full list of events
-		_myEvents.clear();
+    // hey, ditch our lists aswell
+    if (_myEvents != null)
+    {
+      final Iterator<HashMap<Class<?>, Vector<ICallback>>> iter =
+          _myEvents.values().iterator();
+      while (iter.hasNext())
+      {
+        final HashMap<Class<?>, Vector<ICallback>> thisEventList = iter.next();
+        final Iterator<Vector<ICallback>> iter2 =
+            thisEventList.values().iterator();
+        while (iter2.hasNext())
+        {
+          final Vector<ICallback> callbacks = iter2.next();
+
+          // right. ditch the callbacks
+          callbacks.clear();
+        }
+
+        // ok, now ditch this list of events
+        thisEventList.clear();
+      }
+
+      // and ditch the full list of events
+      _myEvents.clear();
+    }
 	}
 	
 	public void addPartListener(final Class<?> Subject, final String event, final PartMonitor.ICallback callback)
