@@ -1,5 +1,8 @@
 package org.mwc.cmap.NarrativeViewer2;
 
+import org.eclipse.swt.graphics.Color;
+import org.mwc.cmap.core.property_support.ColorHelper;
+
 import MWC.TacticalData.NarrativeEntry;
 
 public class NatEntryProxy implements INatEntry
@@ -45,5 +48,12 @@ public class NatEntryProxy implements INatEntry
   public String toString()
   {
     return entry.toString();
+  }
+
+  @Override
+  public Color getColor()
+  {
+    // convert to SWT color
+    return ColorHelper.getColor(entry.getColor());
   }
 }

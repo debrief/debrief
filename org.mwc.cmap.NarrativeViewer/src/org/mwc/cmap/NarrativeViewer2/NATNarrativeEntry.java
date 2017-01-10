@@ -1,5 +1,8 @@
 package org.mwc.cmap.NarrativeViewer2;
 
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.swt.graphics.Color;
+
 public class NATNarrativeEntry implements INatEntry {
 
 	private String date;
@@ -85,4 +88,17 @@ public class NATNarrativeEntry implements INatEntry {
 		return "NarrativeEntry [date=" + date + ", time=" + time + ", name=" + name + ", type=" + type + ", log=" + log
 				+ "]";
 	}
+
+  @Override
+  public Color getColor()
+  {
+    if (this.name.equalsIgnoreCase("NELSON"))
+    {
+      return GUIHelper.COLOR_RED;
+    }
+    else
+    {
+      return GUIHelper.COLOR_BLUE;
+    }
+  }
 }

@@ -7,8 +7,8 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 
 /**
@@ -28,30 +28,22 @@ public class NarrativeEntryConfigLabelAccumulator implements IConfigLabelAccumul
 	@Override
 	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
 		INatEntry entry = dataProvider.getRowObject(rowPosition);
-		if (entry != null) {
-			configLabels.addLabel(entry.getName().toUpperCase());
-			registerStylesForSource(configRegistry, entry.getName().toUpperCase());
-		}
+
+    String uName = entry.getName().toUpperCase();
+    configLabels.addLabel(uName);
+    registerStylesForSource(configRegistry, uName, entry.getColor());
 	}
 
 	// TODO this could be optimized so the styles get only registered once with the known values
 	// this approach is very dynamic as it reacts dynamically on occuring values
-	public void registerStylesForSource(IConfigRegistry configRegistry, String source) {
-		Style style = new Style();
-		style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, colorFor(source));
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.CELL_STYLE, 
-				style,
-				DisplayMode.NORMAL,
-				source);
+	public void registerStylesForSource(IConfigRegistry configRegistry, String source, Color color) {
+	    // ok, generate it
+	    Style style = new Style();
+	    style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, color);
+	    configRegistry.registerConfigAttribute(
+	        CellConfigAttributes.CELL_STYLE, 
+	        style,
+	        DisplayMode.NORMAL,
+	        source);
 	}
-	
-	public Color colorFor(String source) {
-		if (source.equalsIgnoreCase("NELSON")) {
-			return GUIHelper.COLOR_RED;
-		} else {
-			return GUIHelper.COLOR_BLUE;
-		}
-	}
-
 }
