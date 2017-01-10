@@ -42,7 +42,7 @@ public class NarrativeViewerStyleConfiguration extends AbstractRegistryConfigura
 	
 	// default / body configuration
 	public Color bgColor = GUIHelper.COLOR_WHITE;
-	public Color fgColor = GUIHelper.COLOR_RED;
+	public Color fgColor = GUIHelper.COLOR_BLACK;
     public Color selectionBgColor = GUIHelper.COLOR_LIST_SELECTION;
     public Color selectionFgColor = GUIHelper.COLOR_WHITE;
 
@@ -52,19 +52,24 @@ public class NarrativeViewerStyleConfiguration extends AbstractRegistryConfigura
 	public Font font = GUIHelper.DEFAULT_FONT;
 	public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.LEFT;
 	public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.MIDDLE;
-
-	RichTextCellPainter automaticColumnWidthPainter = new RichTextCellPainter(true, true, false);
+	
+	public ICellPainter cellPainter = 
+			new BackgroundPainter(new PaddingDecorator(new RichTextCellPainter(true, true, false), 0, 5, 0, 5, false));
 
 	// customized painter that also supports shrinking
-	RichTextCellPainter automaticRowHeightPainter = new RichTextCellPainter(true, false, true) {
+	RichTextCellPainter wrappingAutomaticRowHeightPainter = new RichTextCellPainter(true, false, true) {
+		protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
+			return ((contentHeight != rectangle.height) && this.calculateByTextHeight);
+		};
+	};
+	RichTextCellPainter automaticRowHeightPainter = new RichTextCellPainter(false, false, true) {
 		protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
 			return ((contentHeight != rectangle.height) && this.calculateByTextHeight);
 		};
 	};
 	
-	public ICellPainter cellPainter = 
-			new BackgroundPainter(new PaddingDecorator(automaticColumnWidthPainter, 0, 5, 0, 5, false));
-	
+	public ICellPainter wrappingEntryLogPainter = 
+			new BackgroundPainter(new PaddingDecorator(wrappingAutomaticRowHeightPainter, 0, 5, 0, 5, false));
 	public ICellPainter entryLogPainter = 
 			new BackgroundPainter(new PaddingDecorator(automaticRowHeightPainter, 0, 5, 0, 5, false));
 
@@ -104,7 +109,7 @@ public class NarrativeViewerStyleConfiguration extends AbstractRegistryConfigura
 
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER, 
-				this.entryLogPainter,
+				this.wrappingEntryLogPainter,
 				DisplayMode.NORMAL,
 				ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
 

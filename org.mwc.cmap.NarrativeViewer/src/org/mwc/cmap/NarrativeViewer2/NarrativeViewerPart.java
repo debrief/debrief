@@ -10,31 +10,22 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
-import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.GlazedListsFilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
-import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -51,23 +42,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.part.ViewPart;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TextFilterator;
-import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 
-public class NarrativeViewerPart extends ViewPart{
-  
-  public NarrativeViewerPart()
-  {
-    
-  }
+public class NarrativeViewerPart {
 
+	private boolean wordWrap = true;
+	
 	public Control createExampleControl(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
@@ -83,7 +65,7 @@ public class NarrativeViewerPart extends ViewPart{
         // handling
         final ConfigRegistry configRegistry = new ConfigRegistry();
 
-        // property names of the ExtendedPersonWithAddress class
+        // property names of the NarrativeEntry class
         String[] propertyNames = { "date", "time", "name", "type", "log" };
 
         // mapping from property to label, needed for column header labels
@@ -97,10 +79,13 @@ public class NarrativeViewerPart extends ViewPart{
         final IColumnPropertyAccessor<NATNarrativeEntry> columnPropertyAccessor =
                 new ReflectiveColumnPropertyAccessor<NATNarrativeEntry>(propertyNames);
 
+        List<NATNarrativeEntry> input = NarrativeValueParser.getInput();
         BodyLayerStack<NATNarrativeEntry> bodyLayer =
                 new BodyLayerStack<NATNarrativeEntry>(
-                        NarrativeValueParser.getInput(),
+                        input,
                         columnPropertyAccessor);
+        bodyLayer.addConfigLabelAccumulator(
+        		new NarrativeEntryConfigLabelAccumulator(bodyLayer.getBodyDataProvider(), configRegistry));
 
         IDataProvider columnHeaderDataProvider =
                 new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
@@ -198,6 +183,21 @@ public class NarrativeViewerPart extends ViewPart{
         	}
 		});
 
+        Button toggleWrapping = new Button(buttonPanel, SWT.PUSH);
+        toggleWrapping.setText("Toggle Word Wrap");
+        toggleWrapping.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent e) {
+        		wordWrap = !wordWrap;
+    			configRegistry.registerConfigAttribute(
+    					CellConfigAttributes.CELL_PAINTER, 
+    					wordWrap ? styleConfig.wrappingAutomaticRowHeightPainter : styleConfig.automaticRowHeightPainter,
+    					DisplayMode.NORMAL,
+    					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+        		
+        		natTable.refresh(false);
+        	}
+		});
         
         // add filter
         final TextMatcherEditor<NATNarrativeEntry> textMatcherEditor = new TextMatcherEditor<NATNarrativeEntry>(new TextFilterator<NATNarrativeEntry>() {
@@ -232,7 +232,6 @@ public class NarrativeViewerPart extends ViewPart{
         		}
         	}
 		});
-
         
         return container;
 	}
@@ -245,98 +244,6 @@ public class NarrativeViewerPart extends ViewPart{
 				CellStyleAttributes.FONT,
 				GUIHelper.getFont(fd));
 	}
-	
-	/**
-	 * The body layer stack for the viewer.
-	 * 
-	 * @param <T>
-	 */
-    class BodyLayerStack<T> extends AbstractLayerTransform {
-
-        private final SortedList<T> sortedList;
-        private final FilterList<T> filterList;
-
-        private final IDataProvider bodyDataProvider;
-
-        private GlazedListsEventLayer<T> glazedListsEventLayer;
-        private ColumnReorderLayer columnReorderLayer;
-        private ColumnHideShowLayer columnHideShowLayer;
-        private SelectionLayer selectionLayer;
-        private ViewportLayer viewportLayer;
-
-        public BodyLayerStack(List<T> values,
-                IColumnPropertyAccessor<T> columnPropertyAccessor) {
-            // wrapping of the list to show into GlazedLists
-            // see http://publicobject.com/glazedlists/ for further information
-            EventList<T> eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-
-            // use the SortedList constructor with 'null' for the Comparator
-            // because the Comparator will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
-            // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(getSortedList());
-
-            this.bodyDataProvider = new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
-            DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
-            
-            bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));
-            
-            // width configuration - last column should take remaining space
-            bodyDataLayer.setColumnWidthByPosition(0, 100);
-            bodyDataLayer.setColumnWidthByPosition(1, 100);
-            bodyDataLayer.setColumnWidthByPosition(2, 100);
-            bodyDataLayer.setColumnWidthByPosition(3, 100);
-            bodyDataLayer.setColumnPercentageSizing(4, true);
-
-            // layer for event handling of GlazedLists and PropertyChanges
-            glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
-
-            this.columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-            this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
-            this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
-            this.viewportLayer = new ViewportLayer(this.selectionLayer);
-
-            addConfiguration(new DefaultEditBindings());
-            addConfiguration(new DefaultEditConfiguration());
-
-            setUnderlyingLayer(viewportLayer);
-        }
-
-        public SortedList<T> getSortedList() {
-            return this.sortedList;
-        }
-
-        public FilterList<T> getFilterList() {
-            return this.filterList;
-        }
-
-        public IDataProvider getBodyDataProvider() {
-            return this.bodyDataProvider;
-        }
-
-        public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
-        	return this.glazedListsEventLayer;
-        }
-        
-        public ColumnReorderLayer getColumnReorderLayer() {
-            return this.columnReorderLayer;
-        }
-
-        public ColumnHideShowLayer getColumnHideShowLayer() {
-            return this.columnHideShowLayer;
-        }
-
-        public SelectionLayer getSelectionLayer() {
-            return this.selectionLayer;
-        }
-
-        public ViewportLayer getViewportLayer() {
-            return this.viewportLayer;
-        }
-
-    }
-	
 	
 	public static void main(String[] args) {
         // Setup
@@ -362,19 +269,4 @@ public class NarrativeViewerPart extends ViewPart{
         shell.dispose();
         display.dispose();
 	}
-
-  @Override
-  public void createPartControl(Composite parent)
-  {
-    parent.setLayout(new FillLayout());
-    createExampleControl(parent);
-    
-  }
-
-  @Override
-  public void setFocus()
-  {
-    // TODO Auto-generated method stub
-    
-  }
 }
