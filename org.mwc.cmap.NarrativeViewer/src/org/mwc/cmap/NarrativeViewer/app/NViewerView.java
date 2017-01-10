@@ -63,6 +63,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.NarrativeViewer;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
+import org.mwc.cmap.NarrativeViewer2.NatNarrativeViewer;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -85,7 +86,7 @@ import MWC.TacticalData.NarrativeEntry;
 public class NViewerView extends ViewPart implements PropertyChangeListener,
     ISelectionProvider
 {
-  NarrativeViewer myViewer;
+  NatNarrativeViewer myViewer;
 
   /**
    * helper application to help track creation/activation of new plots
@@ -410,7 +411,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         final IResource file = ife.getFile();
 
         final StructuredSelection selection =
-            (StructuredSelection) myViewer.getViewer().getSelection();
+            (StructuredSelection) myViewer.getSelection();
         if (selection.getFirstElement() instanceof NarrativeEntry)
         {
 
@@ -477,7 +478,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     rootPanel.setLayout(rootPanelLayout);
 
     myViewer =
-        new NarrativeViewer(rootPanel, CorePlugin.getDefault()
+        new NatNarrativeViewer(rootPanel, CorePlugin.getDefault()
             .getPreferenceStore());
     rootPanelLayout.topControl = myViewer.getControl();
 
@@ -506,7 +507,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
      * 
      */
     setupPartListeners();
-    myViewer.getViewer().addDoubleClickListener(new IDoubleClickListener()
+    myViewer.addDoubleClickListener(new IDoubleClickListener()
     {
 
       @Override
@@ -697,7 +698,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
     // the line below contributes the predefined viewer actions onto the
     // view action bar
-    myViewer.getViewerActions().fillActionBars(getViewSite().getActionBars());
+    myViewer.fillActionBars(getViewSite().getActionBars());
 
     menuManager.add(new Separator());
     final Action editPhrases = new Action("Edit Highlight Phrases")
@@ -884,7 +885,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   @Override
   public void setFocus()
   {
-    myViewer.getViewer().getGrid().setFocus();
+    myViewer.getControl().setFocus();
   }
 
   protected void setInput(final IRollingNarrativeProvider newNarr)

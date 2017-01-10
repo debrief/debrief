@@ -1,6 +1,6 @@
 package org.mwc.cmap.NarrativeViewer2;
 
-public class NATNarrativeEntry {
+public class NATNarrativeEntry implements INatEntry {
 
 	private String date;
 	private String time;
@@ -16,7 +16,11 @@ public class NATNarrativeEntry {
 		this.log = log;
 	}
 
-	public String getDate() {
+	/* (non-Javadoc)
+   * @see org.mwc.cmap.NarrativeViewer2.INatEntry#getDate()
+   */
+	@Override
+  public String getDate() {
 		return date;
 	}
 
@@ -24,7 +28,11 @@ public class NATNarrativeEntry {
 		this.date = date;
 	}
 
-	public String getTime() {
+	/* (non-Javadoc)
+   * @see org.mwc.cmap.NarrativeViewer2.INatEntry#getTime()
+   */
+	@Override
+  public String getTime() {
 		return time;
 	}
 
@@ -32,7 +40,11 @@ public class NATNarrativeEntry {
 		this.time = time;
 	}
 
-	public String getName() {
+	/* (non-Javadoc)
+   * @see org.mwc.cmap.NarrativeViewer2.INatEntry#getName()
+   */
+	@Override
+  public String getName() {
 		return name;
 	}
 
@@ -40,7 +52,11 @@ public class NATNarrativeEntry {
 		this.name = name;
 	}
 
-	public String getType() {
+	/* (non-Javadoc)
+   * @see org.mwc.cmap.NarrativeViewer2.INatEntry#getType()
+   */
+	@Override
+  public String getType() {
 		return type;
 	}
 
@@ -48,7 +64,11 @@ public class NATNarrativeEntry {
 		this.type = type;
 	}
 
-	public String getLog() {
+	/* (non-Javadoc)
+   * @see org.mwc.cmap.NarrativeViewer2.INatEntry#getLog()
+   */
+	@Override
+  public String getLog() {
 		return log;
 	}
 
@@ -57,7 +77,10 @@ public class NATNarrativeEntry {
 	}
 	
 	
-	@Override
+	/* (non-Javadoc)
+   * @see org.mwc.cmap.NarrativeViewer2.INatEntry#toString()
+   */
+
 	public String toString() {
 		return "NarrativeEntry [date=" + date + ", time=" + time + ", name=" + name + ", type=" + type + ", log=" + log
 				+ "]";

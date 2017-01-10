@@ -17,17 +17,17 @@ import org.eclipse.swt.graphics.Color;
  */
 public class NarrativeEntryConfigLabelAccumulator implements IConfigLabelAccumulator {
 
-	private IRowDataProvider<NATNarrativeEntry> dataProvider;
+	private IRowDataProvider<INatEntry> dataProvider;
 	private IConfigRegistry configRegistry;
 	
-	public NarrativeEntryConfigLabelAccumulator(IRowDataProvider<NATNarrativeEntry> dataProvider, IConfigRegistry configRegistry) {
+	public NarrativeEntryConfigLabelAccumulator(IRowDataProvider<INatEntry> dataProvider, IConfigRegistry configRegistry) {
 		this.dataProvider = dataProvider;
 		this.configRegistry = configRegistry;
 	}
 
 	@Override
 	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		NATNarrativeEntry entry = dataProvider.getRowObject(rowPosition);
+		INatEntry entry = dataProvider.getRowObject(rowPosition);
 		if (entry != null) {
 			configLabels.addLabel(entry.getName().toUpperCase());
 			registerStylesForSource(configRegistry, entry.getName().toUpperCase());

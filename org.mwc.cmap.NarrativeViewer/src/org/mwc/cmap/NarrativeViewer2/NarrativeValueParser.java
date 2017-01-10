@@ -8,12 +8,13 @@ import java.util.List;
 
 public class NarrativeValueParser {
 
-	public static List<NATNarrativeEntry> getInput() {
-		List<NATNarrativeEntry> result = new ArrayList<NATNarrativeEntry>();
+	public static List<INatEntry> getInput() {
+		List<INatEntry> result = new ArrayList<INatEntry>();
 		
-		try (InputStreamReader ir = new InputStreamReader(NarrativeValueParser.class.getResourceAsStream("test.rep"));
-				BufferedReader br = new BufferedReader(ir);) {
-			
+    try  {
+      InputStreamReader ir = new InputStreamReader(NarrativeValueParser.class.getResourceAsStream("test.rep"));
+      BufferedReader br = new BufferedReader(ir);
+
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				line = line.substring(line.indexOf(":")+2);
@@ -30,6 +31,7 @@ public class NarrativeValueParser {
 				
 				result.add(new NATNarrativeEntry(values[0], values[1], values[2], values[3], log));
 			}
+			ir.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -38,7 +40,7 @@ public class NarrativeValueParser {
 	}
 	
 	public static void main(String[] args) {
-		for (NATNarrativeEntry narrativeEntry : getInput()) {
+		for (INatEntry narrativeEntry : getInput()) {
 			System.out.println(narrativeEntry);
 		}
 	}
