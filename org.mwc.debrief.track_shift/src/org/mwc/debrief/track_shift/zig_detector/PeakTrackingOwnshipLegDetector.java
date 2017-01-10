@@ -1,7 +1,6 @@
 package org.mwc.debrief.track_shift.zig_detector;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -61,10 +60,10 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
       final double thisCourse = newCourses[i];
       
 //      if(Math.abs(thisCourse - 82.38) < 0.1)
-      if(new Date(thisTime).toString().contains("Tue Oct 11 16:10:48 GMT 2016"))
-      {        
+ //     if(new Date(thisTime).toString().contains("Tue Oct 11 16:10:48 GMT 2016"))
+   //   {        
    //     System.out.println("here at:" + new Date(thisTime));
-      }
+    //  }
 
       // do we need a leg start?
       if (thisLegStart == -1)
@@ -179,6 +178,17 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
       }
       lastCourse = thisCourse;
       lastTime = thisTime;
+    }
+    
+    // do we have a trailing leg?
+    if(thisTroughCourse == Double.MIN_VALUE || thisPeakCourse == Double.MIN_VALUE)
+    {
+      // no, we're turning
+    }
+    else
+    {
+      // ok, in a leg
+      legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart, lastTime));
     }
     
     return legs;
