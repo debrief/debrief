@@ -94,11 +94,11 @@ public class NarrativeViewerPart extends ViewPart{
         propertyToLabelMap.put("type", "Type");
         propertyToLabelMap.put("log", "Entry");
 
-        final IColumnPropertyAccessor<NarrativeEntry> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<NarrativeEntry>(propertyNames);
+        final IColumnPropertyAccessor<NATNarrativeEntry> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<NATNarrativeEntry>(propertyNames);
 
-        BodyLayerStack<NarrativeEntry> bodyLayer =
-                new BodyLayerStack<NarrativeEntry>(
+        BodyLayerStack<NATNarrativeEntry> bodyLayer =
+                new BodyLayerStack<NATNarrativeEntry>(
                         NarrativeValueParser.getInput(),
                         columnPropertyAccessor);
 
@@ -109,22 +109,22 @@ public class NarrativeViewerPart extends ViewPart{
         ColumnHeaderLayer columnHeaderLayer =
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
-        SortHeaderLayer<NarrativeEntry> sortHeaderLayer =
-                new SortHeaderLayer<NarrativeEntry>(
+        SortHeaderLayer<NATNarrativeEntry> sortHeaderLayer =
+                new SortHeaderLayer<NATNarrativeEntry>(
                         columnHeaderLayer,
-                        new GlazedListsSortModel<NarrativeEntry>(
+                        new GlazedListsSortModel<NATNarrativeEntry>(
                                 bodyLayer.getSortedList(),
                                 columnPropertyAccessor,
                                 configRegistry,
                                 columnHeaderDataLayer));
 
-        GlazedListsFilterRowComboBoxDataProvider<NarrativeEntry> comboBoxDataProvider = 
-        		new GlazedListsFilterRowComboBoxDataProvider<NarrativeEntry>(
+        GlazedListsFilterRowComboBoxDataProvider<NATNarrativeEntry> comboBoxDataProvider = 
+        		new GlazedListsFilterRowComboBoxDataProvider<NATNarrativeEntry>(
         				bodyLayer.getGlazedListsEventLayer(),
         				bodyLayer.getSortedList(),
         				columnPropertyAccessor);
-        ComboBoxFilterRowHeaderComposite<NarrativeEntry> filterRowHeaderLayer =
-                new ComboBoxFilterRowHeaderComposite<NarrativeEntry>(
+        ComboBoxFilterRowHeaderComposite<NATNarrativeEntry> filterRowHeaderLayer =
+                new ComboBoxFilterRowHeaderComposite<NATNarrativeEntry>(
                 		bodyLayer.getFilterList(),
                 		comboBoxDataProvider,
                         columnPropertyAccessor,
@@ -200,10 +200,10 @@ public class NarrativeViewerPart extends ViewPart{
 
         
         // add filter
-        final TextMatcherEditor<NarrativeEntry> textMatcherEditor = new TextMatcherEditor<NarrativeEntry>(new TextFilterator<NarrativeEntry>() {
+        final TextMatcherEditor<NATNarrativeEntry> textMatcherEditor = new TextMatcherEditor<NATNarrativeEntry>(new TextFilterator<NATNarrativeEntry>() {
 
 			@Override
-			public void getFilterStrings(List<String> baseList, NarrativeEntry element) {
+			public void getFilterStrings(List<String> baseList, NATNarrativeEntry element) {
 				baseList.add(element.getLog());
 				baseList.add(element.getName());
 				baseList.add(element.getType());

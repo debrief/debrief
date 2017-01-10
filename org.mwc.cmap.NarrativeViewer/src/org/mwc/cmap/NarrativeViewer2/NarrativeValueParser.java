@@ -8,8 +8,8 @@ import java.util.List;
 
 public class NarrativeValueParser {
 
-	public static List<NarrativeEntry> getInput() {
-		List<NarrativeEntry> result = new ArrayList<NarrativeEntry>();
+	public static List<NATNarrativeEntry> getInput() {
+		List<NATNarrativeEntry> result = new ArrayList<NATNarrativeEntry>();
 		
 		try  {
 		  InputStreamReader ir = new InputStreamReader(NarrativeValueParser.class.getResourceAsStream("test.rep"));
@@ -28,7 +28,7 @@ public class NarrativeValueParser {
 				
 				String[] values = fixed.split(" ");
 				
-				result.add(new NarrativeEntry(values[0], values[1], values[2], values[3], log));
+				result.add(new NATNarrativeEntry(values[0], values[1], values[2], values[3], log));
 			}
 			ir.close();
 		} catch (IOException e) {
@@ -39,7 +39,7 @@ public class NarrativeValueParser {
 	}
 	
 	public static void main(String[] args) {
-		for (NarrativeEntry narrativeEntry : getInput()) {
+		for (NATNarrativeEntry narrativeEntry : getInput()) {
 			System.out.println(narrativeEntry);
 		}
 	}

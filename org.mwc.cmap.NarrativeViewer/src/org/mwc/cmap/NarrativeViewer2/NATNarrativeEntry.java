@@ -1,6 +1,6 @@
 package org.mwc.cmap.NarrativeViewer2;
 
-public class NarrativeEntry {
+public class NATNarrativeEntry {
 
 	private String date;
 	private String time;
@@ -8,7 +8,7 @@ public class NarrativeEntry {
 	private String type;
 	private String log;
 	
-	public NarrativeEntry(String date, String time, String name, String type, String log) {
+	public NATNarrativeEntry(String date, String time, String name, String type, String log) {
 		this.date = date;
 		this.time = time;
 		this.name = name;
