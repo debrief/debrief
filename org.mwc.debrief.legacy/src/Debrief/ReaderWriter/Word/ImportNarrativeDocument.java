@@ -736,7 +736,7 @@ public class ImportNarrativeDocument
       // so we have to increment the DTG (seconds) on successive points.
       // so,the dataset should end at 08:11:01 - since the last point
       // had a second added.
-      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081101",
+      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081400",
           bounds.toString());
 
       // hey, let's have a look tthem
