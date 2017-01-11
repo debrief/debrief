@@ -284,8 +284,11 @@ public class ImportNarrativeDocument
       return res;
     }
 
-    final double brgDegs;
-    final double rangYds;
+    /** have brg/rng as objects, so they can be null
+     * 
+     */
+    final Double brgDegs;
+    final Double rangYds;
 
     final String tgtType;
 
@@ -313,8 +316,8 @@ public class ImportNarrativeDocument
       final String source = parseSource(msg);
 
       this.crseDegs = cVal != null ? cVal : 0d;
-      this.brgDegs = bVal != null ? bVal : 0d;
-      this.rangYds = rVal != null ? rVal.getValueIn(WorldDistance.YARDS) : 0d;
+      this.brgDegs = bVal != null ? bVal : null;
+      this.rangYds = rVal != null ? rVal.getValueIn(WorldDistance.YARDS) : null;
       this.spdKts = sVal != null ? sVal : 0d;
       this.tgtType = classStr != null ? classStr : "N/A";
       this.contact = trackId != null ? trackId : "N/A";
@@ -716,7 +719,7 @@ public class ImportNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 368, narrLayer.size());
+      assertEquals("Got num lines", 371, narrLayer.size());
 
       // hey, let's have a look tthem
       TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
@@ -726,14 +729,14 @@ public class ImportNarrativeDocument
       // hey, let's have a look tthem
       tw = (TrackWrapper) tLayers.elementAt(6);
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
-      assertEquals("got fixes", 4, tw.numFixes());
+      assertEquals("got fixes", 5, tw.numFixes());
       
       TimePeriod bounds = tw.getVisiblePeriod();
       // in our sample data we have several FCSs at the same time,
       // so we have to increment the DTG (seconds) on successive points.
       // so,the dataset should end at 08:11:01 - since the last point
       // had a second added.
-      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081101",
+      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081400",
           bounds.toString());
 
       // hey, let's have a look tthem
@@ -869,6 +872,10 @@ public class ImportNarrativeDocument
       final String str3 =
           "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
 
+      final String str4 =
+          "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
+
+      
       // try our special identifier
       assertEquals("first bearing", 123d, FCSEntry.getElement("B-", str1));
       assertEquals("first course", 321d, FCSEntry.getElement("C-", str1));
@@ -902,6 +909,11 @@ public class ImportNarrativeDocument
       ne = new NarrEntry(str3);
       final FCSEntry fe3 = new FCSEntry(ne.text);
       assertEquals("processed master id before other id:", "M02", fe3.contact);
+      
+      ne = new NarrEntry(str4);
+      final FCSEntry fe4 = new FCSEntry(ne.text);
+      assertNull("empty bearing", fe4.brgDegs);
+
     }
 
     public void testParseFCSRange() throws ParseException
@@ -1190,7 +1202,7 @@ public class ImportNarrativeDocument
     final FCSEntry fe = new FCSEntry(thisN.text);
 
     // do we have enough data to create a solution?
-    if (fe.brgDegs == 0 && fe.rangYds == 0)
+    if (fe.brgDegs == null || fe.rangYds == null)
     {
       return;
     }
