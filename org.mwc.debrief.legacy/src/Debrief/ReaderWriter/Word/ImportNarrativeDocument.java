@@ -48,6 +48,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
@@ -70,7 +71,16 @@ import MWC.TacticalData.NarrativeEntry;
 
 public class ImportNarrativeDocument
 {
-
+  /** helper that can ask the user a question
+   * 
+   */
+  public static interface QuestionHelper
+  {
+    boolean askYes(String title, String message);
+  }
+  
+  private static QuestionHelper questionHelper = null;
+  
   /** collection of fields for an FCS entry
    * 
    * @author ian
@@ -1140,6 +1150,11 @@ public class ImportNarrativeDocument
       SkipNames.add("HNLMS");
     }
   }
+  
+  public static void setQuestionHelper(QuestionHelper helper)
+  {
+    questionHelper = helper;
+  }
 
   private void addEntry(final NarrEntry thisN)
   {
@@ -1598,9 +1613,95 @@ public class ImportNarrativeDocument
             match = trackFor(originalName, subStr);
           }
         }
+        
+        // did it work?
+        if(match == null)
+        {
+          // ok, fallback processing.
+          
+          // do we have a track that has come straight from WECDIS?
+          match = existingWECDISTrack(_layers, name);
+        }
+        
+        if(match == null)
+        {
+          // ok, if there is just one track present, invite the user to use that
+          match = singleTrackPresent(_layers);
+        }
       }
     }
 
     return match;
   }
+  
+  private static String singleTrackPresent(Layers layers)
+  {
+    String res = null;
+
+    TrackWrapper candidate = null;
+    
+    // loop through the layers, see if one matches the WECDIS header text
+    final int ctr = layers.size();
+    for(int i = 0; i<ctr; i++)
+    {
+      Layer thisL = layers.elementAt(i);
+      if(thisL.getVisible() && thisL instanceof TrackWrapper)
+      {
+        // ok, have we found one already?
+        if(candidate != null)
+        {
+          // bugger, more than one track. don't bother
+          res = null;
+          break;
+        }
+        else
+        {
+          // hey, it's a maybe
+          candidate = (TrackWrapper) thisL;
+          
+          // remember the name
+          res = thisL.getName();
+        }
+        
+        // done
+        break;
+      }
+    }
+    
+    // did we find one?
+    if(candidate != null)
+    { 
+      // ok, ask the user if he wants to change the subject track to this track's name
+      
+    }
+    
+    return res;
+  }
+  
+  private static String existingWECDISTrack(Layers layers, String dataName)
+  {
+    String res = null;
+    
+    // loop through the layers, see if one matches the WECDIS header text
+    final int ctr = layers.size();
+    for(int i = 0; i<ctr; i++)
+    {
+      Layer thisL = layers.elementAt(i);
+      if(thisL.getVisible() && 
+          thisL.getName().startsWith(ImportNMEA.WECDIS_OWNSHIP_PREFIX))
+      {
+        // ok, change the track name to the provided name
+        thisL.setName(dataName);
+        
+        // and we'll now return it, as confirmation that it worked        
+        res = thisL.getName();
+        
+        // done
+        break;
+      }
+    }
+    
+    return res;
+  }
+  
 }

@@ -32,6 +32,11 @@ import MWC.TacticalData.Fix;
 public class ImportNMEA
 {
 
+  /** prefix we use for ownship track that's extractd
+   * from NMEA data
+   */
+  public static final String WECDIS_OWNSHIP_PREFIX = "WECDIS_OWNSHIP";
+
   private enum MsgType
   {
     VESSEL_NAME, OS_POS, CONTACT, TIMESTAMP, UNKNOWN, AIS, OS_DEPTH,
@@ -617,7 +622,7 @@ public class ImportNMEA
           // let's make one up
           if (myName == null)
           {
-            myName = "WECDIS_OWNSHIP";
+            myName = WECDIS_OWNSHIP_PREFIX;
           }
 
           // extract the location
