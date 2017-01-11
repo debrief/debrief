@@ -719,7 +719,7 @@ public class ImportNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 368, narrLayer.size());
+      assertEquals("Got num lines", 371, narrLayer.size());
 
       // hey, let's have a look tthem
       TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
