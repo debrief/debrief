@@ -14,6 +14,7 @@
  */
 package Debrief.ReaderWriter.Word;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -1158,6 +1159,31 @@ public class ImportNarrativeDocument
     nw.add(ne);
   }
 
+  /** repeatably find a color for the specified track id
+   * The color will be RED if it's a master track ("M01").
+   * Shades of gray nor ownship blue are returned.
+   * @param trackId
+   * @return
+   */
+  private Color colorFor(String trackId)
+  {
+    final Color res;
+    
+    // ok, is it a master track?
+    if(trackId.startsWith("M"))
+    {
+      res = DebriefColors.RED;
+    }
+    else
+    {
+      // ok, get the hash code
+      int hash = trackId.hashCode();
+      int index = hash % DebriefColors.THIRD_PARTY_COLORS.length;
+      res = DebriefColors.THIRD_PARTY_COLORS[index];
+    }
+    return res;
+  }
+
   private void addFCS(final NarrEntry thisN)
   {
     // ok, parse the message
@@ -1203,7 +1229,13 @@ public class ImportNarrativeDocument
         {
           hisTrack = new TrackWrapper();
           hisTrack.setName(trackName);
-          hisTrack.setColor(DebriefColors.RED);
+          
+          // get a custom color for this contact number (tracks from different
+          // will share the same color if they're from the same contact number)
+          final Color customColor = colorFor(fe.contact);
+          hisTrack.setColor(customColor);
+          
+          // store this new track
           _layers.addThisLayer(hisTrack);
         }
 
