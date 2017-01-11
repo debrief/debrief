@@ -617,7 +617,7 @@ public class ImportNMEA
           // let's make one up
           if (myName == null)
           {
-            myName = "AIS_OWNSHIP";
+            myName = "WECDIS_OWNSHIP";
           }
 
           // extract the location
