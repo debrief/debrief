@@ -729,7 +729,7 @@ public class ImportNarrativeDocument
       // hey, let's have a look tthem
       tw = (TrackWrapper) tLayers.elementAt(6);
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
-      assertEquals("got fixes", 4, tw.numFixes());
+      assertEquals("got fixes", 5, tw.numFixes());
       
       TimePeriod bounds = tw.getVisiblePeriod();
       // in our sample data we have several FCSs at the same time,
