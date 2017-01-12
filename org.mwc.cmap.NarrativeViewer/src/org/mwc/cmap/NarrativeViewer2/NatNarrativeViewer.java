@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
+import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -106,7 +107,8 @@ public class NatNarrativeViewer
           }
         });
     textMatcherEditor.setMode(TextMatcherEditor.CONTAINS);
-    styleConfig = new NarrativeViewerStyleConfiguration();
+    ;
+    styleConfig = new NarrativeViewerStyleConfiguration(preferenceStore);
     buildTable();
 
     // input listener
@@ -146,7 +148,7 @@ public class NatNarrativeViewer
       natTable.dispose();
     }
 
-    CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+    final CompositeLayer compositeLayer = new CompositeLayer(1, 2);
     List<INatEntry> input = getNatInput();
     BodyLayerStack<INatEntry> bodyLayer =
         new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
@@ -182,7 +184,6 @@ public class NatNarrativeViewer
         filterRowHeaderLayer, 0, 0);
     compositeLayer.setChildLayer(GridRegion.BODY, bodyLayer, 0, 1);
     filterRowHeaderLayer.getFilterStrategy().addStaticFilter(textMatcherEditor);
-
 
     natTable = new NatTable(container, compositeLayer, false);
     natTable.setBackground(GUIHelper.COLOR_WHITE);
