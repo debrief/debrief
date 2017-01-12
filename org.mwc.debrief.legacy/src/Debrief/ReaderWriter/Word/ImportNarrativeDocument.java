@@ -78,7 +78,16 @@ public class ImportNarrativeDocument
   {
     boolean askYes(String title, String message);
   }
+
+  /** keep track of which track-source combinations we've asked about
+   * 
+   */
+  private List<String> askedAbout = new ArrayList<String>();
   
+
+  /** helper class that can ask the user a question
+   * populated via Dependency Injection
+   */
   private static QuestionHelper questionHelper = null;
   
   /** collection of fields for an FCS entry
@@ -1626,7 +1635,30 @@ public class ImportNarrativeDocument
         if(match == null)
         {
           // ok, if there is just one track present, invite the user to use that
-          match = singleTrackPresent(_layers);
+          TrackWrapper singleTrack = singleTrackPresent(_layers, name);
+          
+          // did we find one?
+          if(singleTrack != null)
+          { 
+            // ok, ask the user if he wants to change the subject track to this track's name
+            if(questionHelper != null)
+            {
+
+              boolean wantsTo = questionHelper.askYes("Change track name", 
+                  "Host platform not found for narrative entries.\nDo you want to rename track ["
+              + singleTrack.getName() + "] to [" +  name + "]");
+
+              // remember that we've asked about it
+              askedAbout.add(singleTrack.getName() + name);
+
+              if(wantsTo)
+              {
+                singleTrack.setName(name);
+                match = name;
+              }
+            }
+          }
+          
         }
       }
     }
@@ -1634,45 +1666,57 @@ public class ImportNarrativeDocument
     return match;
   }
   
-  private static String singleTrackPresent(Layers layers)
+  /** is there a single visible track present?
+   * 
+   * @param layers
+   * @param narrativeName
+   * @return
+   */
+  private TrackWrapper singleTrackPresent(Layers layers, String narrativeName)
   {
-    String res = null;
-
+    final TrackWrapper res;
     TrackWrapper candidate = null;
+    boolean singleCandidate = false;
     
-    // loop through the layers, see if one matches the WECDIS header text
+    // loop through the layers, see if there is a single track present
     final int ctr = layers.size();
     for(int i = 0; i<ctr; i++)
     {
       Layer thisL = layers.elementAt(i);
       if(thisL.getVisible() && thisL instanceof TrackWrapper)
       {
-        // ok, have we found one already?
-        if(candidate != null)
+        // have we already asked about this platform
+        String thisPerm = thisL.getName() + narrativeName;
+        if(!askedAbout.contains(thisPerm))
         {
-          // bugger, more than one track. don't bother
-          res = null;
-          break;
-        }
-        else
-        {
-          // hey, it's a maybe
-          candidate = (TrackWrapper) thisL;
+          // nope, go for it
           
-          // remember the name
-          res = thisL.getName();
+          // ok, have we found one already?
+          if(candidate != null)
+          {
+            // bugger, more than one track. don't bother
+            singleCandidate = false;
+            break;
+          }
+          else
+          {
+            // hey, it's a maybe
+            candidate = (TrackWrapper) thisL;
+
+            // remember we've found one
+            singleCandidate = true;
+          }
         }
-        
-        // done
-        break;
       }
     }
     
-    // did we find one?
-    if(candidate != null)
-    { 
-      // ok, ask the user if he wants to change the subject track to this track's name
-      
+    if(singleCandidate)
+    {
+      res = candidate;
+    }
+    else
+    {
+      res = null;
     }
     
     return res;
