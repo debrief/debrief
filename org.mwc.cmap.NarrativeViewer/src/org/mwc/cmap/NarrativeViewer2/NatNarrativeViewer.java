@@ -32,7 +32,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -59,6 +58,7 @@ public class NatNarrativeViewer
   private IRollingNarrativeProvider input;
   private TextMatcherEditor<INatEntry> textMatcherEditor;
   private Text filterInput;
+  private DateFormatter dateFormatter = new DateFormatter();
 
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -241,7 +241,7 @@ public class NatNarrativeViewer
           new ArrayList<INatEntry>(narrativeHistory.length);
       for (NarrativeEntry narrativeEntry : narrativeHistory)
       {
-        entries.add(new NatEntryProxy(narrativeEntry));
+        entries.add(new NatEntryProxy(dateFormatter,narrativeEntry));
       }
       return entries;
     }
@@ -251,7 +251,7 @@ public class NatNarrativeViewer
   public void setInput(IRollingNarrativeProvider input)
   {
     this.input = input;
-
+    dateFormatter.clearCache();
     buildTable();
     Display.getCurrent().asyncExec(new Runnable()
     {
@@ -266,8 +266,8 @@ public class NatNarrativeViewer
 
   public void setTimeFormatter(TimeFormatter timeFormatter)
   {
-    // TODO
-
+    dateFormatter.setFormatter(timeFormatter);
+    natTable.refresh(true);
   }
 
   public StructuredSelection getSelection()
