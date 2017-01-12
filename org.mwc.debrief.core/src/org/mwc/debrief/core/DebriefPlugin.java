@@ -56,8 +56,10 @@ import org.mwc.debrief.core.ContextOperations.TrimTrack;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
+import org.mwc.debrief.core.ui.SWTEclipseHelper;
 import org.osgi.framework.BundleContext;
 
+import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import Debrief.ReaderWriter.ais.AISDecoder;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.CompositeTrackWrapper.GiveMeALeg;
@@ -318,6 +320,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     CompositeTrackWrapper.initialise(CorePlugin.getToolParent());
     AISDecoder.initialise(CorePlugin.getToolParent());
 
+    ImportNarrativeDocument.setQuestionHelper(new SWTEclipseHelper());
+    
   }
 
   /**
