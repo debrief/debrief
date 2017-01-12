@@ -1,5 +1,8 @@
 package org.mwc.cmap.NarrativeViewer2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
@@ -7,7 +10,6 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.swt.graphics.Color;
 
@@ -19,7 +21,11 @@ public class NarrativeEntryConfigLabelAccumulator implements IConfigLabelAccumul
 
 	private IRowDataProvider<INatEntry> dataProvider;
 	private IConfigRegistry configRegistry;
-	
+
+	// track which sources we have registered
+  private List<String> processedSources = new ArrayList<String>();
+
+
 	public NarrativeEntryConfigLabelAccumulator(IRowDataProvider<INatEntry> dataProvider, IConfigRegistry configRegistry) {
 		this.dataProvider = dataProvider;
 		this.configRegistry = configRegistry;
@@ -28,15 +34,23 @@ public class NarrativeEntryConfigLabelAccumulator implements IConfigLabelAccumul
 	@Override
 	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
 		INatEntry entry = dataProvider.getRowObject(rowPosition);
-
     String uName = entry.getName().toUpperCase();
+    
+    // tell this cell that it has a style label to apply
     configLabels.addLabel(uName);
-    registerStylesForSource(configRegistry, uName, entry.getColor());
+    
+    // have we already processed it?
+    if(!processedSources.contains(uName))
+    {
+      // generate a style with this name
+      registerStylesForSource(configRegistry, uName, entry.getColor());
+      
+      // remember the fact that we've created it
+      processedSources.add(uName);
+    }
 	}
 
-	// TODO this could be optimized so the styles get only registered once with the known values
-	// this approach is very dynamic as it reacts dynamically on occuring values
-	public void registerStylesForSource(IConfigRegistry configRegistry, String source, Color color) {
+	private void registerStylesForSource(IConfigRegistry configRegistry, String source, Color color) {
 	    // ok, generate it
 	    Style style = new Style();
 	    style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, color);
