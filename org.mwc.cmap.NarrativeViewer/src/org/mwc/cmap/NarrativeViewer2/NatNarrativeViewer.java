@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -38,7 +39,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
-import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -58,6 +58,7 @@ public class NatNarrativeViewer
   private String[] propertyNames;
   private IRollingNarrativeProvider input;
   private TextMatcherEditor<INatEntry> textMatcherEditor;
+  private Text filterInput;
 
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -66,11 +67,7 @@ public class NatNarrativeViewer
     container = new Composite(parent, SWT.NONE);
     container.setLayout(new GridLayout());
 
-    Composite buttonPanel = new Composite(container, SWT.NONE);
-    buttonPanel.setLayout(new RowLayout());
-    GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
-
-    final Text filterInput = new Text(container, SWT.NONE);
+    filterInput = new Text(container, SWT.NONE);
     GridDataFactory.fillDefaults().grab(true, false).applyTo(filterInput);
 
     // create a new ConfigRegistry which will be needed for GlazedLists
@@ -138,6 +135,42 @@ public class NatNarrativeViewer
         }
       }
     });
+
+  }
+
+  public void setFilterMode(boolean checked)
+  {
+    clearText();
+    filterInput.setVisible(checked);
+    filterInput.setVisible(checked);
+    if (checked)
+    {
+      GridDataFactory.fillDefaults().grab(true, false).applyTo(filterInput);
+    }
+    else
+    {
+      GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
+      gridData.widthHint = 0;
+      gridData.heightHint = 0;
+      filterInput.setLayoutData(gridData);
+    }
+    container.layout(true);
+
+  }
+
+  void clearText()
+  {
+    if (filterInput != null && !filterInput.isDisposed())
+    {
+      filterInput.setText("");
+      styleConfig.updateSearchHighlight("");
+
+      // update filter
+      textMatcherEditor.setFilterText(new String[]
+      {""});
+
+      natTable.refresh(false);
+    }
 
   }
 
@@ -268,7 +301,7 @@ public class NatNarrativeViewer
 
   public void setSearchMode(boolean checked)
   {
-    // TODO Auto-generated method stub
+    setFilterMode(checked);
 
   }
 
