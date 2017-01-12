@@ -1,16 +1,12 @@
 package org.mwc.cmap.NarrativeViewer2;
 
 import org.eclipse.swt.graphics.Color;
-import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.core.property_support.ColorHelper;
 
-import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 
 public class NatEntryProxy implements INatEntry
 {
-  
- 
   final DateFormatter dateFormatter;
   final NarrativeEntry entry;
 
@@ -29,9 +25,6 @@ public class NatEntryProxy implements INatEntry
   @Override
   public String getTime()
   {
-    
-   
-    
     return dateFormatter.get(entry.getDTG());
   }
 
