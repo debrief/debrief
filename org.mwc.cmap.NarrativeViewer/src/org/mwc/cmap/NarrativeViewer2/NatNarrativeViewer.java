@@ -52,7 +52,6 @@ public class NatNarrativeViewer
   private NatTable natTable;
   private NarrativeViewerStyleConfiguration styleConfig;
   private Composite container;
-  private CompositeLayer compositeLayer;
   private HashMap<String, String> propertyToLabelMap;
   private ReflectiveColumnPropertyAccessor<INatEntry> columnPropertyAccessor;
   private String[] propertyNames;
@@ -79,12 +78,11 @@ public class NatNarrativeViewer
 
     // property names of the NarrativeEntry class
     propertyNames = new String[]
-    {"date", "time", "name", "type", "log"};
+    {"time", "name", "type", "log"};
 
     // mapping from property to label, needed for column header labels
     propertyToLabelMap = new HashMap<String, String>();
 
-    propertyToLabelMap.put("date", "Date");
     propertyToLabelMap.put("time", "Time");
     propertyToLabelMap.put("name", "Source");
     propertyToLabelMap.put("type", "Type");
@@ -92,8 +90,6 @@ public class NatNarrativeViewer
 
     columnPropertyAccessor =
         new ReflectiveColumnPropertyAccessor<INatEntry>(propertyNames);
-
-    compositeLayer = new CompositeLayer(1, 2);
 
     // add filter
     textMatcherEditor =
@@ -110,19 +106,8 @@ public class NatNarrativeViewer
           }
         });
     textMatcherEditor.setMode(TextMatcherEditor.CONTAINS);
-    loadData();
-
     styleConfig = new NarrativeViewerStyleConfiguration();
-
-    natTable = new NatTable(container, compositeLayer, false);
-    natTable.setBackground(GUIHelper.COLOR_WHITE);
-    natTable.setConfigRegistry(configRegistry);
-    natTable.addConfiguration(styleConfig);
-    natTable.configure();
-
-    natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
-
-    GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+    buildTable();
 
     // input listener
     filterInput.addKeyListener(new KeyAdapter()
@@ -154,8 +139,14 @@ public class NatNarrativeViewer
 
   }
 
-  private ComboBoxFilterRowHeaderComposite<INatEntry> loadData()
+  private void buildTable()
   {
+    if (natTable != null && !natTable.isDisposed())
+    {
+      natTable.dispose();
+    }
+
+    CompositeLayer compositeLayer = new CompositeLayer(1, 2);
     List<INatEntry> input = getNatInput();
     BodyLayerStack<INatEntry> bodyLayer =
         new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
@@ -192,7 +183,17 @@ public class NatNarrativeViewer
     compositeLayer.setChildLayer(GridRegion.BODY, bodyLayer, 0, 1);
     filterRowHeaderLayer.getFilterStrategy().addStaticFilter(textMatcherEditor);
 
-    return filterRowHeaderLayer;
+
+    natTable = new NatTable(container, compositeLayer, false);
+    natTable.setBackground(GUIHelper.COLOR_WHITE);
+    natTable.setConfigRegistry(configRegistry);
+    natTable.addConfiguration(styleConfig);
+    natTable.configure();
+
+    natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
+
+    GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+    container.layout(true);
   }
 
   private List<INatEntry> getNatInput()
@@ -217,7 +218,7 @@ public class NatNarrativeViewer
   {
     this.input = input;
 
-    loadData();
+    buildTable();
     Display.getCurrent().asyncExec(new Runnable()
     {
 
@@ -281,7 +282,7 @@ public class NatNarrativeViewer
     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
         checked ? styleConfig.wrappingAutomaticRowHeightPainter
             : styleConfig.automaticRowHeightPainter, DisplayMode.NORMAL,
-        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
     natTable.refresh(false);
 

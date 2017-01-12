@@ -35,23 +35,23 @@ public class NarrativeViewerFilterRowConfiguration extends ComboBoxFilterRowConf
                 EditConfigAttributes.CELL_EDITOR, 
                 this.cellEditor,
                 DisplayMode.NORMAL, 
-                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
         configRegistry.registerConfigAttribute(
         		EditConfigAttributes.CELL_EDITOR, 
         		this.cellEditor,
         		DisplayMode.NORMAL, 
-        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
+        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
 
         configRegistry.registerConfigAttribute(
         		EditConfigAttributes.CELL_EDITABLE_RULE, 
         		EditableRule.ALWAYS_EDITABLE,
         		DisplayMode.NORMAL,
-        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
+        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
         configRegistry.registerConfigAttribute(
         		EditConfigAttributes.CELL_EDITABLE_RULE, 
         		EditableRule.ALWAYS_EDITABLE,
         		DisplayMode.NORMAL,
-        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
+        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
         
         configRegistry.registerConfigAttribute(
                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
@@ -85,15 +85,11 @@ public class NarrativeViewerFilterRowConfiguration extends ComboBoxFilterRowConf
                 DisplayMode.NORMAL, 
                 FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 0);
         configRegistry.registerConfigAttribute(
-        		CellConfigAttributes.CELL_PAINTER, 
-        		new BackgroundPainter(),
-        		DisplayMode.NORMAL, 
-        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
-        configRegistry.registerConfigAttribute(
-        		CellConfigAttributes.CELL_PAINTER, 
-        		new BackgroundPainter(),
-        		DisplayMode.NORMAL, 
-        		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
+            CellConfigAttributes.CELL_PAINTER, 
+            cellPainter,
+            DisplayMode.NORMAL, 
+            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
+       
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, 
@@ -105,6 +101,11 @@ public class NarrativeViewerFilterRowConfiguration extends ComboBoxFilterRowConf
         		cellPainter,
         		DisplayMode.NORMAL, 
         		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
+//        configRegistry.registerConfigAttribute(
+//            CellConfigAttributes.CELL_PAINTER, 
+//            new BackgroundPainter(),
+//            DisplayMode.NORMAL, 
+//            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
     }
 
 }

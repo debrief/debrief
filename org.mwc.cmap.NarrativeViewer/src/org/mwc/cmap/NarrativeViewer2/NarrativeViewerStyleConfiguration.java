@@ -111,7 +111,7 @@ public class NarrativeViewerStyleConfiguration extends AbstractRegistryConfigura
 				CellConfigAttributes.CELL_PAINTER, 
 				this.wrappingEntryLogPainter,
 				DisplayMode.NORMAL,
-				ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+				ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
 		Style cellStyle = new Style();
 		cellStyle.setAttributeValue(

@@ -67,8 +67,7 @@ public class BodyLayerStack<T> extends AbstractLayerTransform {
         bodyDataLayer.setColumnWidthByPosition(0, 100);
         bodyDataLayer.setColumnWidthByPosition(1, 100);
         bodyDataLayer.setColumnWidthByPosition(2, 100);
-        bodyDataLayer.setColumnWidthByPosition(3, 100);
-        bodyDataLayer.setColumnPercentageSizing(4, true);
+        bodyDataLayer.setColumnPercentageSizing(3, true);
 
         // layer for event handling of GlazedLists and PropertyChanges
         glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
