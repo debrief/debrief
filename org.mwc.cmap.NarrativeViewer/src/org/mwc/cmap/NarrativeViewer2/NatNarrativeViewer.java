@@ -10,8 +10,9 @@ import java.util.Set;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -34,14 +35,20 @@ import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -50,6 +57,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
+import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -74,11 +82,26 @@ public class NatNarrativeViewer
   private BodyLayerStack<INatEntry> bodyLayer;
   private NatDoubleClickListener doubleClickListener;
 
+  private Font prefFont;
+  private IPreferenceStore preferenceStore;
+
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
-
+    this.preferenceStore = preferenceStore;
     container = new Composite(parent, SWT.NONE);
+    container.addDisposeListener(new DisposeListener()
+    {
+
+      @Override
+      public void widgetDisposed(DisposeEvent e)
+      {
+        if (prefFont != null)
+          prefFont.dispose();
+
+      }
+    });
+
     container.setLayout(new GridLayout());
 
     filterInput = new Text(container, SWT.NONE);
@@ -120,7 +143,38 @@ public class NatNarrativeViewer
     textMatcherEditor.setMode(TextMatcherEditor.CONTAINS);
     ;
     styleConfig = new NarrativeViewerStyleConfiguration(preferenceStore);
+   
     buildTable();
+    preferenceStore.addPropertyChangeListener(new IPropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(PropertyChangeEvent event)
+      {
+        if (container.isDisposed())
+        {
+          return;
+        }
+
+        if (!event.getProperty().equals(
+            NarrativeViewerPrefsPage.PreferenceConstants.FONT))
+        {
+          return;
+        }
+
+        try
+        {
+
+          loadFont(preferenceStore);
+
+        }
+        finally
+        {
+          natTable.refresh(false);
+        }
+      }
+
+     
+    });
 
     // input listener
     filterInput.addKeyListener(new KeyAdapter()
@@ -149,6 +203,52 @@ public class NatNarrativeViewer
         }
       }
     });
+
+  }
+  
+  private void loadFont(final IPreferenceStore preferenceStore)
+  {
+    String fontStr =
+        preferenceStore
+            .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+    if (fontStr == null)
+    {
+      if (prefFont != null)
+      {
+        prefFont.dispose();
+      }
+      prefFont = null;
+
+    }
+
+    else
+    {
+      if (prefFont != null)
+      {
+        prefFont.dispose();
+        prefFont = null;
+      }
+
+      FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
+      if (readFontData != null)
+      {
+        prefFont = new Font(Display.getDefault(), readFontData);
+      }
+    }
+    // load font to style
+    IStyle defaultStyle =
+        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
+            DisplayMode.NORMAL);
+    IStyle selectionStyle =
+        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
+            DisplayMode.SELECT);
+    IStyle headerStyle =
+        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
+            DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+
+    defaultStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
+    selectionStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
+    headerStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
 
   }
 
@@ -267,6 +367,9 @@ public class NatNarrativeViewer
 
     GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
     container.layout(true);
+
+    loadFont(preferenceStore);
+    natTable.refresh(false);
   }
 
   private List<INatEntry> getNatInput()
