@@ -1,8 +1,10 @@
 package org.mwc.cmap.NarrativeViewer2;
 
+import java.io.Serializable;
+
 import org.eclipse.swt.graphics.Color;
 
-public interface INatEntry
+public interface INatEntry extends Serializable
 {
 
   public abstract String getDate();

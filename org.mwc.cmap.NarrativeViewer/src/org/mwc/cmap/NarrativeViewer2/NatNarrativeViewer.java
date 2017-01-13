@@ -1,5 +1,6 @@
 package org.mwc.cmap.NarrativeViewer2;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
@@ -29,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -243,12 +246,24 @@ public class NatNarrativeViewer
           @Override
           public void run(NatTable natTable, MouseEvent event)
           {
-            if(doubleClickListener!=null)
+            if (doubleClickListener != null)
             {
-              doubleClickListener.doubleClick( getSelection());
+              doubleClickListener.doubleClick(getSelection());
             }
           }
         });
+
+    bodyLayer.getSelectionLayer().setSelectionModel(
+        new RowSelectionModel<INatEntry>(bodyLayer.getSelectionLayer(),
+            bodyLayer.getBodyDataProvider(), new IRowIdAccessor<INatEntry>()
+            {
+
+              public Serializable getRowId(INatEntry rowObject)
+              {
+                return rowObject;
+              }
+
+            }, false));
 
     GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
     container.layout(true);
@@ -313,7 +328,8 @@ public class NatNarrativeViewer
     return container;
   }
 
-  public void addDoubleClickListener(NatDoubleClickListener iDoubleClickListener)
+  public void
+      addDoubleClickListener(NatDoubleClickListener iDoubleClickListener)
   {
     doubleClickListener = iDoubleClickListener;
   }
