@@ -3,15 +3,20 @@ package org.mwc.cmap.NarrativeViewer2;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
@@ -24,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -59,6 +65,7 @@ public class NatNarrativeViewer
   private TextMatcherEditor<INatEntry> textMatcherEditor;
   private Text filterInput;
   private DateFormatter dateFormatter = new DateFormatter();
+  private BodyLayerStack<INatEntry> bodyLayer;
 
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -183,8 +190,7 @@ public class NatNarrativeViewer
 
     final CompositeLayer compositeLayer = new CompositeLayer(1, 2);
     List<INatEntry> input = getNatInput();
-    BodyLayerStack<INatEntry> bodyLayer =
-        new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
+    bodyLayer = new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
     bodyLayer
         .addConfigLabelAccumulator(new NarrativeEntryConfigLabelAccumulator(
             bodyLayer.getBodyDataProvider(), configRegistry));
@@ -241,7 +247,7 @@ public class NatNarrativeViewer
           new ArrayList<INatEntry>(narrativeHistory.length);
       for (NarrativeEntry narrativeEntry : narrativeHistory)
       {
-        entries.add(new NatEntryProxy(dateFormatter,narrativeEntry));
+        entries.add(new NatEntryProxy(dateFormatter, narrativeEntry));
       }
       return entries;
     }
@@ -272,7 +278,15 @@ public class NatNarrativeViewer
 
   public StructuredSelection getSelection()
   {
-    // TODO Auto-generated method stub
+    Set<Range> selectedRowPositions =
+        bodyLayer.getSelectionLayer().getSelectedRowPositions();
+    for (Range range : selectedRowPositions)
+    {
+      INatEntry rowObject =
+          bodyLayer.getBodyDataProvider().getRowObject(range.start);
+      if (rowObject instanceof NatEntryProxy)
+        return new StructuredSelection(((NatEntryProxy) rowObject).entry);
+    }
     return null;
   }
 
@@ -283,7 +297,6 @@ public class NatNarrativeViewer
 
   public void addDoubleClickListener(IDoubleClickListener iDoubleClickListener)
   {
-    // TODO Auto-generated method stub
 
   }
 
@@ -295,7 +308,12 @@ public class NatNarrativeViewer
 
   public void setEntry(NarrativeEntry entry)
   {
-    // TODO Auto-generated method stub
+    List<INatEntry> list = bodyLayer.getBodyDataProvider().getList();
+    int indexOf = list.indexOf(new NatEntryProxy(dateFormatter, entry));
+    if (indexOf > -1)
+      bodyLayer.getSelectionLayer().doCommand(
+          new SelectRowsCommand(bodyLayer.getSelectionLayer(), 0, indexOf,
+              false, false));
 
   }
 
@@ -322,9 +340,61 @@ public class NatNarrativeViewer
 
   }
 
-  public void setDTG(HiResDate theDTG)
+  public void setDTG(HiResDate dtg)
   {
-    // TODO Auto-generated method stub
+    // find the table entry immediately after or on this DTG
+    NarrativeEntry entry = null;
+
+    // retrieve the list of visible rows
+    final List<INatEntry> visEntries =
+        bodyLayer.getBodyDataProvider().getList();
+
+    // step through them
+    for (final Iterator<INatEntry> entryIterator = visEntries.iterator(); entryIterator
+        .hasNext();)
+    {
+      final NatEntryProxy narrativeEntry = (NatEntryProxy) entryIterator.next();
+
+      // get the date
+      final HiResDate dt = narrativeEntry.entry.getDTG();
+
+      // is this what we're looking for?
+      if (dt.greaterThanOrEqualTo(dtg))
+      {
+        entry = narrativeEntry.entry;
+        break;
+      }
+
+    }
+
+    // ok, try to select this entry
+    if (entry != null)
+    {
+      boolean needsChange = true;
+
+      ISelection curSel = getSelection();
+      if (curSel instanceof StructuredSelection)
+      {
+        StructuredSelection sel = (StructuredSelection) curSel;
+        if (sel.size() == 1)
+        {
+          Object item = sel.getFirstElement();
+          if (item instanceof NarrativeEntry)
+          {
+            NarrativeEntry nw = (NarrativeEntry) item;
+            if (entry.equals(nw))
+            {
+              needsChange = false;
+            }
+          }
+        }
+      }
+
+      if (needsChange)
+      {
+        setEntry(entry);
+      }
+    }
 
   }
 
