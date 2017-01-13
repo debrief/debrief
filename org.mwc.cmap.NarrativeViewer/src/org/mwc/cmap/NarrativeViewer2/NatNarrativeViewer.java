@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -32,10 +32,13 @@ import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -66,6 +69,7 @@ public class NatNarrativeViewer
   private Text filterInput;
   private DateFormatter dateFormatter = new DateFormatter();
   private BodyLayerStack<INatEntry> bodyLayer;
+  private NatDoubleClickListener doubleClickListener;
 
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -232,6 +236,20 @@ public class NatNarrativeViewer
 
     natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
 
+    natTable.getUiBindingRegistry().registerDoubleClickBinding(
+        MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction()
+        {
+
+          @Override
+          public void run(NatTable natTable, MouseEvent event)
+          {
+            if(doubleClickListener!=null)
+            {
+              doubleClickListener.doubleClick( getSelection());
+            }
+          }
+        });
+
     GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
     container.layout(true);
   }
@@ -295,9 +313,9 @@ public class NatNarrativeViewer
     return container;
   }
 
-  public void addDoubleClickListener(IDoubleClickListener iDoubleClickListener)
+  public void addDoubleClickListener(NatDoubleClickListener iDoubleClickListener)
   {
-
+    doubleClickListener = iDoubleClickListener;
   }
 
   public void refresh()

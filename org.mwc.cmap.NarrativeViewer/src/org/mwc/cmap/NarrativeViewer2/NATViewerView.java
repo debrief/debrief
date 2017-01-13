@@ -505,14 +505,14 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
      * 
      */
     setupPartListeners();
-    myViewer.addDoubleClickListener(new IDoubleClickListener()
+    myViewer.addDoubleClickListener(new NatDoubleClickListener()
     {
 
       @Override
-      public void doubleClick(final DoubleClickEvent event)
+      public void doubleClick(final ISelection iSelection)
       {
         final StructuredSelection selection =
-            (StructuredSelection) event.getSelection();
+            (StructuredSelection)iSelection;
         if (selection.getFirstElement() instanceof NarrativeEntry)
         {
           fireNewSeletion((NarrativeEntry) selection.getFirstElement());
