@@ -441,16 +441,19 @@ public class NatNarrativeViewer
   {
     this.input = input;
     dateFormatter.clearCache();
-    buildTable();
-    Display.getCurrent().asyncExec(new Runnable()
+    if(!container.isDisposed())
     {
-
-      @Override
-      public void run()
+      buildTable();
+      Display.getCurrent().asyncExec(new Runnable()
       {
-        natTable.refresh(true);
-      }
-    });
+  
+        @Override
+        public void run()
+        {
+          natTable.refresh(true);
+        }
+      });
+    }
   }
 
   public void setTimeFormatter(TimeFormatter timeFormatter)
