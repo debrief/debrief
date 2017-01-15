@@ -47,6 +47,8 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
@@ -104,7 +106,26 @@ public class NatNarrativeViewer
 
     container.setLayout(new GridLayout());
 
-    filterInput = new Text(container, SWT.NONE);
+    filterInput = new Text(container, SWT.SEARCH | SWT.ICON_CANCEL);
+    filterInput.setMessage("filter text (including * or ?)");
+    filterInput.addSelectionListener(new SelectionAdapter()
+    {
+      /*
+       * (non-Javadoc)
+       * 
+       * @see
+       * org.eclipse.swt.events.SelectionAdapter#widgetDefaultSelected(org.eclipse.swt.events.
+       * SelectionEvent)
+       */
+      public void widgetDefaultSelected(SelectionEvent e)
+      {
+        if (e.detail == SWT.ICON_CANCEL)
+        {
+          clearText();
+        }
+          
+      }
+    });
     GridDataFactory.fillDefaults().grab(true, false).applyTo(filterInput);
 
     // create a new ConfigRegistry which will be needed for GlazedLists
