@@ -166,6 +166,8 @@ public class NatNarrativeViewer
     styleConfig = new NarrativeViewerStyleConfiguration(preferenceStore);
    
     buildTable();
+    
+    //for font changes 
     preferenceStore.addPropertyChangeListener(new IPropertyChangeListener()
     {
       @Override
@@ -195,6 +197,30 @@ public class NatNarrativeViewer
       }
 
      
+    });
+    //for phrases changes 
+    preferenceStore.addPropertyChangeListener(new IPropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(PropertyChangeEvent event)
+      {
+        if (container.isDisposed())
+        {
+          return;
+        }
+        
+        if (!event.getProperty().equals(
+            NarrativeViewerPrefsPage.PreferenceConstants.HIGHLIGHT_PHRASES))
+        {
+          return;
+        }
+        
+        styleConfig.updatePhrasesStyle();
+        
+        natTable.refresh(false);
+      }
+      
+      
     });
 
     // input listener

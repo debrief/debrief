@@ -1,5 +1,8 @@
 package org.mwc.cmap.NarrativeViewer2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -109,6 +112,12 @@ public class NarrativeViewerStyleConfiguration extends
       new BeveledBorderDecorator(new PaddingDecorator(
           new AutomaticRowHeightTextPainter(), 0, 5, 2, 5, true));
 
+  private MarkupDisplayConverter selectionMarkupConverter;
+
+  private MarkupDisplayConverter markupConverter;
+
+  private List<String> phrasesMarkups = new ArrayList<String>();
+
   public NarrativeViewerStyleConfiguration(final IPreferenceStore store)
   {
     this.store = store;
@@ -195,37 +204,13 @@ public class NarrativeViewerStyleConfiguration extends
   {
 
     // markup for highlighting
-    final MarkupDisplayConverter markupConverter = new MarkupDisplayConverter();
+    markupConverter = new MarkupDisplayConverter();
     // markup for highlighting in selection mode
-    final MarkupDisplayConverter selectionMarkupConverter =
-        new MarkupDisplayConverter();
+    selectionMarkupConverter = new MarkupDisplayConverter();
 
     markupConverter.registerMarkup("search", searchHighlighter);
 
-    final String[] phrases = getPhrases();
-    for (int i = 0; i < phrases.length; i++)
-    {
-      final String bg = PHRASES_COLORS[i % PHRASES_COLORS.length];
-
-      final RegexMarkupValue phraseHighlighter =
-          new RegexMarkupValue("", "<span style=\"background-color:rgb(" + bg
-              + ")\">", "</span>");
-
-      final RegexMarkupValue phraseSearchHighlighter =
-          new RegexMarkupValue("",
-              "<span style=\"color:rgb(0, 0, 0)\"><span style=\"background-color:rgb("
-                  + bg + ")\">", "</span></span>");
-
-      markupConverter.registerMarkup(phrases[i], phraseHighlighter);
-      selectionMarkupConverter.registerMarkup(phrases[i],
-          phraseSearchHighlighter);
-
-      final String phrase = phrases[i];
-      phraseHighlighter.setRegexValue("(" + phrase + ")");
-      phraseSearchHighlighter.setRegexValue("(" + phrase + ")");
-
-    }
-
+    updatePhrasesStyle();
     // register markup display converter for normal displaymode
     configRegistry.registerConfigAttribute(
         CellConfigAttributes.DISPLAY_CONVERTER, markupConverter,
@@ -318,6 +303,40 @@ public class NarrativeViewerStyleConfiguration extends
   {
     this.searchHighlighter.setRegexValue(searchValue);
     this.selectionSearchHighlighter.setRegexValue(searchValue);
+  }
+
+  public void updatePhrasesStyle()
+  {
+    for (String key : phrasesMarkups)
+    {
+      markupConverter.unregisterMarkup(key);
+      selectionMarkupConverter.unregisterMarkup(key);
+    }
+
+    final String[] phrases = getPhrases();
+    for (int i = 0; i < phrases.length; i++)
+    {
+      final String bg = PHRASES_COLORS[i % PHRASES_COLORS.length];
+      final String phrase = phrases[i];
+      final RegexMarkupValue phraseHighlighter =
+          new RegexMarkupValue("", "<span style=\"background-color:rgb(" + bg
+              + ")\">", "</span>");
+
+      final RegexMarkupValue phraseSearchHighlighter =
+          new RegexMarkupValue("",
+              "<span style=\"color:rgb(0, 0, 0)\"><span style=\"background-color:rgb("
+                  + bg + ")\">", "</span></span>");
+
+      markupConverter.registerMarkup(phrase, phraseHighlighter);
+      selectionMarkupConverter.registerMarkup(phrases[i],
+          phraseSearchHighlighter);
+
+      phrasesMarkups.add(phrase);
+      phraseHighlighter.setRegexValue("(" + phrase + ")");
+      phraseSearchHighlighter.setRegexValue("(" + phrase + ")");
+
+    }
+
   }
 
 }
