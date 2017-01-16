@@ -112,7 +112,7 @@ public class NarrativeViewerFilterRowConfiguration extends ComboBoxFilterRowConf
                 FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
         configRegistry.registerConfigAttribute(
         		CellConfigAttributes.CELL_PAINTER, 
-        		cellPainter,
+        		new BackgroundPainter(),
         		DisplayMode.NORMAL, 
         		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
 //        configRegistry.registerConfigAttribute(
