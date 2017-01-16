@@ -91,18 +91,19 @@ public class NarrativeViewerFilterRowConfiguration extends
       }
     }, CellEdgeEnum.RIGHT, this.filterIconPainter);
 
+    // by default, use plain painter for all columns
     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
         new BackgroundPainter(), DisplayMode.NORMAL,
-        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 0);
+        GridRegion.FILTER_ROW);
+    // use special painter for source column
     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
         cellPainter, DisplayMode.NORMAL,
         FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
+    
+    // use special painter for type column
     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
         cellPainter, DisplayMode.NORMAL,
         FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
-    configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
-        new BackgroundPainter(), DisplayMode.NORMAL,
-        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
   }
 
 }
