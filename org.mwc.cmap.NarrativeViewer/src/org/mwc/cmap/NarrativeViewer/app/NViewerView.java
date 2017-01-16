@@ -884,7 +884,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   @Override
   public void setFocus()
   {
-    myViewer.getViewer().getGrid().setFocus();
+    myViewer.getControl().setFocus();
   }
 
   protected void setInput(final IRollingNarrativeProvider newNarr)
@@ -938,8 +938,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private void setupPartListeners()
   {
 
