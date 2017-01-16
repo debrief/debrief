@@ -7,6 +7,10 @@ import MWC.TacticalData.NarrativeEntry;
 
 public class NatEntryProxy implements INatEntry
 {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   final DateFormatter dateFormatter;
   final NarrativeEntry entry;
 
