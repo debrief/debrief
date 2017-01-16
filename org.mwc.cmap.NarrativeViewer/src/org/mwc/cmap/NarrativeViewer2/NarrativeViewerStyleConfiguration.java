@@ -69,7 +69,7 @@ public class NarrativeViewerStyleConfiguration extends
           5, false));
 
   // customized painter that also supports shrinking
-  final RichTextCellPainter wrappingAutomaticRowHeightPainter =
+ private  final RichTextCellPainter wrappingAutomaticRowHeightPainter =
       new RichTextCellPainter(true, false, true)
       {
         @Override
@@ -80,7 +80,7 @@ public class NarrativeViewerStyleConfiguration extends
         };
       };
 
-  final RichTextCellPainter automaticRowHeightPainter =
+  private final RichTextCellPainter automaticRowHeightPainter =
       new RichTextCellPainter(false, false, true)
       {
         @Override
@@ -90,9 +90,12 @@ public class NarrativeViewerStyleConfiguration extends
           return ((contentHeight != rectangle.height) && this.calculateByTextHeight);
         };
       };
-  private final ICellPainter wrappingEntryLogPainter =
+  public final ICellPainter wrappingEntryLogPainter =
       new BackgroundPainter(new PaddingDecorator(
           wrappingAutomaticRowHeightPainter, 0, 5, 0, 5, false));
+  public final ICellPainter automaticRowHeightLogPainter =
+      new BackgroundPainter(new PaddingDecorator(
+          automaticRowHeightPainter, 0, 5, 0, 5, false));
 
   // column header configuration
   private final Color headerBgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
