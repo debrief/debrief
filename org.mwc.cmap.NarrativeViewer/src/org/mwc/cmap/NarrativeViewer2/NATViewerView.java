@@ -50,6 +50,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -472,13 +473,12 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     parent.setLayout(new GridLayout(1, false));
     final Composite rootPanel = new Composite(parent, SWT.BORDER);
     rootPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    final StackLayout rootPanelLayout = new StackLayout();
-    rootPanel.setLayout(rootPanelLayout);
+    
+    rootPanel.setLayout(new GridLayout());
 
     myViewer =
         new NatNarrativeViewer(rootPanel, CorePlugin.getDefault()
             .getPreferenceStore());
-    rootPanelLayout.topControl = myViewer.getControl();
 
     getSite().setSelectionProvider(this);
 

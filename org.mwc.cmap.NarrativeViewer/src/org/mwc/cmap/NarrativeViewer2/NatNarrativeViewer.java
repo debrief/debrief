@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -44,19 +43,15 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
@@ -79,19 +74,62 @@ public class NatNarrativeViewer
   private String[] propertyNames;
   private IRollingNarrativeProvider input;
   private TextMatcherEditor<INatEntry> textMatcherEditor;
-  private Text filterInput;
+
   private DateFormatter dateFormatter = new DateFormatter();
   private BodyLayerStack<INatEntry> bodyLayer;
   private NatDoubleClickListener doubleClickListener;
 
   private Font prefFont;
   private IPreferenceStore preferenceStore;
+  private FilteredNatTable filteredNatTable;
 
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
     this.preferenceStore = preferenceStore;
-    container = new Composite(parent, SWT.NONE);
+
+    filteredNatTable = new FilteredNatTable(parent, SWT.NONE, true)
+    {
+
+      @Override
+      protected void updateGridData(String text)
+      {
+
+        // update highlight
+        String input = text;
+        if (!input.isEmpty())
+        {
+          styleConfig.updateSearchHighlight("(" + input + ")");
+        }
+        else
+        {
+          styleConfig.updateSearchHighlight("");
+        }
+
+        // update filter
+        textMatcherEditor.setFilterText(new String[]
+        {input});
+
+        natTable.refresh(false);
+
+        // update filter
+        textMatcherEditor.setFilterText(new String[]
+        {text});
+
+        natTable.refresh(false);
+
+      }
+
+      @Override
+      protected Control createGridControl(Composite parent, int style)
+      {
+        container = new Composite(parent, SWT.NONE);
+        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+        container.setLayoutData(data);
+        return container;
+      }
+    };
+    filteredNatTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     container.addDisposeListener(new DisposeListener()
     {
 
@@ -104,29 +142,7 @@ public class NatNarrativeViewer
       }
     });
 
-    container.setLayout(new GridLayout());
-
-    filterInput = new Text(container, SWT.SEARCH | SWT.ICON_CANCEL);
-    filterInput.setMessage("filter text (including * or ?)");
-    filterInput.addSelectionListener(new SelectionAdapter()
-    {
-      /*
-       * (non-Javadoc)
-       * 
-       * @see
-       * org.eclipse.swt.events.SelectionAdapter#widgetDefaultSelected(org.eclipse.swt.events.
-       * SelectionEvent)
-       */
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-        if (e.detail == SWT.ICON_CANCEL)
-        {
-          clearText();
-        }
-          
-      }
-    });
-    GridDataFactory.fillDefaults().grab(true, false).applyTo(filterInput);
+    container.setLayout(new FillLayout());
 
     // create a new ConfigRegistry which will be needed for GlazedLists
     // handling
@@ -164,10 +180,10 @@ public class NatNarrativeViewer
     textMatcherEditor.setMode(TextMatcherEditor.CONTAINS);
     ;
     styleConfig = new NarrativeViewerStyleConfiguration(preferenceStore);
-   
+
     buildTable();
-    
-    //for font changes 
+
+    // for font changes
     preferenceStore.addPropertyChangeListener(new IPropertyChangeListener()
     {
       @Override
@@ -196,9 +212,8 @@ public class NatNarrativeViewer
         }
       }
 
-     
     });
-    //for phrases changes 
+    // for phrases changes
     preferenceStore.addPropertyChangeListener(new IPropertyChangeListener()
     {
       @Override
@@ -208,51 +223,22 @@ public class NatNarrativeViewer
         {
           return;
         }
-        
+
         if (!event.getProperty().equals(
             NarrativeViewerPrefsPage.PreferenceConstants.HIGHLIGHT_PHRASES))
         {
           return;
         }
-        
+
         styleConfig.updatePhrasesStyle();
-        
+
         natTable.refresh(false);
       }
-      
-      
-    });
 
-    // input listener
-    filterInput.addKeyListener(new KeyAdapter()
-    {
-      @Override
-      public void keyPressed(KeyEvent e)
-      {
-        if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
-        {
-          // update highlight
-          String input = filterInput.getText();
-          if (!input.isEmpty())
-          {
-            styleConfig.updateSearchHighlight("(" + input + ")");
-          }
-          else
-          {
-            styleConfig.updateSearchHighlight("");
-          }
-
-          // update filter
-          textMatcherEditor.setFilterText(new String[]
-          {input});
-
-          natTable.refresh(false);
-        }
-      }
     });
 
   }
-  
+
   private void loadFont(final IPreferenceStore preferenceStore)
   {
     String fontStr =
@@ -301,37 +287,7 @@ public class NatNarrativeViewer
 
   public void setFilterMode(boolean checked)
   {
-    clearText();
-    filterInput.setVisible(checked);
-    filterInput.setVisible(checked);
-    if (checked)
-    {
-      GridDataFactory.fillDefaults().grab(true, false).applyTo(filterInput);
-    }
-    else
-    {
-      GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
-      gridData.widthHint = 0;
-      gridData.heightHint = 0;
-      filterInput.setLayoutData(gridData);
-    }
-    container.layout(true);
-
-  }
-
-  void clearText()
-  {
-    if (filterInput != null && !filterInput.isDisposed())
-    {
-      filterInput.setText("");
-      styleConfig.updateSearchHighlight("");
-
-      // update filter
-      textMatcherEditor.setFilterText(new String[]
-      {""});
-
-      natTable.refresh(false);
-    }
+    filteredNatTable.setFilterMode(checked);
 
   }
 
@@ -412,7 +368,6 @@ public class NatNarrativeViewer
 
             }, false));
 
-    GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
     container.layout(true);
 
     loadFont(preferenceStore);
@@ -441,12 +396,12 @@ public class NatNarrativeViewer
   {
     this.input = input;
     dateFormatter.clearCache();
-    if(!container.isDisposed())
+    if (!container.isDisposed())
     {
       buildTable();
       Display.getCurrent().asyncExec(new Runnable()
       {
-  
+
         @Override
         public void run()
         {
