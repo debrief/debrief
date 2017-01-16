@@ -42,16 +42,30 @@ public class NarrativeViewerFilterRowConfiguration extends ComboBoxFilterRowConf
         		DisplayMode.NORMAL, 
         		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
 
+        // prevent the time column from being editable
+        configRegistry.registerConfigAttribute(
+            EditConfigAttributes.CELL_EDITABLE_RULE, 
+            EditableRule.NEVER_EDITABLE,
+            DisplayMode.NORMAL,
+            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 0);
+        // let the source column be editable
         configRegistry.registerConfigAttribute(
         		EditConfigAttributes.CELL_EDITABLE_RULE, 
         		EditableRule.ALWAYS_EDITABLE,
         		DisplayMode.NORMAL,
         		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
+        // let the type column be editable
         configRegistry.registerConfigAttribute(
         		EditConfigAttributes.CELL_EDITABLE_RULE, 
         		EditableRule.ALWAYS_EDITABLE,
         		DisplayMode.NORMAL,
         		FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
+        // prevent the entry column from being editable
+        configRegistry.registerConfigAttribute(
+            EditConfigAttributes.CELL_EDITABLE_RULE, 
+            EditableRule.NEVER_EDITABLE,
+            DisplayMode.NORMAL,
+            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
         
         configRegistry.registerConfigAttribute(
                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
