@@ -910,6 +910,8 @@ public abstract class FilteredNatTable extends Composite
     filterComposite.setVisible(checked);
     if (checked)
     {
+      filterComposite.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
+          false));
       setFilterTextlayoutData();
     }
     else
@@ -919,6 +921,11 @@ public abstract class FilteredNatTable extends Composite
       gridData.widthHint = 0;
       gridData.heightHint = 0;
       filterText.setLayoutData(gridData);
+      GridData layoutData = new GridData(SWT.FILL, SWT.BEGINNING, false,
+          false);
+      layoutData.widthHint = 0;
+      layoutData.heightHint = 0;
+      filterComposite.setLayoutData(layoutData);
     }
     layout(true);
 
