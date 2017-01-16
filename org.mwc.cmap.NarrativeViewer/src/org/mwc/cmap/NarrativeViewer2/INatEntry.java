@@ -6,9 +6,6 @@ import org.eclipse.swt.graphics.Color;
 
 public interface INatEntry extends Serializable
 {
-
-  public abstract String getDate();
-
   public abstract String getTime();
 
   public abstract String getName();
@@ -16,8 +13,6 @@ public interface INatEntry extends Serializable
   public abstract String getType();
 
   public abstract String getLog();
-
-  public abstract String toString();
   
   public abstract Color getColor();
 

@@ -11,7 +11,7 @@ public class NatEntryProxy implements INatEntry
    * 
    */
   private static final long serialVersionUID = 1L;
-  final DateFormatter dateFormatter;
+  final private DateFormatter dateFormatter;
   final private NarrativeEntry entry;
 
   public NatEntryProxy(DateFormatter dateFormatter,NarrativeEntry entry)
@@ -23,12 +23,6 @@ public class NatEntryProxy implements INatEntry
   public NarrativeEntry getEntry()
   {
     return entry;
-  }
-
-  @Override
-  public String getDate()
-  {
-    return entry.getDTGString();
   }
 
   @Override
@@ -53,12 +47,6 @@ public class NatEntryProxy implements INatEntry
   public String getLog()
   {
     return entry.getEntry();
-  }
-
-  @Override
-  public String toString()
-  {
-    return entry.toString();
   }
 
   @Override
