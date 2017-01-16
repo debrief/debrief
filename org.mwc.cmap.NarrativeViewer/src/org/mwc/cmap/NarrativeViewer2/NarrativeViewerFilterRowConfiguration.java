@@ -9,6 +9,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -43,11 +44,11 @@ public class NarrativeViewerFilterRowConfiguration extends
         this.cellEditor, DisplayMode.NORMAL,
         FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
 
-    // prevent the time column from being editable
+    // by default, prevent the columns from being editable
     configRegistry.registerConfigAttribute(
         EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE,
         DisplayMode.NORMAL,
-        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 0);
+        GridRegion.FILTER_ROW);
 
     // let the source column be editable
     configRegistry.registerConfigAttribute(
@@ -60,12 +61,6 @@ public class NarrativeViewerFilterRowConfiguration extends
         EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE,
         DisplayMode.NORMAL,
         FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
-
-    // prevent the entry column from being editable
-    configRegistry.registerConfigAttribute(
-        EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE,
-        DisplayMode.NORMAL,
-        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
 
     configRegistry.registerConfigAttribute(
         FilterRowConfigAttributes.TEXT_MATCHING_MODE,
