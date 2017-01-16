@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -17,7 +19,6 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
@@ -26,6 +27,8 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.Glaze
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
@@ -51,6 +54,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.mwc.cmap.NarrativeViewer.actions.AbstractDynamicAction;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 
@@ -63,6 +67,8 @@ import ca.odell.glazedlists.matchers.TextMatcherEditor;
 public class NatNarrativeViewer
 {
 
+  private static final String TYPE_LBL = "Type";
+  private static final String SOURCE_LBL = "Source";
   private ConfigRegistry configRegistry;
   private NatTable natTable;
   private NarrativeViewerStyleConfiguration styleConfig;
@@ -80,6 +86,9 @@ public class NatNarrativeViewer
   private Font prefFont;
   private IPreferenceStore preferenceStore;
   private FilteredNatTable filteredNatTable;
+  private DefaultColumnHeaderDataProvider columnHeaderDataProvider;
+
+  private List<Integer> hiddenCols = new ArrayList<Integer>();
 
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -158,8 +167,8 @@ public class NatNarrativeViewer
     propertyToLabelMap = new HashMap<String, String>();
 
     propertyToLabelMap.put("time", "Time");
-    propertyToLabelMap.put("name", "Source");
-    propertyToLabelMap.put("type", "Type");
+    propertyToLabelMap.put("name", SOURCE_LBL);
+    propertyToLabelMap.put("type", TYPE_LBL);
     propertyToLabelMap.put("log", "Entry");
 
     columnPropertyAccessor =
@@ -261,7 +270,7 @@ public class NatNarrativeViewer
         .addConfigLabelAccumulator(new NarrativeEntryConfigLabelAccumulator(
             bodyLayer.getBodyDataProvider(), configRegistry));
 
-    final IDataProvider columnHeaderDataProvider =
+    columnHeaderDataProvider =
         new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
     final DataLayer columnHeaderDataLayer =
         new DataLayer(columnHeaderDataProvider);
@@ -299,6 +308,25 @@ public class NatNarrativeViewer
 
     natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
 
+//    natTable.getUiBindingRegistry().registerMouseDownBinding(
+//        MouseEventMatcher.columnHeaderLeftClick(SWT.NONE), new IMouseAction()
+//        {
+//
+//          @Override
+//          public void run(final NatTable natTable, final MouseEvent event)
+//          {
+//            int columnPosition = natTable.getColumnPositionByX(event.x);
+//            if (columnPosition == getColumnPositionBylabel(SOURCE_LBL))// source
+//            {
+//              System.out.println("//click on source");
+//            }
+//            else if (columnPosition == getColumnPositionBylabel(TYPE_LBL))// type
+//            {
+//              System.out.println("//click on type");
+//            }
+//
+//          }
+//        });
     natTable.getUiBindingRegistry().registerDoubleClickBinding(
         MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction()
         {
@@ -334,7 +362,21 @@ public class NatNarrativeViewer
 
   public void fillActionBars(final IActionBars actionBars)
   {
-    // TODO Auto-generated method stub
+    IMenuManager menu = actionBars.getMenuManager();
+    final SwitchColumnVisibilityAction showSource =
+        new SwitchColumnVisibilityAction(SOURCE_LBL, "Show source");
+    menu.add(showSource);
+    final SwitchColumnVisibilityAction showType =
+        new SwitchColumnVisibilityAction(TYPE_LBL, "Show type");
+    menu.add(showType);
+    menu.addMenuListener(new IMenuListener()
+    {
+      public void menuAboutToShow(final IMenuManager manager)
+      {
+        showSource.refresh();
+        showType.refresh();
+      }
+    });
 
   }
 
@@ -543,6 +585,76 @@ public class NatNarrativeViewer
         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
     natTable.refresh(false);
+
+  }
+
+  int getColumnPositionBylabel(String label)
+  {
+
+    int columnCount = natTable.getColumnCount();
+    for (int i = 0; i < columnCount; i++)
+    {
+      String columnHeaderLabel =
+          columnHeaderDataProvider.getColumnHeaderLabel(i);
+      if (label.equals(columnHeaderLabel))
+      {
+        return i;
+      }
+
+    }
+
+    return -1;
+  }
+
+  private class SwitchColumnVisibilityAction extends AbstractDynamicAction
+  {
+    private final String colLabel;
+    private boolean visible = true;
+
+    public SwitchColumnVisibilityAction(final String colLabel, final String name)
+    {
+      this.colLabel = colLabel;
+      setText(name);
+
+    }
+
+    public void refresh()
+    {
+      setChecked(visible);
+    }
+
+    int[] toIntArray(List<Integer> list)
+    {
+      int[] ret = new int[list.size()];
+      int i = 0;
+      for (Integer e : list)
+        ret[i++] = e.intValue();
+      return ret;
+    }
+
+    @Override
+    public void run()
+    {
+      // make sure to do show all to find correct column index
+      natTable.doCommand(new ShowAllColumnsCommand());
+      int columnPositionBylabel = getColumnPositionBylabel(colLabel);
+      visible = !visible;
+      if (visible)
+      {
+        hiddenCols.remove((Object) Integer.valueOf(columnPositionBylabel));
+
+      }
+      else
+      {
+        hiddenCols.add(columnPositionBylabel);
+
+      }
+
+      if (hiddenCols.size() > 0)
+        natTable.doCommand(new MultiColumnHideCommand(natTable,
+            toIntArray(hiddenCols)));
+
+    }
 
   }
 
