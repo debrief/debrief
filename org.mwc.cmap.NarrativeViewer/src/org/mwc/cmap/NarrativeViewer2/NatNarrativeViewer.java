@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -74,7 +73,7 @@ public class NatNarrativeViewer
   private IRollingNarrativeProvider input;
   private TextMatcherEditor<INatEntry> textMatcherEditor;
 
-  private DateFormatter dateFormatter = new DateFormatter();
+  private final DateFormatter dateFormatter = new DateFormatter();
   private BodyLayerStack<INatEntry> bodyLayer;
   private NatDoubleClickListener doubleClickListener;
 
@@ -91,11 +90,21 @@ public class NatNarrativeViewer
     {
 
       @Override
-      protected void updateGridData(String text)
+      protected Control createGridControl(final Composite parent,
+          final int style)
+      {
+        container = new Composite(parent, SWT.NONE);
+        final GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+        container.setLayoutData(data);
+        return container;
+      }
+
+      @Override
+      protected void updateGridData(final String text)
       {
 
         // update highlight
-        String input = text;
+        final String input = text;
         if (!input.isEmpty())
         {
           styleConfig.updateSearchHighlight("(" + input + ")");
@@ -118,25 +127,19 @@ public class NatNarrativeViewer
         natTable.refresh(false);
 
       }
-
-      @Override
-      protected Control createGridControl(Composite parent, int style)
-      {
-        container = new Composite(parent, SWT.NONE);
-        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        container.setLayoutData(data);
-        return container;
-      }
     };
-    filteredNatTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+    filteredNatTable
+        .setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     container.addDisposeListener(new DisposeListener()
     {
 
       @Override
-      public void widgetDisposed(DisposeEvent e)
+      public void widgetDisposed(final DisposeEvent e)
       {
         if (prefFont != null)
+        {
           prefFont.dispose();
+        }
 
       }
     });
@@ -168,8 +171,8 @@ public class NatNarrativeViewer
         {
 
           @Override
-          public void
-              getFilterStrings(List<String> baseList, INatEntry element)
+          public void getFilterStrings(final List<String> baseList,
+              final INatEntry element)
           {
             baseList.add(element.getLog());
             baseList.add(element.getName());
@@ -186,7 +189,7 @@ public class NatNarrativeViewer
     preferenceStore.addPropertyChangeListener(new IPropertyChangeListener()
     {
       @Override
-      public void propertyChange(PropertyChangeEvent event)
+      public void propertyChange(final PropertyChangeEvent event)
       {
         if (container.isDisposed())
         {
@@ -216,7 +219,7 @@ public class NatNarrativeViewer
     preferenceStore.addPropertyChangeListener(new IPropertyChangeListener()
     {
       @Override
-      public void propertyChange(PropertyChangeEvent event)
+      public void propertyChange(final PropertyChangeEvent event)
       {
         if (container.isDisposed())
         {
@@ -238,56 +241,10 @@ public class NatNarrativeViewer
 
   }
 
-  private void loadFont(final IPreferenceStore preferenceStore)
+  public void addDoubleClickListener(
+      final NatDoubleClickListener iDoubleClickListener)
   {
-    String fontStr =
-        preferenceStore
-            .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
-    if (fontStr == null)
-    {
-      if (prefFont != null)
-      {
-        prefFont.dispose();
-      }
-      prefFont = null;
-
-    }
-
-    else
-    {
-      if (prefFont != null)
-      {
-        prefFont.dispose();
-        prefFont = null;
-      }
-
-      FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-      if (readFontData != null)
-      {
-        prefFont = new Font(Display.getDefault(), readFontData);
-      }
-    }
-    // load font to style
-    IStyle defaultStyle =
-        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
-            DisplayMode.NORMAL);
-    IStyle selectionStyle =
-        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
-            DisplayMode.SELECT);
-    IStyle headerStyle =
-        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
-            DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-
-    defaultStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
-    selectionStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
-    headerStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
-
-  }
-
-  public void setFilterMode(boolean checked)
-  {
-    filteredNatTable.setFilterMode(checked);
-
+    doubleClickListener = iDoubleClickListener;
   }
 
   private void buildTable()
@@ -298,29 +255,30 @@ public class NatNarrativeViewer
     }
 
     final CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-    List<INatEntry> input = getNatInput();
+    final List<INatEntry> input = getNatInput();
     bodyLayer = new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
     bodyLayer
         .addConfigLabelAccumulator(new NarrativeEntryConfigLabelAccumulator(
             bodyLayer.getBodyDataProvider(), configRegistry));
 
-    IDataProvider columnHeaderDataProvider =
+    final IDataProvider columnHeaderDataProvider =
         new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-    DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
-    ColumnHeaderLayer columnHeaderLayer =
+    final DataLayer columnHeaderDataLayer =
+        new DataLayer(columnHeaderDataProvider);
+    final ColumnHeaderLayer columnHeaderLayer =
         new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer
             .getSelectionLayer());
 
-    SortHeaderLayer<INatEntry> sortHeaderLayer =
+    final SortHeaderLayer<INatEntry> sortHeaderLayer =
         new SortHeaderLayer<INatEntry>(columnHeaderLayer,
             new GlazedListsSortModel<INatEntry>(bodyLayer.getSortedList(),
                 columnPropertyAccessor, configRegistry, columnHeaderDataLayer));
 
-    GlazedListsFilterRowComboBoxDataProvider<INatEntry> comboBoxDataProvider =
+    final GlazedListsFilterRowComboBoxDataProvider<INatEntry> comboBoxDataProvider =
         new GlazedListsFilterRowComboBoxDataProvider<INatEntry>(bodyLayer
             .getGlazedListsEventLayer(), bodyLayer.getSortedList(),
             columnPropertyAccessor);
-    ComboBoxFilterRowHeaderComposite<INatEntry> filterRowHeaderLayer =
+    final ComboBoxFilterRowHeaderComposite<INatEntry> filterRowHeaderLayer =
         new ComboBoxFilterRowHeaderComposite<INatEntry>(bodyLayer
             .getFilterList(), comboBoxDataProvider, columnPropertyAccessor,
             sortHeaderLayer, columnHeaderDataProvider, configRegistry, false);
@@ -346,7 +304,7 @@ public class NatNarrativeViewer
         {
 
           @Override
-          public void run(NatTable natTable, MouseEvent event)
+          public void run(final NatTable natTable, final MouseEvent event)
           {
             if (doubleClickListener != null)
             {
@@ -360,7 +318,8 @@ public class NatNarrativeViewer
             bodyLayer.getBodyDataProvider(), new IRowIdAccessor<INatEntry>()
             {
 
-              public Serializable getRowId(INatEntry rowObject)
+              @Override
+              public Serializable getRowId(final INatEntry rowObject)
               {
                 return rowObject;
               }
@@ -373,16 +332,27 @@ public class NatNarrativeViewer
     natTable.refresh(false);
   }
 
+  public void fillActionBars(final IActionBars actionBars)
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  public Control getControl()
+  {
+    return container;
+  }
+
   private List<INatEntry> getNatInput()
   {
     if (input != null)
     {
-      NarrativeEntry[] narrativeHistory =
+      final NarrativeEntry[] narrativeHistory =
           input.getNarrativeHistory(new String[]
           {});
-      List<INatEntry> entries =
+      final List<INatEntry> entries =
           new ArrayList<INatEntry>(narrativeHistory.length);
-      for (NarrativeEntry narrativeEntry : narrativeHistory)
+      for (final NarrativeEntry narrativeEntry : narrativeHistory)
       {
         entries.add(new NatEntryProxy(dateFormatter, narrativeEntry));
       }
@@ -391,7 +361,150 @@ public class NatNarrativeViewer
     return Collections.emptyList();
   }
 
-  public void setInput(IRollingNarrativeProvider input)
+  public StructuredSelection getSelection()
+  {
+    final Set<Range> selectedRowPositions =
+        bodyLayer.getSelectionLayer().getSelectedRowPositions();
+    for (final Range range : selectedRowPositions)
+    {
+      final INatEntry rowObject =
+          bodyLayer.getBodyDataProvider().getRowObject(range.start);
+      if (rowObject instanceof NatEntryProxy)
+      {
+        return new StructuredSelection(((NatEntryProxy) rowObject).getEntry());
+      }
+    }
+    return null;
+  }
+
+  private void loadFont(final IPreferenceStore preferenceStore)
+  {
+    final String fontStr =
+        preferenceStore
+            .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+    if (fontStr == null)
+    {
+      if (prefFont != null)
+      {
+        prefFont.dispose();
+      }
+      prefFont = null;
+
+    }
+
+    else
+    {
+      if (prefFont != null)
+      {
+        prefFont.dispose();
+        prefFont = null;
+      }
+
+      final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
+      if (readFontData != null)
+      {
+        prefFont = new Font(Display.getDefault(), readFontData);
+      }
+    }
+    // load font to style
+    final IStyle defaultStyle =
+        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
+            DisplayMode.NORMAL);
+    final IStyle selectionStyle =
+        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
+            DisplayMode.SELECT);
+    final IStyle headerStyle =
+        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
+            DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+
+    defaultStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
+    selectionStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
+    headerStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
+
+  }
+
+  public void refresh()
+  {
+    natTable.refresh(false);
+
+  }
+
+  public void setDTG(final HiResDate dtg)
+  {
+    // find the table entry immediately after or on this DTG
+    NarrativeEntry entry = null;
+
+    // retrieve the list of visible rows
+    final List<INatEntry> visEntries =
+        bodyLayer.getBodyDataProvider().getList();
+
+    // step through them
+    for (INatEntry nEntry: visEntries)
+    {
+      final NatEntryProxy narrativeEntry = (NatEntryProxy) nEntry;
+
+      // get the date
+      final HiResDate dt = narrativeEntry.getEntry().getDTG();
+
+      // is this what we're looking for?
+      if (dt.greaterThanOrEqualTo(dtg))
+      {
+        entry = narrativeEntry.getEntry();
+        break;
+      }
+    }
+
+    // ok, try to select this entry
+    if (entry != null)
+    {
+      boolean needsChange = true;
+
+      final ISelection curSel = getSelection();
+      if (curSel instanceof StructuredSelection)
+      {
+        final StructuredSelection sel = (StructuredSelection) curSel;
+        if (sel.size() == 1)
+        {
+          final Object item = sel.getFirstElement();
+          if (item instanceof NarrativeEntry)
+          {
+            final NarrativeEntry nw = (NarrativeEntry) item;
+            if (entry.equals(nw))
+            {
+              needsChange = false;
+            }
+          }
+        }
+      }
+
+      if (needsChange)
+      {
+        setEntry(entry);
+      }
+    }
+
+  }
+
+  public void setEntry(final NarrativeEntry entry)
+  {
+    final List<INatEntry> list = bodyLayer.getBodyDataProvider().getList();
+    final int indexOf = list.indexOf(new NatEntryProxy(dateFormatter, entry));
+    if (indexOf > -1)
+    {
+      bodyLayer.getSelectionLayer().doCommand(
+          new SelectRowsCommand(bodyLayer.getSelectionLayer(), 0, indexOf,
+              false, false));
+    }
+
+  }
+
+  public void setFilterMode(final boolean checked)
+  {
+    filteredNatTable.setFilterMode(checked);
+
+  }
+
+  public void setInput(final IRollingNarrativeProvider input)
   {
     this.input = input;
     dateFormatter.clearCache();
@@ -410,67 +523,19 @@ public class NatNarrativeViewer
     }
   }
 
-  public void setTimeFormatter(TimeFormatter timeFormatter)
-  {
-    dateFormatter.setFormatter(timeFormatter);
-    natTable.refresh(true);
-  }
-
-  public StructuredSelection getSelection()
-  {
-    Set<Range> selectedRowPositions =
-        bodyLayer.getSelectionLayer().getSelectedRowPositions();
-    for (Range range : selectedRowPositions)
-    {
-      INatEntry rowObject =
-          bodyLayer.getBodyDataProvider().getRowObject(range.start);
-      if (rowObject instanceof NatEntryProxy)
-        return new StructuredSelection(((NatEntryProxy) rowObject).entry);
-    }
-    return null;
-  }
-
-  public Control getControl()
-  {
-    return container;
-  }
-
-  public void
-      addDoubleClickListener(NatDoubleClickListener iDoubleClickListener)
-  {
-    doubleClickListener = iDoubleClickListener;
-  }
-
-  public void refresh()
-  {
-    natTable.refresh(false);
-
-  }
-
-  public void setEntry(NarrativeEntry entry)
-  {
-    List<INatEntry> list = bodyLayer.getBodyDataProvider().getList();
-    int indexOf = list.indexOf(new NatEntryProxy(dateFormatter, entry));
-    if (indexOf > -1)
-      bodyLayer.getSelectionLayer().doCommand(
-          new SelectRowsCommand(bodyLayer.getSelectionLayer(), 0, indexOf,
-              false, false));
-
-  }
-
-  public void setSearchMode(boolean checked)
+  public void setSearchMode(final boolean checked)
   {
     setFilterMode(checked);
 
   }
 
-  public void fillActionBars(IActionBars actionBars)
+  public void setTimeFormatter(final TimeFormatter timeFormatter)
   {
-    // TODO Auto-generated method stub
-
+    dateFormatter.setFormatter(timeFormatter);
+    natTable.refresh(true);
   }
 
-  public void setWrappingEntries(boolean checked)
+  public void setWrappingEntries(final boolean checked)
   {
     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
         checked ? styleConfig.wrappingEntryLogPainter
@@ -478,64 +543,6 @@ public class NatNarrativeViewer
         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
     natTable.refresh(false);
-
-  }
-
-  public void setDTG(HiResDate dtg)
-  {
-    // find the table entry immediately after or on this DTG
-    NarrativeEntry entry = null;
-
-    // retrieve the list of visible rows
-    final List<INatEntry> visEntries =
-        bodyLayer.getBodyDataProvider().getList();
-
-    // step through them
-    for (final Iterator<INatEntry> entryIterator = visEntries.iterator(); entryIterator
-        .hasNext();)
-    {
-      final NatEntryProxy narrativeEntry = (NatEntryProxy) entryIterator.next();
-
-      // get the date
-      final HiResDate dt = narrativeEntry.entry.getDTG();
-
-      // is this what we're looking for?
-      if (dt.greaterThanOrEqualTo(dtg))
-      {
-        entry = narrativeEntry.entry;
-        break;
-      }
-
-    }
-
-    // ok, try to select this entry
-    if (entry != null)
-    {
-      boolean needsChange = true;
-
-      ISelection curSel = getSelection();
-      if (curSel instanceof StructuredSelection)
-      {
-        StructuredSelection sel = (StructuredSelection) curSel;
-        if (sel.size() == 1)
-        {
-          Object item = sel.getFirstElement();
-          if (item instanceof NarrativeEntry)
-          {
-            NarrativeEntry nw = (NarrativeEntry) item;
-            if (entry.equals(nw))
-            {
-              needsChange = false;
-            }
-          }
-        }
-      }
-
-      if (needsChange)
-      {
-        setEntry(entry);
-      }
-    }
 
   }
 

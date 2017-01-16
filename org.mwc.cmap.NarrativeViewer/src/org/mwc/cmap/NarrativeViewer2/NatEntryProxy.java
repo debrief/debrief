@@ -12,12 +12,17 @@ public class NatEntryProxy implements INatEntry
    */
   private static final long serialVersionUID = 1L;
   final DateFormatter dateFormatter;
-  final NarrativeEntry entry;
+  final private NarrativeEntry entry;
 
   public NatEntryProxy(DateFormatter dateFormatter,NarrativeEntry entry)
   {
     this.dateFormatter = dateFormatter;
     this.entry = entry;
+  }
+  
+  public NarrativeEntry getEntry()
+  {
+    return entry;
   }
 
   @Override
