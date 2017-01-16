@@ -11,6 +11,7 @@ public class DateFormatter
 
   static final TimeFormatter DEFAULT_TIME = new TimeFormatter()
   {
+    @Override
     public String format(final HiResDate time)
     {
       return time.toString();
@@ -19,13 +20,7 @@ public class DateFormatter
 
   private TimeFormatter formatter = DEFAULT_TIME;
 
-  public void setFormatter(TimeFormatter formatter)
-  {
-    this.formatter = formatter;
-    clearCache();
-  }
-
-  private WeakHashMap<Object, String> formattedDateCache =
+  private final WeakHashMap<Object, String> formattedDateCache =
       new WeakHashMap<Object, String>();
 
   public void clearCache()
@@ -33,7 +28,7 @@ public class DateFormatter
     formattedDateCache.clear();
   }
 
-  public String get(HiResDate dtg)
+  public String get(final HiResDate dtg)
   {
 
     String format = formattedDateCache.get(dtg);
@@ -46,6 +41,12 @@ public class DateFormatter
 
     return format;
 
+  }
+
+  public void setFormatter(final TimeFormatter formatter)
+  {
+    this.formatter = formatter;
+    clearCache();
   }
 
 }

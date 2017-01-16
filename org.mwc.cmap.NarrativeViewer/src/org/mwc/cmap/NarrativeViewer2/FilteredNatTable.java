@@ -72,6 +72,30 @@ import org.eclipse.ui.progress.WorkbenchJob;
 public abstract class FilteredNatTable extends Composite
 {
 
+  private static boolean useNativeSearchField(final Composite composite)
+  {
+    if (useNativeSearchField == null)
+    {
+      useNativeSearchField = Boolean.FALSE;
+      Text testText = null;
+      try
+      {
+        testText = new Text(composite, SWT.SEARCH | SWT.ICON_CANCEL);
+        useNativeSearchField =
+            new Boolean((testText.getStyle() & SWT.ICON_CANCEL) != 0);
+      }
+      finally
+      {
+        if (testText != null)
+        {
+          testText.dispose();
+        }
+      }
+
+    }
+    return useNativeSearchField.booleanValue();
+  }
+
   /**
    * The filter text widget to be used by this grid. This value may be <code>null</code> if there is
    * no filter widget, or if the controls have not yet been created.
@@ -97,8 +121,6 @@ public abstract class FilteredNatTable extends Composite
    * @since 3.5
    */
   protected Control clearButtonControl;
-
- 
 
   /**
    * The Composite on which the filter controls are created. This is used to set the background
@@ -184,6 +206,8 @@ public abstract class FilteredNatTable extends Composite
     }
   }
 
+  private static Boolean useNativeSearchField;
+
   /**
    * Create a new instance of the receiver.
    * 
@@ -197,7 +221,8 @@ public abstract class FilteredNatTable extends Composite
    *          <code>true</code> if the new 3.5 look should be used
    * @since 3.5
    */
-  public FilteredNatTable(Composite parent, int gridStyle, boolean useNewLook)
+  public FilteredNatTable(final Composite parent, final int gridStyle,
+      final boolean useNewLook)
   {
     super(parent, SWT.NONE);
     this.parent = parent;
@@ -206,23 +231,163 @@ public abstract class FilteredNatTable extends Composite
   }
 
   /**
-   * Create the filtered grid.
-   * 
-   * @param gridStyle
-   *          the style bits for the <code>Grid</code>
-   * @param filter
-   *          the filter to be used
-   * 
-   * @since 3.3
+   * Clears the text in the filter text widget.
    */
-  protected void init(int gridStyle)
+  protected void clearText()
   {
-    showFilterControls = true;
-    createControl(parent, gridStyle);
-    createRefreshJob();
-    setInitialText(FilteredGrid_FilterMessage);
-    setFont(parent.getFont());
+    setFilterText(""); //$NON-NLS-1$
+    textChanged();
+  }
 
+  /**
+   * Create the button that clears the text.
+   * 
+   * @param parent
+   *          parent <code>Composite</code> of toolbar button
+   */
+  private void createClearTextNew(final Composite parent)
+  {
+    // only create the button if the text widget doesn't support one
+    // natively
+    if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0)
+    {
+      final Image inactiveImage =
+          JFaceResources.getImageRegistry().getDescriptor(DISABLED_CLEAR_ICON)
+              .createImage();
+      final Image activeImage =
+          JFaceResources.getImageRegistry().getDescriptor(CLEAR_ICON)
+              .createImage();
+      final Image pressedImage =
+          new Image(getDisplay(), activeImage, SWT.IMAGE_GRAY);
+
+      final Label clearButton = new Label(parent, SWT.NONE);
+      clearButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false,
+          false));
+      clearButton.setImage(inactiveImage);
+      clearButton.setBackground(parent.getDisplay().getSystemColor(
+          SWT.COLOR_LIST_BACKGROUND));
+      clearButton.setToolTipText(FilteredGrid_ClearToolTip);
+      clearButton.addMouseListener(new MouseAdapter()
+      {
+        private MouseMoveListener fMoveListener;
+
+        private boolean isMouseInButton(final MouseEvent e)
+        {
+          final Point buttonSize = clearButton.getSize();
+          return 0 <= e.x && e.x < buttonSize.x && 0 <= e.y
+              && e.y < buttonSize.y;
+        }
+
+        @Override
+        public void mouseDown(final MouseEvent e)
+        {
+          clearButton.setImage(pressedImage);
+          fMoveListener = new MouseMoveListener()
+          {
+            private boolean fMouseInButton = true;
+
+            @Override
+            public void mouseMove(final MouseEvent e)
+            {
+              final boolean mouseInButton = isMouseInButton(e);
+              if (mouseInButton != fMouseInButton)
+              {
+                fMouseInButton = mouseInButton;
+                clearButton.setImage(mouseInButton ? pressedImage
+                    : inactiveImage);
+              }
+            }
+          };
+          clearButton.addMouseMoveListener(fMoveListener);
+        }
+
+        @Override
+        public void mouseUp(final MouseEvent e)
+        {
+          if (fMoveListener != null)
+          {
+            clearButton.removeMouseMoveListener(fMoveListener);
+            fMoveListener = null;
+            final boolean mouseInButton = isMouseInButton(e);
+            clearButton.setImage(mouseInButton ? activeImage : inactiveImage);
+            if (mouseInButton)
+            {
+              clearText();
+              filterText.setFocus();
+            }
+          }
+        }
+      });
+      clearButton.addMouseTrackListener(new MouseTrackListener()
+      {
+        @Override
+        public void mouseEnter(final MouseEvent e)
+        {
+          clearButton.setImage(activeImage);
+        }
+
+        @Override
+        public void mouseExit(final MouseEvent e)
+        {
+          clearButton.setImage(inactiveImage);
+        }
+
+        @Override
+        public void mouseHover(final MouseEvent e)
+        {
+        }
+      });
+      clearButton.addDisposeListener(new DisposeListener()
+      {
+        @Override
+        public void widgetDisposed(final DisposeEvent e)
+        {
+          inactiveImage.dispose();
+          activeImage.dispose();
+          pressedImage.dispose();
+        }
+      });
+
+      this.clearButtonControl = clearButton;
+    }
+  }
+
+  /**
+   * Create the button that clears the text.
+   * 
+   * @param parent
+   *          parent <code>Composite</code> of toolbar button
+   */
+  private void createClearTextOld(final Composite parent)
+  {
+    // only create the button if the text widget doesn't support one
+    // natively
+    if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0)
+    {
+      filterToolBar = new ToolBarManager(SWT.FLAT | SWT.HORIZONTAL);
+      filterToolBar.createControl(parent);
+
+      final IAction clearTextAction = new Action("", IAction.AS_PUSH_BUTTON) {//$NON-NLS-1$
+            /*
+             * (non-Javadoc)
+             * 
+             * @see org.eclipse.jface.action.Action#run()
+             */
+            @Override
+            public void run()
+            {
+              clearText();
+            }
+          };
+
+      clearTextAction.setToolTipText(FilteredGrid_ClearToolTip);
+      clearTextAction.setImageDescriptor(JFaceResources.getImageRegistry()
+          .getDescriptor(CLEAR_ICON));
+      clearTextAction.setDisabledImageDescriptor(JFaceResources
+          .getImageRegistry().getDescriptor(DISABLED_CLEAR_ICON));
+
+      filterToolBar.add(clearTextAction);
+    }
   }
 
   /**
@@ -231,9 +396,9 @@ public abstract class FilteredNatTable extends Composite
    * @param parent
    * @param gridStyle
    */
-  protected void createControl(Composite parent, int gridStyle)
+  protected void createControl(final Composite parent, final int gridStyle)
   {
-    GridLayout layout = new GridLayout();
+    final GridLayout layout = new GridLayout();
     layout.marginHeight = 0;
     layout.marginWidth = 0;
     setLayout(layout);
@@ -251,7 +416,7 @@ public abstract class FilteredNatTable extends Composite
         filterComposite.setBackground(getDisplay().getSystemColor(
             SWT.COLOR_LIST_BACKGROUND));
       }
-      GridLayout filterLayout = new GridLayout(2, false);
+      final GridLayout filterLayout = new GridLayout(2, false);
       filterLayout.marginHeight = 0;
       filterLayout.marginWidth = 0;
       filterComposite.setLayout(filterLayout);
@@ -263,44 +428,13 @@ public abstract class FilteredNatTable extends Composite
     }
 
     gridComposite = new Composite(this, SWT.NONE);
-    GridLayout gridCompositeLayout = new GridLayout();
+    final GridLayout gridCompositeLayout = new GridLayout();
     gridCompositeLayout.marginHeight = 0;
     gridCompositeLayout.marginWidth = 0;
     gridComposite.setLayout(gridCompositeLayout);
-    GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+    final GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
     gridComposite.setLayoutData(data);
-     gridControl = createGridControl(gridComposite, gridStyle);
-  }
-
-  public Composite getGridComposite()
-  {
-    return gridComposite;
-  }
-
-  private static Boolean useNativeSearchField;
-
-  private static boolean useNativeSearchField(Composite composite)
-  {
-    if (useNativeSearchField == null)
-    {
-      useNativeSearchField = Boolean.FALSE;
-      Text testText = null;
-      try
-      {
-        testText = new Text(composite, SWT.SEARCH | SWT.ICON_CANCEL);
-        useNativeSearchField =
-            new Boolean((testText.getStyle() & SWT.ICON_CANCEL) != 0);
-      }
-      finally
-      {
-        if (testText != null)
-        {
-          testText.dispose();
-        }
-      }
-
-    }
-    return useNativeSearchField.booleanValue();
+    gridControl = createGridControl(gridComposite, gridStyle);
   }
 
   /**
@@ -311,13 +445,17 @@ public abstract class FilteredNatTable extends Composite
    *          parent <code>Composite</code> of the filter controls
    * @return the <code>Composite</code> that contains the filter controls
    */
-  protected Composite createFilterControls(Composite parent)
+  protected Composite createFilterControls(final Composite parent)
   {
     createFilterText(parent);
     if (useNewLook)
+    {
       createClearTextNew(parent);
+    }
     else
+    {
       createClearTextOld(parent);
+    }
     if (clearButtonControl != null)
     {
       // initially there is no text to clear
@@ -332,148 +470,6 @@ public abstract class FilteredNatTable extends Composite
     return parent;
   }
 
-  
-  protected abstract Control  createGridControl(Composite parent, int style);
-  
-
-  /**
-   * Creates the grid viewer. Subclasses may override.
-   * 
-   * @param parent
-   *          the parent composite
-   * @param style
-   *          SWT style bits used to create the grid viewer
-   * @return the grid viewer
-   * 
-   * @since 3.3
-   */
-  protected GridTableViewer doCreateGridViewer(Composite parent, int style)
-  {
-    return new GridTableViewer(parent, style)
-    {
-
-      /**
-       * override getSelection in GridTableViewer to avoid bug with ILazyContentProvider and
-       * GridTableViewer as it need to check grid.getFocusItem() before access getData()
-       */
-      @Override
-      public ISelection getSelection()
-      {
-        Grid grid = getGrid();
-        if (!grid.isCellSelectionEnabled())
-        {
-          List<?> list = getSelectionFromWidget();
-          Object el = null;
-          if (grid.getFocusItem() != null && !grid.getFocusItem().isDisposed())
-          {
-            el = grid.getFocusItem().getData();
-          }
-          return new SelectionWithFocusRow(list, el, getComparer());
-        }
-        else
-        {
-          return super.getSelection();
-        }
-      }
-
-    };
-  }
-
-  /**
-   * Create the refresh job for the receiver.
-   * 
-   */
-  private void createRefreshJob()
-  {
-    refreshJob = doCreateRefreshJob();
-    refreshJob.setSystem(true);
-  }
-
-  /**
-   * Creates a workbench job that will refresh the grid based on the current filter text. Subclasses
-   * may override.
-   * 
-   * @return a workbench job that can be scheduled to refresh the grid
-   * 
-   * @since 3.4
-   */
-  protected WorkbenchJob doCreateRefreshJob()
-  {
-    return new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
-      public IStatus runInUIThread(IProgressMonitor monitor)
-      {
-        if (gridControl.isDisposed())
-        {
-          return Status.CANCEL_STATUS;
-        }
-
-        if (monitor.isCanceled())
-        {
-          return Status.CANCEL_STATUS;
-        }
-
-        final String text = getFilterString();
-        if (text == null)
-        {
-          return Status.OK_STATUS;
-        }
-
-        Display.getDefault().asyncExec(new Runnable()
-        {
-
-          @Override
-          public void run()
-          {
-            boolean initial = initialText != null && initialText.equals(text);
-
-           
-            try
-            {
-              
-
-              updateGridData(text);
-
-              if (text.length() > 0 && !initial)
-              {
-
-                // enabled toolbar - there is text to clear
-                // and the list is currently being filtered
-                updateToolbar(true);
-
-              }
-              else
-              {
-                // disabled toolbar - there is no text to clear
-                // and the list is currently not filtered
-                updateToolbar(false);
-              }
-            }
-            finally
-            {
-             
-            }
-          }
-        });
-        return Status.OK_STATUS;
-      }
-
-    };
-  }
-
-  protected abstract void updateGridData(String text);
-
-  protected void updateToolbar(boolean visible)
-  {
-    if (clearButtonControl != null)
-    {
-      clearButtonControl.setVisible(visible);
-    }
-    if (filterToolBar != null)
-    {
-      filterToolBar.getControl().setVisible(visible);
-    }
-  }
-
   /**
    * Creates the filter text and adds listeners. This method calls
    * {@link #doCreateFilterText(Composite)} to create the text control. Subclasses should override
@@ -482,7 +478,7 @@ public abstract class FilteredNatTable extends Composite
    * @param parent
    *          <code>Composite</code> of the filter text
    */
-  protected void createFilterText(Composite parent)
+  protected void createFilterText(final Composite parent)
   {
     filterText = doCreateFilterText(parent);
 
@@ -493,7 +489,8 @@ public abstract class FilteredNatTable extends Composite
        * 
        * @see org.eclipse.swt.events.FocusListener#focusLost(org.eclipse.swt.events.FocusEvent)
        */
-      public void focusGained(FocusEvent e)
+      @Override
+      public void focusGained(final FocusEvent e)
       {
         if (!useNewLook)
         {
@@ -501,9 +498,10 @@ public abstract class FilteredNatTable extends Composite
            * Running in an asyncExec because the selectAll() does not appear to work when using
            * mouse to give focus to text.
            */
-          Display display = filterText.getDisplay();
+          final Display display = filterText.getDisplay();
           display.asyncExec(new Runnable()
           {
+            @Override
             public void run()
             {
               if (!filterText.isDisposed())
@@ -524,7 +522,8 @@ public abstract class FilteredNatTable extends Composite
        * 
        * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
        */
-      public void focusLost(FocusEvent e)
+      @Override
+      public void focusLost(final FocusEvent e)
       {
         if (!useNewLook)
         {
@@ -547,7 +546,8 @@ public abstract class FilteredNatTable extends Composite
          * 
          * @see org.eclipse.swt.events.MouseAdapter#mouseDown(org.eclipse.swt.events.MouseEvent)
          */
-        public void mouseDown(MouseEvent e)
+        @Override
+        public void mouseDown(final MouseEvent e)
         {
           if (filterText.getText().equals(initialText))
           {
@@ -564,11 +564,12 @@ public abstract class FilteredNatTable extends Composite
        * 
        * @see org.eclipse.swt.events.KeyAdapter#keyReleased(org.eclipse.swt.events.KeyEvent)
        */
-      public void keyPressed(KeyEvent e)
+      @Override
+      public void keyPressed(final KeyEvent e)
       {
         // on a CR we want to transfer focus to the list
-       
-        if ( e.keyCode == SWT.ARROW_DOWN)
+
+        if (e.keyCode == SWT.ARROW_DOWN)
         {
           gridControl.setFocus();
           return;
@@ -579,7 +580,8 @@ public abstract class FilteredNatTable extends Composite
     // enter key set focus to grid
     filterText.addTraverseListener(new TraverseListener()
     {
-      public void keyTraversed(TraverseEvent e)
+      @Override
+      public void keyTraversed(final TraverseEvent e)
       {
         if (e.detail == SWT.TRAVERSE_RETURN)
         {
@@ -613,7 +615,8 @@ public abstract class FilteredNatTable extends Composite
        * 
        * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
        */
-      public void modifyText(ModifyEvent e)
+      @Override
+      public void modifyText(final ModifyEvent e)
       {
         textChanged();
       }
@@ -633,10 +636,13 @@ public abstract class FilteredNatTable extends Composite
          * org.eclipse.swt.events.SelectionAdapter#widgetDefaultSelected(org.eclipse.swt.events.
          * SelectionEvent)
          */
-        public void widgetDefaultSelected(SelectionEvent e)
+        @Override
+        public void widgetDefaultSelected(final SelectionEvent e)
         {
           if (e.detail == SWT.ICON_CANCEL)
+          {
             clearText();
+          }
         }
       });
     }
@@ -644,19 +650,16 @@ public abstract class FilteredNatTable extends Composite
     setFilterTextlayoutData();
   }
 
-  private void setFilterTextlayoutData()
-  {
-    GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-    // if the text widget supported cancel then it will have it's own
-    // integrated button. We can take all of the space.
-    if ((filterText.getStyle() & SWT.ICON_CANCEL) != 0)
-      gridData.horizontalSpan = 2;
-    filterText.setLayoutData(gridData);
-  }
+  protected abstract Control createGridControl(Composite parent, int style);
 
-  protected void selectFirst()
+  /**
+   * Create the refresh job for the receiver.
+   * 
+   */
+  private void createRefreshJob()
   {
-
+    refreshJob = doCreateRefreshJob();
+    refreshJob.setSystem(true);
   }
 
   /**
@@ -668,7 +671,7 @@ public abstract class FilteredNatTable extends Composite
    * 
    * @since 3.3
    */
-  protected Text doCreateFilterText(Composite parent)
+  protected Text doCreateFilterText(final Composite parent)
   {
     if (!useNewLook || useNativeSearchField(parent))
     {
@@ -679,215 +682,119 @@ public abstract class FilteredNatTable extends Composite
   }
 
   /**
-   * Update the receiver after the text has changed.
+   * Creates the grid viewer. Subclasses may override.
+   * 
+   * @param parent
+   *          the parent composite
+   * @param style
+   *          SWT style bits used to create the grid viewer
+   * @return the grid viewer
+   * 
+   * @since 3.3
    */
-  protected void textChanged()
+  protected GridTableViewer doCreateGridViewer(final Composite parent,
+      final int style)
   {
-    // cancel currently running job first, to prevent unnecessary redraw
-    refreshJob.cancel();
-    refreshJob.schedule(getRefreshJobDelay());
+    return new GridTableViewer(parent, style)
+    {
+
+      /**
+       * override getSelection in GridTableViewer to avoid bug with ILazyContentProvider and
+       * GridTableViewer as it need to check grid.getFocusItem() before access getData()
+       */
+      @Override
+      public ISelection getSelection()
+      {
+        final Grid grid = getGrid();
+        if (!grid.isCellSelectionEnabled())
+        {
+          final List<?> list = getSelectionFromWidget();
+          Object el = null;
+          if (grid.getFocusItem() != null && !grid.getFocusItem().isDisposed())
+          {
+            el = grid.getFocusItem().getData();
+          }
+          return new SelectionWithFocusRow(list, el, getComparer());
+        }
+        else
+        {
+          return super.getSelection();
+        }
+      }
+
+    };
   }
 
   /**
-   * Return the time delay that should be used when scheduling the filter refresh job. Subclasses
+   * Creates a workbench job that will refresh the grid based on the current filter text. Subclasses
    * may override.
    * 
-   * @return a time delay in milliseconds before the job should run
+   * @return a workbench job that can be scheduled to refresh the grid
    * 
-   * @since 3.5
+   * @since 3.4
    */
-  protected long getRefreshJobDelay()
+  protected WorkbenchJob doCreateRefreshJob()
   {
-    return 200;
-  }
-
-  /**
-   * Set the background for the widgets that support the filter text area.
-   * 
-   * @param background
-   *          background <code>Color</code> to set
-   */
-  public void setBackground(Color background)
-  {
-    super.setBackground(background);
-    if (filterComposite != null
-        && (!useNewLook || useNativeSearchField(filterComposite)))
-    {
-      filterComposite.setBackground(background);
-    }
-    if (filterToolBar != null && filterToolBar.getControl() != null)
-    {
-      filterToolBar.getControl().setBackground(background);
-    }
-  }
-
-  /**
-   * Create the button that clears the text.
-   * 
-   * @param parent
-   *          parent <code>Composite</code> of toolbar button
-   */
-  private void createClearTextOld(Composite parent)
-  {
-    // only create the button if the text widget doesn't support one
-    // natively
-    if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0)
-    {
-      filterToolBar = new ToolBarManager(SWT.FLAT | SWT.HORIZONTAL);
-      filterToolBar.createControl(parent);
-
-      IAction clearTextAction = new Action("", IAction.AS_PUSH_BUTTON) {//$NON-NLS-1$
-            /*
-             * (non-Javadoc)
-             * 
-             * @see org.eclipse.jface.action.Action#run()
-             */
-            public void run()
-            {
-              clearText();
-            }
-          };
-
-      clearTextAction.setToolTipText(FilteredGrid_ClearToolTip);
-      clearTextAction.setImageDescriptor(JFaceResources.getImageRegistry()
-          .getDescriptor(CLEAR_ICON));
-      clearTextAction.setDisabledImageDescriptor(JFaceResources
-          .getImageRegistry().getDescriptor(DISABLED_CLEAR_ICON));
-
-      filterToolBar.add(clearTextAction);
-    }
-  }
-
-  /**
-   * Create the button that clears the text.
-   * 
-   * @param parent
-   *          parent <code>Composite</code> of toolbar button
-   */
-  private void createClearTextNew(Composite parent)
-  {
-    // only create the button if the text widget doesn't support one
-    // natively
-    if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0)
-    {
-      final Image inactiveImage =
-          JFaceResources.getImageRegistry().getDescriptor(DISABLED_CLEAR_ICON)
-              .createImage();
-      final Image activeImage =
-          JFaceResources.getImageRegistry().getDescriptor(CLEAR_ICON)
-              .createImage();
-      final Image pressedImage =
-          new Image(getDisplay(), activeImage, SWT.IMAGE_GRAY);
-
-      final Label clearButton = new Label(parent, SWT.NONE);
-      clearButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false,
-          false));
-      clearButton.setImage(inactiveImage);
-      clearButton.setBackground(parent.getDisplay().getSystemColor(
-          SWT.COLOR_LIST_BACKGROUND));
-      clearButton.setToolTipText(FilteredGrid_ClearToolTip);
-      clearButton.addMouseListener(new MouseAdapter()
+    return new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
+      @Override
+      public IStatus runInUIThread(final IProgressMonitor monitor)
       {
-        private MouseMoveListener fMoveListener;
-
-        public void mouseDown(MouseEvent e)
+        if (gridControl.isDisposed())
         {
-          clearButton.setImage(pressedImage);
-          fMoveListener = new MouseMoveListener()
-          {
-            private boolean fMouseInButton = true;
+          return Status.CANCEL_STATUS;
+        }
 
-            public void mouseMove(MouseEvent e)
+        if (monitor.isCanceled())
+        {
+          return Status.CANCEL_STATUS;
+        }
+
+        final String text = getFilterString();
+        if (text == null)
+        {
+          return Status.OK_STATUS;
+        }
+
+        Display.getDefault().asyncExec(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            final boolean initial =
+                initialText != null && initialText.equals(text);
+
+            try
             {
-              boolean mouseInButton = isMouseInButton(e);
-              if (mouseInButton != fMouseInButton)
+
+              updateGridData(text);
+
+              if (text.length() > 0 && !initial)
               {
-                fMouseInButton = mouseInButton;
-                clearButton.setImage(mouseInButton ? pressedImage
-                    : inactiveImage);
+
+                // enabled toolbar - there is text to clear
+                // and the list is currently being filtered
+                updateToolbar(true);
+
+              }
+              else
+              {
+                // disabled toolbar - there is no text to clear
+                // and the list is currently not filtered
+                updateToolbar(false);
               }
             }
-          };
-          clearButton.addMouseMoveListener(fMoveListener);
-        }
-
-        public void mouseUp(MouseEvent e)
-        {
-          if (fMoveListener != null)
-          {
-            clearButton.removeMouseMoveListener(fMoveListener);
-            fMoveListener = null;
-            boolean mouseInButton = isMouseInButton(e);
-            clearButton.setImage(mouseInButton ? activeImage : inactiveImage);
-            if (mouseInButton)
+            finally
             {
-              clearText();
-              filterText.setFocus();
+
             }
           }
-        }
+        });
+        return Status.OK_STATUS;
+      }
 
-        private boolean isMouseInButton(MouseEvent e)
-        {
-          Point buttonSize = clearButton.getSize();
-          return 0 <= e.x && e.x < buttonSize.x && 0 <= e.y
-              && e.y < buttonSize.y;
-        }
-      });
-      clearButton.addMouseTrackListener(new MouseTrackListener()
-      {
-        public void mouseEnter(MouseEvent e)
-        {
-          clearButton.setImage(activeImage);
-        }
-
-        public void mouseExit(MouseEvent e)
-        {
-          clearButton.setImage(inactiveImage);
-        }
-
-        public void mouseHover(MouseEvent e)
-        {
-        }
-      });
-      clearButton.addDisposeListener(new DisposeListener()
-      {
-        public void widgetDisposed(DisposeEvent e)
-        {
-          inactiveImage.dispose();
-          activeImage.dispose();
-          pressedImage.dispose();
-        }
-      });
-
-      this.clearButtonControl = clearButton;
-    }
+    };
   }
-
-  /**
-   * Clears the text in the filter text widget.
-   */
-  protected void clearText()
-  {
-    setFilterText(""); //$NON-NLS-1$
-    textChanged();
-  }
-
-  /**
-   * Set the text in the filter control.
-   * 
-   * @param string
-   */
-  protected void setFilterText(String string)
-  {
-    if (filterText != null)
-    {
-      filterText.setText(string);
-      selectAll();
-    }
-  }
-
-  
 
   /**
    * Get the filter text for the receiver, if it was created. Otherwise return <code>null</code>.
@@ -910,6 +817,139 @@ public abstract class FilteredNatTable extends Composite
     return filterText != null ? filterText.getText() : null;
   }
 
+  public Composite getGridComposite()
+  {
+    return gridComposite;
+  }
+
+  /**
+   * Get the initial text for the receiver.
+   * 
+   * @return String
+   */
+  protected String getInitialText()
+  {
+    return initialText;
+  }
+
+  /**
+   * Return the time delay that should be used when scheduling the filter refresh job. Subclasses
+   * may override.
+   * 
+   * @return a time delay in milliseconds before the job should run
+   * 
+   * @since 3.5
+   */
+  protected long getRefreshJobDelay()
+  {
+    return 200;
+  }
+
+  /**
+   * Create the filtered grid.
+   * 
+   * @param gridStyle
+   *          the style bits for the <code>Grid</code>
+   * @param filter
+   *          the filter to be used
+   * 
+   * @since 3.3
+   */
+  protected void init(final int gridStyle)
+  {
+    showFilterControls = true;
+    createControl(parent, gridStyle);
+    createRefreshJob();
+    setInitialText(FilteredGrid_FilterMessage);
+    setFont(parent.getFont());
+
+  }
+
+  /**
+   * Select all text in the filter text field.
+   * 
+   */
+  protected void selectAll()
+  {
+    if (filterText != null)
+    {
+      filterText.selectAll();
+    }
+  }
+
+  protected void selectFirst()
+  {
+
+  }
+
+  /**
+   * Set the background for the widgets that support the filter text area.
+   * 
+   * @param background
+   *          background <code>Color</code> to set
+   */
+  @Override
+  public void setBackground(final Color background)
+  {
+    super.setBackground(background);
+    if (filterComposite != null
+        && (!useNewLook || useNativeSearchField(filterComposite)))
+    {
+      filterComposite.setBackground(background);
+    }
+    if (filterToolBar != null && filterToolBar.getControl() != null)
+    {
+      filterToolBar.getControl().setBackground(background);
+    }
+  }
+
+  public void setFilterMode(final boolean checked)
+  {
+    clearText();
+    filterText.setVisible(checked);
+    filterComposite.setVisible(checked);
+    if (checked)
+    {
+      setFilterTextlayoutData();
+    }
+    else
+    {
+      final GridData gridData =
+          new GridData(SWT.FILL, SWT.CENTER, false, false);
+      gridData.widthHint = 0;
+      gridData.heightHint = 0;
+      filterText.setLayoutData(gridData);
+    }
+    layout(true);
+
+  }
+
+  /**
+   * Set the text in the filter control.
+   * 
+   * @param string
+   */
+  protected void setFilterText(final String string)
+  {
+    if (filterText != null)
+    {
+      filterText.setText(string);
+      selectAll();
+    }
+  }
+
+  private void setFilterTextlayoutData()
+  {
+    final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+    // if the text widget supported cancel then it will have it's own
+    // integrated button. We can take all of the space.
+    if ((filterText.getStyle() & SWT.ICON_CANCEL) != 0)
+    {
+      gridData.horizontalSpan = 2;
+    }
+    filterText.setLayoutData(gridData);
+  }
+
   /**
    * Set the text that will be shown until the first focus. A default value is provided, so this
    * method only need be called if overriding the default initial text is desired.
@@ -917,7 +957,7 @@ public abstract class FilteredNatTable extends Composite
    * @param text
    *          initial text to appear in text field
    */
-  public void setInitialText(String text)
+  public void setInitialText(final String text)
   {
     initialText = text;
     if (useNewLook && filterText != null)
@@ -932,6 +972,7 @@ public abstract class FilteredNatTable extends Composite
       {
         getDisplay().asyncExec(new Runnable()
         {
+          @Override
           public void run()
           {
             if (!filterText.isDisposed() && filterText.isFocusControl())
@@ -951,45 +992,27 @@ public abstract class FilteredNatTable extends Composite
   }
 
   /**
-   * Select all text in the filter text field.
-   * 
+   * Update the receiver after the text has changed.
    */
-  protected void selectAll()
+  protected void textChanged()
   {
-    if (filterText != null)
-    {
-      filterText.selectAll();
-    }
+    // cancel currently running job first, to prevent unnecessary redraw
+    refreshJob.cancel();
+    refreshJob.schedule(getRefreshJobDelay());
   }
 
-  /**
-   * Get the initial text for the receiver.
-   * 
-   * @return String
-   */
-  protected String getInitialText()
-  {
-    return initialText;
-  }
+  protected abstract void updateGridData(String text);
 
-  public void setFilterMode(boolean checked)
+  protected void updateToolbar(final boolean visible)
   {
-    clearText();
-    filterText.setVisible(checked);
-    filterComposite.setVisible(checked);
-    if (checked)
+    if (clearButtonControl != null)
     {
-      setFilterTextlayoutData();
+      clearButtonControl.setVisible(visible);
     }
-    else
+    if (filterToolBar != null)
     {
-      GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
-      gridData.widthHint = 0;
-      gridData.heightHint = 0;
-      filterText.setLayoutData(gridData);
+      filterToolBar.getControl().setVisible(visible);
     }
-    layout(true);
-
   }
 
 }

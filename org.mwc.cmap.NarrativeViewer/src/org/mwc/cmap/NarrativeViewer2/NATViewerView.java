@@ -405,8 +405,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         final IFileEditorInput ife = (IFileEditorInput) input;
         final IResource file = ife.getFile();
 
-        final StructuredSelection selection =
-            (StructuredSelection) myViewer.getSelection();
+        final StructuredSelection selection = myViewer.getSelection();
         if (selection.getFirstElement() instanceof NarrativeEntry)
         {
 
@@ -452,11 +451,15 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       final ISelectionChangedListener listener)
   {
     if (_selectionListeners == null)
+    {
       _selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
+    }
 
     // see if we don't already contain it..
     if (!_selectionListeners.contains(listener))
+    {
       _selectionListeners.add(listener);
+    }
   }
 
   @Override
@@ -469,7 +472,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     parent.setLayout(new GridLayout(1, false));
     final Composite rootPanel = new Composite(parent, SWT.BORDER);
     rootPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    
+
     rootPanel.setLayout(new GridLayout());
 
     myViewer =
@@ -507,8 +510,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void doubleClick(final ISelection iSelection)
       {
-        final StructuredSelection selection =
-            (StructuredSelection)iSelection;
+        final StructuredSelection selection = (StructuredSelection) iSelection;
         if (selection.getFirstElement() instanceof NarrativeEntry)
         {
           fireNewSeletion((NarrativeEntry) selection.getFirstElement());
@@ -638,8 +640,12 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   {
     // first update the time
     if (_controlTime.isChecked())
+    {
       if (_controllableTime != null)
+      {
         _controllableTime.setTime(this, newEntry.getDTG(), true);
+      }
+    }
 
     // now update the selection
     final EditableWrapper wrappedEntry = new EditableWrapper(newEntry);
@@ -725,7 +731,9 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
                 "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
                 null, null);
         if (dialog.open() == IDialogConstants.OK_ID)
+        {
           myViewer.refresh();
+        }
       }
     };
     fontSize.setImageDescriptor(CorePlugin

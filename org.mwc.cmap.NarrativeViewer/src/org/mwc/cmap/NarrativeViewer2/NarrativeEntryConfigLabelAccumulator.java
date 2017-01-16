@@ -22,25 +22,26 @@ public class NarrativeEntryConfigLabelAccumulator implements
     IConfigLabelAccumulator
 {
 
-  private IRowDataProvider<INatEntry> dataProvider;
-  private IConfigRegistry configRegistry;
+  private final IRowDataProvider<INatEntry> dataProvider;
+  private final IConfigRegistry configRegistry;
 
   // track which sources we have registered
-  private List<String> processedSources = new ArrayList<String>();
+  private final List<String> processedSources = new ArrayList<String>();
 
   public NarrativeEntryConfigLabelAccumulator(
-      IRowDataProvider<INatEntry> dataProvider, IConfigRegistry configRegistry)
+      final IRowDataProvider<INatEntry> dataProvider,
+      final IConfigRegistry configRegistry)
   {
     this.dataProvider = dataProvider;
     this.configRegistry = configRegistry;
   }
 
   @Override
-  public void accumulateConfigLabels(LabelStack configLabels,
-      int columnPosition, int rowPosition)
+  public void accumulateConfigLabels(final LabelStack configLabels,
+      final int columnPosition, final int rowPosition)
   {
-    INatEntry entry = dataProvider.getRowObject(rowPosition);
-    String uName = entry.getName().toUpperCase();
+    final INatEntry entry = dataProvider.getRowObject(rowPosition);
+    final String uName = entry.getName().toUpperCase();
 
     // tell this cell that it has a style label to apply
     configLabels.addLabel(uName);
@@ -56,11 +57,11 @@ public class NarrativeEntryConfigLabelAccumulator implements
     }
   }
 
-  private void registerStylesForSource(IConfigRegistry configRegistry,
-      String source, Color color)
+  private void registerStylesForSource(final IConfigRegistry configRegistry,
+      final String source, final Color color)
   {
     // ok, generate it
-    Style style = new Style();
+    final Style style = new Style();
     style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, color);
     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
         style, DisplayMode.NORMAL, source);

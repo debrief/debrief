@@ -439,7 +439,7 @@ public class NatNarrativeViewer
         bodyLayer.getBodyDataProvider().getList();
 
     // step through them
-    for (INatEntry nEntry: visEntries)
+    for (final INatEntry nEntry : visEntries)
     {
       final NatEntryProxy narrativeEntry = (NatEntryProxy) nEntry;
 

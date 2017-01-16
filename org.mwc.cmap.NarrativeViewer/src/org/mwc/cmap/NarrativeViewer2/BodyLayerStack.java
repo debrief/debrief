@@ -28,94 +28,108 @@ import ca.odell.glazedlists.TransformedList;
  * 
  * @param <T>
  */
-public class BodyLayerStack<T> extends AbstractLayerTransform {
+public class BodyLayerStack<T> extends AbstractLayerTransform
+{
 
-    private final SortedList<T> sortedList;
-    private final FilterList<T> filterList;
+  private final SortedList<T> sortedList;
+  private final FilterList<T> filterList;
 
-    private final ListDataProvider<T> bodyDataProvider;
+  private final ListDataProvider<T> bodyDataProvider;
 
-    private GlazedListsEventLayer<T> glazedListsEventLayer;
-    private ColumnReorderLayer columnReorderLayer;
-    private ColumnHideShowLayer columnHideShowLayer;
-    private SelectionLayer selectionLayer;
-    private ViewportLayer viewportLayer;
-    
-    private AggregateConfigLabelAccumulator accumulator;
+  private final GlazedListsEventLayer<T> glazedListsEventLayer;
+  private final ColumnReorderLayer columnReorderLayer;
+  private final ColumnHideShowLayer columnHideShowLayer;
+  private final SelectionLayer selectionLayer;
+  private final ViewportLayer viewportLayer;
 
-    public BodyLayerStack(List<T> values,
-            IColumnPropertyAccessor<T> columnPropertyAccessor) {
-        // wrapping of the list to show into GlazedLists
-        // see http://publicobject.com/glazedlists/ for further information
-        EventList<T> eventList = GlazedLists.eventList(values);
-        TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+  private final AggregateConfigLabelAccumulator accumulator;
 
-        // use the SortedList constructor with 'null' for the Comparator
-        // because the Comparator will be set by configuration
-        this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
-        // wrap the SortedList with the FilterList
-        this.filterList = new FilterList<T>(getSortedList());
+  public BodyLayerStack(final List<T> values,
+      final IColumnPropertyAccessor<T> columnPropertyAccessor)
+  {
+    // wrapping of the list to show into GlazedLists
+    // see http://publicobject.com/glazedlists/ for further information
+    final EventList<T> eventList = GlazedLists.eventList(values);
+    final TransformedList<T, T> rowObjectsGlazedList =
+        GlazedLists.threadSafeList(eventList);
 
-        this.bodyDataProvider = new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
-        DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
-        
-        accumulator = new AggregateConfigLabelAccumulator();
-        accumulator.add(new ColumnLabelAccumulator(bodyDataProvider));
-        bodyDataLayer.setConfigLabelAccumulator(accumulator);
-        
-        // width configuration - last column should take remaining space
-        bodyDataLayer.setColumnWidthByPosition(0, 100);
-        bodyDataLayer.setColumnWidthByPosition(1, 100);
-        bodyDataLayer.setColumnWidthByPosition(2, 100);
-        bodyDataLayer.setColumnPercentageSizing(3, true);
+    // use the SortedList constructor with 'null' for the Comparator
+    // because the Comparator will be set by configuration
+    this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+    // wrap the SortedList with the FilterList
+    this.filterList = new FilterList<T>(getSortedList());
 
-        // layer for event handling of GlazedLists and PropertyChanges
-        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
+    this.bodyDataProvider =
+        new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
+    final DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
-        this.columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
-        this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
-        this.viewportLayer = new ViewportLayer(this.selectionLayer);
+    accumulator = new AggregateConfigLabelAccumulator();
+    accumulator.add(new ColumnLabelAccumulator(bodyDataProvider));
+    bodyDataLayer.setConfigLabelAccumulator(accumulator);
 
-        addConfiguration(new DefaultEditBindings());
-        addConfiguration(new DefaultEditConfiguration());
+    // width configuration - last column should take remaining space
+    bodyDataLayer.setColumnWidthByPosition(0, 100);
+    bodyDataLayer.setColumnWidthByPosition(1, 100);
+    bodyDataLayer.setColumnWidthByPosition(2, 100);
+    bodyDataLayer.setColumnPercentageSizing(3, true);
 
-        setUnderlyingLayer(viewportLayer);
-    }
+    // layer for event handling of GlazedLists and PropertyChanges
+    glazedListsEventLayer =
+        new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
 
-    public SortedList<T> getSortedList() {
-        return this.sortedList;
-    }
+    this.columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
+    this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+    this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+    this.viewportLayer = new ViewportLayer(this.selectionLayer);
 
-    public FilterList<T> getFilterList() {
-        return this.filterList;
-    }
+    addConfiguration(new DefaultEditBindings());
+    addConfiguration(new DefaultEditConfiguration());
 
-    public ListDataProvider<T> getBodyDataProvider() {
-        return this.bodyDataProvider;
-    }
+    setUnderlyingLayer(viewportLayer);
+  }
 
-    public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
-    	return this.glazedListsEventLayer;
-    }
-    
-    public ColumnReorderLayer getColumnReorderLayer() {
-        return this.columnReorderLayer;
-    }
+  public void addConfigLabelAccumulator(final IConfigLabelAccumulator cla)
+  {
+    accumulator.add(cla);
+  }
 
-    public ColumnHideShowLayer getColumnHideShowLayer() {
-        return this.columnHideShowLayer;
-    }
+  public ListDataProvider<T> getBodyDataProvider()
+  {
+    return this.bodyDataProvider;
+  }
 
-    public SelectionLayer getSelectionLayer() {
-        return this.selectionLayer;
-    }
+  public ColumnHideShowLayer getColumnHideShowLayer()
+  {
+    return this.columnHideShowLayer;
+  }
 
-    public ViewportLayer getViewportLayer() {
-        return this.viewportLayer;
-    }
+  public ColumnReorderLayer getColumnReorderLayer()
+  {
+    return this.columnReorderLayer;
+  }
 
-    public void addConfigLabelAccumulator(IConfigLabelAccumulator cla) {
-    	accumulator.add(cla);
-    }
+  public FilterList<T> getFilterList()
+  {
+    return this.filterList;
+  }
+
+  public GlazedListsEventLayer<T> getGlazedListsEventLayer()
+  {
+    return this.glazedListsEventLayer;
+  }
+
+  public SelectionLayer getSelectionLayer()
+  {
+    return this.selectionLayer;
+  }
+
+  public SortedList<T> getSortedList()
+  {
+    return this.sortedList;
+  }
+
+  public ViewportLayer getViewportLayer()
+  {
+    return this.viewportLayer;
+  }
 }

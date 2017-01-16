@@ -69,7 +69,7 @@ public class NarrativeViewerStyleConfiguration extends
           5, false));
 
   // customized painter that also supports shrinking
- private  final RichTextCellPainter wrappingAutomaticRowHeightPainter =
+  private final RichTextCellPainter wrappingAutomaticRowHeightPainter =
       new RichTextCellPainter(true, false, true)
       {
         @Override
@@ -94,8 +94,8 @@ public class NarrativeViewerStyleConfiguration extends
       new BackgroundPainter(new PaddingDecorator(
           wrappingAutomaticRowHeightPainter, 0, 5, 0, 5, false));
   public final ICellPainter automaticRowHeightLogPainter =
-      new BackgroundPainter(new PaddingDecorator(
-          automaticRowHeightPainter, 0, 5, 0, 5, false));
+      new BackgroundPainter(new PaddingDecorator(automaticRowHeightPainter, 0,
+          5, 0, 5, false));
 
   // column header configuration
   private final Color headerBgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
@@ -119,7 +119,7 @@ public class NarrativeViewerStyleConfiguration extends
 
   private MarkupDisplayConverter markupConverter;
 
-  private List<String> phrasesMarkups = new ArrayList<String>();
+  private final List<String> phrasesMarkups = new ArrayList<String>();
 
   public NarrativeViewerStyleConfiguration(final IPreferenceStore store)
   {
@@ -302,15 +302,9 @@ public class NarrativeViewerStyleConfiguration extends
     {};
   }
 
-  public void updateSearchHighlight(final String searchValue)
-  {
-    this.searchHighlighter.setRegexValue(searchValue);
-    this.selectionSearchHighlighter.setRegexValue(searchValue);
-  }
-
   public void updatePhrasesStyle()
   {
-    for (String key : phrasesMarkups)
+    for (final String key : phrasesMarkups)
     {
       markupConverter.unregisterMarkup(key);
       selectionMarkupConverter.unregisterMarkup(key);
@@ -340,6 +334,12 @@ public class NarrativeViewerStyleConfiguration extends
 
     }
 
+  }
+
+  public void updateSearchHighlight(final String searchValue)
+  {
+    this.searchHighlighter.setRegexValue(searchValue);
+    this.selectionSearchHighlighter.setRegexValue(searchValue);
   }
 
 }

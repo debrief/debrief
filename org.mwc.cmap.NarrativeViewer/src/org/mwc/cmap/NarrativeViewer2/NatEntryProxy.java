@@ -14,33 +14,53 @@ public class NatEntryProxy implements INatEntry
   final private DateFormatter dateFormatter;
   final private NarrativeEntry entry;
 
-  public NatEntryProxy(DateFormatter dateFormatter,NarrativeEntry entry)
+  public NatEntryProxy(final DateFormatter dateFormatter,
+      final NarrativeEntry entry)
   {
     this.dateFormatter = dateFormatter;
     this.entry = entry;
   }
-  
+
+  @Override
+  public boolean equals(final Object obj)
+  {
+    if (this == obj)
+    {
+      return true;
+    }
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    final NatEntryProxy other = (NatEntryProxy) obj;
+    if (entry == null)
+    {
+      if (other.entry != null)
+      {
+        return false;
+      }
+    }
+    else if (!entry.equals(other.entry))
+    {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public Color getColor()
+  {
+    // convert to SWT color
+    return ColorHelper.getColor(entry.getColor());
+  }
+
   public NarrativeEntry getEntry()
   {
     return entry;
-  }
-
-  @Override
-  public String getTime()
-  {
-    return dateFormatter.get(entry.getDTG());
-  }
-
-  @Override
-  public String getName()
-  {
-    return entry.getTrackName();
-  }
-
-  @Override
-  public String getType()
-  {
-    return entry.getType();
   }
 
   @Override
@@ -50,10 +70,21 @@ public class NatEntryProxy implements INatEntry
   }
 
   @Override
-  public Color getColor()
+  public String getName()
   {
-    // convert to SWT color
-    return ColorHelper.getColor(entry.getColor());
+    return entry.getTrackName();
+  }
+
+  @Override
+  public String getTime()
+  {
+    return dateFormatter.get(entry.getDTG());
+  }
+
+  @Override
+  public String getType()
+  {
+    return entry.getType();
   }
 
   @Override
@@ -65,25 +96,4 @@ public class NatEntryProxy implements INatEntry
     return result;
   }
 
-  @Override
-  public boolean equals(Object obj)
-  {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    NatEntryProxy other = (NatEntryProxy) obj;
-    if (entry == null)
-    {
-      if (other.entry != null)
-        return false;
-    }
-    else if (!entry.equals(other.entry))
-      return false;
-    return true;
-  }
-  
-  
 }
