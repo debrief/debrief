@@ -519,8 +519,8 @@ public class NatNarrativeViewer
   public void setWrappingEntries(boolean checked)
   {
     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
-        checked ? styleConfig.wrappingAutomaticRowHeightPainter
-            : styleConfig.automaticRowHeightPainter, DisplayMode.NORMAL,
+        checked ? styleConfig.wrappingEntryLogPainter
+            : styleConfig.automaticRowHeightLogPainter, DisplayMode.NORMAL,
         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
     natTable.refresh(false);
