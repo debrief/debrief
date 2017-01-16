@@ -5,11 +5,16 @@ import org.eclipse.swt.graphics.Color;
 
 public class NATNarrativeEntry implements INatEntry {
 
-	private String date;
-	private String time;
-	private String name;
-	private String type;
-	private String log;
+	/**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  
+  private final String date;
+	private final String time;
+	private final String name;
+	private final String type;
+	private final String log;
 	
 	public NATNarrativeEntry(String date, String time, String name, String type, String log) {
 		this.date = date;
@@ -27,20 +32,12 @@ public class NATNarrativeEntry implements INatEntry {
 		return date;
 	}
 
-	public void setDate(String date) {
-		this.date = date;
-	}
-
 	/* (non-Javadoc)
    * @see org.mwc.cmap.NarrativeViewer2.INatEntry#getTime()
    */
 	@Override
   public String getTime() {
 		return time;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
 	}
 
 	/* (non-Javadoc)
@@ -51,20 +48,12 @@ public class NATNarrativeEntry implements INatEntry {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	/* (non-Javadoc)
    * @see org.mwc.cmap.NarrativeViewer2.INatEntry#getType()
    */
 	@Override
   public String getType() {
 		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	/* (non-Javadoc)
@@ -74,11 +63,6 @@ public class NATNarrativeEntry implements INatEntry {
   public String getLog() {
 		return log;
 	}
-
-	public void setLog(String log) {
-		this.log = log;
-	}
-	
 	
 	/* (non-Javadoc)
    * @see org.mwc.cmap.NarrativeViewer2.INatEntry#toString()
