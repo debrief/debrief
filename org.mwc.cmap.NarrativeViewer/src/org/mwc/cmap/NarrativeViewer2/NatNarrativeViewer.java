@@ -443,7 +443,7 @@ public class NatNarrativeViewer
       }
 
       final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-      if (readFontData != null)
+      if (readFontData != null && readFontData.length>0)
       {
         prefFont = new Font(Display.getDefault(), readFontData);
       }

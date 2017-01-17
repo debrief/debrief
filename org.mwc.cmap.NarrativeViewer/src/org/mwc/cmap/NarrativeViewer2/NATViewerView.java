@@ -38,6 +38,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -47,6 +49,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -59,6 +62,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
+import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -680,6 +684,12 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         getViewSite().getActionBars().getMenuManager();
     final IToolBarManager toolManager =
         getViewSite().getActionBars().getToolBarManager();
+    
+    
+    
+    
+    
+    
 
     _search = new Action("Search", IAction.AS_CHECK_BOX)
     {
@@ -801,6 +811,72 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     menuManager.add(new Separator());
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
+    
+    
+    
+    
+    Action fontPlus = new Action("+", IAction.AS_PUSH_BUTTON)
+    {
+
+      @Override
+      public void run()
+      {
+        IPreferenceStore preferenceStore = CorePlugin.getDefault()
+            .getPreferenceStore();
+            
+            final String fontStr =
+                preferenceStore
+                    .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+            if(fontStr!=null)
+            {
+              final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
+              if (readFontData != null && readFontData.length>0)
+              {
+                readFontData[0].height=readFontData[0].height +1;
+                preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(readFontData));
+                
+              }
+            }
+      }
+    };
+    fontPlus.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/increase.png"));
+    fontPlus.setToolTipText("+");
+    
+    
+    
+    Action fontMin = new Action("-", IAction.AS_PUSH_BUTTON)
+    {
+
+      @Override
+      public void run()
+      {
+        IPreferenceStore preferenceStore = CorePlugin.getDefault()
+        .getPreferenceStore();
+        
+        final String fontStr =
+            preferenceStore
+                .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+        if(fontStr!=null)
+        {
+          final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
+          if (readFontData != null && readFontData.length>0)
+          {
+            readFontData[0].height=readFontData[0].height -1;
+            preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(readFontData));
+            
+          }
+        }
+      }
+    };
+    fontMin.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/decrease.png"));
+    fontMin.setToolTipText("-");
+    
+    
+    toolManager.add(fontPlus);
+    toolManager.add(fontMin);
+    
 
   }
 
