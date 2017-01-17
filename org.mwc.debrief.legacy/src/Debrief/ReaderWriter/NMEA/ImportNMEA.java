@@ -773,6 +773,9 @@ public class ImportNMEA
           new WorldVector(Math.toRadians(myCourseDegs), distanceDegs, 0);
 
       final WorldLocation newLoc = lastFix.getLocation().add(offset);
+      
+      // store the depth
+      newLoc.setDepth(myDepth);
 
       final Fix fix =
           new Fix(new HiResDate(date.getTime()), newLoc, Math
