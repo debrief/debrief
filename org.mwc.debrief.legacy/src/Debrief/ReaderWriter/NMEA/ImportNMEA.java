@@ -779,7 +779,10 @@ public class ImportNMEA
               .toRadians(myCourseDegs), MWC.Algorithms.Conversions
               .Kts2Yps(mySpeedKts));
       newFix = new FixWrapper(fix);
-      newFix.setColor(color);
+      
+      // no, don't set the color, we want the fix to take
+      // the color of the parent track
+      // newFix.setColor(color);
     }
 
     track.add(newFix);
