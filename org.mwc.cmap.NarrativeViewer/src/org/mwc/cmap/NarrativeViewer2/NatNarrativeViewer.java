@@ -443,7 +443,7 @@ public class NatNarrativeViewer
       }
 
       final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-      if (readFontData != null)
+      if (readFontData != null && readFontData.length>0)
       {
         prefFont = new Font(Display.getDefault(), readFontData);
       }
@@ -642,17 +642,21 @@ public class NatNarrativeViewer
       if (visible)
       {
         hiddenCols.remove((Object) Integer.valueOf(columnPositionBylabel));
-
+        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(columnPositionBylabel, 100);
       }
       else
       {
         hiddenCols.add(columnPositionBylabel);
-
+        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(columnPositionBylabel, 0);
       }
 
       if (hiddenCols.size() > 0)
         natTable.doCommand(new MultiColumnHideCommand(natTable,
             toIntArray(hiddenCols)));
+      
+      
+      
+      natTable.layout(true);
 
     }
 

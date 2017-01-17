@@ -110,7 +110,7 @@ public class NarrativeViewerPrefsPage extends FieldEditorPreferencePage
           PreferenceConverter.readFontData(CorePlugin.getDefault()
               .getPreferenceStore().getString(
                   NarrativeViewerPrefsPage.PreferenceConstants.FONT));
-      if (readFontData != null)
+      if (readFontData != null && readFontData.length>0)
       {
         prefFont = new Font(Display.getDefault(), readFontData);
         previewText.setFont(prefFont);
