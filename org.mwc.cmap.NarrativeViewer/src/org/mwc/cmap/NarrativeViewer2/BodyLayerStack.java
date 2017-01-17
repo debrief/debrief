@@ -43,6 +43,7 @@ public class BodyLayerStack<T> extends AbstractLayerTransform
   private final ViewportLayer viewportLayer;
 
   private final AggregateConfigLabelAccumulator accumulator;
+  private DataLayer bodyDataLayer;
 
   public BodyLayerStack(final List<T> values,
       final IColumnPropertyAccessor<T> columnPropertyAccessor)
@@ -61,7 +62,7 @@ public class BodyLayerStack<T> extends AbstractLayerTransform
 
     this.bodyDataProvider =
         new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
-    final DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
+    bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
     accumulator = new AggregateConfigLabelAccumulator();
     accumulator.add(new ColumnLabelAccumulator(bodyDataProvider));
@@ -72,6 +73,7 @@ public class BodyLayerStack<T> extends AbstractLayerTransform
     bodyDataLayer.setColumnWidthByPosition(1, 100);
     bodyDataLayer.setColumnWidthByPosition(2, 100);
     bodyDataLayer.setColumnPercentageSizing(3, true);
+    bodyDataLayer.setColumnsResizableByDefault(true);
 
     // layer for event handling of GlazedLists and PropertyChanges
     glazedListsEventLayer =
@@ -121,6 +123,11 @@ public class BodyLayerStack<T> extends AbstractLayerTransform
   public SelectionLayer getSelectionLayer()
   {
     return this.selectionLayer;
+  }
+  
+  public DataLayer getBodyDataLayer()
+  {
+    return bodyDataLayer;
   }
 
   public SortedList<T> getSortedList()
