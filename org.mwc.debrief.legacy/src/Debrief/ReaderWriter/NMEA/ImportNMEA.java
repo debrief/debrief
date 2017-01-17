@@ -611,7 +611,7 @@ public class ImportNMEA
           {
             // ok, grow the DR track
             storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName, myDepth,
-                DebriefColors.PURPLE);
+                DebriefColors.BLUE);
           }
         }
         break;
@@ -638,7 +638,7 @@ public class ImportNMEA
           if (state != null && date != null)
           {
             // now store the ownship location
-            storeLocation(date, state, osFreq, DebriefColors.BLUE, myDepth);
+            storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth);
           }
         }
 
