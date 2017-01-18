@@ -710,6 +710,27 @@ public class ImportNarrativeDocument
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
+    @SuppressWarnings("unused")
+    private String messageStr = null;
+    
+    public void setUp()
+    {
+      
+      System.out.println("setting up message provider ");
+      
+      // clear the message string
+      messageStr = null;
+      
+      // initialise the message provider
+      MessageProvider.Base.setProvider(new MessageProvider(){
+
+        @Override
+        public void show(String title, String message, int status)
+        {
+          messageStr = message;
+        }});
+    }
+    
     public static int countLines(final String str)
     {
       if (str == null || str.isEmpty())
