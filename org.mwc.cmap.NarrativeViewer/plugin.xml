@@ -14,8 +14,8 @@
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.NarrativeViewer2.NATViewerView"
             icon="icons/16/narrative_viewer.png"
-            id="org.mwc.cmap.narrative.views.NarrativeViewer2"
-            name="Narrative Viewer 2 (demo)">
+            id="org.mwc.cmap.narrative.views.BulkNarrativeViewer"
+            name="Narrative Viewer (Bulk)">
       </view>
    </extension>
 

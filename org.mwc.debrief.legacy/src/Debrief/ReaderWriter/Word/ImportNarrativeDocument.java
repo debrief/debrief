@@ -56,6 +56,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.MessageProvider;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
@@ -460,6 +461,30 @@ public class ImportNarrativeDocument
         final String yrStr = parts[ctr++];
         platform = parts[ctr++].trim();
         type = parts[ctr++].trim();
+        
+        /** special processing, to overcome problem with
+         * entries being pulled back from the next day. The problem 
+         * has occurred when something that happened at, say
+         * 2345 only gets entered at 0005, so the user moves the
+         * entry back to the real time
+         */
+        if(sixFigDTG)
+        {
+          final int dtgDate = Integer.valueOf(parts[0].substring(0,2));
+          final int hours = Integer.valueOf(parts[0].substring(2,4));
+          
+          // is this entry after 2300?  (that's the usual destination)
+          if(hours == 23)
+          {
+            final int hiddenDay = Integer.parseInt(dayStr);
+            if(hiddenDay == dtgDate + 1)
+            {
+              // ok, the date in the hidden text is one day after
+              // that in 6-fix DTG. correct the date
+              dayStr = "" + dtgDate;
+            }
+          }
+        }
 
         /**
          * special processing, to overcome the previous day being used
@@ -685,6 +710,27 @@ public class ImportNarrativeDocument
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
+    @SuppressWarnings("unused")
+    private String messageStr = null;
+    
+    public void setUp()
+    {
+      
+      System.out.println("setting up message provider ");
+      
+      // clear the message string
+      messageStr = null;
+      
+      // initialise the message provider
+      MessageProvider.Base.setProvider(new MessageProvider(){
+
+        @Override
+        public void show(String title, String message, int status)
+        {
+          messageStr = message;
+        }});
+    }
+    
     public static int countLines(final String str)
     {
       if (str == null || str.isEmpty())
@@ -1122,6 +1168,11 @@ public class ImportNarrativeDocument
    * 
    */
   private final List<String> askedAbout = new ArrayList<String>();
+  
+  /** flag for if we've informed user that we couldn't find host track
+   * 
+   */
+  private boolean _declaredNoHostFound = false;
 
   /**
    * helper class that can ask the user a question populated via Dependency Injection
@@ -1151,11 +1202,17 @@ public class ImportNarrativeDocument
       if (thisL.getVisible()
           && thisL.getName().startsWith(ImportNMEA.WECDIS_OWNSHIP_PREFIX))
       {
+        final String existingName = thisL.getName();
+        
         // ok, change the track name to the provided name
         thisL.setName(dataName);
 
         // and we'll now return it, as confirmation that it worked
         res = thisL.getName();
+
+        // and politely tell the user
+        MessageProvider.Base.Provider.show("Import Narrative", "Since it looks like a WECDIS track, we've renamed "
+            + existingName + " to " + res + ", so we can add create FCSs.", MessageProvider.INFO);
 
         // done
         break;
@@ -1759,7 +1816,26 @@ public class ImportNarrativeDocument
               }
             }
           }
-
+          else
+          {
+            // we can't find a host track.
+            
+            // have we already told the user?
+            if(!_declaredNoHostFound)
+            {
+              // ok, stop it appearing again
+              _declaredNoHostFound = true;
+              
+              // tell the user
+              MessageProvider.Base.Provider
+                  .show(
+                      "Import Narrative",
+                      "Narrative entries will be imported, but we won't be creating FCSs " + 
+                      "since we couldn't determine the host track for: "
+                          + originalName + ".", MessageProvider.WARNING);
+              
+            }
+          }
         }
       }
     }
