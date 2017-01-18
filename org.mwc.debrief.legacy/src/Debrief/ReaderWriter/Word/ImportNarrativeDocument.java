@@ -1147,6 +1147,11 @@ public class ImportNarrativeDocument
    * 
    */
   private final List<String> askedAbout = new ArrayList<String>();
+  
+  /** flag for if we've informed user that we couldn't find host track
+   * 
+   */
+  private boolean _declaredNoHostFound = false;
 
   /**
    * helper class that can ask the user a question populated via Dependency Injection
@@ -1790,7 +1795,26 @@ public class ImportNarrativeDocument
               }
             }
           }
-
+          else
+          {
+            // we can't find a host track.
+            
+            // have we already told the user?
+            if(!_declaredNoHostFound)
+            {
+              // ok, stop it appearing again
+              _declaredNoHostFound = true;
+              
+              // tell the user
+              MessageProvider.Base.Provider
+                  .show(
+                      "Import Narrative",
+                      "Narrative entries will be imported, but we won't be creating FCSs " + 
+                      "since we couldn't determine the host track for: "
+                          + originalName + ".", MessageProvider.WARNING);
+              
+            }
+          }
         }
       }
     }
