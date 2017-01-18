@@ -460,6 +460,30 @@ public class ImportNarrativeDocument
         final String yrStr = parts[ctr++];
         platform = parts[ctr++].trim();
         type = parts[ctr++].trim();
+        
+        /** special processing, to overcome problem with
+         * entries being pulled back from the next day. The problem 
+         * has occurred when something that happened at, say
+         * 2345 only gets entered at 0005, so the user moves the
+         * entry back to the real time
+         */
+        if(sixFigDTG)
+        {
+          final int dtgDate = Integer.valueOf(parts[0].substring(0,2));
+          final int hours = Integer.valueOf(parts[0].substring(2,4));
+          
+          // is this entry after 2300?  (that's the usual destination)
+          if(hours == 23)
+          {
+            final int hiddenDay = Integer.parseInt(dayStr);
+            if(hiddenDay == dtgDate + 1)
+            {
+              // ok, the date in the hidden text is one day after
+              // that in 6-fix DTG. correct the date
+              dayStr = "" + dtgDate;
+            }
+          }
+        }
 
         /**
          * special processing, to overcome the previous day being used
