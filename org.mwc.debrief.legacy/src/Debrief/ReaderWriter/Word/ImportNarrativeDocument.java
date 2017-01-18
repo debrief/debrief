@@ -56,6 +56,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.MessageProvider;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
@@ -1175,11 +1176,17 @@ public class ImportNarrativeDocument
       if (thisL.getVisible()
           && thisL.getName().startsWith(ImportNMEA.WECDIS_OWNSHIP_PREFIX))
       {
+        final String existingName = thisL.getName();
+        
         // ok, change the track name to the provided name
         thisL.setName(dataName);
 
         // and we'll now return it, as confirmation that it worked
         res = thisL.getName();
+
+        // and politely tell the user
+        MessageProvider.Base.Provider.show("Import Narrative", "Since it looks like a WECDIS track, we've renamed "
+            + existingName + " to " + res + ", so we can add create FCSs.", MessageProvider.INFO);
 
         // done
         break;
