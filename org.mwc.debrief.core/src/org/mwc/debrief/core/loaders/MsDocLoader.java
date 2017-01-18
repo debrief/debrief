@@ -70,7 +70,7 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
                 {
                   try
                   {
-                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(CorePlugin.NARRATIVE_VIEWER);
+                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(CorePlugin.BULK_NARRATIVE_VIEWER);
                   }
                   catch (PartInitException e)
                   {
