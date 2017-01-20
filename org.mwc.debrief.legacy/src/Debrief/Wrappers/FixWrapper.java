@@ -1058,16 +1058,13 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     if (format == null)
       return;
 
-    if (!format.equals(MyDateFormatPropertyEditor.getTagList()[0]))
+    // check it's a legitimate format
+    if (!MyDateFormatPropertyEditor.NULL_VALUE.equals(format))
     {
-      // check it's a legitimate format
-      if(MyDateFormatPropertyEditor.NULL_VALUE != format)
-      {
-        // ok, reformat the label to this format
-        final java.text.DateFormat df = new java.text.SimpleDateFormat(format);
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        this.setLabel(df.format(this.getTime().getDate()));
-      }
+      // ok, reformat the label to this format
+      final java.text.DateFormat df = new java.text.SimpleDateFormat(format);
+      df.setTimeZone(TimeZone.getTimeZone("GMT"));
+      this.setLabel(df.format(this.getTime().getDate()));
     }
   }
 
