@@ -458,8 +458,7 @@ public class EditableTests extends TestCase
 			course = 33;
 			final WorldDistance worldDistance = new WorldDistance(5,
 					WorldDistance.MINUTES);
-			editable = new PlanningSegment("test", course, speed, worldDistance,
-					Color.WHITE);
+			editable = new PlanningSegment("test", course, speed, worldDistance);
 			break;
 		case "org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper":
 			BearingMeasurementContribution bmc = new BearingMeasurementContribution();
