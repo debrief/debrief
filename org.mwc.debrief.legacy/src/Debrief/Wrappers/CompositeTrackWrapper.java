@@ -26,17 +26,14 @@ import java.util.Iterator;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
-import MWC.GUI.FireReformatted;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.Duration;
@@ -129,18 +126,13 @@ public class CompositeTrackWrapper extends TrackWrapper implements
                     "the color of the symbol (when used)", FORMAT),
                 displayExpertProp("TrackFont", "Track font",
                     "the track label font", FORMAT),
-                displayLongProp(
-                    "LabelFormat",
-                    "Label format (whole track)",
-                    "the time format of the position labels, or N/A to leave as-is",
-                    MWC.GUI.Properties.MyDateFormatPropertyEditor.class,
-                    FORMAT),
                 displayExpertProp("NameVisible", "Name visible",
                     "show the track label", VISIBILITY),
                 displayExpertProp("NameAtStart", "Name at start",
                     "whether to show the track name at the start (or end)",
                     VISIBILITY),
                 expertProp("Name", "the track name", FORMAT),
+                expertProp("Color", "the track color", FORMAT),
                 displayExpertLongProp("SymbolType", "Symbol type",
                     "the type of symbol plotted for this label", FORMAT,
                     MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class),
@@ -162,12 +154,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
   private HiResDate _startDate;
   private WorldLocation _origin;
-
-  /**
-   * remember what label format was set, if any
-   * 
-   */
-  private String _lastLabelFormat = DateFormatPropertyEditor.TIME_FORMAT;
 
   public CompositeTrackWrapper(final HiResDate startDate,
       final WorldLocation centre)
@@ -202,6 +188,8 @@ public class CompositeTrackWrapper extends TrackWrapper implements
     // initialise thisDist, since we're going to be over-writing it
     WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
+    final CompositeTrackWrapper thisTrack = this;
+    
     final Enumeration<Editable> numer = getSegments().elements();
     while (numer.hasMoreElements())
     {
@@ -251,6 +239,12 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
                   // done
                   thisSeg.setCourse(newBearing);
+                  
+                  // fire an update. We need to do this, because
+                  // the course change actually resulted in new fixes
+                  // being created. It's only the EXTENDED event
+                  // that re-scans the positions
+                  firePropertyChange(EXTENDED, null, thisTrack);
                 }
               };
           // try range
@@ -291,23 +285,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
     recalculate();
   }
 
-  public final String getLabelFormat()
-  {
-    return _lastLabelFormat;
-    /**
-     * note, we return null, not the "N/A" value, so that none of the values in the tag list are
-     * designated as "current value"
-     */
-  }
-
-  @FireReformatted
-  public final void setLabelFormat(final String format)
-  {
-    // store the format (note: we don't need to apply the format to all of the fixes, we do it when
-    // we redraw the line
-    _lastLabelFormat = format;
-  }
-
   /**
    * the editable details for this track
    * 
@@ -320,21 +297,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
       _myEditor = new CompositeTrackInfo(this);
 
     return _myEditor;
-  }
-
-  @Override
-  protected void paintThisFix(final CanvasType dest,
-      final WorldLocation lastLocation, final FixWrapper fw)
-  {
-    // set the label format to ]my label format
-    if (_lastLabelFormat != null)
-      fw.setLabelFormat(_lastLabelFormat);
-
-    // set the fix font-size to be my font-size
-    fw.setFont(this.getTrackFont());
-
-    // and now let it paint
-    super.paintThisFix(dest, lastLocation, fw);
   }
 
   /**
@@ -375,7 +337,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
   public void addClosingLeg()
   {
     this.add(new ClosingSegment("Closing segment", 45, new WorldSpeed(12,
-        WorldSpeed.Kts), new WorldDistance(2, WorldDistance.NM), getColor()));
+        WorldSpeed.Kts), new WorldDistance(2, WorldDistance.NM)));
   }
 
   @FireExtended
@@ -430,6 +392,19 @@ public class CompositeTrackWrapper extends TrackWrapper implements
     if (point instanceof PlanningSegment)
     {
 
+      PlanningSegment segment = (PlanningSegment) point;
+      
+      // hmm, does it already have positions?
+      final boolean resetFormatting;
+      if(segment.isEmpty())
+      {
+        resetFormatting = true;
+      }
+      else
+      {
+        resetFormatting = false;
+      }
+      
       // hey, is this a closing segment?
       if (point instanceof ClosingSegment)
       {
@@ -443,15 +418,28 @@ public class CompositeTrackWrapper extends TrackWrapper implements
       }
 
       // take a copy of the name, to stop it getting manmgled
-      final String name = point.getName();
+      final String name = segment.getName();
 
-      super.add(point);
+      super.add(segment);
 
-      if (point.getName() != name)
-        ((PlanningSegment) point).setName(name);
+      if (segment.getName() != name)
+        segment.setName(name);
 
       // better do a recalc, aswell
       recalculate();
+      
+      if (resetFormatting)
+      {
+        // ok, show all symbols in the segment
+        Enumeration<Editable> iter = segment.elements();
+        while (iter.hasMoreElements())
+        {
+          FixWrapper thisFix = (FixWrapper) iter.nextElement();
+          thisFix.setSymbolShowing(true);
+          thisFix.resetName();
+          thisFix.resetLabelLocation();
+        }
+      }
     }
     else
     {
@@ -529,18 +517,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
         thisDate = seg.endDTG();
       }
     }
-
-    // ok, sort out the symbol & label freq
-    final HiResDate symFreq = this.getSymbolFrequency();
-    final HiResDate labelFreq = this.getLabelFrequency();
-
-    this.setSymbolFrequency(new HiResDate(0));
-    this.setLabelFrequency(new HiResDate(0));
-
-    // and restore them
-    setSymbolFrequency(symFreq);
-    setLabelFrequency(labelFreq);
-
   }
 
   private abstract static class PlanningCalc
@@ -554,6 +530,10 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
       final double timeTravelledMillis = getSecsTravelled(seg) * 1000;
       WorldLocation theOrigin = origin;
+
+      // remember the existing items, so we
+      // can preserve the formatting
+      seg.cacheExistingElements();
 
       // ditch the existing items
       seg.removeAllElements();
@@ -624,6 +604,9 @@ public class CompositeTrackWrapper extends TrackWrapper implements
           break;
         }
       }
+      
+      // and ditch any cached fixes
+      seg.clearCachedFixes();
     }
 
     private WorldLocation addFix(final PlanningSegment seg,
@@ -643,13 +626,11 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
       final FixWrapper fw = new FixWrapper(thisF);
 
-      fw.setColor(seg.getColor());
-
       // and store it
       seg.add(fw);
 
       // reset the name, we're not going to use a human generated one
-      fw.resetName();
+  //    fw.resetName();
 
       // produce a new position
       theOrigin = theOrigin.add(vec);
@@ -792,8 +773,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
     final WorldSpeed worldSpeed = new WorldSpeed(10, WorldSpeed.Kts);
     final WorldDistance worldDistance =
         new WorldDistance(5, WorldDistance.MINUTES);
-    return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance,
-        Color.RED);
+    return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance);
   }
 
   @Override
