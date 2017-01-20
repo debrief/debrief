@@ -16,7 +16,7 @@ package MWC.GUI.Properties;
 public class MyDateFormatPropertyEditor extends
 			MWC.GUI.Properties.DateFormatPropertyEditor
 	{
-		static private final String NULL_VALUE = "N/A";
+		static public final String NULL_VALUE = "N/A";
 
 		static final String[] stringTags =
 		{ NULL_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm.ss",

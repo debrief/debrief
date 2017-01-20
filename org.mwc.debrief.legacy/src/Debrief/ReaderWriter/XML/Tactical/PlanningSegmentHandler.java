@@ -24,14 +24,21 @@ package Debrief.ReaderWriter.XML.Tactical;
  */
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
@@ -63,7 +70,7 @@ abstract public class PlanningSegmentHandler extends
 	private WorldDistance _length;
 	private double _course;
 	private int _calcModel;
-	private Color _color;
+  protected final List<FixWrapper> _fixes = new ArrayList<FixWrapper>();
 
 	public PlanningSegmentHandler()
 	{
@@ -127,14 +134,6 @@ abstract public class PlanningSegmentHandler extends
 				_length = res;
 			}
 		});
-		addHandler(new ColourHandler()
-		{
-			@Override
-			public void setColour(final Color res)
-			{
-				_color = res;
-			}
-		});
 		addHandler(new WorldSpeedHandler()
 		{
 			@Override
@@ -151,6 +150,15 @@ abstract public class PlanningSegmentHandler extends
 				_course = value;
 			}
 		});
+    addHandler(new ColourHandler()
+    {
+        @Override
+        public void setColour(final Color res)
+        {
+          // this is a legacy propery. we've introduced the handler
+          // so that we don't have to report "unexpected parameter
+        }
+    });
 		addAttributeHandler(new HandleAttribute(CALC_MODEL)
 		{
 
@@ -163,25 +171,28 @@ abstract public class PlanningSegmentHandler extends
 				_calcModel = val.intValue();
 			}
 		});
+		
+		// we now read in fixes, since we're allowing formatting to be stored
+		addHandler(new FixHandler()
+    {
+      
+      @Override
+      public void addPlottable(Plottable plottable)
+      {       
+        _fixes.add((FixWrapper) plottable);
+      }
+    });
 
 	}
 
 	protected PlanningSegment createSegment()
 	{
-		final PlanningSegment res = new PlanningSegment(_name, _course, _speed, _length,
-				_color);
-		res.setDuration(_duration);
-		res.setCalculation(_calcModel);
-		return res;
+		return new PlanningSegment(_name, _course, _speed, _length);
 	}
 	
 	protected PlanningSegment createClosingSegment()
 	{
-		final PlanningSegment res = new ClosingSegment(_name, _course, _speed, _length,
-				_color);
-		res.setDuration(_duration);
-		res.setCalculation(_calcModel);
-		return res;
+		return new ClosingSegment(_name, _course, _speed, _length);
 	}
 
 	public final void elementClosed()
@@ -193,14 +204,28 @@ abstract public class PlanningSegmentHandler extends
 			segment = createClosingSegment();
 		else
 			segment = createSegment();
+
+    // add the fixes
+    for(final FixWrapper thisF: _fixes)
+    {
+      segment.addFixSilent(thisF);
+    }
+    _fixes.clear();
+
+    segment.setDuration(_duration);
+    segment.setCalculation(_calcModel);
+		
 		
 		segment.setVisible(_visible);
 		segment.setVectorLabelVisible(_vectorLabelVisible);
 		segment.setName(_name);
 		segment.setLineStyle(_lineStyle);
-		segment.setColor(_color);
+		
 		addSegment(segment);
 		segment = null;
+		
+		// drop the fixes
+		_fixes.clear();
 	}
 
 	public static Element exportThisSegment(final org.w3c.dom.Document doc,
@@ -235,6 +260,14 @@ abstract public class PlanningSegmentHandler extends
 		ColourHandler.exportColour(ps.getColor(), segE, doc);
 		DurationHandler.exportDuration(ps.getDuration(), segE, doc);
 		segE.setAttribute(COURSE, writeThis(ps.getCourse()));
+		
+		// also output the positions
+    final Collection<Editable> pts = seg.getData();
+    for (final Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
+    {
+      final FixWrapper fix = (FixWrapper) iterator.next();
+      FixHandler.exportFix(fix, segE, doc);
+    }
 
 		return segE;
 	}

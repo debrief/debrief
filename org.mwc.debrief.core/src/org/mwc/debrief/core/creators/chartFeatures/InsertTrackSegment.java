@@ -87,7 +87,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 			// get the results
 			final String txt = inp.getValue();
 			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
-					new WorldDistance(5, WorldDistance.KM), PlanningSegment.DEFAULT_COLOR);
+					new WorldDistance(5, WorldDistance.KM));
 		}
 
 		return res;

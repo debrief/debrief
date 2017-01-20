@@ -160,8 +160,6 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
         _theFixWrapper.setVisible(value);
       }
     });
-
-
     addAttributeHandler(new HandleAttribute("LabelLocation")
     {
       public void setValue(final String name, final String val)
@@ -170,6 +168,13 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
         final Integer res = (Integer) lp.getValue();
         if (res != null)
           _theFixWrapper.setLabelLocation(res);
+      }
+    });
+    addAttributeHandler(new HandleAttribute("LabelFormat")
+    {
+      public void setValue(final String name, final String val)
+      {
+        _theFixWrapper.setLabelFormat(val);
       }
     });
 
@@ -220,6 +225,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     eFix.setAttribute("LineShowing", writeThis(fix.getLineShowing()));
     eFix.setAttribute("SymbolShowing", writeThis(fix.getSymbolShowing()));
     eFix.setAttribute("ArrowShowing", writeThis(fix.getArrowShowing()));
+    eFix.setAttribute("LabelFormat", fix.getLabelFormat());
     lp.setValue(fix.getLabelLocation());
     eFix.setAttribute("LabelLocation", lp.getAsText());
 
