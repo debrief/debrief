@@ -113,7 +113,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
                 expertProp("Origin", "where this track starts", FORMAT),
                 displayExpertProp("StartDate", "Start date",
                     "the time this track starts", FORMAT),
-
                 displayExpertLongProp("LabelFrequency", "Label frequency",
                     "the label frequency", TEMPORAL, 
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
@@ -132,10 +131,10 @@ public class CompositeTrackWrapper extends TrackWrapper implements
                     "the track label font", FORMAT),
                 displayLongProp(
                     "LabelFormat",
-                    "Label format",
+                    "Label format (whole track)",
                     "the time format of the position labels, or N/A to leave as-is",
                     MWC.GUI.Properties.MyDateFormatPropertyEditor.class,
-                    SPATIAL),
+                    FORMAT),
                 displayExpertProp("NameVisible", "Name visible",
                     "show the track label", VISIBILITY),
                 displayExpertProp("NameAtStart", "Name at start",
@@ -307,7 +306,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
     // store the format (note: we don't need to apply the format to all of the fixes, we do it when
     // we redraw the line
     _lastLabelFormat = format;
-
   }
 
   /**
