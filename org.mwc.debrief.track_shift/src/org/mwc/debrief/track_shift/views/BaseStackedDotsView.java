@@ -691,6 +691,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     sashForm.setWeights(new int[]{4, 1, 1});
     sashForm
         .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+    
+    // start off with the charts hidden
+    setZoneChartsVisible(false);
+
   }
 
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse, ZoneChart.ColorProvider colorProvider)
@@ -1125,21 +1129,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (_showSlices.isChecked())
         {
           // show the charts
-          // hide the charts
-          ownshipZoneChart.setVisible(true);
-          targetZoneChart.setVisible(true);
-          ownshipZoneChart.getParent().layout(true);
+          setZoneChartsVisible(true);
         }
         else
         {
-          // hide the charts
-          ownshipZoneChart.setVisible(false);
-          targetZoneChart.setVisible(false);
-          ownshipZoneChart.getParent().layout(true);
+          setZoneChartsVisible(false);
         }
       }
     };
-    _showSlices.setChecked(true);
+    _showSlices.setChecked(false);
     _showSlices.setToolTipText("Show the slicing graphs");
     _showSlices.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/GanttBars.png"));
@@ -1261,6 +1259,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _selectOnClick.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/outline.png"));
 
+  }
+
+  /** show/hide the two zone charts
+   * 
+   * @param isVisible
+   */
+  private void setZoneChartsVisible(final boolean isVisible)
+  {
+    // hide the charts
+    ownshipZoneChart.setVisible(isVisible);
+    targetZoneChart.setVisible(isVisible);
+    
+    // and get the parent to redo the layout
+    ownshipZoneChart.getParent().layout(true);
   }
 
   /**
