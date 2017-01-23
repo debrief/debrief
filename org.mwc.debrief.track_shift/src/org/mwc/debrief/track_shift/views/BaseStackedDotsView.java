@@ -1375,26 +1375,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // update the current datasets
     updateData(updateDoublets);
 
-    // right, are we updating the range data?
-    if (_autoResize.isChecked())
-    {
-      if (_showDotPlot.isChecked())
-      {
-        _dotPlot.getRangeAxis().setAutoRange(false);
-        _dotPlot.getRangeAxis().setAutoRange(true);
-      }
-      if (_showLinePlot.isChecked())
-      {
-        _linePlot.getRangeAxis().setAutoRange(false);
-        _linePlot.getRangeAxis().setAutoRange(true);
-      }
-      if (_showTargetOverview.isChecked())
-      {
-        _targetOverviewPlot.getRangeAxis().setAutoRange(false);
-        _targetOverviewPlot.getRangeAxis().setAutoRange(true);
-      }
-    }
-
     // note, we also update the domain axis if we're updating the data in
     // question
     if (updateDoublets)
@@ -1423,6 +1403,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         _targetOverviewPlot.getDomainAxis().setAutoRange(false);
       }
     }
+
+    // right, are we updating the range data?
+    if (_autoResize.isChecked())
+    {
+      if (_showDotPlot.isChecked())
+      {
+        _dotPlot.getRangeAxis().setAutoRange(false);
+        _dotPlot.getRangeAxis().setAutoRange(true);
+      }
+      if (_showLinePlot.isChecked())
+      {
+        _linePlot.getRangeAxis().setAutoRange(false);
+        _linePlot.getRangeAxis().setAutoRange(true);
+      }
+      if (_showTargetOverview.isChecked())
+      {
+        _targetOverviewPlot.getRangeAxis().setAutoRange(false);
+        _targetOverviewPlot.getRangeAxis().setAutoRange(true);
+      }
+    }
+
   }
 
   /**
