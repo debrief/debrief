@@ -142,6 +142,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
+  private static final String SHOW_ZONES = "SHOW_ZONES";
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
 
@@ -242,7 +243,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Action _showLinePlot;
   protected Action _showDotPlot;
   protected Action _showTargetOverview;
-  protected Action _showSlices;
+  protected Action _showZones;
 
   /**
    * flag indicating whether we should only show stacked dots for visible fixes
@@ -349,7 +350,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_showLinePlot);
     toolBarManager.add(_showDotPlot);
     toolBarManager.add(_showTargetOverview);
-    toolBarManager.add(_showSlices);
+    toolBarManager.add(_showZones);
 
     addExtras(toolBarManager);
 
@@ -692,8 +693,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     sashForm
         .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
     
-    // start off with the charts hidden
-    setZoneChartsVisible(false);
+    // sort out zone chart visibility
+    setZoneChartsVisible(_showZones.isChecked());
 
   }
 
@@ -1120,13 +1121,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/fit_to_win.png"));
 
-    _showSlices = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
+    _showZones = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
     {
       @Override
       public void run()
       {
         super.run();
-        if (_showSlices.isChecked())
+        if (_showZones.isChecked())
         {
           // show the charts
           setZoneChartsVisible(true);
@@ -1137,9 +1138,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       }
     };
-    _showSlices.setChecked(false);
-    _showSlices.setToolTipText("Show the slicing graphs");
-    _showSlices.setImageDescriptor(CorePlugin
+    _showZones.setChecked(false);
+    _showZones.setToolTipText("Show the slicing graphs");
+    _showZones.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
@@ -1717,6 +1718,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
       final Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
       final Boolean showOverview = memento.getBoolean(SHOW_OVERVIEW);
+      final Boolean showZones = memento.getBoolean(SHOW_ZONES);
       final Boolean doSelectOnClick = memento.getBoolean(SELECT_ON_CLICK);
       final Boolean showOnlyVis = memento.getBoolean(SHOW_ONLY_VIS);
       if (showLineVal != null)
@@ -1726,6 +1728,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       if (showDotVal != null)
       {
         _showDotPlot.setChecked(showDotVal);
+      }
+      if (showZones != null)
+      {
+        _showZones.setChecked(showZones);
       }
       if (doSelectOnClick != null)
       {
@@ -1751,6 +1757,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     memento.putBoolean(SHOW_LINE_PLOT, _showLinePlot.isChecked());
     memento.putBoolean(SHOW_DOT_PLOT, _showDotPlot.isChecked());
     memento.putBoolean(SHOW_OVERVIEW, _showTargetOverview.isChecked());
+    memento.putBoolean(SHOW_ZONES, _showZones.isChecked());
     memento.putBoolean(SELECT_ON_CLICK, _selectOnClick.isChecked());
     memento.putBoolean(SHOW_ONLY_VIS, _onlyVisible.isChecked());
   }

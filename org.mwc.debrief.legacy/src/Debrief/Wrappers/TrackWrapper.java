@@ -107,11 +107,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       Editable.DynamicDescriptors
   {
 
-    /** we cache static collections of the property & method descriptors.
-     * The sets of descriptors are (mostly) identical for each 
-     * object of this type, so we can re-use them
+    /**
+     * we cache static collections of the property & method descriptors. The sets of descriptors are
+     * (mostly) identical for each object of this type, so we can re-use them
      */
-    private static PropertyDescriptor[] _coreDescriptors;   
+    private static PropertyDescriptor[] _coreDescriptors;
     private static MethodDescriptor[] _methodDescriptors;
     private static PropertyDescriptor[] _coreDescriptorsWithSymbols;
 
@@ -4081,7 +4081,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           // ok, is this our first location?
           if (tmaLastLoc == null)
           {
-            tmaLastLoc = new WorldLocation(seg.getTrackStart());
+            WorldLocation trackStart = seg.getTrackStart();
+            if (trackStart != null)
+            {
+              tmaLastLoc = new WorldLocation(trackStart);
+            }
           }
           else
           {
@@ -4125,19 +4129,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           lastFix = fw;
           tmaLastDTG = thisTime;
 
-          // have we found any movement yet?
-          if (!moved)
+          if (tmaLastLoc != null)
           {
-            // see if this represents a change
-            if (fw.getLocation() != null
-                && !fw.getLocation().equals(tmaLastLoc))
+            // have we found any movement yet?
+            if (!moved)
             {
-              moved = true;
+              // see if this represents a change
+              if (fw.getLocation() != null
+                  && !fw.getLocation().equals(tmaLastLoc))
+              {
+                moved = true;
+              }
             }
-          }
 
-          // dump the location into the fix
-          fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+            // dump the location into the fix
+            fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+          }
         }
       }
     }
