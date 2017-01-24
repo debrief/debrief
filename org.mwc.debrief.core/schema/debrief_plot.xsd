@@ -465,6 +465,13 @@
 		<xs:attribute name="LabelLocation" default="Left"
 			type="labelLocationType" />
 		<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
+		<xs:attribute name="LabelFormat" type="xs:string" >
+			<xs:annotation>
+				<xs:documentation>
+					The Java format string used to format the date label
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="Speed" use="required" type="xs:string" />
 		<xs:attribute name="SymbolShowing" default="true" type="xs:boolean" />
 		<xs:attribute name="ArrowShowing" default="false" type="xs:boolean" />

@@ -32,6 +32,11 @@ import MWC.TacticalData.Fix;
 public class ImportNMEA
 {
 
+  /** prefix we use for ownship track that's extractd
+   * from NMEA data
+   */
+  public static final String WECDIS_OWNSHIP_PREFIX = "WECDIS_OWNSHIP";
+
   private enum MsgType
   {
     VESSEL_NAME, OS_POS, CONTACT, TIMESTAMP, UNKNOWN, AIS, OS_DEPTH,
@@ -606,7 +611,7 @@ public class ImportNMEA
           {
             // ok, grow the DR track
             storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName, myDepth,
-                DebriefColors.PURPLE);
+                DebriefColors.BLUE);
           }
         }
         break;
@@ -617,7 +622,7 @@ public class ImportNMEA
           // let's make one up
           if (myName == null)
           {
-            myName = "AIS_OWNSHIP";
+            myName = WECDIS_OWNSHIP_PREFIX;
           }
 
           // extract the location
@@ -633,7 +638,7 @@ public class ImportNMEA
           if (state != null && date != null)
           {
             // now store the ownship location
-            storeLocation(date, state, osFreq, DebriefColors.BLUE, myDepth);
+            storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth);
           }
         }
 
@@ -768,13 +773,19 @@ public class ImportNMEA
           new WorldVector(Math.toRadians(myCourseDegs), distanceDegs, 0);
 
       final WorldLocation newLoc = lastFix.getLocation().add(offset);
+      
+      // store the depth
+      newLoc.setDepth(myDepth);
 
       final Fix fix =
           new Fix(new HiResDate(date.getTime()), newLoc, Math
               .toRadians(myCourseDegs), MWC.Algorithms.Conversions
               .Kts2Yps(mySpeedKts));
       newFix = new FixWrapper(fix);
-      newFix.setColor(color);
+      
+      // no, don't set the color, we want the fix to take
+      // the color of the parent track
+      // newFix.setColor(color);
     }
 
     track.add(newFix);

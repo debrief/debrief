@@ -1058,13 +1058,13 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     if (format == null)
       return;
 
-    if (!format.equals(MyDateFormatPropertyEditor.getTagList()[0]))
+    // check it's a legitimate format
+    if (!MyDateFormatPropertyEditor.NULL_VALUE.equals(format))
     {
-      // so, reformat the label to this format
+      // ok, reformat the label to this format
       final java.text.DateFormat df = new java.text.SimpleDateFormat(format);
       df.setTimeZone(TimeZone.getTimeZone("GMT"));
       this.setLabel(df.format(this.getTime().getDate()));
-      // this.setLabel(DebriefFormatDateTime.toStringHiRes(this.getTime()));
     }
   }
 
@@ -1193,7 +1193,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
                       "whether the label is showing", VISIBILITY),
                   displayLongProp("LabelFormat", "Label format",
                       "the time format of the label, or N/A to leave as-is",
-                      MyDateFormatPropertyEditor.class, SPATIAL),
+                      MyDateFormatPropertyEditor.class, FORMAT),
                   displayLongProp("LabelLocation", "Label location",
                       "the label location",
                       MWC.GUI.Properties.LocationPropertyEditor.class, FORMAT)};

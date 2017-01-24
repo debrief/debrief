@@ -146,6 +146,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
+  private static final String SHOW_ZONES = "SHOW_ZONES";
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
 
@@ -246,7 +247,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Action _showLinePlot;
   protected Action _showDotPlot;
   protected Action _showTargetOverview;
-  protected Action _showSlices;
+  protected Action _showZones;
 
   /**
    * flag indicating whether we should only show stacked dots for visible fixes
@@ -353,7 +354,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_showLinePlot);
     toolBarManager.add(_showDotPlot);
     toolBarManager.add(_showTargetOverview);
-    toolBarManager.add(_showSlices);
+    toolBarManager.add(_showZones);
 
     addExtras(toolBarManager);
 
@@ -703,6 +704,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     sashForm.setWeights(new int[]{4, 1, 1});
     sashForm
         .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+    
+    // sort out zone chart visibility
+    setZoneChartsVisible(_showZones.isChecked());
+
   }
 
   /**
@@ -1246,32 +1251,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/fit_to_win.png"));
 
-    _showSlices = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
+    _showZones = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
     {
       @Override
       public void run()
       {
         super.run();
-        if (_showSlices.isChecked())
+        if (_showZones.isChecked())
         {
           // show the charts
-          // hide the charts
-          ownshipZoneChart.setVisible(true);
-          targetZoneChart.setVisible(true);
-          ownshipZoneChart.getParent().layout(true);
+          setZoneChartsVisible(true);
         }
         else
         {
-          // hide the charts
-          ownshipZoneChart.setVisible(false);
-          targetZoneChart.setVisible(false);
-          ownshipZoneChart.getParent().layout(true);
+          setZoneChartsVisible(false);
         }
       }
     };
-    _showSlices.setChecked(true);
-    _showSlices.setToolTipText("Show the slicing graphs");
-    _showSlices.setImageDescriptor(CorePlugin
+    _showZones.setChecked(false);
+    _showZones.setToolTipText("Show the slicing graphs");
+    _showZones.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
@@ -1393,6 +1392,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
+  /** show/hide the two zone charts
+   * 
+   * @param isVisible
+   */
+  private void setZoneChartsVisible(final boolean isVisible)
+  {
+    // hide the charts
+    ownshipZoneChart.setVisible(isVisible);
+    targetZoneChart.setVisible(isVisible);
+    
+    // and get the parent to redo the layout
+    ownshipZoneChart.getParent().layout(true);
+  }
+
   /**
    * Passing the focus request to the viewer's control.
    */
@@ -1492,26 +1505,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // update the current datasets
     updateData(updateDoublets);
 
-    // right, are we updating the range data?
-    if (_autoResize.isChecked())
-    {
-      if (_showDotPlot.isChecked())
-      {
-        _dotPlot.getRangeAxis().setAutoRange(false);
-        _dotPlot.getRangeAxis().setAutoRange(true);
-      }
-      if (_showLinePlot.isChecked())
-      {
-        _linePlot.getRangeAxis().setAutoRange(false);
-        _linePlot.getRangeAxis().setAutoRange(true);
-      }
-      if (_showTargetOverview.isChecked())
-      {
-        _targetOverviewPlot.getRangeAxis().setAutoRange(false);
-        _targetOverviewPlot.getRangeAxis().setAutoRange(true);
-      }
-    }
-
     // note, we also update the domain axis if we're updating the data in
     // question
     if (updateDoublets)
@@ -1540,6 +1533,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         _targetOverviewPlot.getDomainAxis().setAutoRange(false);
       }
     }
+
+    // right, are we updating the range data?
+    if (_autoResize.isChecked())
+    {
+      if (_showDotPlot.isChecked())
+      {
+        _dotPlot.getRangeAxis().setAutoRange(false);
+        _dotPlot.getRangeAxis().setAutoRange(true);
+      }
+      if (_showLinePlot.isChecked())
+      {
+        _linePlot.getRangeAxis().setAutoRange(false);
+        _linePlot.getRangeAxis().setAutoRange(true);
+      }
+      if (_showTargetOverview.isChecked())
+      {
+        _targetOverviewPlot.getRangeAxis().setAutoRange(false);
+        _targetOverviewPlot.getRangeAxis().setAutoRange(true);
+      }
+    }
+
   }
 
   /**
@@ -1835,6 +1849,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
       final Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
       final Boolean showOverview = memento.getBoolean(SHOW_OVERVIEW);
+      final Boolean showZones = memento.getBoolean(SHOW_ZONES);
       final Boolean doSelectOnClick = memento.getBoolean(SELECT_ON_CLICK);
       final Boolean showOnlyVis = memento.getBoolean(SHOW_ONLY_VIS);
       if (showLineVal != null)
@@ -1844,6 +1859,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       if (showDotVal != null)
       {
         _showDotPlot.setChecked(showDotVal);
+      }
+      if (showZones != null)
+      {
+        _showZones.setChecked(showZones);
       }
       if (doSelectOnClick != null)
       {
@@ -1869,6 +1888,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     memento.putBoolean(SHOW_LINE_PLOT, _showLinePlot.isChecked());
     memento.putBoolean(SHOW_DOT_PLOT, _showDotPlot.isChecked());
     memento.putBoolean(SHOW_OVERVIEW, _showTargetOverview.isChecked());
+    memento.putBoolean(SHOW_ZONES, _showZones.isChecked());
     memento.putBoolean(SELECT_ON_CLICK, _selectOnClick.isChecked());
     memento.putBoolean(SHOW_ONLY_VIS, _onlyVisible.isChecked());
   }

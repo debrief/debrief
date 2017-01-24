@@ -1025,14 +1025,22 @@ public abstract class FilteredGrid extends Composite
     filterComposite.setVisible(checked);
     if(checked)
     {
+      filterComposite.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
+          false));
       setFilterTextlayoutData();
     }
     else
     {
-      GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
+      final GridData gridData =
+          new GridData(SWT.FILL, SWT.CENTER, false, false);
       gridData.widthHint = 0;
       gridData.heightHint = 0;
       filterText.setLayoutData(gridData);
+      GridData layoutData = new GridData(SWT.FILL, SWT.BEGINNING, false,
+          false);
+      layoutData.widthHint = 0;
+      layoutData.heightHint = 0;
+      filterComposite.setLayoutData(layoutData);
     }
     layout(true);
     
