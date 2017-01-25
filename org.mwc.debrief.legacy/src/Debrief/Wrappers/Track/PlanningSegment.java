@@ -196,7 +196,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 * how far to travel for (optional)
 	 * 
 	 */
-	Duration _myPeriod = new Duration(12, Duration.MINUTES);
+	private Duration _myPeriod = new Duration(12, Duration.MINUTES);
 
 	/**
 	 * which calculation model to use
@@ -283,7 +283,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
         fix.setLabelLocation(matched.getLabelLocation());
         fix.setLabelShowing(matched.getLabelShowing());
         fix.setArrowShowing(matched.getArrowShowing());
-        fix.setLabelFormat(matched.getLabelFormat());
+        fix.setLabel(matched.getLabel());
         fix.setSymbolShowing(matched.getSymbolShowing());
         fix.setFont(matched.getFont());
         fix.setVisible(matched.getVisible());
@@ -308,7 +308,6 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	    // ok, do some default formatting
 	    fix.setSymbolShowing(true);
 	    fix.resetLabelLocation();
-	    fix.resetName();
 	  }
 	  
 		// remember the fix
