@@ -120,7 +120,7 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       "12 Hours",
       "24 Hours",
       "48 Hours",
-      "73 Hours",
+      "72 Hours",
       "None"};
 
   /**
