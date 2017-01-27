@@ -500,18 +500,76 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 								}
 							}
 
-							final HiResDate finalStart = startTime;
-							final HiResDate finalEnd = endTime;
+              final HiResDate finalStart = startTime;
+              final HiResDate finalEnd = endTime;
 
-							final DatasetProvider prov = new DatasetProvider()
-							{
+              final DatasetProvider prov = new DatasetProvider()
+              {
 
-								@Override
-								public AbstractSeriesDataset getDataset()
-								{
-									return ShowTimeVariablePlot3.getDataSeries(thePrimary,
-											theHolder, theTracks, finalStart, finalEnd, null);
-								}
+                @Override
+                public AbstractSeriesDataset getDataset(
+                    final boolean liveUpdates)
+                {
+                  // it isn't obvious which end time value to use
+                  final HiResDate newEnd;
+
+                  // if we're tracking live updates, then we need to work to the time of the last
+                  // point on the primary track
+                  if (!liveUpdates)
+                  {
+                    // not live - that's easy then
+                    newEnd = finalEnd;
+                  }
+                  else
+                  {
+                    // do we have a primary track?
+                    if (thePrimary != null)
+                    {
+                      // yes, we can take the time from the primary
+                      newEnd = thePrimary.getEndDTG();
+                    }
+                    else
+                    {
+                      // ok, we'll have to loop through the data
+                      HiResDate thisEnd = null;
+                      // work out the last time
+                      for (WatchableList thisTrack : theTracks)
+                      {
+                        final HiResDate thisTrackEnd = thisTrack.getEndDTG();
+
+                        if (thisEnd == null)
+                        {
+                          thisEnd = thisTrackEnd;
+                        }
+                        else
+                        {
+                          if (thisTrackEnd != null)
+                          {
+                            if (thisEnd.lessThan(thisTrackEnd))
+                            {
+                              thisEnd = thisTrackEnd;
+                            }
+                          }
+                        }
+                      }
+
+                      if (thisEnd != null)
+                      {
+                        newEnd = thisEnd;
+                      }
+                      else
+                      {
+                        newEnd = finalEnd;
+                      }
+                    }
+                  }
+
+                  System.out.println("requesting data from "
+                      + finalStart.getDate() + " to:" + newEnd.getDate()
+                      + " for:" + theHolder);
+                  return ShowTimeVariablePlot3.getDataSeries(thePrimary,
+                      theHolder, theTracks, finalStart, newEnd, null);
+                }
 
 								@Override
 								public Layers getLayers()

@@ -852,7 +852,7 @@ public class PduGenerator implements
 
     // sort out the course & speed
     final Orientation orientation = espdu.getEntityOrientation();
-    orientation.setPhi((float) thisS.courseRads);
+    orientation.setPsi((float) thisS.courseRads);
 
     // turn the speed into the 3-vector components
     final Vector3Float velocity = espdu.getEntityLinearVelocity();
