@@ -564,9 +564,6 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
                     }
                   }
 
-                  System.out.println("requesting data from "
-                      + finalStart.getDate() + " to:" + newEnd.getDate()
-                      + " for:" + theHolder);
                   return ShowTimeVariablePlot3.getDataSeries(thePrimary,
                       theHolder, theTracks, finalStart, newEnd, null);
                 }
