@@ -82,7 +82,7 @@ public class DummyDataProvider implements IPDUProvider
         eLoc.setZ(-1 + hisId);
 
         Orientation theO = new Orientation();
-        theO.setPhi(30 * (1 + hisId));
+        theO.setPsi(30 * (1 + hisId));
         lastLoc.setEntityOrientation(theO);
 
         Vector3Float linearVel = new Vector3Float();

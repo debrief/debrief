@@ -625,12 +625,12 @@ public class CompositeTrackWrapper extends TrackWrapper implements
           seg.getDepth().getValueIn(WorldDistance.METRES));
 
       final FixWrapper fw = new FixWrapper(thisF);
+      
+      // reset the name, we're not going to use a human generated one
+      fw.resetName();
 
       // and store it
       seg.add(fw);
-
-      // reset the name, we're not going to use a human generated one
-  //    fw.resetName();
 
       // produce a new position
       theOrigin = theOrigin.add(vec);
