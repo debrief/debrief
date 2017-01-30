@@ -34,23 +34,28 @@ public class TagListHelper extends EditorHelper
 		_propEditor = propEditor;
 	}
 
+  @Override
 	public CellEditor getCellEditorFor(final Composite parent)
 	{
-		return new ComboBoxCellEditor(parent, _theTags, SWT.READ_ONLY){
-			public void activate()
-		      {
-		        
-		        super.activate();
-		        getControl().getDisplay().asyncExec(new Runnable() {
-
-		          public void run() {
-		            if(isActivated())
-		              ((CCombo) getControl()).setListVisible(true);
-		          }
-
-		        });
-		      }
-		};
+    return new ComboBoxCellEditor(parent, _theTags, SWT.READ_ONLY)
+    {
+      /** override activate method, so it pops up as soon
+       * as it's clicked
+       */
+      @Override
+      public void activate()
+      {
+        super.activate();
+        getControl().getDisplay().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            if (isActivated())
+              ((CCombo) getControl()).setListVisible(true);
+          }
+        });
+      }
+    };
 	}
 
 	public Object translateFromSWT(final Object value)
