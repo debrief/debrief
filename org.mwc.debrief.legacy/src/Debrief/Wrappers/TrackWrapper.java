@@ -2566,9 +2566,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    *          the fix we're painting
    * @param isEndPoint
    *          whether point is one of the ends
+   * @param forceHideLabel 
+   *          whether we wish to hide the label
    */
   private void paintIt(final CanvasType dest, final FixWrapper thisF,
-      final boolean isEndPoint)
+      final boolean isEndPoint, final boolean forceHideLabel)
   {
     // have a look at the last fix. we defer painting the fix label,
     // because we want to know the id of the last visible fix, since
@@ -2585,6 +2587,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       thisF.setLabelFormat("ddHHmm");
       thisF.setLabelShowing(true);
     }
+    
+    if(forceHideLabel)
+    {
+      thisF.setLabelShowing(false);
+    }
+    
 
     // this next method just paints the fix. we've put the
     // call into paintThisFix so we can override the painting
@@ -2597,6 +2605,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       thisF.setLabelFormat(fmt);
       thisF.setLabelShowing(isVis);
       thisF.setLabel(lblVal);
+    }
+    
+    if(forceHideLabel)
+    {
+      thisF.setLabelShowing(isVis);
     }
   }
 
@@ -2702,7 +2715,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             newLastFix.setSymbolShowing(true);
           }
 
-          paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix);
+          paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix, false);
 
           if (singlePointSegment)
           {
@@ -2845,7 +2858,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         if (endPoints.size() > 1)
         {
-          paintIt(dest, endPoints.get(1), getEndTimeLabels());
+          // special handling. If it's a planning segment, we hide the
+          // last fix, unless it's the very last segment
+
+          // do we have more legs?
+          final boolean hasMoreLegs = segments.hasMoreElements();
+
+          // is this a planning track?
+          final boolean isPlanningTrack = this instanceof CompositeTrackWrapper;
+
+          // ok, we hide the last point for planning legs, if there are
+          // more legs to come
+          boolean forceHideLabel = isPlanningTrack &&
+              hasMoreLegs;
+
+          // ok, get painting
+          paintIt(dest, endPoints.get(1), getEndTimeLabels(), forceHideLabel);
         }
       }
 
