@@ -281,10 +281,9 @@ public class ZigDetector
           optimiseThis(beforeTimes, beforeBearings, beforeBearings.get(0),
               optimiserTolerance);
       beforeScore = beforeOptimiser.getMinimum();
-      msg +=
-          " BEFORE:" + dateF.format(times.get(0)) + "-"
-              + dateF.format(times.get(legOneEnd)) + " " + beforeScore;
       // System.out.println(" before:" + _outDates(beforeTimes));
+      
+
     }
 
     if (legTwoStart != -1)
@@ -297,9 +296,6 @@ public class ZigDetector
           optimiseThis(afterTimes, afterBearings, afterBearings.get(0),
               optimiserTolerance);
       afterScore = afterOptimiser.getMinimum();
-      msg +=
-          " AFTER:" + dateF.format(times.get(legTwoStart)) + "-"
-              + dateF.format(times.get(times.size() - 1)) + " " + afterScore;
       // System.out.println(" after:" + _outDates(afterTimes));
     }
 
@@ -318,7 +314,22 @@ public class ZigDetector
       final double beforeNormal = beforeScore * beforeLen / totalCuts;
       final double afterNormal = afterScore * afterLen / totalCuts;
       sum = beforeNormal + afterNormal;
+      
+//      double[] bValues = beforeOptimiser.getParamValues();
+//      msg +=
+//          " ,BEFORE," + dateF.format(times.get(0)) + ","
+//              + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
+//      msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," + beforeNormal;
+//      double[] aValues = afterOptimiser.getParamValues();
+//      msg +=
+//          " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
+//              + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
+//      msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," + afterNormal;
+//      System.out.println(msg  + ",sum," + sum);
+
     }
+    
+        
     return sum;
   }
 
@@ -366,7 +377,7 @@ public class ZigDetector
             optimiseTolerance);
     final double wholeLegScore = wholeLeg.getMinimum();
 
-    System.out.println("Whole score is:" + wholeLegScore);
+    System.out.println("Whole leg score is:" + wholeLegScore);
 
     // ok, now have to slice it
     double bestScore = Double.MAX_VALUE;
@@ -379,7 +390,11 @@ public class ZigDetector
      * how long we allow for a turn (millis)
      * 
      */
-    final long BUFFER_SIZE = 200 * 1000;
+    final long BUFFER_SIZE = 300 * 1000;
+
+    // TODO - drop this object, it's just for debugging
+ //   DateFormat ds = new SimpleDateFormat("hh:mm:ss");
+
 
     // find the optimal first slice
     for (int index = 0; index < thisLegTimes.size(); index++)
@@ -395,7 +410,8 @@ public class ZigDetector
             sliceLeg(index, thisLegBearings, thisLegTimes, legOneEnd,
                 legTwoStart, optimiseTolerance);
 
-        // System.out.println("sum at " + index + " is " + sum);
+        
+      //   System.out.println(ds.format(new Date(thisLegTimes.get(index))) + ", " + sum);
 
         // is this better?
         if ((sum != Double.MAX_VALUE) && (sum < bestScore))
@@ -413,6 +429,7 @@ public class ZigDetector
     // right, how did we get on?
     if (sliceTime != -1)
     {
+//      System.out.println(ds.format(new Date(sliceTime)));
 //      System.out.println("Best score:" + bestScore + " whole score:" + wholeLegScore + " ratio:" + (bestScore / wholeLegScore));
       
       // is this slice acceptable?
@@ -444,6 +461,10 @@ public class ZigDetector
       log.log(new Status(Status.INFO, PLUGIN_ID,
           "slicing complete, can't slice", null));
     }
+    
+    // and tell the storer that we're done.
+    zigStorer.finish();
+    
   }
 
 }
