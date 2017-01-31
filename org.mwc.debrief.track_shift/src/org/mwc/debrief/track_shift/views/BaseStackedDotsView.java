@@ -693,7 +693,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public ArrayList<Zone> performSlicing()
       {
-        return sliceTarget(ownshipZoneChart.getZones(), targetBearingSeries.getItems(), randomProv);
+        List<TimeSeriesDataItem> bearings = targetBearingSeries.getItems();
+        return sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv);
       }
     };
     targetZoneChart =
@@ -719,11 +720,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @return
    */
   protected ArrayList<Zone> sliceTarget(Zone[] ownshipLegs,
-      List<?> list, final ColorProvider randomProv)
+     final List<TimeSeriesDataItem> bearings, final ColorProvider randomProv)
   {
     ZigDetector slicer = new ZigDetector();
     final ArrayList<Zone> zigs = new ArrayList<Zone>();
     final ArrayList<Zone> legs = new ArrayList<Zone>();
+    
+    // check we have some data
+    if(bearings.isEmpty())
+    {
+      System.err.println("List of cuts is empty");
+      return legs;
+    }
+    
     final IZigStorer zigStorer = new IZigStorer()
     {
       @Override
@@ -736,6 +745,39 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void finish()
       {
+        // place to store the target legs
+        List<Zone> tgtLegs = new ArrayList<Zone>();
+        
+        // ok, work through the data, slicing it
+        if(!zigs.isEmpty())
+        {
+          Zone lastZig = null;
+          
+          for(Zone zig: zigs)
+          {
+            if(lastZig == null)
+            {
+              // ok, we're at the start
+              tgtLegs.add(new Zone(bearings.get(0).getPeriod().getMiddleMillisecond(), zig.getStart(), Color.red));
+            }
+            else
+            {
+              // ok, we're moving along
+              tgtLegs.add(new Zone(lastZig.getEnd(), zig.getStart(), Color.green));
+            }
+            
+            lastZig = zig;
+          }
+          
+          // ok, we're at the start
+          tgtLegs.add(new Zone(lastZig.getEnd(), bearings.get(bearings.size()-1).getPeriod().getMiddleMillisecond(), Color.green));
+        }
+        
+        // ok, loop through them
+        for(Zone zig: tgtLegs)
+        {
+          System.out.println("Leg from:" + new Date(zig.getStart()) + " to:" + new Date(zig.getEnd()));
+        }
       }
     };
     final ILegStorer legStorer = new ILegStorer()
@@ -762,7 +804,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       List<Double> thisLegBearings = new ArrayList<Double>();
 
       // get the bearings in this time period
-      Iterator<?> lIter = list.iterator();
+      Iterator<?> lIter = bearings.iterator();
       while(lIter.hasNext())
       {
         TimeSeriesDataItem td = (TimeSeriesDataItem) lIter.next();
@@ -789,8 +831,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // ok, we've got to turn the zigs into legs
-    TimeSeriesDataItem firstCut = (TimeSeriesDataItem) list.get(0);
-    TimeSeriesDataItem lastCut = (TimeSeriesDataItem) list.get(list.size()-1);
+    TimeSeriesDataItem firstCut = (TimeSeriesDataItem) bearings.get(0);
+    TimeSeriesDataItem lastCut = (TimeSeriesDataItem) bearings.get(bearings.size()-1);
     
     long startTime = firstCut.getPeriod().getMiddleMillisecond();
     long endTime = lastCut.getPeriod().getMiddleMillisecond();
