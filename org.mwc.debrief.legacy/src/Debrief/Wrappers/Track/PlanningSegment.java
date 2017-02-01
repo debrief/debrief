@@ -449,11 +449,22 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		return true;
 	}
 
-	private void recalc()
-	{
-		if (_parent != null)
-			_parent.recalculate();
-	}
+  private void recalc()
+  {
+    if (_parent != null)
+    {
+      _parent.recalculate();
+
+      // also, reset all of the label locations for this leg, since we want
+      // them to indicate direction of travel
+      Enumeration<Editable> numer = this.elements();
+      while (numer.hasMoreElements())
+      {
+        FixWrapper thisF = (FixWrapper) numer.nextElement();
+        thisF.resetLabelLocation();
+      }
+    }
+  }
 
 	@Override
 	public void sortOutDateLabel(final HiResDate startDTG)
