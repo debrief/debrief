@@ -235,15 +235,16 @@ public final class StackedDotHelper
 		return res;
 	}
 	
-	public List<SensorContactWrapper> getBearings(final boolean onlyVis)
+	public List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack, final boolean onlyVis, HiResDate startDTG, HiResDate endDTG)
 	{
 	    final List<SensorContactWrapper> res = new ArrayList<SensorContactWrapper>();
 
-	    // sort out the outer period
-	    TimePeriod targetPeriod = new TimePeriod.BaseTimePeriod(_secondaryTrack.getStartDTG(), _secondaryTrack.getEndDTG());
+    // sort out the outer period
+    TimePeriod targetPeriod =
+        new TimePeriod.BaseTimePeriod(startDTG, endDTG);
 	    
 	    // loop through our sensor data
-	    final Enumeration<Editable> sensors = _primaryTrack.getSensors().elements();
+	    final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
 	    if (sensors != null)
 	    {
 	      while (sensors.hasMoreElements())
@@ -553,7 +554,7 @@ public final class StackedDotHelper
     }
     
     // sort out the sensor cuts (all of them, not just those when we have target legs)
-    final List<SensorContactWrapper> theBearings = getBearings(onlyVis);
+    final List<SensorContactWrapper> theBearings = getBearings(_primaryTrack, onlyVis, _secondaryTrack.getStartDTG(), _secondaryTrack.getEndDTG());
     for (final SensorContactWrapper cut: theBearings)
     {
       final double theBearing;
@@ -883,5 +884,10 @@ public final class StackedDotHelper
 	{
 		return _secondaryTrack;
 	}
+
+  public TrackWrapper getPrimaryTrack()
+  {
+    return _primaryTrack;
+  }
 
 }

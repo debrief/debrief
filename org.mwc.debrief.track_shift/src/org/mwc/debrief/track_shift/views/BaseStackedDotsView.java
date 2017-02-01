@@ -140,6 +140,7 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -707,16 +708,22 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // target track defined. But, in order to consider the actual extent
         // of the target track we need all the data.  So, get the bearings
         // captured during the whole outer time period of the secondary track
-        
+
+        final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
+
         // now find data in the primary track
-        List<SensorContactWrapper> bearings = _myHelper.getBearings(_onlyVisible.isChecked());
+        List<SensorContactWrapper> bearings =
+            _myHelper.getBearings(_myHelper.getPrimaryTrack(), _onlyVisible
+                .isChecked(), secondary.getStartDTG(), secondary.getEndDTG());
         
-        return sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv, _myHelper.getSecondaryTrack());
+        return sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
+            secondary);
       }
     };
     targetZoneChart =
-        ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm, tgtZones,
-            targetBearingSeries, tgtTimeValues, randomProv, DebriefColors.RED, targetLegSlicer);
+        ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
+            tgtZones, targetBearingSeries, tgtTimeValues, randomProv,
+            DebriefColors.RED, targetLegSlicer);
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]{4, 1, 1});
@@ -734,27 +741,140 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @param track
    * @param leg
    */
-  private static void setLeg(ISecondaryTrack track, Zone leg)
-  {
+  private void setLeg(final TrackWrapper primaryTrack, final ISecondaryTrack track, final Zone leg)
+  {    
     System.out.println("Setting leg in " + track.getName() + " from:" + new Date(leg.getStart()) + " to:" + new Date(leg.getEnd()));
     
     TimePeriod zonePeriod = new TimePeriod.BaseTimePeriod(new HiResDate(leg.getStart()), 
         new HiResDate(leg.getEnd()));
     
+    RelativeTMASegment otherSegment = null;
+    
     // see if there is already a leg for this time
     Enumeration<Editable> iter = track.segments();
+    boolean legFound = false;
     while (iter.hasMoreElements())
     {
-      RelativeTMASegment seg = (RelativeTMASegment) iter.nextElement();
+      Editable nextSeg = iter.nextElement();
+      if(nextSeg instanceof SegmentList)
+      {
+        // oh, this track has already been split into legs.  We need to iterate through them instead
+        SegmentList list = (SegmentList) nextSeg;
+        iter = list.elements();
+        continue;
+      }
+      
+      // ok, we know we're working through segments
+      RelativeTMASegment seg = (RelativeTMASegment) nextSeg;
+      otherSegment = seg;
       TimePeriod legPeriod = new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg.getDTG_End());
       if(zonePeriod.overlaps(legPeriod))
       {
-        // ok, set this leg to the relevant time period
-        seg.setDTG_Start(zonePeriod.getStartDTG());
-        seg.setDTG_End(zonePeriod.getEndDTG());
+        // just check the periods don't match - if they match, we don't need to do anything
+        if(zonePeriod.equals(legPeriod))
+        {
+          // ok, we can have a rest
+        }
+        else
+        {
+          // ok, set this leg to the relevant time period
+          seg.setDTG_Start(zonePeriod.getStartDTG());
+          seg.setDTG_End(zonePeriod.getEndDTG());
+        }
+        legFound = true;
+        break;
       }
     }
     
+    if(!legFound)
+    {
+      // ok, we've got to create a new TMA segment
+      
+      // get the host cuts for this time period
+      List<SensorContactWrapper> cuts =
+          _myHelper.getBearings(primaryTrack, false, new HiResDate(leg
+              .getStart()), new HiResDate(leg.getEnd()));
+      final SensorContactWrapper[] observations =
+          cuts.toArray(new SensorContactWrapper[]
+          {});
+
+      final double courseDegs;
+      final WorldSpeed speed;
+      final WorldVector offset;
+      
+      WorldVector defaultOffset = new WorldVector(Math.toDegrees(135), new WorldDistance(2, WorldDistance.NM), 
+          new WorldDistance(0, WorldDistance.METRES));
+
+      
+      if(otherSegment != null)
+      {
+        // ok, put this leg off the end of the previous one
+        // collate the other data
+        courseDegs = otherSegment.getCourse();
+        speed = new WorldSpeed(otherSegment.getSpeed());
+        
+        // ok, get the last position
+        FixWrapper lastFix = null;
+        Enumeration<Editable> sIter = otherSegment.elements();
+        while (sIter.hasMoreElements())
+        {
+          lastFix = (FixWrapper ) sIter.nextElement();
+        }
+        
+        if(lastFix != null)
+        {
+          // ok, build up the vector
+          long timePeriod =
+              leg.getStart() - lastFix.getDTG().getDate().getTime();
+          double distTravelled =
+              speed.getValueIn(WorldSpeed.M_sec) * timePeriod / 1000d;
+          WorldVector vector =
+              new WorldVector(Math.toRadians(otherSegment.getCourse()),
+                  new WorldDistance(distTravelled, WorldDistance.METRES),
+                  new WorldDistance(0, WorldDistance.DEGS));
+
+          WorldLocation legStart = lastFix.getFixLocation().add(vector);
+          
+          // work out the offset from the host at this time
+          Watchable[] matches = primaryTrack.getNearestTo(new HiResDate(leg.getStart()));
+          
+          if(matches != null && matches.length > 0)
+          {
+            WorldLocation hostLoc = matches[0].getLocation();
+            offset = legStart.subtract(hostLoc);
+          }
+          else
+          {
+            CorePlugin.logError(Status.WARNING, "Couldn't create target leg properly,  couldn't find matching point in ownship leg", null);
+            offset = defaultOffset;
+          }
+        }        
+        else
+        {
+          CorePlugin.logError(Status.WARNING, "Couldn't create target leg properly,  couldn't last fix in existing leg", null);
+          offset = defaultOffset;
+        }
+      }
+      else
+      {
+        courseDegs = 0d;
+        speed = new WorldSpeed(5, WorldSpeed.Kts);
+        offset = defaultOffset;
+      }
+      
+      // take the course from the previous leg
+      Layers theLayers = _ourLayersSubject;
+      Color override = leg.getColor();
+
+      // ok, ready to go
+      RelativeTMASegment newLeg = new RelativeTMASegment(observations,
+              offset, speed,
+              courseDegs, theLayers, override);
+      
+      // ok, now add the leg to the secondary track
+      TrackWrapper secondary = (TrackWrapper) track;
+      secondary.add(newLeg);
+    }
   }
   
   /**
@@ -793,45 +913,57 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         // place to store the target legs
         List<Zone> tgtLegs = new ArrayList<Zone>();
-        
+
         // ok, work through the data, slicing it
-        if(!zigs.isEmpty())
+        if (!zigs.isEmpty())
         {
           Zone lastZig = null;
-          
-          for(Zone zig: zigs)
+
+          for (Zone zig : zigs)
           {
-            if(lastZig == null)
+            if (lastZig == null)
             {
               // ok, we're at the start
-              tgtLegs.add(new Zone(doublets.get(0).getDTG().getDate().getTime(), zig.getStart(), Color.red));
+              tgtLegs.add(new Zone(
+                  doublets.get(0).getDTG().getDate().getTime(), zig.getStart(),
+                  Color.red));
             }
             else
             {
               // ok, we're moving along
-              tgtLegs.add(new Zone(lastZig.getEnd(), zig.getStart(), Color.green));
+              tgtLegs.add(new Zone(lastZig.getEnd(), zig.getStart(),
+                  Color.green));
             }
-            
+
             lastZig = zig;
           }
-          
+
           // ok, we're at the start
-          tgtLegs.add(new Zone(lastZig.getEnd(), doublets.get(doublets.size()-1).getDTG().getDate().getTime(), Color.green));
+          tgtLegs.add(new Zone(lastZig.getEnd(), doublets.get(
+              doublets.size() - 1).getDTG().getDate().getTime(), Color.green));
         }
         
         // ok, loop through them
         for(Zone leg: tgtLegs)
         {
-          // ok, see if there is already a leg at this time
+          // ok, see if there is already a leg at this time          
+          setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);          
+        }
+        
+        // ok, fire some updates
+        if(_ourLayersSubject != null)
+        {
+          // share the good news
+          _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
           
-          setLeg(tgtTrack, leg);
-          
+          // and re-generate the doublets
+          updateData(true);
         }
       }
     };
+    
     final ILegStorer legStorer = new ILegStorer()
     {
-      
       @Override
       public void storeLeg(String scenarioName, long tStart, long tEnd, double rms)
       {
@@ -968,7 +1100,42 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private ZoneChart.ZoneListener getTargetListener()
   {
     // TODO reflect the new target legs on the bearing residuals
-    return new ZoneChart.ZoneAdapter();
+    return new ZoneChart.ZoneListener()
+    {
+      
+      @Override
+      public void resized(Zone zone)
+      {
+        fireUpdates();
+      }
+      
+      @Override
+      public void moved(Zone zone)
+      {
+        fireUpdates();
+      }
+      
+      @Override
+      public void deleted(Zone zone)
+      {
+        fireUpdates();
+      }
+      
+      @Override
+      public void added(Zone zone)
+      {
+        fireUpdates();
+      }
+      
+      private void fireUpdates()
+      {
+        // collate the current list of legs
+        
+        // fire the finished event
+      }
+    };
+      
+    
   }
 
   /**
@@ -2103,14 +2270,36 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       RelativeTMASegment newLeg = new RelativeTMASegment(contactArr, new WorldVector(1, 1, 0), 
           new WorldSpeed(12, WorldSpeed.Kts), 12d, theLayers, Color.red);
       target.add(newLeg);
+      
+      BaseStackedDotsView view = new BaseStackedDotsView(true, false)
+      {
+        @Override
+        protected void updateData(boolean updateDoublets)
+        {
+        }
+        @Override
+        protected String getUnits()
+        {
+          return null;
+        }
+        @Override
+        protected String getType()
+        {
+          return null;
+        }
+      };
 
       // try to set a zone on the track
       Zone trimmedPeriod = new Zone(150000, 220000, Color.RED);
-      BaseStackedDotsView.setLeg(target, trimmedPeriod);
+      view.setLeg(host, target, trimmedPeriod);
       
       // ok, check the leg has changed
       assertEquals("leg start changed", 150000, target.getStartDTG().getDate().getTime());
       assertEquals("leg start changed", 220000, target.getEndDTG().getDate().getTime());
+      
+      // ok, also see if we can create a new leg
+      trimmedPeriod = new Zone(250000, 320000, Color.RED);
+      view.setLeg(host, target, trimmedPeriod);
       
     }
   }
