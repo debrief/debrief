@@ -122,6 +122,7 @@ import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -693,8 +694,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public ArrayList<Zone> performSlicing()
       {
+        @SuppressWarnings("unchecked")
         List<TimeSeriesDataItem> bearings = targetBearingSeries.getItems();
-        return sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv);
+        return sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv, _myHelper.getSecondaryTrack());
       }
     };
     targetZoneChart =
@@ -716,11 +718,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * 
    * @param ownshipLegs
    * @param randomProv 
+   * @param secondaryTrack 
    * @param targetBearingSeries2
    * @return
    */
   protected ArrayList<Zone> sliceTarget(Zone[] ownshipLegs,
-     final List<TimeSeriesDataItem> bearings, final ColorProvider randomProv)
+     final List<TimeSeriesDataItem> bearings, final ColorProvider randomProv, final ISecondaryTrack tgtTrack)
   {
     ZigDetector slicer = new ZigDetector();
     final ArrayList<Zone> zigs = new ArrayList<Zone>();
@@ -774,11 +777,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
         
         // ok, loop through them
-        for(Zone zig: tgtLegs)
+        for(Zone leg: tgtLegs)
         {
-          System.out.println("Leg from:" + new Date(zig.getStart()) + " to:" + new Date(zig.getEnd()));
+          // ok, see if there is already a leg at this time
+          
+          setLeg(tgtTrack, leg);
+          
         }
       }
+      
+      private void setLeg(ISecondaryTrack track, Zone leg)
+      {
+        System.out.println("Setting leg in " + track.getName() + " from:" + new Date(leg.getStart()) + " to:" + new Date(leg.getEnd()));
+      }
+      
     };
     final ILegStorer legStorer = new ILegStorer()
     {
