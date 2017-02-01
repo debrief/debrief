@@ -358,7 +358,12 @@ public class TrackManager implements TrackDataProvider
 			for (int i = 0; i < _theSecondaries.length; i++)
 			{
 				final WatchableList thisSec = _theSecondaries[i];
-				secsFound.add(thisSec);
+				
+				// check it's still present
+				if(_theLayers.findLayer(thisSec.getName()) != null)
+				{
+				  secsFound.add(thisSec);
+				}
 			}
 
 			// and store the new secs list
