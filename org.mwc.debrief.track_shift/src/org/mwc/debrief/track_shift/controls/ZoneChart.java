@@ -726,7 +726,7 @@ public class ZoneChart extends Composite
      * 
      * @return list of zones
      */
-    ArrayList<Zone> performSlicing();
+    List<Zone> performSlicing();
   }
 
   public static ZoneChart create(final ZoneUndoRedoProvider undoRedoProvider,
