@@ -561,7 +561,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private void initializeOperationHistory()
   {
     undoContext = new ObjectUndoContext(this);
-    operationHistory.setLimit(undoContext, 100);// TODO: maybe store as application prefrence
+    operationHistory.setLimit(undoContext, 100);
   }
 
   /**
@@ -646,7 +646,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // we will also listen out for zone changes
     @SuppressWarnings("unused")
     ZoneChart.ZoneListener ownshipListener = getOwnshipListener();
-    @SuppressWarnings("unused")
     ZoneChart.ZoneListener targetListener = getTargetListener();
 
     Zone[] osZones = new ZoneChart.Zone[]{};
@@ -702,7 +701,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ZoneSlicer targetLegSlicer = new ZoneSlicer()
     {
       @Override
-      public ArrayList<Zone> performSlicing()
+      public List<Zone> performSlicing()
       {
         // hmm, the above set of bearings only covers windows where we have
         // target track defined. But, in order to consider the actual extent
@@ -724,6 +723,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
             tgtZones, targetBearingSeries, tgtTimeValues, randomProv,
             DebriefColors.RED, targetLegSlicer);
+    
+    targetZoneChart.addZoneListener(targetListener);
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]{4, 1, 1});
@@ -732,26 +733,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     
     // sort out zone chart visibility
     setZoneChartsVisible(_showZones.isChecked());
-
   }
 
   
   /** create a leg of data for the specified time period
    * 
-   * @param track
+   * @param secTrack
    * @param leg
    */
-  private void setLeg(final TrackWrapper primaryTrack, final ISecondaryTrack track, final Zone leg)
+  private void setLeg(final TrackWrapper primaryTrack, final ISecondaryTrack secTrack, final Zone leg)
   {    
-    System.out.println("Setting leg in " + track.getName() + " from:" + new Date(leg.getStart()) + " to:" + new Date(leg.getEnd()));
-    
     TimePeriod zonePeriod = new TimePeriod.BaseTimePeriod(new HiResDate(leg.getStart()), 
         new HiResDate(leg.getEnd()));
     
     RelativeTMASegment otherSegment = null;
     
     // see if there is already a leg for this time
-    Enumeration<Editable> iter = track.segments();
+    Enumeration<Editable> iter = secTrack.segments();
     boolean legFound = false;
     while (iter.hasMoreElements())
     {
@@ -872,7 +870,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               courseDegs, theLayers, override);
       
       // ok, now add the leg to the secondary track
-      TrackWrapper secondary = (TrackWrapper) track;
+      TrackWrapper secondary = (TrackWrapper) secTrack;
       secondary.add(newLeg);
     }
   }
@@ -886,18 +884,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @param targetBearingSeries2
    * @return
    */
-  protected ArrayList<Zone> sliceTarget(Zone[] ownshipLegs,
+  protected List<Zone> sliceTarget(Zone[] ownshipLegs,
      final List<SensorContactWrapper> doublets, final ColorProvider randomProv, final ISecondaryTrack tgtTrack)
   {
     ZigDetector slicer = new ZigDetector();
-    final ArrayList<Zone> zigs = new ArrayList<Zone>();
-    final ArrayList<Zone> legs = new ArrayList<Zone>();
-    
+    final List<Zone> zigs = new ArrayList<Zone>();
+   
     // check we have some data
     if(doublets.isEmpty())
     {
       System.err.println("List of cuts is empty");
-      return legs;
+      return null;
     }
     
     final IZigStorer zigStorer = new IZigStorer()
@@ -911,54 +908,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void finish()
       {
-        // place to store the target legs
-        List<Zone> tgtLegs = new ArrayList<Zone>();
-
-        // ok, work through the data, slicing it
-        if (!zigs.isEmpty())
-        {
-          Zone lastZig = null;
-
-          for (Zone zig : zigs)
-          {
-            if (lastZig == null)
-            {
-              // ok, we're at the start
-              tgtLegs.add(new Zone(
-                  doublets.get(0).getDTG().getDate().getTime(), zig.getStart(),
-                  Color.red));
-            }
-            else
-            {
-              // ok, we're moving along
-              tgtLegs.add(new Zone(lastZig.getEnd(), zig.getStart(),
-                  Color.green));
-            }
-
-            lastZig = zig;
-          }
-
-          // ok, we're at the start
-          tgtLegs.add(new Zone(lastZig.getEnd(), doublets.get(
-              doublets.size() - 1).getDTG().getDate().getTime(), Color.green));
-        }
-        
-        // ok, loop through them
-        for(Zone leg: tgtLegs)
-        {
-          // ok, see if there is already a leg at this time          
-          setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);          
-        }
-        
-        // ok, fire some updates
-        if(_ourLayersSubject != null)
-        {
-          // share the good news
-          _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
-          
-          // and re-generate the doublets
-          updateData(true);
-        }
       }
     };
     
@@ -1012,9 +961,35 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // ok, we've got to turn the zigs into legs
-    long startTime = tgtTrack.getStartDTG().getDate().getTime();
-    long endTime = tgtTrack.getEndDTG().getDate().getTime();
+    final long startTime = tgtTrack.getStartDTG().getDate().getTime();
+    final long endTime = tgtTrack.getEndDTG().getDate().getTime();
+    final List<Zone> legs = legsFromZigs(startTime, endTime, zigs, randomProv);
+    
+    // ok, loop through the legs, updating our TMA legs
+    for(Zone leg: legs)
+    {
+      // ok, see if there is already a leg at this time          
+      setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);          
+    }
+    
+    // ok, fire some updates
+    if(_ourLayersSubject != null)
+    {
+      // share the good news
+      _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
+      
+      // and re-generate the doublets
+      updateData(true);
+    }    
+    
+    // ok, done.
+    return legs;
+  }
 
+  protected List<Zone> legsFromZigs(long startTime, long endTime, List<Zone> zigs, ColorProvider randomProv)
+  {
+    List<Zone> legs = new ArrayList<Zone>();
+    
     Zone lastZig = null;
     for(final Zone zig: zigs)
     {
@@ -1047,7 +1022,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     
     return legs;
   }
-
+  
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse, ZoneChart.ColorProvider colorProvider)
   {
     final IOwnshipLegDetector detector;
@@ -1093,16 +1068,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private ZoneChart.ZoneListener getOwnshipListener()
   {
-    // TODO: fire the ownship legs to the target zig generator
     return new ZoneChart.ZoneAdapter();
   }
 
   private ZoneChart.ZoneListener getTargetListener()
   {
-    // TODO reflect the new target legs on the bearing residuals
     return new ZoneChart.ZoneListener()
     {
-      
       @Override
       public void resized(Zone zone)
       {
@@ -1130,12 +1102,30 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       private void fireUpdates()
       {
         // collate the current list of legs
+        Zone[] zones = targetZoneChart.getZones();
+        
+        ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
+        TrackWrapper priTrack = _myHelper.getPrimaryTrack();
         
         // fire the finished event
+        for (int i = 0; i < zones.length; i++)
+        {
+          Zone zone = zones[i];
+          setLeg(priTrack, secTrack, zone);
+        }
+        
+        // ok, fire some updates
+        if(_ourLayersSubject != null)
+        {
+          // share the good news
+          _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
+          
+          // and re-generate the doublets
+          updateData(true);
+        }    
+
       }
     };
-      
-    
   }
 
   /**
