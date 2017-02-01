@@ -179,12 +179,12 @@ public class RelativeTMASegment extends CoreTMASegment implements
   /**
    * base constructor - sorts out the obvious
    * 
-   * @param courseDegs
-   * @param speed
-   * @param offset
+   * @param courseDegs our course
+   * @param speed our speed
+   * @param offset offset from ownship track at start time
    * @param theLayers
-   * @param trackName
-   * @param sensorName
+   * @param trackName name of the track we're relative to
+   * @param sensorName name of the track sensor that is holding us
    */
   public RelativeTMASegment(final double courseDegs, final WorldSpeed speed,
       final WorldVector offset, final Layers theLayers, String trackName,
