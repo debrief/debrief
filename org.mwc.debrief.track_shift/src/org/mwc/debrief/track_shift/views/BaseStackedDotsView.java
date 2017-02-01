@@ -123,6 +123,7 @@ import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
+import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -694,8 +695,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public ArrayList<Zone> performSlicing()
       {
-        @SuppressWarnings("unchecked")
-        List<TimeSeriesDataItem> bearings = targetBearingSeries.getItems();
+        // hmm, the above set of bearings only covers windows where we have
+        // target track defined. But, in order to consider the actual extent
+        // of the target track we need all the data.  So, get the bearings
+        // captured during the whole outer time period of the secondary track
+        
+        // now find data in the primary track
+        List<SensorContactWrapper> bearings = _myHelper.getBearings(_onlyVisible.isChecked());
+        
         return sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv, _myHelper.getSecondaryTrack());
       }
     };
@@ -723,14 +730,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @return
    */
   protected ArrayList<Zone> sliceTarget(Zone[] ownshipLegs,
-     final List<TimeSeriesDataItem> bearings, final ColorProvider randomProv, final ISecondaryTrack tgtTrack)
+     final List<SensorContactWrapper> doublets, final ColorProvider randomProv, final ISecondaryTrack tgtTrack)
   {
     ZigDetector slicer = new ZigDetector();
     final ArrayList<Zone> zigs = new ArrayList<Zone>();
     final ArrayList<Zone> legs = new ArrayList<Zone>();
     
     // check we have some data
-    if(bearings.isEmpty())
+    if(doublets.isEmpty())
     {
       System.err.println("List of cuts is empty");
       return legs;
@@ -761,7 +768,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             if(lastZig == null)
             {
               // ok, we're at the start
-              tgtLegs.add(new Zone(bearings.get(0).getPeriod().getMiddleMillisecond(), zig.getStart(), Color.red));
+              tgtLegs.add(new Zone(doublets.get(0).getDTG().getDate().getTime(), zig.getStart(), Color.red));
             }
             else
             {
@@ -773,7 +780,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           
           // ok, we're at the start
-          tgtLegs.add(new Zone(lastZig.getEnd(), bearings.get(bearings.size()-1).getPeriod().getMiddleMillisecond(), Color.green));
+          tgtLegs.add(new Zone(lastZig.getEnd(), doublets.get(doublets.size()-1).getDTG().getDate().getTime(), Color.green));
         }
         
         // ok, loop through them
@@ -816,17 +823,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       List<Double> thisLegBearings = new ArrayList<Double>();
 
       // get the bearings in this time period
-      Iterator<?> lIter = bearings.iterator();
+      Iterator<SensorContactWrapper> lIter = doublets.iterator();
       while(lIter.hasNext())
       {
-        TimeSeriesDataItem td = (TimeSeriesDataItem) lIter.next();
-        long thisTime = td.getPeriod().getMiddleMillisecond();
+        SensorContactWrapper td = lIter.next();
+        long thisTime = td.getDTG().getDate().getTime();
         if(thisTime >= wholeStart)
         {
           if(thisTime <= wholeEnd)
           {
             thisLegTimes.add(thisTime);
-            thisLegBearings.add((Double) td.getValue());
+            thisLegBearings.add((Double) td.getBearing());
           }
           else
           {
@@ -843,11 +850,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // ok, we've got to turn the zigs into legs
-    TimeSeriesDataItem firstCut = (TimeSeriesDataItem) bearings.get(0);
-    TimeSeriesDataItem lastCut = (TimeSeriesDataItem) bearings.get(bearings.size()-1);
-    
-    long startTime = firstCut.getPeriod().getMiddleMillisecond();
-    long endTime = lastCut.getPeriod().getMiddleMillisecond();
+    long startTime = tgtTrack.getStartDTG().getDate().getTime();
+    long endTime = tgtTrack.getEndDTG().getDate().getTime();
 
     Zone lastZig = null;
     for(final Zone zig: zigs)
@@ -1745,6 +1749,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   // ok - if we're on auto update, do the
                   // update
                   updateLinePlotRanges();
+                  
+                  // check we have sufficient data
+                  if(_myHelper.getSecondaryTrack() == null)
+                  {
+                    // no secondary track. clear the data
+                    ownshipCourseSeries.clear();
+                    targetBearingSeries.clear();
+                  }
 
                 }
               };
