@@ -811,7 +811,7 @@ public class ZoneChart extends Composite
   private final List<Zone> zones = new ArrayList<Zone>();
   private final Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
-  private EditMode mode = EditMode.ZOOM;
+  private EditMode mode = EditMode.EDIT;
   private volatile List<ZoneListener> listeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
 
@@ -931,11 +931,11 @@ public class ZoneChart extends Composite
       edit.setImage(editImg24);
       edit.setToolTipText("Edit zones");
       edit.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      edit.setSelection(true);
 
       final Button zoom = new Button(this, SWT.TOGGLE);
       zoom.setImage(zoomInImg24);
       zoom.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      zoom.setSelection(true);
       zoom.setToolTipText("Zoom");
 
       final Button merge = new Button(this, SWT.TOGGLE);
