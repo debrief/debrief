@@ -258,32 +258,20 @@ public class RelativeTMASegment extends CoreTMASegment implements
     createPointsFrom(observations, override);
   }
 
-  //
-  // /**
-  // * build up a solution from the supplied sensor data
-  // *
-  // * @param observations
-  // * create a single position for the DTG of each solution
-  // * @param offset
-  // * the range/brg from the host's position at the DTG of the first
-  // * observation
-  // * @param speed
-  // * the initial target speed estimate
-  // * @param courseDegs
-  // * the initial target course estimate
-  // */
-  // public RelativeTMASegment(final SensorWrapper sw, final WorldVector offset,
-  // final WorldSpeed speed, final double courseDegs, final Layers theLayers)
-  // {
-  // this(courseDegs, speed, offset, theLayers, sw.getHost().getName(), sw.getName());
-  //
-  // // sort out the origin
-  // setTrack(sw.getHost());
-  //
-  // // create the points
-  // createPointsFrom(sw);
-  // }
 
+  
+  /**
+   * 
+   * @param sensor
+   * @param offset
+   * @param speed
+   * @param course
+   * @param dataPoints
+   * @param layers
+   * @param track
+   * @param startTime
+   * @param endTime
+   */
   public RelativeTMASegment(final SensorWrapper sensor,
       final WorldVector offset, final WorldSpeed speed, final double course,
       final Collection<Editable> dataPoints, final Layers layers,
