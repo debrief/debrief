@@ -126,6 +126,7 @@ import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -763,24 +764,45 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
       
       // ok, we know we're working through segments
-      RelativeTMASegment seg = (RelativeTMASegment) nextSeg;
-      otherSegment = seg;
-      TimePeriod legPeriod = new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg.getDTG_End());
-      if(zonePeriod.overlaps(legPeriod))
+      
+      TrackSegment cSeg = (TrackSegment) nextSeg;
+
+      if (cSeg instanceof DynamicInfillSegment)
       {
-        // just check the periods don't match - if they match, we don't need to do anything
-        if(zonePeriod.equals(legPeriod))
+        // ok, skip it. It's of no use to us
+        continue;
+      }
+      else
+      {
+
+        RelativeTMASegment seg = (RelativeTMASegment) cSeg;
+        otherSegment = seg;
+        TimePeriod legPeriod =
+            new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg.getDTG_End());
+        if (zonePeriod.overlaps(legPeriod))
         {
-          // ok, we can have a rest
+          // just check the periods don't match - if they match, we don't need to do anything
+          if (zonePeriod.equals(legPeriod))
+          {
+            // ok, we can have a rest
+          }
+          else
+          {
+            // ok, set this leg to the relevant time period
+            seg.setDTG_Start(zonePeriod.getStartDTG());
+            seg.setDTG_End(zonePeriod.getEndDTG());
+
+            // also update the points to be this color
+            Enumeration<Editable> fIter = seg.elements();
+            while (fIter.hasMoreElements())
+            {
+              FixWrapper thisF = (FixWrapper) fIter.nextElement();
+              thisF.setColor(leg.getColor());
+            }
+          }
+          legFound = true;
+          break;
         }
-        else
-        {
-          // ok, set this leg to the relevant time period
-          seg.setDTG_Start(zonePeriod.getStartDTG());
-          seg.setDTG_End(zonePeriod.getEndDTG());
-        }
-        legFound = true;
-        break;
       }
     }
     
