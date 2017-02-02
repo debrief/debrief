@@ -1123,16 +1123,18 @@ public class ZoneChart extends Composite
                 // ok, now ditch the old zone lists
                 zones.clear();
                 zoneMarkers.clear();
-
-                // store the zones
-                zones.addAll(newZones);
-
-                // and create the new intervals
-                for (final Zone thisZone : newZones)
+                
+                if (newZones != null)
                 {
-                  addZone(thePlot, thisZone);
-                }
+                  // store the zones
+                  zones.addAll(newZones);
 
+                  // and create the new intervals
+                  for (final Zone thisZone : newZones)
+                  {
+                    addZone(thePlot, thisZone);
+                  }
+                }
                 return Status.OK_STATUS;
               }
 

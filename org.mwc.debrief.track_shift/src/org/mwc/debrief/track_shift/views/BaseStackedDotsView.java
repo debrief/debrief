@@ -126,7 +126,6 @@ import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -703,18 +702,28 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         // hmm, the above set of bearings only covers windows where we have
         // target track defined. But, in order to consider the actual extent
-        // of the target track we need all the data.  So, get the bearings
+        // of the target track we need all the data. So, get the bearings
         // captured during the whole outer time period of the secondary track
 
         final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
 
-        // now find data in the primary track
-        List<SensorContactWrapper> bearings =
-            _myHelper.getBearings(_myHelper.getPrimaryTrack(), _onlyVisible
-                .isChecked(), secondary.getStartDTG(), secondary.getEndDTG());
-        
-        return sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
-            secondary);
+        final List<Zone> res;
+
+        if (secondary != null)
+        {
+          // now find data in the primary track
+          List<SensorContactWrapper> bearings =
+              _myHelper.getBearings(_myHelper.getPrimaryTrack(), _onlyVisible
+                  .isChecked(), secondary.getStartDTG(), secondary.getEndDTG());
+          res =
+              sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
+                  secondary);
+        }
+        else
+        {
+          res = null;
+        }
+        return res;
       }
     };
     targetZoneChart =
