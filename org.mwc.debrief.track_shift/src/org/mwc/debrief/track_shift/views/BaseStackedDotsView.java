@@ -318,8 +318,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected boolean _itemSelectedPending = false;
   private ZoneChart ownshipZoneChart;
   private ZoneChart targetZoneChart;
-  protected TimeSeries ownshipCourseSeries;
-  protected TimeSeries targetBearingSeries;
+  final protected TimeSeries ownshipCourseSeries = new TimeSeries("Ownship course");
+  final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
 
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Action _modeOne;
@@ -661,8 +661,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the courses into a TimeSeries
-    ownshipCourseSeries = new TimeSeries("Ownship course");
-
     ZoneSlicer ownshipLegSlicer = new ZoneSlicer()
     {
       @Override
@@ -697,7 +695,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the bearings into a TimeSeries
-    targetBearingSeries = new TimeSeries("Bearing");
 
     ZoneSlicer targetLegSlicer = new ZoneSlicer()
     {
