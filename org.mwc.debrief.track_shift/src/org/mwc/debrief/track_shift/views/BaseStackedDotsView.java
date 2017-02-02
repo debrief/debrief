@@ -764,14 +764,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       
       TrackSegment cSeg = (TrackSegment) nextSeg;
 
-      if (cSeg instanceof DynamicInfillSegment)
+      if (cSeg instanceof RelativeTMASegment)
       {
-        // ok, skip it. It's of no use to us
-        continue;
-      }
-      else
-      {
-
         RelativeTMASegment seg = (RelativeTMASegment) cSeg;
         otherSegment = seg;
         TimePeriod legPeriod =
@@ -785,21 +779,39 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           else
           {
-            // ok, set this leg to the relevant time period
-            seg.setDTG_Start(zonePeriod.getStartDTG());
-            seg.setDTG_End(zonePeriod.getEndDTG());
-
-            // also update the points to be this color
-            Enumeration<Editable> fIter = seg.elements();
-            while (fIter.hasMoreElements())
+            if(legFound)
             {
-              FixWrapper thisF = (FixWrapper) fIter.nextElement();
-              thisF.setColor(leg.getColor());
+              // ok, we've already create our leg. But, this one overlaps
+              // with us. we should delete it.
+              TrackWrapper secondary= (TrackWrapper) secTrack;
+              secondary.removeElement(seg);
+              
+              CorePlugin.logError(Status.INFO, "Existing leg overlaps with auto-generated one. deleting:" + seg, null);
+            }
+            else
+            {
+              // leg not found yet. this one will do!
+
+              // ok, set this leg to the relevant time period
+              seg.setDTG_Start(zonePeriod.getStartDTG());
+              seg.setDTG_End(zonePeriod.getEndDTG());
+
+              // also update the points to be this color
+              Enumeration<Editable> fIter = seg.elements();
+              while (fIter.hasMoreElements())
+              {
+                FixWrapper thisF = (FixWrapper) fIter.nextElement();
+                thisF.setColor(leg.getColor());
+              }
+              legFound = true;
             }
           }
-          legFound = true;
-          break;
         }
+      }
+      else
+      {
+        CorePlugin.logError(Status.WARNING, "Ignoring this leg,  it's not relative TMA:" + cSeg, null);
+        continue;
       }
     }
     
