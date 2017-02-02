@@ -543,10 +543,10 @@ public final class StackedDotHelper
               
               final ColouredDataItem crseBearingItem =
                   new ColouredDataItem(thisMilli, tgtCourse, courseColor, isInfill, null);
-              tgtCourseValues.add(crseBearingItem);
+              tgtCourseValues.addOrUpdate(crseBearingItem);
               final ColouredDataItem tgtSpeedItem =
                   new ColouredDataItem(thisMilli, tgtSpeed, speedColor, isInfill, null);
-              tgtSpeedValues.add(tgtSpeedItem);
+              tgtSpeedValues.addOrUpdate(tgtSpeedItem);
             }
           }
         }
