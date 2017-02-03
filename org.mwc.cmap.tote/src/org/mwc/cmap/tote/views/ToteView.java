@@ -498,6 +498,7 @@ public class ToteView extends ViewPart
 				autoGenerate(false);
 			}
 		};
+    _autoGenerate.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/gears_run.png"));
 		// -------------------------------------------------------
 		// put watchables on the tote
 		// -------------------------------------------------------
@@ -509,6 +510,7 @@ public class ToteView extends ViewPart
 				autoGenerate(true);
 			}
 		};
+		_autoGenerateJustTracks.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/gears_run.png"));
 
 		// #### show units is generated in the "init" method, since it uses
 		// part of the memento
@@ -715,6 +717,7 @@ public class ToteView extends ViewPart
 	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		 manager.add(_showUnits);
+		 manager.add(_autoGenerateJustTracks);
 		// manager.add(action2);
 		// manager.add(_followTimeToggle);
 	}
