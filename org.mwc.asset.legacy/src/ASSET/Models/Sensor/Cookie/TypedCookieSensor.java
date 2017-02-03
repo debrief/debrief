@@ -58,6 +58,17 @@ public class TypedCookieSensor extends CoreSensor
 	private HashMap<TypedRangeDoublet, DetectionList> _typedDetections;
 
 	private Integer _detectionState = DetectionEvent.DETECTED;
+	
+  private double[] _noise = new double[]
+  {0.27, 0.96, 0.20, 0.14, 0.82, 0.49, -0.19, 0.09, 0.00, 0.36, 0.00, -0.13,
+      0.46, 0.79, 0.01, -0.05, -0.51, 0.51, 0.81, 0.84, 1.03, 0.62, -0.31,
+      0.06, 0.35, 0.63, 0.01, 0.01, 0.34, 0.60, -1.82, 0.59, 0.49, 0.12, -0.48,
+      -0.05, 0.05, -0.23, 0.39, -0.22, 0.17, 0.12, -0.07, -0.86, -0.61, -0.27,
+      0.13, 0.13, 0.09, -0.16, -0.60, -0.03, 0.30, -0.18, 0.06, -1.16, -0.43,
+      0.25, 0.45, -0.11, 0.38, 0.04, -0.69, 0.11, 0.08, 0.04, 0.04, -0.39,
+      -0.23, -0.16, 0.67, -0.14, -0.31, 0.26, -0.56, 0.30, -0.99, -0.19, -0.01,
+      0.36, 0.13, 0.07, 0.40, 0.63, -0.14, 0.74, -0.14, 0.45, 0.08, 0.55,
+      -0.19, -0.36, -0.25, -0.08, 0.13, 2.27, 0.35};
 
 	/**
 	 * optional sensor medium
@@ -70,6 +81,11 @@ public class TypedCookieSensor extends CoreSensor
 	 * 
 	 */
 	private boolean _produceRange = true;
+	
+	/** whether to apply noise to the measurements
+	 * 
+	 */
+	private boolean _applyNoise = false;
 
 	private HashMap<Integer, Long> _timesGained = null;
 
@@ -114,6 +130,19 @@ public class TypedCookieSensor extends CoreSensor
 		return _produceRange;
 	}
 
+	 /** whether to add noise to measurements
+   * 
+   * @param val
+   */
+  public void setApplyNoise(boolean val)
+  {
+    _applyNoise = val;
+  }
+  
+  public boolean getApplyNoise()
+  {
+    return _applyNoise;
+  }
 	public int getMedium()
 	{
 		return _medium;
@@ -237,6 +266,13 @@ public class TypedCookieSensor extends CoreSensor
 
 						double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
 								.getBearing());
+						
+						// do we need to apply noise?
+						if(getApplyNoise())
+						{
+						  long index = time % _noise.length;
+						  brgDegs += _noise[(int) index];
+						}						
 
 						final WorldDistance rangeToUse;
 						if (_produceRange)
