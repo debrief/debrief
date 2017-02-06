@@ -4,7 +4,7 @@
 	
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="120" Units="minutes" ></Duration>
+			<Duration Value="85" Units="minutes" ></Duration>
 		</TimeObserver>
 		<DebriefReplayObserver Name="RedTrack" record_detections="true"
 			record_positions="true" Active="true" record_decisions="false"
