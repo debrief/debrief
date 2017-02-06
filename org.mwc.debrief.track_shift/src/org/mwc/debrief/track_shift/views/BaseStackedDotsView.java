@@ -356,9 +356,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected void fillLocalToolBar(final IToolBarManager toolBarManager)
   {
-    // fit to window
-    toolBarManager.add(undoAction);
-    toolBarManager.add(redoAction);
+//  Note: we have undo/redo buttons on the toolbar. Let's not bother with them here, there are
+//  lots of cuttons on this toolbar.    
+//    toolBarManager.add(undoAction);
+//    toolBarManager.add(redoAction);
     toolBarManager.add(_autoResize);
     toolBarManager.add(_onlyVisible);
     toolBarManager.add(_selectOnClick);
