@@ -143,6 +143,7 @@ public class NarrativeViewerModel
         }
       }
     });
+    loadFont(store);
     store.addPropertyChangeListener(new IPropertyChangeListener()
     {
       @Override
@@ -161,30 +162,7 @@ public class NarrativeViewerModel
         try
         {
           viewer.getGrid().setRedraw(false);
-          String fontStr = store.getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
-          if(fontStr==null)
-          {
-            if(prefFont!=null)
-            {
-              prefFont.dispose();
-            }
-            prefFont = null;
-          }
-         
-          else
-          {
-            if(prefFont!=null)
-            {
-              prefFont.dispose();
-              prefFont = null;
-            }
-            
-            FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-            if(readFontData!=null)
-            {
-              prefFont = new Font(Display.getDefault(), readFontData);
-            }
-          }
+          loadFont(store);
           viewer.refresh();
         }
         finally
@@ -192,6 +170,8 @@ public class NarrativeViewerModel
           viewer.getGrid().setRedraw(true);
         }
       }
+
+	
     });
 
     mySourceFilter = new ColumnFilter()
@@ -223,6 +203,33 @@ public class NarrativeViewerModel
     this.store = store;
 
   }
+  
+  private void loadFont(final IPreferenceStore store) {
+		String fontStr = store.getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+        if(fontStr==null)
+        {
+          if(prefFont!=null)
+          {
+            prefFont.dispose();
+          }
+          prefFont = null;
+        }
+       
+        else
+        {
+          if(prefFont!=null)
+          {
+            prefFont.dispose();
+            prefFont = null;
+          }
+          
+          FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
+          if(readFontData!=null)
+          {
+            prefFont = new Font(Display.getDefault(), readFontData);
+          }
+        }
+	}
 
   public void setInput(final IRollingNarrativeProvider entryWrapper)
   {

@@ -41,6 +41,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -832,8 +833,11 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
               final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
               if (readFontData != null && readFontData.length>0)
               {
-                readFontData[0].height=readFontData[0].height +1;
-                preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(readFontData));
+            	  readFontData[0].setHeight((int)readFontData[0].height +1);
+                FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
+                		readFontData, Display.getCurrent());
+                if(bestFont!=null)
+                	preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(bestFont));
                 
               }
             }
@@ -862,8 +866,11 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
           final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
           if (readFontData != null && readFontData.length>0)
           {
-            readFontData[0].height=readFontData[0].height -1;
-            preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(readFontData));
+            readFontData[0].setHeight((int)readFontData[0].height -1);
+            FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
+            		readFontData, Display.getCurrent());
+            if(bestFont!=null)
+            	preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(bestFont));
             
           }
         }
