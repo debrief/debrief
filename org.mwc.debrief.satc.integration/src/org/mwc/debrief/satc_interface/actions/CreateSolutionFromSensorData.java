@@ -121,11 +121,12 @@ public class CreateSolutionFromSensorData implements
 			else if (thisItem instanceof SensorWrapper)
 			{
 				SensorWrapper sw = (SensorWrapper) thisItem;
+				final int numCuts = sw.size();
 				
 				sensorCounter ++;
 
 				// only handle the first five sensors
-				if(sensorCounter <= 5)
+				if(sensorCounter <= 5 && numCuts < 2000)
         {
           Enumeration<Editable> cuts = sw.elements();
           while (cuts.hasMoreElements())

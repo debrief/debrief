@@ -1,7 +1,6 @@
 package org.mwc.debrief.track_shift.zig_detector;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -51,8 +50,8 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
         Double.MIN_VALUE;
     double lastCourse = 0;
     int lastDir = 0;
-//    final long startTime = times[0];
     long lastTime = Long.MIN_VALUE;
+    long artificialLegStart = -1;
 
     for (int i = 0; i < newCourses.length; i++)
     {
@@ -60,12 +59,6 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
       final long thisTime = times[i];
       final double thisCourse = newCourses[i];
       
-//      if(Math.abs(thisCourse - 82.38) < 0.1)
-      if(new Date(thisTime).toString().contains("Tue Oct 11 16:10:48 GMT 2016"))
-      {        
-   //     System.out.println("here at:" + new Date(thisTime));
-      }
-
       // do we need a leg start?
       if (thisLegStart == -1)
       {
@@ -91,10 +84,38 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
         {
           thisDir = 0;
         }
-
+        
         // have we changed?
+        if(thisDir == 0)
+        {
+          // ok, we may be on a computer generated dataset,
+          // with perfect course keeping
+          if(artificialLegStart == -1)
+          {
+            artificialLegStart = lastTime;
+          }
+        }
+        else
+        {
+          // ok, we're turning. just check if we were on a computer generated straight leg
+          if(artificialLegStart != -1)
+          {
+            // ok, have we elapsed very long
+            if(thisTime - artificialLegStart > minLegLength)
+            {
+              // ok, generate a leg
+              legs.add(new LegOfData("L" + legs.size() + 1, artificialLegStart, lastTime));
+            }
+          }
+          
+          // make sure we clear the artificial straight leg start time
+          artificialLegStart = -1;
+        }
+        
         if (thisDir != lastDir && thisDir != 0)
         {
+          // ok, back to peak tracking algorithm
+          
           lastDir = thisDir;
 
           final double delta;
@@ -153,9 +174,6 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
             {  
               // ok, leg ended.
               legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart, legEnd));
-              
-   //           System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " (" + new Date(thisLegStart) + ") to:" + (legEnd - startTime)/1000 + "(" + new Date(legEnd) + ")");
-//              System.out.println("Leg:" + (thisLegStart - startTime)/1000 + " to:" + (legEnd - startTime)/1000);
             }
             
             // clear the leg marker
@@ -179,6 +197,24 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
       }
       lastCourse = thisCourse;
       lastTime = thisTime;
+    }
+    
+    // do we have a trailing leg?
+    if(thisTroughCourse == Double.MIN_VALUE || thisPeakCourse == Double.MIN_VALUE)
+    {
+      // no, we're turning
+    }
+    else
+    {
+      // we're still in a leg. is it an artificial one?
+      if (artificialLegStart != -1)
+      {
+        legs.add(new LegOfData("L" + legs.size() + 1, artificialLegStart, lastTime));
+      }
+      else
+      {
+        legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart, lastTime));
+      }
     }
     
     return legs;

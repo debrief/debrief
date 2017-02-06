@@ -3,9 +3,11 @@ package com.planetmayo.debrief.satc.zigdetector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mwc.debrief.track_shift.zig_detector.moving_average.CenteredMovingAverage;
+import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeBasedMovingAverage;
+
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
-import com.planetmayo.debrief.satc.zigdetector.TimeWindow.average.TimeBasedMovingAverage;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class OwnshipLegDetector

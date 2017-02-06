@@ -40,7 +40,7 @@
 				<Move Name="leg one" Course="320">
 					<Vector Value="5.7" Units="nm" /></Move>
 				<Move Name="leg two" Course="355">
-					<Vector Value="4" Units="nm" /></Move>
+					<Vector Value="4.75" Units="nm" /></Move>
 				<Move Name="leg three" Course="300">
 					<Vector Value="5.0" Units="nm" /></Move>
 				<Move Name="leg four" Course="320">
@@ -61,24 +61,24 @@
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
 				<TypedCookieSensor Working="true"
-					ProducesRange="false">
+					IncludesNoise="true">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="25" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 			</SensorFit>
-			<Status Course="200" Fuel="100">
+			<Status Course="210" Fuel="100">
 				<Location>
-					<shortLocation Lat="60.2" Long="0"></shortLocation>
+					<shortLocation Lat="60.18" Long="-0.14"></shortLocation>
 				</Location>
-				<Speed Value="2.5" Units="kts" />
+				<Speed Value="6" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Move Name="leg one" Course="200">
-					<Vector Value="5" Units="nm" /></Move>
+				<Move Name="leg one" Course="140">
+					<Vector Value="16" Units="nm" /></Move>
 				<Move Name="leg two" Course="340">
-					<Vector Value="1.6" Units="nm" /></Move>
+					<Vector Value="4" Units="nm" /></Move>
 				<Move Name="leg three" Course="60">
 					<Vector Value="2" Units="nm" /></Move>
 			</Waterfall>

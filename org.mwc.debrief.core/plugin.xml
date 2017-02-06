@@ -28,6 +28,7 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEALogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
         </editor>
     </extension>
 
@@ -86,6 +87,11 @@
             name="SATC export file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.SATCContentDescriber"/>
         </content-type>
+        <content-type id="org.mwc.debrief.contenttype.SATCSampleTrackFile"
+            file-extensions="cs2"
+            name="SATC Sample file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.SATCSampleContentDescriber"/>
+        </content-type>
     </extension>
 
     <extension-point id="DebriefPlotLoader" name="Plot Loader"
@@ -126,6 +132,10 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.SATCLoader" extensions="txt" first_line="//X, Y, Time"  name="SATC Track File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.SATCSampleLoader" extensions="cs2" first_line="#Time of Validity,"  name="SATC Sample Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">

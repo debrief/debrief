@@ -42,6 +42,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 
   private final static String type = "TypedCookieSensor";
   private final static String HAS_RANGE = "ProducesRange";
+  private final static String INCLUDES_NOISE = "IncludesNoise";
   private final static String DETECTION_INTERVAL = "DetectionIntervalMillis";
 	private Vector<TypedRangeDoublet> _rangeDoublets;
 	
@@ -52,6 +53,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
   int _medium = -1;
   private final static String MEDIUM = "Medium";
   Boolean _produceRange = null;
+  protected Boolean _includesNoise = null;
 
   public static EnvironmentType.MediumPropertyEditor _myEditor =
     new EnvironmentType.MediumPropertyEditor();
@@ -78,6 +80,13 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
       public void setValue(String name, final boolean val)
       {
       	_produceRange = val;
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute(INCLUDES_NOISE)
+    {
+      public void setValue(String name, final boolean val)
+      {
+        _includesNoise  = val;
       }
     });
     addAttributeHandler(new HandleAttribute(MEDIUM)
@@ -121,13 +130,16 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
     if(_produceRange != null)
     {
       typedSensor.setProducesRange(_produceRange);
-      _produceRange = null;
-    
+      _produceRange = null;    
     }
     if(_detectionInterval != null)
     {
 	    typedSensor.setTimeBetweenDetectionOpportunities(_detectionInterval);
 	    _detectionInterval = null;
+    }
+    if(_includesNoise != null)
+    {
+      typedSensor.setApplyNoise(_includesNoise);
     }
     
     // do we have a medium
@@ -145,6 +157,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
     _detectionLevel = null;
     _medium = -1;
     _produceRange = true;
+    _includesNoise = null;
   }
 
   static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
@@ -155,8 +168,6 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
     parent.appendChild(thisPart);
 
     throw new RuntimeException("failed to implement export for TypedCookieSensorHandler");
-
-
   }
   
   static abstract public class TypedRangeDoubletHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
