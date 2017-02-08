@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Overview Plug-in
 Bundle-SymbolicName: org.mwc.cmap.overview; singleton:=true
-Bundle-Version: 1.0.19
+Bundle-Version: 1.0.20
 Bundle-Activator: org.mwc.cmap.overview.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -11,4 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.gt2Plot;bundle-version="1.0.0",
  org.mwc.cmap.plotViewer
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

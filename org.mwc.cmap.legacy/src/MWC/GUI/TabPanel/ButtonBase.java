@@ -36,6 +36,8 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.net.URL;
 
+import MWC.GUI.Properties.DebriefColors;
+
 //	05/30/97	LAB	Updated to support Java 1.1
 //	06/24/97	LAB	Made the button behave like a button. i.e. When you press the
 //					button, then move off of it, it responds.  This also affects the
@@ -1420,7 +1422,7 @@ public abstract class ButtonBase extends Canvas
         buttonImageGraphics.drawLine(w, h - 1, w, 1);
 
         if (hasFocus && showFocus) {
-		    buttonImageGraphics.setColor(java.awt.Color.darkGray);
+		    buttonImageGraphics.setColor(DebriefColors.DARK_GRAY);
             for(x = 3; x <= w - 3; x += 3)
                 buttonImageGraphics.drawLine(x, 3, x+1, 3);
             for(y = 3; y <= h - 3; y += 3)

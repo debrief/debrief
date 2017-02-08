@@ -83,7 +83,7 @@ public class RangeValues
 		
 		bufRdr.close();
 		
-		if (values.size() > 0)
+		if (!values.isEmpty())
 		{
 			_ranges = new double[values.size()];
 			_times = new double[values.size()];

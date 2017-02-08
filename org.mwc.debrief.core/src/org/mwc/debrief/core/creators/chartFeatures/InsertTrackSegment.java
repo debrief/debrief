@@ -87,7 +87,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 			// get the results
 			final String txt = inp.getValue();
 			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
-					new WorldDistance(5, WorldDistance.KM), PlanningSegment.DEFAULT_COLOR);
+					new WorldDistance(5, WorldDistance.KM));
 		}
 
 		return res;
@@ -174,7 +174,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 							if (!(startDate == null))
 							{
 								// get the centre of the visible area
-								final WorldLocation wc = getCentre(theChart);
+								final WorldLocation wc = new WorldLocation(getCentre(theChart));
 								
 								// create new track
 								final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);

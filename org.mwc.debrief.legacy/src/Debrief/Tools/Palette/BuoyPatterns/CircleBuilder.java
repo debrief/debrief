@@ -154,7 +154,7 @@ public final class CircleBuilder extends PatternBuilderType
       // create the new symbol
       final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("C" + (i + 1),
                                                   thisLoc,
-                                                  java.awt.Color.red);
+                                                    MWC.GUI.Properties.DebriefColors.RED);
 
       this.formatSymbol(lw, pattern);
 

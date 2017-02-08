@@ -603,7 +603,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		{
 			String val = "700101 000000";
 			HiResDate ers = DebriefFormatDateTime.parseThis(val);
-			assertNull("zero micros doesn't get parsed", ers);
+			assertNotNull("zero micros doesn't get parsed", ers);
 
 			val = "700101 000000.001";
 			ers = DebriefFormatDateTime.parseThis(val);

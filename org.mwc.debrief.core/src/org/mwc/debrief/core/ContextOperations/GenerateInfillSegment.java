@@ -44,206 +44,216 @@ import MWC.GUI.Layers;
 public class GenerateInfillSegment implements RightClickContextItemGenerator
 {
 
-	/**
-	 * @param parent
-	 * @param theLayers
-	 * @param parentLayers
-	 * @param subjects
-	 */
-	public void generate(final IMenuManager parent, final Layers theLayers,
-			final Layer[] parentLayers, final Editable[] subjects)
-	{
-		// we're only going to work with two or more items
-		if (subjects.length > 1)
-		{
-			// track the parents
-			final Layer firstParent = parentLayers[0];
+  /**
+   * @param parent
+   * @param theLayers
+   * @param parentLayers
+   * @param subjects
+   */
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    // we're only going to work with two or more items
+    if (subjects.length > 1)
+    {
+      // track the parents
+      final Layer firstParent = parentLayers[0];
 
-			// is it a track?
-			if (firstParent instanceof TrackWrapper)
-			{
-				final TrackWrapper parentTrack = (TrackWrapper) firstParent;
+      // is it a track?
+      if (firstParent instanceof TrackWrapper)
+      {
+        final TrackWrapper parentTrack = (TrackWrapper) firstParent;
 
-				// do they have the same parent layer?
-				if (parentLayers[1] == parentLayers[0])
-				{
-					// check what's selected, see if they are suitable
-					boolean canDo = true;
-					for (int i = 0; i < subjects.length; i++)
-					{
-						final Editable editable = subjects[i];
-						if (!(editable instanceof TrackSegment))
-						{
-							canDo = false;
-						}
-					}
+        // do they have the same parent layer?
+        if (parentLayers[1] == parentLayers[0])
+        {
+          // check what's selected, see if they are suitable
+          boolean canDo = true;
+          for (int i = 0; i < subjects.length; i++)
+          {
+            final Editable editable = subjects[i];
+            if (!(editable instanceof TrackSegment))
+            {
+              canDo = false;
+            }
+          }
 
-					// ok, is it worth going for?
-					if (canDo)
-					{
-						String title;
+          // ok, is it worth going for?
+          if (canDo)
+          {
+            String title;
 
-						// see if there are more than one segment to be generated
-						if (subjects.length > 2)
-							title = "Generate infill segments";
-						else
-							title = "Generate infill segment";
+            // see if there are more than one segment to be generated
+            if (subjects.length > 2)
+              title = "Generate infill segments";
+            else
+              title = "Generate infill segment";
 
-						final String finalTitle = title;
+            final String finalTitle = title;
 
-						// create this operation
-						final Action doMerge = new Action(title)
-						{
-							public void run()
-							{
-								final IUndoableOperation theAction = new GenerateInfillOperation(
-										finalTitle, subjects, theLayers, parentTrack);
+            // create this operation
+            final Action doMerge = new Action(title)
+            {
+              public void run()
+              {
+                final IUndoableOperation theAction =
+                    new GenerateInfillOperation(finalTitle, subjects,
+                        theLayers, parentTrack);
 
-								CorePlugin.run(theAction);
-							}
-						};
-						parent.add(new Separator());
-						parent.add(doMerge);
-					}
-				}
-			}
-		}
+                CorePlugin.run(theAction);
+              }
+            };
+            parent.add(new Separator());
+            parent.add(doMerge);
+          }
+        }
+      }
+    }
 
-	}
+  }
 
-	private static class GenerateInfillOperation extends CMAPOperation
-	{
+  private static class GenerateInfillOperation extends CMAPOperation
+  {
 
-		/**
-		 * the parent to update on completion
-		 */
-		private final Layers _layers;
-		private final Layer _parentTrack;
-		private final Vector<TrackSegment> _infills;
-		private final Editable[] _segments;
-		
-		int segCtr = 1;
+    /**
+     * the parent to update on completion
+     */
+    private final Layers _layers;
+    private final Layer _parentTrack;
+    private final Vector<TrackSegment> _infills;
+    private final Editable[] _segments;
 
-		public GenerateInfillOperation(final String title, final Editable[] segments,
-				final Layers theLayers, final Layer parentTrack)
-		{
-			super(title);
-			_segments = segments;
-			_layers = theLayers;
-			_parentTrack = parentTrack;
-			_infills = new Vector<TrackSegment>();
-		}
+    int segCtr = 1;
 
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			IStatus res = null;
+    public GenerateInfillOperation(final String title,
+        final Editable[] segments, final Layers theLayers,
+        final Layer parentTrack)
+    {
+      super(title);
+      _segments = segments;
+      _layers = theLayers;
+      _parentTrack = parentTrack;
+      _infills = new Vector<TrackSegment>();
+    }
 
-			// ok, loop through the segments
-			for (int i = 0; i < _segments.length - 1; i++)
-			{
-				// get the juicy pair we're looking at
-				final TrackSegment trackOne = (TrackSegment) _segments[i];
-				final TrackSegment trackTwo = (TrackSegment) _segments[i + 1];
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      IStatus res = null;
 
-				// join them
-				res = fillSegments(trackOne, trackTwo);
-				
-				// did it work?
-				if (res != null)
-					break;
-			}
+      // ok, loop through the segments
+      for (int i = 0; i < _segments.length - 1; i++)
+      {
+        // get the juicy pair we're looking at
+        final TrackSegment trackOne = (TrackSegment) _segments[i];
+        final TrackSegment trackTwo = (TrackSegment) _segments[i + 1];
 
-			_layers.fireExtended(null, _parentTrack);
+        // join them
+        res = fillSegments(trackOne, trackTwo);
 
-			if (res == null)
-			{
-				res = new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
-						"generate infill successful", null);
-			}
-			return res;
-		}
+        // did it work?
+        if (res != null)
+          break;
+      }
 
-		/**
-		 * create a joining infill segment for these two sections
-		 * 
-		 * @param trackOne
-		 * @param trackTwo
-		 * @return null for ok, status message for fail
-		 */
-		private IStatus fillSegments(final TrackSegment trackOne, final TrackSegment trackTwo)
-		{
-			IStatus res = null;
-			// now do the more detailed checks
-			if (trackOne.endDTG().greaterThan(trackTwo.startDTG()))
-			{
-				// fail, they overlap
-				CorePlugin
-						.showMessage(
-								"Generate infill segment",
-								"Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again");
-				res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
-						"Overlapping data points", null);
-			}
-			else
-			{
-				// cool, go for it
-				// generate the new track segment
-				final TrackSegment newSeg = new DynamicInfillSegment(trackOne, trackTwo);
+      _layers.fireExtended(null, _parentTrack);
 
-				// aah, but, no but, are there points in the segment
-				if (newSeg.getData().size() > 0)
-				{
-					storeSegment(newSeg);
-				}
-			}
+      if (res == null)
+      {
+        res =
+            new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
+                "generate infill successful", null);
+      }
+      return res;
+    }
 
-			return res;
-		}
+    /**
+     * create a joining infill segment for these two sections
+     * 
+     * @param trackOne
+     * @param trackTwo
+     * @return null for ok, status message for fail
+     */
+    private IStatus fillSegments(final TrackSegment trackOne,
+        final TrackSegment trackTwo)
+    {
+      IStatus res = null;
+      // now do the more detailed checks
+      if (trackOne.endDTG().greaterThan(trackTwo.startDTG()))
+      {
+        // fail, they overlap
+        CorePlugin
+            .showMessage(
+                "Generate infill segment",
+                "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again");
+        res =
+            new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
+                "Overlapping data points", null);
+      }
+      else
+      {
+        // cool, go for it
+        // generate the new track segment
+        final TrackSegment newSeg =
+            new DynamicInfillSegment(trackOne, trackTwo);
 
-		private void storeSegment(final TrackSegment newSeg)
-		{
-			// correct the name
-			newSeg.setName(newSeg.getName() + "_" + segCtr++);
-			
-			// add the track segment to the parent track
-			_parentTrack.add(newSeg);
+        // aah, but, no but, are there points in the segment
+        if (!newSeg.getData().isEmpty())
+        {
+          storeSegment(newSeg);
+        }
+      }
 
-			// and remember it
-			_infills.add(newSeg);
-		}
+      return res;
+    }
 
-		@Override
-		public boolean canRedo()
-		{
-			return false;
-		}
+    private void storeSegment(final TrackSegment newSeg)
+    {
+      // correct the name
+      newSeg.setName(newSeg.getName() + "_" + segCtr++);
 
-		@Override
-		public boolean canUndo()
-		{
-			return true;
-		}
+      // add the track segment to the parent track
+      _parentTrack.add(newSeg);
 
-		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			final Iterator<TrackSegment> iter = _infills.iterator();
-			while (iter.hasNext())
-			{
-				final TrackSegment thisSeg = iter.next();
+      // and remember it
+      _infills.add(newSeg);
+    }
 
-				// right, just delete our new track segments
-				_parentTrack.removeElement(thisSeg);
-			}
+    @Override
+    public boolean canRedo()
+    {
+      return true;
+    }
 
-			// cool, tell everyone
-			_layers.fireExtended(null, _parentTrack);
+    @Override
+    public boolean canUndo()
+    {
+      return true;
+    }
 
-			// register success
-			return new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
-					"ditch infill successful", null);
-		}
-	}
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      final Iterator<TrackSegment> iter = _infills.iterator();
+      while (iter.hasNext())
+      {
+        final TrackSegment thisSeg = iter.next();
+
+        // right, just delete our new track segments
+        _parentTrack.removeElement(thisSeg);
+      }
+
+      // and clera the infills
+      _infills.clear();
+
+      // cool, tell everyone
+      _layers.fireExtended(null, _parentTrack);
+
+      // register success
+      return new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
+          "ditch infill successful", null);
+    }
+  }
 }

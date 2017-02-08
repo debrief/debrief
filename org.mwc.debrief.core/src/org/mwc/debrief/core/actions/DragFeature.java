@@ -52,6 +52,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 import MWC.GenericData.WorldDistance;
@@ -464,7 +465,7 @@ public class DragFeature extends CoreDragAction
 		 */
 		private void drawHere(final GC graphics, final WorldVector newVector)
 		{
-			graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
+			graphics.setForeground(ColorHelper.getColor(DebriefColors.WHITE));
 
 			// ok, move the target to the new location...
 			if (newVector != null)

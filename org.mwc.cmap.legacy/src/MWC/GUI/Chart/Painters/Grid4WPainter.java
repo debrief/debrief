@@ -170,6 +170,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -213,14 +214,19 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 */
 	protected boolean _isOn;
 
-	/**
-	 * are we plotting lines?
-	 */
-	protected boolean _plotLines = true;
+  /**
+   * are we plotting lines?
+   */
+  protected boolean _plotLines = true;
 
-	/**
-	 * are we plotting lat/long labels?
-	 */
+  /**
+   * the style the lines of this shape are drawn in
+   */
+  private int _lineStyle = LineStylePropertyEditor.SOLID;
+
+  /**
+   * are we plotting lat/long labels?
+   */
 	protected boolean _plotLabels = true;
 
 	/**
@@ -233,6 +239,11 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * 
 	 */
 	protected Color _fillColor = Color.white;
+	
+	/** the font color
+	 * 
+	 */
+	protected Color _fontColor = null;
 
 	/**
 	 * whether to put the origin at the top-left
@@ -298,6 +309,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	public Grid4WPainter(final WorldLocation origin)
 	{
 		_myColor = Color.darkGray;
+		_fontColor = _myColor;
 
 		_origin = origin;
 
@@ -417,7 +429,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		// check we are visible
 		if (!_isOn)
 			return;
-
+		
 		// create a transparent colour
 		g.setColor(new Color(_myColor.getRed(), _myColor.getGreen(), _myColor
 				.getBlue(), 160));
@@ -456,12 +468,18 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			g.setColor(_fillColor);
 			g.fillPolygon(xPoints, yPoints, xPoints.length);
 		}
-
+		
 		// ok, draw the vertical lines
 		for (int x = _xMin; x <= _xMax + 1; x++)
 		{
+      // set the normal color
+      g.setColor(_myColor);
+		  
 			if (_plotLines)
 			{
+		    // sort out the line style
+		    g.setLineStyle(_lineStyle);
+
 				final Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
 				final Point end = new Point(g.toScreen(calcLocationFor(x, _yMax + 1)));
 				g.drawLine(start.x, start.y, end.x, end.y);
@@ -491,6 +509,9 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 				if(getOriginAtTopLeft())
 					ht = -ht;
+
+				// set the font color
+				g.setColor(_fontColor);
 				
 				// and draw it
 				g.drawText(_theFont, thisLbl, centre.x - wid / 2, centre.y + ht);
@@ -501,8 +522,14 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		// ok, now the horizontal lines
 		for (int y = _yMin; y <= _yMax + 1; y++)
 		{
+		  // set the normal color
+		  g.setColor(_myColor);
+		  
 			if (_plotLines)
 			{
+		    // sort out the line style
+		    g.setLineStyle(_lineStyle);
+
 				final Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
 				final Point end = new Point(g.toScreen(calcLocationFor(_xMax + 1, y)));
 				g.drawLine(start.x, start.y, end.x, end.y);
@@ -530,7 +557,10 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 				// sort out the dimensions of the font
 				final int ht = g.getStringHeight(_theFont);
 				final int wid = g.getStringWidth(_theFont, thisLbl);
-
+				
+        // set the font color
+        g.setColor(_fontColor);
+        
 				// and draw it
 				g.drawText(_theFont, thisLbl, centre.x - (wid + 2), centre.y + ht / 2);
 			}
@@ -714,6 +744,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 						prop("Name", "name of this grid", FORMAT),
 						prop("Font", "font to use for labels", FORMAT),
 						displayProp("FillColor", "Fill color", "color to use to fill the grid", FORMAT),
+            displayProp("FontColor", "Label color", "color to use for grid labels", FORMAT),
 						displayProp("XDelta", "X delta", "the x step size for the grid", SPATIAL),
 						displayProp("YDelta", "Y delta", "the y step size for the grid", SPATIAL),
 						prop("Orientation", "the orientation of the grid", SPATIAL),
@@ -723,7 +754,11 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 						displayProp("YMax", "Y max index", "the max index shown on the y-axis (A-AZ)", SPATIAL),
 						prop("Origin", "the bottom-left corner of the grid", SPATIAL),
 						displayProp("OriginAtTopLeft", "Origin at top-left",
-								"whether to put the origin at the top-left", FORMAT) };
+								"whether to put the origin at the top-left", FORMAT),
+            displayLongProp("LineStyle", "Line style",
+                "the dot-dash style to use for plotting this grid",
+                LineStylePropertyEditor.class, FORMAT),
+								};
 
 				return res;
 			}
@@ -886,11 +921,13 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		}
 	}
 
-	private static String indices[] =
-	{ "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q",
-			"R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD",
-			"AE", "AF", "AG", "AH", "AJ", "AK", "AL", "AM", "AN", "AP", "AQ", "AR",
-			"AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ" };
+  private static String indices[] =
+  {"A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q",
+      "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD",
+      "AE", "AF", "AG", "AH", "AJ", "AK", "AL", "AM", "AN", "AP", "AQ", "AR",
+      "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD",
+      "BE", "BF", "BG", "BH", "BJ", "BK", "BL", "BM", "BN", "BP", "BQ", "BR",
+      "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ"};
 
 	/**
 	 * find the index of the supplied string
@@ -1088,6 +1125,24 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		_fillColor = fillColor;
 	}
 
+
+  /**
+   * @return the fontColor
+   */
+  public Color getFontColor()
+  {
+    return _fontColor;
+  }
+
+  /**
+   * @param fillColor
+   *          the fillColor to set
+   */
+  public void setFontColor(final Color fontColor)
+  {
+    _fontColor = fontColor;
+  }
+
 	/**
 	 * @return the plotLines
 	 */
@@ -1104,6 +1159,16 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	{
 		_plotLines = plotLines;
 	}
+
+  public int getLineStyle()
+  {
+    return _lineStyle;
+  }
+
+  public void setLineStyle(final int lineStyle)
+  {
+    _lineStyle = lineStyle;
+  }
 
 	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
 			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)

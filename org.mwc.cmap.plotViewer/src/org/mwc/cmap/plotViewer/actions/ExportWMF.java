@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
@@ -113,8 +114,14 @@ public class ExportWMF extends CoreEditorAction
 		write.execute();
 		if (!write.isWritable())
 		{
-			Shell shell = getShell();
-			MessageDialog.openError(shell, "Error", write.getErrorMessage());
+			final Shell shell = getShell();
+			Display.getDefault().syncExec(new Runnable(){
+
+        @Override
+        public void run()
+        {
+          MessageDialog.openError(shell, "Error", write.getErrorMessage());
+        }});
 			return Status.OK_STATUS;
 		}
 		if (monitor.isCanceled())

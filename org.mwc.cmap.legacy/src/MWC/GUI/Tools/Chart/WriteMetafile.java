@@ -18,6 +18,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.MetafileCanvas;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldLocation;
@@ -110,7 +111,7 @@ public class WriteMetafile extends PlainTool
 			mf.startDraw(null);
 
 			// sort out the background colour
-			mf.setBackgroundColor(java.awt.Color.white);
+			mf.setBackgroundColor(DebriefColors.WHITE);
 
 			// sort out the line width
 			mf.setLineWidth(_theChart.getCanvas().getLineWidth());
@@ -192,7 +193,7 @@ public class WriteMetafile extends PlainTool
 		mf.startDraw(null);
 
 		// sort out the background colour
-		mf.setBackgroundColor(java.awt.Color.white);
+		mf.setBackgroundColor(DebriefColors.WHITE);
 
 		// sort out the line width
 		mf.setLineWidth(1);
@@ -202,7 +203,7 @@ public class WriteMetafile extends PlainTool
 		// (MWC.GUI.Canvas.Swing.SwingCanvas)_theChart.getCanvas();
 		// sc.paintIt(mf);
 
-		mf.setColor(java.awt.Color.green);
+		mf.setColor(DebriefColors.GREEN);
 		mf.drawLine(350, 50, 200, 200);
 		mf.drawLine(252, 50, 200, 230);
 		mf.drawLine(54, 250, 200, 250);
@@ -211,9 +212,9 @@ public class WriteMetafile extends PlainTool
 
 		final java.awt.Font newF = new java.awt.Font("Courier", java.awt.Font.BOLD, 12);
 
-		mf.setColor(java.awt.Color.blue);
+		mf.setColor(DebriefColors.BLUE);
 		mf.drawText(newF, "and us three", 200, 100);
-		mf.setColor(java.awt.Color.blue);
+		mf.setColor(DebriefColors.BLUE);
 		mf.fillRect(80, 100, 40, 40);
 
 		final String theStr = MWC.Utilities.TextFormatting.DebriefFormatLocation

@@ -14,15 +14,11 @@
  */
 package org.mwc.debrief.multipath2;
 
-import java.awt.BorderLayout;
-import java.awt.Frame;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -32,6 +28,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Slider;
@@ -41,7 +38,6 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -91,7 +87,8 @@ public class MultiPathView extends ViewPart implements
 	 */
 	public void createPartControl(final Composite parent)
 	{
-		_ui = new MultiPathUI(parent, SWT.EMBEDDED);
+	  parent.setLayout(new FillLayout());
+		_ui = new MultiPathUI(parent, SWT.NONE);  
 
 		createPlot(_ui.getChartHolder());
 
@@ -108,7 +105,14 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	private void createPlot(final Composite ui)
-	{ // create a date-formatting axis
+	{ 
+	  //clean old ChartComposites
+	  Control[] children = ui.getChildren();
+	  for (Control control : children)
+    {
+      control.dispose();
+    }
+	  // create a date-formatting axis
 		final DateAxis dateAxis = new RelativeDateAxis();
 		dateAxis.setStandardTickUnits(DateAxisEditor
 				.createStandardDateTickUnitsAsTickUnits());
@@ -134,6 +138,7 @@ public class MultiPathView extends ViewPart implements
 			}
 		};
 		_plotControl.setChart(_plotArea);
+		ui.layout(true);
 	}
 
 	@Override

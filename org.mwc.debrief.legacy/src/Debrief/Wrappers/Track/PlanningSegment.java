@@ -18,7 +18,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.FixWrapper;
@@ -42,7 +44,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class PlanningSegment extends TrackSegment implements Cloneable,
-		Editable.DoNoInspectChildren, CreateEditorForParent, TimeStampedDataItem, ICompositeTrackSegment
+		CreateEditorForParent, TimeStampedDataItem, ICompositeTrackSegment
 {
 
 	/**
@@ -55,10 +57,9 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	{
 
 		public ClosingSegment(final String name, final double courseDegs,
-				final WorldSpeed worldSpeed, final WorldDistance worldDistance,
-				final Color myColor)
+				final WorldSpeed worldSpeed, final WorldDistance worldDistance)
 		{
-			super(name, courseDegs, worldSpeed, worldDistance, myColor);
+			super(name, courseDegs, worldSpeed, worldDistance);
 			this.setCalculation(PlanningLegCalcModelPropertyEditor.RANGE_SPEED);
 		}
 
@@ -109,7 +110,6 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 						expertProp("Distance", "The distance travelled along this leg",
 								SPATIAL),
 						expertProp("Speed", "The speed travelled along this leg", SPATIAL),
-						expertProp("Color", "The color for this leg", FORMAT),
 						expertProp("Duration", "The duration of travel along this leg",
 								SPATIAL),
 						expertProp("Name", "Name of this track segment", FORMAT), };
@@ -159,6 +159,8 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	private transient CompositeTrackWrapper _parent;
+	
+	private List<FixWrapper> _cachedFixes = new ArrayList<FixWrapper>();
 
 	/**
 	 * 
@@ -184,18 +186,6 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	WorldSpeed _mySpeed;
 
 	/**
-	 * the color to use for this planning segment
-	 * 
-	 */
-	public final static Color DEFAULT_COLOR = Color.RED;
-
-	/**
-	 * the color to use for this planning segment
-	 * 
-	 */
-	private Color _myColor = Color.RED;
-
-	/**
 	 * the date this segment was created - used to force sort order by the order
 	 * they were read in
 	 * 
@@ -206,7 +196,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 * how far to travel for (optional)
 	 * 
 	 */
-	Duration _myPeriod = new Duration(12, Duration.MINUTES);
+	private Duration _myPeriod = new Duration(12, Duration.MINUTES);
 
 	/**
 	 * which calculation model to use
@@ -233,6 +223,9 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 */
 	public PlanningSegment(final PlanningSegment other)
 	{
+	  // make it absolute, which planning semgntns are
+	  super(TrackSegment.ABSOLUTE);
+	  
 		_calcModel = other._calcModel;
 		_created = System.nanoTime();
 		_myCourseDegs = other._myCourseDegs;
@@ -240,20 +233,20 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		_myLength = new WorldDistance(other._myLength);
 		_myPeriod = new Duration(other._myPeriod);
 		_mySpeed = new WorldSpeed(other._mySpeed);
-		_myColor = other.getColor();
 		_parent = other._parent;
 		this.setName(other.getName());
 	}
 
 	public PlanningSegment(final String name, final double courseDegs,
-			final WorldSpeed worldSpeed, final WorldDistance worldDistance,
-			final Color color)
+			final WorldSpeed worldSpeed, final WorldDistance worldDistance)
 	{
+	   // make it absolute, which planning semgntns are
+    super(TrackSegment.ABSOLUTE);
+	  
 		this.setName(name);
 		this.setCourse(courseDegs);
 		this.setSpeedSilent(worldSpeed);
 		this.setDistanceSilent(worldDistance);
-		this.setColor(color);
 		this.recalc();
 	}
 
@@ -279,6 +272,44 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 */
 	public void addFix(final FixWrapper fix)
 	{
+	  FixWrapper matched = null;
+	  
+	  // loop through the cached fixes
+	  for(final FixWrapper cachedFix: _cachedFixes)
+	  {
+      if(cachedFix.getTime().equals(fix.getTime()))
+      {
+        matched = cachedFix;
+        fix.setLabelLocation(matched.getLabelLocation());
+        fix.setLabelShowing(matched.getLabelShowing());
+        fix.setArrowShowing(matched.getArrowShowing());
+        fix.setLabel(matched.getLabel());
+        fix.setSymbolShowing(matched.getSymbolShowing());
+        fix.setFont(matched.getFont());
+        fix.setVisible(matched.getVisible());
+    
+        // only set the color if this specific fix has one
+        Color color = matched.getActualColor();
+        if(color != null)
+        {
+          fix.setColor(color);
+        }
+        
+        break;
+      }
+    }
+	  
+	  if(matched != null)
+	  {
+	    _cachedFixes.remove(matched);
+	  }
+	  else
+	  {
+	    // ok, do some default formatting
+	    fix.setSymbolShowing(true);
+	    fix.resetLabelLocation();
+	  }
+	  
 		// remember the fix
 		this.addFixSilent(fix);
 	}
@@ -418,36 +449,25 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		return true;
 	}
 
-	public Color getColor()
-	{
-		return _myColor;
-	}
+  private void recalc()
+  {
+    if (_parent != null)
+    {
+      _parent.recalculate();
 
-	public void setColor(final Color color)
-	{
-		if (color == null)
-			return;
-
-		_myColor = color;
-
-		// ok, loop through the elements and update the color
-		final Enumeration<Editable> numer = elements();
-		while (numer.hasMoreElements())
-		{
-			final Editable nextE = numer.nextElement();
-			final FixWrapper fix = (FixWrapper) nextE;
-			fix.setColor(color);
-		}
-	}
-
-	private void recalc()
-	{
-		if (_parent != null)
-			_parent.recalculate();
-	}
+      // also, reset all of the label locations for this leg, since we want
+      // them to indicate direction of travel
+      Enumeration<Editable> numer = this.elements();
+      while (numer.hasMoreElements())
+      {
+        FixWrapper thisF = (FixWrapper) numer.nextElement();
+        thisF.resetLabelLocation();
+      }
+    }
+  }
 
 	@Override
-	protected void sortOutDate(final HiResDate startDTG)
+	public void sortOutDateLabel(final HiResDate startDTG)
 	{
 		// ignore - we want to keep the layer name
 	}
@@ -564,5 +584,26 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 			}
 		}
 	}
+
+  public void cacheExistingElements()
+  {
+    Enumeration<Editable> iter = super.elements();
+    while (iter.hasMoreElements())
+    {
+      FixWrapper thisF = (FixWrapper) iter.nextElement();
+      _cachedFixes.add(thisF);
+    }
+  }
+
+  public void clearCachedFixes()
+  {
+    _cachedFixes.clear();
+  }
+
+  @Override
+  public Color getColor()
+  {
+    return _parent.getTrackColor();
+  }
 
 }

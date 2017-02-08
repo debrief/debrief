@@ -33,11 +33,13 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
+import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 import flanagan.math.Minimisation;
 
@@ -87,17 +89,10 @@ public class ZigDetectorTest
 		{
 			@Override
 			public void storeLeg(final String scenarioName, final long tStart,
-					final long tEnd, final Sensor sensor, final double rms)
+					final long tEnd, final double rms)
 			{
 				System.out.println("Leg identified from " + new Date(tStart) + " to "
 						+ new Date(tEnd));
-			}
-
-			@Override
-			public ArrayList<StraightLegForecastContribution> getSlices()
-			{
-				// TODO Auto-generated method stub
-				return null;
 			}
 		};
 	
@@ -125,8 +120,8 @@ public class ZigDetectorTest
 					legEnd);
 			final List<Long> thisLegTimes = sensor.extractTimes(legStart, legEnd);
 
-			detector.sliceThis(name, legStart, legEnd, sensor, legStorer, null,
-					RMS_ZIG_RATIO, OPTIMISER_TOLERANCE, thisLegTimes, thisLegBearings);
+			detector.sliceThis(SATC_Activator.getDefault().getLog(),SATC_Activator.PLUGIN_ID,name, legStart, legEnd, legStorer, null, 
+			    RMS_ZIG_RATIO, OPTIMISER_TOLERANCE, thisLegTimes, thisLegBearings);
 	
 			// create a placeholder for the overall score for this leg
 			final TimeSeries atanBar = new TimeSeries("ATan " + thisLeg.getName());
@@ -137,7 +132,6 @@ public class ZigDetectorTest
 					+ " Slices");
 			legResults.addSeries(thisSeries);
 		}
-	
 	}
 
 
@@ -249,7 +243,7 @@ public class ZigDetectorTest
 								legEnd);
 						final List<Long> thisLegTimes = data.sensor.extractTimes(legStart, legEnd);
 
-						detector.sliceThis(name, legStart, legEnd, data.sensor, data.legStorer, null,
+						detector.sliceThis(SATC_Activator.getDefault().getLog(),SATC_Activator.PLUGIN_ID,name, legStart, legEnd,  data.legStorer, null,
 								RMS_ZIG_RATIO, OPTIMISER_TOLERANCE, thisLegTimes, thisLegBearings);
 	
 						// create a placeholder for the overall score for this leg
@@ -401,7 +395,7 @@ public class ZigDetectorTest
 
 		@Override
 		public void storeLeg(final String scenarioName, final long tStart,
-				final long tEnd, final Sensor sensor, final double rms)
+				final long tEnd, final double rms)
 		{
 			System.out.println("Storing " + scenarioName + " : "
 					+ dateF.format(new Date(tStart)) + " - "
@@ -410,19 +404,19 @@ public class ZigDetectorTest
 			_legList.add(new LegOfData("Leg-" + (_legList.size() + 1), tStart, tEnd));
 
 			// store some RMS error scores
-			if (sensor != null)
-			{
-				final List<Long> times = sensor.extractTimes(tStart, tEnd);
-				for (final Iterator<Long> iterator = times.iterator(); iterator
-						.hasNext();)
-				{
-					final Long long1 = iterator.next();
-					_rmsScores.add(new FixedMillisecond(long1), rms);
-				}
-			}
+			// SKIPPED, TO REMOVE SENSOR DEPENDENCY
+//			if (sensor != null)
+//			{
+//				final List<Long> times = sensor.extractTimes(tStart, tEnd);
+//				for (final Iterator<Long> iterator = times.iterator(); iterator
+//						.hasNext();)
+//				{
+//					final Long long1 = iterator.next();
+//					_rmsScores.add(new FixedMillisecond(long1), rms);
+//				}
+//			}
 		}
 
-		@Override
 		public ArrayList<StraightLegForecastContribution> getSlices()
 		{
 			// TODO Auto-generated method stub

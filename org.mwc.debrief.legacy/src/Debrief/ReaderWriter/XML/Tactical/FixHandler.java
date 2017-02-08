@@ -160,8 +160,6 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
         _theFixWrapper.setVisible(value);
       }
     });
-
-
     addAttributeHandler(new HandleAttribute("LabelLocation")
     {
       public void setValue(final String name, final String val)
@@ -172,7 +170,6 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
           _theFixWrapper.setLabelLocation(res);
       }
     });
-
   }
 
   public final void handleOurselves(final String name, final Attributes atts)

@@ -17,7 +17,6 @@ package org.mwc.debrief.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-
 @Suite.SuiteClasses({
 	  
 	Debrief.GUI.Tote.Painters.Highlighters.RangeHighlighter.testMe.class,
@@ -25,7 +24,6 @@ import org.junit.runners.Suite;
   Debrief.GUI.Tote.Painters.PainterManager.testMe.class,
   Debrief.GUI.Tote.Painters.RelativePainter.testMe.class,
   Debrief.GUI.Tote.Painters.SnailDrawFix.testMe.class,
-  Debrief.GUI.Tote.Painters.SnailPainter.testMe.class,
   Debrief.GUI.Tote.Painters.SnailPainter.testMe.class,
   Debrief.GUI.Tote.Painters.TotePainter.testMe.class,
   Debrief.GUI.Tote.StepControl.testMe.class,
@@ -44,6 +42,8 @@ import org.junit.runners.Suite;
   Debrief.ReaderWriter.Replay.ImportTMA_RngBrg.testImportTMA_RngBrg.class,
   Debrief.ReaderWriter.XML.Shapes.LabelHandler.testMe.class,
   Debrief.ReaderWriter.XML.Tactical.TMAContactHandler.testIt.class,
+  Debrief.ReaderWriter.Word.ImportNarrativeDocument.TestImportWord.class,
+  Debrief.ReaderWriter.Word.ImportWordDummy.TestImportDummyWord.class,
   Debrief.Tools.FilterOperations.ReformatFixes.testListOfProperties.class,
   Debrief.Tools.Palette.BuoyPatterns.ArcBuilder.testMe.class,
   Debrief.Tools.Palette.BuoyPatterns.BarrierBuilder.testMe.class,
@@ -52,6 +52,7 @@ import org.junit.runners.Suite;
   Debrief.Tools.Palette.BuoyPatterns.WedgeBuilder.testMe.class,
   Debrief.Wrappers.BuoyPatternWrapper.testMe.class,
   Debrief.Wrappers.FixWrapper.testMe.class,
+  Debrief.Wrappers.NarrativeWrapper.TestMe.class,
   Debrief.Wrappers.LabelWrapper.testMe.class,
   Debrief.Wrappers.SensorContactWrapper.testSensorContact.class,
   Debrief.Wrappers.SensorWrapper.testSensors.class,
@@ -86,6 +87,7 @@ import org.junit.runners.Suite;
   MWC.GUI.Shapes.RangeRingShape.WheelTest.class,
   MWC.GUI.Shapes.RectangleShape.RectangleTest.class,
   MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.ReferenceTest.class,
+  MWC.GUI.Shapes.Symbols.Geog.WreckSym.WreckTest.class,
   MWC.GUI.Shapes.Symbols.SymbolFactory.SymFactoryTest.class,
   MWC.GUI.Shapes.WheelShape.WheelTest.class,
   MWC.GenericData.Duration.DurationTest.class,
@@ -96,6 +98,7 @@ import org.junit.runners.Suite;
   MWC.GenericData.WorldPath.PathTest.class,
   MWC.GenericData.WorldSpeed.SpeedTest.class,
   MWC.GenericData.WorldVector.VectorTest.class,
+  MWC.GenericData.TimePeriod.TestTimePeriod.class,
   MWC.TacticalData.NarrativeEntry.testMe.class,
   MWC.Utilities.Errors.Testing.EmptyTestCase.class,
   MWC.Utilities.Errors.Testing.TestEmpty.class,

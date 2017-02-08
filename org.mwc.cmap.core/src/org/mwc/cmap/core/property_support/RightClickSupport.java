@@ -79,6 +79,8 @@ public class RightClickSupport
 	private static final String PLUGIN_ID = "org.mwc.cmap.core";
 
 	private static final String MULTIPLE_ITEMS_STR = "Multiple items";
+
+  private static final int MAX_ITEMS_FOR_UNDO = 1000;;
 	/**
 	 * list of actions to be added to context-menu on right-click
 	 */
@@ -127,10 +129,12 @@ public class RightClickSupport
 			final boolean hideClipboardOperations)
 	{
 
-		// sort out the top level layer, if we have one
+		// sort out the top level layer, if we have a single one
+	  // Note: if we have more than one top level layer we don't populate the top
+	  // level layer - so the whole plot gets updated
 		Layer theTopLayer = null;
 		if (topLevelLayers != null)
-			if (topLevelLayers.length > 0)
+			if (topLevelLayers.length == 1)
 				theTopLayer = topLevelLayers[0];
 
 		// and now the edit-able bits
@@ -306,7 +310,7 @@ public class RightClickSupport
 			// ok, done
 			_rightClickExtensionsChecked = true;
 		}
-
+		/* no params */
 		// hmm, do we have any right-click generators?
 		if (_additionalRightClickItems != null)
 		{
@@ -377,8 +381,10 @@ public class RightClickSupport
 		final MethodDescriptor[] demo = new MethodDescriptor[]
 		{};
 
+		final int len = editables.length;
+		
 		// right, get the first set of properties
-		if (editables.length > 0)
+		if (len > 0)
 		{
 			final Editable first = editables[0];
 			final EditorType firstInfo = first.getInfo();
@@ -390,10 +396,10 @@ public class RightClickSupport
 				if (res != null)
 				{
 					// right, are there any more?
-					if (editables.length > 1)
+					if (len > 1)
 					{
 						// pass through the others, finding the common ground
-						for (int cnt = 1; cnt < editables.length; cnt++)
+						for (int cnt = 1; cnt < len; cnt++)
 						{
 							final Editable thisE = editables[cnt];
 
@@ -406,8 +412,13 @@ public class RightClickSupport
 								final MethodDescriptor[] newSet = thisEditor
 										.getMethodDescriptors();
 
-								// find the common ones
-								res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
+                // check we're not already looking at an instance of this type
+                if (newSet != res)
+                {
+                  // find the common ones
+                  res =
+                      (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
+                }
 							}
 							else
 							{
@@ -440,7 +451,10 @@ public class RightClickSupport
 		{};
 
 		// right, get the first set of properties
-		if (editables.length > 0)
+		final int len = editables.length;
+		
+		// are there a reasonable number of them?
+		if (len > 0 && len < MAX_ITEMS_FOR_UNDO)
 		{
 			final Editable first = editables[0];
 			final EditorType firstInfo = first.getInfo();
@@ -452,10 +466,10 @@ public class RightClickSupport
 				if (res != null)
 				{
 					// right, are there any more?
-					if (editables.length > 1)
+					if (len > 1)
 					{
 						// pass through the others, finding the common ground
-						for (int cnt = 1; cnt < editables.length; cnt++)
+						for (int cnt = 1; cnt < len; cnt++)
 						{
 							final Editable thisE = editables[cnt];
 
@@ -487,10 +501,13 @@ public class RightClickSupport
 	{
 		final Vector<MWC.GUI.Tools.SubjectAction> res = new Vector<MWC.GUI.Tools.SubjectAction>();
 
-		for (int cnta = 0; cnta < a.length; cnta++)
+		final int aLen = a.length;
+		final int bLen = b.length;
+		
+		for (int cnta = 0; cnta < aLen; cnta++)
 		{
 			final MWC.GUI.Tools.SubjectAction thisP = a[cnta];
-			for (int cntb = 0; cntb < b.length; cntb++)
+			for (int cntb = 0; cntb < bLen; cntb++)
 			{
 				final MWC.GUI.Tools.SubjectAction thatP = b[cntb];
 				if (thisP.toString().equals(thatP.toString()))
@@ -509,8 +526,11 @@ public class RightClickSupport
 		PropertyDescriptor[] res = null;
 		final PropertyDescriptor[] demo = new PropertyDescriptor[]
 		{};
+		
+    final int len = editables.length;
+		
 		// right, get the first set of properties
-		if (editables.length > 0)
+		if (len > 0)
 		{
 			final Editable first = editables[0];
 			final EditorType firstInfo = first.getInfo();
@@ -522,10 +542,10 @@ public class RightClickSupport
 				if (res != null)
 				{
 					// right, are there any more?
-					if (editables.length > 1)
+					if (len > 1)
 					{
 						// pass through the others, finding the common ground
-						for (int cnt = 1; cnt < editables.length; cnt++)
+						for (int cnt = 1; cnt < len; cnt++)
 						{
 							final Editable thisE = editables[cnt];
 
@@ -538,9 +558,15 @@ public class RightClickSupport
 								final PropertyDescriptor[] newSet = thisEditor
 										.getPropertyDescriptors();
 
-								// find the common ones
-								res = (PropertyDescriptor[]) getIntersectionFor(res, newSet,
-										demo);
+								// just double-check that we aren't already looking at these props 
+								// (we do if it's lots of the same item selected
+								if(res != newSet)
+                {
+                  // find the common ones
+                  res =
+                      (PropertyDescriptor[]) getIntersectionFor(res, newSet,
+                          demo);
+                }
 							}
 							else
 							{
@@ -578,12 +604,15 @@ public class RightClickSupport
 	{
 		final Vector<MethodDescriptor> res = new Vector<MethodDescriptor>();
 
-		for (int cnta = 0; cnta < a.length; cnta++)
+    final int aLen = a.length;
+    final int bLen = b.length;
+
+		for (int cnta = 0; cnta < aLen; cnta++)
 		{
 			final MethodDescriptor thisP = a[cnta];
 			if (b != null)
 			{
-				for (int cntb = 0; cntb < b.length; cntb++)
+				for (int cntb = 0; cntb < bLen; cntb++)
 				{
 					final MethodDescriptor thatP = b[cntb];
 					if (thisP.getDisplayName().equals(thatP.getDisplayName()))
@@ -611,10 +640,13 @@ public class RightClickSupport
 	{
 		final Vector<PropertyDescriptor> res = new Vector<PropertyDescriptor>();
 
-		for (int cnta = 0; cnta < a.length; cnta++)
+    final int aLen = a.length;
+    final int bLen = b.length;
+
+		for (int cnta = 0; cnta < aLen; cnta++)
 		{
 			final PropertyDescriptor thisP = a[cnta];
-			for (int cntb = 0; cntb < b.length; cntb++)
+			for (int cntb = 0; cntb < bLen; cntb++)
 			{
 				final PropertyDescriptor thatP = b[cntb];
 				if (thisP.equals(thatP))
@@ -666,7 +698,9 @@ public class RightClickSupport
 
 		public void run()
 		{
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
+		  final int len = _subjects.length;
+		  
+			for (int cnt = 0; cnt < len; cnt++)
 			{
 				final Editable thisSubject = _subjects[cnt];
 				try
@@ -1413,7 +1447,7 @@ public class RightClickSupport
 			assertEquals("found right matches", 1, props.length);
 			props = RightClickSupport.getCommonPropertiesFor(lst4);
 			assertNotNull("found some data", props);
-			assertEquals("found right matches", 9, props.length);
+			assertEquals("found right matches", 10, props.length);
 			props = RightClickSupport.getCommonPropertiesFor(lst5);
 			assertNotNull("found some data", props);
 			assertEquals("found right matches", 13, props.length);

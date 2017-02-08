@@ -216,7 +216,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 	{
 		Color res = null;
 		// just return the color of the first item
-		if (size() > 0)
+		if (!isEmpty())
 		{
 			Editable first = this.elements().nextElement();
 			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first;
@@ -230,7 +230,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 	{
 		HiResDate res = null;
 		// just return the color of the first item
-		if (size() > 0)
+    if (!isEmpty())
 		{
 			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first();
 			res = dsw.getStartDTG();
@@ -243,7 +243,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 	{
 		HiResDate res = null;
 		// just return the color of the first item
-		if (size() > 0)
+    if (!isEmpty())
 		{
 			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first();
 			res = dsw.getEndDTG();
@@ -257,9 +257,9 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 
 		Watchable[] res = new Watchable[] {};
 
-		// just check it's worth testing
-		if (size() > 0)
-		{
+    // just check it's worth testing
+    if (!isEmpty())
+    {
 			final ShapeWrapper firstS = (ShapeWrapper) first();
 			if (firstS.getStartDTG().lessThanOrEqualTo(DTG))
 			{
@@ -335,7 +335,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 		Vector<Editable> list = new Vector<Editable>();
 
 		// just check it's worth testing
-		if (size() > 0)
+    if (!isEmpty())
 		{
 			if (((ShapeWrapper) first()).getStartDTG().lessThanOrEqualTo(end))
 			{

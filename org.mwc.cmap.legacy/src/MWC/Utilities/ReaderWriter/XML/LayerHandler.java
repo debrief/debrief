@@ -182,14 +182,14 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		return new MWC.GUI.BaseLayer();
 	}
 
-	public void addThis(final MWC.GUI.Plottable plottable)
+	public void addThis(final Editable editable)
 	{
-		_myLayer.add(plottable);
+		_myLayer.add(editable);
 		
 		// is this an item that wants to know about the layers object?
-		if (plottable instanceof NeedsToKnowAboutLayers)
+		if (editable instanceof NeedsToKnowAboutLayers)
 		{
-			final NeedsToKnowAboutLayers theL = (NeedsToKnowAboutLayers) plottable;
+			final NeedsToKnowAboutLayers theL = (NeedsToKnowAboutLayers) editable;
 			theL.setLayers(_theLayers);
 		}
 

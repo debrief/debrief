@@ -1,0 +1,2241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot xmlns="http://www.debrief.info/plot" Created="Tue Jan 24 10:50:36 GMT 2017" Name="Debrief Plot" PlotId="1485254274866">
+<details Text="Saved with Debrief version dated Tue Jan 24 10:20:54 GMT 2017"/>
+<session>
+<layers>
+<track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="3" LinkPositions="true" Name="OWNSHIP" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
+<colour Value="BLUE"/>
+<SymbolColor Value="BLUE"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<sensor LineThickness="1" Name="s0b8bb.cs2" TrackName="OWNSHIP" Visible="true" WormInHole="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+<sensor_contact AmbiguousBearing="0.000" Bearing="167.566" Dtg="000101 033130" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033129.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="167.951" Dtg="000101 033200" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033159.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="169.441" Dtg="000101 033230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033229.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="169.646" Dtg="000101 033300" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033259.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="170.095" Dtg="000101 033330" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033329.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="170.566" Dtg="000101 033400" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033359.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="171.404" Dtg="000101 033430" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033429.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="172.021" Dtg="000101 033500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033459.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="172.757" Dtg="000101 033530" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033529.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="173.250" Dtg="000101 033600" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033559.068" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="173.767" Dtg="000101 033630" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033629.068" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="174.391" Dtg="000101 033700" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033659.068" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="174.958" Dtg="000101 033730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033729.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="175.839" Dtg="000101 033800" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033759.068" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="176.485" Dtg="000101 033830" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033829.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="177.282" Dtg="000101 033900" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033859.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="177.660" Dtg="000101 033930" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033929.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="178.444" Dtg="000101 034000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 033959.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="179.090" Dtg="000101 034030" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034029.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="179.671" Dtg="000101 034100" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034059.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-179.482" Dtg="000101 034130" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034129.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-178.846" Dtg="000101 034200" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034159.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-178.363" Dtg="000101 034230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034229.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-177.853" Dtg="000101 034300" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034259.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-177.173" Dtg="000101 034330" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034329.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-175.994" Dtg="000101 034400" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034359.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-175.115" Dtg="000101 034430" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034429.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-174.628" Dtg="000101 034500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034459.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-174.019" Dtg="000101 034530" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034529.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-173.208" Dtg="000101 034600" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034559.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-172.378" Dtg="000101 034630" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034629.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-171.790" Dtg="000101 034700" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034659.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-170.932" Dtg="000101 034730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034729.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-170.251" Dtg="000101 034800" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034759.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-169.526" Dtg="000101 034830" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034829.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-168.751" Dtg="000101 034900" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034859.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-168.123" Dtg="000101 034930" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034929.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-167.354" Dtg="000101 035000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 034959.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-166.331" Dtg="000101 035030" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035029.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-165.639" Dtg="000101 035100" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035059.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-164.767" Dtg="000101 035130" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035129.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-164.272" Dtg="000101 035200" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035159.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-163.407" Dtg="000101 035230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035229.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-162.441" Dtg="000101 035300" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035259.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-161.783" Dtg="000101 035330" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035329.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-161.074" Dtg="000101 035400" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035359.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-159.886" Dtg="000101 035430" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035429.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-158.873" Dtg="000101 035500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035459.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-158.367" Dtg="000101 035530" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035529.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-157.495" Dtg="000101 035600" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035559.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-156.606" Dtg="000101 035630" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035629.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-155.920" Dtg="000101 035700" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035659.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-154.829" Dtg="000101 035730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035729.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-153.856" Dtg="000101 035800" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035759.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-152.983" Dtg="000101 035830" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035829.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-152.355" Dtg="000101 035900" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035859.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-151.561" Dtg="000101 035930" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035929.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-151.010" Dtg="000101 040000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 035959.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-149.650" Dtg="000101 040030" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040029.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-149.143" Dtg="000101 040100" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040059.067" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-148.211" Dtg="000101 040130" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040129.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-147.211" Dtg="000101 040200" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040159.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-146.283" Dtg="000101 040230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040229.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-145.550" Dtg="000101 040300" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040259.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-145.102" Dtg="000101 040330" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040329.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-144.119" Dtg="000101 040400" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040359.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-143.220" Dtg="000101 040430" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040429.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-143.185" Dtg="000101 040500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040459.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-141.704" Dtg="000101 040530" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040529.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-140.562" Dtg="000101 040600" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040559.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-139.975" Dtg="000101 040630" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040629.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-139.124" Dtg="000101 040700" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040659.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-138.346" Dtg="000101 040730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040729.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-137.360" Dtg="000101 040800" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040759.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-137.276" Dtg="000101 040830" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040829.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-135.746" Dtg="000101 040900" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040859.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-135.333" Dtg="000101 040930" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040929.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-134.338" Dtg="000101 041000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 040959.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-133.295" Dtg="000101 041030" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041025.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-132.577" Dtg="000101 041100" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041025.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-131.860" Dtg="000101 041130" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041025.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-131.143" Dtg="000101 041200" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041025.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-130.278" Dtg="000101 041230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041229.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-129.278" Dtg="000101 041300" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041259.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-128.344" Dtg="000101 041330" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041329.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-127.832" Dtg="000101 041400" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041359.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-127.107" Dtg="000101 041430" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041429.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-126.345" Dtg="000101 041500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041459.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-125.408" Dtg="000101 041530" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041529.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-124.500" Dtg="000101 041600" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041559.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-123.883" Dtg="000101 041630" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041629.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-123.195" Dtg="000101 041700" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041659.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-122.528" Dtg="000101 041730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041729.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-122.176" Dtg="000101 041800" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041759.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-121.210" Dtg="000101 041830" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041829.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-120.267" Dtg="000101 041900" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041859.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-120.115" Dtg="000101 041930" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041929.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-119.318" Dtg="000101 042000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 041959.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-118.507" Dtg="000101 042030" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042029.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-117.995" Dtg="000101 042100" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042059.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-117.689" Dtg="000101 042130" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042129.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-117.710" Dtg="000101 042200" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042159.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-117.360" Dtg="000101 042230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042229.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-117.094" Dtg="000101 042300" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042259.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-117.238" Dtg="000101 042330" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042329.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-117.010" Dtg="000101 042400" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042359.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.633" Dtg="000101 042430" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042429.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.740" Dtg="000101 042500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042459.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.403" Dtg="000101 042530" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042529.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.296" Dtg="000101 042600" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042559.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.158" Dtg="000101 042630" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042629.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-115.854" Dtg="000101 042700" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042659.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-115.820" Dtg="000101 042730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042729.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-115.777" Dtg="000101 042800" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042759.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-115.560" Dtg="000101 042830" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042829.066" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-115.071" Dtg="000101 042900" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042859.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-114.720" Dtg="000101 042930" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="true" Label="000101 042929.065" LabelLocation="Left" LabelShowing="false" LineStyle="Long_Dashes" PutLabelAt="Middle" Visible="true">
+<colour CustomBlue="179" CustomGreen="168" CustomRed="36" Value="custom"/>
+</sensor_contact>
+</sensor>
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
+<fix ArrowShowing="false" Course="60.300" Dtg="000101 032930" Label="0329" LabelFormat="ddHHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.935" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.800" Lat="0.2429307" Long="0.0918058"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="59.900" Dtg="000101 033000" Label="0330" LabelFormat="ddHHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.935" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.500" Lat="0.2434509" Long="0.0927696"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="60.100" Dtg="000101 033030" Label="0330" LabelFormat="ddHHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.935" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.200" Lat="0.2439818" Long="0.0937263"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="59.900" Dtg="000101 033100" Label="0331" LabelFormat="ddHHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.897" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.400" Lat="0.2445164" Long="0.0946820"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="60.200" Dtg="000101 033130" Label="0331" LabelFormat="ddHHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.935" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.2450428" Long="0.0956422"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="64.400" Dtg="000101 033200" Label="0332" LabelFormat="ddHHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.806" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.500" Lat="0.2455756" Long="0.0966015"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="97.200" Dtg="000101 033230" Label="0332" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.365" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.500" Lat="0.2458141" Long="0.0976284"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="106.100" Dtg="000101 033300" Label="0333" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.388" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="91.100" Lat="0.2455990" Long="0.0986111"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 033330" Label="0333" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.176" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="91.300" Lat="0.2453128" Long="0.0995830"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 033400" Label="0334" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.955" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.900" Lat="0.2450365" Long="0.1005136"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="104.900" Dtg="000101 033430" Label="0334" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.758" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.2447765" Long="0.1014171"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 033500" Label="0335" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.568" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.600" Lat="0.2445254" Long="0.1022936"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 033530" Label="0335" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.477" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.2442770" Long="0.1031513"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 033600" Label="0336" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.409" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.900" Lat="0.2440331" Long="0.1039945"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 033630" Label="0336" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.363" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.2437919" Long="0.1048251"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.000" Dtg="000101 033700" Label="0337" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.272" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.100" Lat="0.2435553" Long="0.1056477"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 033730" Label="0337" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.257" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.800" Lat="0.2433204" Long="0.1064639"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 033800" Label="0338" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.400" Lat="0.2430837" Long="0.1072748"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 033830" Label="0338" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.700" Lat="0.2428542" Long="0.1080829"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 033900" Label="0339" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.500" Lat="0.2426211" Long="0.1088892"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 033930" Label="0339" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.500" Lat="0.2423925" Long="0.1096929"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 034000" Label="0340" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.800" Lat="0.2421613" Long="0.1104965"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 034030" Label="0340" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.100" Lat="0.2419291" Long="0.1112975"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="104.700" Dtg="000101 034100" Label="0341" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.900" Lat="0.2416996" Long="0.1121002"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.500" Dtg="000101 034130" Label="0341" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.2414728" Long="0.1129056"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 034200" Label="0342" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.700" Lat="0.2412424" Long="0.1137084"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="104.900" Dtg="000101 034230" Label="0342" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.700" Lat="0.2410183" Long="0.1145129"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 034300" Label="0343" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.234" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.500" Lat="0.2407943" Long="0.1153157"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 034330" Label="0343" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.241" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.700" Lat="0.2405639" Long="0.1161157"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="104.800" Dtg="000101 034400" Label="0344" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.700" Lat="0.2403398" Long="0.1169166"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.700" Dtg="000101 034430" Label="0344" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.249" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.400" Lat="0.2401157" Long="0.1177122"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 034500" Label="0345" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.234" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.200" Lat="0.2398934" Long="0.1185068"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 034530" Label="0345" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.700" Lat="0.2396756" Long="0.1192988"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 034600" Label="0346" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.500" Lat="0.2394570" Long="0.1200907"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.500" Dtg="000101 034630" Label="0346" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.400" Lat="0.2392383" Long="0.1208790"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="104.800" Dtg="000101 034700" Label="0347" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.158" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.400" Lat="0.2390250" Long="0.1216674"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 034730" Label="0347" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.100" Lat="0.2388135" Long="0.1224539"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 034800" Label="0348" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.800" Lat="0.2385993" Long="0.1232468"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.200" Dtg="000101 034830" Label="0348" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.143" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.600" Lat="0.2383878" Long="0.1240261"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 034900" Label="0349" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.400" Lat="0.2381791" Long="0.1248109"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.500" Dtg="000101 034930" Label="0349" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="90.500" Lat="0.2379694" Long="0.1255974"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.600" Dtg="000101 035000" Label="0350" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="91.400" Lat="0.2377489" Long="0.1263929"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 035030" Label="0350" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.143" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="91.500" Lat="0.2375374" Long="0.1271786"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 035100" Label="0351" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.800" Lat="0.2373250" Long="0.1279525"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.000" Dtg="000101 035130" Label="0351" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="91.800" Lat="0.2371090" Long="0.1287508"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 035200" Label="0352" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="91.200" Lat="0.2368985" Long="0.1295382"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.400" Dtg="000101 035230" Label="0352" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.700" Lat="0.2366951" Long="0.1303094"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 035300" Label="0353" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.500" Lat="0.2364836" Long="0.1310978"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 035330" Label="0353" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.700" Lat="0.2362775" Long="0.1318861"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 035400" Label="0354" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.800" Lat="0.2360732" Long="0.1326781"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 035430" Label="0354" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.700" Lat="0.2358671" Long="0.1334673"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.100" Dtg="000101 035500" Label="0355" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.000" Lat="0.2356673" Long="0.1342575"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.000" Dtg="000101 035530" Label="0355" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.800" Lat="0.2354667" Long="0.1350503"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.300" Dtg="000101 035600" Label="0356" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.300" Lat="0.2352651" Long="0.1358404"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="105.000" Dtg="000101 035630" Label="0356" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.500" Lat="0.2350653" Long="0.1366324"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="107.600" Dtg="000101 035700" Label="0357" LabelFormat="ddHHmm.ss" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.900" Lat="0.2348628" Long="0.1374234"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="128.900" Dtg="000101 035730" Label="0357" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="5.953" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.300" Lat="0.2345325" Long="0.1381416"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="133.600" Dtg="000101 035800" Label="0358" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="5.908" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.200" Lat="0.2340313" Long="0.1387085"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.600" Dtg="000101 035830" Label="0358" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="5.976" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.900" Lat="0.2335048" Long="0.1392458"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 035900" Label="0359" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.021" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.300" Lat="0.2329666" Long="0.1397803"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 035930" Label="0359" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.044" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.600" Lat="0.2324258" Long="0.1403212"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.600" Dtg="000101 040000" Label="0400" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.097" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.300" Lat="0.2318768" Long="0.1408639"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="134.800" Dtg="000101 040030" Label="0400" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.112" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.100" Lat="0.2313288" Long="0.1414119"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.600" Dtg="000101 040100" Label="0401" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.143" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.400" Lat="0.2307780" Long="0.1419627"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 040130" Label="0401" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.158" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.200" Lat="0.2302236" Long="0.1425116"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 040200" Label="0402" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.158" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.500" Lat="0.2296684" Long="0.1430642"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 040230" Label="0402" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.158" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.100" Lat="0.2291113" Long="0.1436159"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 040300" Label="0403" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.000" Lat="0.2285525" Long="0.1441675"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.000" Dtg="000101 040330" Label="0403" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.100" Lat="0.2279927" Long="0.1447192"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 040400" Label="0404" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.181" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.800" Lat="0.2274357" Long="0.1452735"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 040430" Label="0404" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.300" Lat="0.2268750" Long="0.1458261"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.000" Dtg="000101 040500" Label="0405" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.600" Lat="0.2263161" Long="0.1463814"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.000" Dtg="000101 040530" Label="0405" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.100" Lat="0.2257600" Long="0.1469393"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 040600" Label="0406" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.900" Lat="0.2252029" Long="0.1474964"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="134.900" Dtg="000101 040630" Label="0406" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.500" Lat="0.2246504" Long="0.1480588"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 040700" Label="0407" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.300" Lat="0.2240942" Long="0.1486168"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.700" Dtg="000101 040730" Label="0407" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.500" Lat="0.2235380" Long="0.1491774"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 040800" Label="0408" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.211" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.400" Lat="0.2229765" Long="0.1497336"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 040830" Label="0408" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.300" Lat="0.2224185" Long="0.1502916"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 040900" Label="0409" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="83.600" Lat="0.2218570" Long="0.1508495"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.500" Dtg="000101 040930" Label="0409" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="83.000" Lat="0.2212963" Long="0.1514075"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 041000" Label="0410" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="82.900" Lat="0.2207347" Long="0.1519663"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 041030" Label="0410" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="83.300" Lat="0.2201723" Long="0.1525243"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 041100" Label="0411" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="82.300" Lat="0.2196089" Long="0.1530814"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 041130" Label="0411" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="82.100" Lat="0.2190447" Long="0.1536384"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.700" Dtg="000101 041200" Label="0412" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="81.600" Lat="0.2184804" Long="0.1541946"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 041230" Label="0412" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="80.800" Lat="0.2179135" Long="0.1547480"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 041300" Label="0413" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="80.900" Lat="0.2173483" Long="0.1553024"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 041330" Label="0413" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="79.900" Lat="0.2167876" Long="0.1558631"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.000" Dtg="000101 041400" Label="0414" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="79.100" Lat="0.2162270" Long="0.1564219"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 041430" Label="0414" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="79.000" Lat="0.2156672" Long="0.1569817"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 041500" Label="0415" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="78.400" Lat="0.2151093" Long="0.1575432"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.500" Dtg="000101 041530" Label="0415" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="77.600" Lat="0.2145486" Long="0.1581012"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.000" Dtg="000101 041600" Label="0416" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="77.000" Lat="0.2139879" Long="0.1586555"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 041630" Label="0416" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="75.800" Lat="0.2134327" Long="0.1592198"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.600" Dtg="000101 041700" Label="0417" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="87.700" Lat="0.2128612" Long="0.1597301"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="134.900" Dtg="000101 041730" Label="0417" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.100" Lat="0.2123051" Long="0.1602853"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 041800" Label="0418" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.000" Lat="0.2117516" Long="0.1608406"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 041830" Label="0418" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.143" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="87.500" Lat="0.2111955" Long="0.1613967"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 041900" Label="0419" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.158" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="87.500" Lat="0.2106402" Long="0.1619520"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.600" Dtg="000101 041930" Label="0419" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="87.700" Lat="0.2100804" Long="0.1625091"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 042000" Label="0420" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="87.900" Lat="0.2095207" Long="0.1630652"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 042030" Label="0420" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.300" Lat="0.2089636" Long="0.1636241"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 042100" Label="0421" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.400" Lat="0.2084048" Long="0.1641784"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 042130" Label="0421" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.600" Lat="0.2078513" Long="0.1647355"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 042200" Label="0422" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.900" Lat="0.2073005" Long="0.1652944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 042230" Label="0422" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.204" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.700" Lat="0.2067498" Long="0.1658487"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 042300" Label="0423" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.900" Lat="0.2061999" Long="0.1664049"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="134.800" Dtg="000101 042330" Label="0423" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.600" Lat="0.2056555" Long="0.1669673"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 042400" Label="0424" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.500" Lat="0.2051128" Long="0.1675298"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.500" Dtg="000101 042430" Label="0424" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.188" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.900" Lat="0.2045665" Long="0.1680886"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.300" Dtg="000101 042500" Label="0425" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.500" Lat="0.2040203" Long="0.1686448"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.500" Dtg="000101 042530" Label="0425" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.800" Lat="0.2034758" Long="0.1692028"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.400" Dtg="000101 042600" Label="0426" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.300" Lat="0.2029260" Long="0.1697679"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 042630" Label="0426" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.600" Lat="0.2023842" Long="0.1703241"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.500" Dtg="000101 042700" Label="0427" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.500" Lat="0.2018370" Long="0.1708910"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.200" Dtg="000101 042730" Label="0427" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="88.800" Lat="0.2012917" Long="0.1714436"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.100" Dtg="000101 042800" Label="0428" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.100" Lat="0.2007463" Long="0.1720052"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="135.000" Dtg="000101 042830" Label="0428" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.166" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.000" Lat="0.2002019" Long="0.1725685"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="136.000" Dtg="000101 042900" Label="0429" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.226" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.000" Lat="0.1996538" Long="0.1731346"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="136.700" Dtg="000101 042930" Label="0429" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="7.418" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.700" Lat="0.1990122" Long="0.1737303"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="149.000" Dtg="000101 043000" Label="0430" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="8.626" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.500" Lat="0.1982067" Long="0.1744899"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="214.400" Dtg="000101 043030" Label="0430" LabelFormat="ddHHmm.ss" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="6.591" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="89.800" Lat="0.1971907" Long="0.1745826"/>
+</centre>
+</fix>
+</TrackSegment>
+</track>
+<track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="3" LinkPositions="true" Name="TMA_010331.30" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="true">
+<colour CustomBlue="0" CustomGreen="0" CustomRed="255" Value="custom"/>
+<SymbolColor Value="CYAN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<RelativeTMASegment BaseFrequency="0.000" CourseDegs="300.671" HostSensor="s0b8bb.cs2" HostTrack="OWNSHIP" LineStyle="Solid" Name="010331.30" Visible="true">
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033130" Label="0331.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0885850" Long="0.1297148"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033200" Label="0332.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0891282" Long="0.1287989"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033230" Label="0332.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0896714" Long="0.1278830"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033300" Label="0333.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0902146" Long="0.1269671"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033330" Label="0333.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0907578" Long="0.1260511"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033400" Label="0334.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0913011" Long="0.1251352"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033430" Label="0334.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0918443" Long="0.1242193"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033500" Label="0335.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0923875" Long="0.1233034"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033530" Label="0335.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0929307" Long="0.1223875"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033600" Label="0336.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0934739" Long="0.1214716"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033630" Label="0336.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0940171" Long="0.1205556"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033700" Label="0337.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0945603" Long="0.1196397"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033730" Label="0337.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0951036" Long="0.1187238"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033800" Label="0338.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0956468" Long="0.1178079"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033830" Label="0338.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0961900" Long="0.1168920"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033900" Label="0339.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0967332" Long="0.1159761"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 033930" Label="0339.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0972764" Long="0.1150601"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034000" Label="0340.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0978196" Long="0.1141442"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034030" Label="0340.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0983628" Long="0.1132283"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034100" Label="0341.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0989060" Long="0.1123124"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034130" Label="0341.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0994493" Long="0.1113965"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034200" Label="0342.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.0999925" Long="0.1104805"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034230" Label="0342.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1005357" Long="0.1095646"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034300" Label="0343.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1010789" Long="0.1086487"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034330" Label="0343.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1016221" Long="0.1077328"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034400" Label="0344.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1021653" Long="0.1068169"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034430" Label="0344.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1027085" Long="0.1059010"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034500" Label="0345.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1032517" Long="0.1049850"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034530" Label="0345.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1037950" Long="0.1040691"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034600" Label="0346.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1043382" Long="0.1031532"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034630" Label="0346.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1048814" Long="0.1022373"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034700" Label="0347.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1054246" Long="0.1013214"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034730" Label="0347.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1059678" Long="0.1004055"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034800" Label="0348.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1065110" Long="0.0994895"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034830" Label="0348.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1070542" Long="0.0985736"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034900" Label="0349.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1075975" Long="0.0976577"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 034930" Label="0349.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1081407" Long="0.0967418"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035000" Label="0350.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1086839" Long="0.0958259"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035030" Label="0350.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1092271" Long="0.0949100"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035100" Label="0351.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1097703" Long="0.0939940"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035130" Label="0351.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1103135" Long="0.0930781"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035200" Label="0352.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1108567" Long="0.0921622"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035230" Label="0352.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1113999" Long="0.0912463"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035300" Label="0353.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1119432" Long="0.0903304"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035330" Label="0353.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1124864" Long="0.0894145"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035400" Label="0354.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1130296" Long="0.0884985"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035430" Label="0354.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1135728" Long="0.0875826"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035500" Label="0355.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1141160" Long="0.0866667"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035530" Label="0355.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1146592" Long="0.0857508"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035600" Label="0356.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1152024" Long="0.0848349"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035630" Label="0356.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1157456" Long="0.0839189"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035700" Label="0357.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1162889" Long="0.0830030"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035730" Label="0357.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1168321" Long="0.0820871"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035800" Label="0358.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1173753" Long="0.0811712"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035830" Label="0358.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1179185" Long="0.0802553"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035900" Label="0359.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1184617" Long="0.0793394"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 035930" Label="0359.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1190049" Long="0.0784234"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040000" Label="0400.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1195481" Long="0.0775075"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040030" Label="0400.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1200914" Long="0.0765916"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040100" Label="0401.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1206346" Long="0.0756757"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040130" Label="0401.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1211778" Long="0.0747598"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040200" Label="0402.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1217210" Long="0.0738438"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040230" Label="0402.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1222642" Long="0.0729279"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040300" Label="0403.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1228074" Long="0.0720120"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040330" Label="0403.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1233506" Long="0.0710961"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040400" Label="0404.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1238938" Long="0.0701802"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040430" Label="0404.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1244371" Long="0.0692643"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040500" Label="0405.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1249803" Long="0.0683483"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040530" Label="0405.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1255235" Long="0.0674324"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040600" Label="0406.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1260667" Long="0.0665165"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040630" Label="0406.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1266099" Long="0.0656006"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040700" Label="0407.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1271531" Long="0.0646847"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040730" Label="0407.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1276963" Long="0.0637688"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040800" Label="0408.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1282395" Long="0.0628528"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040830" Label="0408.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1287828" Long="0.0619369"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040900" Label="0409.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1293260" Long="0.0610210"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 040930" Label="0409.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1298692" Long="0.0601051"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041000" Label="0410.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1304124" Long="0.0591892"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041030" Label="0410.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1309556" Long="0.0582732"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041100" Label="0411.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1314988" Long="0.0573573"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041130" Label="0411.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1320420" Long="0.0564414"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041200" Label="0412.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1325853" Long="0.0555255"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041230" Label="0412.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1331285" Long="0.0546096"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041300" Label="0413.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1336717" Long="0.0536937"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041330" Label="0413.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1342149" Long="0.0527777"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041400" Label="0414.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1347581" Long="0.0518618"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041430" Label="0414.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1353013" Long="0.0509459"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041500" Label="0415.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1358445" Long="0.0500300"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041530" Label="0415.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1363877" Long="0.0491141"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041600" Label="0416.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1369310" Long="0.0481981"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041630" Label="0416.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1374742" Long="0.0472822"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041700" Label="0417.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1380174" Long="0.0463663"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041730" Label="0417.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1385606" Long="0.0454504"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041800" Label="0418.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1391038" Long="0.0445345"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041830" Label="0418.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1396470" Long="0.0436185"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.671" Dtg="000101 041900" Label="0419.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.667" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="90.300" Lat="0.1401902" Long="0.0427026"/>
+</centre>
+</fix>
+<Speed Units="kts" Value="7.667"/>
+<Offset BearingDegs="167.714">
+<Range Units="degs" Value="0.1601249"/>
+</Offset>
+</RelativeTMASegment>
+<RelativeTMASegment BaseFrequency="0.000" CourseDegs="79.627" HostSensor="s0b8bb.cs2" HostTrack="OWNSHIP" LineStyle="Solid" Name="010423.00" Visible="true">
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042300" Label="0423.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1443157" Long="0.0465007"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042330" Label="0423.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1445170" Long="0.0476001"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042400" Label="0424.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1447182" Long="0.0486995"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042430" Label="0424.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1449195" Long="0.0497990"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042500" Label="0425.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1451207" Long="0.0508984"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042530" Label="0425.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1453219" Long="0.0519978"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042600" Label="0426.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1455232" Long="0.0530973"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042630" Label="0426.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1457244" Long="0.0541967"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042700" Label="0427.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1459257" Long="0.0552961"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042730" Label="0427.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1461269" Long="0.0563956"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042800" Label="0428.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1463282" Long="0.0574950"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042830" Label="0428.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1465294" Long="0.0585944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042900" Label="0429.00" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1467306" Long="0.0596939"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.627" Dtg="000101 042930" Label="0429.30" LabelFormat="HHmm.ss" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.047" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="0.1469319" Long="0.0607933"/>
+</centre>
+</fix>
+<Speed Units="kts" Value="8.047"/>
+<Offset BearingDegs="-117.299">
+<Range Units="degs" Value="0.1349316"/>
+</Offset>
+</RelativeTMASegment>
+<SegmentList/>
+</track>
+<track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="3" LinkPositions="true" Name="SOURCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
+<colour Value="ORANGE"/>
+<SymbolColor Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
+<fix ArrowShowing="false" Course="302.400" Dtg="000101 032930" Label="0329" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.200" Lat="0.0851967" Long="0.1339362"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.300" Dtg="000101 033000" Label="0330" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.600" Lat="0.0857591" Long="0.1330560"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.400" Dtg="000101 033030" Label="0330" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.200" Lat="0.0863180" Long="0.1321642"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.600" Dtg="000101 033100" Label="0331" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.300" Lat="0.0868571" Long="0.1312724"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="303.300" Dtg="000101 033130" Label="0331" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.800" Lat="0.0874069" Long="0.1304003"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.200" Dtg="000101 033200" Label="0332" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.500" Lat="0.0879856" Long="0.1295274"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.800" Dtg="000101 033230" Label="0332" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.000" Lat="0.0885273" Long="0.1286626"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="304.000" Dtg="000101 033300" Label="0333" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.700" Lat="0.0891078" Long="0.1277977"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.400" Dtg="000101 033330" Label="0333" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.400" Lat="0.0896892" Long="0.1269068"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.800" Dtg="000101 033400" Label="0334" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.200" Lat="0.0902453" Long="0.1260150"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.300" Dtg="000101 033430" Label="0334" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.100" Lat="0.0907970" Long="0.1251348"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="304.200" Dtg="000101 033500" Label="0335" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.700" Lat="0.0913765" Long="0.1242655"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.400" Dtg="000101 033530" Label="0335" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.300" Lat="0.0919624" Long="0.1233773"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.300" Dtg="000101 033600" Label="0336" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.400" Lat="0.0925158" Long="0.1224863"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.500" Dtg="000101 033630" Label="0336" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.900" Lat="0.0930468" Long="0.1215936"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.500" Dtg="000101 033700" Label="0337" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.192" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.200" Lat="0.0935850" Long="0.1207234"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="304.400" Dtg="000101 033730" Label="0337" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.600" Lat="0.0941357" Long="0.1198729"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="304.100" Dtg="000101 033800" Label="0338" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.200" Lat="0.0947261" Long="0.1190180"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.200" Dtg="000101 033830" Label="0338" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.200" Lat="0.0952894" Long="0.1181261"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.900" Dtg="000101 033900" Label="0339" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.100" Lat="0.0958141" Long="0.1172208"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.500" Dtg="000101 033930" Label="0339" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.100" Lat="0.0963730" Long="0.1163074"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.600" Dtg="000101 034000" Label="0340" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.000" Lat="0.0969201" Long="0.1153868"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.500" Dtg="000101 034030" Label="0340" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.200" Lat="0.0974691" Long="0.1144661"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.100" Dtg="000101 034100" Label="0341" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.400" Lat="0.0980189" Long="0.1135644"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="303.500" Dtg="000101 034130" Label="0341" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.100" Lat="0.0985823" Long="0.1126834"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.400" Dtg="000101 034200" Label="0342" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.300" Lat="0.0991700" Long="0.1118014"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.300" Dtg="000101 034230" Label="0342" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.900" Lat="0.0997234" Long="0.1109096"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.300" Dtg="000101 034300" Label="0343" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.500" Lat="0.1002688" Long="0.1100142"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.500" Dtg="000101 034330" Label="0343" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.600" Lat="0.1008186" Long="0.1091250"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.400" Dtg="000101 034400" Label="0344" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.000" Lat="0.1013478" Long="0.1082377"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.300" Dtg="000101 034430" Label="0344" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.600" Lat="0.1018968" Long="0.1073170"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.100" Dtg="000101 034500" Label="0345" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.400" Lat="0.1024403" Long="0.1063856"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.900" Dtg="000101 034530" Label="0345" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.800" Lat="0.1029578" Long="0.1054632"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.100" Dtg="000101 034600" Label="0346" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.100" Lat="0.1034842" Long="0.1045597"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="303.000" Dtg="000101 034630" Label="0346" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.700" Lat="0.1040467" Long="0.1036732"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.400" Dtg="000101 034700" Label="0347" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.800" Lat="0.1046190" Long="0.1027733"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.600" Dtg="000101 034730" Label="0347" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.800" Lat="0.1051680" Long="0.1018536"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.100" Dtg="000101 034800" Label="0348" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.300" Lat="0.1057134" Long="0.1009383"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.500" Dtg="000101 034830" Label="0348" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.200" Lat="0.1062533" Long="0.1000420"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.100" Dtg="000101 034900" Label="0349" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.500" Lat="0.1068077" Long="0.0991430"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.300" Dtg="000101 034930" Label="0349" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.600" Lat="0.1073692" Long="0.0982304"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.300" Dtg="000101 035000" Label="0350" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.700" Lat="0.1079137" Long="0.0973251"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.300" Dtg="000101 035030" Label="0350" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.400" Lat="0.1084708" Long="0.0964135"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.400" Dtg="000101 035100" Label="0351" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.500" Lat="0.1090485" Long="0.0954919"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.500" Dtg="000101 035130" Label="0351" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.600" Lat="0.1096290" Long="0.0945641"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.300" Dtg="000101 035200" Label="0352" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.800" Lat="0.1102040" Long="0.0936417"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.900" Dtg="000101 035230" Label="0352" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.900" Lat="0.1107845" Long="0.0927156"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.400" Dtg="000101 035300" Label="0353" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.800" Lat="0.1113524" Long="0.0917932"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.700" Dtg="000101 035330" Label="0353" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.400" Lat="0.1119292" Long="0.0908699"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.800" Dtg="000101 035400" Label="0354" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.500" Lat="0.1125124" Long="0.0899492"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.600" Dtg="000101 035430" Label="0354" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.100" Lat="0.1130694" Long="0.0890295"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.400" Dtg="000101 035500" Label="0355" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.600" Lat="0.1136472" Long="0.0881134"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.900" Dtg="000101 035530" Label="0355" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.200" Lat="0.1142186" Long="0.0871873"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.500" Dtg="000101 035600" Label="0356" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.300" Lat="0.1147640" Long="0.0862640"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.100" Dtg="000101 035630" Label="0356" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.100" Lat="0.1153157" Long="0.0853425"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.500" Dtg="000101 035700" Label="0357" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.900" Lat="0.1158772" Long="0.0844317"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.000" Dtg="000101 035730" Label="0357" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.300" Lat="0.1164532" Long="0.0835246"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="303.100" Dtg="000101 035800" Label="0358" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.300" Lat="0.1170291" Long="0.0826166"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.400" Dtg="000101 035830" Label="0358" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.200" Lat="0.1176285" Long="0.0817022"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.400" Dtg="000101 035900" Label="0359" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.700" Lat="0.1182053" Long="0.0807780"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.100" Dtg="000101 035930" Label="0359" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.400" Lat="0.1187678" Long="0.0798556"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.900" Dtg="000101 040000" Label="0400" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.000" Lat="0.1193141" Long="0.0789278"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.600" Dtg="000101 040030" Label="0400" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.700" Lat="0.1198459" Long="0.0779864"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.300" Dtg="000101 040100" Label="0401" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.400" Lat="0.1203868" Long="0.0770487"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.100" Dtg="000101 040130" Label="0401" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.500" Lat="0.1209258" Long="0.0761029"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.000" Dtg="000101 040200" Label="0402" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.200" Lat="0.1214559" Long="0.0751615"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.800" Dtg="000101 040230" Label="0402" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.700" Lat="0.1220094" Long="0.0742049"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.700" Dtg="000101 040300" Label="0403" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.000" Lat="0.1225547" Long="0.0732483"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.600" Dtg="000101 040330" Label="0403" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.000" Lat="0.1231073" Long="0.0723024"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.600" Dtg="000101 040400" Label="0404" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.000" Lat="0.1236670" Long="0.0713404"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.000" Dtg="000101 040430" Label="0404" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.300" Lat="0.1242043" Long="0.0703802"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.800" Dtg="000101 040500" Label="0405" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.000" Lat="0.1247470" Long="0.0694218"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.400" Dtg="000101 040530" Label="0405" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.000" Lat="0.1252941" Long="0.0684642"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.500" Dtg="000101 040600" Label="0406" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.000" Lat="0.1258440" Long="0.0675058"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.000" Dtg="000101 040630" Label="0406" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.200" Lat="0.1264001" Long="0.0665474"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.400" Dtg="000101 040700" Label="0407" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.200" Lat="0.1269563" Long="0.0655907"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.600" Dtg="000101 040730" Label="0407" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.100" Lat="0.1275134" Long="0.0646314"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.400" Dtg="000101 040800" Label="0408" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.400" Lat="0.1280605" Long="0.0636631"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.500" Dtg="000101 040830" Label="0408" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.100" Lat="0.1286023" Long="0.0626921"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="299.800" Dtg="000101 040900" Label="0409" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.800" Lat="0.1291485" Long="0.0617282"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.200" Dtg="000101 040930" Label="0409" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.200" Lat="0.1297011" Long="0.0607761"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.100" Dtg="000101 041000" Label="0410" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.500" Lat="0.1302555" Long="0.0598213"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.700" Dtg="000101 041030" Label="0410" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.300" Lat="0.1308242" Long="0.0588745"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.300" Dtg="000101 041100" Label="0411" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.400" Lat="0.1314011" Long="0.0579485"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.500" Dtg="000101 041130" Label="0411" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.000" Lat="0.1320049" Long="0.0570279"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.500" Dtg="000101 041200" Label="0412" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.900" Lat="0.1325818" Long="0.0560820"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.200" Dtg="000101 041230" Label="0412" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.100" Lat="0.1331424" Long="0.0551254"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.600" Dtg="000101 041300" Label="0413" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.900" Lat="0.1337049" Long="0.0541643"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.300" Dtg="000101 041330" Label="0413" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.600" Lat="0.1342782" Long="0.0532122"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.400" Dtg="000101 041400" Label="0414" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.800" Lat="0.1348541" Long="0.0522672"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.600" Dtg="000101 041430" Label="0414" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.000" Lat="0.1354256" Long="0.0513223"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.400" Dtg="000101 041500" Label="0415" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.164" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.000" Lat="0.1360177" Long="0.0503720"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.000" Dtg="000101 041530" Label="0415" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.800" Lat="0.1365784" Long="0.0494063"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="302.000" Dtg="000101 041600" Label="0416" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.100" Lat="0.1371489" Long="0.0484497"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.000" Dtg="000101 041630" Label="0416" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.600" Lat="0.1377384" Long="0.0474976"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.700" Dtg="000101 041700" Label="0417" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.164" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.500" Lat="0.1383081" Long="0.0465356"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="301.100" Dtg="000101 041730" Label="0417" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.164" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="31.700" Lat="0.1388687" Long="0.0455852"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="300.700" Dtg="000101 041800" Label="0418" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="29.500" Lat="0.1394528" Long="0.0446178"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="303.400" Dtg="000101 041830" Label="0418" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="28.100" Lat="0.1399945" Long="0.0437179"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="315.500" Dtg="000101 041900" Label="0419" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.415" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="30.600" Lat="0.1405705" Long="0.0429916"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="334.900" Dtg="000101 041930" Label="0419" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.026" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="32.400" Lat="0.1412733" Long="0.0424877"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="348.900" Dtg="000101 042000" Label="0420" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.637" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="39.400" Lat="0.1420428" Long="0.0422690"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="26.500" Dtg="000101 042030" Label="0420" LabelFormat="HHmm" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.220" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="39.400" Lat="0.1427942" Long="0.0423374"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="69.000" Dtg="000101 042100" Label="0421" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="35.500" Lat="0.1433810" Long="0.0430258"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="76.500" Dtg="000101 042130" Label="0421" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="28.200" Lat="0.1436681" Long="0.0440193"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.400" Dtg="000101 042200" Label="0422" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.775" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="28.000" Lat="0.1439074" Long="0.0450624"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="80.500" Dtg="000101 042230" Label="0422" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.200" Lat="0.1440973" Long="0.0461360"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.300" Dtg="000101 042300" Label="0423" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.970" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.200" Lat="0.1442872" Long="0.0472258"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.500" Dtg="000101 042330" Label="0423" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.581" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.900" Lat="0.1444951" Long="0.0482949"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.800" Dtg="000101 042400" Label="0424" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.387" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="29.600" Lat="0.1447030" Long="0.0493226"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="80.300" Dtg="000101 042430" Label="0424" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.192" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="30.400" Lat="0.1448893" Long="0.0503252"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="80.600" Dtg="000101 042500" Label="0425" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.192" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="31.700" Lat="0.1450513" Long="0.0513106"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.500" Dtg="000101 042530" Label="0425" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="32.700" Lat="0.1452222" Long="0.0522816"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.800" Dtg="000101 042600" Label="0426" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.400" Lat="0.1454094" Long="0.0532455"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.500" Dtg="000101 042630" Label="0426" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.600" Lat="0.1455885" Long="0.0541949"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.500" Dtg="000101 042700" Label="0427" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.100" Lat="0.1457703" Long="0.0551443"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.600" Dtg="000101 042730" Label="0427" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.900" Lat="0.1459692" Long="0.0560955"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="79.200" Dtg="000101 042800" Label="0428" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.900" Lat="0.1461555" Long="0.0570459"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.000" Dtg="000101 042830" Label="0428" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.900" Lat="0.1463454" Long="0.0580070"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="77.300" Dtg="000101 042900" Label="0429" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.192" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.600" Lat="0.1465595" Long="0.0589726"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="77.200" Dtg="000101 042930" Label="0429" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.100" Lat="0.1467746" Long="0.0599320"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="77.200" Dtg="000101 043000" Label="0430" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.400" Lat="0.1469906" Long="0.0608724"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.200" Dtg="000101 043030" Label="0430" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.803" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.900" Lat="0.1471931" Long="0.0618047"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="78.400" Dtg="000101 043100" Label="0431" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.900" Lat="0.1473821" Long="0.0627407"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="77.300" Dtg="000101 043130" Label="0431" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.300" Lat="0.1475918" Long="0.0636946"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="76.500" Dtg="000101 043200" Label="0432" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="6.998" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.500" Lat="0.1478167" Long="0.0646530"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="76.400" Dtg="000101 043230" Label="0432" LabelFormat="HHmm" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="7.192" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.800" Lat="0.1480507" Long="0.0656078"/>
+</centre>
+</fix>
+</TrackSegment>
+</track>
+</layers>
+<projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
+<tl>
+<shortLocation Depth="91.800" Lat="0.2590454" Long="0.0290377"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="0.0719654" Long="0.1878139"/>
+</br>
+</projection>
+<gui>
+<tote>
+<primary Name="OWNSHIP"/>
+<secondary Name="TMA_010331.30"/>
+</tote>
+<component Type="Stepper">
+<property Name="GREEN" Value="64"/>
+<property Name="DateFormat" Value="ddHHmm"/>
+<property Name="ShadeArcs" Value="false"/>
+<property Name="Radius" Value="3000.000"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="RectHighlight_Size" Value="5"/>
+<property Name="RectHighlight_Color" Value="128,128,128"/>
+<property Name="BLUE" Value="64"/>
+<property Name="Arc_Finish" Value="180"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="RED" Value="64"/>
+<property Name="CurrentTime" Value="000101 032838.704"/>
+<property Name="NumRings" Value="3"/>
+<property Name="Toolbox_Start_Time" Value="991231 220000"/>
+<property Name="PointSize" Value="5"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="UseTrackColor" Value="false"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="Toolbox_End_Time" Value="000101 053700"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="JustPrimary" Value="false"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="Arcs" Value="-180"/>
+</component>
+<Background>
+<colour Value="LIGHT_GREY"/>
+</Background>
+</gui>
+</session>
+</plot>

@@ -392,7 +392,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			final MWC.GUI.Shapes.PlainShape ps = new MWC.GUI.Shapes.CircleShape(
 					new WorldLocation(2d, 2d, 2d), 12);
-			MWC.GUI.Editable ed = new ShapeWrapper("", ps, java.awt.Color.red,
+			MWC.GUI.Editable ed = new ShapeWrapper("", ps,   MWC.GUI.Properties.DebriefColors.RED,
 					new HiResDate(0));
 			editableTesterSupport.testParams(ed, this);
 			ed = null;
@@ -412,7 +412,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 				{
 					final ShapeWrapper sw = new ShapeWrapper("blank",
 							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
-							java.awt.Color.red, null)
+							  MWC.GUI.Properties.DebriefColors.RED, null)
 					{
 						/**
 						 * 
@@ -435,7 +435,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 				{
 					final ShapeWrapper sw = new ShapeWrapper("blank",
 							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
-							java.awt.Color.red, null)
+							  MWC.GUI.Properties.DebriefColors.RED, null)
 					{
 						/**
 						 * 
@@ -458,7 +458,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 				{
 					final ShapeWrapper sw = new ShapeWrapper("blank",
 							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
-							java.awt.Color.red, null)
+							  MWC.GUI.Properties.DebriefColors.RED, null)
 					{
 						/**
 						 * 

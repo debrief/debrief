@@ -69,23 +69,19 @@ import java.beans.PropertyEditorSupport;
 
 public class LabelLocationPropertyEditor extends PropertyEditorSupport
 {
-   
+
   final static public int TOP = 0;
   final static public int BOTTOM = 1;
   final static public int LEFT = 2;
   final static public int RIGHT = 3;
   final static public int ALL = 4;
 
-  
   protected Integer _myLocation;
-    
+
   public String[] getTags()
   {
-    final String tags[] = {"Top",
-                     "Bottom",
-                     "Left",
-                     "Right",
-										 "All"};
+    final String tags[] =
+    {"Top", "Bottom", "Left", "Right", "All"};
     return tags;
   }
 
@@ -94,58 +90,84 @@ public class LabelLocationPropertyEditor extends PropertyEditorSupport
     return _myLocation;
   }
 
-  
-  
+  /** find the location opposite to the specified one
+   * 
+   * @param loc
+   * @return
+   */
+  public static int oppositeFor(final int loc)
+  {
+    final int res;
+    switch (loc)
+    {
+    case TOP:
+      res = BOTTOM;
+      break;
+    case LEFT:
+      res = RIGHT;
+      break;
+    case BOTTOM:
+      res = TOP;
+      break;
+    case RIGHT:
+      res = LEFT;
+      break;
+    default:
+      res = TOP;
+    }
+
+    return res;
+  }
+
   public void setValue(final Object p1)
   {
-    if(p1 instanceof Integer)
+    if (p1 instanceof Integer)
     {
-      _myLocation = (Integer)p1;
+      _myLocation = (Integer) p1;
     }
-    if(p1 instanceof String)
+    if (p1 instanceof String)
     {
       final String val = (String) p1;
       setAsText(val);
     }
   }
-    
+
   public void setAsText(final String val)
   {
-    if(val.equals("Top"))
+    if (val.equals("Top"))
       _myLocation = new Integer(TOP);
-    if(val.equals("Bottom"))
+    if (val.equals("Bottom"))
       _myLocation = new Integer(BOTTOM);
-    if(val.equals("Left"))
+    if (val.equals("Left"))
       _myLocation = new Integer(LEFT);
-    if(val.equals("Right"))
+    if (val.equals("Right"))
       _myLocation = new Integer(RIGHT);
-		if(val.equals("All"))
-			_myLocation = new Integer(ALL);
-      
+    if (val.equals("All"))
+      _myLocation = new Integer(ALL);
+
   }
 
   public String getAsText()
   {
     String res = null;
-    switch(_myLocation.intValue())
+    switch (_myLocation.intValue())
     {
-    case(TOP):
+    case (TOP):
       res = "Top";
       break;
-    case(BOTTOM):
+    case (BOTTOM):
       res = "Bottom";
       break;
-    case(LEFT):
+    case (LEFT):
       res = "Left";
       break;
-    case(RIGHT):
+    case (RIGHT):
       res = "Right";
       break;
-		case(ALL):
-			res = "All";
-			break;
+    case (ALL):
+      res = "All";
+      break;
     }
     return res;
   }
 }
-  

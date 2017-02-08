@@ -56,7 +56,15 @@ public class FontHelper extends EditorHelper
 			super(parent);
 		}
 
-		protected Object openDialogBox(final Control cellEditorWindow)
+		@Override
+		protected void updateContents(Object value)
+		{
+		  getDefaultLabel().setText(fontToText((Font) value));
+		}
+
+
+
+    protected Object openDialogBox(final Control cellEditorWindow)
 		{
 			Font res = null;
 			final FontDialog ftDialog = new FontDialog(cellEditorWindow.getShell());
@@ -201,25 +209,7 @@ public class FontHelper extends EditorHelper
 		{
 			public String getText(final Object element)
 			{
-				final Font font = (Font) element;
-				final FontData[] datas = font.getFontData();
-
-				final FontData data = datas[0];
-
-				// sort out the font family
-				String res = data.getName();
-
-				// is it bold?
-				if (SWT.BOLD == (data.getStyle() & SWT.BOLD))
-					res += ", Bold";
-
-				// is it italic?
-				if (SWT.ITALIC == (data.getStyle() & SWT.ITALIC))
-					res += ", Italic";
-
-				// and finish the line off with the height
-				res += ", " + data.getHeight();
-				return res;
+				return fontToText((Font) element);
 			}
 
 			public Image getImage(final Object element)
@@ -230,5 +220,32 @@ public class FontHelper extends EditorHelper
 		};
 		return label1;
 	}
+	
+	private static String fontToText(final Font font)
+  {
+   
+    if(font==null)
+    {
+      return "";
+    }
+    final FontData[] datas = font.getFontData();
+
+    final FontData data = datas[0];
+
+    // sort out the font family
+    String res = data.getName();
+
+    // is it bold?
+    if (SWT.BOLD == (data.getStyle() & SWT.BOLD))
+      res += ", Bold";
+
+    // is it italic?
+    if (SWT.ITALIC == (data.getStyle() & SWT.ITALIC))
+      res += ", Italic";
+
+    // and finish the line off with the height
+    res += ", " + data.getHeight();
+    return res;
+  }
 
 }

@@ -1039,4 +1039,10 @@ public final class SwingApplication extends Application
     }
   }
 
+  @Override
+  public void logStack(int status, String text)
+  {
+    logError(status, "Stack requested:" + text, null);
+  }
+
 }

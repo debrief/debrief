@@ -97,6 +97,8 @@ public class CreateSolutionFromSensorData implements
 
 		BaseTimePeriod runningPeriod = null;
 
+		int sensorCounter = 0;
+		
 		for (int i = 0; i < subjects.length; i++)
 		{
 			Editable thisItem = subjects[i];
@@ -119,22 +121,35 @@ public class CreateSolutionFromSensorData implements
 			else if (thisItem instanceof SensorWrapper)
 			{
 				SensorWrapper sw = (SensorWrapper) thisItem;
+				final int numCuts = sw.size();
+				
+				sensorCounter ++;
 
-				Enumeration<Editable> cuts = sw.elements();
-				while (cuts.hasMoreElements())
-				{
-					SensorContactWrapper thisCut = (SensorContactWrapper) cuts
-							.nextElement();
-					if (thisCut.getVisible())
-					{
-						if (validCuts == null)
-							validCuts = new ArrayList<SensorContactWrapper>();
+				// only handle the first five sensors
+				if(sensorCounter <= 5 && numCuts < 2000)
+        {
+          Enumeration<Editable> cuts = sw.elements();
+          while (cuts.hasMoreElements())
+          {
+            SensorContactWrapper thisCut =
+                (SensorContactWrapper) cuts.nextElement();
+            if (thisCut.getVisible())
+            {
+              if (validCuts == null)
+                validCuts = new ArrayList<SensorContactWrapper>();
 
-						// SPECIAL PROCESSING: see above for duplicate cuts
-						if (!validCuts.contains(thisCut))
-							validCuts.add(thisCut);
-					}
+              // SPECIAL PROCESSING: see above for duplicate cuts
+              if (!validCuts.contains(thisCut))
+                validCuts.add(thisCut);
+            }
+          }
 				}
+				else
+				{
+          CorePlugin.logError(Status.WARNING,
+              "NOTE: we're only going to process the first five sensors", null);
+				}
+				  
 			}
 			else if ((thisItem instanceof ContributionWrapper)
 					|| (thisItem instanceof SATC_Solution))

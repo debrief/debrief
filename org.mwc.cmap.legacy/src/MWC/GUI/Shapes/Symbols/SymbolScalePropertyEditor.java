@@ -60,9 +60,10 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
 {
 
   // publicly accessable values used for setting scale from code
-  final public static double SMALL = 0.5;
-  final public static double MEDIUM = 1;
-  final public static double LARGE = 2;
+  final public static double SMALL = 0.75;
+  final public static double MEDIUM = 1.25;
+  final public static double LARGE = 2.5;
+  final public static double HUGE = 4;
 
   protected Double _mySize;
 
@@ -70,13 +71,15 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
   {
                      "Small",
                      "Medium",
-                     "Large"};
+                     "Large",
+                     "Huge"};
 
   private final double sizes[] =
   {
     SMALL,
     MEDIUM,
-    LARGE
+    LARGE,
+    HUGE
   };
 
 
@@ -127,6 +130,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
       if(thisS.equals(theVal))
       {
         _mySize = new Double(sizes[i]);
+        break;
       }
     }
 

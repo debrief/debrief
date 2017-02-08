@@ -21,7 +21,7 @@ import java.util.TreeSet;
 
 import MWC.TacticalData.NarrativeEntry;
 
-public abstract class ColumnFilter {
+public abstract class ColumnFilter implements EntryFilter {
 	private final TreeSet<String> myAllowedValues = new TreeSet<String>();
 	private final SortedSet<String> myAllowedValuesRO = Collections.unmodifiableSortedSet(myAllowedValues);
 

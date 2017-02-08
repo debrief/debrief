@@ -11,4 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

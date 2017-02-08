@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	
+	<extension
+		point="org.eclipse.ui.preferencePages">
+        <page
+        	category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+        	class="org.mwc.debrief.dis.ui.preferences.DisPrefs"
+            id="org.mwc.debrief.dis.preferences.DisPrefs"
+            name="DIS Preferences">
+        </page>
+    </extension>
+    
+	<extension
+         point="org.eclipse.core.runtime.preferences">
+         <scope name="DIS Preferences" class="org.mwc.debrief.dis.ui.preferences.DisPrefs"/>
+      <initializer
+            class="org.mwc.debrief.dis.ui.preferences.DisPrefsInitialiser">
+      </initializer>
+  	</extension>    
+    
+    <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.debrief.dis.ui.views.DisListenerView"
+            icon="icons/16px/dis_icon.png"
+            id="org.mwc.debrief.dis.views.DisListenerView"
+            name="DIS Listener" restorable="true">
+      </view>
+   </extension>
+    
+    <extension
+          point="org.eclipse.ui.menus">
+       <menuContribution
+             allPopups="true"
+             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="org.mwc.debrief.dis.runinsimulator"
+               icon="icons/16px/dis_icon.png"
+               label="Run In Simulator"
+               style="push"
+               tooltip="Run In Simulator">
+               <visibleWhen checkEnabled="false">
+				<with variable="activeMenuSelection">
+					<iterate ifEmpty="false">
+						<adapt type="org.eclipse.core.resources.IResource">
+						<test property="org.eclipse.core.resources.extension" value="inp" />
+						</adapt>
+					</iterate>
+				</with>
+				</visibleWhen>
+         </command>
+       </menuContribution>
+    </extension>
+    <extension
+          point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.debrief.dis.action.DISRunInSimulatorHandler"
+             id="org.mwc.debrief.dis.runinsimulator"
+             name="Run In Simulator">
+       </command>
+    </extension>    
+    <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.mwc.debrief.dis.editor.InputFileEditor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            default="true"
+            extensions="inp"
+            filenames="*.inp"
+            icon="icons/16px/dis_icon.png"
+            id="inputfile.editor"
+            name="Input File Editor">
+         <contentTypeBinding
+               contentTypeId="org.mwc.debrief.dis.inputfile">
+         </contentTypeBinding>
+      </editor>
+   </extension>
+    <extension
+          point="org.eclipse.core.contenttype.contentTypes">
+       <content-type
+             file-extensions="ins"
+             id="org.mwc.debrief.dis.inputfile"
+             name="Input File"
+             priority="high">
+       </content-type>
+    </extension>
+</plugin>

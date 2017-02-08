@@ -17,6 +17,8 @@ package ASSET.GUI.Editors;
 import java.awt.*;
 import javax.swing.*;
 
+import MWC.GUI.Properties.DebriefColors;
+
 /**
  * Title:
  * Description:
@@ -132,7 +134,7 @@ public class CourseControl extends JPanel {
     final java.awt.Point tl = new java.awt.Point(centre.x - diam/2, centre.y - diam/2);
 
 
-    graph.setColor(java.awt.Color.black);
+    graph.setColor(DebriefColors.BLACK);
 
     // draw the circle
     graph.drawOval(tl.x, tl.y, diam, diam);
@@ -151,7 +153,7 @@ public class CourseControl extends JPanel {
                                               -(int)(outerRad * cosVal));
 
     // and plot it
-    graph.setColor(java.awt.Color.black);
+    graph.setColor(DebriefColors.BLACK);
     innerCur.translate(centre.x, centre.y);
     outerCur.translate(centre.x, centre.y);
     graph.drawLine(innerCur.x, innerCur.y, outerCur.x, outerCur.y);
@@ -170,7 +172,7 @@ public class CourseControl extends JPanel {
                                                  -(int)(outerRad * cosVal));
 
     // and plot it
-    graph.setColor(java.awt.Color.red);
+    graph.setColor(DebriefColors.RED);
     innerDem.translate(centre.x, centre.y);
     outerDem.translate(centre.x, centre.y);
     graph.drawLine(innerDem.x, innerDem.y, outerDem.x, outerDem.y);

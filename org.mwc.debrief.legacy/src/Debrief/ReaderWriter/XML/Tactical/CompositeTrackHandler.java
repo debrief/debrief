@@ -104,24 +104,6 @@ public class CompositeTrackHandler extends TrackHandler
 		// and trigger a recalculation
 		comp.recalculate();
 
-		// and the symbol intervals
-		if (_symInt != null)
-		{
-			if (_symInt == -1)
-				comp.setSymbolFrequency(new HiResDate(0, _symInt));
-			else
-				comp.setSymbolFrequency(new HiResDate(_symInt));
-		}
-
-		// and the symbol intervals
-		if (_labInt != null)
-		{
-			if (_labInt == -1)
-				comp.setLabelFrequency(new HiResDate(0, _labInt));
-			else
-				comp.setLabelFrequency(new HiResDate(_labInt));
-		}
-
 		// and do some resetting
 		_origin = null;
 		_startTime = null;

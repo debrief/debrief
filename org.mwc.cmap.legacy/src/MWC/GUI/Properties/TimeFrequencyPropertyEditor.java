@@ -110,6 +110,7 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       "2 Min",
       "3 Min",
       "5 Mins",
+      "6 Mins",
       "10 Mins",
       "15 Mins",
       "30 Mins",
@@ -118,6 +119,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       "6 Hours",
       "12 Hours",
       "24 Hours",
+      "48 Hours",
+      "72 Hours",
       "None"};
 
   /**
@@ -134,6 +137,7 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       2 * 60 * 1000000l,
       3 * 60 * 1000000l,
       _5_MINS,
+      6 * 60 * 1000000l,
       _10_MINS,
       _15_MINS,
       _30_MINS,
@@ -142,6 +146,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       6 * _60_MINS,
       12 * _60_MINS,
       24 * _60_MINS,
+      48 * _60_MINS,
+      72 * _60_MINS,
       0};
 
 
@@ -209,7 +215,12 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
         res = tags[i];
         break;
       }
-
+    }
+    
+    // hmm, did we manage it?
+    if (res == null)
+    {
+      res = tags[tags.length - 2];
     }
 
     return res;

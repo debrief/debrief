@@ -84,6 +84,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import MWC.GUI.StatusBar;
+import MWC.GUI.Properties.DebriefColors;
 
 /**
  * Class providing Swing implementation of StatusBar.
@@ -177,7 +178,7 @@ public class SwingStatusBar extends JPanel implements StatusBar
     super.paint(p1);
 
     final java.awt.Rectangle rt = super.getBounds();
-    p1.setColor(java.awt.Color.lightGray);
+    p1.setColor(DebriefColors.LIGHT_GRAY);
     p1.draw3DRect(1, 1, rt.width-3, rt.height-3, false);
   }
 

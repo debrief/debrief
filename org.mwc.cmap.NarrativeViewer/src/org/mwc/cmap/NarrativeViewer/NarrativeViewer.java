@@ -16,14 +16,19 @@ package org.mwc.cmap.NarrativeViewer;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
+import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
+import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -31,258 +36,280 @@ import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
-import de.kupzog.ktable.KTable;
-import de.kupzog.ktable.KTableCellDoubleClickAdapter;
-import de.kupzog.ktable.KTableCellResizeAdapter;
-import de.kupzog.ktable.SWTX;
 
-public class NarrativeViewer extends KTable
+public class NarrativeViewer
 {
 
-	final NarrativeViewerModel myModel;
-	private NarrativeViewerActions myActions;
+  private final NarrativeViewerModel myModel;
+  private NarrativeViewerActions myActions;
 
-	public NarrativeViewer(final Composite parent, final IPreferenceStore preferenceStore)
-	{
-		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+  private final GridTableViewer viewer;
+  private final FilteredGrid filterGrid;
 
-		myModel = new NarrativeViewerModel(preferenceStore,
-				new ColumnSizeCalculator()
-				{
-					@SuppressWarnings("synthetic-access")
-					public int getColumnWidth(final int col)
-					{
-						return getColumnRight(col) - getColumnLeft(col);
-					}
-				});
+  public NarrativeViewer(final Composite parent,
+      final IPreferenceStore preferenceStore)
+  {
+    GridColumnLayout layout = new GridColumnLayout();
 
-		myModel.addColumnVisibilityListener(new Column.VisibilityListener()
-		{
-			public void columnVisibilityChanged(final Column column, final boolean actualIsVisible)
-			{
-				refresh();
-			}
-		});
-		setModel(myModel);
+    filterGrid =
+        new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI | SWT.VIRTUAL, true)
+        {
 
-		addControlListener(new ControlAdapter()
-		{
-			public void controlResized(final ControlEvent e)
-			{
-				onColumnsResized(false);
-			}
-		});
+          @Override
+          protected void updateGridData(String text)
+          {
 
-		addCellResizeListener(new KTableCellResizeAdapter()
-		{
-			public void columnResized(final int col, final int newWidth)
-			{
-				onColumnsResized(false);
-			}
-		});
+            myModel.updateFilters();
+            refresh();
 
-		addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
-		{
-			public void fixedCellDoubleClicked(final int col, final int row, final int statemask)
-			{
-				final Column column = myModel.getVisibleColumn(col);
-				showFilterDialog(column);
-				final ColumnFilter filter = column.getFilter();
-				if (filter != null)
-				{
+          }
 
-				}
-			}
-		});
-	}
+        };
+    filterGrid.getGridComposite().setLayout(layout);
+    viewer = filterGrid.getViewer();
+    viewer.getGrid().setHeaderVisible(true);
+    viewer.getGrid().setLinesVisible(true);
 
-	public NarrativeViewerActions getViewerActions()
-	{
-		if (myActions == null)
-		{
-			myActions = new NarrativeViewerActions(this);
-		}
-		return myActions;
-	}
+    viewer.setAutoPreferredHeight(true);
 
-	public NarrativeViewerModel getModel()
-	{
-		return (NarrativeViewerModel) super.getModel();
-	}
+    myModel = new NarrativeViewerModel(viewer,preferenceStore, new EntryFilter()
+    {
 
-	public void showFilterDialog(final Column column)
-	{
-		if (!myModel.hasInput())
-		{
-			return;
-		}
+      @Override
+      public boolean accept(NarrativeEntry entry)
+      {
+        if (viewer != null && !viewer.getGrid().isDisposed())
+        {
+          String filterString = filterGrid.getFilterString();
+          if (filterString != null && !filterString.trim().isEmpty())
+          {
+            Pattern pattern =
+                Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
 
-		final ColumnFilter filter = column.getFilter();
-		if (filter == null)
-		{
-			return;
-		}
+            AbstractColumn[] allColumns = myModel.getAllColumns();
+            for (AbstractColumn abstractColumn : allColumns)
+            {
+              if (abstractColumn.isVisible())
+              {
+                Object property = abstractColumn.getProperty(entry);
+                if (property instanceof String)
+                {
+                  Matcher matcher = pattern.matcher((CharSequence) property);
+                  if (matcher.find())
+                    return true;
 
-		final FilterDialog dialog = new FilterDialog(getShell(), myModel.getInput(),
-				column);
+                }
+              }
+            }
+            return false;
+          }
+        }
 
-		if (Dialog.OK == dialog.open())
-		{
-			dialog.commitFilterChanges();
-			refresh();
-		}
-	}
+        return true;
+      }
+    });
 
-	void onColumnsResized(final boolean force)
-	{
-		final GC gc = new GC(this);
-		myModel.onColumnsResized(gc, force);
-		gc.dispose();
-	}
+    myModel.createTable(this, layout);
 
-	public void setInput(final IRollingNarrativeProvider entryWrapper)
-	{
-		myModel.setInput(entryWrapper);
-		refresh();
-	}
+  }
 
-	public void setTimeFormatter(final TimeFormatter timeFormatter)
-	{
-		myModel.setTimeFormatter(timeFormatter);
-		redraw();
-	}
+  public GridTableViewer getViewer()
+  {
+    return viewer;
+  }
 
-	public void refresh()
-	{
-		onColumnsResized(true);
-		redraw();
-	}
+  public Composite getControl()
+  {
+    return filterGrid;
+  }
 
-	public boolean isWrappingEntries()
-	{
-		return myModel.isWrappingEntries();
-	}
+  FilteredGrid getFilterGrid()
+  {
+    return filterGrid;
+  }
 
-	public void setWrappingEntries(final boolean shouldWrap)
-	{
-		if (myModel.setWrappingEntries(shouldWrap))
-		{
-			refresh();
-		}
-	}
+  public NarrativeViewerActions getViewerActions()
+  {
+    if (myActions == null)
+    {
+      myActions = new NarrativeViewerActions(this);
+    }
+    return myActions;
+  }
 
-	/**
-	 * the controlling time has updated
-	 * 
-	 * @param dtg
-	 *          the selected dtg
-	 */
-	public void setDTG(final HiResDate dtg)
-	{
-		// find the table entry immediately after or on this DTG
-		int theIndex = -1;
-		int thisIndex = 0;
+  public void showFilterDialog(final Column column)
+  {
+    if (!myModel.hasInput())
+    {
+      return;
+    }
 
-		// retrieve the list of visible rows
-		final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+    final EntryFilter filter = column.getFilter();
+    if (filter == null)
+    {
+      return;
+    }
 
-		// step through them
-		for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
-				.hasNext();)
-		{
-			final NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+    final FilterDialog dialog =
+        new FilterDialog(viewer.getGrid().getShell(), myModel.getInput(),
+            column);
 
-			// get the date
-			final HiResDate dt = narrativeEntry.getDTG();
+    if (Dialog.OK == dialog.open())
+    {
+      dialog.commitFilterChanges();
+      refresh();
+    }
+  }
 
-			// is this what we're looking for?
-			if (dt.greaterThanOrEqualTo(dtg))
-			{
-				// yup, remember the index
-				theIndex = thisIndex;
-				break;
-			}
+  public void setInput(final IRollingNarrativeProvider entryWrapper)
+  {
+    myModel.setInput(entryWrapper);
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        refresh();
+      }
+    });
+  }
 
-			// increment the counter
-			thisIndex++;
-		}
+  public void setTimeFormatter(final TimeFormatter timeFormatter)
+  {
+    myModel.setTimeFormatter(timeFormatter);
+    viewer.refresh();
+  }
 
-		// ok, try to select this entry
-		if (theIndex > -1)
-		{
-			// just check it's not already selected
-			final int[] currentRows = super.getRowSelection();
-			if (currentRows.length == 1)
-			{
-				// don't bother, we've already selected it
-				if (currentRows[0] == theIndex + 1)
-					return;
-			}
+  public void refresh()
+  {
+    // check we're not closing
+    if (!viewer.getGrid().isDisposed() && viewer.getContentProvider() != null)
+    {
+      viewer.setInput(new Object());
+    }
+  }
 
-			// to make sure the desired entry is fully visible (even if it's a
-			// multi-line one),
-			// select the entry after our target one, then our target entry.
-			super.setSelection(1, theIndex + 2, true);
+  private void calculateGridRawHeight()
+  {
+    viewer.getGrid().setRedraw(false);
+    viewer.setInput(new Object());
+    viewer.getGrid().setRedraw(true);
+  }
 
-			// right, it's currently looking at the entry after our one. Now select
-			// our one.
-			super.setSelection(1, theIndex + 1, true);
-		}
+  public boolean isWrappingEntries()
+  {
+    return myModel.isWrappingEntries();
+  }
 
-	}
+  public void setWrappingEntries(final boolean shouldWrap)
+  {
+    if (myModel.setWrappingEntries(shouldWrap))
+    {
+      GridColumn[] columns = getViewer().getGrid().getColumns();
+      for (GridColumn gridColumn : columns)
+      {
+        gridColumn.setWordWrap(shouldWrap);
+      }
+      calculateGridRawHeight();
+    }
+  }
 
-	/**
-	 * the controlling time has updated
-	 * 
-	 * @param dtg
-	 *          the selected dtg
-	 */
-	public void setEntry(final NarrativeEntry entry)
-	{
-		// find the table entry immediately after or on this DTG
-		int theIndex = -1;
-		int thisIndex = 0;
+  /**
+   * the controlling time has updated
+   * 
+   * @param dtg
+   *          the selected dtg
+   */
+  public void setDTG(final HiResDate dtg)
+  {
+    // find the table entry immediately after or on this DTG
+    NarrativeEntry entry = null;
 
-		// retrieve the list of visible rows
-		final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+    // retrieve the list of visible rows
+    final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
 
-		// step through them
-		for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
-				.hasNext();)
-		{
-			final NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+    // step through them
+    for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
+        .hasNext();)
+    {
+      final NarrativeEntry narrativeEntry =
+          (NarrativeEntry) entryIterator.next();
 
-			if (narrativeEntry == entry)
-			{
-				// yup, remember the index
-				theIndex = thisIndex;
-				break;
-			}
+      // get the date
+      final HiResDate dt = narrativeEntry.getDTG();
 
-			// increment the counter
-			thisIndex++;
-		}
+      // is this what we're looking for?
+      if (dt.greaterThanOrEqualTo(dtg))
+      {
+        entry = narrativeEntry;
+        break;
+      }
 
-		// ok, try to select this entry
-		if (theIndex > -1)
-		{
-			// to make sure the desired entry is fully visible (even if it's a
-			// multi-line one),
-			// select the entry after our target one, then our target entry.
-			super.setSelection(1, theIndex + 2, true);
+    }
 
-			// right, it's currently looking at the entry after our one. Now select
-			// our one.
-			super.setSelection(1, theIndex + 1, true);
-		}
+    // ok, try to select this entry
+    if (entry != null)
+    {
+      boolean needsChange = true;
 
-	}
-	
-	@Override
-	public void dispose() {
-		if (myModel != null) {
-			myModel.dispose();
-		}
-		super.dispose();
-	}
+      ISelection curSel = getViewer().getSelection();
+      if (curSel instanceof StructuredSelection)
+      {
+        StructuredSelection sel = (StructuredSelection) curSel;
+        if (sel.size() == 1)
+        {
+          Object item = sel.getFirstElement();
+          if (item instanceof NarrativeEntry)
+          {
+            NarrativeEntry nw = (NarrativeEntry) item;
+            if (entry.equals(nw))
+            {
+              needsChange = false;
+            }
+          }
+        }
+      }
+
+      if (needsChange)
+      {
+        setEntry(entry);
+      }
+    }
+
+  }
+
+  /**
+   * the controlling time has updated
+   * 
+   * @param dtg
+   *          the selected dtg
+   */
+  public void setEntry(final NarrativeEntry entry)
+  {
+    try
+    {
+      viewer.getGrid().setRedraw(false);
+      // select this item
+      viewer.setSelection(new StructuredSelection(entry));
+  
+      // make sure the new item is visible
+      viewer.reveal(entry);
+    }
+    finally
+    {
+      viewer.getGrid().setRedraw(true);
+    }
+  }
+
+  public NarrativeViewerModel getModel()
+  {
+    return myModel;
+  }
+
+  public void setSearchMode(boolean checked)
+  {
+
+    filterGrid.setFilterMode(checked);
+  }
+
 }

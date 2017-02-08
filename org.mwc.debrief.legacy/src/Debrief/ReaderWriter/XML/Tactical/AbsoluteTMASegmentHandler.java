@@ -25,6 +25,7 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import org.w3c.dom.Element;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GenericData.WorldLocation;
@@ -63,7 +64,26 @@ abstract public class AbsoluteTMASegmentHandler extends CoreTMASegmentHandler
 	}
 
 
-	public static void exportThisTMASegment(final org.w3c.dom.Document doc, final Element trk,
+  @Override
+  protected void finishInitialisation(TrackSegment segment)
+  {
+    AbsoluteTMASegment rel = (AbsoluteTMASegment) segment;
+
+    // ok, the track has it's fixes. pass through to set the time,
+    // if necessary
+    if(rel.getDTG_Start() == null)
+    {
+      FixWrapper firstF = (FixWrapper) rel.first();
+      FixWrapper lastF = (FixWrapper) rel.last();
+      
+      rel.setDTG_Start_Silent(firstF.getDateTimeGroup());
+      rel.setDTG_End_Silent(lastF.getDateTimeGroup());
+    }
+    
+    super.finishInitialisation(segment);
+  }	
+
+  public static void exportThisTMASegment(final org.w3c.dom.Document doc, final Element trk,
 			final AbsoluteTMASegment seg)
 	{
 		

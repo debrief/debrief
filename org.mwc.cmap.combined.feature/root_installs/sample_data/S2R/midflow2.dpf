@@ -5101,7 +5101,7 @@
 <colour Value="RED"/>
 <SymbolColor Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<RelativeTMASegment BaseFrequency="0.000" CourseDegs="224.495" HostSensor="" HostTrack="NONSUCH" LineStyle="Solid" Name="220415.22" Visible="true">
+<RelativeTMASegment BaseFrequency="0.000" CourseDegs="224.495" HostSensor="SENSOR_A_1" HostTrack="NONSUCH" LineStyle="Solid" Name="220415.22" Visible="true">
 <fix ArrowShowing="false" Course="224.495" Dtg="090722 041522" Label="0415" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.947" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="30.980" Lat="4.9939017" Long="29.9447744"/>
@@ -5132,7 +5132,7 @@
 <Range Units="degs" Value="0.0330000"/>
 </Offset>
 </RelativeTMASegment>
-<RelativeTMASegment BaseFrequency="0.000" CourseDegs="227.960" HostSensor="" HostTrack="NONSUCH" LineStyle="Solid" Name="220448.18" Visible="true">
+<RelativeTMASegment BaseFrequency="0.000" CourseDegs="227.960" HostSensor="SENSOR_A_2" HostTrack="NONSUCH" LineStyle="Solid" Name="220448.18" Visible="true">
 <fix ArrowShowing="false" Course="227.960" Dtg="090722 044818" Label="0448" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.005" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="30.980" Lat="4.9644235" Long="29.9039426"/>

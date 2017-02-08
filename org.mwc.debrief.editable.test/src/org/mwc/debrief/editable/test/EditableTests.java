@@ -87,6 +87,7 @@ import MWC.GUI.Griddable;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.EllipseShape;
@@ -450,15 +451,14 @@ public class EditableTests extends TestCase
 			speed = new WorldSpeed(5, WorldSpeed.Kts);
 			course = 33;
 			final WorldVector offset = new WorldVector(12, 12, 0);
-			editable = new RelativeTMASegment(course, speed, offset, null);
+			editable = new RelativeTMASegment(course, speed, offset, null, null,null);
 			break;
 		case "Debrief.Wrappers.Track.PlanningSegment":
 			speed = new WorldSpeed(5, WorldSpeed.Kts);
 			course = 33;
 			final WorldDistance worldDistance = new WorldDistance(5,
 					WorldDistance.MINUTES);
-			editable = new PlanningSegment("test", course, speed, worldDistance,
-					Color.WHITE);
+			editable = new PlanningSegment("test", course, speed, worldDistance);
 			break;
 		case "org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper":
 			BearingMeasurementContribution bmc = new BearingMeasurementContribution();
@@ -475,7 +475,7 @@ public class EditableTests extends TestCase
 			origin = new WorldLocation(0, 0, 0);
 			editable = new SensorContactWrapper("blank track",
 					new HiResDate(new java.util.Date().getTime()), new WorldDistance(1,
-							WorldDistance.DEGS), 55d, origin, java.awt.Color.red, "my label",
+							WorldDistance.DEGS), 55d, origin, DebriefColors.RED, "my label",
 					1, "theSensorName");
 			break;
 		case "Debrief.Wrappers.FixWrapper":
@@ -491,7 +491,7 @@ public class EditableTests extends TestCase
 			centre = new WorldLocation(2d, 2d, 2d);
 			editable = new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
 					new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
-							WorldDistance.DEGS)), java.awt.Color.red, null);
+							WorldDistance.DEGS)), DebriefColors.RED, null);
 			break;
 		case "Debrief.GUI.Tote.Painters.PainterManager":
 			final StepControl stepper = new Debrief.GUI.Tote.Swing.SwingStepControl(null,null,null,null, null, null);
@@ -737,10 +737,11 @@ public class EditableTests extends TestCase
    */
   public static void testTheseParameters(final Editable toBeTested)
   {
-    // check if we received an object
-  	System.out.println("testing " + toBeTested.getClass());
     if (toBeTested == null)
       return;
+
+    // check if we received an object
+  	System.out.println("testing " + toBeTested.getClass());
 
     Assert.assertNotNull("Found editable object", toBeTested);
 

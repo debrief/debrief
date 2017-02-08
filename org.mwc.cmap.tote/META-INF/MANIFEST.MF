@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Track Tote Plug-in
 Bundle-SymbolicName: org.mwc.cmap.tote; singleton:=true
-Bundle-Version: 1.0.31
+Bundle-Version: 1.0.33
 Bundle-ClassPath: tote.jar
 Bundle-Activator: org.mwc.cmap.tote.TotePlugin
 Bundle-Vendor: MWC
@@ -14,4 +14,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.core,
  org.eclipse.ui.views
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

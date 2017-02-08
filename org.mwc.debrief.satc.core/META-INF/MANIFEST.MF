@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief SATC
 Bundle-SymbolicName: org.mwc.debrief.satc.core;singleton:=true
-Bundle-Version: 1.0.26
+Bundle-Version: 1.0.30
 Bundle-Activator: com.planetmayo.debrief.satc_rcp.SATC_Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,9 +14,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.nebula.jface.cdatetime,
  org.junit,
  org.eclipse.help;bundle-version="3.6.0",
- org.mwc.cmap.geotools;bundle-version="12.1.0",
+ org.geotools,
  org.mwc.cmap.jfreechart,
- org.mwc.cmap.legacy
+ org.mwc.cmap.legacy,
+ org.mwc.debrief.track_shift;bundle-version="1.0.72"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: libs/jts-1.13.jar,

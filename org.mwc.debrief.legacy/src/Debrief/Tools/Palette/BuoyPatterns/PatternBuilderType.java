@@ -154,7 +154,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     _jigPoint = centre;
     _thePanel = thePanel;
     _theData = theData;
-    _theColor = java.awt.Color.red;
+    _theColor =   MWC.GUI.Properties.DebriefColors.RED;
 
     // initialise the shape
     _theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");

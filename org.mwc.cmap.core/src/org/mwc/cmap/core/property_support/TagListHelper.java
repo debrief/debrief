@@ -16,6 +16,7 @@ package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
@@ -33,9 +34,28 @@ public class TagListHelper extends EditorHelper
 		_propEditor = propEditor;
 	}
 
+  @Override
 	public CellEditor getCellEditorFor(final Composite parent)
 	{
-		return new ComboBoxCellEditor(parent, _theTags);
+    return new ComboBoxCellEditor(parent, _theTags, SWT.READ_ONLY)
+    {
+      /** override activate method, so it pops up as soon
+       * as it's clicked
+       */
+      @Override
+      public void activate()
+      {
+        super.activate();
+        getControl().getDisplay().asyncExec(new Runnable()
+        {
+          public void run()
+          {
+            if (isActivated())
+              ((CCombo) getControl()).setListVisible(true);
+          }
+        });
+      }
+    };
 	}
 
 	public Object translateFromSWT(final Object value)
@@ -80,7 +100,15 @@ public class TagListHelper extends EditorHelper
 			// that string
 			_propEditor.setValue(value);
 			final String txtVersion = _propEditor.getAsText();
-			res = translateToSWT(txtVersion);
+			if(txtVersion == null)
+			{
+			  // ok, just use the first one
+        res = translateToSWT(_theTags[0]);
+			}
+			else
+			{
+			  res = translateToSWT(txtVersion);
+			}
 		}
 		return res;
 	}

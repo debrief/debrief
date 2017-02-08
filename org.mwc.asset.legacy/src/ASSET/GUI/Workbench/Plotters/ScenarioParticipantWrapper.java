@@ -32,6 +32,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -194,11 +195,11 @@ public class ScenarioParticipantWrapper implements
 	public static java.awt.Color getColorFor(String force)
 	{
 		if (force.equals(ASSET.Participants.Category.Force.BLUE))
-			return java.awt.Color.blue;
+			return DebriefColors.BLUE;
 		else if (force.equals(ASSET.Participants.Category.Force.GREEN))
-			return java.awt.Color.green;
+			return DebriefColors.GREEN;
 		else
-			return java.awt.Color.red;
+			return DebriefColors.RED;
 
 	}
 

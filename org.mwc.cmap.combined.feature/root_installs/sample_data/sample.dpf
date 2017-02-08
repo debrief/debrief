@@ -233,7 +233,7 @@
 <narrative Name="Narratives">
 <narrative_entry Dtg="951212 050000" Entry="comment 1" Track="NELSON" Type="Narratives"/>
 <narrative_entry Dtg="951212 050100" Entry="comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2" Track="NELSON" Type="Narratives"/>
-<narrative_entry Dtg="951212 050200" Entry="comment 3" Track="NELSON" Type="Narratives"/>
+<narrative_entry Dtg="951212 050200" Entry="comment 3 B-123 R-12.4Kyds" Track="NELSON" Type="Narratives"/>
 <narrative_entry Dtg="951212 052200" Entry="comment 4" Track="NELSON" Type="Narratives"/>
 <narrative_entry Dtg="951212 061200" Entry="comment 4A" Track="NELSON" Type="Narratives"/>
 <narrative_entry Dtg="951212 062200" Entry="comment 4B" Track="NELSON" Type="Narratives"/>
@@ -6016,7 +6016,7 @@
 <property Name="Arc_Finish" Value="180"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="951212 102144"/>
+<property Name="CurrentTime" Value="951212 050000"/>
 <property Name="NumRings" Value="1"/>
 <property Name="Toolbox_Start_Time" Value="951212 050000"/>
 <property Name="PointSize" Value="5"/>

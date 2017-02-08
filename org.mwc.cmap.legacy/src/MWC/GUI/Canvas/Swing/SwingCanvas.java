@@ -239,6 +239,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -320,7 +321,7 @@ public class SwingCanvas extends javax.swing.JComponent
     super.setName("Canvas");
 
     // start with our background colour
-    setBackgroundColor(java.awt.Color.black);
+    setBackgroundColor(DebriefColors.BLACK);
 
     // initialisation
     _thePainters = new Vector<CanvasType.PaintListener>(0, 1);

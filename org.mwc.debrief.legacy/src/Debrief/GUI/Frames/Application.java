@@ -1026,6 +1026,23 @@ public abstract class Application implements ToolParent, ActionListener,
 		System.err.println("Error:" + text);
 	}
 
+  @Override
+  public void logError(final int status, final String text, final Exception e,
+      boolean revealLog)
+  {
+    if (_substituteParent != null)
+      _substituteParent.logError(status, text, e);
+    System.err.println("Error:" + text);
+  }
+
+  public static void
+      logError3(int status, String text, Exception e, boolean revealLog)
+  {
+    if(_substituteParent != null)
+      _substituteParent.logError(status, text, e, revealLog);
+    System.err.println("Error:" + text);
+  }
+	
 	/**
 	 * @param status
 	 * @param text
@@ -1037,5 +1054,16 @@ public abstract class Application implements ToolParent, ActionListener,
 			_substituteParent.logError(status, text, e);
 		System.err.println("Error:" + text);
 	}
+
+	 /**
+   * @param status
+   * @param text
+   * @param e
+   */
+  public static void logStack2(final int status, String message)
+  {
+    if(_substituteParent != null)
+      _substituteParent.logStack(status, message);
+  }
 
 }

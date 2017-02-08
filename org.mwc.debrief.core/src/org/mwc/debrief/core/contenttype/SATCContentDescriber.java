@@ -15,6 +15,7 @@ import org.mwc.cmap.core.CorePlugin;
  * @author ian
  *
  */
+@SuppressWarnings("restriction")
 public class SATCContentDescriber extends TextContentDescriber
 {
 

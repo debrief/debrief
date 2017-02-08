@@ -162,7 +162,7 @@ public final class WedgeBuilder extends PatternBuilderType
       // create the new symbol
       final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
                                                   origin,
-                                                  java.awt.Color.red);
+                                                    MWC.GUI.Properties.DebriefColors.RED);
 
       buoy_counter++;
 
@@ -206,7 +206,7 @@ public final class WedgeBuilder extends PatternBuilderType
       // drop a buoy at the current point
       final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
                                                   origin,
-                                                  java.awt.Color.red);
+                                                    MWC.GUI.Properties.DebriefColors.RED);
       buoy_counter++;
 
       // move to the correct location for the next point
@@ -232,7 +232,7 @@ public final class WedgeBuilder extends PatternBuilderType
       // create the new symbol
       final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
                                                   origin,
-                                                  java.awt.Color.red);
+                                                    MWC.GUI.Properties.DebriefColors.RED);
 
       buoy_counter++;
 

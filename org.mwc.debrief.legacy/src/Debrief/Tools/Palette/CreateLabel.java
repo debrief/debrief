@@ -134,7 +134,7 @@ public final class CreateLabel extends PlainTool
 
       final LabelWrapper theWrapper = new LabelWrapper("blank label",
                                                  centre,
-                                                 java.awt.Color.orange);
+                                                  MWC.GUI.Properties.DebriefColors.ORANGE);
 
       Layer theLayer = _theData.findLayer("Misc");
       if(theLayer == null)

@@ -94,17 +94,12 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		if (_myHelperList == null)
 		{
 			_myHelperList = new Vector<EditorHelper>(0, 1);
+			_myHelperList.add(new MultiTextHelper());
 			_myHelperList.add(new ColorHelper(_theControl));
 			_myHelperList.add(new BoundedIntegerHelper());
 			_myHelperList
 					.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
-			_myHelperList.add(new EditorHelper(String.class)
-			{
-				public CellEditor getCellEditorFor(final Composite parent)
-				{
-					return new TextCellEditor(parent, SWT.MULTI | SWT.V_SCROLL);
-				}
-			});
+		
 			_myHelperList.add(new EditorHelper(Long.class)
 			{
 

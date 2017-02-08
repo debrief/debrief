@@ -129,6 +129,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Transform;
@@ -144,6 +145,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -232,7 +234,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 * and our default background color
 	 * 
 	 */
-	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.LIGHT_GRAY;
+	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = DebriefColors.LIGHT_GRAY;
 
 	private SWTGraphics2D _sg2d;
 
@@ -373,16 +375,26 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			}
 		}
 
-		// check we have found a valid area
-		if (theArea != null)
-		{
-			// so, we now have the data area for everything which
-			// wants to plot to it, give it to the projection
-			_theProjection.setDataArea(theArea);
+    // check we have found a valid area
+    if (theArea != null)
+    {
+      // what's the width in degs?
+      double wid = theArea.getWidth();
 
-			// get the projection to refit-itself
-		//	_theProjection.zoom(0.0);
-		}
+      // get the border for this projection
+      double border = _theProjection.getDataBorder();
+      if (border >= 1)
+      {
+        border = border - 1d;
+      }
+
+      // add a border
+      theArea.grow(wid * border, 0);
+
+      // so, we now have the data area for everything which
+      // wants to plot to it, give it to the projection
+      _theProjection.setDataArea(theArea);
+    }
 
 	}
 
@@ -590,7 +602,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 				// because "new GC(image)" ignores transparency on Linux. 
 				// It is probably a bug in SWT.
 				ImageData data = img.getImageData();
-				final java.awt.Color trColor = java.awt.Color.black;
+				final java.awt.Color trColor = DebriefColors.BLACK;
 				final int transPx = data.palette.getPixel(new RGB(trColor.getRed(),
 						trColor.getGreen(), trColor.getBlue()));
 				data.transparentPixel = transPx;
@@ -635,6 +647,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			xmin = ymin = 0;
 			xmax = this.getSize().width;
 			ymax = this.getSize().height;
+			//workaround for issue_1906 to avoid GC ignore line styles
+			_theDest.setLineAttributes(new LineAttributes(_theDest.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, _theDest.getLineStyle(), null, 0, 10));
+      
 			SWTClipper.drawLine(_theDest, x1, y1, x2, y2, xmin, xmax, ymin, ymax);
 		}
 	}
@@ -1020,6 +1035,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// final BasicStroke bs = new BasicStroke(_lineWidth);
 		// final Graphics2D g2 = (Graphics2D) _theDest;
 		// g2.setStroke(bs);
+		
+		// set the stroke so that the pointy corner doesn't go past the symbol
+		if(!_theDest.isDisposed())
+		{
+		  _theDest.setLineJoin(SWT.JOIN_BEVEL);
+		}
+		
 	}
 
 	public final void endDraw(final Object theVal)
@@ -1207,7 +1229,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		if (!_theDest.isDisposed())
 		{
-			// _theDest.setBackground(ColorHelper.getColor(java.awt.Color.green));
+			// _theDest.setBackground(ColorHelper.getColor( MWC.GUI.Properties.DebriefColors.green));
 			_theDest.fillRectangle(x, y, wid, height);
 
 			// now, the fill only fills in the provided rectangle. we also have

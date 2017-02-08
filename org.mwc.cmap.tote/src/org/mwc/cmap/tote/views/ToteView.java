@@ -63,7 +63,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -144,12 +143,6 @@ public class ToteView extends ViewPart
 	 * the temporal dataset controlling the narrative entry currently displayed
 	 */
 	TimeProvider _myTemporalDataset;
-
-	/**
-	 * the "write" interface for the plot which tracks the narrative, where
-	 * avaialable
-	 */
-	private ControllableTime _controllableTime;
 
 	/**
 	 * the editor currently providing our narrative
@@ -505,6 +498,7 @@ public class ToteView extends ViewPart
 				autoGenerate(false);
 			}
 		};
+    _autoGenerate.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/gears_run.png"));
 		// -------------------------------------------------------
 		// put watchables on the tote
 		// -------------------------------------------------------
@@ -516,6 +510,7 @@ public class ToteView extends ViewPart
 				autoGenerate(true);
 			}
 		};
+		_autoGenerateJustTracks.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/gears_run.png"));
 
 		// #### show units is generated in the "init" method, since it uses
 		// part of the memento
@@ -552,7 +547,7 @@ public class ToteView extends ViewPart
 			_myPartMonitor = null;
 		}
 		// also stop listening for time events
-		if (_controllableTime != null)
+		if (_myTemporalDataset != null)
 		{
 			_myTemporalDataset.removeListener(_temporalListener,
 					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -722,6 +717,7 @@ public class ToteView extends ViewPart
 	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		 manager.add(_showUnits);
+		 manager.add(_autoGenerateJustTracks);
 		// manager.add(action2);
 		// manager.add(_followTimeToggle);
 	}

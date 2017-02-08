@@ -6,7 +6,7 @@ Bundle-Version: 5.1.8
 Bundle-Activator: org.mwc.cmap.openmap.Activator
 Bundle-Vendor: BBN Technologies
 Require-Bundle: org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: libs/openmap.jar,
  .

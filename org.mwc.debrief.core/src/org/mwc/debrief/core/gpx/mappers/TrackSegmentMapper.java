@@ -35,7 +35,7 @@ public class TrackSegmentMapper
 
 	private TrackSegment newSegment()
 	{
-		final TrackSegment segment = new TrackSegment();
+		final TrackSegment segment = new TrackSegment(TrackSegment.ABSOLUTE);
 		return segment;
 	}
 }

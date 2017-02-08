@@ -59,14 +59,6 @@ public class CruiserSym extends ScreenScaledSym
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public java.awt.Dimension getBounds()
-	{
-		// sort out the size of the symbol at the current scale factor
-		final java.awt.Dimension res = new java.awt.Dimension(
-				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
-		return res;
-	}
-
 	@Override
 	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
 	{

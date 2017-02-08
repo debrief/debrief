@@ -323,6 +323,7 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.StatusBar;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Toolbar;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
@@ -612,7 +613,7 @@ abstract public class AnalysisView extends PlainView implements
 					{
 						return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
 								new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
-										WorldDistance.DEGS)), java.awt.Color.red, null);
+										WorldDistance.DEGS)), DebriefColors.RED, null);
 					}
 				}, null, ' '));
 		// rectangle
@@ -624,7 +625,7 @@ abstract public class AnalysisView extends PlainView implements
 					{
 						return new ShapeWrapper("new rectangle", new RectangleShape(centre,
 								centre.add(new WorldVector(MWC.Algorithms.Conversions
-										.Degs2Rads(45), 0.05, 0))), java.awt.Color.red, null);
+										.Degs2Rads(45), 0.05, 0))), DebriefColors.RED, null);
 					}
 				}, null, ' '));
 
@@ -637,7 +638,7 @@ abstract public class AnalysisView extends PlainView implements
 					{
 						return new ShapeWrapper("new arc", new ArcShape(centre,
 								new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
-								false), java.awt.Color.red, null);
+								false), DebriefColors.RED, null);
 					}
 				}, null, ' ')); // circle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle",
@@ -647,7 +648,7 @@ abstract public class AnalysisView extends PlainView implements
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
 						return new ShapeWrapper("new circle",
-								new CircleShape(centre, 4000), java.awt.Color.red, null);
+								new CircleShape(centre, 4000), DebriefColors.RED, null);
 					}
 				}, null, ' '));
 		// line
@@ -660,7 +661,7 @@ abstract public class AnalysisView extends PlainView implements
 						return new ShapeWrapper("new line", new LineShape(centre, centre
 								.add(new WorldVector(
 										MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
-								java.awt.Color.red, null);
+										DebriefColors.RED, null);
 					}
 				}, null, ' '));
 
@@ -671,7 +672,7 @@ abstract public class AnalysisView extends PlainView implements
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
-						return new ShapeWrapper("new polygon", new PolygonShape(null), java.awt.Color.red,
+						return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED,
 								null);
 					}
 				}, null, ' '));

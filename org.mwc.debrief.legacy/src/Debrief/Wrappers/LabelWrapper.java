@@ -335,8 +335,17 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 		{
 			if (_plotSymbol)
 			{
+			  // update the line width
+			  final float lineWid = dest.getLineWidth();
+			  
+			  // assign the line widht
+			  _theShape.setLineWid(dest);
+			  
 				// first paint the symbol
 				_theShape.paint(dest, _theLocation);
+				
+				// and restore the line width
+				dest.setLineWidth(lineWid);
 
 				// also indicate to the text that we are using an offset
 				_theLabel.setFixedOffset(_theShape.getBounds());

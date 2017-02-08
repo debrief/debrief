@@ -53,7 +53,7 @@ public class InsertPolygon extends CoreInsertShape
 	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		// get centre of area
-		final WorldLocation centre = getCentre(theChart);
+		final WorldLocation centre = new WorldLocation(getCentre(theChart));
 
 		// create the shape, based on the centre
 		final Vector<PolygonNode> path2 = new Vector<PolygonNode>();

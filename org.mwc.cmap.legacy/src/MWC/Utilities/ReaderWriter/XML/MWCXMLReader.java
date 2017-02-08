@@ -305,7 +305,7 @@ public class MWCXMLReader extends DefaultHandler {
 			myName = name;
 		}
 
-		abstract public void setValue(String name, String value);
+		abstract public void setValue(final String name, final String value);
 	}
 
 	abstract static public class HandleDoubleAttribute extends HandleAttribute {

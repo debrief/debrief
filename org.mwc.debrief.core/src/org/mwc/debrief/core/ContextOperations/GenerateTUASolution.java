@@ -133,7 +133,7 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 			_solutionWrapper.add(_solution);
 
 			// sorted, do the update
-			_layers.fireExtended();
+			_layers.fireExtended(_solutionWrapper, _track);
 
 			return Status.OK_STATUS;
 		}

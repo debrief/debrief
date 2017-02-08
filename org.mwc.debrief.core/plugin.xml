@@ -26,7 +26,9 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.LogTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEALogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
         </editor>
     </extension>
 
@@ -59,6 +61,9 @@
         <content-type base-type="org.eclipse.core.runtime.text"
             id="org.mwc.debrief.contenttype.ReplaySensorFile" file-extensions="dsf"
             name="Debrief Sensor File" priority="normal"> </content-type>
+        <content-type base-type="org.eclipse.core.runtime.text"
+            id="org.mwc.debrief.contenttype.INPFile" file-extensions="inp"
+            name="DIS Simulation input file" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.WorldImageFile" file-extensions="tif"
             name="World Image (Electronic Chart) File" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.KMZTrackArchive" file-extensions="kmz"
@@ -72,10 +77,20 @@
             name="AIS track file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.AISContentDescriber"/>
         </content-type>
+        <content-type id="org.mwc.debrief.contenttype.NMEALogFile"
+            file-extensions="log"
+            name="NMEA Log file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.NMEAContentDescriber"/>
+        </content-type>
         <content-type id="org.mwc.debrief.contenttype.SATCTrackFile"
             file-extensions="txt"
             name="SATC export file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.SATCContentDescriber"/>
+        </content-type>
+        <content-type id="org.mwc.debrief.contenttype.SATCSampleTrackFile"
+            file-extensions="cs2"
+            name="SATC Sample file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.SATCSampleContentDescriber"/>
         </content-type>
     </extension>
 
@@ -108,11 +123,19 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.NMEALoader" extensions="log" first_line="$POSL" name="NMEA Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" first_line="!AIVDM" name="AIS Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.SATCLoader" extensions="txt" first_line="//X, Y, Time"  name="SATC Track File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.SATCSampleLoader" extensions="cs2" first_line="#Time of Validity,"  name="SATC Sample Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
@@ -122,6 +145,18 @@
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.ShapeLoader" extensions="shp"
             name="ShapeFile File"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.MsDocLoader" extensions="doc"
+            name="MS Word Document"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.MsDocXLoader" extensions="docx"
+            name="MS Word XML Document"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.PdfLoader" extensions="pdf"
+            name="PDF Document"/>
     </extension>
 
     <extension point="org.eclipse.ui.menus">
@@ -135,6 +170,22 @@
                 <separator name="features" visible="true"/>
                 <separator name="sep3" visible="true"/>
                 <separator name="additions" visible="true"/>
+            </toolbar>
+            <toolbar
+                  id="org.mwc.debrief.core.undoRedo"
+                  label="Undo Redo">
+               <separator
+                     name="features"
+                     visible="true">
+               </separator>
+               <separator
+                     name="sep3"
+                     visible="true">
+               </separator>
+               <separator
+                     name="additions"
+                     visible="true">
+               </separator>
             </toolbar>
             <toolbar id="org.mwc.debrief.core.EditorFeatures" label="Add Features">
                 <separator name="features" visible="true"/>
@@ -243,6 +294,21 @@
                 icon="icons/24/create_project.png" label="Create Project"
                 tooltip="Create folders to contain your Debrief working files" style="push"
                 id="org.mwc.debrief.core.createProject"> </command>
+        </menuContribution>
+        <menuContribution
+              locationURI="toolbar:org.mwc.debrief.core.undoRedo?before=additions">
+           <command
+                 commandId="org.eclipse.ui.edit.undo"
+                 icon="icons/24/undo.png"
+                 id="undoredo.undo"
+                 style="push">
+           </command>
+           <command
+                 commandId="org.eclipse.ui.edit.redo"
+                 icon="icons/24/redo.png"
+                 id="undoredo.redo"
+                 style="push">
+           </command>
         </menuContribution>
 
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio">
@@ -808,9 +874,20 @@
     </extension>
 
     <extension point="org.eclipse.ui.newWizards">
-        <wizard category="org.mwc.cmap.core" class="org.mwc.debrief.core.wizards.NewPlotWizard"
-            icon="icons/16/plot_file.png" id="org.mwc.debrief.core.wizards.NewPlotWizard"
-            name="Debrief Plot"/>
+        <wizard
+              category="org.eclipse.ui.Basic"
+              class="org.mwc.debrief.core.wizards.NewProjectWizard"
+              icon="icons/16/create_project.png"
+              id="org.mwc.debrief.core.wizards.NewProjectWizard"
+              name="Debrief Project"
+              project="true"/>
+        <wizard
+              category="org.mwc.cmap.core"
+              class="org.mwc.debrief.core.wizards.NewPlotWizard"
+              icon="icons/16/plot_file.png"
+              id="org.mwc.debrief.core.wizards.NewPlotWizard"
+              name="Debrief Plot">
+        </wizard>
     </extension>
     <extension id="Debrief" point="org.eclipse.core.runtime.products">
         <product application="org.eclipse.ui.ide.workbench"
@@ -822,7 +899,6 @@
             <property name="introBrandingImageText"
                 value="Debrief, from the Maritime Warfare Centre"/>
             <property name="aboutImage" value="icons/DebriefNGlogoSmall.png"/>
-            <property name="windowImages" value="icons/icon.png"/>
             <property name="startupForegroundColor" value="000000"/>
             <property name="startupMessageRect" value="0,0,0,0"/>
             <property name="startupProgressRect" value="0,0,0,0"/>
@@ -831,6 +907,10 @@
             <property name="applicationCSSResources"
                 value="platform:/plugin/org.eclipse.platform/images/"/>
             <property name="aboutText" value="%aboutText"> </property>
+            <property
+                  name="windowImages"
+                  value="icons/16/icon_16.png,icons/32/icon_32.png,icons/48/icon_48.png,icons/256/icon_256.png">
+            </property>
         </product>
     </extension>
 
@@ -1011,12 +1091,7 @@
     <extension point="org.mwc.cmap.core.RightClickSupport">
         <helper class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
         <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>
-    </extension>
-
-    <extension point="org.eclipse.wst.xml.core.catalogContributions">
-        <catalogContribution id="default">
-            <uri name="http://www.debrief.info/plot" uri="schema/debrief_plot.xsd"/>
-        </catalogContribution>
+        <helper class="org.mwc.debrief.core.ContextOperations.CalculateTrackLength"/>
     </extension>
     
     <extension
@@ -1032,5 +1107,16 @@
             class="org.mwc.debrief.core.handlers.DynamicLayerHandler">
       </helper>
     </extension>
-   
+   <extension
+      point="org.eclipse.ui.activities">
+	    <activity
+	         id="test.disable"
+	         name="Disable New Project">
+	   </activity>
+	   <activityPatternBinding
+	         activityId="test.disable"
+	         isEqualityPattern="true"
+	         pattern="org.eclipse.ui.ide/org.eclipse.ui.wizards.new.project">
+	   </activityPatternBinding>
+	</extension>
 </plugin>

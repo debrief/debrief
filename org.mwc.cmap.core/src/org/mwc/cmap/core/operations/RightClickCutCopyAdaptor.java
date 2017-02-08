@@ -14,18 +14,32 @@
  */
 package org.mwc.cmap.core.operations;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
-import org.eclipse.swt.dnd.*;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.swt.dnd.ByteArrayTransfer;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Wrappers.FixWrapper;
@@ -34,7 +48,10 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -265,7 +282,7 @@ public class RightClickCutCopyAdaptor
 
 			// formatting
 			super.setText("Cut " + toString());
-
+			setActionDefinitionId(ActionFactory.CUT.getCommandId());
 			// and the icon
 			setImageIcon();
 
@@ -280,25 +297,32 @@ public class RightClickCutCopyAdaptor
 		// remember what used to be on the clipboard
 		protected void rememberPreviousContents()
 		{
-			// copy in the new data
-			final EditableTransfer transfer = EditableTransfer.getInstance();
-			_oldContents = _myClipboard.getContents(transfer);
+		  if(_myClipboard!=null)
+      {
+  			// copy in the new data
+  			final EditableTransfer transfer = EditableTransfer.getInstance();
+  			_oldContents = _myClipboard.getContents(transfer);
+      }
 		}
 
 		// restore the previous contents of the clipboard
 		protected void restorePreviousContents()
 		{
-			// just check that there were some previous contents
-			if (_oldContents != null)
-			{
-				// copy in the new data
-				final EditableTransfer transfer = EditableTransfer.getInstance();
-				_myClipboard.setContents(new Object[]
-				{ _oldContents }, new Transfer[]
-				{ transfer });
-			}
-			// and forget what we're holding
-			_oldContents = null;
+		  if(_myClipboard!=null)
+		  {
+		 // just check that there were some previous contents
+	      if (_oldContents != null)
+	      {
+	        // copy in the new data
+	        final EditableTransfer transfer = EditableTransfer.getInstance();
+	        _myClipboard.setContents(new Object[]
+	        { _oldContents }, new Transfer[]
+	        { transfer });
+	      }
+	      // and forget what we're holding
+	      _oldContents = null;
+		  }
+			
 		}
 
 		/**
@@ -390,9 +414,13 @@ public class RightClickCutCopyAdaptor
 
 					// copy in the new data
 					final EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(new Object[]
-					{ _data }, new Transfer[]
-					{ transfer });
+					if(_myClipboard!=null)
+					{
+					  _myClipboard.setContents(new Object[]
+			          { _data }, new Transfer[]
+			          { transfer });
+					}
+					
 
 					for (int i = 0; i < _data.length; i++)
 					{
@@ -412,9 +440,19 @@ public class RightClickCutCopyAdaptor
 						{
 							// remove the new data from it's parent
 							parentLayer.removeElement(thisE);
+							
+							// some objects want to know when they're removed
+              if (thisE instanceof NeedsToBeInformedOfRemove)
+              {
+                // spread the good news
+                ((NeedsToBeInformedOfRemove) thisE).beingRemoved();
+              }
 
+              // see if we need to track this layer change
 							if (!changedLayers.contains(parentLayer))
+							{
 								changedLayers.add(parentLayer);
+							}
 						}
 					}
 
@@ -459,6 +497,7 @@ public class RightClickCutCopyAdaptor
 			super(data, clipboard, theParent, theLayers, updateLayer);
 
 			super.setText(toString());
+			setActionDefinitionId(ActionFactory.COPY.getCommandId());
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 					.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 
@@ -958,30 +997,21 @@ public class RightClickCutCopyAdaptor
 	// ////////////////////////////////////////////
 	//
 	// ///////////////////////////////////////////////
-	public static class DeleteItem extends Action
+	public static class DeleteItem extends CutItem
 	{
-		protected Editable[] _data;
-
-		protected Layer[] _theParent;
-
-		protected Layers _theLayers;
-
-		protected Object _oldContents;
-
-		protected Layer[] _updateLayer;
+		
 
 		public DeleteItem(final Editable[] data, final Layer[] theParent, final Layers theLayers,
 				final Layer[] updateLayer)
 		{
-			// remember parameters
-			_data = data;
-			_theParent = theParent;
-			_theLayers = theLayers;
-			_updateLayer = updateLayer;
+			super(data, null, theParent, theLayers, updateLayer);
 
 			// formatting
 			super.setText("Delete " + toString());
 
+			
+			setActionDefinitionId(ActionFactory.DELETE.getCommandId());
+			
 			// and the icon
 			setImageIcon();
 
@@ -993,98 +1023,6 @@ public class RightClickCutCopyAdaptor
 					.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		}
 
-		/**
-		 * 
-		 */
-		public void run()
-		{
-			final AbstractOperation myOperation = new AbstractOperation(getText())
-			{
-				public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-						throws ExecutionException
-				{
-					doCut();
-					return Status.OK_STATUS;
-				}
-
-				public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-						throws ExecutionException
-				{
-					return Status.OK_STATUS;
-				}
-
-				/**
-				 * the cut operation is common for execute and redo operations - so
-				 * factor it out to here...
-				 * 
-				 */
-				private void doCut()
-				{
-					final Vector<Layer> changedLayers = new Vector<Layer>();
-
-					for (int i = 0; i < _data.length; i++)
-					{
-						final Editable thisE = _data[i];
-						final Layer parentLayer = _theParent[i];
-
-						// is the parent the data object itself?
-						if (parentLayer == null)
-						{
-							// no, it must be the top layers object
-							_theLayers.removeThisLayer((Layer) thisE);
-
-							// no need to remember the layer. the "removeThisLayer" will have
-							// fired updates
-						}
-						else
-						{
-							// remove the new data from it's parent
-							parentLayer.removeElement(thisE);
-							if (thisE instanceof NeedsToBeInformedOfRemove)
-							{
-								((NeedsToBeInformedOfRemove)thisE).beingRemoved();
-							}
-
-							if (!changedLayers.contains(parentLayer))
-								changedLayers.add(parentLayer);
-						}
-					}
-
-					if (changedLayers.size() > 1)
-						_theLayers.fireExtended();
-					else if (changedLayers.size() == 1)
-						_theLayers.fireExtended(null, changedLayers.firstElement());
-					else
-					{
-						// zero layers listed as changed. no 'firing' necessary
-					}
-				}
-
-				@Override
-				public boolean canRedo()
-				{
-					return false;
-				}
-
-				@Override
-				public boolean canUndo()
-				{
-					return false;
-				}
-
-				@Override
-				public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
-						throws ExecutionException
-				{
-					return null;
-				}
-
-			};
-			if (CorePlugin.getUndoContext() != null) {
-				myOperation.addContext(CorePlugin.getUndoContext());
-			}
-			CorePlugin.run(myOperation);
-		}
 
 		public String toString()
 		{

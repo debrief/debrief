@@ -597,6 +597,12 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="IncludesNoise" type="xs:boolean" use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to include noise data on the bearings (default = false)
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="DetectionLevel" type="DetectionLevelType">
 					<xs:annotation>
 						<xs:documentation>The level of detection delivered by this

@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Gt2Plot
 Bundle-SymbolicName: org.mwc.cmap.gt2Plot; singleton:=true
-Bundle-Version: 1.0.16
+Bundle-Version: 1.0.18
 Bundle-Activator: org.mwc.cmap.gt2plot.GtActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core;bundle-version="1.0.143",
  org.mwc.cmap.legacy;bundle-version="1.0.137",
- org.mwc.cmap.geotools;bundle-version="12.1.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ org.geotools
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Export-Package: org.mwc.cmap.gt2plot,
  org.mwc.cmap.gt2plot.data,

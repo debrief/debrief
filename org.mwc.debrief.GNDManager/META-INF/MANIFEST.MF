@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer,
  org.mwc.debrief.core
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  libs/swing2swt.jar,
  libs/jackson-core-asl-1.9.4.jar,

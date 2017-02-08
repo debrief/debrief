@@ -27,6 +27,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
@@ -64,59 +65,10 @@ public class RightClickPasteAdaptor
 				try
 				{
 					// extract the plottable
-					final Editable[] theDataList = (Editable[]) tr;
 					PasteItem paster = null;
 
-					// see if all of the selected items are layers - or not
-					boolean allLayers = true;
-					for (int i = 0; i < theDataList.length; i++)
-					{
-						final Editable editable = theDataList[i];
-						if(!(editable instanceof Layer))
-						{
-							allLayers = false;
-							continue;
-						}
-						
-						// just check that it we're not trying to drop a layer onto a layer
-						if((editable instanceof BaseLayer) &&(destination instanceof BaseLayer))
-						{
-							// nope, we don't allow a baselayer to be dropped onto a baselayer
-							return;
-						}
-						
-					}
-					
-					// so, are we just dealing with layers?
-					if (allLayers)
-					{
-						// create the menu items
-						paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
-					}
-					else
-					{
-						// just check that there isn't a null destination
-						if (destination != null)
-						{
-							// just check that the layers are compliant (that we're not trying to paste a dynamic plottable 
-							// into a non-compliant layer
-							if(tr[0] instanceof DynamicPlottable)
-							{
-								if(destination instanceof DynamicLayer)
-								{
-									// create the menu items
-									paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
-											theLayers);
-								}
-							}
-							else
-							{
-							// create the menu items
-							paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
-									theLayers);
-							}
-						}
-					}
+					paster =
+              createAction(destination, theLayers, _clipboard,  tr);
 
 					// did we find one?
 					if (paster != null)
@@ -134,6 +86,64 @@ public class RightClickPasteAdaptor
 		}
 
 	} // /////////////////////////////////
+
+  public static PasteItem createAction(final Editable destination,
+      final Layers theLayers, final Clipboard _clipboard,
+      final Editable[] theDataList)
+  {
+     PasteItem paster = null;
+    // see if all of the selected items are layers - or not
+    boolean allLayers = true;
+    for (int i = 0; i < theDataList.length; i++)
+    {
+    	final Editable editable = theDataList[i];
+    	if(!(editable instanceof Layer))
+    	{
+    		allLayers = false;
+    		continue;
+    	}
+    	
+    	// just check that it we're not trying to drop a layer onto a layer
+    	if((editable instanceof BaseLayer) &&(destination instanceof BaseLayer))
+    	{
+    		// nope, we don't allow a baselayer to be dropped onto a baselayer
+    		return paster;
+    	}
+    	
+    }
+    
+    // so, are we just dealing with layers?
+    if (allLayers)
+    {
+    	// create the menu items
+    	paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
+    }
+    else
+    {
+    	// just check that there isn't a null destination
+    	if (destination != null)
+    	{
+    		// just check that the layers are compliant (that we're not trying to paste a dynamic plottable 
+    		// into a non-compliant layer
+    		if(theDataList[0] instanceof DynamicPlottable)
+    		{
+    			if(destination instanceof DynamicLayer)
+    			{
+    				// create the menu items
+    				paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
+    						theLayers);
+    			}
+    		}
+    		else
+    		{
+    		// create the menu items
+    		paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
+    				theLayers);
+    		}
+    	}
+    }
+    return paster;
+  }
 
 	// member functions
 	// ////////////////////////////////
@@ -165,6 +175,7 @@ public class RightClickPasteAdaptor
 			// formatting
 			super.setText("Paste " + toString());
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+			setActionDefinitionId(ActionFactory.PASTE.getCommandId());
 			
 		}
 
@@ -193,7 +204,7 @@ public class RightClickPasteAdaptor
 					}
 
 					// inform the listeners
-					_theLayers.fireExtended();
+					_theLayers.fireExtended(null, _theDestination);
 
 					// now clear the clipboard
 			//		_myClipboard.clearContents();
@@ -212,7 +223,7 @@ public class RightClickPasteAdaptor
 					}
 
 					// inform the listeners
-					_theLayers.fireExtended();
+					_theLayers.fireExtended(null, _theDestination);
 					
 					// put the contents back in the clipbard
 					final EditableTransfer transfer = EditableTransfer.getInstance();
@@ -280,23 +291,23 @@ public class RightClickPasteAdaptor
 					{
 						final Editable thisItem = _data[i];
 
+            // extract the layer
+            final Layer newLayer = (Layer) thisItem;
+
 						// copy in the new data
 						// do we have a destination layer?
 						if (_theDestination != null)
 						{
-							// extract the layer
-							final Layer newLayer = (Layer) thisItem;
 
 							// add it to the target layer
 							_theDestination.add(newLayer);
 						}
 						else
 						{
-							// extract the layer
-							final Layer newLayer = (Layer) thisItem;
-
 							// add it to the top level
 							_theLayers.addThisLayer(newLayer);
+							
+							// hmm, any special processing?
 						}
 
 					}

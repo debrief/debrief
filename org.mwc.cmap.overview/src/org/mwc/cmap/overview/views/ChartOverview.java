@@ -285,7 +285,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 		// did it work?
 		if (loc == null)
+		{
+		  // ok - didn't work. maybe the plot is collapsed
 			return;
+		}
 
 		// produce the screen coordinate in the overview
 		final Point thePt = _myOverviewChart.getCanvas().getProjection()

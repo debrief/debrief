@@ -18,4 +18,4 @@ Require-Bundle: org.mwc.asset.core,
  org.eclipse.core.runtime,
  org.eclipse.ui.ide,
  org.eclipse.ui
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

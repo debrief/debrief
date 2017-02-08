@@ -141,7 +141,7 @@ public class TimeDeltas
 		bufRdr.close();
 
 		
-		if (values.size() > 0)
+		if (!values.isEmpty())
 		{
 			// just check the values are of the correct order
 			final double sampleVal = values.elementAt(1);

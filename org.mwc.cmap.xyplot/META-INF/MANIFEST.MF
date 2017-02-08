@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Time-Variable plot
 Bundle-SymbolicName: org.mwc.cmap.xyplot; singleton:=true
-Bundle-Version: 1.0.50
+Bundle-Version: 1.0.53
 Bundle-ClassPath: XYPlot.jar
 Bundle-Activator: org.mwc.cmap.xyplot.XYPlotPlugin
 Bundle-Vendor: MWC
@@ -15,4 +15,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer
 Export-Package: org.mwc.cmap.xyplot,
  org.mwc.cmap.xyplot.views
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

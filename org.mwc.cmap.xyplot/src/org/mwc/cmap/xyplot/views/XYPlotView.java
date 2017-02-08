@@ -117,6 +117,7 @@ import MWC.GUI.JFreeChart.RelativeDateAxis;
 import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
@@ -137,10 +138,11 @@ public class XYPlotView extends ViewPart
 	{
 		/**
 		 * get (recalculate) the dataset
+		 * @param liveUpdates whether to include newest updstes
 		 * 
 		 * @return
 		 */
-		public AbstractSeriesDataset getDataset();
+		public AbstractSeriesDataset getDataset(boolean liveUpdates);
 
 		/**
 		 * get the layers that this data comes from
@@ -849,6 +851,7 @@ public class XYPlotView extends ViewPart
 
 					// and tell the plot holder to redraw everything
 					_chartInPanel.newTime(null, newDTG, null);
+					
 					refreshPlot();
 				}
 			};
@@ -1014,7 +1017,7 @@ public class XYPlotView extends ViewPart
 
 		// sort out the background colour
 		//final Dimension dim = _plotControl.getSize();
-		mf.setBackgroundColor(java.awt.Color.white);
+		mf.setBackgroundColor(DebriefColors.WHITE);
 		mf.setColor(mf.getBackgroundColor());
 		mf.fillRect(0, 0, dim.width, dim.height);
 
@@ -1379,7 +1382,10 @@ public class XYPlotView extends ViewPart
 	{
 		if (_provider != null)
 		{
-			final AbstractSeriesDataset ds = _provider.getDataset();
+		  // flag for if we're extending for live data
+		  final boolean liveUpdates = _listenForDataChanges.isChecked();
+		  
+			final AbstractSeriesDataset ds = _provider.getDataset(liveUpdates);
 			if (ds != null)
 			{
 				// store the dataset
@@ -1581,7 +1587,7 @@ public class XYPlotView extends ViewPart
 		_provider = prov;
 		if (_provider != null)
 		{
-			final AbstractSeriesDataset ds = _provider.getDataset();
+			final AbstractSeriesDataset ds = _provider.getDataset(false);
 			if (ds != null)
 			{
 				// store the dataset
