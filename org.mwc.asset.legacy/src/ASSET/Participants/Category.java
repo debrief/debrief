@@ -79,6 +79,7 @@ public class Category implements java.io.Serializable
 		public static final String TORPEDO = "TORPEDO";
 		public static final String SONAR_BUOY = "SONAR_BUOY";
 		public static final String BUOY_FIELD = "BUOY_FIELD";
+		public static final String BUOY = "BUOY";
 
 		/**
 		 * surface types
@@ -235,6 +236,7 @@ public class Category implements java.io.Serializable
 			_types.addElement(Type.MPA);
 			_types.addElement(Type.AV_MISSILE);
 			_types.addElement(Type.BUOY_FIELD);
+			_types.addElement(Type.BUOY);
 		}
 	}
 

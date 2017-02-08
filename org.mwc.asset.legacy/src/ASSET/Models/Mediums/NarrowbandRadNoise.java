@@ -84,7 +84,7 @@ public class NarrowbandRadNoise implements ASSET.Models.Vessels.Radiated.Radiate
     return res;
   }
 
-  double getBaseNoiseLevelFor(ASSET.Participants.Status status)
+  public double getBaseNoiseLevelFor(ASSET.Participants.Status status)
   {
     return _baseNoiseLevel;
   }

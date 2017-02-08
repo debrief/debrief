@@ -77,6 +77,8 @@ import ASSET.Scenario.Observers.*;
 import ASSET.Scenario.Observers.Plotting.PlotDetectionStatusObserver;
 import ASSET.Scenario.Observers.Plotting.PlotInvestigationSubjectObserver;
 import ASSET.Scenario.Observers.Plotting.PlotSensorObserver;
+import ASSET.Scenario.Observers.Recording.CSVExportDetectionsObserver;
+import ASSET.Scenario.Observers.Recording.CSVExportStatusObserver;
 import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefDeployableSensorLocationObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
@@ -138,6 +140,23 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
         _myList.add(obs);
       }
     });
+    
+    addHandler(new CSVExportDetectionObserverHandler()
+    {
+      public void setObserver(final ScenarioObserver obs)
+      {
+        _myList.add(obs);
+      }
+    });
+
+    addHandler(new CSVExportStatusObserverHandler()
+    {
+      public void setObserver(final ScenarioObserver obs)
+      {
+        _myList.add(obs);
+      }
+    });
+
     
     addHandler(new RecordToDatabaseObserverHandler()
     {
@@ -323,6 +342,14 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       else if (observer instanceof CSVTrackObserver)
       {
         CSVTrackObserverHandler.exportThis(observer, sens, doc);
+      }
+      else if (observer instanceof CSVExportDetectionsObserver)
+      {
+      	CSVExportDetectionObserverHandler.exportThis(observer, sens, doc);
+      }
+      else if (observer instanceof CSVExportStatusObserver)
+      {
+      	CSVExportStatusObserverHandler.exportThis(observer, sens, doc);
       }
       else if (observer instanceof StopOnElapsedObserver)
       {

@@ -535,7 +535,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		}
 
 		String ambigTxt = null;
-		if (bearing == null)
+		if (ambigBearing == null)
 		{
 			ambigTxt = "NULL";
 		}

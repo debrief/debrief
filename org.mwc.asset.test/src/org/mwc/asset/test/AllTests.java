@@ -103,6 +103,7 @@ import org.junit.runners.Suite;
 	ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor.DippingActiveTest.class,
 	ASSET.Models.Sensor.Initial.NarrowbandSensor.NBSensorTest.class,
 	ASSET.Models.Sensor.Initial.OpticSensor.OpticTest.class,
+	ASSET.Models.Sensor.Initial.BistaticReceiver.BistaticTest.class,
 	ASSET.Models.Sensor.Lookup.LookupSensor.LookupSensorTest.class,
 	ASSET.Models.Sensor.Lookup.MADLookupSensor.MADLookupTest.class,
 	ASSET.Models.Sensor.Lookup.OpticLookupSensor.OpticLookupTest.class,
