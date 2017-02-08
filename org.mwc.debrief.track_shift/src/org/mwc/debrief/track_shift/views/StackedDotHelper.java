@@ -601,9 +601,15 @@ public final class StackedDotHelper
     {
       if(ownshipCourseSeries != null)
       {
-        // ok, clear it out
-        ownshipCourseSeries.clear();
-        ownshipCourseSeries.addAndOrUpdate(osCourseValues);
+        // is it currently empty?
+        if (ownshipCourseSeries.isEmpty())
+        {
+          ownshipCourseSeries.addAndOrUpdate(osCourseValues);
+        }
+        else
+        {
+          // ok, ignore it. we only assign the data in the first pass
+        }
       }
     }
     
@@ -612,11 +618,15 @@ public final class StackedDotHelper
     {
       if(targetBearingSeries != null)
       {
-        // ok, clear it out
-        targetBearingSeries.clear();
-        
-        // and store them
-        targetBearingSeries.addAndOrUpdate(allCuts);
+        // is it currently empty?
+        if (targetBearingSeries.isEmpty())
+        {
+          targetBearingSeries.addAndOrUpdate(allCuts);
+        }
+        else
+        {
+          // ok, ignore it. we only assign the data in the first pass
+        }
       }
     }
     
