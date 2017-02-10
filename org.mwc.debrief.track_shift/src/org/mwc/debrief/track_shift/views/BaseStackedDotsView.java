@@ -121,11 +121,13 @@ import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -792,7 +794,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             if(legFound)
             {
               // ok, we've already create our leg. But, this one overlaps
-              // with us. we should delete it.
+              // with us. we should delete it, unless it's a Dynamic Infill
               TrackWrapper secondary= (TrackWrapper) secTrack;
               secondary.removeElement(seg);
               
@@ -934,7 +936,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // check we have some data
     if(doublets.isEmpty())
     {
-      System.err.println("List of cuts is empty");
+      Application.logError2(Application.ERROR,
+          "List of cuts is empty", null);
       return null;
     }
     
@@ -1905,6 +1908,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             {
               // cool, remember about it.
               _theTrackDataListener = (TrackManager) part;
+              
+              // hey, new plot. clear the zone charts
+              clearZoneCharts();
 
               // set the title, so there's something useful in
               // there
@@ -1919,8 +1925,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // just in case we're ready to start plotting, go
               // for it!
               updateStackedDots(true);
+              
             }
-
           }
         });
     _myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
@@ -1933,6 +1939,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             _theTrackDataListener = null;
 
             _myHelper.reset();
+            
+            // ok, clear the zone charts
+            clearZoneCharts();
           }
         });
     _myPartMonitor.addPartListener(TrackDataProvider.class,
@@ -1960,13 +1969,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
               _myTrackDataListener = new TrackDataListener()
               {
-
                 public void tracksUpdated(final WatchableList primary,
                     final WatchableList[] secondaries)
                 {
                   _myHelper.initialise(_theTrackDataListener, false,
                       _onlyVisible.isChecked(), _holder, logger, getType(),
                       _needBrg, _needFreq);
+
+                  // check we have sufficient data
+                  if(_myHelper.getSecondaryTrack() == null)
+                  {
+                    // no secondary track. clear the data
+                    clearZoneCharts();
+                  }
 
                   // ahh, the tracks have changed, better
                   // update the doublets
@@ -1978,14 +1993,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   // update
                   updateLinePlotRanges();
                   
-                  // check we have sufficient data
-                  if(_myHelper.getSecondaryTrack() == null)
-                  {
-                    // no secondary track. clear the data
-                    ownshipCourseSeries.clear();
-                    targetBearingSeries.clear();
-                  }
-
                 }
               };
             }
@@ -2032,6 +2039,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             // hey - lets clear our plot
             updateStackedDots(true);
+
+            // and clear the zone charts
+            clearZoneCharts();
           }
         });
 
@@ -2104,9 +2114,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _linePlot.setDataset(null);
               _dotPlot.setDataset(null);
               _targetOverviewPlot.setDataset(null);
+              
+              // ok, clear the zone charts
+              clearZoneCharts();
             }
           }
-
         });
 
     // ok we're all ready now. just try and see if the current part is valid
@@ -2259,6 +2271,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
   
+  private void clearZoneCharts()
+  {
+    ownshipCourseSeries.clear();
+    targetBearingSeries.clear();
+  }
+
   public static class TestSlicing extends junit.framework.TestCase
   {
     public void testSetLeg()
