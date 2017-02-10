@@ -40,7 +40,7 @@ public class ImportNMEA
   private enum MsgType
   {
     VESSEL_NAME, OS_POS, CONTACT, TIMESTAMP, UNKNOWN, AIS, OS_DEPTH,
-    OS_COURSE_SPEED;
+    OS_COURSE_SPEED, OS_COURSE, OS_SPEED;
   }
 
   private static class State
@@ -168,6 +168,8 @@ public class ImportNMEA
           "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06";
       final String test8 = "$POSL,PDS,9.2,M*03";
       final String test9 = "$POSL,VEL,GPS,276.3,4.6,,,*35";
+      final String test10_drSpd = "$POSL,VEL,SPL,,,4.1,0.0,4.0*12";
+      final String test11_drCrse = "$POSL,HDG,111.2,-04.1*7F";
 
       assertEquals("Tgt POS", MsgType.CONTACT, parseType(test1));
       assertEquals("Vessel name", MsgType.VESSEL_NAME, parseType(test2));
@@ -224,8 +226,14 @@ public class ImportNMEA
 
       assertEquals("got depth", 9.2d, parseMyDepth(test8), 0.001);
 
-      assertEquals("got course", 276.3d, parseMyCourse(test9), 0.001);
-      assertEquals("got speed", 4.6d, parseMySpeed(test9), 0.001);
+      assertEquals("got course", 276.3d, parseMyCourse(coursePatternGPS, test9), 0.001);
+      assertEquals("got speed", 4.6d, parseMySpeed(speedPatternGPS, test9), 0.001);
+
+      // and the DR equivalents
+      assertEquals("got speed", 4.1d, parseMySpeed(speedPatternLOG, test10_drSpd), 0.001);
+      assertEquals("got course", 111.2d, parseMyCourse(coursePatternHDG, test11_drCrse), 0.001);
+
+      
     }
   }
 
@@ -249,8 +257,14 @@ public class ImportNMEA
   /**
    * $POSL,VEL,GPS,276.3,4.6,,,*35
    */
-  final private static Pattern coursePattern = Pattern
+  final private static Pattern coursePatternGPS = Pattern
       .compile("\\$POSL,VEL,GPS,(?<COURSE>\\d+.\\d+),.*");
+
+  /**
+   * $POSL,HDG,111.0,-04.1*7F
+   */
+  final private static Pattern coursePatternHDG = Pattern
+      .compile("\\$POSL,HDG,(?<COURSE>\\d+.\\d+),.*");
 
   /**
    * $POSL,DZA,20160720,000000.859,0007328229*42
@@ -271,9 +285,13 @@ public class ImportNMEA
   /**
    * $POSL,VEL,GPS,276.3,4.6,,,*35
    */
-  final private static Pattern speedPattern = Pattern
+  final private static Pattern speedPatternGPS = Pattern
       .compile("\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*");
-
+  /**
+   * $POSL,VEL,SPL,,,4.0,0.0,4.0*12
+   */
+  final private static Pattern speedPatternLOG = Pattern
+      .compile("\\$POSL,VEL,SPL,,,(?<SPEED>\\d+.\\d+),.*");
   /**
    * "$POSL,POS,GPS,1122.2222,N,12312.1234,W,0.00,,Center of Rotation,N,,,,,*41";
    */
@@ -379,9 +397,10 @@ public class ImportNMEA
     return res;
   }
 
-  static private double parseMyCourse(final String nmea_sentence)
+  static private double parseMyCourse(final Pattern pattern,
+      final String nmea_sentence)
   {
-    final Matcher m = coursePattern.matcher(nmea_sentence);
+    final Matcher m = pattern.matcher(nmea_sentence);
     final double res;
     if (m.matches())
     {
@@ -444,9 +463,10 @@ public class ImportNMEA
     return res;
   }
 
-  static private double parseMySpeed(final String nmea_sentence)
+  static private double parseMySpeed(final Pattern pattern,
+      final String nmea_sentence)
   {
-    final Matcher m = speedPattern.matcher(nmea_sentence);
+    final Matcher m = pattern.matcher(nmea_sentence);
     final double res;
     if (m.matches())
     {
@@ -494,6 +514,10 @@ public class ImportNMEA
         res = MsgType.OS_POS;
       else if (str.contains("VEL") && str2.equals("GPS"))
         res = MsgType.OS_COURSE_SPEED;
+      else if (str.contains("VEL") && str2.equals("SPL"))
+        res = MsgType.OS_SPEED;
+      else if (str.contains("HDG"))
+        res = MsgType.OS_COURSE;
       else if (str.equals("CONTACT"))
         res = MsgType.CONTACT;
       else if (str.equals("AIS"))
@@ -559,6 +583,13 @@ public class ImportNMEA
     final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
     String nmea_sentence;
+    
+    // flag for if we wish to obtain DR data from GPS message, or from organic sensors
+    final boolean DRfromGPS = false;
+    
+    // remember the last DR course read in, since we capture course and speed
+    // from different messages
+    Double drCourse = null;
 
     int ctr = 0;
 
@@ -599,20 +630,58 @@ public class ImportNMEA
           myDepth = parseMyDepth(nmea_sentence);
         }
         break;
+      case OS_COURSE:
+        if (importOS)
+        {
+          // ok, extract the rest of the body
+          drCourse = parseMyCourse(coursePatternHDG, nmea_sentence);
+        }
+        break;
+      case OS_SPEED:
+        if (importOS)
+        {
+          // ok, extract the rest of the body
+          double drSpeedDegs = parseMySpeed(speedPatternLOG, nmea_sentence);
+          
+          // are we taking DR from GPS?
+          if(DRfromGPS)
+          {
+            // ok, skip creating the DR - do it in the other message
+          }
+          else
+          {
+            // do we know our origin?
+            if (origin != null)
+            {
+              // ok, grow the DR track
+              storeDRFix(origin, drCourse, drSpeedDegs, date, myName, myDepth,
+                  DebriefColors.BLUE);
+            }
+          }          
+        }
+        break;
       case OS_COURSE_SPEED:
         if (importOS)
         {
           // ok, extract the rest of the body
-          final double myCourseDegs = parseMyCourse(nmea_sentence);
-          final double mySpeedKts = parseMySpeed(nmea_sentence);
+          final double myCourseDegs = parseMyCourse(coursePatternGPS, nmea_sentence);
+          final double mySpeedKts = parseMySpeed(speedPatternGPS, nmea_sentence);
 
-          // do we know our origin?
-          if (origin != null)
-          {
-            // ok, grow the DR track
-            storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName, myDepth,
-                DebriefColors.BLUE);
-          }
+            // are we taking DR from GPS?
+            if (DRfromGPS)
+            {
+              // do we know our origin?
+              if (origin != null)
+              {
+                // ok, grow the DR track
+                storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName,
+                    myDepth, DebriefColors.BLUE);
+              }
+            }
+            else
+            {
+              // ok, skip creating the DR using GPS deltas - do it from the organic sensors
+            }
         }
         break;
       case OS_POS:
