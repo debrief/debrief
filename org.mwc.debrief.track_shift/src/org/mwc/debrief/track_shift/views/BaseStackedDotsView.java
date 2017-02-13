@@ -2013,11 +2013,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                       _needBrg, _needFreq);
 
                   // check we have sufficient data
-                  if(_myHelper.getSecondaryTrack() == null)
-                  {
-                    // no secondary track. clear the data
-                    clearZoneCharts();
-                  }
+                  // no secondary track. clear the data
+                  clearZoneCharts();
 
                   // ahh, the tracks have changed, better
                   // update the doublets
@@ -2311,6 +2308,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
     ownshipCourseSeries.clear();
     targetBearingSeries.clear();
+    
+    // and the marked zones
+    if (ownshipZoneChart != null)
+    {
+      ownshipZoneChart.clearZones();
+    }
+
+    if (targetZoneChart != null)
+    {
+      targetZoneChart.clearZones();
+    }
   }
 
   public static class TestSlicing extends junit.framework.TestCase
