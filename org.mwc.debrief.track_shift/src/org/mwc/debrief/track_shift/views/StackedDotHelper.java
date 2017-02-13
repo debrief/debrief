@@ -297,7 +297,7 @@ public final class StackedDotHelper
       final ErrorLogger logger, final boolean updateDoublets,
       TimeSeriesCollection targetCourseSeries,
       TimeSeriesCollection targetSpeedSeries, TimeSeries ownshipCourseSeries,
-      TimeSeries targetBearingSeries)
+      TimeSeries targetBearingSeries, TimeSeries targetCalculatedSeries)
 	{
 		// do we even have a primary track
 		if (_primaryTrack == null)
@@ -377,7 +377,7 @@ public final class StackedDotHelper
 						measuredBearing, thisColor, false, null);
 
 				// and add them to the series
-				measuredValues.add(mBearing);
+				measuredValues.addOrUpdate(mBearing);
 
 				if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
 				{
@@ -387,7 +387,7 @@ public final class StackedDotHelper
 
 					final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
 							ambigBearing, thisColor, false, null);
-					ambigValues.add(amBearing);
+					ambigValues.addOrUpdate(amBearing);
 				}
 
 				// do we have target data?
@@ -411,8 +411,8 @@ public final class StackedDotHelper
 						final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
 								calculatedBearing, calcColor, true, null);
 
-						errorValues.add(newError);
-						calculatedValues.add(cBearing);
+						errorValues.addOrUpdate(newError);
+						calculatedValues.addOrUpdate(cBearing);
 					}
 				}
 
@@ -475,7 +475,7 @@ public final class StackedDotHelper
 
 			final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
 					ownshipCourse, fw.getColor(), true, null);
-			osCourseValues.add(crseBearing);
+			osCourseValues.addOrUpdate(crseBearing);
 		}
 
     // sort out the target course/speed
@@ -570,7 +570,7 @@ public final class StackedDotHelper
       }
       
       // ok, store it.
-      allCuts.add(new TimeSeriesDataItem(new FixedMillisecond(cut.getDTG().getDate().getTime()), theBearing));
+      allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut.getDTG().getDate().getTime()), theBearing));
     }
 
 		// ok, add these new series
@@ -594,6 +594,12 @@ public final class StackedDotHelper
     if (showCourse)
     {
       targetCourseSeries.addSeries(osCourseValues);
+    }
+    
+    if (calculatedValues.getItemCount() > 0)
+    {
+      targetCalculatedSeries.clear();
+      targetCalculatedSeries.addAndOrUpdate(calculatedValues);
     }
     
     // and the course data for the zone chart
@@ -832,7 +838,7 @@ public final class StackedDotHelper
 				// final ColouredDataItem corrFreq = new ColouredDataItem(
 				// new FixedMillisecond(currentTime.getDate().getTime()),
 				// correctedFreq, thisColor, false, null);
-				measuredValues.add(mFreq);
+				measuredValues.addOrUpdate(mFreq);
 
 				// do we have target data?
 				if (thisD.getTarget() != null)
@@ -857,12 +863,12 @@ public final class StackedDotHelper
 								predictedFreq, calcColor, false, null);
 						final ColouredDataItem eFreq = new ColouredDataItem(thisMilli,
 								thisError, thisColor, false, null);
-						baseValues.add(bFreq);
-						predictedValues.add(pFreq);
-						errorValues.add(eFreq);
+						baseValues.addOrUpdate(bFreq);
+						predictedValues.addOrUpdate(pFreq);
+						errorValues.addOrUpdate(eFreq);
 					}
 
-					correctedValues.add(corrFreq);
+					correctedValues.addOrUpdate(corrFreq);
 				}
 
 			}

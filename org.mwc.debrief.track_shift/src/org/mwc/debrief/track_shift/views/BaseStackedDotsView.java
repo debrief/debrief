@@ -320,6 +320,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private ZoneChart targetZoneChart;
   final protected TimeSeries ownshipCourseSeries = new TimeSeries("Ownship course");
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
+  final protected TimeSeries targetCalculatedSeries = new TimeSeries("Calculated Bearing");
 
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Action _modeOne;
@@ -673,7 +674,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     ownshipZoneChart =
         ZoneChart.create(undoRedoProvider, "Ownship Legs", "Course", sashForm,
-            osZones, ownshipCourseSeries, osTimeValues, blueProv,
+            osZones, ownshipCourseSeries, null, osTimeValues, blueProv,
             DebriefColors.BLUE, ownshipLegSlicer);
 
     
@@ -731,7 +732,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     targetZoneChart =
         ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
-            tgtZones, targetBearingSeries, tgtTimeValues, randomProv,
+            tgtZones, targetBearingSeries, targetCalculatedSeries,  tgtTimeValues, randomProv,
             DebriefColors.RED, targetLegSlicer);
     
     targetZoneChart.addZoneListener(targetListener);

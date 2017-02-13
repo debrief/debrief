@@ -745,14 +745,17 @@ public class ZoneChart extends Composite
     {
       xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
+    
+    final TimeSeries otherSeries = null;
 
     return create(undoRedoProvider, chartTitle, yTitle, parent, zones,
-        xySeries, timeValues, blueProv, lineColor, zoneSlicer);
+        xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer);
   }
 
   public static ZoneChart create(ZoneUndoRedoProvider undoRedoProvider,
       final String chartTitle, final String yTitle, final Composite parent,
-      final Zone[] zones, final TimeSeries xySeries, final long[] timeValues,
+      final Zone[] zones, final TimeSeries xySeries, 
+      final TimeSeries otherSeries, final long[] timeValues,
       final ColorProvider blueProv, final Color lineColor,
       final ZoneSlicer zoneSlicer)
   {
@@ -779,6 +782,11 @@ public class ZoneChart extends Composite
 
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
+    
+    if(otherSeries != null)
+    {
+      dataset.addSeries(otherSeries);
+    }
 
     final JFreeChart xylineChart =
         ChartFactory.createTimeSeriesChart(chartTitle, // String
