@@ -342,6 +342,9 @@ public class ZoneChart extends Composite
         }
         case EDIT:
         {
+          
+          
+          
           if (adding != null)
           {
             final XYPlot plot = (XYPlot) chart.getPlot();
@@ -425,8 +428,8 @@ public class ZoneChart extends Composite
                     };
                 undoRedoProvider.execute(deleteOp);
               }
-              else if (isResizeStart(dragZone, event.x)
-                  || isResizeEnd(dragZone, event.x))
+              else if (resizeStart
+                  || resizeEnd)
               {
                 final Zone affect = dragZone;
                 final long startBefore = dragZoneStartBefore;
