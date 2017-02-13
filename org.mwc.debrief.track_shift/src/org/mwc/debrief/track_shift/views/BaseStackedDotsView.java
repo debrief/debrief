@@ -2184,7 +2184,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       final WatchableList[] secTracks =
           _myTrackDataProvider.getSecondaryTracks();
-      if (secTracks.length == 1)
+      if (secTracks != null && secTracks.length == 1)
       {
         final TrackWrapper sw = (TrackWrapper) secTracks[0];
         final Enumeration<Editable> iter = sw.getSegments().elements();
