@@ -127,7 +127,6 @@ import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -1134,6 +1133,43 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void deleted(Zone zone)
       {
+        // capture the time period
+        TimePeriod zonePeriod = new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()), 
+            new HiResDate(zone.getEnd()));
+
+        // ok, delete the relevant leg
+        // see if there is already a leg for this time
+        final ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
+        Enumeration<Editable> iter = secTrack.segments();
+        while (iter.hasMoreElements())
+        {
+          Editable nextSeg = iter.nextElement();
+          if(nextSeg instanceof SegmentList)
+          {
+            // oh, this track has already been split into legs.  We need to iterate through them instead
+            SegmentList list = (SegmentList) nextSeg;
+            iter = list.elements();
+            continue;
+          }
+          
+          // ok, we know we're working through segments
+          TrackSegment cSeg = (TrackSegment) nextSeg;
+          if (cSeg instanceof RelativeTMASegment)
+          {
+            RelativeTMASegment seg = (RelativeTMASegment) cSeg;
+            TimePeriod legPeriod =
+                new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg.getDTG_End());
+            
+            if (zonePeriod.equals(legPeriod))
+            {
+              // ok, delete this segment
+              TrackWrapper secTr = (TrackWrapper) secTrack;
+              secTr.removeElement(seg);
+            }
+          }
+        }        
+        
+        // now do some updates, to double-check
         fireUpdates();
       }
       
