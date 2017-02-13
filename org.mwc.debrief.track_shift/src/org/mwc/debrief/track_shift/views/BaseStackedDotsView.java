@@ -676,7 +676,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             osZones, ownshipCourseSeries, osTimeValues, blueProv,
             DebriefColors.BLUE, ownshipLegSlicer);
 
-    final Zone[] tgtZones = new ZoneChart.Zone[]{};
+    
+    final Zone[] tgtZones = getTargetZones().toArray(new Zone[]{});
     final long[] tgtTimeValues = new long[]{};
 
     // we need a color provider for the target legs
@@ -1961,7 +1962,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // just in case we're ready to start plotting, go
               // for it!
               updateStackedDots(true);
-              
             }
           }
         });
@@ -2026,6 +2026,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   // update
                   updateLinePlotRanges();
                   
+                  // initialise the zones       
+                  List<Zone> zones = getTargetZones();
+                  if(targetZoneChart != null)
+                  {
+                    targetZoneChart.setZones(zones);
+                  }
                 }
               };
             }
@@ -2157,6 +2163,53 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // ok we're all ready now. just try and see if the current part is valid
     _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
         .getActivePage());
+  }
+
+  /** collate some zones based on legs in the target track
+   * 
+   * @return
+   */
+  protected List<Zone> getTargetZones()
+  {
+    final List<Zone> zones = new ArrayList<Zone>();
+    if (_myTrackDataProvider != null)
+    {
+      final WatchableList[] secTracks = _myTrackDataProvider.getSecondaryTracks();
+      if (secTracks.length == 1)
+      {
+        final TrackWrapper sw = (TrackWrapper) secTracks[0];
+        if (targetZoneChart != null)
+        {
+          final Enumeration<Editable> iter = sw.getSegments().elements();
+          while (iter.hasMoreElements())
+          {
+            final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
+            if (thisSeg instanceof RelativeTMASegment)
+            {
+              // do we have a first color?
+              Editable firstElement = thisSeg.elements().nextElement();
+              final Color color;
+              if(firstElement != null)
+              {
+                FixWrapper fix = (FixWrapper) firstElement;
+                color = fix.getColor();
+              }
+              else
+              {
+                color = Color.RED;
+              }
+              
+              final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
+              final Zone newZ =
+                  new Zone(rel.getDTG_Start().getDate().getTime(), rel
+                      .getDTG_End().getDate().getTime(), color);
+              zones.add(newZ);
+            }
+          }
+        }
+      }
+    }
+    return zones;
   }
 
   /**

@@ -1317,4 +1317,14 @@ public class ZoneChart extends Composite
     return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
         .getLastMillisecond();
   }
+
+  final public void setZones(final List<Zone> newZones)
+  {
+    final XYPlot plot = (XYPlot) chart.getPlot();
+    for(final Zone zone: newZones)
+    {
+      addZone(plot, zone);
+      zones.add(zone);
+    }
+  }
 }
