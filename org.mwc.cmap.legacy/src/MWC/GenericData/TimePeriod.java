@@ -163,6 +163,8 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     // member functions
     ////////////////////////////////////////////////////////////
 
+    
+    
     /**
      * get the start of this time period
      */
@@ -170,6 +172,31 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     {
       return _startDTG;
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      if (!(obj instanceof TimePeriod))
+        return false;
+      if (obj == this)
+        return true;
+      TimePeriod tp = (TimePeriod) obj;
+      if(tp.getStartDTG().equals(this.getStartDTG()) && tp.getEndDTG().equals(this.getEndDTG()))
+        return true;
+      else
+        return false;
+    }
+
+
+    @Override
+    public int hashCode()
+    {
+      int hash = 7;
+      hash = 31 * hash + getStartDTG().getDate().hashCode();
+      hash = 31 * hash + getEndDTG().getDate().hashCode();
+      return hash;
+    }
+
 
     /**
      * get the end of this time period

@@ -907,6 +907,16 @@ public class ZoneChart extends Composite
     plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
   }
+  
+  public void clearZones()
+  {
+    zoneMarkers.clear();
+    zones.clear();
+    
+    // and from the plot
+    final XYPlot thePlot = (XYPlot) chart.getPlot();
+    thePlot.clearDomainMarkers();
+  }
 
   public void addZoneListener(final ZoneListener listener)
   {
@@ -1306,5 +1316,15 @@ public class ZoneChart extends Composite
     }
     return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
         .getLastMillisecond();
+  }
+
+  final public void setZones(final List<Zone> newZones)
+  {
+    final XYPlot plot = (XYPlot) chart.getPlot();
+    for(final Zone zone: newZones)
+    {
+      addZone(plot, zone);
+      zones.add(zone);
+    }
   }
 }
