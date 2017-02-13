@@ -1,5 +1,6 @@
 package org.mwc.debrief.track_shift.controls;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
@@ -809,6 +810,13 @@ public class ZoneChart extends Composite
     renderer.setSeriesPaint(0, lineColor);
     renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
+    renderer.setSeriesStroke(0, new BasicStroke(1));
+
+    if(otherSeries != null)
+    {
+      renderer.setSeriesStroke(1, new BasicStroke(2));
+      renderer.setSeriesPaint(1, Color.GRAY);
+    }
 
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
