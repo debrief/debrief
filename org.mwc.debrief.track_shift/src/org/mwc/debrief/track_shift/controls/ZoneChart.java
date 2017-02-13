@@ -1,5 +1,6 @@
 package org.mwc.debrief.track_shift.controls;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
@@ -745,14 +746,17 @@ public class ZoneChart extends Composite
     {
       xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
+    
+    final TimeSeries otherSeries = null;
 
     return create(undoRedoProvider, chartTitle, yTitle, parent, zones,
-        xySeries, timeValues, blueProv, lineColor, zoneSlicer);
+        xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer);
   }
 
   public static ZoneChart create(ZoneUndoRedoProvider undoRedoProvider,
       final String chartTitle, final String yTitle, final Composite parent,
-      final Zone[] zones, final TimeSeries xySeries, final long[] timeValues,
+      final Zone[] zones, final TimeSeries xySeries, 
+      final TimeSeries otherSeries, final long[] timeValues,
       final ColorProvider blueProv, final Color lineColor,
       final ZoneSlicer zoneSlicer)
   {
@@ -779,6 +783,11 @@ public class ZoneChart extends Composite
 
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
+    
+    if(otherSeries != null)
+    {
+      dataset.addSeries(otherSeries);
+    }
 
     final JFreeChart xylineChart =
         ChartFactory.createTimeSeriesChart(chartTitle, // String
@@ -801,6 +810,13 @@ public class ZoneChart extends Composite
     renderer.setSeriesPaint(0, lineColor);
     renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
+    renderer.setSeriesStroke(0, new BasicStroke(1));
+
+    if(otherSeries != null)
+    {
+      renderer.setSeriesStroke(1, new BasicStroke(2));
+      renderer.setSeriesPaint(1, Color.GRAY);
+    }
 
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
