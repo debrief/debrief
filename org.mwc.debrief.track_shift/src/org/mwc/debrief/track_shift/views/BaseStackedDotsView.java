@@ -1962,6 +1962,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // just in case we're ready to start plotting, go
               // for it!
               updateStackedDots(true);
+              
+              // and the zones
+              // initialise the zones
+              List<Zone> zones = getTargetZones();
+              if (targetZoneChart != null)
+              {
+                targetZoneChart.setZones(zones);
+              }
             }
           }
         });
@@ -2174,37 +2182,35 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final List<Zone> zones = new ArrayList<Zone>();
     if (_myTrackDataProvider != null)
     {
-      final WatchableList[] secTracks = _myTrackDataProvider.getSecondaryTracks();
+      final WatchableList[] secTracks =
+          _myTrackDataProvider.getSecondaryTracks();
       if (secTracks.length == 1)
       {
         final TrackWrapper sw = (TrackWrapper) secTracks[0];
-        if (targetZoneChart != null)
+        final Enumeration<Editable> iter = sw.getSegments().elements();
+        while (iter.hasMoreElements())
         {
-          final Enumeration<Editable> iter = sw.getSegments().elements();
-          while (iter.hasMoreElements())
+          final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
+          if (thisSeg instanceof RelativeTMASegment)
           {
-            final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
-            if (thisSeg instanceof RelativeTMASegment)
+            // do we have a first color?
+            Editable firstElement = thisSeg.elements().nextElement();
+            final Color color;
+            if (firstElement != null)
             {
-              // do we have a first color?
-              Editable firstElement = thisSeg.elements().nextElement();
-              final Color color;
-              if(firstElement != null)
-              {
-                FixWrapper fix = (FixWrapper) firstElement;
-                color = fix.getColor();
-              }
-              else
-              {
-                color = Color.RED;
-              }
-              
-              final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
-              final Zone newZ =
-                  new Zone(rel.getDTG_Start().getDate().getTime(), rel
-                      .getDTG_End().getDate().getTime(), color);
-              zones.add(newZ);
+              FixWrapper fix = (FixWrapper) firstElement;
+              color = fix.getColor();
             }
+            else
+            {
+              color = Color.RED;
+            }
+
+            final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
+            final Zone newZ =
+                new Zone(rel.getDTG_Start().getDate().getTime(), rel
+                    .getDTG_End().getDate().getTime(), color);
+            zones.add(newZ);
           }
         }
       }
