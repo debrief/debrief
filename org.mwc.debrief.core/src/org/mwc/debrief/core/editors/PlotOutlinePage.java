@@ -614,7 +614,18 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
         // go for it.
-        _treeViewer.collapseAll();
+    	  try
+    	  {
+    		  //workaround to avoid NPE on windows 
+    		  _treeViewer.setSelection(new StructuredSelection());
+    		  _treeViewer.getTree().setRedraw(true);
+    		  _treeViewer.collapseAll();
+    	  }
+    	  finally{
+    		  
+    		  
+    		  _treeViewer.getTree().setRedraw(true);
+    	  }
       }
     };
 
