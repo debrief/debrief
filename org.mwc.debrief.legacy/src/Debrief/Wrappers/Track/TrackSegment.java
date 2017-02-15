@@ -19,18 +19,24 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.Vector;
 
 import junit.framework.TestCase;
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
+import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
@@ -42,6 +48,7 @@ import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
+import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -114,6 +121,118 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			ts0.addFix(newFix4);
 			return ts0;
 		}
+		
+		public void testResample()
+		{
+		  TrackWrapper tw = new TrackWrapper();
+		  tw.setName("Some name");
+		  
+		  final List<String> log = new ArrayList<String>();
+		  
+		  tw.add(getFix(0, 2, 4));
+      tw.add(getFix(60000, 2, 4));
+      tw.add(getFix(120000, 2, 4));
+      tw.add(getFix(180000, 2, 4));
+      tw.add(getFix(240000, 2, 4));
+      tw.add(getFix(300000, 2, 4));
+      
+      TrackSegment t1 = (TrackSegment) tw.getSegments().elements().nextElement();
+      assertEquals("right length", 6, t1.size());
+      
+      // do resample
+      t1.setResampleDataAt(new HiResDate(120000));
+      assertEquals("right length", 3, t1.size());
+
+      t1.setResampleDataAt(new HiResDate(12000));
+      assertEquals("right length", 21, t1.size());
+      
+      // also try it for a TMA segment
+      tw.removeElement(t1);
+      
+      Application.initialise(new ToolParent(){
+
+        @Override
+        public void logError(int status, String text, Exception e)
+        {
+          log.add(text);
+        }
+
+        @Override
+        public void logError(int status, String text, Exception e,
+            boolean revealLog)
+        {
+          log.add(text);
+        }
+
+        @Override
+        public void logStack(int status, String text)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public void setCursor(int theCursor)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public void restoreCursor()
+        {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public void addActionToBuffer(Action theAction)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public String getProperty(String name)
+        {
+          // TODO Auto-generated method stub
+          return null;
+        }
+
+        @Override
+        public Map<String, String> getPropertiesLike(String pattern)
+        {
+          // TODO Auto-generated method stub
+          return null;
+        }
+
+        @Override
+        public void setProperty(String name, String value)
+        {
+          // TODO Auto-generated method stub
+          
+        }});
+      
+      AbsoluteTMASegment as = new AbsoluteTMASegment(12, new WorldSpeed(4, WorldSpeed.Kts), new WorldLocation(2,2,2),new HiResDate(100000), new HiResDate(1000000));
+      tw.add(as);
+      assertEquals("right length", 16, as.size());
+      assertEquals("empty log", 0, log.size());
+      
+      as.setResampleDataAt(new HiResDate(120000));
+      
+      assertEquals("still right length", 16, as.size());
+      assertEquals("non-empty log", 1, log.size());
+
+		}
+		
+		private FixWrapper getFix(long dtg, double course, double speed)
+		{
+		  Fix theFix = new Fix(new HiResDate(dtg), new WorldLocation(2,2,2), course, speed);
+		  FixWrapper res = new FixWrapper(theFix);
+		  
+		  return res;
+		}
+		
 	}
 
 	/**
@@ -163,7 +282,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				final PropertyDescriptor[] res =
 				{ expertProp("Visible", "whether this layer is visible", FORMAT),
 						displayExpertProp("LineStyle", "Line style", "how to plot this line", FORMAT),
-						expertProp("Name", "Name of this track segment", FORMAT) };
+						expertProp("Name", "Name of this track segment", FORMAT),
+            displayExpertLongProp("ResampleDataAt", "Resample data at",
+                "the data sample rate", TEMPORAL,
+                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class) };
 				res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
 				return res;
 			}
@@ -217,6 +339,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 */
 	private int _lineStyle = CanvasType.SOLID;
+
+  private HiResDate _lastDataFrequency;
 
 	public static final String TMA_LEADER = "TMA_";
 	
@@ -1023,5 +1147,71 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			super.add(editable);
 		}
 	}
+	
+
+  /**
+   * set the data frequency (in seconds) for the track & sensor data
+   * 
+   * @param theVal
+   *          frequency to use
+   */
+  @FireExtended
+  public final void setResampleDataAt(final HiResDate theVal)
+  {
+    this._lastDataFrequency = theVal;
+    
+    // just check that we're not a TMA segment
+    if(this instanceof CoreTMASegment)
+    {
+      Application.logError2(ErrorLogger.WARNING, "Can't resample TMA track", null);
+      return;
+    }
+  
+    // have a go at trimming the start time to a whole number of intervals
+    final long interval = theVal.getMicros();
+  
+    // do we have a start time (we may just be being tested...)
+    if (!this.elements().hasMoreElements())
+    {
+      return;
+    }
+  
+    // get the first item
+    FixWrapper first = (FixWrapper) elements().nextElement();
+    
+    // sort out the start time & time steps
+    final long currentStart = first.getTime().getMicros();
+    long startTime = (currentStart / interval) * interval;
+  
+    // just check we're in the range
+    if (startTime < currentStart)
+    {
+      startTime += interval;
+    }
+  
+    // just check it's not a barking frequency
+    if (theVal.getDate().getTime() <= 0)
+    {
+      // ignore, we don't need to do anything for a zero or a -1
+    }
+    else
+    {
+      // get the parent track
+      TrackWrapper parent = this.getWrapper();
+      
+      // and do the decimate
+      decimate(theVal, parent, startTime);
+    }
+  }
+
+  /**
+   * method to allow the setting of data sampling frequencies for the track & sensor data
+   * 
+   * @return frequency to use
+   */
+  public final HiResDate getResampleDataAt()
+  {
+    return this._lastDataFrequency;
+  }
 
 }

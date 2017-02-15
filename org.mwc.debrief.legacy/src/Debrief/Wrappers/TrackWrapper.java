@@ -2202,6 +2202,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                   // THE ORIGINAL
                   // SEARCH TIME
                   res = getInterpolatedFix(previous, res, srchDTG);
+                  
+                  // and reset the label
+                  res.resetName();
                 }
               }
             }
@@ -2221,7 +2224,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // and remember this fix
       lastFix = res;
       lastDTG = srchDTG;
-
     }
 
     if (res != null)
