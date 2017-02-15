@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package MWC.Algorithms.Editors;
+package org.mwc.cmap.core.operations;
 
 import org.eclipse.core.commands.operations.IUndoContext;
 

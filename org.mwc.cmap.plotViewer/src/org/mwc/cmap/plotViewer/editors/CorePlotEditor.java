@@ -95,6 +95,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.interfaces.IPlotGUI;
 import org.mwc.cmap.core.interfaces.IResourceProvider;
+import org.mwc.cmap.core.operations.IUndoable;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
@@ -112,7 +113,6 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.Editors.IUndoable;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
