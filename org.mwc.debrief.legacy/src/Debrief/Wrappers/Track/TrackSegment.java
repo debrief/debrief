@@ -26,11 +26,14 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import junit.framework.TestCase;
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
+import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
@@ -163,7 +166,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				final PropertyDescriptor[] res =
 				{ expertProp("Visible", "whether this layer is visible", FORMAT),
 						displayExpertProp("LineStyle", "Line style", "how to plot this line", FORMAT),
-						expertProp("Name", "Name of this track segment", FORMAT) };
+						expertProp("Name", "Name of this track segment", FORMAT),
+            displayExpertLongProp("ResampleDataAt", "Resample data at",
+                "the data sample rate", TEMPORAL,
+                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class) };
 				res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
 				return res;
 			}
@@ -217,6 +223,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 */
 	private int _lineStyle = CanvasType.SOLID;
+
+  private HiResDate _lastDataFrequency;
 
 	public static final String TMA_LEADER = "TMA_";
 	
@@ -1023,5 +1031,71 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			super.add(editable);
 		}
 	}
+	
+
+  /**
+   * set the data frequency (in seconds) for the track & sensor data
+   * 
+   * @param theVal
+   *          frequency to use
+   */
+  @FireExtended
+  public final void setResampleDataAt(final HiResDate theVal)
+  {
+    this._lastDataFrequency = theVal;
+    
+    // just check that we're not a TMA segment
+    if(this instanceof CoreTMASegment)
+    {
+      Application.logError2(ErrorLogger.WARNING, "Can't resample TMA track", null);
+      return;
+    }
+  
+    // have a go at trimming the start time to a whole number of intervals
+    final long interval = theVal.getMicros();
+  
+    // do we have a start time (we may just be being tested...)
+    if (!this.elements().hasMoreElements())
+    {
+      return;
+    }
+  
+    // get the first item
+    FixWrapper first = (FixWrapper) elements().nextElement();
+    
+    // sort out the start time & time steps
+    final long currentStart = first.getTime().getMicros();
+    long startTime = (currentStart / interval) * interval;
+  
+    // just check we're in the range
+    if (startTime < currentStart)
+    {
+      startTime += interval;
+    }
+  
+    // just check it's not a barking frequency
+    if (theVal.getDate().getTime() <= 0)
+    {
+      // ignore, we don't need to do anything for a zero or a -1
+    }
+    else
+    {
+      // get the parent track
+      TrackWrapper parent = this.getWrapper();
+      
+      // and do the decimate
+      decimate(theVal, parent, startTime);
+    }
+  }
+
+  /**
+   * method to allow the setting of data sampling frequencies for the track & sensor data
+   * 
+   * @return frequency to use
+   */
+  public final HiResDate getResampleDataAt()
+  {
+    return this._lastDataFrequency;
+  }
 
 }
