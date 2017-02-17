@@ -100,11 +100,11 @@ final class ImportLabel extends AbstractPlainLineImporter
     final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
-    WorldLocation theLoc;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    String theText;
+    final WorldLocation theLoc;
+    final double latDeg, longDeg, latMin, longMin;
+    final char latHem, longHem;
+    final double latSec, longSec;
+    final String theText;
     
     // skip the comment identifier
     st.nextToken();
@@ -141,8 +141,15 @@ final class ImportLabel extends AbstractPlainLineImporter
 	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
 	    longHem = st.nextToken().charAt(0);
 
-	    // and now read in the message
-	    theText = st.nextToken("\r").trim();
+	    // and now read in the message, if there is one	  
+	    if(st.hasMoreElements())
+	    {
+	      theText = st.nextToken("\r").trim();
+	    }
+	    else
+	    {
+	      theText = "";
+	    }
 	
 	    // create the tactical data
 	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
@@ -213,8 +220,29 @@ final class ImportLabel extends AbstractPlainLineImporter
 		}
 
 		return res;
-
 	}
+	
+  // ///////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testImport extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public void testLabel()
+    {
+      //
+      final String str1 = ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol"; 
+      final String str2 = ";TEXT: EB 21.66 0 0 N 21.52 0 0 W";
+      
+      ImportLabel importer = new ImportLabel();
+      LabelWrapper res = (LabelWrapper) importer.readThisLine(str1);
+      assertEquals("Correct label", "wreck symbol", res.getLabel());
+
+      LabelWrapper res2 = (LabelWrapper) importer.readThisLine(str2);
+      assertEquals("Correct label", "", res2.getLabel());
+    }
+  }
 
 }
 
