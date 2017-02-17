@@ -8703,9 +8703,41 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                 </tbody>
               </tgroup>
             </table>
+            <note>
+              <para>In 2017 the Debrief symbology attributes were extended to allow the provision
+              of some optional named parameters. The first of these is the specification of the 
+              layer into which the annotation should be inserted.  Note: in the initial
+              implementation spaces are not allowed in the entries.</para>
+            </note>
+            <table xml:id="debrief_NamedSym">
+              <title>Debrief extended symbology data fields</title>
+              <tgroup cols="2">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <thead>
+                  <row>
+                    <entry>
+                      <para>Example</para>
+                    </entry>
+                    <entry>
+                      <para>Usage</para>
+                    </entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry>
+                      <para>[LAYER=Other_Target_Layer]</para>
+                    </entry>
+                    <entry>
+                      <para>Put this annotation into the layer named "Other_Target_Layer". Note: spaces not allowed</para>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
           </para>
         </sect2>
-
         <sect2 xml:id="replay_annotation_format">
           <title>Annotation Data Intro</title>
 
@@ -8713,8 +8745,6 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             annotation is placed on a single line in a replay file, each line beginning with the
             comment marker; a semi-colon &apos;;&apos;.To put a comment on a line, begin with two
             semi-colons.</para>
-
-
           <para>
             <note>
               <para>Note, when null positions are entered for <glossterm linkend="g_sensor">Sensor</glossterm> data, the position is taken from the track named in "ownship
