@@ -15,6 +15,7 @@
 
 ;TEXT: @E 21.7 0 0 N 21.5 0 0 W test text 
 ;TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol 
+;TEXT: EB 21.66 0 0 N 21.52 0 0 W
 
 ;TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
 ;TEXT: CA[LAYER=Special_Layer] 21.32 0 0 N 21.88 0 0 W Other layer 2
