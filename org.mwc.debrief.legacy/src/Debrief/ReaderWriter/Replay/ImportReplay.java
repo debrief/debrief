@@ -896,12 +896,17 @@ public class ImportReplay extends PlainImporterBase
         proccessShapeWrapper(thisOne, thisObject);
       }
 
-      // not fix, must be annotation, just add it to the correct
-      // layer
-      Layer dest = getLayerFor(ANNOTATION_LAYER);
+      // see if the shape symbology specifies a layer
+      String targetLayer = targetLayerFor(thisOne);
+
+      // ok, get that layer
+      Layer dest = getLayerFor(targetLayer);
+      
+      // does it exist?
       if (dest == null)
       {
-        dest = createLayer(ANNOTATION_LAYER);
+        // nope, create it
+        dest = createLayer(targetLayer);
         addLayer(dest);
       }
 
@@ -909,6 +914,38 @@ public class ImportReplay extends PlainImporterBase
 
     }
 
+    return res;
+  }
+
+  /** examine the sybmology, to see if a target layer is specified. If it isn't just put
+   * it into the annotations layer
+   * @param thisOne
+   * @return the name of the layer to use
+   */
+  final private String targetLayerFor(final PlainLineImporter thisOne)
+  {
+    final String res;
+    
+    // what are we looking for?
+    final String LAYER_PREFIX = "[LAYER=";
+    
+    // check the symbology
+    final String sym = thisOne.getSymbology();    
+    final int startIndex = sym.indexOf(LAYER_PREFIX);
+    final int prefixLen = startIndex + LAYER_PREFIX.length();
+    final int endIndex = sym.indexOf("]", prefixLen);
+    
+    // did we find both components?
+    if ((startIndex != -1) && (endIndex != -1))
+    {
+      res = sym.substring(prefixLen, endIndex);
+    }
+    else
+    {
+      res = ANNOTATION_LAYER;
+    }
+    
+    // done
     return res;
   }
 
