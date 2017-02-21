@@ -284,7 +284,19 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	 */
 	public void setCourse(final double course)
 	{
-		_courseDegs = course;
+	  // ensure course is in +ve domain
+	  final double happyCourse;
+	  if(course < 0)
+	  {
+	    happyCourse = course + 360;
+	  }
+	  else
+	  {
+	    happyCourse = course;
+	  }
+	  
+	  // ok, store the satisfactory course
+		_courseDegs = happyCourse;
 
 		final double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
 		final Collection<Editable> data = getData();
