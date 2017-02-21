@@ -1258,7 +1258,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
     assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(
         WorldDistance.DEGS), 0.001);
-    assertEquals("on new course", -90, ts.getCourse(), 0.001);
+    assertEquals("on new course", 270, ts.getCourse(), 0.001);
     assertEquals("at original speed", 12, ts.getSpeed().getValueIn(
         WorldSpeed.Kts), 0.001);
   }
