@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
@@ -917,6 +919,38 @@ public class ImportReplay extends PlainImporterBase
     return res;
   }
 
+  /** utility method to extract formatted property values from a symbology line,
+   * such as: 
+   * ;TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
+   * 
+   * @param symbology
+   * @param property_name
+   * @return
+   */
+  final private String getThisSymProperty(final String symbology, final String property_name)
+  {
+    final String regexp = "\\[(?<NAME>.*?)\\=(?<VALUE>.*?)\\]";
+    final Matcher m = Pattern.compile(regexp).matcher(symbology);
+    
+    // did we find any?
+    while(m.find())
+    {
+      // get the name of this property
+      final String property = m.group("NAME");
+      
+      // does it match?
+      if(property.equals(property_name))
+      {
+        // yes, get the value
+        final String value = m.group("VALUE");
+        
+        // done, return it.
+        return value;
+      }
+    }
+    return null;
+  }
+  
   /** examine the sybmology, to see if a target layer is specified. If it isn't just put
    * it into the annotations layer
    * @param thisOne
@@ -927,18 +961,16 @@ public class ImportReplay extends PlainImporterBase
     final String res;
     
     // what are we looking for?
-    final String LAYER_PREFIX = "[LAYER=";
+    final String LAYER_PREFIX = "LAYER";
     
     // check the symbology
     final String sym = thisOne.getSymbology();    
-    final int startIndex = sym.indexOf(LAYER_PREFIX);
-    final int prefixLen = startIndex + LAYER_PREFIX.length();
-    final int endIndex = sym.indexOf("]", prefixLen);
     
-    // did we find both components?
-    if ((startIndex != -1) && (endIndex != -1))
+    final String layerName = getThisSymProperty(sym, LAYER_PREFIX);
+    
+    if(layerName != null)
     {
-      res = sym.substring(prefixLen, endIndex);
+      res = layerName;
     }
     else
     {
@@ -1589,6 +1621,22 @@ public class ImportReplay extends PlainImporterBase
     public final void testOTGimport3()
     {
       doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
+    }
+    
+    public final void testParseSymbology()
+    {
+      final String test = ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
+      final String test2 = ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
+      ImportReplay ir = new ImportReplay();
+      
+      
+      assertEquals("String not found", null, ir.getThisSymProperty(test, "LAYDER"));
+      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test, "LAYER"));
+      
+      assertEquals("String not found", null, ir.getThisSymProperty(test2, "LAYDER"));
+      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test2, "LAYER"));
+      assertEquals("String found", "OFF", ir.getThisSymProperty(test2, "TEST_ON"));
+      
     }
 
     private final void doReadRep(String mode, Long freq, int LAYER_COUNT,
