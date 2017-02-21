@@ -105,7 +105,7 @@ public class WrappingResidualRenderer extends ResidualXYItemRenderer
 
     public double value(double x) {
       if (x < xs[0] || x > xs[1]){
-        throw new IllegalArgumentException(String.format("x needs to be between %s and %s", xs[0], xs[1]));
+        throw new IllegalArgumentException(String.format("x needs to be between %s and %s, found %s", xs[0], xs[1], x));
       }
       return ys[0]+(ys[1]-ys[0])*(x-xs[0])/(xs[1]-xs[0]);
     }
