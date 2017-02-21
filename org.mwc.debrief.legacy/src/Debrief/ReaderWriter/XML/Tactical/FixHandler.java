@@ -69,7 +69,13 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       {
         try
         {
-          _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(readThisDouble(value)));
+          double courseVal = readThisDouble(value);
+          if(courseVal < 0)
+          {
+            // trim it back to positive domain
+            courseVal += 360;
+          }
+          _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(courseVal));
         }
         catch (final java.text.ParseException pe)
         {
