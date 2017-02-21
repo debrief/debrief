@@ -286,13 +286,21 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	{
 	  // ensure course is in +ve domain
 	  final double happyCourse;
-	  if(course < 0)
+	  if(course > 0)
 	  {
+	    // all is fine
+      happyCourse = course;
+	  }
+	  else if(course < -0.00000000001)
+	  {
+	    // check if we're a significant negative number
 	    happyCourse = course + 360;
 	  }
 	  else
 	  {
-	    happyCourse = course;
+      // special case. Sometimes it's a really small
+      // negative number, so we're better off making it zero
+	    happyCourse = 0;
 	  }
 	  
 	  // ok, store the satisfactory course
