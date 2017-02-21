@@ -1334,6 +1334,36 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
       editableTesterSupport.testParams(ed, this);
       ed = null;
     }
+    
+    public final void testResetColor()
+    {
+      TrackWrapper track = new TrackWrapper();
+      track.setName("name");
+      track.setColor(Color.YELLOW);
+      
+      FixWrapper fw = new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(1,1,0), 12d, 13d));
+      fw.setColor(Color.GREEN);
+      
+      assertEquals("Correct color", Color.GREEN, fw.getColor());
+      
+      fw.resetColor();
+      
+      assertEquals("Correct color (no track)", Color.GREEN, fw.getColor());
+      
+      // ok, add the fix to the track
+      track.addFix(fw);
+
+      fw.resetColor();
+      
+      assertEquals("Correct color (from track)", Color.YELLOW, fw.getColor());
+
+      assertEquals("Correct color", null, fw.getActualColor());
+      
+      // change track color
+      track.setColor(Color.red);
+      
+      assertEquals("Correct color (After track color change)", Color.RED, fw.getColor());
+    }
 
     /**
      * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)} .
