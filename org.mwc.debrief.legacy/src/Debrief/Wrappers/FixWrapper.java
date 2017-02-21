@@ -565,8 +565,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     // do we know our parent?
     if (_trackWrapper != null)
     {
-      // ok, revert to the parent color
-      setColor(_trackWrapper.getColor());
+      // ok, revert to the parent color, we can retrieve
+      // the color to use from the parent, when we need it
+      super.setColor(null);
     }
   }
 
