@@ -24,5 +24,14 @@
 			<SubjectToTrack>
 				<Type Name="BLUE" />
 			</SubjectToTrack>
-		</DebriefReplayObserver></ObserverList>
+		</DebriefReplayObserver>
+		<TowedArrayLocationObserver Name="Towed Array Observer"
+			Active="true" file_name="ta_data" DEFAULT_DEPTH="28"
+			MESSAGE_NAME="TA_FORE_AFT" RECORDER_TYPE="HDG_BRG"
+			OFFSETS="800, 1800" SENSOR_NAME="TA_ARRAY">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</TowedArrayLocationObserver>
+	</ObserverList>
 </ScenarioController>
