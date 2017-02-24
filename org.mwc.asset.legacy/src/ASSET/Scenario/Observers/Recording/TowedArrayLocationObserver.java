@@ -15,6 +15,7 @@
 package ASSET.Scenario.Observers.Recording;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -80,7 +81,6 @@ public class TowedArrayLocationObserver
                           final boolean isActive,
                           final List<Double> offsets,
                           final String messageName,
-                          final String recorderType, 
                           final double defaultDepth,
                           final String sensorName)
   {
@@ -96,9 +96,10 @@ public class TowedArrayLocationObserver
     _sensorName = sensorName;
     
     // what are we recording?
-    switch (recorderType)
+    switch (_messageName)
     {
-    case "HDG_BRG":
+    case "TA_FORE_AFT":
+    case "TA_MODULES":
       _recorderType = RecorderType.HDG_DEPTH;
       break;
     case "LOC_RELATIVE":
@@ -174,6 +175,8 @@ public class TowedArrayLocationObserver
 
     final StringBuffer theseValues = new StringBuffer();
     
+    DecimalFormat df = new DecimalFormat("0.00");
+    
     // ok, see if we are ready to sort out the array locations
     for(Double thisO: _offsets)
     {
@@ -192,7 +195,7 @@ public class TowedArrayLocationObserver
           // get the heading and depth
           double hdgDegs = pos.getCourseDegs();
           double depthM = pos.getDepth();
-          theseValues.append("[" + depthM + " " + hdgDegs + "] ");
+          theseValues.append("[" + df.format(depthM) + " " + df.format(hdgDegs) + "] ");
           break;
         case LOC_ABS:
           theseValues.append("[" + aLoc.getLat() + " " + aLoc.getLong() + "] ");
@@ -201,6 +204,7 @@ public class TowedArrayLocationObserver
           // ok, we need an offset here
           WorldVector offset = aLoc.subtract(loc);
           
+          theseValues.append(offset);
           // create xy from this
           break;
         }
@@ -218,8 +222,9 @@ public class TowedArrayLocationObserver
       final String dtg = DebriefFormatDateTime.toString(newTime);
       
       // message type
+      buff.append(";");
       buff.append(_messageName);
-      buff.append(" ");
+      buff.append(": ");
       buff.append(dtg);
       buff.append(" ");
       buff.append(pt.getName());
@@ -314,7 +319,7 @@ public class TowedArrayLocationObserver
   {
     _os.write(";; ASSET Output recorded at:," + new java.util.Date() + ", name:," + title);
     _os.write("" + System.getProperty("line.separator"));
-    _os.write("DTG,Track name, x (m), y (m), z (m), course (degs), speed (m/s), dem course (Degs), dem speed (m/s), dem depth (m), fuel, activity");
+    _os.write(";; See Debrief reference document for file formats");
     _os.write("" + System.getProperty("line.separator"));
   }
 

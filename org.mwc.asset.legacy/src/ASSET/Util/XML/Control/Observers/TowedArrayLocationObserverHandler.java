@@ -40,7 +40,6 @@ abstract class TowedArrayLocationObserverHandler extends CoreFileObserverHandler
   TargetType _subjectName;
   List<Double> offsets;
   String messageName;
-  String recorderType;
   Double defaultDepth;
   String sensorName;
   
@@ -49,7 +48,7 @@ abstract class TowedArrayLocationObserverHandler extends CoreFileObserverHandler
     super(type);
 
     // add the other handlers
-    addHandler(new TargetTypeHandler("TARGET_TYPE")
+    addHandler(new TargetTypeHandler("SubjectToTrack")
     {
       public void setTargetType(TargetType type1)
       {
@@ -61,8 +60,13 @@ abstract class TowedArrayLocationObserverHandler extends CoreFileObserverHandler
       public void setValue(String name, final String val)
       {
         offsets = new ArrayList<Double>();
-        offsets.add(100d);
-        offsets.add(300d);
+        
+        String[] items = val.split(",");
+        for (int i = 0; i < items.length; i++)
+        {
+          String string = items[i];
+          offsets.add(Double.parseDouble(string));
+        }
       }
     });
     addAttributeHandler(new HandleAttribute("MESSAGE_NAME")
@@ -70,13 +74,6 @@ abstract class TowedArrayLocationObserverHandler extends CoreFileObserverHandler
       public void setValue(String name, final String val)
       {
         messageName = val;
-      }
-    });
-    addAttributeHandler(new HandleAttribute("RECORDER_TYPE")
-    {
-      public void setValue(String name, final String val)
-      {
-        recorderType = val;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute("DEFAULT_DEPTH")
@@ -98,9 +95,10 @@ abstract class TowedArrayLocationObserverHandler extends CoreFileObserverHandler
 
   public void elementClosed()
   {
+    defaultDepth = 12d;
     // create ourselves
     final CoreObserver timeO = new TowedArrayLocationObserver(_directory, _fileName, _subjectName, _name, _isActive, offsets, messageName,
-        recorderType, defaultDepth, sensorName);
+        defaultDepth, sensorName);
     
     setObserver(timeO);
 
@@ -110,7 +108,6 @@ abstract class TowedArrayLocationObserverHandler extends CoreFileObserverHandler
     // clear the params
     _subjectName = null;
     messageName = null;
-    recorderType = null;
     defaultDepth = null;
     sensorName = null;
   }

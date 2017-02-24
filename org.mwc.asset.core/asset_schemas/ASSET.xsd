@@ -207,6 +207,7 @@
 			<xs:element name="ElapsedTimeObserver" type="ElapsedTimeObserverType" />
 			<xs:element name="FinalStateObserver" type="FinalStateObserverType" />
 			<xs:element name="CSVTrackObserver" type="CSVTrackObserverType" />
+			<xs:element name="TowedArrayLocationObserver" type="TowedArrayLocationObserverType" />
 			<xs:element name="TimeObserver" type="TimeObserverType" />
 			<xs:element name="ProximityObserver" type="ProximityObserverType" />
 			<xs:element name="RemoveInAreaObserver" type="RemoveInAreaObserverType" />
@@ -3972,6 +3973,64 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreFileObserverType">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TowedArrayLocationObserverType">
+		<xs:annotation>
+			<xs:documentation>Record Towed Array Datasets</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited .
+				Editable:
+				inherited
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreFileObserverType">
+				<xs:sequence>
+					<xs:element name="SubjectToTrack" type="TargetTypeType"
+						minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The type of target we want to record a
+								narrative full
+								(or omit to record all)
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="MESSAGE_NAME" use="required">
+					<xs:annotation>
+						<xs:documentation>Type of REP message to write</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:NMTOKEN">
+							<xs:enumeration value="TA_FORE_AFT" />
+							<xs:enumeration value="TA_MODULES" />
+							<xs:enumeration value="TA_COG_ABS" />
+							<xs:enumeration value="TA_COG_REL" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="OFFSETS" type="xs:string"
+					use="required">
+					<xs:annotation>
+						<xs:documentation>Comma separated list of offset lengths (in m)
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DEFAULT_DEPTH" type="xs:double"
+					use="required">
+					<xs:annotation>
+						<xs:documentation>Default depth value to use
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>				
+				<xs:attribute name="SENSOR_NAME" type="xs:string"
+					use="required">
+					<xs:annotation>
+						<xs:documentation>What to call the sensor
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>				
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
