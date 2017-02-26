@@ -50,7 +50,7 @@
 	</extension>
 
 	<!-- specify the location of the asset schema -->
-	<!-- FIXME DO WE NEED THIS ?
+
 	<extension name="create a catalog entry for the ASSET schema"
 		point="org.eclipse.wst.xml.core.catalogContributions">
 		<catalogContribution>
@@ -59,7 +59,7 @@
 			</public>
 		</catalogContribution>
 	</extension>
-    -->
+    
 	<!--  specify the xml templates we provide to help the model editor -->
 	<extension point="org.eclipse.ui.editors.templates">
 		<include file="templates/xml-templates.xml" />
