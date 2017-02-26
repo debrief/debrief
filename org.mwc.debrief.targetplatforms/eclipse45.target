@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?><target name="eclipse45" sequenceNumber="23">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.geotools.feature.feature.group" version="0.0.0"/>
+<unit id="info.limpet.feature.feature.group" version="0.0.0"/>
+<unit id="info.limpet.rcp.feature.feature.group" version="0.0.0"/>
+<unit id="info.limpet.ui.feature.feature.group" version="0.0.0"/>
+<repository location="http://debrief.github.io/limpet-update/1.0"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="4.5.2.M20160212-1500"/>
+<unit id="org.eclipse.platform.ide" version="4.5.2.M20160212-1500"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.5.2.v20160212-1500"/>
+<unit id="org.eclipse.test.feature.group" version="3.7.0.v20150428-2048"/>
+<unit id="org.eclipse.platform.sdk" version="4.5.2.M20160212-1500"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.5"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.7.2.v201511240257"/>
+<repository location="http://www.eclipse.org/modeling/amalgam/downloads/package/modeling/mars/"/>
+</location>
+</locations>
+</target>
