@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="eclipse45" sequenceNumber="23">
+<?pde version="3.8"?><target name="eclipse45" sequenceNumber="27">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.geotools.feature.feature.group" version="0.0.0"/>
@@ -19,7 +19,12 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.7.2.v201511240257"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.11.2.v20160208-0841"/>
 <repository location="http://www.eclipse.org/modeling/amalgam/downloads/package/modeling/mars/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.4.2.v201211061806-7H7GFeJDxumUrsn5qkiQgOEhsz0p60HAmPyU6VX"/>
+<repository location="http://download.eclipse.org/releases/juno/"/>
 </location>
 </locations>
 </target>
