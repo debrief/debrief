@@ -21,7 +21,13 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -59,12 +65,14 @@ import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.mwc.debrief.core.ui.SWTEclipseHelper;
 import org.osgi.framework.BundleContext;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import Debrief.ReaderWriter.ais.AISDecoder;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.CompositeTrackWrapper.GiveMeALeg;
 import MWC.GUI.Layer;
 import MWC.GUI.MessageProvider;
+import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.ImportManager;
 
 /**
@@ -88,6 +96,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   public static final String INTROVIEW = "org.eclipse.ui.internal.introview";
 
   private static final String BUILD_MODE = "buildMode";
+  
+  private static final String EXTENSION_POINT_ID = "RepReader";
 
   // The shared instance.
   private static DebriefPlugin plugin;
@@ -184,6 +194,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   // Resource bundle.
   private ResourceBundle resourceBundle;
   private DebriefImageHelper _myImageHelper;
+
+  private ArrayList<ExtensibleLineImporter> _repFileExtensionLoaders;
 
   /**
    * keep track of images we can't find. It's no use carrying on trying to find them
@@ -290,6 +302,10 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     // and the Replay importer/exporter (used to export items from the
     // layer-manager)
     ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+    
+    // tell ImportReplay that we can provide more importers
+    List<ExtensibleLineImporter> importers =  getRepImporterExtensions();
+    ImportReplay.addExtraImporters(importers);
 
     // make Debrief the default editor for XML files
     final IEditorRegistry editorRegistry =
@@ -323,6 +339,50 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     ImportNarrativeDocument.setQuestionHelper(new SWTEclipseHelper());
     
   }
+
+  private List<ExtensibleLineImporter> getRepImporterExtensions()
+  {
+    if (_repFileExtensionLoaders == null)
+    {
+      _repFileExtensionLoaders = new ArrayList<ExtensibleLineImporter>();
+
+      IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+      if (registry != null)
+      {
+
+        final IExtensionPoint point = Platform.getExtensionRegistry()
+            .getExtensionPoint(PLUGIN_NAME, EXTENSION_POINT_ID);
+
+        final IExtension[] extensions = point.getExtensions();
+        for (int i = 0; i < extensions.length; i++)
+        {
+          final IExtension iExtension = extensions[i];
+          final IConfigurationElement[] confE = iExtension
+              .getConfigurationElements();
+          for (int j = 0; j < confE.length; j++)
+          {
+            final IConfigurationElement iConfigurationElement = confE[j];
+            ExtensibleLineImporter newInstance;
+            try
+            {
+              newInstance = (ExtensibleLineImporter) iConfigurationElement
+                  .createExecutableExtension("class");
+              _repFileExtensionLoaders.add(newInstance);
+            }
+            catch (final CoreException e)
+            {
+              CorePlugin.logError(Status.ERROR,
+                  "Trouble whilst loading REP import extensions", e);
+            }
+          }
+        }
+      }
+    }
+    return _repFileExtensionLoaders;  
+   }
+  
+
 
   /**
    * This method is called when the plug-in is stopped

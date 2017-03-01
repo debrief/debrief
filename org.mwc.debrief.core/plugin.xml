@@ -98,6 +98,7 @@
         schema="schema/DebriefPlotLoader.exsd"/>
     <extension-point id="XMLLayerHandler" name="XMLLayerHandler"
         schema="schema/XMLLayerHandler.exsd"/>
+    <extension-point id="RepReader" name="RepReader" schema="schema/RepReader.exsd"/>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.ReplayLoader" extensions="rep;dsf;dtf"
             name="ReplayLoader"/>
@@ -1119,4 +1120,19 @@
 	         pattern="org.eclipse.ui.ide/org.eclipse.ui.wizards.new.project">
 	   </activityPatternBinding>
 	</extension>
+   <extension
+         point="org.mwc.debrief.core.RepReader">
+      <helper
+            class="Debrief.ReaderWriter.Replay.extensions.TA_Modules_DataHandler">
+      </helper>
+      <helper
+            class="Debrief.ReaderWriter.Replay.extensions.TA_ForeAft_DataHandler">
+      </helper>
+      <helper
+            class="Debrief.ReaderWriter.Replay.extensions.TA_COG_ABS_DataHandler">
+      </helper>
+      <helper
+            class="Debrief.ReaderWriter.Replay.extensions.TA_COG_REL_DataHandler">
+      </helper>
+   </extension>
 </plugin>

@@ -63,6 +63,7 @@ import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.ReaderWriter.ReaderMonitor;
@@ -137,7 +138,8 @@ public class ImportReplay extends PlainImporterBase
   private final java.text.DateFormat dateFormat =
       new java.text.SimpleDateFormat("yyMMdd HHmmss.SSS");
 
-  private static Vector<PlainLineImporter> _theImporters;
+  private static Vector<PlainLineImporter> _coreImporters;
+  private static ArrayList<ExtensibleLineImporter> _extensionImporters;
 
   static private Vector<doublet> colors; // list of Replay colours
 
@@ -267,44 +269,44 @@ public class ImportReplay extends PlainImporterBase
    */
   private synchronized static void checkImporters()
   {
-    if (_theImporters == null)
+    if (_coreImporters == null)
     {
       // create the array of import handlers, by
-      _theImporters = new Vector<PlainLineImporter>(0, 1);
+      _coreImporters = new Vector<PlainLineImporter>(0, 1);
 
       // adding handler we (currently) know of
-      _theImporters.addElement(new ImportCircle());
-      _theImporters.addElement(new ImportRectangle());
-      _theImporters.addElement(new ImportLine());
-      _theImporters.addElement(new ImportVector());
-      _theImporters.addElement(new ImportEllipse());
-      _theImporters.addElement(new ImportPeriodText());
-      _theImporters.addElement(new ImportTimeText());
-      _theImporters.addElement(new ImportFixFormatter());
-      _theImporters.addElement(new ImportNameAtEndFormatter());
-      _theImporters.addElement(new ImportHideLayerFormatter());
-      _theImporters.addElement(new ImportLabel());
-      _theImporters.addElement(new ImportWheel());
-      _theImporters.addElement(new ImportBearing());
-      _theImporters.addElement(new ImportNarrative());
-      _theImporters.addElement(new ImportNarrative2());
-      _theImporters.addElement(new ImportSensor());
-      _theImporters.addElement(new ImportSensor2());
-      _theImporters.addElement(new ImportSensor3());
-      _theImporters.addElement(new ImportTMA_Pos());
-      _theImporters.addElement(new ImportTMA_RngBrg());
-      _theImporters.addElement(new ImportPolygon());
-      _theImporters.addElement(new ImportPolyline());
+      _coreImporters.addElement(new ImportCircle());
+      _coreImporters.addElement(new ImportRectangle());
+      _coreImporters.addElement(new ImportLine());
+      _coreImporters.addElement(new ImportVector());
+      _coreImporters.addElement(new ImportEllipse());
+      _coreImporters.addElement(new ImportPeriodText());
+      _coreImporters.addElement(new ImportTimeText());
+      _coreImporters.addElement(new ImportFixFormatter());
+      _coreImporters.addElement(new ImportNameAtEndFormatter());
+      _coreImporters.addElement(new ImportHideLayerFormatter());
+      _coreImporters.addElement(new ImportLabel());
+      _coreImporters.addElement(new ImportWheel());
+      _coreImporters.addElement(new ImportBearing());
+      _coreImporters.addElement(new ImportNarrative());
+      _coreImporters.addElement(new ImportNarrative2());
+      _coreImporters.addElement(new ImportSensor());
+      _coreImporters.addElement(new ImportSensor2());
+      _coreImporters.addElement(new ImportSensor3());
+      _coreImporters.addElement(new ImportTMA_Pos());
+      _coreImporters.addElement(new ImportTMA_RngBrg());
+      _coreImporters.addElement(new ImportPolygon());
+      _coreImporters.addElement(new ImportPolyline());
       // note that we don't rely on ImportFix for importing Replay fixes, since
       // they are handled by the ImportReplay method. We are including it in
       // this list so that we can use it as an exporter
-      _theImporters.addElement(new ImportFix());
+      _coreImporters.addElement(new ImportFix());
 
-      _theImporters.addElement(new ImportDynamicRectangle());
-      _theImporters.addElement(new ImportDynamicCircle());
-      _theImporters.addElement(new ImportDynamicPolygon());
+      _coreImporters.addElement(new ImportDynamicRectangle());
+      _coreImporters.addElement(new ImportDynamicCircle());
+      _coreImporters.addElement(new ImportDynamicPolygon());
 
-      _theImporters.addElement(new ImportSensorArc());
+      _coreImporters.addElement(new ImportSensorArc());
     }
   }
 
@@ -1137,7 +1139,7 @@ public class ImportReplay extends PlainImporterBase
   private PlainLineImporter getImporterFor(final String rawString)
   {
     PlainLineImporter res = null;
-
+    
     // trim any leading whitespace
     final String theLine = rawString.trim();
 
@@ -1147,33 +1149,59 @@ public class ImportReplay extends PlainImporterBase
       // so, determine if this is a comment
       if (theLine.charAt(0) == ';')
       {
-        // look through types of import handler
-        final Enumeration<PlainLineImporter> iter = _theImporters.elements();
-
         // get the type for this comment
         final StringTokenizer st = new StringTokenizer(theLine);
         final String type = st.nextToken();
 
-        // cycle through my types
-        while (iter.hasMoreElements())
+        // do we have any extension importers?
+        if (_extensionImporters != null)
         {
-          final PlainLineImporter thisImporter = iter.nextElement();
-
-          // get the handler correct type?
-          final String thisType = thisImporter.getYourType();
-
-          if (thisType == null)
+          for (final ExtensibleLineImporter importer : _extensionImporters)
           {
-            MWC.Utilities.Errors.Trace.trace("null returned by: "
-                + thisImporter);
-            return null;
+            String thisType = importer.getYourType();
+            if (thisType.equals(type))
+            {
+              // ok, we also have to initialise it with this layers object
+              importer.setLayers(getLayers());
+
+              // remember it
+              res = importer;
+              
+              // done
+              break;
+            }
           }
+        }
 
-          // does this one fit?
-          if (thisType.equals(type))
+        // did it work?
+        if (res == null)
+        {
+          // nope, try the core ones
+          
+          // look through types of import handler
+          final Enumeration<PlainLineImporter> iter = _coreImporters.elements();
+
+          // cycle through my types
+          while (iter.hasMoreElements())
           {
-            res = thisImporter;
-            break;
+            final PlainLineImporter thisImporter = iter.nextElement();
+
+            // get the handler correct type?
+            final String thisType = thisImporter.getYourType();
+
+            if (thisType == null)
+            {
+              MWC.Utilities.Errors.Trace.trace("null returned by: "
+                  + thisImporter);
+              return null;
+            }
+
+            // does this one fit?
+            if (thisType.equals(type))
+            {
+              res = thisImporter;
+              break;
+            }
           }
         }
       }
@@ -1216,9 +1244,9 @@ public class ImportReplay extends PlainImporterBase
     else
     {
       // check we have some importers
-      if (_theImporters != null)
+      if (_coreImporters != null)
       {
-        final Enumeration<PlainLineImporter> iter = _theImporters.elements();
+        final Enumeration<PlainLineImporter> iter = _coreImporters.elements();
 
         // step though our importers, to see if any will 'do the deal;
         while (iter.hasMoreElements())
@@ -1489,6 +1517,19 @@ public class ImportReplay extends PlainImporterBase
     }
   }
 
+  /** interface for helpers that may be able to provide extra REP file importers
+   * 
+   */
+  public static interface RepImportHelper
+  {
+    /** provide an importer, if there is a suitable one
+     * 
+     * @param line line we're trying to import
+     * @return a matching importer, if there is one.
+     */
+    public ExtensibleLineImporter canImport(final String line);
+  }
+  
   /**
    * interface which we use to implement class capable of formatting a set of layers once they've
    * been read in
@@ -1749,6 +1790,25 @@ public class ImportReplay extends PlainImporterBase
       // check those narrative lines got read in
       NarrativeWrapper narratives = (NarrativeWrapper) _theLayers.elementAt(2);
       assertEquals("have read in both narrative entries", 2, narratives.size());
+    }
+  }
+
+  /** provide an extra set of importers
+   * 
+   * @param importers
+   */
+  public static void addExtraImporters(List<ExtensibleLineImporter> importers)
+  {
+    // do we have a holder?
+    if(_extensionImporters == null)
+    {
+      _extensionImporters = new ArrayList<ExtensibleLineImporter>();
+    }
+    
+    // now add the new ones
+    for(final ExtensibleLineImporter importer: importers)
+    {
+      _extensionImporters.add(importer);
     }
   }
 }
