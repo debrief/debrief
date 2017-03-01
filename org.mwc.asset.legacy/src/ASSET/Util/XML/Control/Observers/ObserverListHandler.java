@@ -73,7 +73,20 @@ package ASSET.Util.XML.Control.Observers;
  *
  */
 
-import ASSET.Scenario.Observers.*;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import ASSET.Scenario.Observers.DetectionObserver;
+import ASSET.Scenario.Observers.ProportionDetectedObserver;
+import ASSET.Scenario.Observers.ProximityObserver;
+import ASSET.Scenario.Observers.RemoveDetectedObserver;
+import ASSET.Scenario.Observers.RemoveInAreaObserver;
+import ASSET.Scenario.Observers.ScenarioObserver;
+import ASSET.Scenario.Observers.StopOnElapsedObserver;
+import ASSET.Scenario.Observers.TrackPlotObserver;
 import ASSET.Scenario.Observers.Plotting.PlotDetectionStatusObserver;
 import ASSET.Scenario.Observers.Plotting.PlotInvestigationSubjectObserver;
 import ASSET.Scenario.Observers.Plotting.PlotSensorObserver;
@@ -83,15 +96,11 @@ import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefDeployableSensorLocationObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Scenario.Observers.Recording.RecordStatusToDBObserverType;
+import ASSET.Scenario.Observers.Recording.TowedArrayLocationObserver;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
 import ASSET.Scenario.Observers.Summary.ElapsedTimeObserver;
 import ASSET.Scenario.Observers.Summary.FinalStateObserver;
 import ASSET.Scenario.Observers.Summary.TimeToLaunchObserver;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * read in a list of observers from file
@@ -173,10 +182,17 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
         _myList.add(obs);
       }
     });
-
     addHandler(new CSVTrackObserverHandler()
     {
       public void setObserver(final ScenarioObserver obs)
+      {
+        _myList.add(obs);
+      }
+    });
+    addHandler(new TowedArrayLocationObserverHandler()
+    {
+      @Override
+      public void setObserver(ScenarioObserver obs)
       {
         _myList.add(obs);
       }
@@ -342,6 +358,10 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       else if (observer instanceof CSVTrackObserver)
       {
         CSVTrackObserverHandler.exportThis(observer, sens, doc);
+      }
+      else if (observer instanceof TowedArrayLocationObserver)
+      {
+        TowedArrayLocationObserverHandler.exportThis(observer, sens, doc);
       }
       else if (observer instanceof CSVExportDetectionsObserver)
       {
