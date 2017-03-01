@@ -1,0 +1,26 @@
+package Debrief.ReaderWriter.Replay.extensions;
+
+
+public class TA_COG_ABS_DataHandler extends Core_TA_Handler 
+{
+
+  public TA_COG_ABS_DataHandler()
+  {
+    super("TA_COG_ABS");
+  }
+
+  @Override
+  public Object readThisLine(String theLine)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getSymbology()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+}
