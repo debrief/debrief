@@ -74,6 +74,7 @@ import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -214,6 +215,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                   displayExpertLongProp("ArrowFrequency", "Arrow frequency",
                       "the direction marker frequency", TEMPORAL,
                       MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                  displayProp("CustomTrailLength", "Custom Trail length",
+                      "to specify a custom snail trail length",
+                      Editable.EditorType.TEMPORAL),
                   displayExpertLongProp("LineStyle", "Line style",
                       "the line style used to join track points", TEMPORAL,
                       MWC.GUI.Properties.LineStylePropertyEditor.class)};
@@ -844,6 +848,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   transient private final PropertyChangeListener _locationListener;
 
   transient private PropertyChangeListener _childTrackMovedListener;
+
+  private Duration _customTrailLength = null;
 
   // //////////////////////////////////////
   // constructors
@@ -3891,6 +3897,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     _theLabel.setFont(font);
   }
+  
+
+  /** length of trail to draw
+   */
+  public final void setCustomTrailLength(final Duration len)
+  {
+    // just check that it's a non-null length
+    if(len != null && len.getMillis() != 0)
+    {
+      _customTrailLength  = len;
+    }
+  }
+
+  /** length of trail to plot
+   */
+  public final Duration getCustomTrailLength()
+  {
+    return _customTrailLength;
+  }  
 
   @Override
   public void shift(final WorldLocation feature, final WorldVector vector)
@@ -4695,4 +4720,5 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
     return res;
   }
+
 }
