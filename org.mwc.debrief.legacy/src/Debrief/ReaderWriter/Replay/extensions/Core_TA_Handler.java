@@ -25,7 +25,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   @Override
   final public String getYourType()
   {
-    return _myType;
+    return ";" + _myType + ":";
   }
 
 
