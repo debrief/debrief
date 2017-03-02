@@ -112,6 +112,10 @@ public interface PlainLineImporter
 	 */
 	public boolean canExportThis(Object val);
 
+	/** we occasionally wish to retrieve the symbology after the line is ready in. Retain it,
+	 * and provide it here
+	 * @return symbology string read in from file
+	 */
 	String getSymbology();
 	
 }
