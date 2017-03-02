@@ -274,6 +274,7 @@
 			<xs:element name="font" type="font" />
 			<xs:element name="SYMBOL_WIDTH" type="worldDistanceType" />
 			<xs:element name="SYMBOL_LENGTH" type="worldDistanceType" />
+			<xs:element name="CustomTrailLength" type="unitsValueType" />
 		</xs:choice>
 		<xs:attribute name="InterpolatePoints" default="true"
 			type="xs:boolean" />
