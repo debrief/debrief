@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.asset.legacy
-Bundle-Version: 1.0.53
+Bundle-Version: 1.0.54
 Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.debrief.legacy
 Export-Package: ASSET;
