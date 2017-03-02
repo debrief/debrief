@@ -24,17 +24,11 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
     final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
-    @SuppressWarnings("unused")
     final HiResDate theDate;
-    @SuppressWarnings("unused")
     final String platform_name;
-    @SuppressWarnings("unused")
     final String sensor_name;
-    @SuppressWarnings("unused")
     final double x;
-    @SuppressWarnings("unused")
     final double y;
-    @SuppressWarnings("unused")
     final double depth;
 
     // skip the comment identifier
@@ -62,6 +56,9 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
       depth = Double.valueOf(st.nextToken());
 
       // ok, try to store the measurement
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "X", theDate, x);
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Y", theDate, y);
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Z", theDate, depth);
 
       return null;
 
@@ -71,11 +68,5 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
       MWC.Utilities.Errors.Trace.trace(pe, "Whilst importing measured data");
       return null;
     }
-  }
-
-  @Override
-  public String getSymbology()
-  {
-    return null;
   }
 }

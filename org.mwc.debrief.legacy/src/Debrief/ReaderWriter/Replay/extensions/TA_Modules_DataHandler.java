@@ -15,11 +15,4 @@ public class TA_Modules_DataHandler extends Core_TA_Handler
     // TODO Auto-generated method stub
     return null;
   }
-
-  @Override
-  public String getSymbology()
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
