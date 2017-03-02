@@ -13,8 +13,6 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   private final String _myType;
   
   protected static final String CENTRE_OF_GRAVITY = "Centre of Gravity";
-
-
   
   Core_TA_Handler(final String type)
   {
@@ -58,7 +56,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   protected void storeMeasurement(final String platform_name, final String sensor_name, final String folder,
       final String dataset, final HiResDate theDate, final double measurement)
   {
-    System.out.println("Storing " + measurement + " at " + theDate.getDate() + " in " + dataset);
+    System.out.println("Storing " + measurement + " at " + theDate.getDate() + " in " + dataset + " in folder:" + folder);
     
     
     // find the platform
@@ -75,7 +73,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   }
 
   @Override
-  public String getSymbology()
+  final public String getSymbology()
   {
     return null;
   }

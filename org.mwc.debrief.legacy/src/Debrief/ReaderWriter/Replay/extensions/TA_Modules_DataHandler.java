@@ -1,18 +1,17 @@
 package Debrief.ReaderWriter.Replay.extensions;
 
 
-public class TA_Modules_DataHandler extends Core_TA_Handler 
+public class TA_Modules_DataHandler extends TA_ForeAft_DataHandler
 {
 
   public TA_Modules_DataHandler()
   {
-    super("TA_MODULES");
+    super("TA_MODULES", "Acoustic Modules");
   }
 
   @Override
-  public Object readThisLine(String theLine)
+  protected String nameForRow(int ctr)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return "" + ctr;
   }
 }

@@ -1,8 +1,12 @@
 package Debrief.ReaderWriter.Replay.extensions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import junit.framework.TestCase;
 
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
@@ -11,9 +15,46 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class TA_ForeAft_DataHandler extends Core_TA_Handler
 {
 
+  final private String _datasetName;
+
   public TA_ForeAft_DataHandler()
   {
-    super("TA_FORE_AFT");
+    this("TA_FORE_AFT", "Fore & Aft");
+  }
+  
+  public TA_ForeAft_DataHandler(String title, String datasetName)
+  {
+    super(title);
+    
+    _datasetName = datasetName;
+  }
+
+  public static class TestMe extends TestCase
+  {
+//    
+    private List<String> _messages = new ArrayList<String>();
+    
+    public void testImport()
+    {
+      final String str = ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" [12.75 3.00] [14.75 10.00]";
+      TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler(){
+
+        @Override
+        protected void storeMeasurement(String platform_name,
+            String sensor_name, String folder, String dataset,
+            HiResDate theDate, double measurement)
+        {
+          super.storeMeasurement(platform_name, sensor_name, folder, dataset, theDate,
+              measurement);
+          _messages.add("stored");
+        }
+        
+      };
+      ff.readThisLine(str);
+      
+      assertEquals("found items", 2, _messages.size());
+      
+    }
   }
 
   @Override
@@ -53,7 +94,7 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
       // ok, parse the rest of the line
       String remainingText = st.nextToken("");
 
-      Pattern pattern = Pattern.compile("<(.*?)>");
+      Pattern pattern = Pattern.compile("\\[(.*?)\\]");
       Matcher matcher = pattern.matcher(remainingText);
 
       int ctr = 1;
@@ -67,21 +108,13 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
         final double depth = Double.valueOf(blockT.nextToken());
         final double heading = Double.valueOf(blockT.nextToken());
 
-        final String datasetName;
-        if (ctr == 1)
-        {
-          datasetName = "Fore";
-        }
-        else
-        {
-          datasetName = "Aft";
-        }
-
+        final String datasetName = nameForRow(ctr);
+        
         // ok, try to store the measurement
         storeMeasurement(platform_name, sensor_name,
-            "Fore & Aft" + datasetName, "Heading", theDate, heading);
+            _datasetName + " / " + datasetName, "Heading", theDate, heading);
         storeMeasurement(platform_name, sensor_name,
-            "Fore & Aft" + datasetName, "Depth", theDate, depth);
+            _datasetName + " / " + datasetName, "Depth", theDate, depth);
 
         ctr++;
       }
@@ -94,6 +127,22 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
       MWC.Utilities.Errors.Trace.trace(pe, "Whilst importing measured data");
       return null;
     }
+  }
+
+  protected String nameForRow(int ctr)
+  {
+    final String datasetName;
+    
+    if (ctr == 1)
+    {
+      datasetName = "Fore";
+    }
+    else
+    {
+      datasetName = "Aft";
+    }
+
+    return datasetName;
   }
 
 }
