@@ -65,6 +65,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
+import MWC.GUI.Properties.FractionPropertyEditor;
 import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
@@ -215,9 +216,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                   displayExpertLongProp("ArrowFrequency", "Arrow frequency",
                       "the direction marker frequency", TEMPORAL,
                       MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                  displayProp("CustomTrailLength", "Custom Trail length",
+                  displayProp("CustomTrailLength", "Custom Snail Trail",
                       "to specify a custom snail trail length",
                       Editable.EditorType.TEMPORAL),
+                  displayExpertLongProp("CustomVectorStretch", "Custom Vector Stretch",
+                      "to specify a custom snail vector stretch",
+                      Editable.EditorType.TEMPORAL, FractionPropertyEditor.class),
                   displayExpertLongProp("LineStyle", "Line style",
                       "the line style used to join track points", TEMPORAL,
                       MWC.GUI.Properties.LineStylePropertyEditor.class)};
@@ -850,6 +854,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   transient private PropertyChangeListener _childTrackMovedListener;
 
   private Duration _customTrailLength = null;
+
+  private Double _customVectorStretch = null;
 
   // //////////////////////////////////////
   // constructors
@@ -3904,10 +3910,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final void setCustomTrailLength(final Duration len)
   {
     // just check that it's a non-null length
-    if(len != null && len.getMillis() != 0)
+    if(len != null)
     {
-      _customTrailLength  = len;
+      if(len.getMillis() != 0)
+      {
+        _customTrailLength  = len;
+      }
+      else
+      {
+        _customTrailLength = null;
+      }
     }
+    
   }
 
   /** length of trail to plot
@@ -3916,7 +3930,33 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     return _customTrailLength;
   }  
+  
+  /** length of trail to draw
+   */
+  public final void setCustomVectorStretch(double stretch)
+  {
+    _customVectorStretch  = stretch;
+  }
 
+  /** length of trail to plot
+   */
+  public final double getCustomVectorStretch()
+  {
+    final double res;
+    
+    // do we have a value?
+    if(_customVectorStretch != null)
+    {
+      res = _customVectorStretch;
+    }
+    else
+    {
+      res = 0;
+    }
+    
+    return res;
+  }  
+  
   @Override
   public void shift(final WorldLocation feature, final WorldVector vector)
   {

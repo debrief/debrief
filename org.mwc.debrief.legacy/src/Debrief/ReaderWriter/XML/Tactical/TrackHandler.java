@@ -67,6 +67,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   private static final String INTERPOLATE_POINTS = "InterpolatePoints";
   private static final String END_TIME_LABELS = "EndTimeLabels";
   private static final String CUSTOM_TRAIL_LENGTH = "CustomTrailLength";
+  private static final String CUSTOM_VECTOR_STRETCH = "CustomVectorStretch";
 
   final MWC.GUI.Layers _theLayers;
 
@@ -125,6 +126,12 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         writeThis(track.getSensors().getVisible()));
     trk.setAttribute(SOLUTIONS_VISIBLE, writeThis(track.getSolutions()
         .getVisible()));
+    
+    // do we have a vector stretch?
+    if(track.getCustomVectorStretch() != 0)
+    {
+      trk.setAttribute(CUSTOM_VECTOR_STRETCH, writeThis(track.getCustomVectorStretch()));
+    }
 
     ColourHandler.exportColour(track.getColor(), trk, doc);
     ColourHandler.exportColour(track.getSymbolColor(), trk, doc, SYMBOL_COLOR);
@@ -503,6 +510,14 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
       public void setValue(final String name, final int value)
       {
         _myTrack.setLineStyle(value);
+      }
+    });
+    addAttributeHandler(new HandleDoubleAttribute(CUSTOM_VECTOR_STRETCH)
+    {
+      @Override
+      public void setValue(final String name, final double value)
+      {
+        _myTrack.setCustomVectorStretch(value);
       }
     });
 
