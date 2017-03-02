@@ -146,19 +146,29 @@ final class SnailDrawSWTTrack
 	{
 		// represent this area as a rectangle
 		java.awt.Rectangle thisR = null;
-		
-		// how long? (convert to millis)
-		final long trail_len = (long) parent.getSnailProperties().getTrailLength().getValueIn(
-				Duration.MICROSECONDS);
 
-		// get the fix and the track
-		FixWrapper theFix = (FixWrapper) watch;
-		final TrackWrapper trk = theFix.getTrackWrapper();
-		
-		// does this object return a track?
-		if(trk == null)
-			return thisR;
-
+    // get the fix and the track
+    FixWrapper theFix = (FixWrapper) watch;
+    final TrackWrapper trk = theFix.getTrackWrapper();
+    
+    // does this object return a track?
+    if(trk == null)
+      return thisR;
+    
+    // does this track have a custom trail length
+    final Duration customTrail = trk.getCustomTrailLength();
+    
+    final long trail_len;
+    if(customTrail != null)
+    {
+      trail_len = (long) customTrail.getValueIn(Duration.MICROSECONDS);
+    }
+    else
+    {
+      trail_len = (long) parent.getSnailProperties().getTrailLength().getValueIn(
+          Duration.MICROSECONDS);
+    }
+    
     // trim to visible period if its a track
     TimePeriod visP = trk.getVisiblePeriod();
     if (!visP.contains(dtg))
@@ -192,7 +202,12 @@ final class SnailDrawSWTTrack
 		{
 			// retrieve the points in range
 			dotPoints = trk.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
-					- _trailLength), new HiResDate(0, dtg.getMicros() + 2));
+					- trail_len), new HiResDate(0, dtg.getMicros() + 2));
+
+			// note we were using the local _tralLength, but we're switching to the 
+			// retrieved propery (or custom override)
+//	     dotPoints = trk.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
+//	          - _trailLength), new HiResDate(0, dtg.getMicros() + 2));
 
 			// add the target fix aswell. We are showing the symbol nearest to the
 			// current DTG -

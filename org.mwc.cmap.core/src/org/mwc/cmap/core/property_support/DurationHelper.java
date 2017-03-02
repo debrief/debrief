@@ -44,8 +44,19 @@ public class DurationHelper extends EditorHelper
 		 */
 		public int getUnitsValue()
 		{
+		  final int theUnits;
+		  
+		  // do we have a value?
+		  if(_myVal != null)
+		  {
+		    theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+		  }
+		  else
+		  {
+		    theUnits = Duration.MINUTES;
+		  }
+		  
 	    // so, what are the preferred units?
-	    final int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
 	    return theUnits;
 		}
 
@@ -54,10 +65,23 @@ public class DurationHelper extends EditorHelper
 		 */
 		public double getDoubleValue()
 		{
-	    // so, what are the preferred units?
-	    final int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
 
-	    final double theValue = _myVal.getValueIn(theUnits);				
+      final double theValue;
+      
+      // do we have a value?
+      if(_myVal != null)
+      {
+        // so, what are the preferred units?
+        final int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+        
+        // get the value
+        theValue = _myVal.getValueIn(theUnits);        
+      }
+      else
+      {
+        theValue = 0d;
+      }
+	    
 			return theValue;
 		}
 

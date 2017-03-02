@@ -44,8 +44,10 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
+import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
@@ -64,6 +66,8 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   private static final String LINE_STYLE = "LineStyle";
   private static final String INTERPOLATE_POINTS = "InterpolatePoints";
   private static final String END_TIME_LABELS = "EndTimeLabels";
+  private static final String CUSTOM_TRAIL_LENGTH = "CustomTrailLength";
+  private static final String CUSTOM_VECTOR_STRETCH = "CustomVectorStretch";
 
   final MWC.GUI.Layers _theLayers;
 
@@ -122,6 +126,12 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         writeThis(track.getSensors().getVisible()));
     trk.setAttribute(SOLUTIONS_VISIBLE, writeThis(track.getSolutions()
         .getVisible()));
+    
+    // do we have a vector stretch?
+    if(track.getCustomVectorStretch() != 0)
+    {
+      trk.setAttribute(CUSTOM_VECTOR_STRETCH, writeThis(track.getCustomVectorStretch()));
+    }
 
     ColourHandler.exportColour(track.getColor(), trk, doc);
     ColourHandler.exportColour(track.getSymbolColor(), trk, doc, SYMBOL_COLOR);
@@ -133,6 +143,13 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
       FontHandler.exportFont(theFont, trk, doc);
     }
 
+    // do we have a custom trail length?
+    final Duration trailLen = track.getCustomTrailLength();
+    if(trailLen != null)
+    {
+      DurationHandler.exportDuration(CUSTOM_TRAIL_LENGTH, trailLen, trk, doc);
+    }
+    
     // and the symbol
     if (track.getSymbolLength() != null)
       WorldDistanceHandler.exportDistance(SYMBOL_LENGTH, track
@@ -321,7 +338,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         addThis(list);
       }
     });
-
+    
     addHandler(new TMAHandler()
     {
       @Override
@@ -343,6 +360,15 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         {
           _myTrack.setSymbolColor(res);
         }
+      }
+    });
+    
+    addHandler(new DurationHandler(CUSTOM_TRAIL_LENGTH)
+    {
+      @Override
+      public void setDuration(Duration res)
+      {
+        _myTrack.setCustomTrailLength(res);
       }
     });
 
@@ -484,6 +510,14 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
       public void setValue(final String name, final int value)
       {
         _myTrack.setLineStyle(value);
+      }
+    });
+    addAttributeHandler(new HandleDoubleAttribute(CUSTOM_VECTOR_STRETCH)
+    {
+      @Override
+      public void setValue(final String name, final double value)
+      {
+        _myTrack.setCustomVectorStretch(value);
       }
     });
 

@@ -195,10 +195,23 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
       // and now plot the vector
       final double crse = fix.getCourse();
       final double spd = fix.getSpeed();
+      
+      // see if there is a custom override for this track
+      final double vectorStretch;
+      
+      final double trackStretch = trk.getCustomVectorStretch();
+      if(trackStretch != 0)
+      {
+        vectorStretch = trackStretch;
+      }
+      else
+      {
+        vectorStretch = getVectorStretch();
+      }
 
       //
-      final int dx = (int)(Math.sin(crse) * mySize * spd * _vectorStretch);
-      final int dy = (int)(Math.cos(crse) * mySize * spd * _vectorStretch);
+      final int dx = (int)(Math.sin(crse) * mySize * spd * vectorStretch);
+      final int dy = (int)(Math.cos(crse) * mySize * spd * vectorStretch);
 
 
       // produce the end of the stick (just to establish the length in data units)
