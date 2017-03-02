@@ -71,27 +71,29 @@ public class FractionPropertyEditor extends PropertyEditorSupport
 
   private final String stringTags[] =
   {
-                     "1/100",
-                     "1/50",
-                     "1/10",
-                     "1/5",
-                     "1",
-                     "5",
-                     "10",
-                     "50",
-                     "100"};
+     "0 - reset",
+     "1/100",
+     "1/50",
+     "1/10",
+     "1/5",
+     "1",
+     "5",
+     "10",
+     "50",
+     "100"};
 
   private final double vals[] =
   {
-                 0.01,
-                 0.02,
-                 0.1,
-                 0.2,
-                   1,
-                 5,
-                 10,
-                 50,
-                 100
+       0,
+       0.01,
+       0.02,
+       0.1,
+       0.2,
+       1,
+       5,
+       10,
+       50,
+       100
     };
 
 
