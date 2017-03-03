@@ -1,4 +1,4 @@
-package Debrief.Wrappers.Measurements;
+package Debrief.Wrappers.Extensions.Measurements;
 
 public interface DataItem
 {
