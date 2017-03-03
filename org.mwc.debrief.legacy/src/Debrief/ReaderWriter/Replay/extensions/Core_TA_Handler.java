@@ -6,8 +6,9 @@ import junit.framework.TestCase;
 
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Measurements.CoreDataset;
-import Debrief.Wrappers.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -95,7 +96,12 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     }
     
     // find the measurements
-    DataFolder dataFolder = ourSensor.getMeasurements();
+    DataFolder dataFolder = (DataFolder) ourSensor.getAdditionalData().getThisType(DataFolder.class);
+    if(dataFolder == null)
+    {
+      dataFolder = new DataFolder();
+      ourSensor.getAdditionalData().add(dataFolder);
+    }
     
     // find the dataset
     CoreDataset<Long, Double> dataset = findDataset(dataFolder, folder, dataset_name);
@@ -146,13 +152,11 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   {
     CoreDataset<Long, Double> res = null;
     
-    Enumeration<Editable> ele = folder.elements();
-    while (ele.hasMoreElements())
+    for(DataItem item: folder)
     {
-      Editable thisE = (Editable) ele.nextElement();
-      if(thisE.getName().equals(name))
+      if(item.getName().equals(name) && (item instanceof CoreDataset<?,?>))
       {
-        res = (CoreDataset<Long, Double>) thisE;
+        res = (CoreDataset<Long, Double>) item;
         break;
       }
     }
@@ -173,13 +177,11 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   {
     DataFolder res = null;
     
-    Enumeration<Editable> ele = folder.elements();
-    while (ele.hasMoreElements())
+    for(DataItem item: folder)
     {
-      Editable thisE = (Editable) ele.nextElement();
-      if(thisE.getName().equals(name))
+      if(item.getName().equals(name) && (item instanceof DataFolder))
       {
-        res = (DataFolder) thisE;
+        res = (DataFolder) item;
         break;
       }
     }
@@ -216,7 +218,13 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", new HiResDate(1200000), 12.33);
       
       // check it worked
-      DataFolder topF = sensor.getMeasurements();
+      // find the measurements
+      DataFolder topF = (DataFolder) sensor.getAdditionalData().getThisType(DataFolder.class);
+      if(topF == null)
+      {
+        topF = new DataFolder();
+        sensor.getAdditionalData().add(topF);
+      }
       
       topF.printAll();
       
