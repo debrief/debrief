@@ -5,9 +5,10 @@ import java.util.List;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 
-public class CoreDataset<IndexType extends Number, ValueType> extends PlainWrapper implements DataItem
+public class CoreDataset<IndexType extends Number, ValueType> extends PlainWrapper implements DataItem, Plottable
 {
   /**
    * 
@@ -52,6 +53,14 @@ public class CoreDataset<IndexType extends Number, ValueType> extends PlainWrapp
     return _name;
   }
 
+  /**
+   * convenience function, to describe this plottable as a string
+   */
+  public String toString()
+  {
+    return getName() + " (" + size() + " items)";
+  }
+  
   @Override
   public void paint(CanvasType dest)
   {
@@ -72,10 +81,16 @@ public class CoreDataset<IndexType extends Number, ValueType> extends PlainWrapp
 
   public void printAll()
   {
+    System.out.println(":"  + getName());
     for(final Measurement m:_data)
     {
       System.out.println("i:" + m._index + " v:" + m._value);
     }
+  }
+
+  public int size()
+  {
+    return _data.size();
   }
 
 }

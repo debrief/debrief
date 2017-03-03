@@ -166,6 +166,9 @@ import java.util.Iterator;
 import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Wrappers.Measurements.DataFolder;
+import Debrief.Wrappers.Measurements.DataItem;
+import Debrief.Wrappers.Measurements.DatasetContainer;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -182,7 +185,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class SensorWrapper extends TacticalDataWrapper implements
-    GriddableSeriesMarker, Cloneable
+    GriddableSeriesMarker, Cloneable, DatasetContainer
 {
 
   /**
@@ -217,6 +220,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
   private HiResDate _lastDataFrequency = new HiResDate(0,
       TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+  
+  /** (temporary) data holder
+   * 
+   */
+  private DataFolder _dataFolder;
 
   // //////////////////////////////////////
   // constructors
@@ -362,6 +370,23 @@ public class SensorWrapper extends TacticalDataWrapper implements
       // and tell the contact about us
       scw.setSensor(this);
     }
+    else if(plottable instanceof DataItem)
+    {
+      // ok, ready to store
+      getMeasurements().add(plottable);
+    }
+  }
+  
+  @Override
+  public DataFolder getMeasurements()
+  {
+    // initialise it, if necessary
+    if(_dataFolder == null)
+    {
+      _dataFolder = new DataFolder();
+    }
+    
+    return _dataFolder;
   }
 
   public final void append(final Layer theLayer)
