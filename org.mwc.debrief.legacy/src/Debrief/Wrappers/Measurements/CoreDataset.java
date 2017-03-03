@@ -72,6 +72,7 @@ public class CoreDataset<IndexType extends Number, ValueType> extends PlainWrapp
       CoreDataset<Long, Double> timeD = new CoreDataset<Long, Double>("TimeDouble");
       timeD.printAll();
       
+      // TODO:  I wish to create an instance of the measurement object - but I get compiler warning
   //    CoreDataset<Long, Double>.Measurement newM = new CoreDataset<Long, Double>.Measurement(new Long(12), new Double(44.0));
   //    timeD.add(newM);     
     }
