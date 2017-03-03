@@ -1,6 +1,5 @@
 package Debrief.Wrappers.Measurements;
 
-import Debrief.Wrappers.Measurements.CoreDataset.Measurement;
 import junit.framework.TestCase;
 
 public class DataTest extends TestCase
@@ -14,7 +13,7 @@ public class DataTest extends TestCase
 
     timeD.add(12L, 13D);
     
-    Measurement newM = timeD.new Measurement(13L, 12D);
+    CoreDataset<Long, Double>.Measurement newM = timeD.new Measurement(13L, 12D);
     timeD.add(newM);
 
     timeD.printAll();
