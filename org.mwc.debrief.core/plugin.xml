@@ -99,6 +99,7 @@
     <extension-point id="XMLLayerHandler" name="XMLLayerHandler"
         schema="schema/XMLLayerHandler.exsd"/>
     <extension-point id="RepReader" name="RepReader" schema="schema/RepReader.exsd"/>
+    <extension-point id="OutlineContentProvider" name="OutlineContentProvider" schema="schema/ContentProvider.exsd"/>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.ReplayLoader" extensions="rep;dsf;dtf"
             name="ReplayLoader"/>
