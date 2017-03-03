@@ -14,17 +14,31 @@
  */
 package org.mwc.debrief.core.editors;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.providers.MeasuredDataProvider;
 
-import Debrief.Wrappers.Measurements.DataFolder;
-import Debrief.Wrappers.Measurements.DatasetContainer;
-import MWC.GUI.*;
+import Debrief.Wrappers.Extensions.AdditionalProvider;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottables;
 
 /*
  * The content provider class is responsible for providing objects to the view.
@@ -34,10 +48,32 @@ import MWC.GUI.*;
  */
 public class ViewContentProvider implements IStructuredContentProvider,	ITreeContentProvider
 {
+  
+  private static final String EXTENSION_POINT_ID = "OutlineContentProvider";
+  
+  /** API for Debrief extensions that are able to put content
+   * into the Outline view
+   * 
+   * @author ian
+   *
+   */
+  public static interface ExtensionContentProvider
+  {
+
+    /** produce a (possibly empty) list of UI elements for this item
+     * 
+     * @param item the extension object
+     * @return UI elements to represent the object
+     */
+    List<EditableWrapper> itemsFor(Object subject, EditableWrapper parent,
+        Layers layers);
+  }
+  
 	/** set a limit on the limit for which we allow a layer
 	 * to be expanded  
 	 */
 	private static final int MAX_ITEMS = 10000;
+  private ArrayList<ExtensionContentProvider> _contentProviders;
 	
 	/**
 	 * @param view
@@ -128,12 +164,26 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 				}
 				
         // is this a data provider?
-        if(thisL instanceof DatasetContainer)
+        if(thisL instanceof AdditionalProvider)
         {
-          DatasetContainer container = (DatasetContainer) thisL;
-          DataFolder meas = container.getMeasurements();
-          final EditableWrapper pw = new EditableWrapper(meas, pl, pl.getLayers());
-          list.add(pw);
+          AdditionalProvider container = (AdditionalProvider) thisL;
+          
+         
+          
+          // ok,  are there any data items in there?
+          
+          
+          
+          for(Object item: container.getAdditionalData())
+          {
+            //  see if we have a content provider for this data type
+            List<ExtensionContentProvider> cp = getContentProviderExtensions();
+            for(ExtensionContentProvider provider: cp)
+            {
+              List<EditableWrapper> items = provider.itemsFor(item, pl, pl.getLayers());
+              list.addAll(items);
+            }
+          }
         }
 
         // ok, done.
@@ -166,4 +216,53 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 
 		return res;
 	}
+	
+
+  private List<ExtensionContentProvider> getContentProviderExtensions()
+  {
+    if (_contentProviders == null)
+    {
+      _contentProviders = new ArrayList<ExtensionContentProvider>();
+
+      // PUSH IN OUR DUMMY ONE
+      _contentProviders.add(new MeasuredDataProvider());
+      
+      IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+      if (registry != null)
+      {
+
+        final IExtensionPoint point = Platform.getExtensionRegistry()
+            .getExtensionPoint(DebriefPlugin.PLUGIN_NAME, EXTENSION_POINT_ID);
+
+        final IExtension[] extensions = point.getExtensions();
+        for (int i = 0; i < extensions.length; i++)
+        {
+          final IExtension iExtension = extensions[i];
+          final IConfigurationElement[] confE = iExtension
+              .getConfigurationElements();
+          for (int j = 0; j < confE.length; j++)
+          {
+            final IConfigurationElement iConfigurationElement = confE[j];
+            ExtensionContentProvider newInstance;
+            try
+            {
+              newInstance = (ExtensionContentProvider) iConfigurationElement
+                  .createExecutableExtension("class");
+              _contentProviders.add(newInstance);
+            }
+            catch (final CoreException e)
+            {
+              CorePlugin.logError(Status.ERROR,
+                  "Trouble whilst loading REP import extensions", e);
+            }
+          }
+        }
+      }
+    }
+    return _contentProviders;  
+   }
+  
+
+	
 }
