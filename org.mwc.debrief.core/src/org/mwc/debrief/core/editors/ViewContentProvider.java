@@ -22,6 +22,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mwc.cmap.core.property_support.*;
 
+import Debrief.Wrappers.Measurements.DataFolder;
+import Debrief.Wrappers.Measurements.DatasetContainer;
 import MWC.GUI.*;
 
 /*
@@ -125,6 +127,16 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 					}
 				}
 				
+        // is this a data provider?
+        if(thisL instanceof DatasetContainer)
+        {
+          DatasetContainer container = (DatasetContainer) thisL;
+          DataFolder meas = container.getMeasurements();
+          final EditableWrapper pw = new EditableWrapper(meas, pl, pl.getLayers());
+          list.add(pw);
+        }
+
+        // ok, done.
 				res = list.toArray();
 			}
 		}
