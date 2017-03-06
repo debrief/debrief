@@ -4,25 +4,16 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
-import MWC.GUI.Plottable;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
+import MWC.GUI.HasChildData;
 
 /** make a list of additional data items suitable
  * for showing in Debrief's Outline View
  * @author ian
  *
  */
-public class AdditionalProviderWrapper implements Editable, Layer
+public class AdditionalProviderWrapper implements Editable, HasChildData
 {
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  
   /** the list of additional data items
    * 
    */
@@ -97,94 +88,10 @@ public class AdditionalProviderWrapper implements Editable, Layer
   }
 
   @Override
-  public boolean getVisible()
-  {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public double rangeFrom(WorldLocation other)
-  {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public int compareTo(Plottable o)
-  {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public void exportShape()
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void append(Layer other)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void paint(CanvasType dest)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public WorldArea getBounds()
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void setName(String val)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
   public boolean hasOrderedChildren()
   {
     // TODO Auto-generated method stub
     return false;
-  }
-
-  @Override
-  public int getLineThickness()
-  {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public void add(Editable point)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void removeElement(Editable point)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void setVisible(boolean val)
-  {
-    // TODO Auto-generated method stub
-
   }
 
   protected static final class IteratorWrapper implements

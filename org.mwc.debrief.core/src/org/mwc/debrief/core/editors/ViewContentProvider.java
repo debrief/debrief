@@ -32,12 +32,12 @@ import org.eclipse.jface.viewers.Viewer;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.providers.MeasuredDataProvider;
 
 import Debrief.Wrappers.Extensions.AdditionalProvider;
 import Debrief.Wrappers.Extensions.AdditionalProviderWrapper;
 import Debrief.Wrappers.Extensions.ExtensionContentProvider;
 import MWC.GUI.Editable;
+import MWC.GUI.HasChildData;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottables;
@@ -48,149 +48,149 @@ import MWC.GUI.Plottables;
  * These objects may be sensitive to the current input of the view, or ignore it
  * and always show the same content (like Task List, for example).
  */
-public class ViewContentProvider implements IStructuredContentProvider,	ITreeContentProvider
+public class ViewContentProvider implements IStructuredContentProvider,
+    ITreeContentProvider
 {
-  
-  private static final String EXTENSION_POINT_ID = "OutlineContentProvider";
-
-  
-	/** set a limit on the limit for which we allow a layer
-	 * to be expanded  
-	 */
-	private static final int MAX_ITEMS = 10000;
+  /**
+   * set a limit on the limit for which we allow a layer to be expanded
+   */
+  private static final int MAX_ITEMS = 10000;
   private ArrayList<ExtensionContentProvider> _contentProviders;
-	
-	/**
-	 * @param view
-	 */
-	public ViewContentProvider()
-	{
-		
-	}
 
-	public void inputChanged(final Viewer v, final Object oldInput, final Object newInput)
-	{
-	}
+  /**
+   * @param view
+   */
+  public ViewContentProvider()
+  {
 
-	public void dispose()
-	{
-	}
+  }
 
-	public Object[] getElements(final Object parent)
-	{
-		Object[] res = null;
-		if (parent instanceof Layers)
-		{
-			// cool - run through the layers
-			final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
-			final Layers theLayers = (Layers) parent;
-			final Enumeration<Editable> numer = theLayers.elements();
-			while (numer.hasMoreElements())
-			{
-				final Layer thisL = (Layer) numer.nextElement();
-				final EditableWrapper wrapper = new EditableWrapper(thisL, null,
-						theLayers);
-				list.add(wrapper);
-			}
-			res = list.toArray();
-		}
-		return res;
-	}
+  public void inputChanged(final Viewer v, final Object oldInput,
+      final Object newInput)
+  {
+  }
 
-	public Object getParent(final Object child)
-	{
-		Object res = null;
-		if (child instanceof EditableWrapper)
-		{
-			final EditableWrapper thisP = (EditableWrapper) child;
-			final EditableWrapper parent = thisP.getParent();
-			res = parent;
-		}
-		return res;
-	}
+  public void dispose()
+  {
+  }
 
-	public Object[] getChildren(final Object parent)
-	{
-		Object[] res = new Object[0];
-		if (parent instanceof EditableWrapper)
-		{
-			final EditableWrapper pl = (EditableWrapper) parent;
-			if (pl.hasChildren())
-			{
-				final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
+  public Object[] getElements(final Object parent)
+  {
+    Object[] res = null;
+    if (parent instanceof Layers)
+    {
+      // cool - run through the layers
+      final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
+      final Layers theLayers = (Layers) parent;
+      final Enumeration<Editable> numer = theLayers.elements();
+      while (numer.hasMoreElements())
+      {
+        final Layer thisL = (Layer) numer.nextElement();
+        final EditableWrapper wrapper =
+            new EditableWrapper(thisL, null, theLayers);
+        list.add(wrapper);
+      }
+      res = list.toArray();
+    }
+    return res;
+  }
 
-				final Layer thisL = (Layer) pl.getEditable();
-				
-				// right, do they have their own order?
-				if(thisL.hasOrderedChildren())
-				{
-					int index = 0;
-					final Enumeration<Editable> numer = thisL.elements();
-					while (numer.hasMoreElements())
-					{
-						final Editable thisP = (Editable) numer.nextElement();
-						final EditableWrapper pw = new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl.getLayers(), index);
-						list.add(pw);
-						index++;
-					}
-				}
-				else
-				{
-					final Enumeration<Editable> numer = thisL.elements();
-					if(numer != null)
-					{
-						while (numer.hasMoreElements())
-						{
-							final Editable thisP = (Editable) numer.nextElement();
-							final EditableWrapper pw = new EditableWrapper(thisP, pl, pl.getLayers());
-							list.add(pw);
-						}
-					}
-				}
-				
+  public Object getParent(final Object child)
+  {
+    Object res = null;
+    if (child instanceof EditableWrapper)
+    {
+      final EditableWrapper thisP = (EditableWrapper) child;
+      final EditableWrapper parent = thisP.getParent();
+      res = parent;
+    }
+    return res;
+  }
+
+  public Object[] getChildren(final Object parent)
+  {
+    Object[] res = new Object[0];
+    if (parent instanceof EditableWrapper)
+    {
+      final EditableWrapper pl = (EditableWrapper) parent;
+      if (pl.hasChildren())
+      {
+        final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
+
+        final HasChildData thisL = (HasChildData) pl.getEditable();
+
+        // right, do they have their own order?
+        if (thisL.hasOrderedChildren())
+        {
+          int index = 0;
+          final Enumeration<Editable> numer = thisL.elements();
+          while (numer.hasMoreElements())
+          {
+            final Editable thisP = (Editable) numer.nextElement();
+            final EditableWrapper pw =
+                new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl
+                    .getLayers(), index);
+            list.add(pw);
+            index++;
+          }
+        }
+        else
+        {
+          final Enumeration<Editable> numer = thisL.elements();
+          if (numer != null)
+          {
+            while (numer.hasMoreElements())
+            {
+              final Editable thisP = (Editable) numer.nextElement();
+              final EditableWrapper pw =
+                  new EditableWrapper(thisP, pl, pl.getLayers());
+              list.add(pw);
+            }
+          }
+        }
+
         // is this a data provider?
-        if(thisL instanceof AdditionalProvider)
+        if (thisL instanceof AdditionalProvider)
         {
           AdditionalProvider container = (AdditionalProvider) thisL;
-          
+
           // ok, we need to wrap this container
-          Editable addData = new AdditionalProviderWrapper(container.getAdditionalData(), getContentProviderExtensions());
+          Editable addData =
+              new AdditionalProviderWrapper(container.getAdditionalData(),
+                  getContentProviderExtensions());
           EditableWrapper pw = new EditableWrapper(addData, pl, pl.getLayers());
           list.add(pw);
-
         }
 
         // ok, done.
-				res = list.toArray();
-			}
-		}
-		return res;
-	}
+        res = list.toArray();
+      }
+    }
+    return res;
+  }
 
-	public boolean hasChildren(final Object parent)
-	{
-		boolean res = false;
-		if (parent instanceof EditableWrapper)
-		{
-			final EditableWrapper pw = (EditableWrapper) parent;
-			
-			// special case - only allow the layer to open if it has less than max-items
-			Editable ed = pw.getEditable();
-			if(ed instanceof Plottables)
-			{
-				// get the object as a list
-				Plottables pl = (Plottables) ed;
-				
-				// check if it's a reasonable size
-				res = pl.size() < MAX_ITEMS;
-			}
-			else
-				res = pw.hasChildren();
-		}
+  public boolean hasChildren(final Object parent)
+  {
+    boolean res = false;
+    if (parent instanceof EditableWrapper)
+    {
+      final EditableWrapper pw = (EditableWrapper) parent;
 
-		return res;
-	}
-	
+      // special case - only allow the layer to open if it has less than max-items
+      Editable ed = pw.getEditable();
+      if (ed instanceof Plottables)
+      {
+        // get the object as a list
+        Plottables pl = (Plottables) ed;
+
+        // check if it's a reasonable size
+        res = pl.size() < MAX_ITEMS;
+      }
+      else
+        res = pw.hasChildren();
+    }
+    return res;
+  }
 
   private List<ExtensionContentProvider> getContentProviderExtensions()
   {
@@ -198,31 +198,31 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
     {
       _contentProviders = new ArrayList<ExtensionContentProvider>();
 
-      // PUSH IN OUR DUMMY ONE
-      _contentProviders.add(new MeasuredDataProvider());
-      
       IExtensionRegistry registry = Platform.getExtensionRegistry();
 
       if (registry != null)
       {
 
-        final IExtensionPoint point = Platform.getExtensionRegistry()
-            .getExtensionPoint(DebriefPlugin.PLUGIN_NAME, EXTENSION_POINT_ID);
+        final IExtensionPoint point =
+            Platform.getExtensionRegistry().getExtensionPoint(
+                DebriefPlugin.PLUGIN_NAME,
+                DebriefPlugin.CONTENT_PROVIDER_EXTENSION_POINT_ID);
 
         final IExtension[] extensions = point.getExtensions();
         for (int i = 0; i < extensions.length; i++)
         {
           final IExtension iExtension = extensions[i];
-          final IConfigurationElement[] confE = iExtension
-              .getConfigurationElements();
+          final IConfigurationElement[] confE =
+              iExtension.getConfigurationElements();
           for (int j = 0; j < confE.length; j++)
           {
             final IConfigurationElement iConfigurationElement = confE[j];
             ExtensionContentProvider newInstance;
             try
             {
-              newInstance = (ExtensionContentProvider) iConfigurationElement
-                  .createExecutableExtension("class");
+              newInstance =
+                  (ExtensionContentProvider) iConfigurationElement
+                      .createExecutableExtension("contentProvider");
               _contentProviders.add(newInstance);
             }
             catch (final CoreException e)
@@ -234,9 +234,6 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
         }
       }
     }
-    return _contentProviders;  
-   }
-  
-
-	
+    return _contentProviders;
+  }
 }
