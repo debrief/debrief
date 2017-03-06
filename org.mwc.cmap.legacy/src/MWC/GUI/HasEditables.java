@@ -7,7 +7,7 @@ import java.util.Enumeration;
  * @author ian
  *
  */
-public interface HasChildData
+public interface HasEditables
 {
   /** get the children
    * 
@@ -30,5 +30,10 @@ public interface HasChildData
   {
     public Enumeration<Editable> contiguousElements();
   }
+
+
+  void add(Editable point);
+
+  void removeElement(Editable point);
 
 }
