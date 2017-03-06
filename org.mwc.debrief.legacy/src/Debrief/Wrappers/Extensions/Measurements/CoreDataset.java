@@ -7,6 +7,7 @@ public class CoreDataset<IndexType extends Number, ValueType> implements DataIte
 {
   private final List<Measurement> _data = new ArrayList<Measurement>();
   private String _name;
+  private String _units;
   
   
   public class Measurement
@@ -21,9 +22,10 @@ public class CoreDataset<IndexType extends Number, ValueType> implements DataIte
     }
   }
   
-  public CoreDataset(String name)
+  public CoreDataset(final String name, final String units)
   {
     _name = name;
+    _units = units;
   }
   
   public void add(IndexType index, ValueType value)
@@ -43,6 +45,11 @@ public class CoreDataset<IndexType extends Number, ValueType> implements DataIte
     return _name;
   }
 
+  public String getUnits()
+  {
+    return _units;
+  }
+  
   /**
    * convenience function, to describe this plottable as a string
    */

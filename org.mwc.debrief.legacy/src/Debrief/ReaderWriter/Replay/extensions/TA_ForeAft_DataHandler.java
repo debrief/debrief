@@ -41,10 +41,10 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
 
         @Override
         protected void storeMeasurement(String platform_name,
-            String sensor_name, String folder, String dataset,
+            String sensor_name, String folder, String dataset, final String units,
             HiResDate theDate, double measurement)
         {
-          super.storeMeasurement(platform_name, sensor_name, folder, dataset, theDate,
+          super.storeMeasurement(platform_name, sensor_name, folder, dataset, units, theDate,
               measurement);
           _messages.add("stored");
         }
@@ -112,9 +112,9 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
         
         // ok, try to store the measurement
         storeMeasurement(platform_name, sensor_name,
-            _datasetName + " / " + datasetName, "Heading", theDate, heading);
+            _datasetName + " / " + datasetName, "Heading", "\u00b0", theDate, heading);
         storeMeasurement(platform_name, sensor_name,
-            _datasetName + " / " + datasetName, "Depth", theDate, depth);
+            _datasetName + " / " + datasetName, "Depth", "m", theDate, depth);
 
         ctr++;
       }

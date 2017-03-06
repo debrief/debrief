@@ -19,17 +19,17 @@ public class DataTest extends TestCase
     d0.add(d0_2);
     
     CoreDataset<Long, Double> timeD1 =
-        new CoreDataset<Long, Double>("TimeDouble");
+        new CoreDataset<Long, Double>("TimeDouble", "Some units");
     timeD1.add(12L, 13D);
     timeD1.add(14L, 15D);
 
     CoreDataset<Long, Double> timeD2 =
-        new CoreDataset<Long, Double>("TimeDouble");
+        new CoreDataset<Long, Double>("TimeDouble", "Some units");
     timeD2.add(22L, 23D);
     timeD2.add(34L, 25D);
 
     CoreDataset<Long, String> timeS1 =
-        new CoreDataset<Long, String>("TimeString");
+        new CoreDataset<Long, String>("TimeString", "Some units");
     timeS1.add(12L, ""+ 13d);
     timeS1.add(14L, "" + 15D);
     
@@ -44,7 +44,7 @@ public class DataTest extends TestCase
   public void testDataset()
   {
     CoreDataset<Long, Double> timeD =
-        new CoreDataset<Long, Double>("TimeDouble");
+        new CoreDataset<Long, Double>("TimeDouble", "Some units");
     
     timeD.printAll();
 

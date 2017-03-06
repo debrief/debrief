@@ -64,7 +64,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
    * @param measurement the measurement
    */
   protected void storeMeasurement(final String platform_name, final String sensor_name, final String folder,
-      final String dataset_name, final HiResDate theDate, final double measurement)
+      final String dataset_name, final String units, final HiResDate theDate, final double measurement)
   {
     // find the platform
     TrackWrapper track = (TrackWrapper) _layers.findLayer(platform_name);
@@ -104,13 +104,13 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     }
     
     // find the dataset
-    CoreDataset<Long, Double> dataset = findDataset(dataFolder, folder, dataset_name);
+    CoreDataset<Long, Double> dataset = findDataset(dataFolder, folder, dataset_name, units);
     
     // add the measurement
     dataset.add(theDate.getDate().getTime(), measurement);
   }
 
-  private CoreDataset<Long, Double> findDataset(DataFolder parent, String folder, String name)
+  private CoreDataset<Long, Double> findDataset(DataFolder parent, String folder, String name, String units)
   {
     CoreDataset<Long, Double> res = null;
     
@@ -134,12 +134,12 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     }
 
     // get the dataset
-    res = getDataset(targetFolder, name);
+    res = getDataset(targetFolder, name, units);
     
     // did it find it?
     if(res == null)
     {
-      res = new CoreDataset<Long, Double>(name);
+      res = new CoreDataset<Long, Double>(name, units);
       targetFolder.add(res);
     }
     
@@ -148,7 +148,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   
   @SuppressWarnings("unchecked")
   private CoreDataset<Long, Double> getDataset(DataFolder folder,
-      String name)
+      String name, String units)
   {
     CoreDataset<Long, Double> res = null;
     
@@ -163,7 +163,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     
     if(res == null)
     {
-      res = new CoreDataset<Long, Double>(name);
+      res = new CoreDataset<Long, Double>(name, units);
       folder.add(res);
     }
     
@@ -215,7 +215,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       
       TA_Modules_DataHandler handler = new TA_Modules_DataHandler();
       handler.setLayers(layers);
-      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", new HiResDate(1200000), 12.33);
+      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", "Some units", new HiResDate(1200000), 12.33);
       
       // check it worked
       // find the measurements
@@ -232,8 +232,8 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       CoreDataset<?,?> dataset = (CoreDataset<?, ?>) subF.get("Fore");
       assertEquals("has items",  1, dataset.size());
 
-      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", new HiResDate(1300000), 15.33);
-      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", new HiResDate(1400000), 11.33);
+      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", "Some units", new HiResDate(1300000), 15.33);
+      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", "Some units", new HiResDate(1400000), 11.33);
 
       assertEquals("has items",  3, dataset.size());
 
