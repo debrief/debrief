@@ -3,17 +3,15 @@ package org.mwc.debrief.core.providers;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 
-import org.mwc.cmap.core.property_support.EditableWrapper;
-import org.mwc.debrief.core.editors.ViewContentProvider.ExtensionContentProvider;
-
+import Debrief.Wrappers.Extensions.ExtensionContentProvider;
 import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -21,10 +19,16 @@ import MWC.GenericData.WorldLocation;
 public class MeasuredDataProvider implements ExtensionContentProvider
 {
 
+
   @Override
-  public List<EditableWrapper> itemsFor(Object subject, EditableWrapper parent, Layers layers)
+  public List<Editable> itemsFor(Object subject)
   {
-    List<EditableWrapper> res = null;
+    return getItemsFor(subject);
+  }
+  
+  private static List<Editable> getItemsFor(Object subject)
+  {
+    List<Editable> res = null;
     
     if(subject instanceof DataFolder)
     {
@@ -52,20 +56,17 @@ public class MeasuredDataProvider implements ExtensionContentProvider
           plottable = null;
         }
         
-        
-        // ok, wrap this item.
-        EditableWrapper wr = new EditableWrapper(plottable, parent, layers);
-        
         if(res == null)
         {
-          res = new ArrayList<EditableWrapper>();
-          res.add(wr);
+          res = new ArrayList<Editable>();
         }
+        res.add(plottable);
       }
     }
     
     return res;
   }
+  
   protected static class DatasetWrapper implements Editable
   {
     
@@ -100,9 +101,13 @@ public class MeasuredDataProvider implements ExtensionContentProvider
     }
   }
 
-  protected static class FolderWrapper implements Editable
+  protected static class FolderWrapper implements Editable, Layer
   {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private DataFolder _folder;
 
     public FolderWrapper(DataFolder folder)
@@ -131,6 +136,109 @@ public class MeasuredDataProvider implements ExtensionContentProvider
     public EditorType getInfo()
     {
       return null;
+    }
+
+    @Override
+    public boolean getVisible()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public double rangeFrom(WorldLocation other)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public int compareTo(Plottable o)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public void exportShape()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void append(Layer other)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void paint(CanvasType dest)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public WorldArea getBounds()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public void setName(String val)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public boolean hasOrderedChildren()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public int getLineThickness()
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public void add(Editable point)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void removeElement(Editable point)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public Enumeration<Editable> elements()
+    {
+      Vector<Editable> res = new Vector<Editable>();
+
+      // get the folder contents
+      List<Editable> items = getItemsFor(_folder);
+      
+      // put into our vector
+      res.addAll(items);
+      
+      return res.elements();
+    }
+
+    @Override
+    public void setVisible(boolean val)
+    {
     }
   }
 

@@ -2,6 +2,11 @@ package Debrief.Wrappers.Extensions;
 
 import java.util.ArrayList;
 
+/** store list of data items of unpredictable type (since they're provided by extension)
+ * 
+ * @author ian
+ *
+ */
 public class AdditionalData extends ArrayList<Object>
 {
 

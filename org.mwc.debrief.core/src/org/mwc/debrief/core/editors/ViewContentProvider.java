@@ -35,6 +35,8 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.providers.MeasuredDataProvider;
 
 import Debrief.Wrappers.Extensions.AdditionalProvider;
+import Debrief.Wrappers.Extensions.AdditionalProviderWrapper;
+import Debrief.Wrappers.Extensions.ExtensionContentProvider;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -50,24 +52,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 {
   
   private static final String EXTENSION_POINT_ID = "OutlineContentProvider";
-  
-  /** API for Debrief extensions that are able to put content
-   * into the Outline view
-   * 
-   * @author ian
-   *
-   */
-  public static interface ExtensionContentProvider
-  {
 
-    /** produce a (possibly empty) list of UI elements for this item
-     * 
-     * @param item the extension object
-     * @return UI elements to represent the object
-     */
-    List<EditableWrapper> itemsFor(Object subject, EditableWrapper parent,
-        Layers layers);
-  }
   
 	/** set a limit on the limit for which we allow a layer
 	 * to be expanded  
@@ -168,22 +153,11 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
         {
           AdditionalProvider container = (AdditionalProvider) thisL;
           
-         
-          
-          // ok,  are there any data items in there?
-          
-          
-          
-          for(Object item: container.getAdditionalData())
-          {
-            //  see if we have a content provider for this data type
-            List<ExtensionContentProvider> cp = getContentProviderExtensions();
-            for(ExtensionContentProvider provider: cp)
-            {
-              List<EditableWrapper> items = provider.itemsFor(item, pl, pl.getLayers());
-              list.addAll(items);
-            }
-          }
+          // ok, we need to wrap this container
+          Editable addData = new AdditionalProviderWrapper(container.getAdditionalData(), getContentProviderExtensions());
+          EditableWrapper pw = new EditableWrapper(addData, pl, pl.getLayers());
+          list.add(pw);
+
         }
 
         // ok, done.
