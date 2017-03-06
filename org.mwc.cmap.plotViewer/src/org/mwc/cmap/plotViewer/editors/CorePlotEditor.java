@@ -117,6 +117,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener2;
@@ -435,7 +436,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
       @Override
       public void dataExtended(final Layers theData, final Plottable newItem,
-          final Layer parent)
+          final HasEditables parent)
       {
         layersExtended();
         fireDirty();

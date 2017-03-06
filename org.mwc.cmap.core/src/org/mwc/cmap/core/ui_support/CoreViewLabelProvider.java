@@ -39,7 +39,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.Editable;
-import MWC.GUI.HasChildData;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
@@ -321,7 +321,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
         imageKey = "coast.png";
       else if (editable instanceof VPFDatabase)
         imageKey = "vpf.png";
-      else if (editable instanceof HasChildData)
+      else if (editable instanceof HasEditables)
         imageKey = "layer.png";
       else if (editable instanceof LabelWrapper)
         imageKey = "label.png";

@@ -51,6 +51,7 @@ import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener2;
@@ -116,7 +117,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 			}
 
 			@Override
-			public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
+			public void dataExtended(final Layers theData, final Plottable newItem, final HasEditables parent)
 			{
 				fireDirty();
 			}

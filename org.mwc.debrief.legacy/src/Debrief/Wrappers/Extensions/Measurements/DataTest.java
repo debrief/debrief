@@ -50,8 +50,7 @@ public class DataTest extends TestCase
 
     timeD.add(12L, 13D);
     
-    CoreDataset<Long, Double>.Measurement newM = timeD.new Measurement(13L, 12D);
-    timeD.add(newM);
+    timeD.add(13L, 12D);
 
     timeD.printAll();
   }

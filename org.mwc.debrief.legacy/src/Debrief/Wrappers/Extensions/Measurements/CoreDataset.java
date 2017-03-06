@@ -1,26 +1,21 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoreDataset<IndexType extends Number, ValueType> implements DataItem
+public class CoreDataset<IndexType extends Number, ValueType> implements DataItem, Serializable
 {
-  private final List<Measurement> _data = new ArrayList<Measurement>();
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  
+  private final List<IndexType> _indices = new ArrayList<IndexType>();
+  private final List<ValueType> _values = new ArrayList<ValueType>();
   private String _name;
   private String _units;
   
-  
-  public class Measurement
-  {
-    private IndexType _index;
-    private ValueType _value;
-    
-    public Measurement(final IndexType index, final ValueType value)
-    {
-      _index = index;
-      _value = value;
-    }
-  }
   
   public CoreDataset(final String name, final String units)
   {
@@ -30,13 +25,8 @@ public class CoreDataset<IndexType extends Number, ValueType> implements DataIte
   
   public void add(IndexType index, ValueType value)
   {
-    Measurement m = new Measurement(index,value);
-    _data.add(m);
-  }
-  
-  public void add(Measurement measurement)
-  {
-    _data.add(measurement);
+    _indices.add(index);
+    _values.add(value);
   }
   
   @Override
@@ -61,15 +51,16 @@ public class CoreDataset<IndexType extends Number, ValueType> implements DataIte
   public void printAll()
   {
     System.out.println(":"  + getName());
-    for(final Measurement m:_data)
+    final int len = _indices.size();
+    for(int i=0;i<len;i++)
     {
-      System.out.println("i:" + m._index + " v:" + m._value);
+      System.out.println("i:" + _indices.get(i) + " v:" + _values.get(i));
     }
   }
 
   public int size()
   {
-    return _data.size();
+    return _indices.size();
   }
 
 }

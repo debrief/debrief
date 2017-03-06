@@ -106,7 +106,7 @@ import java.util.Enumeration;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.HasChildData.ProvidesContiguousElements;
+import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;

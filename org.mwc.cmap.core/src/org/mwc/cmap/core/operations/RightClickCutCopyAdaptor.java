@@ -49,6 +49,7 @@ import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
@@ -199,7 +200,7 @@ public class RightClickCutCopyAdaptor
 	// member functions
 	// ////////////////////////////////
 	static public void getDropdownListFor(final IMenuManager manager,
-			final Editable[] editables, final Layer[] updateLayers, final Layer[] parentLayers,
+			final Editable[] editables, final Layer[] updateLayers, final HasEditables[] parentLayers,
 			final Layers theLayers, final Clipboard _clipboard)
 	{
 		// do we have any editables?
@@ -262,7 +263,7 @@ public class RightClickCutCopyAdaptor
 
 		protected Clipboard _myClipboard;
 
-		protected Layer[] _theParent;
+		protected HasEditables[] _theParent;
 
 		protected Layers _theLayers;
 
@@ -270,7 +271,7 @@ public class RightClickCutCopyAdaptor
 
 		protected Layer[] _updateLayer;
 
-		public CutItem(final Editable[] data, final Clipboard clipboard, final Layer[] theParent,
+		public CutItem(final Editable[] data, final Clipboard clipboard, final HasEditables[] theParent,
 				final Layers theLayers, final Layer[] updateLayer)
 		{
 			// remember parameters
@@ -352,12 +353,12 @@ public class RightClickCutCopyAdaptor
 					// ok, place our items back in their layers
 
 					boolean multipleLayersModified = false;
-					Layer lastLayerModified = null;
+					HasEditables lastLayerModified = null;
 
 					for (int i = 0; i < _data.length; i++)
 					{
 						final Editable thisE = _data[i];
-						final Layer parentLayer = _theParent[i];
+						final HasEditables parentLayer = _theParent[i];
 
 						// is the parent the data object itself?
 						if (parentLayer == null)
@@ -407,7 +408,7 @@ public class RightClickCutCopyAdaptor
 				 */
 				private void doCut()
 				{
-					final Vector<Layer> changedLayers = new Vector<Layer>();
+					final Vector<HasEditables> changedLayers = new Vector<HasEditables>();
 
 					// remember the previous contents
 					rememberPreviousContents();
@@ -425,7 +426,7 @@ public class RightClickCutCopyAdaptor
 					for (int i = 0; i < _data.length; i++)
 					{
 						final Editable thisE = _data[i];
-						final Layer parentLayer = _theParent[i];
+						final HasEditables parentLayer = _theParent[i];
 
 						// is the parent the data object itself?
 						if (parentLayer == null)
@@ -491,7 +492,7 @@ public class RightClickCutCopyAdaptor
 	// ///////////////////////////////////////////////
 	public static class CopyItem extends CutItem
 	{
-		public CopyItem(final Editable[] data, final Clipboard clipboard, final Layer[] theParent,
+		public CopyItem(final Editable[] data, final Clipboard clipboard, final HasEditables[] theParent,
 				final Layers theLayers, final Layer[] updateLayer)
 		{
 			super(data, clipboard, theParent, theLayers, updateLayer);
@@ -1001,7 +1002,7 @@ public class RightClickCutCopyAdaptor
 	{
 		
 
-		public DeleteItem(final Editable[] data, final Layer[] theParent, final Layers theLayers,
+		public DeleteItem(final Editable[] data, final HasEditables[] theParent, final Layers theLayers,
 				final Layer[] updateLayer)
 		{
 			super(data, null, theParent, theLayers, updateLayer);

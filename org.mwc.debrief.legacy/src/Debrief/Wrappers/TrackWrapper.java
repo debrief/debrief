@@ -58,7 +58,7 @@ import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.HasChildData.ProvidesContiguousElements;
+import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;

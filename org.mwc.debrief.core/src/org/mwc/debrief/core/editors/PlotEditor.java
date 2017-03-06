@@ -172,6 +172,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -495,7 +496,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
 
       @Override
-      public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
+      public void dataExtended(final Layers theData, final Plottable newItem, final HasEditables parent)
       {
         reconnectSegments(newItem, parent);        
       }
@@ -2128,7 +2129,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   }
 
-  private void reconnectSegments(final Plottable newItem, final Layer parent)
+  private void reconnectSegments(final Plottable newItem, final HasEditables parent)
   {
     // ok, have a look at the pasted track
     if (parent != null && parent instanceof TrackWrapper && newItem == null)

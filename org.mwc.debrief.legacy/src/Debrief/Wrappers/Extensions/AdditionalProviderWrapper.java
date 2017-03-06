@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Vector;
 
 import MWC.GUI.Editable;
-import MWC.GUI.HasChildData;
+import MWC.GUI.HasEditables;
 
 /** make a list of additional data items suitable
  * for showing in Debrief's Outline View
  * @author ian
  *
  */
-public class AdditionalProviderWrapper implements Editable, HasChildData
+public class AdditionalProviderWrapper implements Editable, HasEditables
 {
   /** the list of additional data items
    * 
@@ -114,6 +114,18 @@ public class AdditionalProviderWrapper implements Editable, HasChildData
     {
       return _val.next();
     }
+  }
+
+  @Override
+  public void add(Editable point)
+  {
+    _provider.add(point);
+  }
+
+  @Override
+  public void removeElement(Editable point)
+  {
+    _provider.remove(point);
   }
 
 }

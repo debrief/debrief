@@ -1,5 +1,6 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /** hold a set of datasets, or child stores
@@ -7,7 +8,7 @@ import java.util.ArrayList;
  * @author ian
  *
  */
-public class DataFolder extends ArrayList<DataItem> implements DataItem
+public class DataFolder extends ArrayList<DataItem> implements DataItem, Serializable
 {
   /**
    * 

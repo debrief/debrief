@@ -119,7 +119,7 @@ import java.io.Serializable;
  * @see Plottables
  * @see Plottable
  */
-public interface Layer extends Serializable, Plottable, HasChildData
+public interface Layer extends Serializable, Plottable, HasEditables
 {
   /////////////////////////////////////////////////////////////
   // member interfaces
@@ -175,6 +175,7 @@ public interface Layer extends Serializable, Plottable, HasChildData
    *
    * @param point
    */
+  @Override
   public void add(MWC.GUI.Editable point);
 
   /**
@@ -182,6 +183,7 @@ public interface Layer extends Serializable, Plottable, HasChildData
    *
    * @param point
    */
+  @Override
   public void removeElement(Editable point);
 
   @Override

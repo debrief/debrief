@@ -17,8 +17,8 @@ package org.mwc.debrief.core.providers;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.providers.MeasuredDataProvider.DatasetWrapper;
-import org.mwc.debrief.core.providers.MeasuredDataProvider.FolderWrapper;
+import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
+import org.mwc.debrief.core.providers.measured_data.FolderWrapper;
 
 import MWC.GUI.Editable;
 

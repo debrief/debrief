@@ -35,6 +35,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.DynamicLayer;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
@@ -50,7 +51,7 @@ public class RightClickPasteAdaptor
 	// ////////////////////////////////
 
 	static public void getDropdownListFor(final IMenuManager manager, final Editable destination,
-			final Layer[] updateLayer, final Layer[] parentLayer, final Layers theLayers, final Clipboard _clipboard)
+			final Layer[] updateLayer, final HasEditables[] parentLayer, final Layers theLayers, final Clipboard _clipboard)
 	{
 
 		// is the plottable a layer

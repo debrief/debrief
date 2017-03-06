@@ -21,7 +21,7 @@ import java.awt.Dimension;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
-import MWC.GUI.Layer;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
@@ -234,7 +234,7 @@ public class ZoomOut extends PlainTool
 				public void update() {}
 
 				@Override
-				public void update(Layer changedLayer) {}
+				public void update(HasEditables changedLayer) {}
 
 				@Override
 				public void repaint() {}

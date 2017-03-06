@@ -93,6 +93,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -1253,7 +1254,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         }
 
         public void dataExtended(final Layers theData, final Plottable newItem,
-            final Layer parentLayer)
+            final HasEditables parentLayer)
         {
           processNewData(theData, newItem, parentLayer);
         }
@@ -1738,7 +1739,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   private Job refreshOnDeleteJob;
 
   void processNewData(final Layers theData, final Editable newItem,
-      final Layer parentLayer)
+      final HasEditables parentLayer)
   {
     if (!_treeViewer.getTree().isDisposed())
     {
@@ -1786,7 +1787,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
             {
               // wrap the plottable
               final EditableWrapper parentWrapper =
-                  new EditableWrapper(parentLayer, null, theData);
+                  new EditableWrapper((Editable) parentLayer, null, theData);
               final EditableWrapper wrapped =
                   new EditableWrapper(newItem, parentWrapper, theData);
               final ISelection selected = new StructuredSelection(wrapped);
@@ -1922,7 +1923,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   {
 
     final Editable[] eList;
-    final Layer[] parentLayers;
+    final HasEditables[] parentLayers;
     final Layer[] updateLayers;
 
     static SelectionContext create(StructuredSelection sel)
@@ -1933,7 +1934,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     private SelectionContext(StructuredSelection sel)
     {
       eList = new Editable[sel.size()];
-      parentLayers = new Layer[sel.size()];
+      parentLayers = new HasEditables[sel.size()];
       updateLayers = new Layer[sel.size()];
 
       // right, now populate them
@@ -1949,7 +1950,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         // hmm, did we find one?
         if (theParent != null)
           // yes, store it
-          parentLayers[i] = (Layer) wrapper.getParent().getEditable();
+          parentLayers[i] = (HasEditables) wrapper.getParent().getEditable();
         else
           // nope - store a null (to indicate it's a top-level layer)
           parentLayers[i] = null;

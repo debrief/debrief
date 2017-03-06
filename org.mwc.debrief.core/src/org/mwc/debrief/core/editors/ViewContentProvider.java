@@ -37,7 +37,7 @@ import Debrief.Wrappers.Extensions.AdditionalProvider;
 import Debrief.Wrappers.Extensions.AdditionalProviderWrapper;
 import Debrief.Wrappers.Extensions.ExtensionContentProvider;
 import MWC.GUI.Editable;
-import MWC.GUI.HasChildData;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottables;
@@ -117,7 +117,7 @@ public class ViewContentProvider implements IStructuredContentProvider,
       {
         final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
 
-        final HasChildData thisL = (HasChildData) pl.getEditable();
+        final HasEditables thisL = (HasEditables) pl.getEditable();
 
         // right, do they have their own order?
         if (thisL.hasOrderedChildren())

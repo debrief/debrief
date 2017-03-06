@@ -122,6 +122,7 @@ import javax.swing.ImageIcon;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -279,7 +280,8 @@ public class SwingChart extends PlainChart
     _theCanvas.updateMe();
   }
 
-  public final void update(final Layer changedLayer)
+  @Override
+  public final void update(final HasEditables changedLayer)
   {
     if (changedLayer == null)
     {
