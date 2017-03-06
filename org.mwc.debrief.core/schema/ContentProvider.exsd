@@ -49,13 +49,23 @@
 
    <element name="helper">
       <complexType>
-         <attribute name="class" type="string" use="required">
+         <attribute name="contentProvider" type="string" use="required">
             <annotation>
                <documentation>
                   The importer must fulfil this interface.
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn=":org.mwc.debrief.core.editors.ViewContentProvider$ExtensionContentProvider"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="imageProvider" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The importer must fulfil this interface.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":org.mwc.cmap.core.ui_support.CoreViewLabelProvider$ViewLabelImageHelper"/>
                </appInfo>
             </annotation>
          </attribute>

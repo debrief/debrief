@@ -1136,4 +1136,11 @@
             class="Debrief.ReaderWriter.Replay.extensions.TA_COG_REL_DataHandler">
       </helper>
    </extension>
+   <extension
+         point="org.mwc.debrief.core.OutlineContentProvider">
+      <helper
+            contentProvider="org.mwc.debrief.core.providers.MeasuredDataProvider"
+            imageProvider="org.mwc.debrief.core.providers.MeasuredDataImageHelper">
+      </helper>
+   </extension>
 </plugin>
