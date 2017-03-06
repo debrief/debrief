@@ -1,5 +1,6 @@
 package org.mwc.debrief.core.providers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +13,13 @@ import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import MWC.GUI.Editable;
 
-public class MeasuredDataProvider implements ExtensionContentProvider
+public class MeasuredDataProvider implements ExtensionContentProvider, Serializable
 {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   public static List<Editable> getItemsFor(final Object subject)
   {

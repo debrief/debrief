@@ -1,5 +1,6 @@
 package Debrief.Wrappers.Extensions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /** store list of data items of unpredictable type (since they're provided by extension)
@@ -7,7 +8,7 @@ import java.util.ArrayList;
  * @author ian
  *
  */
-public class AdditionalData extends ArrayList<Object>
+public class AdditionalData extends ArrayList<Object> implements Serializable
 {
 
   /**

@@ -1,5 +1,6 @@
 package Debrief.Wrappers.Extensions;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -12,8 +13,13 @@ import MWC.GUI.HasEditables;
  * @author ian
  *
  */
-public class AdditionalProviderWrapper implements Editable, HasEditables
+public class AdditionalProviderWrapper implements Editable, HasEditables, Serializable
 {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
   /** the list of additional data items
    * 
    */
