@@ -106,11 +106,11 @@ import java.util.Enumeration;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.HasChildData.ProvidesContiguousElements;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
-import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.WorldLocation;
 

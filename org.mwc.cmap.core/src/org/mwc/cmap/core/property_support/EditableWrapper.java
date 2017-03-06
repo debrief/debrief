@@ -37,6 +37,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.Griddable.NonBeanPropertyDescriptor;
 import MWC.GUI.GriddableSeriesMarker;
+import MWC.GUI.HasChildData;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
@@ -510,7 +511,7 @@ public class EditableWrapper implements IPropertySource
 
 	final public boolean hasChildren()
 	{
-		return ((_editable instanceof Layer) && (!(_editable instanceof Editable.DoNoInspectChildren)));
+		return ((_editable instanceof HasChildData) && (!(_editable instanceof Editable.DoNoInspectChildren)));
 	}
 
 	@SuppressWarnings("rawtypes")
