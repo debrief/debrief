@@ -53,11 +53,11 @@ public class DatasetWrapper implements Editable, Serializable
     }
     
     
-    final CoreDataset<?, ?> _data;
+    final CoreDataset _data;
     
     private transient DatasetWrapperInfo _myEditor = null;
 
-    public DatasetWrapper(final CoreDataset<?, ?> folder)
+    public DatasetWrapper(final CoreDataset folder)
     {
       _data = folder;
     }
@@ -114,8 +114,8 @@ public class DatasetWrapper implements Editable, Serializable
     {
       public void testSerialise()
       {
-        CoreDataset<Long, Double> original =
-            new CoreDataset<Long, Double>("Data", "Seconds");
+        CoreDataset original =
+            new CoreDataset("Data", "Seconds");
 
         original.add(12L, 100d);
         original.add(15L, 200d);
