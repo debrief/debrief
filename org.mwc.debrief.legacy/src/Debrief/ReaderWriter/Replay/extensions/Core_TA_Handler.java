@@ -3,7 +3,6 @@ package Debrief.ReaderWriter.Replay.extensions;
 import java.util.Enumeration;
 
 import junit.framework.TestCase;
-
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
@@ -21,9 +20,9 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
 
   private Layers _layers;
   private final String _myType;
-  
+
   protected static final String CENTRE_OF_GRAVITY = "Centre of Gravity";
-  
+
   Core_TA_Handler(final String type)
   {
     _myType = type;
@@ -34,13 +33,12 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   {
     _layers = parent;
   }
-  
+
   @Override
   final public String getYourType()
   {
     return ";" + _myType + ":";
   }
-
 
   @Override
   final public String exportThis(Plottable theShape)
@@ -54,75 +52,86 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     return false;
   }
 
-  /** store this measurement
+  /**
+   * store this measurement
    * 
-   * @param platform_name the platform to store the data under
-   * @param sensor_name the sensor to store the data under (or null to go in the top level)
-   * @param folder the folder to store the dataset into (use "/" to indicate sub-folders)
-   * @param dataset_name the dataset to put the measurement into
-   * @param theDate the time of the measurement
-   * @param measurement the measurement
+   * @param platform_name
+   *          the platform to store the data under
+   * @param sensor_name
+   *          the sensor to store the data under (or null to go in the top level)
+   * @param folder
+   *          the folder to store the dataset into (use "/" to indicate sub-folders)
+   * @param dataset_name
+   *          the dataset to put the measurement into
+   * @param theDate
+   *          the time of the measurement
+   * @param measurement
+   *          the measurement
    */
-  protected void storeMeasurement(final String platform_name, final String sensor_name, final String folder,
-      final String dataset_name, final String units, final HiResDate theDate, final double measurement)
+  protected void storeMeasurement(final String platform_name,
+      final String sensor_name, final String folder, final String dataset_name,
+      final String units, final HiResDate theDate, final double measurement)
   {
     // find the platform
     TrackWrapper track = (TrackWrapper) _layers.findLayer(platform_name);
-    if(track == null)
+    if (track == null)
     {
       System.err.println("Track not found for:" + platform_name);
       return;
     }
-    
+
     // find the sensor
     SensorWrapper ourSensor = null;
-    BaseLayer sensors = track.getSensors();    
+    BaseLayer sensors = track.getSensors();
     Enumeration<Editable> numer = sensors.elements();
     while (numer.hasMoreElements())
     {
       SensorWrapper thisSensor = (SensorWrapper) numer.nextElement();
-      if(thisSensor.getName().equals(sensor_name))
+      if (thisSensor.getName().equals(sensor_name))
       {
         ourSensor = thisSensor;
         break;
       }
     }
-    
-    if(ourSensor == null)
+
+    if (ourSensor == null)
     {
       // ok, create an empty sensor?
       ourSensor = new SensorWrapper(sensor_name);
       track.getSensors().add(ourSensor);
     }
-    
+
     // find the measurements
-    DataFolder dataFolder = (DataFolder) ourSensor.getAdditionalData().getThisType(DataFolder.class);
-    if(dataFolder == null)
+    DataFolder dataFolder =
+        (DataFolder) ourSensor.getAdditionalData()
+            .getThisType(DataFolder.class);
+    if (dataFolder == null)
     {
       dataFolder = new DataFolder();
       ourSensor.getAdditionalData().add(dataFolder);
     }
-    
+
     // find the dataset
-    CoreDataset<Long, Double> dataset = findDataset(dataFolder, folder, dataset_name, units);
-    
+    CoreDataset dataset = findDataset(dataFolder, folder, dataset_name, units);
+
     // add the measurement
     dataset.add(theDate.getDate().getTime(), measurement);
   }
 
-  private CoreDataset<Long, Double> findDataset(DataFolder parent, String folder, String name, String units)
+  private CoreDataset findDataset(DataFolder parent, String folder,
+      String name, String units)
   {
-    CoreDataset<Long, Double> res = null;
-    
+    CoreDataset res = null;
+
     DataFolder targetFolder = parent;
-    
+
     // break the folder down, if necessary
-    if(folder != null)
+    if (folder != null)
     {
-      if(folder.contains("/"))
+      if (folder.contains("/"))
       {
-        String [] levels = folder.split("/");
-        for(String level: levels)
+        String[] levels = folder.split("/");
+        for (String level : levels)
         {
           targetFolder = getFolder(targetFolder, level);
         }
@@ -135,73 +144,71 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
 
     // get the dataset
     res = getDataset(targetFolder, name, units);
-    
+
     // did it find it?
-    if(res == null)
+    if (res == null)
     {
-      res = new CoreDataset<Long, Double>(name, units);
+      res = new CoreDataset(name, units);
       targetFolder.add(res);
     }
-    
-    return res;
-  }
-  
-  @SuppressWarnings("unchecked")
-  private CoreDataset<Long, Double> getDataset(DataFolder folder,
-      String name, String units)
-  {
-    CoreDataset<Long, Double> res = null;
-    
-    for(DataItem item: folder)
-    {
-      if(item.getName().equals(name) && (item instanceof CoreDataset<?,?>))
-      {
-        res = (CoreDataset<Long, Double>) item;
-        break;
-      }
-    }
-    
-    if(res == null)
-    {
-      res = new CoreDataset<Long, Double>(name, units);
-      folder.add(res);
-    }
-    
+
     return res;
   }
 
-  /** find (or create) a folder with the given name
+  private CoreDataset getDataset(DataFolder folder, String name, String units)
+  {
+    CoreDataset res = null;
+
+    for (DataItem item : folder)
+    {
+      if (item.getName().equals(name) && (item instanceof CoreDataset))
+      {
+        res = (CoreDataset) item;
+        break;
+      }
+    }
+
+    if (res == null)
+    {
+      res = new CoreDataset(name, units);
+      folder.add(res);
+    }
+
+    return res;
+  }
+
+  /**
+   * find (or create) a folder with the given name
    * 
    */
   private DataFolder getFolder(DataFolder folder, String name)
   {
     DataFolder res = null;
-    
-    for(DataItem item: folder)
+
+    for (DataItem item : folder)
     {
-      if(item.getName().equals(name) && (item instanceof DataFolder))
+      if (item.getName().equals(name) && (item instanceof DataFolder))
       {
         res = (DataFolder) item;
         break;
       }
     }
-    
-    if(res == null)
+
+    if (res == null)
     {
       res = new DataFolder(name);
       folder.add(res);
     }
-    
+
     return res;
   }
-  
+
   @Override
   final public String getSymbology()
   {
     return null;
   }
-  
-  
+
   public static class TestStorage extends TestCase
   {
     public void testFolders()
@@ -212,30 +219,34 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       SensorWrapper sensor = new SensorWrapper("Sensor");
       track.add(sensor);
       layers.addThisLayer(track);
-      
+
       TA_Modules_DataHandler handler = new TA_Modules_DataHandler();
       handler.setLayers(layers);
-      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", "Some units", new HiResDate(1200000), 12.33);
-      
+      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore",
+          "Some units", new HiResDate(1200000), 12.33);
+
       // check it worked
       // find the measurements
-      DataFolder topF = (DataFolder) sensor.getAdditionalData().getThisType(DataFolder.class);
-      if(topF == null)
+      DataFolder topF =
+          (DataFolder) sensor.getAdditionalData().getThisType(DataFolder.class);
+      if (topF == null)
       {
         topF = new DataFolder();
         sensor.getAdditionalData().add(topF);
       }
-      
+
       topF.printAll();
-      
+
       DataFolder subF = (DataFolder) topF.get("Modules");
-      CoreDataset<?,?> dataset = (CoreDataset<?, ?>) subF.get("Fore");
-      assertEquals("has items",  1, dataset.size());
+      CoreDataset dataset = (CoreDataset) subF.get("Fore");
+      assertEquals("has items", 1, dataset.size());
 
-      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", "Some units", new HiResDate(1300000), 15.33);
-      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore", "Some units", new HiResDate(1400000), 11.33);
+      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore",
+          "Some units", new HiResDate(1300000), 15.33);
+      handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore",
+          "Some units", new HiResDate(1400000), 11.33);
 
-      assertEquals("has items",  3, dataset.size());
+      assertEquals("has items", 3, dataset.size());
 
     }
   }

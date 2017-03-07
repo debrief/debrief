@@ -40,9 +40,9 @@ public class MeasuredDataProvider implements ExtensionContentProvider, Serializa
           final DataFolder df = (DataFolder) item;
           plottable = new FolderWrapper(df);
         }
-        else if (item instanceof CoreDataset<?, ?>)
+        else if (item instanceof CoreDataset)
         {
-          final CoreDataset<?, ?> set = (CoreDataset<?, ?>) item;
+          final CoreDataset set = (CoreDataset) item;
           plottable = new DatasetWrapper(set);
         }
         else

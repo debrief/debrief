@@ -2,18 +2,18 @@ package Debrief.Wrappers.Extensions.Measurements;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class CoreDataset<IndexType extends Number, ValueType> implements
-    DataItem, Serializable
+public class CoreDataset implements DataItem, Serializable
 {
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
-  private final List<IndexType> _indices = new ArrayList<IndexType>();
-  private final List<ValueType> _values = new ArrayList<ValueType>();
+  private final List<Long> _indices = new ArrayList<Long>();
+  private final List<Double> _values = new ArrayList<Double>();
   private final String _name;
   private final String _units;
 
@@ -23,10 +23,20 @@ public class CoreDataset<IndexType extends Number, ValueType> implements
     _units = units;
   }
 
-  public void add(IndexType index, ValueType value)
+  public void add(Long index, Double value)
   {
     _indices.add(index);
     _values.add(value);
+  }
+  
+  public Iterator<Long> getIndices()
+  {
+    return _indices.iterator();
+  }
+  
+  public Iterator<Double> getValues()
+  {
+    return _values.iterator();
   }
 
   @Override

@@ -12,12 +12,11 @@ public class DataTest extends TestCase
 
   public void testSerialise()
   {
-    CoreDataset<Long, Double> original =
-        new CoreDataset<Long, Double>("Data", "Seconds");
+    CoreDataset original = new CoreDataset("Data", "Seconds");
 
     original.add(12L, 100d);
     original.add(15L, 200d);
-    
+
     try
     {
       final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
@@ -43,8 +42,7 @@ public class DataTest extends TestCase
       bis.close();
       iis.close();
 
-      @SuppressWarnings("unchecked")
-      CoreDataset<Long, Double> clone =(CoreDataset<Long, Double>) oj;
+      CoreDataset clone = (CoreDataset) oj;
 
       clone.printAll();
     }
@@ -67,20 +65,17 @@ public class DataTest extends TestCase
     d0_1.add(d0_1_2);
     d0.add(d0_2);
 
-    CoreDataset<Long, Double> timeD1 =
-        new CoreDataset<Long, Double>("TimeDouble", "Some units");
+    CoreDataset timeD1 = new CoreDataset("TimeDouble", "Some units");
     timeD1.add(12L, 13D);
     timeD1.add(14L, 15D);
 
-    CoreDataset<Long, Double> timeD2 =
-        new CoreDataset<Long, Double>("TimeDouble", "Some units");
+    CoreDataset timeD2 = new CoreDataset("TimeDouble", "Some units");
     timeD2.add(22L, 23D);
     timeD2.add(34L, 25D);
 
-    CoreDataset<Long, String> timeS1 =
-        new CoreDataset<Long, String>("TimeString", "Some units");
-    timeS1.add(12L, "" + 13d);
-    timeS1.add(14L, "" + 15D);
+    CoreDataset timeS1 = new CoreDataset("TimeString", "Some units");
+    timeS1.add(12L, 313d);
+    timeS1.add(14L, 315D);
 
     d0_1.add(timeD1);
     d0_1.add(timeS1);
@@ -92,8 +87,7 @@ public class DataTest extends TestCase
 
   public void testDataset()
   {
-    CoreDataset<Long, Double> timeD =
-        new CoreDataset<Long, Double>("TimeDouble", "Some units");
+    CoreDataset timeD = new CoreDataset("TimeDouble", "Some units");
 
     timeD.printAll();
 
