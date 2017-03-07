@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -643,8 +644,22 @@ public class RightClickCutCopyAdaptor
 			final java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
 
 			// create the reader
-			final java.io.ObjectInputStream iis = new ObjectInputStream(bis);
+			final java.io.ObjectInputStream iis = new ObjectInputStream(bis){
+				
+				
+				protected Class<?> resolveClass(ObjectStreamClass desc)
+				        throws IOException, ClassNotFoundException
+				    {
+				        String name = desc.getName();
+				        try {
+				            return Class.forName(name, false, item.getClass().getClassLoader());
+				        } catch (ClassNotFoundException ex) {
+				            return super.resolveClass(desc);
+				        }
+				    }
+			};
 
+			
 			// and read it in
 			final Object oj = iis.readObject();
 
