@@ -26,6 +26,7 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
@@ -212,6 +213,9 @@ abstract public class SensorHandler extends
 
 		}
 
+		// chuck in some extended data support
+		AdditionalDataHandler.appendChild(sensor, trk, doc);
+		
 		parent.appendChild(trk);
 	}
 
