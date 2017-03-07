@@ -69,7 +69,7 @@ import org.osgi.framework.BundleContext;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
-import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler.ExporterProvider;
+import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler.ExportProvider;
 import Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler;
 import Debrief.ReaderWriter.ais.AISDecoder;
 import Debrief.Wrappers.CompositeTrackWrapper;
@@ -79,6 +79,7 @@ import MWC.GUI.MessageProvider;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.XML.IDOMExporter;
+import MWC.Utilities.ReaderWriter.XML.ISAXImporter;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -207,6 +208,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   private ArrayList<ExtensibleLineImporter> _repFileExtensionLoaders;
 
   private List<IDOMExporter> _exportHelpers;
+
+  private ArrayList<ISAXImporter> _importHelpers;
 
   /**
    * keep track of images we can't find. It's no use carrying on trying to find them
@@ -352,26 +355,36 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     ImportNarrativeDocument.setQuestionHelper(new SWTEclipseHelper());
 
     // tell the additional data that we can help
-    AdditionalDataHandler.setExportHelper(new ExporterProvider()
+    AdditionalDataHandler.setExportHelper(new ExportProvider()
     {
       @Override
       public List<IDOMExporter> getExporters()
       {
-        return getExportHelpers();
+        initImportExportHelpers();
+        return _exportHelpers;
+      }
+
+      @Override
+      public List<ISAXImporter> getImporters()
+      {
+        initImportExportHelpers();
+        return _importHelpers;
       }
     });
 
   }
 
-  protected List<IDOMExporter> getExportHelpers()
+  private void initImportExportHelpers()
   {
     if (_exportHelpers == null)
     {
       _exportHelpers = new ArrayList<IDOMExporter>();
-      
+      _importHelpers = new ArrayList<ISAXImporter>();
+
       // manually insert our one
       _exportHelpers.add(new MeasuredDataHandler());
-      
+      _importHelpers.add(new MeasuredDataHandler());
+
       IExtensionRegistry registry = Platform.getExtensionRegistry();
       if (registry != null)
       {
@@ -395,6 +408,10 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
                   (IDOMExporter) iConfigurationElement
                       .createExecutableExtension("writer");
               _exportHelpers.add(newInstance);
+              final ISAXImporter newInstance2 =
+                  (ISAXImporter) iConfigurationElement
+                      .createExecutableExtension("reader");
+              _importHelpers.add(newInstance2);
             }
             catch (final CoreException e)
             {
@@ -405,7 +422,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
         }
       }
     }
-    return _exportHelpers;
   }
 
   private void loadContentProviderExtensions()

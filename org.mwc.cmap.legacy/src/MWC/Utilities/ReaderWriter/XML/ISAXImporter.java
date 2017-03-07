@@ -1,6 +1,7 @@
 package MWC.Utilities.ReaderWriter.XML;
 
 
+
 /**
  * interface for classes that are able to export a data object to XML
  * 
@@ -9,16 +10,25 @@ package MWC.Utilities.ReaderWriter.XML;
  */
 public interface ISAXImporter
 {
-  /** determine if this exporter can export this object
+  
+  /** helper classes that can store data we've loaded
    * 
-   * @param subject
-   * @return
+   * @author ian
+   *
    */
-  boolean canImportThis(String subject);
-
+  public static interface DataCatcher
+  {
+    /** store this data item
+     * 
+     * @param data
+     */
+    public void storeThis(Object data);
+  }
+  
   /** provide a suitable handler object
+   * @param storeMe helper class, to store new data
    * 
    * @return
    */
-  MWCXMLReader getHandler();
+  MWCXMLReader getHandler(DataCatcher storeMe);
 }

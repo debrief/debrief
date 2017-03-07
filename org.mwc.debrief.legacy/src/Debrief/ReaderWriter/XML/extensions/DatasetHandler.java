@@ -23,248 +23,137 @@ package Debrief.ReaderWriter.XML.extensions;
  * @version 1.0
  */
 
-import MWC.GenericData.HiResDate;
-import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
-import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
-import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-abstract public class DatasetHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract public class DatasetHandler extends
+    MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  MWC.TacticalData.Fix _theFix;
-  Debrief.Wrappers.FixWrapper _theFixWrapper;
+  private static final String VALUE = "Value";
+  private static final String INDEX = "Index";
+  private static final String MEASUREMENT = "P";
+  private static final String UNITS = "Units";
+  private static final String NAME = "Name";
+  private static final String MY_TYPE = "Dataset";
+  private static final String P_TYPE = "P";
+  private String _name;
+  private String _units;
+  private ArrayList<Long> _indices;
+  private ArrayList<Double> _values;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static final MWC.GUI.Properties.LocationPropertyEditor lp
-    = new MWC.GUI.Properties.LocationPropertyEditor();
+  static final MWC.GUI.Properties.LocationPropertyEditor lp =
+      new MWC.GUI.Properties.LocationPropertyEditor();
 
   public DatasetHandler()
   {
     // inform our parent what type of class we are
-    super("fix");
+    super(MY_TYPE);
 
-    addAttributeHandler(new HandleAttribute("Label")
+    addAttributeHandler(new HandleAttribute(NAME)
     {
       public void setValue(final String name, final String value)
       {
-        _theFixWrapper.setLabel(fromXML(value));
+        _name = value;
       }
     });
-    addHandler(new FontHandler()
-    {
-      public void setFont(final java.awt.Font font)
-      {
-        _theFixWrapper.setFont(font);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("Course")
+    addAttributeHandler(new HandleAttribute(UNITS)
     {
       public void setValue(final String name, final String value)
       {
-        try
+        _units = value;
+      }
+    });
+    addHandler(new MeasurementHandler());
+  }
+
+  public static void exportThisDataset(CoreDataset dataset, Element parent,
+      Document doc)
+  {
+    Element ds = doc.createElement(MY_TYPE);
+
+    ds.setAttribute(NAME, dataset.getName());
+    ds.setAttribute(UNITS, dataset.getUnits());
+
+    // ok, now work through the children
+    Iterator<Long> indices = dataset.getIndices();
+    Iterator<Double> values = dataset.getValues();
+
+    while (indices.hasNext())
+    {
+      Element ele = doc.createElement(MEASUREMENT);
+      ele.setAttribute(INDEX, "" + indices.next());
+      ele.setAttribute(VALUE, "" + values.next());
+      ds.appendChild(ele);
+    }
+
+    parent.appendChild(ds);
+  }
+
+  private class MeasurementHandler extends MWCXMLReader
+  {
+    protected MeasurementHandler()
+    {
+      super(P_TYPE);
+
+      addAttributeHandler(new HandleAttribute(INDEX)
+      {
+        public void setValue(final String name, final String value)
         {
-          double courseVal = readThisDouble(value);
-          if(courseVal < 0)
-          {
-            // trim it back to positive domain
-            courseVal += 360;
-          }
-          _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(courseVal));
+          _indices.add(Long.parseLong(value));
         }
-        catch (final java.text.ParseException pe)
+      });
+      addAttributeHandler(new HandleAttribute(VALUE)
+      {
+        public void setValue(final String name, final String value)
         {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
+          _values.add(Double.parseDouble(value));
         }
-      }
-    });
+      });
 
-
-    addAttributeHandler(new HandleAttribute("Speed")
-    {
-      public void setValue(final String name, final String value)
-      {
-        try
-        {
-          _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(readThisDouble(value)));
-        }
-        catch (final java.text.ParseException pe)
-        {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
-        }
-
-      }
-    });
-
-    addAttributeHandler(new HandleAttribute("Dtg")
-    {
-      public void setValue(final String name, final String value)
-      {
-        final HiResDate hrf = DebriefFormatDateTime.parseThis(value);
-        _theFix.setTime(hrf);
-      }
-    });
-
-    addHandler(new LocationHandler("centre")
-    {
-      public void setLocation(final MWC.GenericData.WorldLocation res)
-      {
-        _theFixWrapper.setFixLocation(res);
-      }
-    });
-
-    addHandler(new ColourHandler()
-    {
-      public void setColour(final java.awt.Color theVal)
-      {
-
-        _theFixWrapper.setColor(theVal);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("LabelShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setLabelShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("SymbolShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setSymbolShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("ArrowShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setArrowShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("LineShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setLineShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("Visible")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setVisible(value);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("LabelLocation")
-    {
-      public void setValue(final String name, final String val)
-      {
-        lp.setAsText(val);
-        final Integer res = (Integer) lp.getValue();
-        if (res != null)
-          _theFixWrapper.setLabelLocation(res);
-      }
-    });
+    }
   }
 
   public final void handleOurselves(final String name, final Attributes atts)
   {
-    // create the new items
-    _theFix = new MWC.TacticalData.Fix();
-    _theFixWrapper = new Debrief.Wrappers.FixWrapper(_theFix);
-    lp.setValue(null);
-
     super.handleOurselves(name, atts);
+
+    _indices = new ArrayList<Long>();
+    _values = new ArrayList<Double>();
   }
 
   public final void elementClosed()
   {
-    addPlottable(_theFixWrapper);
+    // create the dataset
+    CoreDataset dataset = new CoreDataset(_name, _units);
+
+    Iterator<Long> iIter = _indices.iterator();
+    Iterator<Double> vIter = _values.iterator();
+    while (iIter.hasNext())
+    {
+      dataset.add(iIter.next(), vIter.next());
+    }
+
+    // and store it
+    addDataset(dataset);
 
     // reset our variables
-    _theFix = null;
-    _theFixWrapper = null;
+    _name = null;
+    _units = null;
+    _indices = null;
+    _values = null;
   }
 
-  abstract public void addPlottable(MWC.GUI.Plottable plottable);
-
-  public static void exportFix(final Debrief.Wrappers.FixWrapper fix, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-  {
-    /*
-<!ELEMENT fix (colour?, centre)>
-<!ATTLIST fix
-  course CDATA #REQUIRED
-  speed CDATA #REQUIRED
-  dtg CDATA #REQUIRED
-  visible (TRUE|FALSE) "TRUE"
-  label CDATA #IMPLIED
-  LabelShowing (TRUE|FALSE) #IMPLIED
-  SymbolShowing (TRUE|FALSE) "TRUE"
-  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
-    */
-    final Element eFix = doc.createElement("fix");
-    eFix.setAttribute("Course", "" + writeThis(MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse())));
-    eFix.setAttribute("Speed", "" + writeThis(fix.getSpeed()));
-    eFix.setAttribute("Dtg", writeThis(fix.getTime()));
-    eFix.setAttribute("Visible", writeThis(fix.getVisible()));
-    eFix.setAttribute("Label", toXML(fix.getLabel()));
-    eFix.setAttribute("LabelShowing", writeThis(fix.getLabelShowing()));
-    eFix.setAttribute("LineShowing", writeThis(fix.getLineShowing()));
-    eFix.setAttribute("SymbolShowing", writeThis(fix.getSymbolShowing()));
-    eFix.setAttribute("ArrowShowing", writeThis(fix.getArrowShowing()));
-    lp.setValue(fix.getLabelLocation());
-    eFix.setAttribute("LabelLocation", lp.getAsText());
-
-    // note, we are accessing the "actual" colour for this fix, we are not using the
-    // normal getColor method which may return the track colour
-    final java.awt.Color fCol = fix.getActualColor();
-    if (fCol != null)
-    {
-      // just see if the colour is different to the parent
-      final java.awt.Color parentColor = fix.getTrackWrapper().getColor();
-      if (fCol.equals(parentColor))
-      {
-        // hey, don't bother outputting the parent color
-      }
-      else
-      {
-        MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(fCol, eFix, doc);
-      }
-
-    }
-
-    // and the font
-    final java.awt.Font theFont = fix.getFont();
-    if (theFont != null)
-    {
-      // ok, compare the font to the parent
-      if(theFont.equals(fix.getTrackWrapper().getTrackFont()))
-      {
-        // don't bother outputting the font - it's the same as the parent anyway
-      }
-      else
-      {
-        FontHandler.exportFont(theFont, eFix, doc);
-      }
-    }
-
-    // and now the centre item,
-    MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(fix.getLocation(), "centre", eFix, doc);
-
-    parent.appendChild(eFix);
-
-  }
-
+  abstract public void addDataset(CoreDataset dataset);
 
 }

@@ -23,248 +23,101 @@ package Debrief.ReaderWriter.XML.extensions;
  * @version 1.0
  */
 
-import MWC.GenericData.HiResDate;
-import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
-import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
-import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.DataItem;
 
-abstract public class DataFolderHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract public class DataFolderHandler extends
+    MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  MWC.TacticalData.Fix _theFix;
-  Debrief.Wrappers.FixWrapper _theFixWrapper;
-
-  /**
-   * class which contains list of textual representations of label locations
-   */
-  static final MWC.GUI.Properties.LocationPropertyEditor lp
-    = new MWC.GUI.Properties.LocationPropertyEditor();
-
-  public DataFolderHandler()
+  private static final String MY_TYPE = "DataFolder";
+  private DataFolder _folder;
+  final int level;
+  
+  public DataFolderHandler(int levelsRemaining)
   {
-    // inform our parent what type of class we are
-    super("fix");
+    super(MY_TYPE);
+    
+    level = levelsRemaining;
 
-    addAttributeHandler(new HandleAttribute("Label")
+    addAttributeHandler(new HandleAttribute("Name")
     {
       public void setValue(final String name, final String value)
       {
-        _theFixWrapper.setLabel(fromXML(value));
+        _folder.setName(value);
       }
     });
-    addHandler(new FontHandler()
+    addHandler(new DatasetHandler()
     {
-      public void setFont(final java.awt.Font font)
+      @Override
+      public void addDataset(CoreDataset dataset)
       {
-        _theFixWrapper.setFont(font);
+        _folder.add(dataset);
       }
     });
-    addAttributeHandler(new HandleAttribute("Course")
+    if (levelsRemaining > 0)
     {
-      public void setValue(final String name, final String value)
+      System.out.println("Declaring handler at level: " + level);
+      addHandler(new DataFolderHandler(--levelsRemaining)
       {
-        try
+        @Override
+        public void addFolder(DataFolder folder)
         {
-          double courseVal = readThisDouble(value);
-          if(courseVal < 0)
-          {
-            // trim it back to positive domain
-            courseVal += 360;
-          }
-          _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(courseVal));
+          System.out.println("adding " + folder.getName() + " into " + _folder.getName());
+          _folder.add(folder);
         }
-        catch (final java.text.ParseException pe)
-        {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
-        }
-      }
-    });
-
-
-    addAttributeHandler(new HandleAttribute("Speed")
-    {
-      public void setValue(final String name, final String value)
-      {
-        try
-        {
-          _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(readThisDouble(value)));
-        }
-        catch (final java.text.ParseException pe)
-        {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
-        }
-
-      }
-    });
-
-    addAttributeHandler(new HandleAttribute("Dtg")
-    {
-      public void setValue(final String name, final String value)
-      {
-        final HiResDate hrf = DebriefFormatDateTime.parseThis(value);
-        _theFix.setTime(hrf);
-      }
-    });
-
-    addHandler(new LocationHandler("centre")
-    {
-      public void setLocation(final MWC.GenericData.WorldLocation res)
-      {
-        _theFixWrapper.setFixLocation(res);
-      }
-    });
-
-    addHandler(new ColourHandler()
-    {
-      public void setColour(final java.awt.Color theVal)
-      {
-
-        _theFixWrapper.setColor(theVal);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("LabelShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setLabelShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("SymbolShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setSymbolShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("ArrowShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setArrowShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("LineShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setLineShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("Visible")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setVisible(value);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("LabelLocation")
-    {
-      public void setValue(final String name, final String val)
-      {
-        lp.setAsText(val);
-        final Integer res = (Integer) lp.getValue();
-        if (res != null)
-          _theFixWrapper.setLabelLocation(res);
-      }
-    });
+      });
+    }
   }
 
   public final void handleOurselves(final String name, final Attributes atts)
   {
-    // create the new items
-    _theFix = new MWC.TacticalData.Fix();
-    _theFixWrapper = new Debrief.Wrappers.FixWrapper(_theFix);
-    lp.setValue(null);
+    _folder = new DataFolder();
 
+    // let parent get started
     super.handleOurselves(name, atts);
   }
 
   public final void elementClosed()
   {
-    addPlottable(_theFixWrapper);
+    System.out.println("Adding folder: " + _folder.getName() + " at level:" + level);
+    
+    addFolder(_folder);
 
-    // reset our variables
-    _theFix = null;
-    _theFixWrapper = null;
+    _folder = null;
   }
 
-  abstract public void addPlottable(MWC.GUI.Plottable plottable);
+  abstract public void addFolder(DataFolder data);
 
-  public static void exportFix(final Debrief.Wrappers.FixWrapper fix, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+  public static void exportThisFolder(DataFolder folder, Element parent,
+      Document doc)
   {
-    /*
-<!ELEMENT fix (colour?, centre)>
-<!ATTLIST fix
-  course CDATA #REQUIRED
-  speed CDATA #REQUIRED
-  dtg CDATA #REQUIRED
-  visible (TRUE|FALSE) "TRUE"
-  label CDATA #IMPLIED
-  LabelShowing (TRUE|FALSE) #IMPLIED
-  SymbolShowing (TRUE|FALSE) "TRUE"
-  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
-    */
-    final Element eFix = doc.createElement("fix");
-    eFix.setAttribute("Course", "" + writeThis(MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse())));
-    eFix.setAttribute("Speed", "" + writeThis(fix.getSpeed()));
-    eFix.setAttribute("Dtg", writeThis(fix.getTime()));
-    eFix.setAttribute("Visible", writeThis(fix.getVisible()));
-    eFix.setAttribute("Label", toXML(fix.getLabel()));
-    eFix.setAttribute("LabelShowing", writeThis(fix.getLabelShowing()));
-    eFix.setAttribute("LineShowing", writeThis(fix.getLineShowing()));
-    eFix.setAttribute("SymbolShowing", writeThis(fix.getSymbolShowing()));
-    eFix.setAttribute("ArrowShowing", writeThis(fix.getArrowShowing()));
-    lp.setValue(fix.getLabelLocation());
-    eFix.setAttribute("LabelLocation", lp.getAsText());
+    Element df = doc.createElement("DataFolder");
 
-    // note, we are accessing the "actual" colour for this fix, we are not using the
-    // normal getColor method which may return the track colour
-    final java.awt.Color fCol = fix.getActualColor();
-    if (fCol != null)
+    // attributes
+    df.setAttribute("Name", folder.getName());
+
+    for (DataItem child : folder)
     {
-      // just see if the colour is different to the parent
-      final java.awt.Color parentColor = fix.getTrackWrapper().getColor();
-      if (fCol.equals(parentColor))
+      if (child instanceof DataFolder)
       {
-        // hey, don't bother outputting the parent color
+        DataFolder childFolder = (DataFolder) child;
+        exportThisFolder(childFolder, df, doc);
       }
-      else
+      else if (child instanceof CoreDataset)
       {
-        MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(fCol, eFix, doc);
-      }
-
-    }
-
-    // and the font
-    final java.awt.Font theFont = fix.getFont();
-    if (theFont != null)
-    {
-      // ok, compare the font to the parent
-      if(theFont.equals(fix.getTrackWrapper().getTrackFont()))
-      {
-        // don't bother outputting the font - it's the same as the parent anyway
-      }
-      else
-      {
-        FontHandler.exportFont(theFont, eFix, doc);
+        CoreDataset childD = (CoreDataset) child;
+        DatasetHandler.exportThisDataset(childD, df, doc);
       }
     }
 
-    // and now the centre item,
-    MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(fix.getLocation(), "centre", eFix, doc);
-
-    parent.appendChild(eFix);
-
+    // now children
+    parent.appendChild(df);
   }
-
 
 }

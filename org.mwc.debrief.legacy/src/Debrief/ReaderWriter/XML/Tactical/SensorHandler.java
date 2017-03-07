@@ -28,6 +28,7 @@ import org.xml.sax.Attributes;
 
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.Extensions.AdditionalData;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -117,14 +118,22 @@ abstract public class SensorHandler extends
 
 		addAttributeHandler(new HandleBooleanAttribute(WORM_IN_HOLE)
 		{
-
 			@Override
 			public void setValue(final String name, final boolean value)
 			{
 				_mySensor.setWormInHole(value);
 			}
 		});
-
+		
+		// and one for any additional data
+		addHandler(new AdditionalDataHandler()
+		{
+		  @Override
+		  public void storeData(final AdditionalData data)
+		  {
+		    _mySensor.getAdditionalData().addAll(data);
+		  }
+		});
 	}
 
 	// this is one of ours, so get on with it!
@@ -145,7 +154,6 @@ abstract public class SensorHandler extends
 	{
 		// our layer is complete, add it to the parent!
 		addSensor(_mySensor);
-
 
 		if(_baseFrequency != 0)
 		{

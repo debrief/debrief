@@ -57,4 +57,9 @@ public class DataFolder extends ArrayList<DataItem> implements DataItem, Seriali
     }
     return res;
   }
+
+  public void setName(String name)
+  {
+    _name = name;
+  }
 }
