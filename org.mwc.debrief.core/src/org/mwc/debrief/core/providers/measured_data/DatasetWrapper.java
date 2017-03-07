@@ -2,7 +2,13 @@ package org.mwc.debrief.core.providers.measured_data;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import junit.framework.TestCase;
 
 import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
 import MWC.GUI.Editable;
@@ -102,5 +108,54 @@ public class DatasetWrapper implements Editable, Serializable
     public String toString()
     {
       return getName() + " (" + _data.size() + " items)";
+    }
+    
+    public static class TestSerialize extends TestCase
+    {
+      public void testSerialise()
+      {
+        CoreDataset<Long, Double> original =
+            new CoreDataset<Long, Double>("Data", "Seconds");
+
+        original.add(12L, 100d);
+        original.add(15L, 200d);
+        
+        DatasetWrapper wrapper = new DatasetWrapper(original);
+        
+        try
+        {
+          final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
+          final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
+          oos.writeObject(wrapper);
+          // get closure
+          oos.close();
+          bas.close();
+
+          // now get the item
+          final byte[] bt = bas.toByteArray();
+
+          // and read it back in as a new item
+          final java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
+
+          // create the reader
+          final java.io.ObjectInputStream iis = new ObjectInputStream(bis);
+
+          // and read it in
+          final Object oj = iis.readObject();
+
+          // get more closure
+          bis.close();
+          iis.close();
+
+          DatasetWrapper clone = (DatasetWrapper) oj;
+
+          clone._data.printAll();
+        }
+        catch (final Exception e)
+        {
+          e.printStackTrace();
+        }
+      }
+
     }
   }
