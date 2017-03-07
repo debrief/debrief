@@ -68,6 +68,9 @@ import org.osgi.framework.BundleContext;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
+import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
+import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler.ExporterProvider;
+import Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler;
 import Debrief.ReaderWriter.ais.AISDecoder;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.CompositeTrackWrapper.GiveMeALeg;
@@ -75,6 +78,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.MessageProvider;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.ImportManager;
+import MWC.Utilities.ReaderWriter.XML.IDOMExporter;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -99,7 +103,10 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   private static final String BUILD_MODE = "buildMode";
 
   private static final String REP_READER_EXTENSION_POINT_ID = "RepReader";
-  public static final String CONTENT_PROVIDER_EXTENSION_POINT_ID = "OutlineContentProvider";
+  public static final String CONTENT_PROVIDER_EXTENSION_POINT_ID =
+      "OutlineContentProvider";
+  public static final String EXPORT_HELPER_EXTENSION_POINT_ID =
+      "DPFReaderWriter";
 
   // The shared instance.
   private static DebriefPlugin plugin;
@@ -198,6 +205,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   private DebriefImageHelper _myImageHelper;
 
   private ArrayList<ExtensibleLineImporter> _repFileExtensionLoaders;
+
+  private List<IDOMExporter> _exportHelpers;
 
   /**
    * keep track of images we can't find. It's no use carrying on trying to find them
@@ -316,14 +325,14 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
     // tell the message provider where it can fire messages to
     MessageProvider.Base.setProvider(this);
-    
+
     // give the LayerManager our image creator.
     _myImageHelper = new DebriefImageHelper();
     CoreViewLabelProvider.addImageHelper(_myImageHelper);
 
     // see if there are any extensions to handle images
-    loadContentProviderExtensions();    
-    
+    loadContentProviderExtensions();
+
     // provide helper for triggering 'new-leg' operation
     final GiveMeALeg triggerNewLeg = new GiveMeALeg()
     {
@@ -342,17 +351,34 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
     ImportNarrativeDocument.setQuestionHelper(new SWTEclipseHelper());
 
+    // tell the additional data that we can help
+    AdditionalDataHandler.setExportHelper(new ExporterProvider()
+    {
+      @Override
+      public List<IDOMExporter> getExporters()
+      {
+        return getExportHelpers();
+      }
+    });
+
   }
 
-  private void loadContentProviderExtensions()
+  protected List<IDOMExporter> getExportHelpers()
   {
+    if (_exportHelpers == null)
+    {
+      _exportHelpers = new ArrayList<IDOMExporter>();
+      
+      // manually insert our one
+      _exportHelpers.add(new MeasuredDataHandler());
+      
       IExtensionRegistry registry = Platform.getExtensionRegistry();
       if (registry != null)
       {
 
         final IExtensionPoint point =
             Platform.getExtensionRegistry().getExtensionPoint(
-                DebriefPlugin.PLUGIN_NAME, CONTENT_PROVIDER_EXTENSION_POINT_ID);
+                DebriefPlugin.PLUGIN_NAME, EXPORT_HELPER_EXTENSION_POINT_ID);
 
         final IExtension[] extensions = point.getExtensions();
         for (int i = 0; i < extensions.length; i++)
@@ -363,13 +389,12 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
           for (int j = 0; j < confE.length; j++)
           {
             final IConfigurationElement iConfigurationElement = confE[j];
-            ViewLabelImageHelper newInstance;
             try
             {
-              newInstance =
-                  (ViewLabelImageHelper) iConfigurationElement
-                      .createExecutableExtension("imageProvider");
-              CoreViewLabelProvider.addImageHelper(newInstance);              
+              final IDOMExporter newInstance =
+                  (IDOMExporter) iConfigurationElement
+                      .createExecutableExtension("writer");
+              _exportHelpers.add(newInstance);
             }
             catch (final CoreException e)
             {
@@ -379,6 +404,45 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
           }
         }
       }
+    }
+    return _exportHelpers;
+  }
+
+  private void loadContentProviderExtensions()
+  {
+    IExtensionRegistry registry = Platform.getExtensionRegistry();
+    if (registry != null)
+    {
+
+      final IExtensionPoint point =
+          Platform.getExtensionRegistry().getExtensionPoint(
+              DebriefPlugin.PLUGIN_NAME, CONTENT_PROVIDER_EXTENSION_POINT_ID);
+
+      final IExtension[] extensions = point.getExtensions();
+      for (int i = 0; i < extensions.length; i++)
+      {
+        final IExtension iExtension = extensions[i];
+        final IConfigurationElement[] confE =
+            iExtension.getConfigurationElements();
+        for (int j = 0; j < confE.length; j++)
+        {
+          final IConfigurationElement iConfigurationElement = confE[j];
+          ViewLabelImageHelper newInstance;
+          try
+          {
+            newInstance =
+                (ViewLabelImageHelper) iConfigurationElement
+                    .createExecutableExtension("imageProvider");
+            CoreViewLabelProvider.addImageHelper(newInstance);
+          }
+          catch (final CoreException e)
+          {
+            CorePlugin.logError(Status.ERROR,
+                "Trouble whilst loading image helper", e);
+          }
+        }
+      }
+    }
   }
 
   private List<ExtensibleLineImporter> getRepImporterExtensions()
