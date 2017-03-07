@@ -1,0 +1,1387 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot xmlns="http://www.debrief.info/plot" Created="Tue Mar 07 15:21:33 GMT 2017" Name="Debrief Plot" PlotId="1488900085108">
+<details Text="Saved with Debrief version dated Tue Mar 07 11:59:55 GMT 2017"/>
+<session>
+<layers>
+<track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="3" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<colour Value="BLUE"/>
+<SymbolColor Value="BLUE"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<sensor LineThickness="1" Name="TA_ARRAY" TrackName="" Visible="false" WormInHole="true">
+<colour CustomBlue="0" CustomGreen="255" CustomRed="255" Value="custom"/>
+<AdditionalData>
+<DataFolder Name="Measurements">
+<DataFolder Name="Fore &amp; Aft ">
+<DataFolder Name=" Fore">
+<Dataset Name="Heading" Units="°">
+<P Index="1263297600000" Value="0.0"/>
+<P Index="1263297600000" Value="0.0"/>
+<P Index="1263297650000" Value="227.14"/>
+<P Index="1263297700000" Value="223.8"/>
+<P Index="1263297750000" Value="268.02"/>
+<P Index="1263297800000" Value="305.12"/>
+<P Index="1263297850000" Value="235.56"/>
+<P Index="1263297900000" Value="204.88"/>
+<P Index="1263297950000" Value="204.88"/>
+<P Index="1263298000000" Value="204.88"/>
+<P Index="1263298050000" Value="204.88"/>
+<P Index="1263298100000" Value="204.88"/>
+<P Index="1263298150000" Value="204.88"/>
+<P Index="1263298200000" Value="204.88"/>
+<P Index="1263298250000" Value="204.88"/>
+<P Index="1263298300000" Value="204.88"/>
+<P Index="1263298350000" Value="204.88"/>
+<P Index="1263298400000" Value="204.88"/>
+<P Index="1263298450000" Value="204.88"/>
+<P Index="1263298500000" Value="204.88"/>
+<P Index="1263298550000" Value="204.88"/>
+<P Index="1263298600000" Value="204.88"/>
+<P Index="1263298650000" Value="204.88"/>
+<P Index="1263298700000" Value="204.88"/>
+<P Index="1263298750000" Value="204.88"/>
+<P Index="1263298800000" Value="204.88"/>
+<P Index="1263298850000" Value="204.88"/>
+<P Index="1263298900000" Value="204.88"/>
+<P Index="1263298950000" Value="204.88"/>
+<P Index="1263299000000" Value="204.88"/>
+<P Index="1263299050000" Value="204.88"/>
+<P Index="1263299100000" Value="204.88"/>
+<P Index="1263299150000" Value="204.88"/>
+<P Index="1263299200000" Value="204.88"/>
+<P Index="1263299250000" Value="285.73"/>
+<P Index="1263299300000" Value="28.68"/>
+<P Index="1263299350000" Value="45.3"/>
+<P Index="1263299400000" Value="323.86"/>
+<P Index="1263299450000" Value="312.69"/>
+<P Index="1263299500000" Value="312.69"/>
+<P Index="1263299550000" Value="312.69"/>
+<P Index="1263299600000" Value="312.69"/>
+<P Index="1263299650000" Value="312.69"/>
+<P Index="1263299700000" Value="312.69"/>
+<P Index="1263299750000" Value="312.69"/>
+<P Index="1263299800000" Value="312.69"/>
+<P Index="1263299850000" Value="312.69"/>
+<P Index="1263299900000" Value="312.69"/>
+<P Index="1263299950000" Value="312.69"/>
+<P Index="1263300000000" Value="312.69"/>
+<P Index="1263300050000" Value="312.69"/>
+<P Index="1263300100000" Value="312.69"/>
+<P Index="1263300150000" Value="312.69"/>
+<P Index="1263300200000" Value="312.69"/>
+<P Index="1263300250000" Value="312.69"/>
+<P Index="1263300300000" Value="312.69"/>
+<P Index="1263300350000" Value="312.69"/>
+<P Index="1263300400000" Value="312.69"/>
+<P Index="1263300450000" Value="312.69"/>
+<P Index="1263300500000" Value="312.69"/>
+<P Index="1263300550000" Value="312.69"/>
+<P Index="1263300600000" Value="312.69"/>
+<P Index="1263300650000" Value="312.69"/>
+<P Index="1263300700000" Value="312.69"/>
+<P Index="1263300750000" Value="312.69"/>
+<P Index="1263300800000" Value="312.69"/>
+<P Index="1263300850000" Value="312.69"/>
+<P Index="1263300900000" Value="312.69"/>
+<P Index="1263300950000" Value="312.69"/>
+<P Index="1263301000000" Value="312.69"/>
+<P Index="1263301050000" Value="33.54"/>
+<P Index="1263301100000" Value="136.5"/>
+<P Index="1263301150000" Value="155.54"/>
+<P Index="1263301200000" Value="74.05"/>
+<P Index="1263301250000" Value="61.64"/>
+<P Index="1263301300000" Value="61.64"/>
+<P Index="1263301350000" Value="61.64"/>
+<P Index="1263301400000" Value="61.64"/>
+<P Index="1263301450000" Value="61.64"/>
+<P Index="1263301500000" Value="61.64"/>
+<P Index="1263301550000" Value="61.64"/>
+<P Index="1263301600000" Value="61.64"/>
+<P Index="1263301650000" Value="61.64"/>
+<P Index="1263301700000" Value="61.64"/>
+<P Index="1263301750000" Value="61.64"/>
+<P Index="1263301800000" Value="61.64"/>
+<P Index="1263301850000" Value="61.64"/>
+<P Index="1263301900000" Value="61.64"/>
+<P Index="1263301950000" Value="61.64"/>
+<P Index="1263302000000" Value="61.64"/>
+<P Index="1263302050000" Value="61.64"/>
+<P Index="1263302100000" Value="61.64"/>
+<P Index="1263302150000" Value="61.64"/>
+<P Index="1263302200000" Value="61.64"/>
+<P Index="1263302250000" Value="61.64"/>
+<P Index="1263302300000" Value="61.64"/>
+<P Index="1263302350000" Value="61.64"/>
+<P Index="1263302400000" Value="61.64"/>
+<P Index="1263302450000" Value="61.64"/>
+<P Index="1263302500000" Value="61.64"/>
+<P Index="1263302550000" Value="61.64"/>
+<P Index="1263302600000" Value="61.64"/>
+<P Index="1263302650000" Value="61.64"/>
+<P Index="1263302700000" Value="61.64"/>
+<P Index="1263302750000" Value="61.64"/>
+<P Index="1263302800000" Value="61.64"/>
+<P Index="1263302850000" Value="61.64"/>
+<P Index="1263302900000" Value="61.64"/>
+<P Index="1263302950000" Value="61.64"/>
+<P Index="1263303000000" Value="61.64"/>
+<P Index="1263303050000" Value="61.64"/>
+<P Index="1263303100000" Value="61.64"/>
+<P Index="1263303150000" Value="61.64"/>
+<P Index="1263303200000" Value="61.64"/>
+<P Index="1263303250000" Value="61.64"/>
+<P Index="1263303300000" Value="61.64"/>
+<P Index="1263303350000" Value="61.64"/>
+<P Index="1263303400000" Value="61.64"/>
+<P Index="1263303450000" Value="61.64"/>
+<P Index="1263303500000" Value="61.64"/>
+<P Index="1263303550000" Value="61.64"/>
+<P Index="1263303600000" Value="61.64"/>
+<P Index="1263303650000" Value="61.64"/>
+<P Index="1263303700000" Value="61.64"/>
+<P Index="1263303750000" Value="61.64"/>
+<P Index="1263303800000" Value="61.64"/>
+<P Index="1263303850000" Value="61.64"/>
+<P Index="1263303900000" Value="61.64"/>
+<P Index="1263303950000" Value="61.64"/>
+<P Index="1263304000000" Value="61.64"/>
+<P Index="1263304050000" Value="61.64"/>
+<P Index="1263304100000" Value="61.64"/>
+<P Index="1263304150000" Value="61.64"/>
+<P Index="1263304200000" Value="61.64"/>
+<P Index="1263304250000" Value="61.64"/>
+<P Index="1263304300000" Value="61.64"/>
+<P Index="1263304350000" Value="61.64"/>
+<P Index="1263304400000" Value="61.64"/>
+<P Index="1263304450000" Value="61.64"/>
+<P Index="1263304500000" Value="61.64"/>
+<P Index="1263304550000" Value="61.64"/>
+<P Index="1263304600000" Value="61.64"/>
+<P Index="1263304650000" Value="61.64"/>
+<P Index="1263304700000" Value="61.64"/>
+<P Index="1263304750000" Value="61.64"/>
+<P Index="1263304800000" Value="61.64"/>
+</Dataset>
+<Dataset Name="Depth" Units="m">
+<P Index="1263297600000" Value="12.75"/>
+<P Index="1263297600000" Value="13.27"/>
+<P Index="1263297650000" Value="16.41"/>
+<P Index="1263297700000" Value="15.18"/>
+<P Index="1263297750000" Value="16.85"/>
+<P Index="1263297800000" Value="16.02"/>
+<P Index="1263297850000" Value="17.28"/>
+<P Index="1263297900000" Value="17.47"/>
+<P Index="1263297950000" Value="17.78"/>
+<P Index="1263298000000" Value="19.21"/>
+<P Index="1263298050000" Value="19.31"/>
+<P Index="1263298100000" Value="20.38"/>
+<P Index="1263298150000" Value="21.8"/>
+<P Index="1263298200000" Value="20.78"/>
+<P Index="1263298250000" Value="21.21"/>
+<P Index="1263298300000" Value="21.4"/>
+<P Index="1263298350000" Value="20.79"/>
+<P Index="1263298400000" Value="24.21"/>
+<P Index="1263298450000" Value="23.86"/>
+<P Index="1263298500000" Value="22.96"/>
+<P Index="1263298550000" Value="23.32"/>
+<P Index="1263298600000" Value="27.07"/>
+<P Index="1263298650000" Value="25.78"/>
+<P Index="1263298700000" Value="27.3"/>
+<P Index="1263298750000" Value="26.4"/>
+<P Index="1263298800000" Value="28.15"/>
+<P Index="1263298850000" Value="25.19"/>
+<P Index="1263298900000" Value="27.88"/>
+<P Index="1263298950000" Value="28.04"/>
+<P Index="1263299000000" Value="27.13"/>
+<P Index="1263299050000" Value="29.48"/>
+<P Index="1263299100000" Value="31.75"/>
+<P Index="1263299150000" Value="29.3"/>
+<P Index="1263299200000" Value="30.33"/>
+<P Index="1263299250000" Value="30.69"/>
+<P Index="1263299300000" Value="33.12"/>
+<P Index="1263299350000" Value="30.42"/>
+<P Index="1263299400000" Value="34.49"/>
+<P Index="1263299450000" Value="32.47"/>
+<P Index="1263299500000" Value="34.89"/>
+<P Index="1263299550000" Value="35.18"/>
+<P Index="1263299600000" Value="34.86"/>
+<P Index="1263299650000" Value="35.09"/>
+<P Index="1263299700000" Value="34.18"/>
+<P Index="1263299750000" Value="36.69"/>
+<P Index="1263299800000" Value="37.6"/>
+<P Index="1263299850000" Value="35.96"/>
+<P Index="1263299900000" Value="38.99"/>
+<P Index="1263299950000" Value="38.97"/>
+<P Index="1263300000000" Value="39.83"/>
+<P Index="1263300050000" Value="40.58"/>
+<P Index="1263300100000" Value="40.01"/>
+<P Index="1263300150000" Value="40.19"/>
+<P Index="1263300200000" Value="40.19"/>
+<P Index="1263300250000" Value="42.15"/>
+<P Index="1263300300000" Value="41.54"/>
+<P Index="1263300350000" Value="42.79"/>
+<P Index="1263300400000" Value="44.49"/>
+<P Index="1263300450000" Value="43.76"/>
+<P Index="1263300500000" Value="45.95"/>
+<P Index="1263300550000" Value="44.92"/>
+<P Index="1263300600000" Value="45.92"/>
+<P Index="1263300650000" Value="47.15"/>
+<P Index="1263300700000" Value="45.39"/>
+<P Index="1263300750000" Value="47.3"/>
+<P Index="1263300800000" Value="48.97"/>
+<P Index="1263300850000" Value="49.44"/>
+<P Index="1263300900000" Value="50.23"/>
+<P Index="1263300950000" Value="49.1"/>
+<P Index="1263301000000" Value="49.45"/>
+<P Index="1263301050000" Value="50.27"/>
+<P Index="1263301100000" Value="50.77"/>
+<P Index="1263301150000" Value="49.39"/>
+<P Index="1263301200000" Value="52.99"/>
+<P Index="1263301250000" Value="51.67"/>
+<P Index="1263301300000" Value="53.41"/>
+<P Index="1263301350000" Value="52.76"/>
+<P Index="1263301400000" Value="51.84"/>
+<P Index="1263301450000" Value="53.92"/>
+<P Index="1263301500000" Value="56.11"/>
+<P Index="1263301550000" Value="54.25"/>
+<P Index="1263301600000" Value="54.78"/>
+<P Index="1263301650000" Value="56.95"/>
+<P Index="1263301700000" Value="56.21"/>
+<P Index="1263301750000" Value="56.98"/>
+<P Index="1263301800000" Value="59.08"/>
+<P Index="1263301850000" Value="58.47"/>
+<P Index="1263301900000" Value="58.31"/>
+<P Index="1263301950000" Value="59.01"/>
+<P Index="1263302000000" Value="61.31"/>
+<P Index="1263302050000" Value="59.4"/>
+<P Index="1263302100000" Value="60.85"/>
+<P Index="1263302150000" Value="61.77"/>
+<P Index="1263302200000" Value="63.16"/>
+<P Index="1263302250000" Value="64.6"/>
+<P Index="1263302300000" Value="64.45"/>
+<P Index="1263302350000" Value="65.55"/>
+<P Index="1263302400000" Value="64.03"/>
+<P Index="1263302450000" Value="64.35"/>
+<P Index="1263302500000" Value="67.33"/>
+<P Index="1263302550000" Value="66.91"/>
+<P Index="1263302600000" Value="67.34"/>
+<P Index="1263302650000" Value="68.28"/>
+<P Index="1263302700000" Value="69.74"/>
+<P Index="1263302750000" Value="68.59"/>
+<P Index="1263302800000" Value="70.81"/>
+<P Index="1263302850000" Value="71.4"/>
+<P Index="1263302900000" Value="69.59"/>
+<P Index="1263302950000" Value="70.94"/>
+<P Index="1263303000000" Value="70.28"/>
+<P Index="1263303050000" Value="70.93"/>
+<P Index="1263303100000" Value="73.56"/>
+<P Index="1263303150000" Value="72.09"/>
+<P Index="1263303200000" Value="72.49"/>
+<P Index="1263303250000" Value="73.38"/>
+<P Index="1263303300000" Value="74.58"/>
+<P Index="1263303350000" Value="73.09"/>
+<P Index="1263303400000" Value="74.58"/>
+<P Index="1263303450000" Value="76.36"/>
+<P Index="1263303500000" Value="74.66"/>
+<P Index="1263303550000" Value="76.28"/>
+<P Index="1263303600000" Value="77.9"/>
+<P Index="1263303650000" Value="77.44"/>
+<P Index="1263303700000" Value="77.91"/>
+<P Index="1263303750000" Value="77.4"/>
+<P Index="1263303800000" Value="78.12"/>
+<P Index="1263303850000" Value="80.14"/>
+<P Index="1263303900000" Value="80.22"/>
+<P Index="1263303950000" Value="81.95"/>
+<P Index="1263304000000" Value="81.04"/>
+<P Index="1263304050000" Value="81.03"/>
+<P Index="1263304100000" Value="80.88"/>
+<P Index="1263304150000" Value="82.04"/>
+<P Index="1263304200000" Value="83.2"/>
+<P Index="1263304250000" Value="82.04"/>
+<P Index="1263304300000" Value="83.76"/>
+<P Index="1263304350000" Value="83.24"/>
+<P Index="1263304400000" Value="85.11"/>
+<P Index="1263304450000" Value="83.93"/>
+<P Index="1263304500000" Value="85.41"/>
+<P Index="1263304550000" Value="84.52"/>
+<P Index="1263304600000" Value="84.92"/>
+<P Index="1263304650000" Value="85.69"/>
+<P Index="1263304700000" Value="86.61"/>
+<P Index="1263304750000" Value="86.82"/>
+<P Index="1263304800000" Value="87.49"/>
+</Dataset>
+</DataFolder>
+<DataFolder Name=" Aft">
+<Dataset Name="Heading" Units="°">
+<P Index="1263297600000" Value="0.0"/>
+<P Index="1263297600000" Value="0.0"/>
+<P Index="1263297650000" Value="73.43"/>
+<P Index="1263297700000" Value="10.66"/>
+<P Index="1263297750000" Value="54.87"/>
+<P Index="1263297800000" Value="85.22"/>
+<P Index="1263297850000" Value="273.9"/>
+<P Index="1263297900000" Value="204.88"/>
+<P Index="1263297950000" Value="204.88"/>
+<P Index="1263298000000" Value="204.88"/>
+<P Index="1263298050000" Value="204.88"/>
+<P Index="1263298100000" Value="204.88"/>
+<P Index="1263298150000" Value="204.88"/>
+<P Index="1263298200000" Value="204.88"/>
+<P Index="1263298250000" Value="204.88"/>
+<P Index="1263298300000" Value="204.88"/>
+<P Index="1263298350000" Value="204.88"/>
+<P Index="1263298400000" Value="204.88"/>
+<P Index="1263298450000" Value="204.88"/>
+<P Index="1263298500000" Value="204.88"/>
+<P Index="1263298550000" Value="204.88"/>
+<P Index="1263298600000" Value="204.88"/>
+<P Index="1263298650000" Value="204.88"/>
+<P Index="1263298700000" Value="204.88"/>
+<P Index="1263298750000" Value="204.88"/>
+<P Index="1263298800000" Value="204.88"/>
+<P Index="1263298850000" Value="204.88"/>
+<P Index="1263298900000" Value="204.88"/>
+<P Index="1263298950000" Value="204.88"/>
+<P Index="1263299000000" Value="204.88"/>
+<P Index="1263299050000" Value="204.88"/>
+<P Index="1263299100000" Value="204.88"/>
+<P Index="1263299150000" Value="204.88"/>
+<P Index="1263299200000" Value="204.88"/>
+<P Index="1263299250000" Value="359.16"/>
+<P Index="1263299300000" Value="175.54"/>
+<P Index="1263299350000" Value="166.45"/>
+<P Index="1263299400000" Value="337.81"/>
+<P Index="1263299450000" Value="312.69"/>
+<P Index="1263299500000" Value="312.69"/>
+<P Index="1263299550000" Value="312.69"/>
+<P Index="1263299600000" Value="312.69"/>
+<P Index="1263299650000" Value="312.69"/>
+<P Index="1263299700000" Value="312.69"/>
+<P Index="1263299750000" Value="312.69"/>
+<P Index="1263299800000" Value="312.69"/>
+<P Index="1263299850000" Value="312.69"/>
+<P Index="1263299900000" Value="312.69"/>
+<P Index="1263299950000" Value="312.69"/>
+<P Index="1263300000000" Value="312.69"/>
+<P Index="1263300050000" Value="312.69"/>
+<P Index="1263300100000" Value="312.69"/>
+<P Index="1263300150000" Value="312.69"/>
+<P Index="1263300200000" Value="312.69"/>
+<P Index="1263300250000" Value="312.69"/>
+<P Index="1263300300000" Value="312.69"/>
+<P Index="1263300350000" Value="312.69"/>
+<P Index="1263300400000" Value="312.69"/>
+<P Index="1263300450000" Value="312.69"/>
+<P Index="1263300500000" Value="312.69"/>
+<P Index="1263300550000" Value="312.69"/>
+<P Index="1263300600000" Value="312.69"/>
+<P Index="1263300650000" Value="312.69"/>
+<P Index="1263300700000" Value="312.69"/>
+<P Index="1263300750000" Value="312.69"/>
+<P Index="1263300800000" Value="312.69"/>
+<P Index="1263300850000" Value="312.69"/>
+<P Index="1263300900000" Value="312.69"/>
+<P Index="1263300950000" Value="312.69"/>
+<P Index="1263301000000" Value="312.69"/>
+<P Index="1263301050000" Value="106.97"/>
+<P Index="1263301100000" Value="283.35"/>
+<P Index="1263301150000" Value="278.9"/>
+<P Index="1263301200000" Value="89.57"/>
+<P Index="1263301250000" Value="61.64"/>
+<P Index="1263301300000" Value="61.64"/>
+<P Index="1263301350000" Value="61.64"/>
+<P Index="1263301400000" Value="61.64"/>
+<P Index="1263301450000" Value="61.64"/>
+<P Index="1263301500000" Value="61.64"/>
+<P Index="1263301550000" Value="61.64"/>
+<P Index="1263301600000" Value="61.64"/>
+<P Index="1263301650000" Value="61.64"/>
+<P Index="1263301700000" Value="61.64"/>
+<P Index="1263301750000" Value="61.64"/>
+<P Index="1263301800000" Value="61.64"/>
+<P Index="1263301850000" Value="61.64"/>
+<P Index="1263301900000" Value="61.64"/>
+<P Index="1263301950000" Value="61.64"/>
+<P Index="1263302000000" Value="61.64"/>
+<P Index="1263302050000" Value="61.64"/>
+<P Index="1263302100000" Value="61.64"/>
+<P Index="1263302150000" Value="61.64"/>
+<P Index="1263302200000" Value="61.64"/>
+<P Index="1263302250000" Value="61.64"/>
+<P Index="1263302300000" Value="61.64"/>
+<P Index="1263302350000" Value="61.64"/>
+<P Index="1263302400000" Value="61.64"/>
+<P Index="1263302450000" Value="61.64"/>
+<P Index="1263302500000" Value="61.64"/>
+<P Index="1263302550000" Value="61.64"/>
+<P Index="1263302600000" Value="61.64"/>
+<P Index="1263302650000" Value="61.64"/>
+<P Index="1263302700000" Value="61.64"/>
+<P Index="1263302750000" Value="61.64"/>
+<P Index="1263302800000" Value="61.64"/>
+<P Index="1263302850000" Value="61.64"/>
+<P Index="1263302900000" Value="61.64"/>
+<P Index="1263302950000" Value="61.64"/>
+<P Index="1263303000000" Value="61.64"/>
+<P Index="1263303050000" Value="61.64"/>
+<P Index="1263303100000" Value="61.64"/>
+<P Index="1263303150000" Value="61.64"/>
+<P Index="1263303200000" Value="61.64"/>
+<P Index="1263303250000" Value="61.64"/>
+<P Index="1263303300000" Value="61.64"/>
+<P Index="1263303350000" Value="61.64"/>
+<P Index="1263303400000" Value="61.64"/>
+<P Index="1263303450000" Value="61.64"/>
+<P Index="1263303500000" Value="61.64"/>
+<P Index="1263303550000" Value="61.64"/>
+<P Index="1263303600000" Value="61.64"/>
+<P Index="1263303650000" Value="61.64"/>
+<P Index="1263303700000" Value="61.64"/>
+<P Index="1263303750000" Value="61.64"/>
+<P Index="1263303800000" Value="61.64"/>
+<P Index="1263303850000" Value="61.64"/>
+<P Index="1263303900000" Value="61.64"/>
+<P Index="1263303950000" Value="61.64"/>
+<P Index="1263304000000" Value="61.64"/>
+<P Index="1263304050000" Value="61.64"/>
+<P Index="1263304100000" Value="61.64"/>
+<P Index="1263304150000" Value="61.64"/>
+<P Index="1263304200000" Value="61.64"/>
+<P Index="1263304250000" Value="61.64"/>
+<P Index="1263304300000" Value="61.64"/>
+<P Index="1263304350000" Value="61.64"/>
+<P Index="1263304400000" Value="61.64"/>
+<P Index="1263304450000" Value="61.64"/>
+<P Index="1263304500000" Value="61.64"/>
+<P Index="1263304550000" Value="61.64"/>
+<P Index="1263304600000" Value="61.64"/>
+<P Index="1263304650000" Value="61.64"/>
+<P Index="1263304700000" Value="61.64"/>
+<P Index="1263304750000" Value="61.64"/>
+<P Index="1263304800000" Value="61.64"/>
+</Dataset>
+<Dataset Name="Depth" Units="m">
+<P Index="1263297600000" Value="12.75"/>
+<P Index="1263297600000" Value="13.27"/>
+<P Index="1263297650000" Value="18.83"/>
+<P Index="1263297700000" Value="16.35"/>
+<P Index="1263297750000" Value="18.69"/>
+<P Index="1263297800000" Value="16.5"/>
+<P Index="1263297850000" Value="18.61"/>
+<P Index="1263297900000" Value="18.83"/>
+<P Index="1263297950000" Value="18.82"/>
+<P Index="1263298000000" Value="21.24"/>
+<P Index="1263298050000" Value="20.9"/>
+<P Index="1263298100000" Value="22.47"/>
+<P Index="1263298150000" Value="24.9"/>
+<P Index="1263298200000" Value="22.32"/>
+<P Index="1263298250000" Value="22.86"/>
+<P Index="1263298300000" Value="22.87"/>
+<P Index="1263298350000" Value="21.27"/>
+<P Index="1263298400000" Value="27.04"/>
+<P Index="1263298450000" Value="26.0"/>
+<P Index="1263298500000" Value="23.44"/>
+<P Index="1263298550000" Value="23.32"/>
+<P Index="1263298600000" Value="30.16"/>
+<P Index="1263298650000" Value="27.56"/>
+<P Index="1263298700000" Value="30.32"/>
+<P Index="1263298750000" Value="28.09"/>
+<P Index="1263298800000" Value="31.06"/>
+<P Index="1263298850000" Value="25.23"/>
+<P Index="1263298900000" Value="30.1"/>
+<P Index="1263298950000" Value="29.55"/>
+<P Index="1263299000000" Value="27.14"/>
+<P Index="1263299050000" Value="31.43"/>
+<P Index="1263299100000" Value="34.93"/>
+<P Index="1263299150000" Value="29.45"/>
+<P Index="1263299200000" Value="31.18"/>
+<P Index="1263299250000" Value="31.29"/>
+<P Index="1263299300000" Value="35.88"/>
+<P Index="1263299350000" Value="30.48"/>
+<P Index="1263299400000" Value="37.47"/>
+<P Index="1263299450000" Value="32.75"/>
+<P Index="1263299500000" Value="37.09"/>
+<P Index="1263299550000" Value="37.14"/>
+<P Index="1263299600000" Value="36.47"/>
+<P Index="1263299650000" Value="36.6"/>
+<P Index="1263299700000" Value="34.54"/>
+<P Index="1263299750000" Value="39.3"/>
+<P Index="1263299800000" Value="40.4"/>
+<P Index="1263299850000" Value="36.53"/>
+<P Index="1263299900000" Value="41.73"/>
+<P Index="1263299950000" Value="40.79"/>
+<P Index="1263300000000" Value="42.15"/>
+<P Index="1263300050000" Value="43.25"/>
+<P Index="1263300100000" Value="41.34"/>
+<P Index="1263300150000" Value="41.09"/>
+<P Index="1263300200000" Value="40.56"/>
+<P Index="1263300250000" Value="43.54"/>
+<P Index="1263300300000" Value="41.88"/>
+<P Index="1263300350000" Value="43.5"/>
+<P Index="1263300400000" Value="46.0"/>
+<P Index="1263300450000" Value="44.28"/>
+<P Index="1263300500000" Value="48.1"/>
+<P Index="1263300550000" Value="45.78"/>
+<P Index="1263300600000" Value="47.64"/>
+<P Index="1263300650000" Value="49.47"/>
+<P Index="1263300700000" Value="45.99"/>
+<P Index="1263300750000" Value="49.02"/>
+<P Index="1263300800000" Value="51.79"/>
+<P Index="1263300850000" Value="52.11"/>
+<P Index="1263300900000" Value="52.75"/>
+<P Index="1263300950000" Value="50.19"/>
+<P Index="1263301000000" Value="50.5"/>
+<P Index="1263301050000" Value="51.35"/>
+<P Index="1263301100000" Value="52.3"/>
+<P Index="1263301150000" Value="49.58"/>
+<P Index="1263301200000" Value="56.12"/>
+<P Index="1263301250000" Value="52.99"/>
+<P Index="1263301300000" Value="56.0"/>
+<P Index="1263301350000" Value="53.89"/>
+<P Index="1263301400000" Value="51.91"/>
+<P Index="1263301450000" Value="55.21"/>
+<P Index="1263301500000" Value="58.6"/>
+<P Index="1263301550000" Value="54.83"/>
+<P Index="1263301600000" Value="55.84"/>
+<P Index="1263301650000" Value="59.35"/>
+<P Index="1263301700000" Value="57.38"/>
+<P Index="1263301750000" Value="57.97"/>
+<P Index="1263301800000" Value="61.4"/>
+<P Index="1263301850000" Value="60.21"/>
+<P Index="1263301900000" Value="59.75"/>
+<P Index="1263301950000" Value="60.77"/>
+<P Index="1263302000000" Value="64.36"/>
+<P Index="1263302050000" Value="60.02"/>
+<P Index="1263302100000" Value="61.94"/>
+<P Index="1263302150000" Value="63.17"/>
+<P Index="1263302200000" Value="64.96"/>
+<P Index="1263302250000" Value="66.95"/>
+<P Index="1263302300000" Value="66.52"/>
+<P Index="1263302350000" Value="68.05"/>
+<P Index="1263302400000" Value="65.0"/>
+<P Index="1263302450000" Value="64.83"/>
+<P Index="1263302500000" Value="69.87"/>
+<P Index="1263302550000" Value="68.54"/>
+<P Index="1263302600000" Value="68.87"/>
+<P Index="1263302650000" Value="69.81"/>
+<P Index="1263302700000" Value="72.52"/>
+<P Index="1263302750000" Value="70.03"/>
+<P Index="1263302800000" Value="73.35"/>
+<P Index="1263302850000" Value="74.07"/>
+<P Index="1263302900000" Value="69.97"/>
+<P Index="1263302950000" Value="72.33"/>
+<P Index="1263303000000" Value="70.92"/>
+<P Index="1263303050000" Value="71.54"/>
+<P Index="1263303100000" Value="76.08"/>
+<P Index="1263303150000" Value="72.96"/>
+<P Index="1263303200000" Value="73.35"/>
+<P Index="1263303250000" Value="74.21"/>
+<P Index="1263303300000" Value="76.28"/>
+<P Index="1263303350000" Value="73.4"/>
+<P Index="1263303400000" Value="76.09"/>
+<P Index="1263303450000" Value="79.16"/>
+<P Index="1263303500000" Value="75.54"/>
+<P Index="1263303550000" Value="78.13"/>
+<P Index="1263303600000" Value="81.08"/>
+<P Index="1263303650000" Value="79.36"/>
+<P Index="1263303700000" Value="80.03"/>
+<P Index="1263303750000" Value="78.83"/>
+<P Index="1263303800000" Value="79.84"/>
+<P Index="1263303850000" Value="83.15"/>
+<P Index="1263303900000" Value="82.66"/>
+<P Index="1263303950000" Value="85.13"/>
+<P Index="1263304000000" Value="83.09"/>
+<P Index="1263304050000" Value="82.96"/>
+<P Index="1263304100000" Value="82.68"/>
+<P Index="1263304150000" Value="84.57"/>
+<P Index="1263304200000" Value="86.11"/>
+<P Index="1263304250000" Value="83.43"/>
+<P Index="1263304300000" Value="85.97"/>
+<P Index="1263304350000" Value="84.55"/>
+<P Index="1263304400000" Value="87.6"/>
+<P Index="1263304450000" Value="85.31"/>
+<P Index="1263304500000" Value="88.05"/>
+<P Index="1263304550000" Value="85.85"/>
+<P Index="1263304600000" Value="85.91"/>
+<P Index="1263304650000" Value="86.95"/>
+<P Index="1263304700000" Value="87.89"/>
+<P Index="1263304750000" Value="87.56"/>
+<P Index="1263304800000" Value="88.74"/>
+</Dataset>
+</DataFolder>
+</DataFolder>
+</DataFolder>
+</AdditionalData>
+</sensor>
+<TrackSegment LineStyle="Solid" Name="121200.00" PlotRelative="false" Visible="true">
+<fix ArrowShowing="false" Course="40.000" Dtg="100112 120000" Label="121200" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="60.2000000" Long="0.2000000"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="84.210" Dtg="100112 120050" Label="1200" LabelLocation="Top" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="13.750" Lat="60.2012667" Long="0.2048194"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="128.430" Dtg="100112 120140" Label="1201" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="13.890" Lat="60.2005056" Long="0.2100500"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="172.640" Dtg="100112 120230" Label="1202" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="14.830" Lat="60.1981472" Long="0.2127333"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.500" Dtg="100112 120320" Label="1203" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.490" Lat="60.1954861" Long="0.2114917"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 120410" Label="1204" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.790" Lat="60.1929667" Long="0.2091417"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 120500" Label="1205" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.960" Lat="60.1904472" Long="0.2067917"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 120550" Label="1205" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="16.620" Lat="60.1879278" Long="0.2044389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 120640" Label="1206" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="16.960" Lat="60.1854083" Long="0.2020889"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 120730" Label="1207" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="17.540" Lat="60.1828861" Long="0.1997389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 120820" Label="1208" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="18.070" Lat="60.1803667" Long="0.1973889"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 120910" Label="1209" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="18.360" Lat="60.1778472" Long="0.1950389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121000" Label="1210" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="19.080" Lat="60.1753278" Long="0.1926889"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121050" Label="1210" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="19.390" Lat="60.1728083" Long="0.1903389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121140" Label="1211" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="19.770" Lat="60.1702861" Long="0.1879889"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121230" Label="1212" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="20.250" Lat="60.1677667" Long="0.1856417"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121320" Label="1213" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="21.080" Lat="60.1652472" Long="0.1832917"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121410" Label="1214" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="21.480" Lat="60.1627278" Long="0.1809417"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121500" Label="1215" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="22.420" Lat="60.1602083" Long="0.1785944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121550" Label="1215" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="23.320" Lat="60.1576861" Long="0.1762444"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121640" Label="1216" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="23.640" Lat="60.1551667" Long="0.1738972"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121730" Label="1217" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="23.810" Lat="60.1526472" Long="0.1715472"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121820" Label="1218" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="23.950" Lat="60.1501278" Long="0.1692000"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 121910" Label="1219" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.520" Lat="60.1476083" Long="0.1668528"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122000" Label="1220" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="24.920" Lat="60.1450861" Long="0.1645056"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122050" Label="1220" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.150" Lat="60.1425667" Long="0.1621583"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122140" Label="1221" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="25.420" Lat="60.1400472" Long="0.1598111"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122230" Label="1222" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="26.370" Lat="60.1375278" Long="0.1574639"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122320" Label="1223" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.120" Lat="60.1350083" Long="0.1551167"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122410" Label="1224" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="27.310" Lat="60.1324889" Long="0.1527694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122500" Label="1225" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="28.230" Lat="60.1299667" Long="0.1504222"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122550" Label="1225" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="29.130" Lat="60.1274472" Long="0.1480750"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="204.880" Dtg="100112 122640" Label="1226" LabelLocation="Right" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="29.380" Lat="60.1249278" Long="0.1457306"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="249.090" Dtg="100112 122730" Label="1227" LabelLocation="Bottom" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="30.030" Lat="60.1230806" Long="0.1417528"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="293.310" Dtg="100112 122820" Label="1228" LabelLocation="Bottom" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="30.080" Lat="60.1231361" Long="0.1363139"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.570" Dtg="100112 122910" Label="1229" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="30.350" Lat="60.1248528" Long="0.1319694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123000" Label="1230" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="31.190" Lat="60.1267361" Long="0.1278694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123050" Label="1230" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="32.160" Lat="60.1286194" Long="0.1237694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123140" Label="1231" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="32.460" Lat="60.1305028" Long="0.1196694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123230" Label="1232" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.010" Lat="60.1323861" Long="0.1155722"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123320" Label="1233" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.060" Lat="60.1342694" Long="0.1114722"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123410" Label="1234" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.420" Lat="60.1361528" Long="0.1073722"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123500" Label="1235" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.780" Lat="60.1380361" Long="0.1032722"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123550" Label="1235" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="33.790" Lat="60.1399194" Long="0.0991694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123640" Label="1236" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="34.500" Lat="60.1418028" Long="0.0950694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123730" Label="1237" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="35.340" Lat="60.1436861" Long="0.0909694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123820" Label="1238" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="35.960" Lat="60.1455694" Long="0.0868667"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 123910" Label="1239" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="36.960" Lat="60.1474528" Long="0.0827667"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124000" Label="1240" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="37.260" Lat="60.1493389" Long="0.0786639"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124050" Label="1240" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="37.620" Lat="60.1512222" Long="0.0745611"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124140" Label="1241" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="38.530" Lat="60.1531056" Long="0.0704611"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124230" Label="1242" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="39.200" Lat="60.1549889" Long="0.0663583"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124320" Label="1243" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="39.790" Lat="60.1568722" Long="0.0622556"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124410" Label="1244" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.610" Lat="60.1587556" Long="0.0581528"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124500" Label="1245" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="41.160" Lat="60.1606389" Long="0.0540500"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124550" Label="1245" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="42.010" Lat="60.1625222" Long="0.0499472"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124640" Label="1246" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="42.810" Lat="60.1644056" Long="0.0458417"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124730" Label="1247" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="43.190" Lat="60.1662889" Long="0.0417389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124820" Label="1248" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="43.560" Lat="60.1681722" Long="0.0376333"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 124910" Label="1249" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="43.960" Lat="60.1700556" Long="0.0335306"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125000" Label="1250" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="44.020" Lat="60.1719389" Long="0.0294250"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125050" Label="1250" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="44.590" Lat="60.1738250" Long="0.0253222"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125140" Label="1251" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="44.720" Lat="60.1757083" Long="0.0212167"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125230" Label="1252" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="45.390" Lat="60.1775917" Long="0.0171111"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125320" Label="1253" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="45.850" Lat="60.1794750" Long="0.0130056"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125410" Label="1254" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="46.490" Lat="60.1813583" Long="0.0089000"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125500" Label="1255" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="47.440" Lat="60.1832417" Long="0.0047944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125550" Label="1255" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="47.900" Lat="60.1851250" Long="0.0006889"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="312.690" Dtg="100112 125640" Label="1256" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="48.280" Lat="60.1870083" Long="-0.0034194"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="356.910" Dtg="100112 125730" Label="1257" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="49.070" Lat="60.1894611" Long="-0.0057389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="41.120" Dtg="100112 125820" Label="1258" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="49.070" Lat="60.1920222" Long="-0.0039639"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.560" Dtg="100112 125910" Label="1259" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="49.170" Lat="60.1935306" Long="0.0006861"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130000" Label="1300" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="49.530" Lat="60.1948500" Long="0.0056028"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130050" Label="1300" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="50.220" Lat="60.1961694" Long="0.0105194"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130140" Label="1301" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="50.530" Lat="60.1974889" Long="0.0154389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130230" Label="1302" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="51.510" Lat="60.1988083" Long="0.0203556"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130320" Label="1303" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="51.760" Lat="60.2001278" Long="0.0252750"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130410" Label="1304" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="52.490" Lat="60.2014472" Long="0.0301944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130500" Label="1305" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="53.350" Lat="60.2027667" Long="0.0351111"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130550" Label="1305" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="53.600" Lat="60.2040861" Long="0.0400306"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130640" Label="1306" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="53.600" Lat="60.2054056" Long="0.0449500"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130730" Label="1307" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="54.280" Lat="60.2067278" Long="0.0498694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130820" Label="1308" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="54.910" Lat="60.2080472" Long="0.0547889"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 130910" Label="1309" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="55.870" Lat="60.2093667" Long="0.0597083"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131000" Label="1310" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="56.510" Lat="60.2106861" Long="0.0646306"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131050" Label="1310" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="56.550" Lat="60.2120056" Long="0.0695500"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131140" Label="1311" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="56.710" Lat="60.2133250" Long="0.0744694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131230" Label="1312" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="57.060" Lat="60.2146444" Long="0.0793917"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131320" Label="1313" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="57.930" Lat="60.2159639" Long="0.0843111"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131410" Label="1314" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="58.710" Lat="60.2172833" Long="0.0892333"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131500" Label="1315" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="59.640" Lat="60.2186028" Long="0.0941528"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131550" Label="1315" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="60.210" Lat="60.2199222" Long="0.0990750"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131640" Label="1316" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="61.170" Lat="60.2212417" Long="0.1039972"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131730" Label="1317" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="62.000" Lat="60.2225611" Long="0.1089167"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131820" Label="1318" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="62.160" Lat="60.2238806" Long="0.1138389"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 131910" Label="1319" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="62.760" Lat="60.2252000" Long="0.1187611"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132000" Label="1320" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="62.950" Lat="60.2265194" Long="0.1236833"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132050" Label="1320" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="63.820" Lat="60.2278389" Long="0.1286056"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132140" Label="1321" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="64.510" Lat="60.2291583" Long="0.1335306"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132230" Label="1322" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="65.100" Lat="60.2304778" Long="0.1384528"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132320" Label="1323" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="65.630" Lat="60.2317972" Long="0.1433750"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132410" Label="1324" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="66.600" Lat="60.2331167" Long="0.1483000"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132500" Label="1325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="66.660" Lat="60.2344361" Long="0.1532222"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132550" Label="1325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="66.990" Lat="60.2357556" Long="0.1581472"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132640" Label="1326" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="67.990" Lat="60.2370750" Long="0.1630694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132730" Label="1327" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="68.450" Lat="60.2383944" Long="0.1679944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132820" Label="1328" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="69.170" Lat="60.2397139" Long="0.1729194"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 132910" Label="1329" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="69.390" Lat="60.2410333" Long="0.1778444"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133000" Label="1330" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="69.570" Lat="60.2423556" Long="0.1827667"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133050" Label="1330" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="70.240" Lat="60.2436750" Long="0.1876917"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133140" Label="1331" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="70.780" Lat="60.2449944" Long="0.1926167"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133230" Label="1332" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="71.120" Lat="60.2463139" Long="0.1975444"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133320" Label="1333" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="71.530" Lat="60.2476333" Long="0.2024694"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133410" Label="1334" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="72.460" Lat="60.2489528" Long="0.2073944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133500" Label="1335" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="72.710" Lat="60.2502722" Long="0.2123194"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133550" Label="1335" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="72.740" Lat="60.2515917" Long="0.2172472"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133640" Label="1336" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="72.910" Lat="60.2529111" Long="0.2221722"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133730" Label="1337" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="73.250" Lat="60.2542306" Long="0.2271000"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133820" Label="1338" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="73.680" Lat="60.2555500" Long="0.2320250"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 133910" Label="1339" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="74.230" Lat="60.2568694" Long="0.2369528"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134000" Label="1340" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="74.370" Lat="60.2581889" Long="0.2418806"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134050" Label="1340" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="75.310" Lat="60.2595083" Long="0.2468083"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134140" Label="1341" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="75.550" Lat="60.2608278" Long="0.2517361"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134230" Label="1342" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="75.820" Lat="60.2621472" Long="0.2566639"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134320" Label="1343" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="76.210" Lat="60.2634667" Long="0.2615917"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134410" Label="1344" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="76.790" Lat="60.2647861" Long="0.2665194"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134500" Label="1345" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="77.520" Lat="60.2661056" Long="0.2714472"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134550" Label="1345" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="78.420" Lat="60.2674250" Long="0.2763750"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134640" Label="1346" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="78.760" Lat="60.2687444" Long="0.2813028"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134730" Label="1347" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="78.890" Lat="60.2700639" Long="0.2862333"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134820" Label="1348" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="78.890" Lat="60.2713833" Long="0.2911611"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 134910" Label="1349" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="79.230" Lat="60.2727028" Long="0.2960917"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135000" Label="1350" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="79.980" Lat="60.2740222" Long="0.3010194"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135050" Label="1350" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="80.510" Lat="60.2753417" Long="0.3059500"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135140" Label="1351" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="81.320" Lat="60.2766611" Long="0.3108806"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135230" Label="1352" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="81.780" Lat="60.2779833" Long="0.3158111"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135320" Label="1353" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="82.340" Lat="60.2793028" Long="0.3207417"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135410" Label="1354" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="82.400" Lat="60.2806222" Long="0.3256722"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135500" Label="1355" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="82.490" Lat="60.2819417" Long="0.3306028"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135550" Label="1355" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="83.050" Lat="60.2832611" Long="0.3355333"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135640" Label="1356" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="83.830" Lat="60.2845806" Long="0.3404639"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135730" Label="1357" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="84.300" Lat="60.2859000" Long="0.3453944"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135820" Label="1358" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="85.200" Lat="60.2872194" Long="0.3503278"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 135910" Label="1359" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.000" Lat="60.2885389" Long="0.3552583"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="61.640" Dtg="100112 140000" Label="1400" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="86.100" Lat="60.2898583" Long="0.3601889"/>
+</centre>
+</fix>
+</TrackSegment>
+</track>
+</layers>
+<projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
+<tl>
+<shortLocation Depth="86.100" Lat="60.3080404" Long="-0.0239210"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="60.1048985" Long="0.3783710"/>
+</br>
+</projection>
+<gui>
+<tote/>
+<component Type="Stepper">
+<property Name="GREEN" Value="64"/>
+<property Name="DateFormat" Value="ddHHmm"/>
+<property Name="ShadeArcs" Value="false"/>
+<property Name="Radius" Value="3000.000"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="RectHighlight_Size" Value="5"/>
+<property Name="RectHighlight_Color" Value="128,128,128"/>
+<property Name="BLUE" Value="64"/>
+<property Name="Arc_Finish" Value="180"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="RED" Value="64"/>
+<property Name="CurrentTime" Value="100112 120000"/>
+<property Name="NumRings" Value="3"/>
+<property Name="PointSize" Value="5"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="UseTrackColor" Value="false"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="JustPrimary" Value="false"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="Arcs" Value="-180"/>
+</component>
+<Background>
+<colour Value="LIGHT_GREY"/>
+</Background>
+</gui>
+</session>
+</plot>
