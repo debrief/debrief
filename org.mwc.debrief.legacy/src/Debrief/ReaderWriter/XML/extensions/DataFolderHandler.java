@@ -57,6 +57,7 @@ abstract public class DataFolderHandler extends
       @Override
       public void addDataset(CoreDataset dataset)
       {
+        System.out.println("adding dataset:" + dataset.getName() + " to folder:" + _folder.getName() + " at level:" + level);
         _folder.add(dataset);
       }
     });
