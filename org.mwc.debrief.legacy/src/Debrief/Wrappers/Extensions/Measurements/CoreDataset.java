@@ -11,6 +11,7 @@ public class CoreDataset implements DataItem, Serializable
    * 
    */
   private static final long serialVersionUID = 1L;
+  private transient DataFolder _parent;
 
   private final List<Long> _indices = new ArrayList<Long>();
   private final List<Double> _values = new ArrayList<Double>();
@@ -21,6 +22,20 @@ public class CoreDataset implements DataItem, Serializable
   {
     _name = name;
     _units = units;
+  }
+  
+  /** sometimes it's useful to know the parent folder for a dataset
+   * 
+   * @param parent
+   */
+  public void setParent(DataFolder parent)
+  {
+    _parent = parent;
+  }
+  
+  public DataFolder getParent()
+  {
+    return _parent;
   }
 
   public void add(Long index, Double value)
