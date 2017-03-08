@@ -70,7 +70,6 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler.ExportProvider;
-import Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler;
 import Debrief.ReaderWriter.ais.AISDecoder;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.CompositeTrackWrapper.GiveMeALeg;
@@ -380,10 +379,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     {
       _exportHelpers = new ArrayList<IDOMExporter>();
       _importHelpers = new ArrayList<ISAXImporter>();
-
-      // manually insert our one
-      _exportHelpers.add(new MeasuredDataHandler());
-      _importHelpers.add(new MeasuredDataHandler());
 
       IExtensionRegistry registry = Platform.getExtensionRegistry();
       if (registry != null)

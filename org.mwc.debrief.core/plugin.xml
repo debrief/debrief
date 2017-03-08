@@ -1144,4 +1144,11 @@
             imageProvider="org.mwc.debrief.core.providers.MeasuredDataImageHelper">
       </helper>
    </extension>
+   <extension
+         point="org.mwc.debrief.core.DPFReaderWriter">
+      <helper
+            reader="Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler"
+            writer="Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler">
+      </helper>
+   </extension>
 </plugin>
