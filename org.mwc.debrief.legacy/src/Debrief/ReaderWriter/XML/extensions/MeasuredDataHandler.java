@@ -39,7 +39,7 @@ public class MeasuredDataHandler implements IDOMExporter, ISAXImporter
   @Override
   public MWCXMLReader getHandler(final DataCatcher storeMe)
   {
-      return new DataFolderHandler(6)
+      return new DataFolderHandler()
       {
         @Override
         public void addFolder(DataFolder data)
