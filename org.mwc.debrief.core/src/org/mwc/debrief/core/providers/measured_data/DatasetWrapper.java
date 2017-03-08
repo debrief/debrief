@@ -158,4 +158,9 @@ public class DatasetWrapper implements Editable, Serializable
       }
 
     }
+
+    public CoreDataset getDataset()
+    {
+      return _data;
+    }
   }
