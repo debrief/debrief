@@ -3,6 +3,20 @@
 <plugin>
 
    <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="org.mwc.debrief.core.DebriefCategory"
+            class="info.limpet.stackedcharts.ui.view.StackedChartsView"
+            icon="icons/stacked-chart.png"
+            id="info.limpet.StackedChartsView"
+            name="Stacked Charts 2"
+            restorable="true">
+      </view>
+   </extension>
+   
+   
+   <extension
          point="org.eclipse.ui.commands">
       <category
             name="Tactical Overview"
@@ -46,6 +60,24 @@
       <adapter
             class="org.mwc.debrief.limpet_integration.adapter.DebriefStackedChartsAdapter">
       </adapter>
+   </extension>
+   <extension
+         point="info.limpet.stackedcharts.ui.dataset_adapter">
+      <adapter
+            class="org.mwc.debrief.limpet_integration.measured_data.MeasuredDataInStackedChartsAdapter">
+      </adapter>
+   </extension>
+   <extension
+         point="info.limpet.stackedcharts.ui.scatterset_adapter">
+      <adapter
+            class="org.mwc.debrief.limpet_integration.measured_data.MeasuredDataInStackedChartsAdapter">
+      </adapter>
+   </extension>
+   <extension
+         point="info.limpet.stackedcharts.ui.stacked_time_provider">
+      <provider
+            class="org.mwc.debrief.limpet_integration.measured_data.MeasuredDataInStackedChartsAdapter">
+      </provider>
    </extension>
 
 </plugin>
