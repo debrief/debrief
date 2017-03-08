@@ -71,7 +71,7 @@ abstract public class DataFolderHandler extends
    * use flag to allow recursive data-folders. This will prevent us trying to handle a child folder
    * ourselves
    */
-  private final AtomicBoolean inuse = new AtomicBoolean(true);
+  private final AtomicBoolean inuse = new AtomicBoolean(false);
 
   public DataFolderHandler()
   {
@@ -100,7 +100,7 @@ abstract public class DataFolderHandler extends
   @Override
   public boolean canHandleThis(final String element)
   {
-    return super.canHandleThis(element) && inuse.get();
+    return super.canHandleThis(element) && !inuse.get();
   }
 
   @Override
@@ -109,14 +109,14 @@ abstract public class DataFolderHandler extends
     addFolder(_folder);
 
     _folder = null;
-    inuse.set(true);
+    inuse.set(false);
   }
 
   @Override
   public final void handleOurselves(final String name, final Attributes atts)
   {
     _folder = new DataFolder();
-    inuse.set(false);
+    inuse.set(true);
     addHandler(new DataFolderHandler()
     {
       @Override
