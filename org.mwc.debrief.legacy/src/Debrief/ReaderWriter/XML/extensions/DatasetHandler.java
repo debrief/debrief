@@ -37,16 +37,67 @@ abstract public class DatasetHandler extends
     MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
+  private class MeasurementHandler extends MWCXMLReader
+  {
+    protected MeasurementHandler()
+    {
+      super(MEASUREMENT);
+
+      addAttributeHandler(new HandleAttribute(INDEX)
+      {
+        @Override
+        public void setValue(final String name, final String value)
+        {
+          _indices.add(Long.parseLong(value));
+        }
+      });
+      addAttributeHandler(new HandleAttribute(VALUE)
+      {
+        @Override
+        public void setValue(final String name, final String value)
+        {
+          _values.add(Double.parseDouble(value));
+        }
+      });
+
+    }
+  }
+
   private static final String VALUE = "Value";
   private static final String INDEX = "Index";
-  private static final String MEASUREMENT = "P";
+  private static final String MEASUREMENT = "Item";
   private static final String UNITS = "Units";
   private static final String NAME = "Name";
   private static final String MY_TYPE = "Dataset";
-  private static final String P_TYPE = "P";
+
+  public static void exportThisDataset(final CoreDataset dataset,
+      final Element parent, final Document doc)
+  {
+    final Element ds = doc.createElement(MY_TYPE);
+
+    ds.setAttribute(NAME, dataset.getName());
+    ds.setAttribute(UNITS, dataset.getUnits());
+
+    // ok, now work through the children
+    final Iterator<Long> indices = dataset.getIndices();
+    final Iterator<Double> values = dataset.getValues();
+
+    while (indices.hasNext())
+    {
+      final Element ele = doc.createElement(MEASUREMENT);
+      ele.setAttribute(INDEX, "" + indices.next());
+      ele.setAttribute(VALUE, "" + values.next());
+      ds.appendChild(ele);
+    }
+
+    parent.appendChild(ds);
+  }
+
   private String _name;
   private String _units;
+
   private ArrayList<Long> _indices;
+
   private ArrayList<Double> _values;
 
   /**
@@ -62,6 +113,7 @@ abstract public class DatasetHandler extends
 
     addAttributeHandler(new HandleAttribute(NAME)
     {
+      @Override
       public void setValue(final String name, final String value)
       {
         _name = value;
@@ -69,6 +121,7 @@ abstract public class DatasetHandler extends
     });
     addAttributeHandler(new HandleAttribute(UNITS)
     {
+      @Override
       public void setValue(final String name, final String value)
       {
         _units = value;
@@ -77,68 +130,16 @@ abstract public class DatasetHandler extends
     addHandler(new MeasurementHandler());
   }
 
-  public static void exportThisDataset(CoreDataset dataset, Element parent,
-      Document doc)
-  {
-    Element ds = doc.createElement(MY_TYPE);
+  abstract public void addDataset(CoreDataset dataset);
 
-    ds.setAttribute(NAME, dataset.getName());
-    ds.setAttribute(UNITS, dataset.getUnits());
-
-    // ok, now work through the children
-    Iterator<Long> indices = dataset.getIndices();
-    Iterator<Double> values = dataset.getValues();
-
-    while (indices.hasNext())
-    {
-      Element ele = doc.createElement(MEASUREMENT);
-      ele.setAttribute(INDEX, "" + indices.next());
-      ele.setAttribute(VALUE, "" + values.next());
-      ds.appendChild(ele);
-    }
-
-    parent.appendChild(ds);
-  }
-
-  private class MeasurementHandler extends MWCXMLReader
-  {
-    protected MeasurementHandler()
-    {
-      super(P_TYPE);
-
-      addAttributeHandler(new HandleAttribute(INDEX)
-      {
-        public void setValue(final String name, final String value)
-        {
-          _indices.add(Long.parseLong(value));
-        }
-      });
-      addAttributeHandler(new HandleAttribute(VALUE)
-      {
-        public void setValue(final String name, final String value)
-        {
-          _values.add(Double.parseDouble(value));
-        }
-      });
-
-    }
-  }
-
-  public final void handleOurselves(final String name, final Attributes atts)
-  {
-    super.handleOurselves(name, atts);
-
-    _indices = new ArrayList<Long>();
-    _values = new ArrayList<Double>();
-  }
-
+  @Override
   public final void elementClosed()
   {
     // create the dataset
-    CoreDataset dataset = new CoreDataset(_name, _units);
+    final CoreDataset dataset = new CoreDataset(_name, _units);
 
-    Iterator<Long> iIter = _indices.iterator();
-    Iterator<Double> vIter = _values.iterator();
+    final Iterator<Long> iIter = _indices.iterator();
+    final Iterator<Double> vIter = _values.iterator();
     while (iIter.hasNext())
     {
       dataset.add(iIter.next(), vIter.next());
@@ -154,6 +155,13 @@ abstract public class DatasetHandler extends
     _values = null;
   }
 
-  abstract public void addDataset(CoreDataset dataset);
+  @Override
+  public final void handleOurselves(final String name, final Attributes atts)
+  {
+    super.handleOurselves(name, atts);
+
+    _indices = new ArrayList<Long>();
+    _values = new ArrayList<Double>();
+  }
 
 }

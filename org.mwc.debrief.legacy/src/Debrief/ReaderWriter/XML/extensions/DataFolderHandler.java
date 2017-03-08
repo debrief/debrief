@@ -16,6 +16,13 @@ package Debrief.ReaderWriter.XML.extensions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
+
+import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.DataItem;
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -25,29 +32,54 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @version 1.0
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
-
-import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
-import Debrief.Wrappers.Extensions.Measurements.DataFolder;
-import Debrief.Wrappers.Extensions.Measurements.DataItem;
-
 abstract public class DataFolderHandler extends
     MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
+  private static final String NAME = "Name";
   private static final String MY_TYPE = "DataFolder";
+
+  public static void exportThisFolder(final DataFolder folder,
+      final Element parent, final Document doc)
+  {
+    final Element df = doc.createElement(MY_TYPE);
+
+    // attributes
+    df.setAttribute(NAME, folder.getName());
+
+    for (final DataItem child : folder)
+    {
+      if (child instanceof DataFolder)
+      {
+        final DataFolder childFolder = (DataFolder) child;
+        exportThisFolder(childFolder, df, doc);
+      }
+      else if (child instanceof CoreDataset)
+      {
+        final CoreDataset childD = (CoreDataset) child;
+        DatasetHandler.exportThisDataset(childD, df, doc);
+      }
+    }
+
+    // now children
+    parent.appendChild(df);
+  }
+
   private DataFolder _folder;
 
-  private AtomicBoolean inuse = new AtomicBoolean(true);
+  /**
+   * use flag to allow recursive data-folders. This will prevent us trying to handle a child folder
+   * ourselves
+   */
+  private final AtomicBoolean inuse = new AtomicBoolean(true);
 
   public DataFolderHandler()
   {
     super(MY_TYPE);
 
-    addAttributeHandler(new HandleAttribute("Name")
+    addAttributeHandler(new HandleAttribute(NAME)
     {
+      @Override
       public void setValue(final String name, final String value)
       {
         _folder.setName(value);
@@ -56,35 +88,22 @@ abstract public class DataFolderHandler extends
     addHandler(new DatasetHandler()
     {
       @Override
-      public void addDataset(CoreDataset dataset)
+      public void addDataset(final CoreDataset dataset)
       {
         _folder.add(dataset);
       }
     });
   }
 
+  abstract public void addFolder(DataFolder data);
+
   @Override
-  public boolean canHandleThis(String element)
+  public boolean canHandleThis(final String element)
   {
     return super.canHandleThis(element) && inuse.get();
   }
 
-  public final void handleOurselves(final String name, final Attributes atts)
-  {
-    _folder = new DataFolder();
-    inuse.set(false);
-    addHandler(new DataFolderHandler()
-    {
-      @Override
-      public void addFolder(DataFolder folder)
-      {
-        _folder.add(folder);
-      }
-    });
-    // let parent get started
-    super.handleOurselves(name, atts);
-  }
-
+  @Override
   public final void elementClosed()
   {
     addFolder(_folder);
@@ -93,32 +112,21 @@ abstract public class DataFolderHandler extends
     inuse.set(true);
   }
 
-  abstract public void addFolder(DataFolder data);
-
-  public static void exportThisFolder(DataFolder folder, Element parent,
-      Document doc)
+  @Override
+  public final void handleOurselves(final String name, final Attributes atts)
   {
-    Element df = doc.createElement("DataFolder");
-
-    // attributes
-    df.setAttribute("Name", folder.getName());
-
-    for (DataItem child : folder)
+    _folder = new DataFolder();
+    inuse.set(false);
+    addHandler(new DataFolderHandler()
     {
-      if (child instanceof DataFolder)
+      @Override
+      public void addFolder(final DataFolder folder)
       {
-        DataFolder childFolder = (DataFolder) child;
-        exportThisFolder(childFolder, df, doc);
+        _folder.add(folder);
       }
-      else if (child instanceof CoreDataset)
-      {
-        CoreDataset childD = (CoreDataset) child;
-        DatasetHandler.exportThisDataset(childD, df, doc);
-      }
-    }
-
-    // now children
-    parent.appendChild(df);
+    });
+    // let parent get started
+    super.handleOurselves(name, atts);
   }
 
 }
