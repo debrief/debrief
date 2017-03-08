@@ -44,7 +44,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.PropertySheet;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "restriction"})
 public class Startup implements IStartup
 {
 
@@ -299,7 +299,6 @@ public class Startup implements IStartup
       IWorkbenchWindow activeWorkbenchWindow =
           PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
-      @SuppressWarnings("restriction")
       Class<?> clazz = WorkbenchWindow.class;
       Method method;
       try
