@@ -15,8 +15,8 @@
 package org.mwc.debrief.core.providers;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
-import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 import org.mwc.debrief.core.providers.measured_data.FolderWrapper;
 
@@ -30,9 +30,9 @@ public class MeasuredDataImageHelper implements ViewLabelImageHelper
 		ImageDescriptor res = null;
 		
 		if (editable instanceof FolderWrapper)
-			res = DebriefPlugin.getImageDescriptor("icons/16/library.png");
+			res = CorePlugin.getImageDescriptor("icons/16/folder.png");
 		else if (editable instanceof DatasetWrapper)
-			res = DebriefPlugin.getImageDescriptor("icons/16/sensor.png");		 
+			res = CorePlugin.getImageDescriptor("icons/16/measurement.png");		 
 		return res;
 	}
 
