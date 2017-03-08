@@ -14,6 +14,8 @@
  */
 package Debrief.ReaderWriter.XML.extensions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -37,13 +39,12 @@ abstract public class DataFolderHandler extends
 
   private static final String MY_TYPE = "DataFolder";
   private DataFolder _folder;
-  final int level;
+
+  private AtomicBoolean inuse = new AtomicBoolean(true);
   
-  public DataFolderHandler(int levelsRemaining)
+  public DataFolderHandler()
   {
     super(MY_TYPE);
-    
-    level = levelsRemaining;
 
     addAttributeHandler(new HandleAttribute("Name")
     {
@@ -57,40 +58,44 @@ abstract public class DataFolderHandler extends
       @Override
       public void addDataset(CoreDataset dataset)
       {
-        System.out.println("adding dataset:" + dataset.getName() + " to folder:" + _folder.getName() + " at level:" + level);
+        System.out.println("adding dataset:" + dataset.getName() + " to folder:" + _folder.getName() );
         _folder.add(dataset);
       }
     });
-    if (levelsRemaining > 0)
-    {
-      System.out.println("Declaring handler at level: " + level);
-      addHandler(new DataFolderHandler(--levelsRemaining)
-      {
-        @Override
-        public void addFolder(DataFolder folder)
-        {
-          System.out.println("adding " + folder.getName() + " into " + _folder.getName());
-          _folder.add(folder);
-        }
-      });
-    }
+   
   }
+  
+  @Override
+	public boolean canHandleThis(String element) {
+	  
+		return super.canHandleThis(element)&& inuse.get();
+	}
 
   public final void handleOurselves(final String name, final Attributes atts)
   {
     _folder = new DataFolder();
-
+    inuse.set(false);
+    addHandler(new DataFolderHandler()
+    {
+      @Override
+      public void addFolder(DataFolder folder)
+      {
+        System.out.println("adding " + folder.getName() + " into " + _folder.getName());
+        _folder.add(folder);
+      }
+    });
     // let parent get started
     super.handleOurselves(name, atts);
   }
 
   public final void elementClosed()
   {
-    System.out.println("Adding folder: " + _folder.getName() + " at level:" + level);
+    System.out.println("Adding folder: " + _folder.getName() );
     
     addFolder(_folder);
 
     _folder = null;
+    inuse.set(true);
   }
 
   abstract public void addFolder(DataFolder data);
