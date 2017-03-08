@@ -1403,8 +1403,7 @@ public class ImportNarrativeDocument
     {
       // ok, get the hash code
       final int hash = trackId.hashCode();
-      final int index = hash % DebriefColors.THIRD_PARTY_COLORS.length;
-      res = DebriefColors.THIRD_PARTY_COLORS[index];
+      res = DebriefColors.RandomColorProvider.getRandomColor(hash);
     }
     return res;
   }
