@@ -102,9 +102,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 								DebriefPlugin.logError(Status.INFO,
 										"completed loading:" + fileName, null);
 
-
-								DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
 							}
 							catch (final RuntimeException e)
 							{
@@ -148,8 +145,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 			finally
 			{
 			}
-	//	}
 		// ok, load the data...
-		DebriefPlugin.logError(Status.INFO, "Successfully loaded XML file", null);
 	}
 }

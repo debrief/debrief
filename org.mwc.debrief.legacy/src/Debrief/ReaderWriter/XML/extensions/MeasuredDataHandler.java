@@ -44,7 +44,6 @@ public class MeasuredDataHandler implements IDOMExporter, ISAXImporter
         @Override
         public void addFolder(DataFolder data)
         {
-          System.out.println("storing folder at top level:" + data.getName());
           storeMe.storeThis(data);
         }
       };
