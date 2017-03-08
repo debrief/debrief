@@ -41,7 +41,7 @@ abstract public class DataFolderHandler extends
   private DataFolder _folder;
 
   private AtomicBoolean inuse = new AtomicBoolean(true);
-  
+
   public DataFolderHandler()
   {
     super(MY_TYPE);
@@ -58,18 +58,16 @@ abstract public class DataFolderHandler extends
       @Override
       public void addDataset(CoreDataset dataset)
       {
-        System.out.println("adding dataset:" + dataset.getName() + " to folder:" + _folder.getName() );
         _folder.add(dataset);
       }
     });
-   
   }
-  
+
   @Override
-	public boolean canHandleThis(String element) {
-	  
-		return super.canHandleThis(element)&& inuse.get();
-	}
+  public boolean canHandleThis(String element)
+  {
+    return super.canHandleThis(element) && inuse.get();
+  }
 
   public final void handleOurselves(final String name, final Attributes atts)
   {
@@ -80,7 +78,6 @@ abstract public class DataFolderHandler extends
       @Override
       public void addFolder(DataFolder folder)
       {
-        System.out.println("adding " + folder.getName() + " into " + _folder.getName());
         _folder.add(folder);
       }
     });
@@ -90,8 +87,6 @@ abstract public class DataFolderHandler extends
 
   public final void elementClosed()
   {
-    System.out.println("Adding folder: " + _folder.getName() );
-    
     addFolder(_folder);
 
     _folder = null;
