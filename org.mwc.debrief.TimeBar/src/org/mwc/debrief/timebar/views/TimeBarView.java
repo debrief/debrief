@@ -37,6 +37,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -201,7 +202,7 @@ public class TimeBarView extends ViewPart {
 				}
 
 				public void dataExtended(final Layers theData, final Plottable newItem,
-								final Layer parentLayer)
+								final HasEditables parentLayer)
 				{
 					processNewData(theData, newItem, parentLayer);
 				}
@@ -231,7 +232,7 @@ public class TimeBarView extends ViewPart {
 	}
 		
 	void processNewData(final Layers theData, final Editable newItem,
-			final Layer parentLayer)
+			final HasEditables parentLayer)
 	{
 			Display.getDefault().asyncExec(new Runnable()
 			{
@@ -245,7 +246,7 @@ public class TimeBarView extends ViewPart {
 					if (newItem != null)
 					{
 						// wrap the plottable
-						final EditableWrapper parentWrapper = new EditableWrapper(parentLayer,
+						final EditableWrapper parentWrapper = new EditableWrapper((Editable)parentLayer,
 								null, theData);
 						final EditableWrapper wrapped = new EditableWrapper(newItem,
 								parentWrapper, theData);

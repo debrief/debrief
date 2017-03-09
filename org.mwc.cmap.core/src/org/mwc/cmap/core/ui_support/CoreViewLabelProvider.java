@@ -39,7 +39,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
@@ -321,7 +321,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
         imageKey = "coast.png";
       else if (editable instanceof VPFDatabase)
         imageKey = "vpf.png";
-      else if (editable instanceof Layer)
+      else if (editable instanceof HasEditables)
         imageKey = "layer.png";
       else if (editable instanceof LabelWrapper)
         imageKey = "label.png";
@@ -388,7 +388,9 @@ public class CoreViewLabelProvider extends LabelProvider implements
       }
       else
       {
-        res = nonVisibleImage;
+        // if it's not a plottable then we don't have the concept of visibility,
+        // so don't show an image
+        res = null;
       }
     }
 

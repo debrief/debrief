@@ -111,7 +111,6 @@
 package MWC.GUI;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 
 /**
  * this class is a collection of objects which
@@ -120,20 +119,12 @@ import java.util.Enumeration;
  * @see Plottables
  * @see Plottable
  */
-public interface Layer extends Serializable, Plottable
+public interface Layer extends Serializable, Plottable, HasEditables
 {
   /////////////////////////////////////////////////////////////
   // member interfaces
   ////////////////////////////////////////////////////////////
-	
-	/** interface for class that normally provides it's elements in a tiered fashion,
-	 * but is able to provide them as a single list (for when an external class wants to
-	 * process all of them as one list - double-click nearest testing).
-	 */
-	public interface ProvidesContiguousElements
-	{
-		public Enumeration<Editable> contiguousElements();
-	}
+
 	
 	/** marker interface for layers that should not be painted in the overview chart
 	 * 
@@ -169,6 +160,7 @@ public interface Layer extends Serializable, Plottable
    * an non-alphanumeric order
    * @return
    */
+  @Override
   public boolean hasOrderedChildren();
 
   /**
@@ -183,6 +175,7 @@ public interface Layer extends Serializable, Plottable
    *
    * @param point
    */
+  @Override
   public void add(MWC.GUI.Editable point);
 
   /**
@@ -190,8 +183,10 @@ public interface Layer extends Serializable, Plottable
    *
    * @param point
    */
+  @Override
   public void removeElement(Editable point);
 
+  @Override
   public java.util.Enumeration<Editable> elements();
 
   public void setVisible(boolean val);

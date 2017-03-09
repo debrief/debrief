@@ -106,7 +106,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import MWC.GUI.CanvasType;
-import MWC.GUI.Layer;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Canvas.AWT.AWTCanvas;
@@ -170,7 +170,8 @@ import MWC.GUI.Canvas.AWT.AWTCanvas;
   /** repaint the indicated layer
    *
    */
-  public void update(final Layer changedLayer)
+  @Override
+  public void update(final HasEditables changedLayer)
   {
     update();
   }

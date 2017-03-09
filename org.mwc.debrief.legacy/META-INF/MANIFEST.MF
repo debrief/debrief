@@ -171,6 +171,7 @@ Export-Package:
    MWC.GUI.Properties,
    MWC.GUI",
  Debrief.ReaderWriter.XML.Util;uses:="MWC.Utilities.ReaderWriter.XML",
+ Debrief.ReaderWriter.XML.extensions,
  Debrief.ReaderWriter.ais,
  Debrief.Tools.FilterOperations;
   uses:="Debrief.GUI.Tote,
@@ -220,6 +221,8 @@ Export-Package:
    MWC.GUI,
    MWC.GUI.Tools",
  Debrief.Wrappers.DynamicTrackShapes,
+ Debrief.Wrappers.Extensions,
+ Debrief.Wrappers.Extensions.Measurements,
  Debrief.Wrappers.Track;
   uses:="MWC.GUI.Shapes,
    junit.framework,

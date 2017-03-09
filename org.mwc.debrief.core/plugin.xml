@@ -99,6 +99,8 @@
     <extension-point id="XMLLayerHandler" name="XMLLayerHandler"
         schema="schema/XMLLayerHandler.exsd"/>
     <extension-point id="RepReader" name="RepReader" schema="schema/RepReader.exsd"/>
+    <extension-point id="OutlineContentProvider" name="OutlineContentProvider" schema="schema/ContentProvider.exsd"/>
+    <extension-point id="DPFReaderWriter" name="DPFReaderWriter" schema="schema/DPFReaderWriter.exsd"/>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.ReplayLoader" extensions="rep;dsf;dtf"
             name="ReplayLoader"/>
@@ -1133,6 +1135,20 @@
       </helper>
       <helper
             class="Debrief.ReaderWriter.Replay.extensions.TA_COG_REL_DataHandler">
+      </helper>
+   </extension>
+   <extension
+         point="org.mwc.debrief.core.OutlineContentProvider">
+      <helper
+            contentProvider="org.mwc.debrief.core.providers.MeasuredDataProvider"
+            imageProvider="org.mwc.debrief.core.providers.MeasuredDataImageHelper">
+      </helper>
+   </extension>
+   <extension
+         point="org.mwc.debrief.core.DPFReaderWriter">
+      <helper
+            reader="Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler"
+            writer="Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler">
       </helper>
    </extension>
 </plugin>

@@ -300,7 +300,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			 * @param newItem
 			 * @param parent
 			 */
-			public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
+			public void dataExtended(final Layers theData, final Plottable newItem, final HasEditables parent)
 			{
 				if (!_suspendUpdates)
 				{
@@ -381,7 +381,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	 * @param changedLayer
 	 *          the layer which needs repaining (or null for all)
 	 */
-	abstract public void update(Layer changedLayer);
+	abstract public void update(HasEditables changedLayer);
 
 	/**
 	 * just refresh the double-buffer

@@ -166,6 +166,8 @@ import java.util.Iterator;
 import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Wrappers.Extensions.AdditionalData;
+import Debrief.Wrappers.Extensions.AdditionalProvider;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -182,7 +184,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class SensorWrapper extends TacticalDataWrapper implements
-    GriddableSeriesMarker, Cloneable
+    GriddableSeriesMarker, Cloneable, AdditionalProvider
 {
 
   /**
@@ -217,6 +219,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
   private HiResDate _lastDataFrequency = new HiResDate(0,
       TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+  
+  /** handler for supplemental data
+   * 
+   */
+  private AdditionalData _additionalData;
 
   // //////////////////////////////////////
   // constructors
@@ -362,6 +369,16 @@ public class SensorWrapper extends TacticalDataWrapper implements
       // and tell the contact about us
       scw.setSensor(this);
     }
+  }
+  
+  @Override
+  public AdditionalData getAdditionalData()
+  {
+    if(_additionalData == null)
+    {
+      _additionalData = new AdditionalData();
+    }
+    return _additionalData;
   }
 
   public final void append(final Layer theLayer)

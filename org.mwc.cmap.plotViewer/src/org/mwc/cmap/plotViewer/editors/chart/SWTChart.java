@@ -193,6 +193,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -1287,7 +1288,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	}
 
 	@Override
-	public final void update(final Layer changedLayer)
+	public final void update(final HasEditables changedLayer)
 	{
 		if (changedLayer == null)
 		{

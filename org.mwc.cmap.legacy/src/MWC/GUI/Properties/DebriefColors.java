@@ -35,11 +35,32 @@ public interface DebriefColors
   {BLACK, DARK_BLUE, DARK_GRAY, MEDIUM_BLUE, LIGHT_GRAY, WHITE, RED, GREEN,
       BLUE, LIGHT_GREEN, YELLOW, ORANGE, BROWN, CYAN, PINK, PURPLE, MAGENTA,
       GOLD, GRAY};
-  
-  /** set of colors that could be used to color third party tracks (avoids
-   * standard red & blue, and gray shades)
+
+  /**
+   * set of colors that could be used to color third party tracks (avoids standard red & blue, and
+   * gray shades)
    */
   public static Color[] THIRD_PARTY_COLORS = new Color[]
   {DARK_BLUE, MEDIUM_BLUE, GREEN, LIGHT_GREEN, YELLOW, ORANGE, BROWN, CYAN,
       PINK, PURPLE, MAGENTA, GOLD};
+
+  /** helper, to provide random Debrief-like colors
+   * 
+   * @author ian
+   *
+   */
+  public static class RandomColorProvider
+  {
+    /** get a random color, based on the supplied hash
+     * 
+     * @param hash
+     * @return
+     */
+    public static Color getRandomColor(int hash)
+    {
+      final int index = hash % DebriefColors.THIRD_PARTY_COLORS.length;
+      final Color res = DebriefColors.THIRD_PARTY_COLORS[index];
+      return res;
+    }
+  }
 }

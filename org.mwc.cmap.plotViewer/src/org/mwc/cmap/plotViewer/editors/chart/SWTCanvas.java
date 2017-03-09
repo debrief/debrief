@@ -384,8 +384,18 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
 
     // finally put the required bits of the target image onto the screen
     if (_dblBuff != null)
-      gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
-          pe.width, pe.height);
+    {
+      try
+      {
+        gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
+            pe.width, pe.height);
+      }
+      catch (IllegalArgumentException ae)
+      {
+        System.err.println("Routine Linux startup exception suppressed (Argument not valid).");
+        ae.printStackTrace();
+      }
+    }
     else
     {
       CorePlugin.logError(Status.INFO,

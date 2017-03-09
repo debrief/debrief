@@ -50,6 +50,7 @@ import org.mwc.cmap.xyplot.views.snail.SnailPeriodTracker;
 
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
@@ -438,7 +439,7 @@ public class CrossSectionView extends ViewPart implements
         }
 
         public void dataExtended(final Layers theData, final Plottable newItem,
-            final Layer parentLayer)
+            final HasEditables parentLayer)
         {
           processNewData(theData, newItem, parentLayer);
         }
@@ -469,7 +470,7 @@ public class CrossSectionView extends ViewPart implements
   }
 
   void processNewData(final Layers theData, final Editable newItem,
-      final Layer parentLayer)
+      final HasEditables parentLayer)
   {
     Display.getDefault().asyncExec(new Runnable()
     {

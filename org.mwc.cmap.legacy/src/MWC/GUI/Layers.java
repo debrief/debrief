@@ -771,7 +771,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
   /**
    * inform listeners that we have been extended
    */
-  public void fireExtended(final Plottable newItem, final Layer parent)
+  public void fireExtended(final Plottable newItem, final HasEditables parent)
   {
     if (!_suspendFiringExtended)
     {
@@ -1168,7 +1168,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
      * @param parent
      *          the layer containing the item
      */
-    public void dataExtended(Layers theData, Plottable newItem, Layer parent);
+    public void dataExtended(Layers theData, Plottable newItem, HasEditables parent);
   }
 
   // //////////////////////////////////////////////////////////////////////////

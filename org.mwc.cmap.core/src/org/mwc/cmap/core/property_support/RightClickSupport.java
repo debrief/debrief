@@ -58,6 +58,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.RectangleShape;
@@ -125,7 +126,7 @@ public class RightClickSupport
 	 */
 	static public void getDropdownListFor(final IMenuManager manager,
 			final Editable[] editables, final Layer[] topLevelLayers,
-			final Layer[] parentLayers, final Layers theLayers,
+			final HasEditables[] parentLayers, final Layers theLayers,
 			final boolean hideClipboardOperations)
 	{
 

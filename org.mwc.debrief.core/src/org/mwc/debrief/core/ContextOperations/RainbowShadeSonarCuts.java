@@ -114,12 +114,15 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator
 			Collection<Editable> editables =
 					theSensor.getItemsBetween(theSensor.getStartDTG(),
 							theSensor.getEndDTG());
-			for (Editable editable : editables)
+			if(editables != null)
 			{
-				if (editable instanceof SensorContactWrapper)
-				{
-					cuts.add((SensorContactWrapper) editable);
-				}
+  			for (Editable editable : editables)
+  			{
+  				if (editable instanceof SensorContactWrapper)
+  				{
+  					cuts.add((SensorContactWrapper) editable);
+  				}
+  			}
 			}
 		}
 

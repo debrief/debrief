@@ -660,10 +660,20 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	@Override
 	public final HiResDate getEndDTG()
 	{
-		if (_timePeriod == null)
-			recalcTimePeriod();
+    if (_timePeriod == null)
+      recalcTimePeriod();
 
-		return _timePeriod.getEndDTG();
+    final HiResDate res;
+    if(_timePeriod != null)
+    {
+      res = _timePeriod.getEndDTG();
+    }
+    else
+    {
+      res = null;
+    }
+    
+    return res;
 	}
 
 	/**
@@ -767,7 +777,17 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		if (_timePeriod == null)
 			recalcTimePeriod();
 
-		return _timePeriod.getStartDTG();
+		final HiResDate res;
+		if(_timePeriod != null)
+		{
+		  res = _timePeriod.getStartDTG();
+		}
+		else
+		{
+		  res = null;
+		}
+		
+		return res;
 	}
 
 	/**
@@ -869,12 +889,16 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 */
 	private void recalcTimePeriod()
 	{
-		final PlottableWrapperWithTimeAndOverrideableColor first = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts
-				.first();
-		final PlottableWrapperWithTimeAndOverrideableColor last = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts
-				.last();
+    if (!_myContacts.isEmpty())
+    {
+      final PlottableWrapperWithTimeAndOverrideableColor first =
+          (PlottableWrapperWithTimeAndOverrideableColor) _myContacts.first();
+      final PlottableWrapperWithTimeAndOverrideableColor last =
+          (PlottableWrapperWithTimeAndOverrideableColor) _myContacts.last();
 
-		_timePeriod = new TimePeriod.BaseTimePeriod(first.getDTG(), last.getDTG());
+      _timePeriod =
+          new TimePeriod.BaseTimePeriod(first.getDTG(), last.getDTG());
+    }
 	}
 
 	/**

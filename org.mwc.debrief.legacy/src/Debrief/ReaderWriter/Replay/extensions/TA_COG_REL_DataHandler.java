@@ -56,9 +56,9 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
       depth = Double.valueOf(st.nextToken());
 
       // ok, try to store the measurement
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "X", theDate, x);
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Y", theDate, y);
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Z", theDate, depth);
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "X", "m", theDate, x);
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Y", "m", theDate, y);
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Z", "m", theDate, depth);
 
       return null;
 
