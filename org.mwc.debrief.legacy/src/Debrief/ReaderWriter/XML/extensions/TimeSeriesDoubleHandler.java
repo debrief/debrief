@@ -33,10 +33,15 @@ import org.xml.sax.Attributes;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-abstract public class DatasetHandler extends
+abstract public class TimeSeriesDoubleHandler extends
     MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
+  /** handle the discrete measurements
+   * 
+   * @author ian
+   *
+   */
   private class MeasurementHandler extends MWCXMLReader
   {
     protected MeasurementHandler()
@@ -68,7 +73,7 @@ abstract public class DatasetHandler extends
   private static final String MEASUREMENT = "Item";
   private static final String UNITS = "Units";
   private static final String NAME = "Name";
-  private static final String MY_TYPE = "Dataset";
+  private static final String MY_TYPE = "TimeSeriesDouble";
 
   public static void exportThisDataset(final TimeSeriesDouble dataset,
       final Element parent, final Document doc)
@@ -106,7 +111,7 @@ abstract public class DatasetHandler extends
   static final MWC.GUI.Properties.LocationPropertyEditor lp =
       new MWC.GUI.Properties.LocationPropertyEditor();
 
-  public DatasetHandler()
+  public TimeSeriesDoubleHandler()
   {
     // inform our parent what type of class we are
     super(MY_TYPE);

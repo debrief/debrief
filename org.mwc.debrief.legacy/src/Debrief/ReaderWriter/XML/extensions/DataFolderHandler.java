@@ -57,7 +57,7 @@ abstract public class DataFolderHandler extends
       else if (child instanceof TimeSeriesDouble)
       {
         final TimeSeriesDouble childD = (TimeSeriesDouble) child;
-        DatasetHandler.exportThisDataset(childD, df, doc);
+        TimeSeriesDoubleHandler.exportThisDataset(childD, df, doc);
       }
     }
 
@@ -85,7 +85,7 @@ abstract public class DataFolderHandler extends
         _folder.setName(value);
       }
     });
-    addHandler(new DatasetHandler()
+    addHandler(new TimeSeriesDoubleHandler()
     {
       @Override
       public void addDataset(final TimeSeriesDouble dataset)
