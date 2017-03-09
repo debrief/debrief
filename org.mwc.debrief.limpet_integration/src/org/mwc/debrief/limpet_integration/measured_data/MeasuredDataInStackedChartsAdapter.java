@@ -28,8 +28,9 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
@@ -83,7 +84,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        TimeSeriesDouble cd = ds.getDataset();
+        TimeSeriesCore cd = ds.getDataset();
         res = true;
       }
     }
@@ -102,7 +103,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        TimeSeriesDouble cd = ds.getDataset();
+        TimeSeriesCore cd = ds.getDataset();
         res = true;
       }
     }
@@ -139,7 +140,37 @@ public class MeasuredDataInStackedChartsAdapter implements
     {
       helper.processThis(iIter.next(), vIter.next());
     }
+  }
 
+  private void DoDatasetCore(TimeSeriesCore cd, ProcessHelper helper,
+      StackedchartsFactory factory)
+  {
+    // sort out a name
+    final String name;
+    DataFolder parent = cd.getParent();
+    if (parent != null)
+    {
+      name = parent.getName() + " - " + cd.getName();
+    }
+    else
+    {
+      name = cd.getName();
+    }
+    helper.setName(name);
+
+    PlainStyling ps = factory.createPlainStyling();
+    // get a hash-code, for the color
+    int hash = cd.hashCode();
+    ps.setColor(DebriefColors.RandomColorProvider.getRandomColor(hash));
+    ps.setLineThickness(2.0d);
+    helper.setStyling(ps);
+
+    Iterator<Long> iIter = cd.getIndices();
+
+    while (iIter.hasNext())
+    {
+      helper.processThis(iIter.next(), 0d);
+    }
   }
 
   @Override
@@ -154,50 +185,56 @@ public class MeasuredDataInStackedChartsAdapter implements
       if (ed instanceof DatasetWrapper)
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
-        TimeSeriesDouble cd = ds.getDataset();
-        final StackedchartsFactory factory = new StackedchartsFactoryImpl();
-        final Dataset dataset = factory.createDataset();
+        TimeSeriesCore tsc = ds.getDataset();
 
-        dataset.setUnits(cd.getUnits());
-
-        ProcessHelper ph = new ProcessHelper()
+        if (tsc instanceof TimeSeriesDouble)
         {
-          @Override
-          public void processThis(long index, double value)
+          TimeSeriesDouble cd = (TimeSeriesDouble) tsc;
+
+          final StackedchartsFactory factory = new StackedchartsFactoryImpl();
+          final Dataset dataset = factory.createDataset();
+
+          dataset.setUnits(cd.getUnits());
+
+          ProcessHelper ph = new ProcessHelper()
           {
-            DataItem item = factory.createDataItem();
-            item.setIndependentVal(index);
-            item.setDependentVal(value);
+            @Override
+            public void processThis(long index, double value)
+            {
+              DataItem item = factory.createDataItem();
+              item.setIndependentVal(index);
+              item.setDependentVal(value);
 
-            // and store it
-            dataset.getMeasurements().add(item);
-          }
+              // and store it
+              dataset.getMeasurements().add(item);
+            }
 
-          @Override
-          public void setName(String name)
+            @Override
+            public void setName(String name)
+            {
+              dataset.setName(name);
+            }
+
+            @Override
+            public void setStyling(PlainStyling ps)
+            {
+              dataset.setStyling(ps);
+            }
+
+          };
+
+          DoDataset(cd, ph, factory);
+
+          // did we find any?
+          if (!dataset.getMeasurements().isEmpty())
           {
-            dataset.setName(name);
+            if (res == null)
+            {
+              res = new ArrayList<Dataset>();
+            }
+            res.add(dataset);
           }
-
-          @Override
-          public void setStyling(PlainStyling ps)
-          {
-            dataset.setStyling(ps);
-          }
-        };
-
-        DoDataset(cd, ph, factory);
-
-        // did we find any?
-        if (!dataset.getMeasurements().isEmpty())
-        {
-          if (res == null)
-          {
-            res = new ArrayList<Dataset>();
-          }
-          res.add(dataset);
         }
-
       }
     }
     return res;
@@ -215,7 +252,6 @@ public class MeasuredDataInStackedChartsAdapter implements
       if (ed instanceof DatasetWrapper)
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
-        TimeSeriesDouble cd = ds.getDataset();
         final StackedchartsFactoryImpl factory = new StackedchartsFactoryImpl();
         final ScatterSet dataset = factory.createScatterSet();
 
@@ -244,7 +280,8 @@ public class MeasuredDataInStackedChartsAdapter implements
           }
         };
 
-        DoDataset(cd, ph, factory);
+        TimeSeriesCore cd = ds.getDataset();
+        DoDatasetCore(cd, ph, factory);
 
         // did we find any?
         if (!dataset.getDatums().isEmpty())

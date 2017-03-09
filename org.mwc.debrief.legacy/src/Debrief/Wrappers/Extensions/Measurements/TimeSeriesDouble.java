@@ -1,6 +1,5 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,68 +9,29 @@ import java.util.List;
  * @author ian
  *
  */
-public class TimeSeriesDouble implements DataItem, Serializable
+public class TimeSeriesDouble extends TimeSeriesCore
 {
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
   
-  /** track the parent folder. It's transient since the parent
-   * gets assigned as part of XML restore
-   */
-  private transient DataFolder _parent;
-
-  private final List<Long> _indices = new ArrayList<Long>();
-  private final List<Double> _values = new ArrayList<Double>();
-  private final String _name;
-  private final String _units;
-
+  private final List<Double> _values1 = new ArrayList<Double>();
+  
   public TimeSeriesDouble(final String name, final String units)
   {
-    _name = name;
-    _units = units;
+    super(name, units);
   }
   
-  /** sometimes it's useful to know the parent folder for a dataset
-   * 
-   * @param parent
-   */
-  public void setParent(DataFolder parent)
-  {
-    _parent = parent;
-  }
-  
-  public DataFolder getParent()
-  {
-    return _parent;
-  }
-
-  public void add(Long index, Double value)
+  public void add(Long index, Double value1)
   {
     _indices.add(index);
-    _values.add(value);
-  }
-  
-  public Iterator<Long> getIndices()
-  {
-    return _indices.iterator();
+    _values1.add(value1);
   }
   
   public Iterator<Double> getValues()
   {
-    return _values.iterator();
-  }
-
-  @Override
-  public String getName()
-  {
-    return _name;
-  }
-
-  public String getUnits()
-  {
-    return _units;
+    return _values1.iterator();
   }
 
   /**
@@ -88,12 +48,7 @@ public class TimeSeriesDouble implements DataItem, Serializable
     final int len = _indices.size();
     for (int i = 0; i < len; i++)
     {
-      System.out.println("i:" + _indices.get(i) + " v:" + _values.get(i));
+      System.out.println("i:" + _indices.get(i) + " v1:" + _values1.get(i));
     }
-  }
-
-  public int size()
-  {
-    return _indices.size();
   }
 }

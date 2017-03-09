@@ -161,13 +161,19 @@ package Debrief.Wrappers;
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Tools.Properties.ArrayCentreModePropertyEditor;
 import Debrief.Wrappers.Extensions.AdditionalData;
 import Debrief.Wrappers.Extensions.AdditionalProvider;
+import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.DataFolder.DatasetOperator;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -209,7 +215,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * fwd/backward of the attack datum, or whether it's a dragged sensor that follows the track of
    * it's host platform (like a towed array).
    */
-  private boolean _wormInHole = true;
+  private String _arrayCentreMode = ArrayCentreMode.WORM;
 
   /**
    * the radiated (source) transmitted frequency
@@ -224,6 +230,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * 
    */
   private AdditionalData _additionalData;
+
+  private static interface ArrayCentreMode
+  {
+    String PLAIN = "PLAIN";
+    String WORM = "WORM";
+    String EXTERNAL_SOURCE = "EXT:";
+  }
 
   // //////////////////////////////////////
   // constructors
@@ -631,25 +644,77 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
   public Boolean getWormInHole()
   {
-    return _wormInHole;
+    return _arrayCentreMode.equals(ArrayCentreMode.WORM);
   }
 
   public void setWormInHole(final Boolean wormInHole)
   {
-    // see if this is a changed setting
-    if (wormInHole != _wormInHole)
+    // sort out the new mode
+    final String mode = wormInHole ? ArrayCentreMode.WORM : ArrayCentreMode.PLAIN;
+    
+    setArrayCentreMode(mode);
+  }
+  
+  public String getArrayCentreMode()
+  {
+    return _arrayCentreMode;
+  }
+  
+  public void setArrayCentreMode(final String mode)
+  {
+    if(mode != _arrayCentreMode)
     {
       // remember the new value
-      _wormInHole = wormInHole;
-
+      _arrayCentreMode = mode;
+      
       // we've got to recalculate our positions now, really.
       clearChildOffsets();
 
       // ok, fire the property change - to tell folks we've moved
-      firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, wormInHole);
-
+      firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, _arrayCentreMode);
     }
   }
+
+  public String[] getAdditionalArrayCentreModes()
+  {
+    
+    final List<String> res = new ArrayList<String>();
+    Object measuredData = this.getAdditionalData().getThisType(DataFolder.class);
+    if(measuredData != null)
+    {
+      // ok. walk the tree, and see if there are any datasets with location
+      DataFolder df = (DataFolder) measuredData;
+      
+      DatasetOperator processor = new DataFolder.DatasetOperator()
+      {
+        @Override
+        public void process(TimeSeriesCore dataset)
+        {
+           // is it suitable?
+          if("m".equals(dataset.getUnits()))
+          {
+          res.add(dataset.getName());
+          }
+        }
+      };
+      
+      df.walkThisDataset(processor);
+      
+    }
+    
+    final String[] res2;
+    if(res.size() > 0)
+    {
+      res2 = res.toArray(new String[]{});
+    }
+    else
+    {
+      res2 = null;
+    }
+    
+    return res2;
+  }
+  
 
   public WorldDistance.ArrayLength getSensorOffset()
   {
@@ -739,10 +804,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
                     "the default colour to plot this set of sensor data"),
                 displayProp("SensorOffset", "Sensor offset",
                     "the forward/backward offset (m) of this sensor from the attack datum"),
-                displayProp(
-                    "WormInHole",
-                    "Worm in hole",
-                    "whether the origin of this sensor is offset in straight line, or back along the host track"),
                 displayProp("Coverage", "Start/Finish DTG",
                     "the time coverage for this sensor"),
                 displayLongProp("VisibleFrequency", "Visible frequency",
@@ -751,8 +812,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
                 displayExpertProp("BaseFrequency", "Base frequency",
                     "The base frequency of the source for this sound", OPTIONAL),
                 displayExpertLongProp("ResampleDataAt", "Resample data at",
-                    "the sensor cut sample rate",TEMPORAL, 
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
+                    "the sensor cut sample rate", TEMPORAL,
+                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                displayExpertLongProp("ArrayCentreMode", "Array Centre Mode",
+                    "the method used to calculate the array centre", SPATIAL,
+                    ArrayCentreModePropertyEditor.class)};
 
         res[2]
             .setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);

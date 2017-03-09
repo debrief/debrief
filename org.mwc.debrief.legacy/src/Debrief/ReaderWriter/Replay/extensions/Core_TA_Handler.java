@@ -5,9 +5,10 @@ import java.util.Enumeration;
 import junit.framework.TestCase;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -52,6 +53,13 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     return false;
   }
 
+  private static interface StorageHelper
+  {
+    void storeHere(long time, DataItem dataset);
+
+    DataItem createTarget(String name, String units);
+  }
+
   /**
    * store this measurement
    * 
@@ -71,6 +79,70 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
   protected void storeMeasurement(final String platform_name,
       final String sensor_name, final String folder, final String dataset_name,
       final String units, final HiResDate theDate, final double measurement)
+  {
+    StorageHelper helper = new StorageHelper()
+    {
+      @Override
+      public void storeHere(long time, DataItem dataset)
+      {
+        TimeSeriesDouble ds = (TimeSeriesDouble) dataset;
+        ds.add(time, measurement);
+      }
+
+      @Override
+      public DataItem createTarget(String name, String units)
+      {
+        return new TimeSeriesDouble(name, units);
+      }
+    };
+    storeMeasurement(platform_name, sensor_name, folder, dataset_name, units,
+        theDate, helper);
+  }
+
+  /**
+   * store this measurement
+   * 
+   * @param platform_name
+   *          the platform to store the data under
+   * @param sensor_name
+   *          the sensor to store the data under (or null to go in the top level)
+   * @param folder
+   *          the folder to store the dataset into (use "/" to indicate sub-folders)
+   * @param dataset_name
+   *          the dataset to put the measurement into
+   * @param theDate
+   *          the time of the measurement
+   * @param measurement
+   *          the measurement
+   */
+  protected void storeMeasurement2D(final String platform_name,
+      final String sensor_name, final String folder, final String dataset_name,
+      final String units, final HiResDate theDate, final String value1Name,
+      final String value2Name, final double measurement1,
+      final double measurement2)
+  {
+    StorageHelper helper = new StorageHelper()
+    {
+      @Override
+      public void storeHere(long time, DataItem dataset)
+      {
+        TimeSeries2Double ds = (TimeSeries2Double) dataset;
+        ds.add(time, measurement1, measurement2);
+      }
+
+      @Override
+      public DataItem createTarget(String name, String units)
+      {
+        return new TimeSeries2Double(name, units, value1Name, value2Name);
+      }
+    };
+    storeMeasurement(platform_name, sensor_name, folder, dataset_name, units,
+        theDate, helper);
+  }
+
+  private void storeMeasurement(final String platform_name,
+      final String sensor_name, final String folder, final String dataset_name,
+      final String units, final HiResDate theDate, StorageHelper helper)
   {
     // find the platform
     TrackWrapper track = (TrackWrapper) _layers.findLayer(platform_name);
@@ -112,16 +184,17 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     }
 
     // find the dataset
-    TimeSeriesDouble dataset = findDataset(dataFolder, folder, dataset_name, units);
+    DataItem target =
+        findDataset(dataFolder, folder, dataset_name, units, helper);
 
     // add the measurement
-    dataset.add(theDate.getDate().getTime(), measurement);
+    helper.storeHere(theDate.getDate().getTime(), target);
   }
 
-  private TimeSeriesDouble findDataset(DataFolder parent, String folder,
-      String name, String units)
+  private DataItem findDataset(DataFolder parent, String folder, String name,
+      String units, StorageHelper helper)
   {
-    TimeSeriesDouble res = null;
+    DataItem res = null;
 
     DataFolder targetFolder = parent;
 
@@ -142,36 +215,21 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       }
     }
 
-    // get the dataset
-    res = getDataset(targetFolder, name, units);
-
-    // did it find it?
-    if (res == null)
+    // get the dataset from this folder
+    for (DataItem item : targetFolder)
     {
-      res = new TimeSeriesDouble(name, units);
-      targetFolder.add(res);
-    }
-
-    return res;
-  }
-
-  private TimeSeriesDouble getDataset(DataFolder folder, String name, String units)
-  {
-    TimeSeriesDouble res = null;
-
-    for (DataItem item : folder)
-    {
-      if (item.getName().equals(name) && (item instanceof TimeSeriesDouble))
+      if (item.getName().equals(name))
       {
-        res = (TimeSeriesDouble) item;
+        res = item;
         break;
       }
     }
 
+    // did it find it?
     if (res == null)
     {
-      res = new TimeSeriesDouble(name, units);
-      folder.add(res);
+      res = helper.createTarget(name, units);
+      targetFolder.add(res);
     }
 
     return res;

@@ -28,6 +28,29 @@ public class DataFolder extends ArrayList<DataItem> implements DataItem,
     this(DEFAULT_NAME);
   }
 
+  public static interface DatasetOperator
+  {
+    void process(TimeSeriesCore dataset);
+  }
+  
+  public void walkThisDataset(DatasetOperator operator)
+  {
+    for(DataItem item: this)
+    {
+      if(item instanceof TimeSeries2Double)
+      {
+        TimeSeriesCore ts = (TimeSeriesCore) item;
+        operator.process(ts);
+      }
+      else if(item instanceof DataFolder)
+      {
+        DataFolder folder = (DataFolder) item;
+        folder.walkThisDataset(operator);
+      }
+    }
+  }
+  
+  
   @Override
   public boolean add(DataItem item)
   {
