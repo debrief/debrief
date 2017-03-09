@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import junit.framework.TestCase;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import MWC.GUI.BaseLayer;
@@ -112,16 +112,16 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     }
 
     // find the dataset
-    CoreDataset dataset = findDataset(dataFolder, folder, dataset_name, units);
+    TimeSeriesDouble dataset = findDataset(dataFolder, folder, dataset_name, units);
 
     // add the measurement
     dataset.add(theDate.getDate().getTime(), measurement);
   }
 
-  private CoreDataset findDataset(DataFolder parent, String folder,
+  private TimeSeriesDouble findDataset(DataFolder parent, String folder,
       String name, String units)
   {
-    CoreDataset res = null;
+    TimeSeriesDouble res = null;
 
     DataFolder targetFolder = parent;
 
@@ -148,29 +148,29 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
     // did it find it?
     if (res == null)
     {
-      res = new CoreDataset(name, units);
+      res = new TimeSeriesDouble(name, units);
       targetFolder.add(res);
     }
 
     return res;
   }
 
-  private CoreDataset getDataset(DataFolder folder, String name, String units)
+  private TimeSeriesDouble getDataset(DataFolder folder, String name, String units)
   {
-    CoreDataset res = null;
+    TimeSeriesDouble res = null;
 
     for (DataItem item : folder)
     {
-      if (item.getName().equals(name) && (item instanceof CoreDataset))
+      if (item.getName().equals(name) && (item instanceof TimeSeriesDouble))
       {
-        res = (CoreDataset) item;
+        res = (TimeSeriesDouble) item;
         break;
       }
     }
 
     if (res == null)
     {
-      res = new CoreDataset(name, units);
+      res = new TimeSeriesDouble(name, units);
       folder.add(res);
     }
 
@@ -238,7 +238,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       topF.printAll();
 
       DataFolder subF = (DataFolder) topF.get("Modules");
-      CoreDataset dataset = (CoreDataset) subF.get("Fore");
+      TimeSeriesDouble dataset = (TimeSeriesDouble) subF.get("Fore");
       assertEquals("has items", 1, dataset.size());
 
       handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore",

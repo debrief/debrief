@@ -20,7 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
 /**
@@ -54,9 +54,9 @@ abstract public class DataFolderHandler extends
         final DataFolder childFolder = (DataFolder) child;
         exportThisFolder(childFolder, df, doc);
       }
-      else if (child instanceof CoreDataset)
+      else if (child instanceof TimeSeriesDouble)
       {
-        final CoreDataset childD = (CoreDataset) child;
+        final TimeSeriesDouble childD = (TimeSeriesDouble) child;
         DatasetHandler.exportThisDataset(childD, df, doc);
       }
     }
@@ -88,7 +88,7 @@ abstract public class DataFolderHandler extends
     addHandler(new DatasetHandler()
     {
       @Override
-      public void addDataset(final CoreDataset dataset)
+      public void addDataset(final TimeSeriesDouble dataset)
       {
         _folder.add(dataset);
       }

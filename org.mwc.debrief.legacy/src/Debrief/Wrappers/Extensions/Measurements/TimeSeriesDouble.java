@@ -5,12 +5,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CoreDataset implements DataItem, Serializable
+/** time series that stores double measurements
+ * 
+ * @author ian
+ *
+ */
+public class TimeSeriesDouble implements DataItem, Serializable
 {
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
+  
+  /** track the parent folder. It's transient since the parent
+   * gets assigned as part of XML restore
+   */
   private transient DataFolder _parent;
 
   private final List<Long> _indices = new ArrayList<Long>();
@@ -18,7 +27,7 @@ public class CoreDataset implements DataItem, Serializable
   private final String _name;
   private final String _units;
 
-  public CoreDataset(final String name, final String units)
+  public TimeSeriesDouble(final String name, final String units)
   {
     _name = name;
     _units = units;

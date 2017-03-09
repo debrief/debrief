@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 import junit.framework.TestCase;
 
-import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import MWC.GUI.Editable;
 
 public class DatasetWrapper implements Editable, Serializable
@@ -53,11 +53,11 @@ public class DatasetWrapper implements Editable, Serializable
     }
     
     
-    final CoreDataset _data;
+    final TimeSeriesDouble _data;
     
     private transient DatasetWrapperInfo _myEditor = null;
 
-    public DatasetWrapper(final CoreDataset folder)
+    public DatasetWrapper(final TimeSeriesDouble folder)
     {
       _data = folder;
     }
@@ -114,8 +114,8 @@ public class DatasetWrapper implements Editable, Serializable
     {
       public void testSerialise()
       {
-        CoreDataset original =
-            new CoreDataset("Data", "Seconds");
+        TimeSeriesDouble original =
+            new TimeSeriesDouble("Data", "Seconds");
 
         original.add(12L, 100d);
         original.add(15L, 200d);
@@ -159,7 +159,7 @@ public class DatasetWrapper implements Editable, Serializable
 
     }
 
-    public CoreDataset getDataset()
+    public TimeSeriesDouble getDataset()
     {
       return _data;
     }

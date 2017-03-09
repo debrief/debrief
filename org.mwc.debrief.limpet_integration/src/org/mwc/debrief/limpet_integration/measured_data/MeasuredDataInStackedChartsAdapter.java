@@ -28,7 +28,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 
-import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.DebriefColors;
@@ -83,7 +83,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        CoreDataset cd = ds.getDataset();
+        TimeSeriesDouble cd = ds.getDataset();
         res = true;
       }
     }
@@ -102,14 +102,14 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        CoreDataset cd = ds.getDataset();
+        TimeSeriesDouble cd = ds.getDataset();
         res = true;
       }
     }
     return res;
   }
 
-  private void DoDataset(CoreDataset cd, ProcessHelper helper,
+  private void DoDataset(TimeSeriesDouble cd, ProcessHelper helper,
       StackedchartsFactory factory)
   {
     // sort out a name
@@ -154,7 +154,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       if (ed instanceof DatasetWrapper)
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
-        CoreDataset cd = ds.getDataset();
+        TimeSeriesDouble cd = ds.getDataset();
         final StackedchartsFactory factory = new StackedchartsFactoryImpl();
         final Dataset dataset = factory.createDataset();
 
@@ -215,7 +215,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       if (ed instanceof DatasetWrapper)
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
-        CoreDataset cd = ds.getDataset();
+        TimeSeriesDouble cd = ds.getDataset();
         final StackedchartsFactoryImpl factory = new StackedchartsFactoryImpl();
         final ScatterSet dataset = factory.createScatterSet();
 

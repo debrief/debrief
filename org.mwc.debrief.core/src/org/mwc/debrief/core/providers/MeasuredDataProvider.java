@@ -8,7 +8,7 @@ import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 import org.mwc.debrief.core.providers.measured_data.FolderWrapper;
 
 import Debrief.Wrappers.Extensions.ExtensionContentProvider;
-import Debrief.Wrappers.Extensions.Measurements.CoreDataset;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import MWC.GUI.Editable;
@@ -40,9 +40,9 @@ public class MeasuredDataProvider implements ExtensionContentProvider, Serializa
           final DataFolder df = (DataFolder) item;
           plottable = new FolderWrapper(df);
         }
-        else if (item instanceof CoreDataset)
+        else if (item instanceof TimeSeriesDouble)
         {
-          final CoreDataset set = (CoreDataset) item;
+          final TimeSeriesDouble set = (TimeSeriesDouble) item;
           plottable = new DatasetWrapper(set);
         }
         else
