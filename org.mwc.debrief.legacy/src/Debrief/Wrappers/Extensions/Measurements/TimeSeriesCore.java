@@ -13,6 +13,12 @@ abstract public class TimeSeriesCore implements DataItem, Serializable
    */
   private static final long serialVersionUID = 1L;
 
+  /** value used to indicate an invalid index
+   * 
+   */
+  public static int INVALID_INDEX = -1;
+ 
+  
   /**
    * track the parent folder. It's transient since the parent gets assigned as part of XML restore
    */
@@ -25,6 +31,27 @@ abstract public class TimeSeriesCore implements DataItem, Serializable
   {
     _name = name;
     _units = units;
+  }
+  
+  /** get the index on (or after) the specified time
+   * 
+   * @param time
+   * @return
+   */
+  public int getIndexNearestTo(long time)
+  {
+    int ctr = 0;
+    for(Long val: _indices)
+    {
+      if(val >= time)
+      {
+        return ctr;
+      }
+      ctr++;
+    }
+    
+    // ok, didn't work. return negative index
+    return INVALID_INDEX;
   }
 
   /**
@@ -71,4 +98,16 @@ abstract public class TimeSeriesCore implements DataItem, Serializable
     return _indices.size();
   }
 
+  public String getPath()
+  {
+    String name = "";
+    DataFolder parent = this.getParent();
+    while (parent != null)
+    {
+      name += parent.getName() + " // ";
+      parent = parent.getParent();
+    }
+    name += getName();
+    return name;
+  }
 }

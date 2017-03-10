@@ -46,6 +46,17 @@ public class TimeSeries2Double extends TimeSeriesCore
   {
     return _values2.iterator();
   }
+  
+  public double getValue1At(final int index)
+  {
+    return _values1.get(index);
+  }
+
+  
+  public double getValue2At(final int index)
+  {
+    return _values2.get(index);
+  }
 
   public String getValue1Name()
   {
