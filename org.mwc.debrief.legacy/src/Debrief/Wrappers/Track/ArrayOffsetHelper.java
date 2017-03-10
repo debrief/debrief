@@ -167,8 +167,14 @@ public class ArrayOffsetHelper
       // now try get the location from the measured dataset
 
       // do we know the host location?
-      if(hostLocation == null)
+      if(hostLocation != null)
       {
+        // ok, get calculating
+        centre =
+            sensor.getMeasuredLocationAt(meas, time, hostLocation);
+      }
+      else
+      {        
         // ok, we'll have to find it
         Watchable[] matches = track.getNearestTo(time);
         if(matches.length == 1)
@@ -182,11 +188,6 @@ public class ArrayOffsetHelper
           centre = null;
         }
       }
-      else
-      {
-        centre = null;
-      }
-      
     }
     
     return centre;
