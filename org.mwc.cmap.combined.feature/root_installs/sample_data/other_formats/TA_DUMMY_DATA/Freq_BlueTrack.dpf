@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Fri Mar 10 12:15:51 GMT 2017" Name="Debrief Plot" PlotId="1489148128750">
+<plot xmlns="http://www.debrief.info/plot" Created="Fri Mar 10 13:57:10 GMT 2017" Name="Debrief Plot" PlotId="1489148128750">
 <details Text="Saved with Debrief version dated Thu Mar 09 14:45:43 GMT 2017"/>
 <session>
 <layers>
-<track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="3" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="3" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="true" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="false" WormInHole="true">
+<sensor ArrayMode="Worm in hole" LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="true">
 <colour Value="BLUE"/>
+<Offset Units="m" Value="-400.0000000"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-153.500" Dtg="100112 120000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2000000" Long="0.2000000"/>
@@ -735,8 +736,9 @@
 </centre>
 </sensor_contact>
 </sensor>
-<sensor LineThickness="1" Name="NB_FREQ" TrackName="SENSOR" Visible="false" WormInHole="true">
+<sensor ArrayMode="Worm in hole" LineThickness="1" Name="NB_FREQ" TrackName="SENSOR" Visible="true">
 <colour Value="BLUE"/>
+<Offset Units="m" Value="-800.0000000"/>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 120000" Frequency="149.589" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 120050" Frequency="149.842" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 120140" Frequency="150.272" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
@@ -883,8 +885,9 @@
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 135910" Frequency="149.116" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 140000" Frequency="149.115" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 </sensor>
-<sensor LineThickness="1" Name="TA_ARRAY" TrackName="" Visible="false" WormInHole="true">
+<sensor ArrayMode="Centre of Gravity // Measurements // XY" LineThickness="1" Name="TA_ARRAY" TrackName="SENSOR" Visible="true">
 <colour CustomBlue="0" CustomGreen="255" CustomRed="255" Value="custom"/>
+<Offset Units="m" Value="-1400.0000000"/>
 <AdditionalData>
 <DataFolder Name="Measurements">
 <DataFolder Name="Centre of Gravity">
@@ -3872,7 +3875,7 @@
 </DataFolder>
 </AdditionalData>
 </sensor>
-<TrackSegment LineStyle="Solid" Name="121200.00" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix ArrowShowing="false" Course="40.000" Dtg="100112 120000" Label="121200" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2000000" Long="0.2000000"/>
@@ -4604,7 +4607,7 @@
 <colour Value="RED"/>
 <SymbolColor Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<TrackSegment LineStyle="Solid" Name="121200.00" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix ArrowShowing="false" Course="320.000" Dtg="100112 120000" Label="121200" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="60.0000000" Long="-0.0000000"/>
@@ -5335,10 +5338,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="86.300" Lat="60.3200963" Long="-0.2774713"/>
+<shortLocation Depth="0.000" Lat="60.1834262" Long="0.0093172"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.9697620" Long="0.3904268"/>
+<shortLocation Depth="0.000" Lat="60.1277597" Long="0.1181086"/>
 </br>
 </projection>
 <gui>
@@ -5355,7 +5358,7 @@
 <property Name="Arc_Finish" Value="180"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="100112 120000"/>
+<property Name="CurrentTime" Value="100112 124557"/>
 <property Name="NumRings" Value="3"/>
 <property Name="PointSize" Value="5"/>
 <property Name="LargeStep" Value="10.0 minutes"/>
