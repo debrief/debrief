@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -249,16 +250,22 @@ final class SnailDrawSWTTrack
 							final ArrayLength len = sw.getSensorOffset();
 							if (len != null) {
 								if (len.getValue() != 0) {
-									final WorldLocation centre = trk
-											.getBacktraceTo(dtg,
-													len, sw.getWormInHole()).getLocation();
-									final Point pt = dest.toScreen(centre);
-									dest.drawLine(pt.x - _mySize, pt.y
-											- _mySize, pt.x + _mySize, pt.y
-											+ _mySize);
-									dest.drawLine(pt.x + _mySize, pt.y
-											- _mySize, pt.x - _mySize, pt.y
-											+ _mySize);
+								  
+		              final WorldLocation centre = sw.getArrayCentre(dtg, watch, trk);
+		              if(centre != null)
+		              {
+	                  final Point pt = dest.toScreen(centre);
+	                  dest.drawLine(pt.x - _mySize, pt.y
+	                      - _mySize, pt.x + _mySize, pt.y
+	                      + _mySize);
+	                  dest.drawLine(pt.x + _mySize, pt.y
+	                      - _mySize, pt.x - _mySize, pt.y
+	                      + _mySize);
+		              }
+		              else
+		              {
+		                Application.logStack2(Application.ERROR, "Unable to determine array centre for:" + sw.getName());
+		              }
 								}
 							}
 						}
