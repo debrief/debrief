@@ -202,8 +202,9 @@ public interface SWTPlotHighlighter extends Editable
                 sensorColor = fw.getColor().brighter();
                 dest.setColor(sensorColor);
               }
-             
-              final WorldLocation centre = sw.getArrayCentre(fw.getTime(), watch, tw);
+
+              final WorldLocation centre =
+                  sw.getArrayCentre(fw.getTime(), watch.getLocation(), tw);
 
               // have we managed it?
               if (centre != null)
