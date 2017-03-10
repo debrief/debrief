@@ -28,6 +28,9 @@ import org.xml.sax.Attributes;
 
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.SensorWrapper.ArrayCentreMode;
+import Debrief.Wrappers.SensorWrapper.LegacyModes;
 import Debrief.Wrappers.Extensions.AdditionalData;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
@@ -39,6 +42,7 @@ abstract public class SensorHandler extends
 {
 	Debrief.Wrappers.SensorWrapper _mySensor;
 	private static final String WORM_IN_HOLE = "WormInHole";
+  private static final String ARRAY_MODE = "ArrayMode";
 
 	private static final String OFFSET = "Offset";
 	private static final String BASE_FREQUENCY = "BaseFrequency";
@@ -121,9 +125,34 @@ abstract public class SensorHandler extends
 			@Override
 			public void setValue(final String name, final boolean value)
 			{
-				_mySensor.setWormInHole(value);
+			  // decide which legacy mode to use
+			  final LegacyModes mode = value ? LegacyModes.WORM : LegacyModes.PLAIN;
+				_mySensor.setArrayCentreMode(mode);
 			}
 		});
+    addAttributeHandler(new HandleAttribute(ARRAY_MODE)
+    {
+      @Override
+      public void setValue(final String name, final String value)
+      {
+        final ArrayCentreMode mode;
+        // ok, handle the string
+        if(LegacyModes.PLAIN.asString().equals(value))
+        {
+          mode = LegacyModes.PLAIN;
+        }
+        else if(LegacyModes.WORM.asString().equals(value))
+        {
+          mode = LegacyModes.WORM;
+        }
+        else
+        {
+          // ok, it must be a datset name
+          mode = new SensorWrapper.DeferredDatasetArrayMode(value);
+        }
+        _mySensor.setArrayCentreMode(mode);
+      }
+    });
 		
 		// and one for any additional data
 		addHandler(new AdditionalDataHandler()
@@ -195,11 +224,8 @@ abstract public class SensorHandler extends
 		}
 
 		// and the worm in the hole indicator?
-		final Boolean wormy = sensor.getWormInHole();
-		if (wormy != null)
-		{
-			trk.setAttribute(WORM_IN_HOLE, writeThis(wormy));
-		}
+		ArrayCentreMode mode = sensor.getArrayCentreMode();
+		trk.setAttribute(ARRAY_MODE, mode.asString());
 
 		// do we have a base frequency?
 		final double baseF = sensor.getBaseFrequency();
