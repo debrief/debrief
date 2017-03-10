@@ -66,9 +66,8 @@ import java.beans.PropertyEditorSupport;
 import java.util.List;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.Wrappers.SensorWrapper;
-import Debrief.Wrappers.SensorWrapper.ArrayCentreMode;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
+import Debrief.Wrappers.Track.ArrayOffsetHelper;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
 
 /**
  * class to provide list of time frequencies, together with ALL value
@@ -84,7 +83,7 @@ public class ArrayCentreModePropertyEditor extends PropertyEditorSupport
   /**
    * the currently selected frequency (in micros)
    */
-  protected ArrayCentreMode _myMode = SensorWrapper.LegacyModes.WORM;
+  protected ArrayCentreMode _myMode = ArrayOffsetHelper.LegacyArrayOffsetModes.WORM;
 
   @Override
   public String[] getTags()
