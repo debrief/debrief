@@ -63,6 +63,12 @@
 package Debrief.Tools.Properties;
 
 import java.beans.PropertyEditorSupport;
+import java.util.List;
+
+import Debrief.GUI.Frames.Application;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.SensorWrapper.ArrayCentreMode;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
 
 /**
  * class to provide list of time frequencies, together with ALL value
@@ -70,22 +76,47 @@ import java.beans.PropertyEditorSupport;
 public class ArrayCentreModePropertyEditor extends PropertyEditorSupport
 {
 
+  /** the array centres for the current object
+   * 
+   */
+  private static List<ArrayCentreMode> _arrayCentres;
+  
   /**
    * the currently selected frequency (in micros)
    */
-  protected String _myMode = "BASIC";
+  protected ArrayCentreMode _myMode = SensorWrapper.LegacyModes.WORM;
 
-
+  @Override
   public String[] getTags()
   {
-    return new String[]{"BASIC", "WORM", "EXT"};
+    final String[] allTags;
+    if(_arrayCentres != null)
+    {
+      // ok, build up the list
+      allTags = new String[_arrayCentres.size()];
+      for(int i=0;i<_arrayCentres.size();i++)
+      {
+        allTags[i] = _arrayCentres.get(i).asString();
+      }
+    }
+    else
+    {
+      Application.logStack2(Application.ERROR,
+          "The array modes have not been set. We can't produce a proper list");
+      allTags = new String[]
+      {"Broken: centre modes not found"};
+    }
+    
+    return allTags;
   }
 
+  @Override
   public Object getValue()
   {
     return _myMode;
   }
 
+  @Override
   public void setValue(final Object p1)
   {
     if (p1 instanceof String)
@@ -93,16 +124,44 @@ public class ArrayCentreModePropertyEditor extends PropertyEditorSupport
       final String val = (String) p1;
       setAsText(val);
     }
+    else if(p1 instanceof ArrayCentreMode)
+    {
+      ArrayCentreMode td = (ArrayCentreMode) p1;
+      _myMode = td;
+    }
+    else if(p1 instanceof Integer)
+    {
+      _myMode = _arrayCentres.get((int) p1);
+    }
   }
 
+  @Override
   public void setAsText(final String val)
   {
-    _myMode = val;
+    // ok, loop though modes, to fine match
+    for(final ArrayCentreMode t: _arrayCentres)
+    {
+      if(t.asString().equals(val))
+      {
+        _myMode = t;
+        break;
+      }
+    }
   }
 
+  @Override
   public String getAsText()
   {
-    return _myMode;
+    return _myMode.asString();
+  }
+
+  /** we wish to allow some modes that have been taken from the
+   * subject sensor. They get set here
+   * @param arrayCentres
+   */
+  public static void setCustomModes(List<ArrayCentreMode> arrayCentres)
+  {
+    _arrayCentres = arrayCentres;
   }
 }
 
