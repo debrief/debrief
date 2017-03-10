@@ -28,10 +28,10 @@ import org.xml.sax.Attributes;
 
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
-import Debrief.Wrappers.SensorWrapper.ArrayCentreMode;
-import Debrief.Wrappers.SensorWrapper.LegacyModes;
 import Debrief.Wrappers.Extensions.AdditionalData;
+import Debrief.Wrappers.Track.ArrayOffsetHelper;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -126,7 +126,7 @@ abstract public class SensorHandler extends
 			public void setValue(final String name, final boolean value)
 			{
 			  // decide which legacy mode to use
-			  final LegacyModes mode = value ? LegacyModes.WORM : LegacyModes.PLAIN;
+			  final LegacyArrayOffsetModes mode = value ? LegacyArrayOffsetModes.WORM : LegacyArrayOffsetModes.PLAIN;
 				_mySensor.setArrayCentreMode(mode);
 			}
 		});
@@ -137,18 +137,19 @@ abstract public class SensorHandler extends
       {
         final ArrayCentreMode mode;
         // ok, handle the string
-        if(LegacyModes.PLAIN.asString().equals(value))
+        if(LegacyArrayOffsetModes.PLAIN.asString().equals(value))
         {
-          mode = LegacyModes.PLAIN;
+          mode = LegacyArrayOffsetModes.PLAIN;
         }
-        else if(LegacyModes.WORM.asString().equals(value))
+        else if(LegacyArrayOffsetModes.WORM.asString().equals(value))
         {
-          mode = LegacyModes.WORM;
+          mode = LegacyArrayOffsetModes.WORM;
         }
         else
         {
           // ok, it must be a datset name
-          mode = new SensorWrapper.DeferredDatasetArrayMode(value);
+          mode = new 
+              ArrayOffsetHelper.DeferredDatasetArrayMode(value);
         }
         _mySensor.setArrayCentreMode(mode);
       }
@@ -213,14 +214,15 @@ abstract public class SensorHandler extends
 		trk.setAttribute("LineThickness", writeThis(sensor.getLineThickness()));
 		ColourHandler.exportColour(sensor.getColor(), trk, doc);
 
-		// do we have an offset?
-		final WorldDistance theOFfset = sensor.getSensorOffset();
-		if (theOFfset != null)
+		// do we have an offset?  It's only used for legacy modes,
+		// but we may as well store it anyway.
+		final WorldDistance theOffset = sensor.getSensorOffset();
+		if (theOffset != null)
 		{
 			// check it has a legitimate value
-			if (theOFfset.getValue() != 0)
+			if (theOffset.getValue() != 0)
 				MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler
-						.exportDistance(OFFSET, theOFfset, trk, doc);
+						.exportDistance(OFFSET, theOffset, trk, doc);
 		}
 
 		// and the worm in the hole indicator?
