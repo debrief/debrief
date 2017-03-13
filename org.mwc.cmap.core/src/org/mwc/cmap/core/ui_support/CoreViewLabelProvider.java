@@ -31,6 +31,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
@@ -245,51 +247,86 @@ public class CoreViewLabelProvider extends LabelProvider implements
               final org.eclipse.swt.graphics.Color thisColor =
                   ColorHelper.getColor(jColor);
 
-              newGC.setBackground(thisColor);
+              
+              
+              boolean foundInfill = false;
+        	  {// infill color 
+        		newGC.setForeground(thisColor);  
+              	ImageData data = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor).getImageData();
+					PaletteData palette = data.palette;
+              	if (palette.isDirect) {
+              		for (int y = 0; y < data.height; y++) {
+              			for (int x = 0; x < data.width; x++) {
+              				int pixel = data.getPixel(x, y);
+              				RGB rgb = palette.getRGB(pixel);
+              				//match blue shades 
+              				if((rgb.red<40 && rgb.red>25 ) && (rgb.green<65 && rgb.green>45 ) &&  (rgb.blue<105 && rgb.blue>85 ))
+              				{
+              					foundInfill = true;
+              					newGC.drawPoint(x, y);
+              				}
+//              				else
+//              				{
+//              				System.out.println("X="+x+" : Y="+y+" :"+rgb);
+//              				}
+              			    
+              			}
+              		}
+              	} 
 
-              // apply a color wash
-              // Linux/Mac doesn't fill transparent color properly. The
-              // following is workaround.
-              if (Platform.OS_LINUX.equals(Platform.getOS())
-                  || Platform.OS_MACOSX.equals(Platform.getOS()))
-              {
-                ImageData data = res.getImageData();
-                // we recognize two transparency types
-                if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL
-                    || data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
-                {
-                  for (int i = 0; i < wid; i++)
+              }
+        	  //no infill found fill full color 
+        	  if(!foundInfill)
+        	  {
+        		  newGC.setBackground(thisColor);
+
+                  // apply a color wash
+                  // Linux/Mac doesn't fill transparent color properly. The
+                  // following is workaround.
+                  if (Platform.OS_LINUX.equals(Platform.getOS())
+                      || Platform.OS_MACOSX.equals(Platform.getOS()))
                   {
-                    for (int j = 0; j < ht; j++)
+                    ImageData data = res.getImageData();
+                    // we recognize two transparency types
+                    if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL
+                        || data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
                     {
-                      if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL)
+                      for (int i = 0; i < wid; i++)
                       {
-                        if (data.getPixel(i, j) > 0)
+                        for (int j = 0; j < ht; j++)
                         {
-                          newGC.fillRectangle(i, j, 1, 1);
-                        }
-                      }
-                      else if (data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
-                      {
-                        if (data.getAlpha(i, j) > 0)
-                        {
-                          newGC.fillRectangle(i, j, 1, 1);
+                          if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL)
+                          {
+                            if (data.getPixel(i, j) > 0)
+                            {
+                              newGC.fillRectangle(i, j, 1, 1);
+                            }
+                          }
+                          else if (data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
+                          {
+                            if (data.getAlpha(i, j) > 0)
+                            {
+                              newGC.fillRectangle(i, j, 1, 1);
+                            }
+                          }
                         }
                       }
                     }
+                    else
+                    {
+                      // display solid color icon
+                      newGC.fillRectangle(0, 0, wid, ht);
+                    }
                   }
-                }
-                else
-                {
-                  // display solid color icon
-                  newGC.fillRectangle(0, 0, wid, ht);
-                }
-              }
-              else
-              {
-                // Windows
-                newGC.fillRectangle(0, 0, wid, ht);
-              }
+                  else
+                  {
+                	  // Windows
+                		  newGC.fillRectangle(0, 0, wid, ht);
+                  }
+        	  }
+              
+              
+              
 
               // and dispose the GC
               newGC.dispose();
