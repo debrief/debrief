@@ -250,7 +250,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
               
               
               boolean foundInfill = false;
-        	  {// infill color RGB {224, 28, 62}
+        	  {// infill color 
         		newGC.setForeground(thisColor);  
               	ImageData data = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor).getImageData();
 					PaletteData palette = data.palette;
@@ -259,12 +259,17 @@ public class CoreViewLabelProvider extends LabelProvider implements
               			for (int x = 0; x < data.width; x++) {
               				int pixel = data.getPixel(x, y);
               				RGB rgb = palette.getRGB(pixel);
-              				if(rgb.red==224&&rgb.green==28&& rgb.blue==62)
+              				//match blue shades 
+              				if((rgb.red<40 && rgb.red>25 ) && (rgb.green<65 && rgb.green>45 ) &&  (rgb.blue<105 && rgb.blue>85 ))
               				{
               					foundInfill = true;
               					newGC.drawPoint(x, y);
               				}
-              			    //System.out.println("X="+x+" : Y="+y+" :"+rgb);
+//              				else
+//              				{
+//              				System.out.println("X="+x+" : Y="+y+" :"+rgb);
+//              				}
+              			    
               			}
               		}
               	} 
