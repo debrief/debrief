@@ -198,6 +198,10 @@ public class SwingToolbar extends JToolBar implements Toolbar {
           final ImageIcon im = new ImageIcon(imLoc);
           theBtn = new SwingToolbarButton(theTool, im);
         }
+        else
+        {
+          System.err.println("Failed to load image:" + val);
+        }
       }
 			else
 			{
