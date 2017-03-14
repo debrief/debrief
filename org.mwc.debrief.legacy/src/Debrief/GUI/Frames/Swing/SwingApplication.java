@@ -929,7 +929,7 @@ public final class SwingApplication extends Application
   void helpAbout()
   {
     // show the help text
-    String msg = getName() + ", from the Maritime Warfare Centre";
+    String msg = getName() + ", from Deep Blue C Ltd";
     msg += System.getProperties().getProperty("line.separator");
     msg += "Build date: " + Debrief.GUI.VersionInfo.getVersion();
 
@@ -955,7 +955,7 @@ public final class SwingApplication extends Application
       super.setBackground(new Color(184, 184, 184));
 
       this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED),
-                                                      "From the Maritime Warfare Centre and PlanetMayo Ltd",
+                                                      "From Deep Blue C Ltd (www.DeepBlueC.com)",
                                                       TitledBorder.RIGHT, TitledBorder.ABOVE_BOTTOM, this.getFont(), Color.darkGray));
 
       // load the image
