@@ -232,8 +232,10 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Operations.*;
 import MWC.GUI.*;
+import MWC.GUI.Dialogs.ApplicationProperties;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.Tools.*;
 import MWC.Utilities.Errors.Trace;
@@ -323,16 +325,29 @@ public abstract class Application implements ToolParent, ActionListener,
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
+		
+    // and give the app properties some initial values - mostly
+    // ones that have sensible defaults in DebriefNG
+    initProps(_appProps);
 
 		_singleton = this;
 
 		// create drag/drop support for this class, so that the user can
 		// drop .rep files onto the plto
 		_dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF");
-
+		
+		// ok, do some more initialisation
+		ImportReplay.initialise(this);
+		
 	}
 
-	protected final void completeInitialisation()
+	private void initProps(ApplicationProperties appProps)
+  {
+	  appProps.setProperty(ImportReplay.TRACK_IMPORT_MODE, ImportReplay.IMPORT_AS_OTG);
+    appProps.setProperty(ImportReplay.RESAMPLE_FREQUENCY, "0");
+  }
+
+  protected final void completeInitialisation()
 	{
 		if (_mru != null)
 			_mru.addActionListener(this);
