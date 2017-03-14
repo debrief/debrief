@@ -33,6 +33,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.core.DebriefPlugin;
 
+import Debrief.Wrappers.Extensions.AdditionalData;
 import Debrief.Wrappers.Extensions.AdditionalProvider;
 import Debrief.Wrappers.Extensions.AdditionalProviderWrapper;
 import Debrief.Wrappers.Extensions.ExtensionContentProvider;
@@ -153,14 +154,20 @@ public class ViewContentProvider implements IStructuredContentProvider,
         if (thisL instanceof AdditionalProvider)
         {
           AdditionalProvider container = (AdditionalProvider) thisL;
+          AdditionalData additionalData = container.getAdditionalData();
 
-          // ok, we need to wrap this container
-          Editable addData =
-              new AdditionalProviderWrapper(container.getAdditionalData(),
-                  getContentProviderExtensions());
-          EditableWrapper pw = new EditableWrapper(addData, pl, pl.getLayers());
-          list.add(pw);
-        }
+          // and is there any additional data?
+          if (additionalData.size() > 0)
+          {
+            // ok, we need to wrap this container
+            Editable addData =
+                new AdditionalProviderWrapper(additionalData,
+                    getContentProviderExtensions());
+            EditableWrapper pw =
+                new EditableWrapper(addData, pl, pl.getLayers());
+            list.add(pw);
+          }
+       }
 
         // ok, done.
         res = list.toArray();
