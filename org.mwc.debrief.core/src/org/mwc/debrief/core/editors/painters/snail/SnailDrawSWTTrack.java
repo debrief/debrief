@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -32,7 +33,6 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -244,24 +244,25 @@ final class SnailDrawSWTTrack
 						final SensorWrapper sw = (SensorWrapper) enumer
 								.nextElement();
 
-						// is this sensor visible?
-						if (sw.getVisible()) {
-							final ArrayLength len = sw.getSensorOffset();
-							if (len != null) {
-								if (len.getValue() != 0) {
-									final WorldLocation centre = trk
-											.getBacktraceTo(dtg,
-													len, sw.getWormInHole()).getLocation();
-									final Point pt = dest.toScreen(centre);
-									dest.drawLine(pt.x - _mySize, pt.y
-											- _mySize, pt.x + _mySize, pt.y
-											+ _mySize);
-									dest.drawLine(pt.x + _mySize, pt.y
-											- _mySize, pt.x - _mySize, pt.y
-											+ _mySize);
-								}
-							}
-						}
+            // is this sensor visible?
+            if (sw.getVisible())
+            {
+              final WorldLocation centre =
+                  sw.getArrayCentre(dtg, watch.getLocation(), trk);
+              if (centre != null)
+              {
+                final Point pt = dest.toScreen(centre);
+                dest.drawLine(pt.x - _mySize, pt.y - _mySize, pt.x + _mySize,
+                    pt.y + _mySize);
+                dest.drawLine(pt.x + _mySize, pt.y - _mySize, pt.x - _mySize,
+                    pt.y + _mySize);
+              }
+              else
+              {
+                Application.logStack2(Application.ERROR,
+                    "Unable to determine array centre for:" + sw.getName());
+              }
+            }
 					}
 				}
 				

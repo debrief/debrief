@@ -33,7 +33,7 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
 
     // skip the comment identifier
     st.nextToken();
-    
+
     // combine the date, a space, and the time
     final String dateToken = st.nextToken();
     final String timeToken = st.nextToken();
@@ -56,9 +56,10 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
       depth = Double.valueOf(st.nextToken());
 
       // ok, try to store the measurement
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "X", "m", theDate, x);
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Y", "m", theDate, y);
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Z", "m", theDate, depth);
+      storeMeasurement2D(platform_name, sensor_name, CENTRE_OF_GRAVITY, "XY",
+          "m", theDate, "x", "y", x, y);
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Z", "m",
+          theDate, depth);
 
       return null;
 

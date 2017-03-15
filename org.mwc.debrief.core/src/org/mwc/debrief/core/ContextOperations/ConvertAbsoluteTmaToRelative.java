@@ -104,18 +104,22 @@ public class ConvertAbsoluteTmaToRelative implements
     protected static RelativeTMASegment createSegment(Layers layers,
         SuitableSegment seg, TrackWrapper track, AbsoluteTMASegment absSegment,
         SensorWrapper sensor)
-    {
+    {      
+      final HiResDate startTime = absSegment.getDTG_Start();
+
       // sort out the offset
-      final WorldLocation tOrigin =
-          track.getBacktraceTo(absSegment.getDTG_Start(),
-              sensor.getSensorOffset(), sensor.getWormInHole()).getLocation();
+      final WorldLocation sensorOrigin = sensor.getArrayCentre(startTime, null, track);
+
+      // here is the previous version, which only worked for legacy array mode types
+      // final WorldLocation sensorOrigin =
+      // track.getBacktraceTo(absSegment.getDTG_Start(),
+      // sensor.getSensorOffset(), sensor.getWormInHole()).getLocation();
 
       final WorldLocation sOrigin = absSegment.getTrackStart();
 
-      final WorldVector offset = sOrigin.subtract(tOrigin);
+      final WorldVector offset = sOrigin.subtract(sensorOrigin);
       
       // create the relative segment
-      final HiResDate startTime = absSegment.getDTG_Start();
       final HiResDate endTime = absSegment.getDTG_End();
       final Collection<Editable> dataPoints = absSegment.getData();
       RelativeTMASegment rSeg =

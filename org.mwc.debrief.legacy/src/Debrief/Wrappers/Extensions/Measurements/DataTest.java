@@ -42,7 +42,7 @@ public class DataTest extends TestCase
       bis.close();
       iis.close();
 
-      TimeSeriesDouble clone = (TimeSeriesDouble) oj;
+      TimeSeriesCore clone = (TimeSeriesCore) oj;
 
       clone.printAll();
     }
