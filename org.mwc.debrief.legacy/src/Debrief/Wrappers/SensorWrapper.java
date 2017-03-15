@@ -172,6 +172,7 @@ import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTi
 import Debrief.Tools.Properties.ArrayCentreModePropertyEditor;
 import Debrief.Wrappers.Extensions.AdditionalData;
 import Debrief.Wrappers.Extensions.AdditionalProvider;
+import Debrief.Wrappers.Extensions.AdditionalProvider.ExistingChildrenMayNeedToBeWrapped;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
@@ -196,7 +197,7 @@ import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class SensorWrapper extends TacticalDataWrapper implements
-    GriddableSeriesMarker, Cloneable, AdditionalProvider
+    GriddableSeriesMarker, Cloneable, AdditionalProvider, ExistingChildrenMayNeedToBeWrapped
 {
 
   /**
@@ -1446,6 +1447,21 @@ public class SensorWrapper extends TacticalDataWrapper implements
       TrackWrapper track)
   {
     return ArrayOffsetHelper.getArrayCentre(this, time, hostLocation, track);
+  }
+
+  @Override
+  public String getItemsName()
+  {
+    return "Cuts (" + this.size() + " items)";
+  }
+
+  @Override
+  public boolean childrenNeedWrapping()
+  {
+    // this is always true, since objects using a sensor-wrapper
+    // always expect the cuts to be returned from the
+    // elements() call
+    return true;
   }
 
 }
