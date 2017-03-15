@@ -104,7 +104,7 @@ abstract public class TimeSeriesCore implements DataItem, Serializable
     DataFolder parent = this.getParent();
     while (parent != null)
     {
-      name += parent.getName() + " // ";
+      name = parent.getName() + " // " + name;
       parent = parent.getParent();
     }
     name += getName();
