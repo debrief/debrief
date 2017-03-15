@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 
@@ -40,7 +41,7 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
   @Override
   public String getName()
   {
-    return "Additional data";
+    return DataFolder.DEFAULT_NAME;
   }
 
   public String toString()

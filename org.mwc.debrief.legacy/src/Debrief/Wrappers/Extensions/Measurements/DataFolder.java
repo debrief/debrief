@@ -17,7 +17,7 @@ public class DataFolder extends ArrayList<DataItem> implements DataItem,
    */
   private static final long serialVersionUID = 1L;
 
-  public static final String DEFAULT_NAME = "Measurements";
+  public static final String DEFAULT_NAME = "Additional data";
 
   private String _name;
 
