@@ -79,5 +79,9 @@
             class="org.mwc.debrief.limpet_integration.measured_data.MeasuredDataInStackedChartsAdapter">
       </provider>
    </extension>
+       <extension point="org.mwc.cmap.core.RightClickSupport">
+        <helper class="org.mwc.debrief.limpet_integration.measured_data.MeasuredDataInStackedChartsAdapter"/>
+    </extension>
+   
 
 </plugin>
