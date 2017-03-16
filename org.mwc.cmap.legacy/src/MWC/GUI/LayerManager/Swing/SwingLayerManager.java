@@ -641,7 +641,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		// find out which node is currently visible
 		final int[] selections = _myTree.getSelectionRows();
 		int cur = 0;
-		if (selections != null)
+		if (selections != null && selections.length > 0)
 			cur = _myTree.getSelectionRows()[0];
 
 		// create a new root element
@@ -661,8 +661,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		// and put the data into our existing tree
 		_myTree.setModel(tmp.getModel());
 
-		// highlight the existing selection again
-		_myTree.setSelectionRow(cur);
+		if(cur != 0)
+		{
+  		// highlight the existing selection again
+  		_myTree.setSelectionRow(cur);
+		}
 
 		// trigger a repaint
 		_myTree.invalidate();

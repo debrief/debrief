@@ -216,7 +216,7 @@ abstract public class PlainProjection implements Serializable, Editable
     if (_theVisibleDataArea == null)
     {
       // check we've got an area, not just a point
-      if (this.getDataArea().getWidth() != 0)
+      if (this.getDataArea() != null && this.getDataArea().getWidth() != 0)
       {
         // we'll have to recalculate it then!
         final WorldLocation origin = this.toWorld(new Point(0, 0));

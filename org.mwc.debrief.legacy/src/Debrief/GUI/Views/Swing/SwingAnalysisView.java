@@ -205,6 +205,7 @@ import Debrief.GUI.Frames.Swing.SwingSession;
 import Debrief.GUI.Tote.Swing.SwingStepControl;
 import Debrief.GUI.Views.AnalysisView;
 import MWC.GUI.Chart.Swing.SwingChart;
+import MWC.GUI.Dialogs.AWT.RowLayout;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Chart.Pan;
@@ -399,6 +400,8 @@ public class SwingAnalysisView extends AnalysisView
     // see which toolbar this is on
     final String toolbar = item.getMenuName();
 
+    
+    
     SwingToolbar thisToolbar = null;
 
     // check if we have a toolbar for this tool
@@ -408,8 +411,8 @@ public class SwingAnalysisView extends AnalysisView
     {
       // we obviously have to create this toolbar, go for it
       thisToolbar = new SwingToolbar(MWC.GUI.Toolbar.HORIZONTAL, toolbar, (SwingSession) super._theSession);
-      thisToolbar.setLayout(new GridLayout(1, 0));
-
+      thisToolbar.setLayout(new RowLayout());
+      thisToolbar.setMinimumSize(new Dimension(0, 0));
       // we also put it into a panel, to assist when its floating
       final JPanel jp = new JPanel();
       jp.setLayout(new BorderLayout());
