@@ -20,6 +20,8 @@ import info.limpet.stackedcharts.ui.view.adapter.IStackedTimeProvider;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +52,7 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
+import org.mwc.debrief.limpet_integration.LimpetInt_Activator;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
@@ -414,10 +417,11 @@ public class MeasuredDataInStackedChartsAdapter implements
 
     private final List<Editable> _subjects;
 
-    public ViewInChartsOperation(final String title, final List<Editable> res)
+    public ViewInChartsOperation(final String title,
+        final List<Editable> datasets)
     {
       super(title);
-      _subjects = res;
+      _subjects = datasets;
     }
 
     @Override
@@ -432,36 +436,9 @@ public class MeasuredDataInStackedChartsAdapter implements
       return false;
     }
 
-    @Override
-    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
+    private static ChartSet
+        produceChartset(Map<String, List<Dataset>> datasets)
     {
-
-      Map<String, List<Dataset>> datasets =
-          new HashMap<String, List<Dataset>>();
-
-      // ok, loop through them, finding groups of the same units
-      for (Editable thisD : _subjects)
-      {
-        // get this as a dataset
-        Dataset dataset = _convertToDataset(thisD);
-
-        if (dataset != null)
-        {
-
-          final String units = dataset.getUnits();
-
-          List<Dataset> matches = datasets.get(units);
-
-          if (matches == null)
-          {
-            matches = new ArrayList<Dataset>();
-            datasets.put(units, matches);
-          }
-
-          matches.add(dataset);
-        }
-      }
 
       // keep track of the current chart
       StackedchartsFactoryImpl factory = new StackedchartsFactoryImpl();
@@ -472,7 +449,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       // and the curernt chart
       Chart currentC = factory.createChart();
       charts.getCharts().add(currentC);
-      
+
       IndependentAxis timeAxis = factory.createIndependentAxis();
       timeAxis.setAxisType(factory.createDateAxis());
       charts.setSharedAxis(timeAxis);
@@ -513,48 +490,89 @@ public class MeasuredDataInStackedChartsAdapter implements
         targetAxis.getDatasets().addAll(theseSets);
       }
 
-      // ok, we have our model. Now create the view, and show the model
+      return charts;
+    }
 
-      // ok, get the active editor
-      final IWorkbenchWindow window =
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-      if (window == null)
-      {
-        // handle case where application is closing
-        return null;
-      }
-      final IWorkbenchPage page = window.getActivePage();
-      final IEditorPart editor = page.getActiveEditor();
-      final String viewId = "TEST PAGE";
+    @Override
+    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
 
-      // create a new instance of the Tactical Overview
-      final String ID = StackedChartsView.ID;
-      try
-      {
-        page.showView(ID, viewId, IWorkbenchPage.VIEW_ACTIVATE);
-      }
-      catch (final PartInitException e)
-      {
-        e.printStackTrace();
-      }
+      Map<String, List<Dataset>> datasets =
+          new HashMap<String, List<Dataset>>();
 
-      // send over the data
-      final IViewReference viewRef = page.findViewReference(ID, viewId);
-      if (viewRef != null)
+      // ok, loop through them, finding groups of the same units
+      for (Editable thisD : _subjects)
       {
-        final IViewPart theView = viewRef.getView(true);
+        // get this as a dataset
+        Dataset dataset = _convertToDataset(thisD);
 
-        // double check it's what we're after
-        if (theView instanceof StackedChartsView)
+        // did it work?
+        if (dataset != null)
         {
-          final StackedChartsView cv = (StackedChartsView) theView;
+          final String units = dataset.getUnits();
 
-          if (charts != null)
+          List<Dataset> matches = datasets.get(units);
+
+          if (matches == null)
           {
-            // set follow selection to off
+            matches = new ArrayList<Dataset>();
+            datasets.put(units, matches);
+          }
+
+          matches.add(dataset);
+        }
+      }
+
+      // get a charts model
+      ChartSet charts = produceChartset(datasets);
+
+      // ok, we have our model. Now create the view, and show the model
+      if (charts != null)
+      {
+
+        // ok, get the active editor
+        final IWorkbenchWindow window =
+            PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (window == null)
+        {
+          // handle case where application is closing
+          return null;
+        }
+        final IWorkbenchPage page = window.getActivePage();
+        
+        // produce a name for the view
+        DateFormat df = new SimpleDateFormat("hh_mm_ss");
+        final String viewId = "Measured Data " + df.format(new Date());
+
+        // create a new instance of the Tactical Overview
+        final String ID = StackedChartsView.ID;
+        try
+        {
+          page.showView(ID, viewId, IWorkbenchPage.VIEW_ACTIVATE);
+        }
+        catch (final PartInitException e)
+        {
+          CorePlugin.logError(Status.ERROR, "Failed to open Stacked Charts view", e);
+          return Status.CANCEL_STATUS;
+        }
+
+        // send over the data
+        final IViewReference viewRef = page.findViewReference(ID, viewId);
+        if (viewRef != null)
+        {
+          final IViewPart theView = viewRef.getView(true);
+
+          // double check it's what we're after
+          if (theView instanceof StackedChartsView)
+          {
+            final StackedChartsView cv = (StackedChartsView) theView;
+
+            // give it the model data
             cv.setModel(charts);
 
             // see if we have a time provider
+            final IEditorPart editor = page.getActiveEditor();
             final TimeProvider timeProv =
                 (TimeProvider) editor.getAdapter(TimeProvider.class);
             if (timeProv != null)
@@ -573,7 +591,8 @@ public class MeasuredDataInStackedChartsAdapter implements
                   }
                 }
               };
-              timeProv.addListener(evt, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+              timeProv
+                  .addListener(evt, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
               // we also need to listen for it closing, to remove the listner
               cv.addRunOnCloseCallback(new Runnable()
@@ -585,9 +604,6 @@ public class MeasuredDataInStackedChartsAdapter implements
                   // stop listening for time changes
                   timeProv.removeListener(evt,
                       TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-                  // also stop listening to our tracks
-            //      unregisterListeners();
                 }
               });
             }
@@ -639,43 +655,10 @@ public class MeasuredDataInStackedChartsAdapter implements
     public IStatus undo(IProgressMonitor monitor, IAdaptable info)
         throws ExecutionException
     {
-      // TODO Auto-generated method stub
       return Status.CANCEL_STATUS;
     }
   }
 
-  // the track change listeners
-  Map<PlainWrapper, ArrayList<Runnable>> _updaters =
-      new HashMap<PlainWrapper, ArrayList<Runnable>>();
-  Map<PlainWrapper, ArrayList<PropertyChangeListener>> _listeners =
-      new HashMap<PlainWrapper, ArrayList<PropertyChangeListener>>();
-
-  private void unregisterListeners()
-  {
-    Set<PlainWrapper> subjects = _listeners.keySet();
-    for (PlainWrapper subject : subjects)
-    {
-      ArrayList<PropertyChangeListener> list = _listeners.get(subject);
-      for (PropertyChangeListener item : list)
-      {
-        subject.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-            item);
-      }
-    }
-    _listeners.clear();
-
-    // tidying = also drop the updaters
-    subjects = _updaters.keySet();
-    for (PlainWrapper subject : subjects)
-    {
-      ArrayList<Runnable> list = _updaters.get(subject);
-      if(list != null)
-      {
-        list.clear();
-      }
-    }
-    _updaters.clear();
-  }
   @Override
   public void releaseThis(IStackedTimeListener listener)
   {
