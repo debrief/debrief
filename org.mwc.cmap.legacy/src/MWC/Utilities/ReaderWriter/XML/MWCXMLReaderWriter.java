@@ -241,7 +241,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		final int pos = theFile.lastIndexOf(".");
 		theSuffix = theFile.substring(pos, theFile.length()).toUpperCase();
 
-		if (theSuffix.equals(".XML"))
+		if (theSuffix.equals(".XML") | theSuffix.equals(".DPF"))
 			res = true;
 
 		return res;
