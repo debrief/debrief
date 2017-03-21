@@ -49,7 +49,7 @@ public class OpenScenarioXML extends MWC.GUI.Tools.Operations.Open
 	public OpenScenarioXML(final ToolParent theParent, final ServerType server,
 			final MWC.GUI.PlainChart theChart)
 	{
-		super(theParent, "Open Scenario", "*" + mySuffix, "Asset Scenario Files (*"
+		super(theParent, "Open Scenario", new String []{"*" + mySuffix}, "Asset Scenario Files (*"
 				+ mySuffix + ")");
 
 		// store local data

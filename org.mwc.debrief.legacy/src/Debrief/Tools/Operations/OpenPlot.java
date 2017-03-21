@@ -37,7 +37,7 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
   public OpenPlot(final ToolParent theParent,
                   final java.awt.Image theImage,
                   final Application theApplication){
-    super(theParent, "Open Plot", "*.dpl", "Debrief Plot Files (*.dpl)");
+    super(theParent, "Open Plot", new String[]{"*.dpl"}, "Debrief Plot Files (*.dpl)");
 
     // store local data
 

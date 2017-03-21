@@ -41,7 +41,7 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
   public OpenPlotXML(final ToolParent theParent,
                   final java.awt.Image theImage,
                   final Application theApplication){
-    super(theParent, "Open Plot", "*.xml", "Debrief Plot Files (*.xml)");
+    super(theParent, "Open Plot", new String [] {"*.xml","*.dpf"}, "Debrief Plot Files (*.xml/*.dpf)");
 
     // store local data
 

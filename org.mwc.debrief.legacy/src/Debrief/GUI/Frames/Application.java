@@ -794,7 +794,7 @@ public abstract class Application implements ToolParent, ActionListener,
 					newLayers = null;
 
 				}
-				else if (suff.equalsIgnoreCase(".XML"))
+				else if (suff.equalsIgnoreCase(".XML")|| suff.equalsIgnoreCase(".DPF"))
 				{
 
 					MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
