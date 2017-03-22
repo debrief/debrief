@@ -7,7 +7,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble2;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -126,14 +126,14 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       @Override
       public void storeHere(long time, DataItem dataset)
       {
-        TimeSeries2Double ds = (TimeSeries2Double) dataset;
+        TimeSeriesTmpDouble2 ds = (TimeSeriesTmpDouble2) dataset;
         ds.add(time, measurement1, measurement2);
       }
 
       @Override
       public DataItem createTarget(String name, String units)
       {
-        return new TimeSeries2Double(name, units, value1Name, value2Name);
+        return new TimeSeriesTmpDouble2(name, units, value1Name, value2Name);
       }
     };
     storeMeasurement(platform_name, sensor_name, folder, dataset_name, units,
