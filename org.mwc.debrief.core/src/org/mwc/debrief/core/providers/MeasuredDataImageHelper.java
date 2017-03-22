@@ -20,7 +20,7 @@ import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 import org.mwc.debrief.core.providers.measured_data.FolderWrapper;
 
-import Debrief.Wrappers.Extensions.Measurements.ITimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 import MWC.GUI.Editable;
@@ -40,7 +40,7 @@ public class MeasuredDataImageHelper implements ViewLabelImageHelper
 		{
 		  // sort out the correct number of dimensions
 		  DatasetWrapper sw = (DatasetWrapper) editable;
-		  ITimeSeriesCore ds = sw.getDataset();
+		  TimeSeriesCore ds = sw.getDataset();
 		  if(ds instanceof TimeSeriesDatasetDouble2)
 		  {
 	      res = CorePlugin.getImageDescriptor("icons/16/dataset_2.png");

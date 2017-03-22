@@ -174,8 +174,6 @@ import Debrief.Wrappers.Extensions.AdditionalData;
 import Debrief.Wrappers.Extensions.AdditionalProvider;
 import Debrief.Wrappers.Extensions.AdditionalProvider.ExistingChildrenMayNeedToBeWrapped;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble2;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.DeferredDatasetArrayMode;

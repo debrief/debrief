@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 import junit.framework.TestCase;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import MWC.GUI.Editable;
 
 public class DatasetWrapper implements Editable, Serializable
@@ -114,11 +114,11 @@ public class DatasetWrapper implements Editable, Serializable
     {
       public void testSerialise()
       {
-        TimeSeriesTmpDouble original =
-            new TimeSeriesTmpDouble("Data", "Seconds");
-
-        original.add(12L, 100d);
-        original.add(15L, 200d);
+        long[] times = new long[]{12L, 14L};
+        double[] values = new double[]{100d, 200d};
+        
+        TimeSeriesDatasetDouble original =
+            new TimeSeriesDatasetDouble("Data", "Seconds", times, values);
         
         DatasetWrapper wrapper = new DatasetWrapper(original);
         

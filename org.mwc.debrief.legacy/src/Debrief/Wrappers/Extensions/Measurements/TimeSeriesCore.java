@@ -1,9 +1,15 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
-abstract public class TimeSeriesCore implements Serializable, ITimeSeriesCore
+abstract public class TimeSeriesCore implements Serializable, DataItem
 {
+
+  /** value used to indicate an invalid index
+   * 
+   */
+  public static final int INVALID_INDEX = -1;
 
   /**
    * 
@@ -22,6 +28,8 @@ abstract public class TimeSeriesCore implements Serializable, ITimeSeriesCore
     _name = name;
     _units = units;
   }
+  
+  abstract public int size();
   
 
   /**
@@ -56,13 +64,11 @@ abstract public class TimeSeriesCore implements Serializable, ITimeSeriesCore
     return getName() + " (" + size() + " items)";
   }
 
-  @Override
   public String getUnits()
   {
     return _units;
   }
 
-  @Override
   public String getPath()
   {
     String name = "";
@@ -75,4 +81,8 @@ abstract public class TimeSeriesCore implements Serializable, ITimeSeriesCore
     name += getName();
     return name;
   }
+
+  abstract public Iterator<Long> getIndices();
+
+  abstract public int getIndexNearestTo(long time);
 }

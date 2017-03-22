@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -52,16 +51,13 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
-import org.mwc.debrief.limpet_integration.LimpetInt_Activator;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
-import Debrief.Wrappers.Extensions.Measurements.ITimeSeriesCore;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 
@@ -115,7 +111,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        ITimeSeriesCore cd = ds.getDataset();
+        TimeSeriesCore cd = ds.getDataset();
         res = true;
       }
     }
@@ -134,14 +130,14 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        ITimeSeriesCore cd = ds.getDataset();
+        TimeSeriesCore cd = ds.getDataset();
         res = true;
       }
     }
     return res;
   }
 
-  private static void DoDataset(TimeSeriesTmpDouble cd, ProcessHelper helper,
+  private static void DoDataset(TimeSeriesDatasetDouble cd, ProcessHelper helper,
       StackedchartsFactory factory)
   {
     // sort out a name
@@ -224,11 +220,11 @@ public class MeasuredDataInStackedChartsAdapter implements
 
     if (ds != null)
     {
-      ITimeSeriesCore tsc = ds.getDataset();
+      TimeSeriesCore tsc = ds.getDataset();
 
-      if (tsc instanceof TimeSeriesTmpDouble)
+      if (tsc instanceof TimeSeriesDatasetDouble)
       {
-        TimeSeriesTmpDouble cd = (TimeSeriesTmpDouble) tsc;
+        TimeSeriesDatasetDouble cd = (TimeSeriesDatasetDouble) tsc;
 
         final StackedchartsFactory factory = new StackedchartsFactoryImpl();
         final Dataset dataset = factory.createDataset();
@@ -715,8 +711,8 @@ public class MeasuredDataInStackedChartsAdapter implements
       if (editable instanceof DatasetWrapper)
       {
         DatasetWrapper dw = (DatasetWrapper) editable;
-        ITimeSeriesCore ds = dw.getDataset();
-        if (ds instanceof TimeSeriesTmpDouble)
+        TimeSeriesCore ds = dw.getDataset();
+        if (ds instanceof TimeSeriesDatasetDouble)
         {
           // ok, add it
           res.add(editable);
