@@ -11,7 +11,10 @@ Bundle-ClassPath: debrief_legacy.jar,
  libs/poi-ooxml-schemas-3.14.jar,
  libs/pdfbox-2.0.3.jar,
  libs/commons-logging-1.2.jar,
- libs/fontbox-2.0.3.jar
+ libs/fontbox-2.0.3.jar,
+ libs/January.jar,
+ libs/slf4j-api.jar,
+ libs/slf4j-simple-1.7.25.jar
 Bundle-Vendor: MWC
 Export-Package: 
  Debrief.GUI,

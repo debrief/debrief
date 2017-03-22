@@ -1,29 +1,25 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-abstract public class TimeSeriesCore implements DataItem, Serializable
+abstract public class TimeSeriesCore implements Serializable, DataItem
 {
+
+  /** value used to indicate an invalid index
+   * 
+   */
+  public static final int INVALID_INDEX = -1;
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
-  /** value used to indicate an invalid index
-   * 
-   */
-  public static int INVALID_INDEX = -1;
- 
-  
   /**
    * track the parent folder. It's transient since the parent gets assigned as part of XML restore
    */
   private transient DataFolder _parent;
-  protected final List<Long> _indices = new ArrayList<Long>();
   protected final String _name;
   protected final String _units;
 
@@ -33,46 +29,26 @@ abstract public class TimeSeriesCore implements DataItem, Serializable
     _units = units;
   }
   
-  /** get the index on (or after) the specified time
-   * 
-   * @param time
-   * @return
-   */
-  public int getIndexNearestTo(long time)
-  {
-    int ctr = 0;
-    for(Long val: _indices)
-    {
-      if(val >= time)
-      {
-        return ctr;
-      }
-      ctr++;
-    }
-    
-    // ok, didn't work. return negative index
-    return INVALID_INDEX;
-  }
+  abstract public int size();
+  
 
   /**
    * sometimes it's useful to know the parent folder for a dataset
    * 
    * @param parent
    */
+  @Override
   public void setParent(DataFolder parent)
   {
     _parent = parent;
   }
 
+  @Override
   public DataFolder getParent()
   {
     return _parent;
   }
 
-  public Iterator<Long> getIndices()
-  {
-    return _indices.iterator();
-  }
 
   @Override
   public String getName()
@@ -93,11 +69,6 @@ abstract public class TimeSeriesCore implements DataItem, Serializable
     return _units;
   }
 
-  public int size()
-  {
-    return _indices.size();
-  }
-
   public String getPath()
   {
     String name = "";
@@ -110,4 +81,8 @@ abstract public class TimeSeriesCore implements DataItem, Serializable
     name += getName();
     return name;
   }
+
+  abstract public Iterator<Long> getIndices();
+
+  abstract public int getIndexNearestTo(long time);
 }

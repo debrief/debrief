@@ -9,7 +9,8 @@ import java.util.List;
  * @author ian
  *
  */
-public class TimeSeries2Double extends TimeSeriesCore
+@Deprecated
+public class TimeSeriesTmpDouble2 extends TimeSeriesTmpCore
 {
   /**
    * 
@@ -18,12 +19,12 @@ public class TimeSeries2Double extends TimeSeriesCore
   
   private final List<Double> _values1 = new ArrayList<Double>();
   private final List<Double> _values2 = new ArrayList<Double>();
-
+  
   private final String _value1Name;
 
   private final String _value2Name;
   
-  public TimeSeries2Double(final String name, final String units, final String value1Name, final  String value2Name)
+  public TimeSeriesTmpDouble2(final String name, final String units, final String value1Name, final  String value2Name)
   {
     super(name, units);
     _value1Name = value1Name;

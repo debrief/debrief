@@ -9,7 +9,8 @@ import java.util.List;
  * @author ian
  *
  */
-public class TimeSeriesDouble extends TimeSeriesCore
+@Deprecated
+public class TimeSeriesTmpDouble extends TimeSeriesTmpCore
 {
   /**
    * 
@@ -17,8 +18,10 @@ public class TimeSeriesDouble extends TimeSeriesCore
   private static final long serialVersionUID = 1L;
   
   private final List<Double> _values1 = new ArrayList<Double>();
+
+
   
-  public TimeSeriesDouble(final String name, final String units)
+  public TimeSeriesTmpDouble(final String name, final String units)
   {
     super(name, units);
   }

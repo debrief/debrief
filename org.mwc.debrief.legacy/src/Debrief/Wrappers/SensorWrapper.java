@@ -173,8 +173,7 @@ import Debrief.Tools.Properties.ArrayCentreModePropertyEditor;
 import Debrief.Wrappers.Extensions.AdditionalData;
 import Debrief.Wrappers.Extensions.AdditionalProvider;
 import Debrief.Wrappers.Extensions.AdditionalProvider.ExistingChildrenMayNeedToBeWrapped;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.DeferredDatasetArrayMode;
@@ -1403,7 +1402,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
       WorldLocation hostLocation)
   {
     // ok, is it a relative or absolute dataset
-    TimeSeries2Double dataset = measuredMode.getDataset();
+    TimeSeriesDatasetDouble2 dataset = measuredMode.getDataset();
 
     final String units = dataset.getUnits();
 
@@ -1411,7 +1410,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
     final WorldLocation res;
 
-    if (index == TimeSeriesCore.INVALID_INDEX)
+    if (index == TimeSeriesDatasetDouble2.INVALID_INDEX)
     {
       // ok, failed
       res = null;

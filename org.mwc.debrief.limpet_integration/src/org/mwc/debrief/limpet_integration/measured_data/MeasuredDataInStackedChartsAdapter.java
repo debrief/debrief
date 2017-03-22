@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -52,15 +51,13 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
-import org.mwc.debrief.limpet_integration.LimpetInt_Activator;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 
@@ -140,7 +137,7 @@ public class MeasuredDataInStackedChartsAdapter implements
     return res;
   }
 
-  private static void DoDataset(TimeSeriesDouble cd, ProcessHelper helper,
+  private static void DoDataset(TimeSeriesDatasetDouble cd, ProcessHelper helper,
       StackedchartsFactory factory)
   {
     // sort out a name
@@ -225,9 +222,9 @@ public class MeasuredDataInStackedChartsAdapter implements
     {
       TimeSeriesCore tsc = ds.getDataset();
 
-      if (tsc instanceof TimeSeriesDouble)
+      if (tsc instanceof TimeSeriesDatasetDouble)
       {
-        TimeSeriesDouble cd = (TimeSeriesDouble) tsc;
+        TimeSeriesDatasetDouble cd = (TimeSeriesDatasetDouble) tsc;
 
         final StackedchartsFactory factory = new StackedchartsFactoryImpl();
         final Dataset dataset = factory.createDataset();
@@ -715,7 +712,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper dw = (DatasetWrapper) editable;
         TimeSeriesCore ds = dw.getDataset();
-        if (ds instanceof TimeSeriesDouble)
+        if (ds instanceof TimeSeriesDatasetDouble)
         {
           // ok, add it
           res.add(editable);
