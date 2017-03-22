@@ -1,7 +1,6 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DoubleDataset;
@@ -61,13 +60,6 @@ abstract public class TimeSeriesDatasetCore extends TimeSeriesCore
     }
 
     @Override
-    public void forEachRemaining(Consumer<? super Long> arg0)
-    {
-      throw new UnsupportedOperationException(
-          "forEachRemaining() not supported in this iterator");
-    }
-
-    @Override
     public Long next()
     {
       return _lData.get(index++);
@@ -95,13 +87,6 @@ abstract public class TimeSeriesDatasetCore extends TimeSeriesCore
     {
       throw new UnsupportedOperationException(
           "remove() not supported in this iterator");
-    }
-
-    @Override
-    public void forEachRemaining(Consumer<? super Double> arg0)
-    {
-      throw new UnsupportedOperationException(
-          "forEachRemaining() not supported in this iterator");
     }
 
     @Override
