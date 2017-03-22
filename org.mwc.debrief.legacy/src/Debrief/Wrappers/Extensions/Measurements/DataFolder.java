@@ -30,16 +30,16 @@ public class DataFolder extends ArrayList<DataItem> implements DataItem,
 
   public static interface DatasetOperator
   {
-    void process(ITimeSeriesCore dataset);
+    void process(TimeSeriesCore dataset);
   }
   
   public void walkThisDataset(DatasetOperator operator)
   {
     for(DataItem item: this)
     {
-      if(item instanceof ITimeSeriesCore)
+      if(item instanceof TimeSeriesCore)
       {
-        ITimeSeriesCore ts = (ITimeSeriesCore) item;
+        TimeSeriesCore ts = (TimeSeriesCore) item;
         operator.process(ts);
       }
       else if(item instanceof DataFolder)

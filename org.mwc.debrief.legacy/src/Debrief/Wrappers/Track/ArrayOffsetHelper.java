@@ -8,7 +8,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder.DatasetOperator;
-import Debrief.Wrappers.Extensions.Measurements.ITimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
@@ -111,7 +111,7 @@ public class ArrayOffsetHelper
       DatasetOperator processor = new DataFolder.DatasetOperator()
       {
         @Override
-        public void process(ITimeSeriesCore dataset)
+        public void process(TimeSeriesCore dataset)
         {
           // ok, is it a 2D dataset?
           if (dataset instanceof TimeSeriesDatasetDouble2)
@@ -210,7 +210,7 @@ public class ArrayOffsetHelper
       DatasetOperator processor = new DataFolder.DatasetOperator()
       {
         @Override
-        public void process(ITimeSeriesCore dataset)
+        public void process(TimeSeriesCore dataset)
         {
           // ok, is it a 2D dataset?
           if (dataset instanceof TimeSeriesDatasetDouble2)
