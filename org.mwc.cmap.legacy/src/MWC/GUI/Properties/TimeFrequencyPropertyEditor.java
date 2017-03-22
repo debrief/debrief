@@ -163,18 +163,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
 
   public Object getValue()
   {
-    final HiResDate res;
-    if(_myFreq != null)
-    {
-      res = new HiResDate(_myFreq);
-    }
-    else
-    {
-      res = new HiResDate(0);
-    }
-    return res;
+    return new HiResDate(_myFreq);
   }
-
 
   public void setValue(final Object p1)
   {
