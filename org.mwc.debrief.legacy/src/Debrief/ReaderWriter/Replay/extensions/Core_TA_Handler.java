@@ -8,7 +8,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -85,14 +85,14 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       @Override
       public void storeHere(long time, DataItem dataset)
       {
-        TimeSeriesDouble ds = (TimeSeriesDouble) dataset;
+        TimeSeriesTmpDouble ds = (TimeSeriesTmpDouble) dataset;
         ds.add(time, measurement);
       }
 
       @Override
       public DataItem createTarget(String name, String units)
       {
-        return new TimeSeriesDouble(name, units);
+        return new TimeSeriesTmpDouble(name, units);
       }
     };
     storeMeasurement(platform_name, sensor_name, folder, dataset_name, units,
@@ -296,7 +296,7 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter
       topF.printAll();
 
       DataFolder subF = (DataFolder) topF.get("Modules");
-      TimeSeriesDouble dataset = (TimeSeriesDouble) subF.get("Fore");
+      TimeSeriesTmpDouble dataset = (TimeSeriesTmpDouble) subF.get("Fore");
       assertEquals("has items", 1, dataset.size());
 
       handler.storeMeasurement("Platform", "Sensor", "Modules", "Fore",

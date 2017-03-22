@@ -55,8 +55,9 @@ import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 import org.mwc.debrief.limpet_integration.LimpetInt_Activator;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.ITimeSeriesCore;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -114,7 +115,7 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        TimeSeriesCore cd = ds.getDataset();
+        ITimeSeriesCore cd = ds.getDataset();
         res = true;
       }
     }
@@ -133,14 +134,14 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         DatasetWrapper ds = (DatasetWrapper) ed;
         @SuppressWarnings("unused")
-        TimeSeriesCore cd = ds.getDataset();
+        ITimeSeriesCore cd = ds.getDataset();
         res = true;
       }
     }
     return res;
   }
 
-  private static void DoDataset(TimeSeriesDouble cd, ProcessHelper helper,
+  private static void DoDataset(TimeSeriesTmpDouble cd, ProcessHelper helper,
       StackedchartsFactory factory)
   {
     // sort out a name
@@ -223,11 +224,11 @@ public class MeasuredDataInStackedChartsAdapter implements
 
     if (ds != null)
     {
-      TimeSeriesCore tsc = ds.getDataset();
+      ITimeSeriesCore tsc = ds.getDataset();
 
-      if (tsc instanceof TimeSeriesDouble)
+      if (tsc instanceof TimeSeriesTmpDouble)
       {
-        TimeSeriesDouble cd = (TimeSeriesDouble) tsc;
+        TimeSeriesTmpDouble cd = (TimeSeriesTmpDouble) tsc;
 
         final StackedchartsFactory factory = new StackedchartsFactoryImpl();
         final Dataset dataset = factory.createDataset();
@@ -714,8 +715,8 @@ public class MeasuredDataInStackedChartsAdapter implements
       if (editable instanceof DatasetWrapper)
       {
         DatasetWrapper dw = (DatasetWrapper) editable;
-        TimeSeriesCore ds = dw.getDataset();
-        if (ds instanceof TimeSeriesDouble)
+        ITimeSeriesCore ds = dw.getDataset();
+        if (ds instanceof TimeSeriesTmpDouble)
         {
           // ok, add it
           res.add(editable);

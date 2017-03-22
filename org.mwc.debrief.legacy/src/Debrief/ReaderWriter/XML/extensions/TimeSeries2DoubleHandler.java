@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble2;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class TimeSeries2DoubleHandler extends
@@ -87,7 +87,7 @@ abstract public class TimeSeries2DoubleHandler extends
   private static final String NAME = "Name";
   private static final String MY_TYPE = "TimeSeries2Double";
 
-  public static void exportThisDataset(final TimeSeries2Double dataset,
+  public static void exportThisDataset(final TimeSeriesTmpDouble2 dataset,
       final Element parent, final Document doc)
   {
     final Element ds = doc.createElement(MY_TYPE);
@@ -168,14 +168,14 @@ abstract public class TimeSeries2DoubleHandler extends
     addHandler(new MeasurementHandler());
   }
 
-  abstract public void addDataset(TimeSeries2Double dataset);
+  abstract public void addDataset(TimeSeriesTmpDouble2 dataset);
 
   @Override
   public final void elementClosed()
   {
     // create the dataset
-    final TimeSeries2Double dataset =
-        new TimeSeries2Double(_name, _units, _value1Name, _value2Name);
+    final TimeSeriesTmpDouble2 dataset =
+        new TimeSeriesTmpDouble2(_name, _units, _value1Name, _value2Name);
 
     final Iterator<Long> iIter = _indices.iterator();
     final Iterator<Double> v1Iter = _values1.iterator();

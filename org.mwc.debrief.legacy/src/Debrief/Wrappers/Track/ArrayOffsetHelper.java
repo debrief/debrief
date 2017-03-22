@@ -8,8 +8,8 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder.DatasetOperator;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeries2Double;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.ITimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble2;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance.ArrayLength;
@@ -53,9 +53,9 @@ public class ArrayOffsetHelper
 
   public static class MeasuredDatasetArrayMode implements ArrayCentreMode
   {
-    private final TimeSeries2Double _source;
+    private final TimeSeriesTmpDouble2 _source;
 
-    public MeasuredDatasetArrayMode(TimeSeries2Double source)
+    public MeasuredDatasetArrayMode(TimeSeriesTmpDouble2 source)
     {
       _source = source;
     }
@@ -66,7 +66,7 @@ public class ArrayOffsetHelper
       return _source.getPath();
     }
 
-    public TimeSeries2Double getDataset()
+    public TimeSeriesTmpDouble2 getDataset()
     {
       return _source;
     }
@@ -111,12 +111,12 @@ public class ArrayOffsetHelper
       DatasetOperator processor = new DataFolder.DatasetOperator()
       {
         @Override
-        public void process(TimeSeriesCore dataset)
+        public void process(ITimeSeriesCore dataset)
         {
           // ok, is it a 2D dataset?
-          if (dataset instanceof TimeSeries2Double)
+          if (dataset instanceof TimeSeriesTmpDouble2)
           {
-            TimeSeries2Double ts = (TimeSeries2Double) dataset;
+            TimeSeriesTmpDouble2 ts = (TimeSeriesTmpDouble2) dataset;
 
             String hisUnits = ts.getUnits();
 
@@ -210,12 +210,12 @@ public class ArrayOffsetHelper
       DatasetOperator processor = new DataFolder.DatasetOperator()
       {
         @Override
-        public void process(TimeSeriesCore dataset)
+        public void process(ITimeSeriesCore dataset)
         {
           // ok, is it a 2D dataset?
-          if (dataset instanceof TimeSeries2Double)
+          if (dataset instanceof TimeSeriesTmpDouble2)
           {
-            TimeSeries2Double ts = (TimeSeries2Double) dataset;
+            TimeSeriesTmpDouble2 ts = (TimeSeriesTmpDouble2) dataset;
 
             if(ts.getPath().equals(dName))
             {
