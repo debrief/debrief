@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble2;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class TimeSeries2DoubleHandler extends
@@ -87,7 +87,7 @@ abstract public class TimeSeries2DoubleHandler extends
   private static final String NAME = "Name";
   private static final String MY_TYPE = "TimeSeries2Double";
 
-  public static void exportThisDataset(final TimeSeriesTmpDouble2 dataset,
+  public static void exportThisDataset(final TimeSeriesDatasetDouble2 dataset,
       final Element parent, final Document doc)
   {
     final Element ds = doc.createElement(MY_TYPE);
@@ -168,22 +168,28 @@ abstract public class TimeSeries2DoubleHandler extends
     addHandler(new MeasurementHandler());
   }
 
-  abstract public void addDataset(TimeSeriesTmpDouble2 dataset);
+  abstract public void addDataset(TimeSeriesDatasetDouble2 dataset);
 
   @Override
   public final void elementClosed()
   {
-    // create the dataset
-    final TimeSeriesTmpDouble2 dataset =
-        new TimeSeriesTmpDouble2(_name, _units, _value1Name, _value2Name);
-
-    final Iterator<Long> iIter = _indices.iterator();
-    final Iterator<Double> v1Iter = _values1.iterator();
-    final Iterator<Double> v2Iter = _values2.iterator();
-    while (iIter.hasNext())
+    
+    // sort out the lists
+    long[] times = new long[_indices.size()];
+    double[] values1 = new double[_values1.size()];
+    double[] values2 = new double[_values2.size()];
+    
+    // put the data into arrays
+    for(int i = 0; i<_indices.size();i++)
     {
-      dataset.add(iIter.next(), v1Iter.next(), v2Iter.next());
-    }
+      times[i] = _indices.get(i);
+      values1[i] = _values1.get(i);
+      values2[i] = _values2.get(i);
+     }
+    
+    // create the dataset
+    final TimeSeriesDatasetDouble2 dataset =
+        new TimeSeriesDatasetDouble2(_name, _units, _value1Name, _value2Name, times, values1, values2);
 
     // and store it
     addDataset(dataset);

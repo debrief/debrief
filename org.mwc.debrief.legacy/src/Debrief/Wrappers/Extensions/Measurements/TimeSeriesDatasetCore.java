@@ -1,7 +1,6 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.january.dataset.Dataset;

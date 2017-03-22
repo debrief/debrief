@@ -9,6 +9,7 @@ import java.util.List;
  * @author ian
  *
  */
+@Deprecated
 public class TimeSeriesTmpDouble2 extends TimeSeriesTmpCore
 {
   /**

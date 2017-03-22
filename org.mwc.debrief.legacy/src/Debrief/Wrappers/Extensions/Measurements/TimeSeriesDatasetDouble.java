@@ -1,7 +1,6 @@
 package Debrief.Wrappers.Extensions.Measurements;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.DoubleDataset;
@@ -21,13 +20,13 @@ public class TimeSeriesDatasetDouble extends TimeSeriesDatasetCore
    */
   private static final long serialVersionUID = 1L;
   
-  public TimeSeriesDatasetDouble(final String name, final String units, final List<Long> times, final List<Double> values)
+  public TimeSeriesDatasetDouble(final String name, final String units, final long[] times, final double[] values)
   {
     super(name, units);
     
     // ok create the data items
-    LongDataset dTimes = (LongDataset) DatasetFactory.createFromList(times);
-    _data = (DoubleDataset)DatasetFactory.createFromList(values);
+    LongDataset dTimes = (LongDataset) DatasetFactory.createFromObject(times);
+    _data = (DoubleDataset)DatasetFactory.createFromObject(values);
     
     // put the time in as an axis
     AxesMetadata axis = new AxesMetadataImpl();

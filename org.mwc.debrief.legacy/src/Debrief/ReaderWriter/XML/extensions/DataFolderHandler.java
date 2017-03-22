@@ -22,8 +22,8 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble2;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -55,14 +55,14 @@ abstract public class DataFolderHandler extends
         final DataFolder childFolder = (DataFolder) child;
         exportThisFolder(childFolder, df, doc);
       }
-      else if (child instanceof TimeSeriesTmpDouble)
+      else if (child instanceof TimeSeriesDatasetDouble)
       {
-        final TimeSeriesTmpDouble childD = (TimeSeriesTmpDouble) child;
+        final TimeSeriesDatasetDouble childD = (TimeSeriesDatasetDouble) child;
         TimeSeriesDoubleHandler.exportThisDataset(childD, df, doc);
       }
-      else if (child instanceof TimeSeriesTmpDouble2)
+      else if (child instanceof TimeSeriesDatasetDouble2)
       {
-        final TimeSeriesTmpDouble2 childD = (TimeSeriesTmpDouble2) child;
+        final TimeSeriesDatasetDouble2 childD = (TimeSeriesDatasetDouble2) child;
         TimeSeries2DoubleHandler.exportThisDataset(childD, df, doc);
       }
     }
@@ -94,7 +94,7 @@ abstract public class DataFolderHandler extends
     addHandler(new TimeSeriesDoubleHandler()
     {
       @Override
-      public void addDataset(final TimeSeriesTmpDouble dataset)
+      public void addDataset(final TimeSeriesDatasetDouble dataset)
       {
         _folder.add(dataset);
       }
@@ -102,7 +102,7 @@ abstract public class DataFolderHandler extends
     addHandler(new TimeSeries2DoubleHandler()
     {
       @Override
-      public void addDataset(final TimeSeriesTmpDouble2 dataset)
+      public void addDataset(final TimeSeriesDatasetDouble2 dataset)
       {
         _folder.add(dataset);
       }

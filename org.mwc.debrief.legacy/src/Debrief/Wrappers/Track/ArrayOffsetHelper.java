@@ -9,7 +9,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder.DatasetOperator;
 import Debrief.Wrappers.Extensions.Measurements.ITimeSeriesCore;
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesTmpDouble2;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance.ArrayLength;
@@ -53,9 +53,9 @@ public class ArrayOffsetHelper
 
   public static class MeasuredDatasetArrayMode implements ArrayCentreMode
   {
-    private final TimeSeriesTmpDouble2 _source;
+    private final TimeSeriesDatasetDouble2 _source;
 
-    public MeasuredDatasetArrayMode(TimeSeriesTmpDouble2 source)
+    public MeasuredDatasetArrayMode(TimeSeriesDatasetDouble2 source)
     {
       _source = source;
     }
@@ -66,7 +66,7 @@ public class ArrayOffsetHelper
       return _source.getPath();
     }
 
-    public TimeSeriesTmpDouble2 getDataset()
+    public TimeSeriesDatasetDouble2 getDataset()
     {
       return _source;
     }
@@ -114,9 +114,9 @@ public class ArrayOffsetHelper
         public void process(ITimeSeriesCore dataset)
         {
           // ok, is it a 2D dataset?
-          if (dataset instanceof TimeSeriesTmpDouble2)
+          if (dataset instanceof TimeSeriesDatasetDouble2)
           {
-            TimeSeriesTmpDouble2 ts = (TimeSeriesTmpDouble2) dataset;
+            TimeSeriesDatasetDouble2 ts = (TimeSeriesDatasetDouble2) dataset;
 
             String hisUnits = ts.getUnits();
 
@@ -213,9 +213,9 @@ public class ArrayOffsetHelper
         public void process(ITimeSeriesCore dataset)
         {
           // ok, is it a 2D dataset?
-          if (dataset instanceof TimeSeriesTmpDouble2)
+          if (dataset instanceof TimeSeriesDatasetDouble2)
           {
-            TimeSeriesTmpDouble2 ts = (TimeSeriesTmpDouble2) dataset;
+            TimeSeriesDatasetDouble2 ts = (TimeSeriesDatasetDouble2) dataset;
 
             if(ts.getPath().equals(dName))
             {

@@ -37,7 +37,7 @@ public class DataFolder extends ArrayList<DataItem> implements DataItem,
   {
     for(DataItem item: this)
     {
-      if(item instanceof TimeSeriesTmpDouble2)
+      if(item instanceof ITimeSeriesCore)
       {
         ITimeSeriesCore ts = (ITimeSeriesCore) item;
         operator.process(ts);

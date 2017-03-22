@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 
 import junit.framework.TestCase;
 
+@Deprecated
 public class DataTest extends TestCase
 {
 
