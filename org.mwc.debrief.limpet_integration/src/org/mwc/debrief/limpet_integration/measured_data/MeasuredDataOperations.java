@@ -9,6 +9,9 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.january.dataset.DoubleDataset;
+import org.eclipse.january.dataset.Maths;
+import org.eclipse.january.metadata.AxesMetadata;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -28,57 +31,130 @@ import MWC.GUI.Layers;
 public class MeasuredDataOperations implements RightClickContextItemGenerator
 {
 
-  protected interface CalcOperation
-  {
-    /**
-     * perform a calculation
-     * 
-     * @param items
-     * @return
-     */
-    TimeSeriesCore calculate(List<TimeSeriesDatasetDouble> items);
-  }
-
   protected static class DatasetsOperation extends CMAPOperation
   {
 
-    final private CalcOperation _operation;
+    final private Operation _operation;
     final private List<TimeSeriesDatasetDouble> _items;
     private TimeSeriesCore _newData;
     private DataFolder _target;
+    final Layers _theLayers;
+    private String _units;
 
-    public DatasetsOperation(String title, CalcOperation operation,
-        List<TimeSeriesDatasetDouble> fWrappers)
+    public DatasetsOperation(String title, Operation operation,
+        List<TimeSeriesDatasetDouble> fWrappers, Layers theLayers,
+        final String units)
     {
       super(title);
       _operation = operation;
       _items = fWrappers;
+      _theLayers = theLayers;
+      _units = units;
     }
 
     @Override
     public IStatus execute(IProgressMonitor monitor, IAdaptable info)
         throws ExecutionException
     {
-      // sort out the destination
-      _target = getTarget();
-
       // calculate the dataset
-      _newData = _operation.calculate(_items);
+      _newData = calculate(_operation, _items);
 
-      // and store it
-      _target.add(_newData);
+      if (_newData != null)
+      {
+        // sort out the destination
+        _target = getTarget();
 
-      return Status.OK_STATUS;
+        // and store it
+        _target.add(_newData);
+
+        // share the good news
+        fireUpdated();
+
+        return Status.OK_STATUS;
+      }
+      else
+      {
+        CorePlugin.logError(Status.WARNING,
+            "Failed to perform calculation on measured data", null);
+        return Status.CANCEL_STATUS;
+      }
+
+    }
+
+    public TimeSeriesCore calculate(Operation operation,
+        List<TimeSeriesDatasetDouble> items)
+    {
+      DoubleDataset d1 = (DoubleDataset) items.get(0).getDataset();
+      DoubleDataset d2 = (DoubleDataset) items.get(1).getDataset();
+
+      final DoubleDataset first;
+      final DoubleDataset second;
+
+      if (d1.getSize() == d2.getSize())
+      {
+        first = d1;
+        second = d2;
+      }
+      else
+      {
+        // ok, do all that processing
+        first = null;
+        second = null;
+      }
+
+      // perform the calculation
+      DoubleDataset dResult = operation.calc(first, second);
+
+      // put the times back in
+      AxesMetadata times = d1.getFirstMetadata(AxesMetadata.class);
+      dResult.addMetadata(times);
+
+      TimeSeriesDatasetDouble res =
+          new TimeSeriesDatasetDouble(dResult, _units);
+
+      // wrap it
+
+      return res;
     }
 
     private DataFolder getTarget()
     {
-      // look at the first item
-      TimeSeriesCore first = _items.get(0);
+       DataFolder folder1 = _items.get(0).getParent();
+      DataFolder folder2 = _items.get(1).getParent();
 
-      DataFolder target = first.getParent();
+      final DataFolder target;
+      if (folder1.equals(folder2))
+      {
+        // ok, from same folder cool
+        target = folder1;
+      }
+      else
+      {
+        // in different folders, move up a level
+        if (folder1.getParent() != null)
+        {
+          target = folder1.getParent();
+        }
+        else
+        {
+          // ok, no parent. keep it in this folder
+          target = folder1;
+        }
+      }
 
       return target;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+      return _newData != null;
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return _newData != null;
     }
 
     @Override
@@ -87,6 +163,9 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
     {
       // ok, delete the dataset
       _target.remove(_newData);
+
+      // share the good news
+      fireUpdated();
 
       return Status.OK_STATUS;
     }
@@ -98,40 +177,31 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       // ok, put the dataset back into the parent
       _target.add(_newData);
 
+      // share the good news
+      fireUpdated();
+
       return Status.OK_STATUS;
+    }
+
+    void fireUpdated()
+    {
+      _theLayers.fireExtended(null, null);
     }
   }
 
-  private class DoAdd implements CalcOperation
+  private interface Operation
   {
-
-    @Override
-    public TimeSeriesCore calculate(List<TimeSeriesDatasetDouble> items)
-    {
-      long[] times = new long[]
-      {1000, 2000, 3000};
-      double[] values = new double[]
-      {44, 55, 66};
-      
-      // can't see org.eclipse.january.dataset.  I'm sure it's shared from org.mwc.debrief.legacy
-      // Dataset d1 = items.get(0).getDataset();
-      // Dataset d2 = items.get(1).getDataset();
-      //
-      // res = Maths.add(d1, d2, null);
-      TimeSeriesDatasetDouble res =
-          new TimeSeriesDatasetDouble("sum of other two", "m", times, values);
-
-      return res;
-    }
-
+    DoubleDataset calc(DoubleDataset val1, DoubleDataset val2);
   }
 
   @Override
-  public void generate(IMenuManager parent, Layers theLayers,
-      Layer[] parentLayers, Editable[] subjects)
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
   {
 
-    List<TimeSeriesCore> wrappers = null;
+    List<TimeSeriesCore> timeSeries = null;
+    List<Editable> wrappers = null;
+    List<Layer> parents = null;
 
     // ok, let's have a look
     for (int i = 0; i < subjects.length; i++)
@@ -141,54 +211,113 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       {
         DatasetWrapper dw = (DatasetWrapper) thisE;
         TimeSeriesCore core = dw.getDataset();
-        if (wrappers == null)
+        if (timeSeries == null)
         {
-          wrappers = new ArrayList<TimeSeriesCore>();
+          timeSeries = new ArrayList<TimeSeriesCore>();
+          wrappers = new ArrayList<Editable>();
+          parents = new ArrayList<Layer>();
         }
-        wrappers.add(core);
+        timeSeries.add(core);
+        wrappers.add(dw);
+        parents.add(parentLayers[i]);
       }
     }
 
     // success?
-    if (wrappers != null)
+    if (timeSeries != null)
     {
       List<IAction> items = new ArrayList<IAction>();
 
       // extract the datasets
       final List<TimeSeriesDatasetDouble> fWrappers =
           new ArrayList<TimeSeriesDatasetDouble>();
+      final List<Editable> fEditables = new ArrayList<Editable>();
+      final List<Layer> fParents = new ArrayList<Layer>();
 
-      for (TimeSeriesCore dataset : wrappers)
+      for (int i = 0; i < timeSeries.size(); i++)
       {
+        TimeSeriesCore dataset = timeSeries.get(i);
         if (dataset instanceof TimeSeriesDatasetDouble)
         {
           fWrappers.add((TimeSeriesDatasetDouble) dataset);
+          fEditables.add(wrappers.get(i));
+          fParents.add(parents.get(i));
         }
       }
 
       // ok, let's have a go.
       if (fWrappers.size() == 2)
       {
-        // ok, generate the action
-        final Action doMerge = new Action("Add datasets")
+        // ok, generate addition and subtraction
+        Operation doAdd = new Operation()
         {
-          public void run()
+          @Override
+          public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
           {
-            CalcOperation operation = new DoAdd();
-            final IUndoableOperation theAction =
-                new DatasetsOperation("Do add", operation, fWrappers);
-
-            CorePlugin.run(theAction);
+            final DoubleDataset res =
+                (DoubleDataset) Maths.add(val1, val2, null);
+            res.setName("Sum of " + val1.getName() + " and " + val2.getName());
+            return res;
           }
         };
-        // easy.
-        items.add(doMerge);
+        items.add(new DoAction("Add datasets", new DatasetsOperation("Do add",
+            doAdd, fWrappers, theLayers, fWrappers.get(0).getUnits())));
+
+        Operation doSubtract = new Operation()
+        {
+          @Override
+          public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
+          {
+            final DoubleDataset res =
+                (DoubleDataset) Maths.subtract(val1, val2, null);
+            res.setName(val1.getName() + " minus " + val2.getName());
+            return res;
+          }
+        };
+        items.add(new DoAction("Subtract datasets", new DatasetsOperation(
+            "Do add", doSubtract, fWrappers, theLayers, fWrappers.get(0)
+                .getUnits())));
+
+        // multiply and divide
+        Operation doMultiply = new Operation()
+        {
+          @Override
+          public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
+          {
+            final DoubleDataset res =
+                (DoubleDataset) Maths.multiply(val1, val2, null);
+            res.setName("Product of " + val1.getName() + " and "
+                + val2.getName());
+            return res;
+          }
+        };
+        items.add(new DoAction("Multiply datasets", new DatasetsOperation(
+            "Do add", doMultiply, fWrappers, theLayers, fWrappers.get(0)
+                .getUnits()
+                + "x" + fWrappers.get(1).getUnits())));
+
+        // multiply and divide
+        Operation doDivide = new Operation()
+        {
+          @Override
+          public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
+          {
+            final DoubleDataset res =
+                (DoubleDataset) Maths.divide(val1, val2, null);
+            res.setName(val1.getName() + " / " + val2.getName());
+            return res;
+          }
+        };
+        items.add(new DoAction("Divide datasets", new DatasetsOperation(
+            "Do add", doDivide, fWrappers, theLayers, fWrappers.get(0)
+                .getUnits()
+                + "/" + fWrappers.get(1).getUnits())));
+
       }
 
       // create any?
       if (!items.isEmpty())
       {
-
         parent.add(new Separator("Calculations"));
         // and add them all
 
@@ -199,6 +328,28 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       }
     }
 
+  }
+
+  /**
+   * warp the process of calling an action
+   * 
+   * @author ian
+   * 
+   */
+  protected class DoAction extends Action
+  {
+    final private IUndoableOperation _theAction;
+
+    public DoAction(final String title, final IUndoableOperation theAction)
+    {
+      super(title);
+      _theAction = theAction;
+    }
+
+    public void run()
+    {
+      CorePlugin.run(_theAction);
+    }
   }
 
 }
