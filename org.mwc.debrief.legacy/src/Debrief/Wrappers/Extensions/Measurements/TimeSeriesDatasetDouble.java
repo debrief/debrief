@@ -15,6 +15,7 @@ import org.eclipse.january.metadata.internal.AxesMetadataImpl;
  */
 public class TimeSeriesDatasetDouble extends TimeSeriesDatasetCore
 {
+ 
   /**
    * 
    */
@@ -22,11 +23,14 @@ public class TimeSeriesDatasetDouble extends TimeSeriesDatasetCore
   
   public TimeSeriesDatasetDouble(final String name, final String units, final long[] times, final double[] values)
   {
-    super(name, units);
+    super(units);
     
     // ok create the data items
     LongDataset dTimes = (LongDataset) DatasetFactory.createFromObject(times);
     _data = (DoubleDataset)DatasetFactory.createFromObject(values);
+    
+    // and sort the name out
+    setName(name);
     
     // put the time in as an axis
     AxesMetadata axis = new AxesMetadataImpl();
@@ -36,6 +40,14 @@ public class TimeSeriesDatasetDouble extends TimeSeriesDatasetCore
   }
 
   
+  public TimeSeriesDatasetDouble(DoubleDataset dResult, String units)
+  {
+    super(units);
+    
+    _data = dResult;
+  }
+
+
   public Iterator<Double> getValues()
   {
     return new DoubleIterator((DoubleDataset) _data);

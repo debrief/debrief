@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-schemas-3.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-3.14.jar"/>
-	<classpathentry kind="lib" path="libs/January.jar" sourcepath="/home/ian/git/january/org.eclipse.january/src"/>
+	<classpathentry exported="true" kind="lib" path="libs/January.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-api.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-simple-1.7.25.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">

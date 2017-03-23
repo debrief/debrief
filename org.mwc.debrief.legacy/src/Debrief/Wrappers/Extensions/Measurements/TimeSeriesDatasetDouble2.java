@@ -36,7 +36,7 @@ public class TimeSeriesDatasetDouble2 extends TimeSeriesDatasetCore
       final String value1Name, final String value2Name, final long[] times,
       final double[] values1, final double[] values2)
   {
-    super(name, units);
+    super(units);
     _value1Name = value1Name;
     _value2Name = value2Name;
     
@@ -45,15 +45,22 @@ public class TimeSeriesDatasetDouble2 extends TimeSeriesDatasetCore
     DoubleDataset data1 = (DoubleDataset)DatasetFactory.createFromObject(values1);
     DoubleDataset data2 = (DoubleDataset)DatasetFactory.createFromObject(values2);
     
+    // and sort the name out
+    data1.setName(name + ":" + value1Name);
+    data2.setName(name + ":" + value2Name);
+
+    
     // combine the two into a single compound dataset
     _data = DatasetUtils.createCompoundDataset(data1, data2);
+
+    // we've defined the dataset. now we can centrally name it
+    setName(name);
     
     // put the time in as an axis
     AxesMetadata axis = new AxesMetadataImpl();
     axis.initialize(1);
     axis.setAxis(0, dTimes);
     _data.addMetadata(axis);
-
   }
 
   public Iterator<Double> getValues1()
