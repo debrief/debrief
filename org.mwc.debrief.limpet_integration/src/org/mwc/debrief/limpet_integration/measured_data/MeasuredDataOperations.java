@@ -34,15 +34,16 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
   protected static class DatasetsOperation extends CMAPOperation
   {
 
-    final private Operation _operation;
+    final private Calculate _operation;
     final private List<TimeSeriesDatasetDouble> _items;
     private TimeSeriesCore _newData;
     private DataFolder _target;
     final Layers _theLayers;
     private String _units;
+    private List<Layer> _fParents;
 
-    public DatasetsOperation(String title, Operation operation,
-        List<TimeSeriesDatasetDouble> fWrappers, Layers theLayers,
+    public DatasetsOperation(String title, Calculate operation,
+        List<TimeSeriesDatasetDouble> fWrappers, List<Layer> fParents, Layers theLayers,
         final String units)
     {
       super(title);
@@ -50,6 +51,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       _items = fWrappers;
       _theLayers = theLayers;
       _units = units;
+      _fParents = fParents;
     }
 
     @Override
@@ -81,32 +83,14 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
 
     }
 
-    public TimeSeriesCore calculate(Operation operation,
+    public TimeSeriesCore calculate(Calculate _operation,
         List<TimeSeriesDatasetDouble> items)
     {
-      DoubleDataset d1 = (DoubleDataset) items.get(0).getDataset();
-      DoubleDataset d2 = (DoubleDataset) items.get(1).getDataset();
-
-      final DoubleDataset first;
-      final DoubleDataset second;
-
-      if (d1.getSize() == d2.getSize())
-      {
-        first = d1;
-        second = d2;
-      }
-      else
-      {
-        // ok, do all that processing
-        first = null;
-        second = null;
-      }
-
       // perform the calculation
-      DoubleDataset dResult = operation.calc(first, second);
+      DoubleDataset dResult = _operation.calculate(items);
 
       // put the times back in
-      AxesMetadata times = d1.getFirstMetadata(AxesMetadata.class);
+      AxesMetadata times = items.get(0).getDataset().getFirstMetadata(AxesMetadata.class);
       dResult.addMetadata(times);
 
       TimeSeriesDatasetDouble res =
@@ -119,29 +103,31 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
 
     private DataFolder getTarget()
     {
-       DataFolder folder1 = _items.get(0).getParent();
-      DataFolder folder2 = _items.get(1).getParent();
+      DataFolder target = _items.get(0).getParent();
+      
+      if(_items.size()  == 2)
+      {
+        DataFolder folder2 = _items.get(1).getParent();
 
-      final DataFolder target;
-      if (folder1.equals(folder2))
-      {
-        // ok, from same folder cool
-        target = folder1;
-      }
-      else
-      {
-        // in different folders, move up a level
-        if (folder1.getParent() != null)
+        if (target.equals(folder2))
         {
-          target = folder1.getParent();
+          // ok, keep the target, they're both in 
+          // the same directory
         }
         else
         {
-          // ok, no parent. keep it in this folder
-          target = folder1;
+          // in different folders, move up a level
+          if (target.getParent() != null)
+          {
+            target = target.getParent();
+          }
+          else
+          {
+            // ok, no parent. keep it in this folder
+          }
         }
       }
-
+ 
       return target;
     }
 
@@ -185,13 +171,109 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
 
     void fireUpdated()
     {
-      _theLayers.fireExtended(null, null);
+      // how many parents
+      Layer singleLayer = null;
+      for(Layer thisLayer: _fParents)
+      {
+        if(singleLayer == null)
+        {
+          singleLayer = thisLayer;
+        }
+        else if(thisLayer != singleLayer)
+        {
+          singleLayer = null;
+          break;
+        }
+      }
+      
+      _theLayers.fireExtended(null, singleLayer);
     }
   }
 
-  private interface Operation
+  /** perform operation on the set of time series datasets
+   * 
+   * @author ian
+   *
+   */
+  private interface Calculate
   {
-    DoubleDataset calc(DoubleDataset val1, DoubleDataset val2);
+    DoubleDataset calculate(List<TimeSeriesDatasetDouble> items);
+  }
+
+  /**
+   * operate on two datasets
+   * 
+   * @author ian
+   * 
+   */
+  abstract private class Operation2 implements Calculate
+  {
+    /** do calculation on these two datasets
+     * 
+     * @param val1
+     * @param val2
+     * @return
+     */
+    abstract DoubleDataset calc(DoubleDataset val1, DoubleDataset val2);
+
+    @Override
+    public DoubleDataset calculate(List<TimeSeriesDatasetDouble> items)
+    {
+      DoubleDataset d1 = (DoubleDataset) items.get(0).getDataset();
+      DoubleDataset d2 = (DoubleDataset) items.get(1).getDataset();
+
+      final DoubleDataset first;
+      final DoubleDataset second;
+
+      if (d1.getSize() == d2.getSize())
+      {
+        first = d1;
+        second = d2;
+      }
+      else
+      {
+        // ok, do all the interpolation processing
+        first = null;
+        second = null;
+      }
+
+      final DoubleDataset res;
+      if (first != null)
+      {
+        res = calc(first, second);
+      }
+      else
+      {
+        res = null;
+      }
+      return res;
+    }
+
+  }
+
+  /**
+   * operate on a single dataset
+   * 
+   * @author ian
+   * 
+   */
+  abstract private class Operation1 implements Calculate
+  {
+
+    @Override
+    public DoubleDataset calculate(List<TimeSeriesDatasetDouble> items)
+    {
+      DoubleDataset d1 = (DoubleDataset) items.get(0).getDataset();
+      DoubleDataset res = calc(d1);
+      return res;
+    }
+
+    /** do a calculation with a single dataset
+     * 
+     * @param val1
+     * @return
+     */
+    abstract DoubleDataset calc(DoubleDataset val1);
   }
 
   @Override
@@ -249,7 +331,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       if (fWrappers.size() == 2)
       {
         // ok, generate addition and subtraction
-        Operation doAdd = new Operation()
+        Operation2 doAdd = new Operation2()
         {
           @Override
           public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
@@ -261,9 +343,9 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           }
         };
         items.add(new DoAction("Add datasets", new DatasetsOperation("Do add",
-            doAdd, fWrappers, theLayers, fWrappers.get(0).getUnits())));
+            doAdd, fWrappers,  fParents, theLayers, fWrappers.get(0).getUnits())));
 
-        Operation doSubtract = new Operation()
+        Operation2 doSubtract = new Operation2()
         {
           @Override
           public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
@@ -275,11 +357,11 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           }
         };
         items.add(new DoAction("Subtract datasets", new DatasetsOperation(
-            "Do add", doSubtract, fWrappers, theLayers, fWrappers.get(0)
+            "Do add", doSubtract, fWrappers,  fParents, theLayers, fWrappers.get(0)
                 .getUnits())));
 
         // multiply and divide
-        Operation doMultiply = new Operation()
+        Operation2 doMultiply = new Operation2()
         {
           @Override
           public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
@@ -292,12 +374,12 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           }
         };
         items.add(new DoAction("Multiply datasets", new DatasetsOperation(
-            "Do add", doMultiply, fWrappers, theLayers, fWrappers.get(0)
+            "Do add", doMultiply, fWrappers,  fParents, theLayers, fWrappers.get(0)
                 .getUnits()
                 + "x" + fWrappers.get(1).getUnits())));
 
         // multiply and divide
-        Operation doDivide = new Operation()
+        Operation2 doDivide = new Operation2()
         {
           @Override
           public DoubleDataset calc(DoubleDataset val1, DoubleDataset val2)
@@ -309,10 +391,45 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           }
         };
         items.add(new DoAction("Divide datasets", new DatasetsOperation(
-            "Do add", doDivide, fWrappers, theLayers, fWrappers.get(0)
+            "Do add", doDivide, fWrappers,  fParents, theLayers, fWrappers.get(0)
                 .getUnits()
                 + "/" + fWrappers.get(1).getUnits())));
 
+      }
+      // ok, let's have a go.
+      if (fWrappers.size() == 1)
+      {
+        // abs
+        Operation1 doAbs = new Operation1()
+        {
+          @Override
+          public DoubleDataset calc(DoubleDataset val1)
+          {
+            final DoubleDataset res = (DoubleDataset) Maths.abs(val1, null);
+            res.setName("Absolute of " + val1.getName());
+            return res;
+          }
+        };
+        items
+            .add(new DoAction("Calculate Absolute", new DatasetsOperation(
+                "Do add", doAbs, fWrappers,  fParents, theLayers, fWrappers.get(0)
+                    .getUnits())));
+
+        // multiply and divide
+        Operation1 doDivide = new Operation1()
+        {
+          @Override
+          public DoubleDataset calc(DoubleDataset val1)
+          {
+            final DoubleDataset res =
+                (DoubleDataset) Maths.divide(1, val1, null);
+            res.setName("Inverse of " + val1.getName());
+            return res;
+          }
+        };
+        items.add(new DoAction("Calculate inverse", new DatasetsOperation(
+            "Do add", doDivide, fWrappers,  fParents, theLayers, "1 / "
+                + fWrappers.get(0).getUnits())));
       }
 
       // create any?
