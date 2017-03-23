@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 
 public class DatasetWrapper implements Editable, Serializable
   {
@@ -38,8 +39,9 @@ public class DatasetWrapper implements Editable, Serializable
         try
         {
           final PropertyDescriptor[] myRes = {
-              displayProp("ItemCount", "Number of items", "Number of items in this dataset", TEMPORAL),
-              displayProp("Units", "Units for data", "Units for this dataset", TEMPORAL)
+              displayProp("ItemCount", "Number of items", "Number of items in this dataset", FORMAT),
+              displayProp("Units", "Units for data", "Units for this dataset", FORMAT),
+              displayProp("Name", "Name", "Name for this dataset", FORMAT)
               };
 
           return myRes;
@@ -98,6 +100,12 @@ public class DatasetWrapper implements Editable, Serializable
       return _data.getName();
     }
 
+    @FireReformatted
+    public void setName(final String name)
+    {
+      _data.setName(name);
+    }
+    
     @Override
     public boolean hasEditor()
     {

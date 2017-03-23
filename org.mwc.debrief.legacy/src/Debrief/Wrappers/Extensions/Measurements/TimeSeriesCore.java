@@ -20,15 +20,17 @@ abstract public class TimeSeriesCore implements Serializable, DataItem
    * track the parent folder. It's transient since the parent gets assigned as part of XML restore
    */
   private transient DataFolder _parent;
-  protected final String _name;
   protected final String _units;
 
-  public TimeSeriesCore(String name, String units)
+  public TimeSeriesCore(String units)
   {
-    _name = name;
     _units = units;
   }
   
+  /** get the the number of elements in this time series
+   * 
+   * @return
+   */
   abstract public int size();
   
 
@@ -51,10 +53,7 @@ abstract public class TimeSeriesCore implements Serializable, DataItem
 
 
   @Override
-  public String getName()
-  {
-    return _name;
-  }
+  abstract public String getName();
 
   /**
    * convenience function, to describe this plottable as a string

@@ -18,9 +18,27 @@ abstract public class TimeSeriesTmpCore extends TimeSeriesCore
 
   public TimeSeriesTmpCore(String name, String units)
   {
-    super(name, units);
+    super(units);
   }
   
+  
+
+  @Override
+  public void setName(String name)
+  {
+    throw new IllegalArgumentException("Not implemented");
+  }
+
+
+
+  @Override
+  public String getName()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
 
   @Override
   public int size()

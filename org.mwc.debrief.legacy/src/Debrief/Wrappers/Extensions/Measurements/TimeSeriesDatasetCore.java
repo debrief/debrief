@@ -25,9 +25,9 @@ abstract public class TimeSeriesDatasetCore extends TimeSeriesCore
    */
   private LongDataset _times;
 
-  public TimeSeriesDatasetCore(String name, String units)
+  public TimeSeriesDatasetCore(String units)
   {
-    super(name, units);
+    super(units);
   }
 
   @Override
@@ -35,6 +35,19 @@ abstract public class TimeSeriesDatasetCore extends TimeSeriesCore
   {
     return _data.getSize();
   }
+  
+  @Override
+  public String getName()
+  {
+    return _data.getName();
+  }
+  
+  @Override
+  public void setName(String name)
+  {
+    _data.setName(name);
+  }
+
 
   private static class LongIterator implements Iterator<Long>
   {
