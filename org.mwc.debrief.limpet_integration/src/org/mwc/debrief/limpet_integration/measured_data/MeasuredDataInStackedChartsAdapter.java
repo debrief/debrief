@@ -145,7 +145,7 @@ public class MeasuredDataInStackedChartsAdapter implements
     DataFolder parent = cd.getParent();
     if (parent != null)
     {
-      name = parent.getName() + " - " + cd.getName();
+      name = parent.getName() + " : " + cd.getName();
     }
     else
     {
