@@ -40,6 +40,14 @@ public class TimeSeriesDatasetDouble extends TimeSeriesDatasetCore
   }
 
   
+  public TimeSeriesDatasetDouble(DoubleDataset dResult, String units)
+  {
+    super(units);
+    
+    _data = dResult;
+  }
+
+
   public Iterator<Double> getValues()
   {
     return new DoubleIterator((DoubleDataset) _data);
