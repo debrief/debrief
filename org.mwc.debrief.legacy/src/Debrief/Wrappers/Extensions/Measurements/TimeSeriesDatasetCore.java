@@ -30,6 +30,11 @@ abstract public class TimeSeriesDatasetCore extends TimeSeriesCore
     super(units);
   }
 
+  public Dataset getDataset()
+  {
+    return _data;
+  }
+  
   @Override
   public int size()
   {

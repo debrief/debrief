@@ -2,7 +2,6 @@ package Debrief.Wrappers.Extensions.Measurements;
 
 import java.util.Iterator;
 
-import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.LongDataset;
