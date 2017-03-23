@@ -1287,7 +1287,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     // define the columns
     final TreeColumn nameCol = new TreeColumn(tree, SWT.NONE);
     nameCol.setText(NAME_COLUMN_NAME);
-    nameCol.setWidth(180);
+    nameCol.setWidth(280);
     final TreeColumn visibleCol = new TreeColumn(tree, SWT.NONE);
     visibleCol.setText(VISIBILITY_COLUMN_NAME);
     visibleCol.setWidth(50);
