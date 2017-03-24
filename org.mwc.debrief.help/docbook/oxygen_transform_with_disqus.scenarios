@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<serialized version="17.1" xml:space="preserve">
+<serialized version="16.0" xml:space="preserve">
 	<map>
 		<entry>
 			<String>scenarios</String>
@@ -32,6 +32,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -54,6 +57,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -73,6 +79,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -94,6 +103,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -114,6 +126,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -133,6 +148,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -157,6 +175,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -176,6 +197,9 @@
 								</field>
 								<field name="type">
 									<Integer>0</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -197,6 +221,9 @@
 								<field name="type">
 									<Integer>0</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -216,6 +243,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -237,6 +267,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -256,6 +289,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -277,6 +313,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -296,6 +335,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -317,6 +359,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -336,6 +381,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -357,6 +405,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -376,6 +427,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -397,6 +451,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -416,6 +473,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -437,6 +497,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -456,6 +519,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -477,6 +543,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -496,6 +565,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -517,6 +589,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -536,6 +611,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -557,6 +635,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -576,6 +657,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -597,6 +681,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -616,6 +703,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -637,6 +727,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -656,6 +749,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -677,6 +773,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -696,6 +795,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -717,6 +819,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -736,6 +841,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -757,6 +865,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -776,6 +887,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -797,6 +911,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -816,6 +933,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -837,6 +957,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -856,6 +979,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -877,6 +1003,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -896,6 +1025,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<String-array>
@@ -921,6 +1053,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -940,6 +1075,9 @@
 								</field>
 								<field name="type">
 									<Integer>4</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<String-array>
@@ -965,6 +1103,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -984,6 +1125,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1005,6 +1149,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1024,6 +1171,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1045,6 +1195,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1064,6 +1217,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1085,6 +1241,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1104,6 +1263,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1125,6 +1287,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1144,6 +1309,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1165,6 +1333,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1184,6 +1355,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1205,6 +1379,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1224,6 +1401,9 @@
 								</field>
 								<field name="type">
 									<Integer>0</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1245,6 +1425,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1264,6 +1447,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1285,6 +1471,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1304,6 +1493,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1325,6 +1517,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1344,6 +1539,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1365,6 +1563,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1384,6 +1585,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1405,6 +1609,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1424,6 +1631,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1445,6 +1655,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1465,6 +1678,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1484,6 +1700,9 @@
 								</field>
 								<field name="type">
 									<Integer>4</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<String-array>
@@ -1509,6 +1728,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1528,6 +1750,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1549,6 +1774,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1568,6 +1796,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1589,6 +1820,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1608,6 +1842,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1629,6 +1866,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1648,6 +1888,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1669,6 +1912,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1688,6 +1934,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1709,6 +1958,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1728,6 +1980,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1749,6 +2004,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1768,6 +2026,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1790,6 +2051,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1809,6 +2073,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1830,6 +2097,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1849,6 +2119,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1870,6 +2143,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1889,6 +2165,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1910,6 +2189,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1929,6 +2211,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1950,6 +2235,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -1969,6 +2257,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -1990,6 +2281,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2009,6 +2303,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2030,6 +2327,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2049,6 +2349,9 @@
 								</field>
 								<field name="type">
 									<Integer>0</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2070,6 +2373,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2089,6 +2395,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2110,6 +2419,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2129,6 +2441,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2150,6 +2465,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2169,6 +2487,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2190,6 +2511,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2209,6 +2533,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2230,6 +2557,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2249,6 +2579,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2270,6 +2603,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2289,6 +2625,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2310,6 +2649,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2329,6 +2671,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2350,6 +2695,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2369,6 +2717,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2390,6 +2741,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2409,6 +2763,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2430,6 +2787,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2449,6 +2809,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2470,6 +2833,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2489,6 +2855,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2510,6 +2879,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2529,6 +2901,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2550,6 +2925,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2569,6 +2947,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2590,6 +2971,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2609,6 +2993,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2630,6 +3017,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2649,6 +3039,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2670,6 +3063,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2689,6 +3085,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2710,6 +3109,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2729,6 +3131,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2750,6 +3155,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2769,6 +3177,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2790,6 +3201,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2809,6 +3223,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2830,6 +3247,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2849,6 +3269,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2870,6 +3293,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2889,6 +3315,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2910,6 +3339,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2929,6 +3361,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2950,6 +3385,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -2969,6 +3407,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -2990,6 +3431,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3009,6 +3453,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3030,6 +3477,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3049,6 +3499,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3070,6 +3523,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3089,6 +3545,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3110,6 +3569,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3129,6 +3591,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3150,6 +3615,9 @@
 								<field name="type">
 									<Integer>0</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3169,6 +3637,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3190,6 +3661,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3209,6 +3683,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3230,6 +3707,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3250,6 +3730,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3269,6 +3752,9 @@
 								</field>
 								<field name="type">
 									<Integer>4</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<String-array>
@@ -3294,6 +3780,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3313,6 +3802,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3334,6 +3826,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3353,6 +3848,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3374,6 +3872,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3393,6 +3894,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3414,6 +3918,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3433,6 +3940,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3454,6 +3964,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3473,6 +3986,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3494,6 +4010,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3513,6 +4032,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3534,6 +4056,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3553,6 +4078,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3574,6 +4102,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3593,6 +4124,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3614,6 +4148,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3633,6 +4170,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3654,6 +4194,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3673,6 +4216,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3694,6 +4240,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3713,6 +4262,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3734,6 +4286,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3753,6 +4308,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3774,6 +4332,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3793,6 +4354,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3814,6 +4378,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3833,6 +4400,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3854,6 +4424,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3873,6 +4446,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3894,6 +4470,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3913,6 +4492,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3934,6 +4516,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3953,6 +4538,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -3974,6 +4562,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -3993,6 +4584,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4014,6 +4608,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4033,6 +4630,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4054,6 +4654,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4073,6 +4676,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4094,6 +4700,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4113,6 +4722,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4134,6 +4746,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4153,6 +4768,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4174,6 +4792,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4193,6 +4814,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4214,6 +4838,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4233,6 +4860,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4254,6 +4884,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4273,6 +4906,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4294,6 +4930,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4314,6 +4953,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4333,6 +4975,9 @@
 								</field>
 								<field name="type">
 									<Integer>4</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<String-array>
@@ -4358,6 +5003,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4377,6 +5025,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4398,6 +5049,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4417,6 +5071,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4438,6 +5095,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4457,6 +5117,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4478,6 +5141,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4497,6 +5163,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4518,6 +5187,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4537,6 +5209,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4558,6 +5233,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4577,6 +5255,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4598,6 +5279,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4617,6 +5301,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4638,6 +5325,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4657,6 +5347,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4678,6 +5371,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4697,6 +5393,9 @@
 								</field>
 								<field name="type">
 									<Integer>0</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4718,6 +5417,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4737,6 +5439,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4758,6 +5463,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4777,6 +5485,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4798,6 +5509,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4817,6 +5531,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4838,6 +5555,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4857,6 +5577,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4878,6 +5601,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4897,6 +5623,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4918,6 +5647,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4937,6 +5669,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4958,6 +5693,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -4977,6 +5715,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -4998,6 +5739,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5018,6 +5762,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5037,6 +5784,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<String-array>
@@ -5062,6 +5812,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5081,6 +5834,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5102,6 +5858,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5121,6 +5880,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5142,6 +5904,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5154,13 +5919,16 @@
 									<String>Path of HTML file with the footer of Webhelp output pages.</String>
 								</field>
 								<field name="value">
-									<null/>
+									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/webhelp_disqus.html</String>
 								</field>
 								<field name="defaultValue">
 									<null/>
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5181,6 +5949,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<String-array>
@@ -5206,6 +5977,9 @@
 								<field name="type">
 									<Integer>5</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5225,6 +5999,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5246,6 +6023,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5265,6 +6045,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5286,6 +6069,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5305,6 +6091,9 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5326,6 +6115,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5345,6 +6137,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5366,6 +6161,9 @@
 								<field name="type">
 									<Integer>2</Integer>
 								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
 								<field name="possibleValues">
 									<null/>
 								</field>
@@ -5385,6 +6183,9 @@
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
 								</field>
 								<field name="possibleValues">
 									<null/>
@@ -5456,9 +6257,6 @@
 						<Boolean>true</Boolean>
 					</field>
 					<field name="outputFile">
-						<null/>
-					</field>
-					<field name="outputResource">
 						<null/>
 					</field>
 					<field name="openOtherLocationInBrowser">
