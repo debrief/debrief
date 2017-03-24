@@ -39,6 +39,35 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
   }
 
   @Override
+  public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((_provider == null) ? 0 : _provider.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AdditionalProviderWrapper other = (AdditionalProviderWrapper) obj;
+    if (_provider == null)
+    {
+      if (other._provider != null)
+        return false;
+    }
+    else if (!_provider.equals(other._provider))
+      return false;
+    return true;
+  }
+
+  @Override
   public String getName()
   {
     return DataFolder.DEFAULT_NAME;

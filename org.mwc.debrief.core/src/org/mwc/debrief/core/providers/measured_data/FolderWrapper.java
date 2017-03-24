@@ -27,6 +27,23 @@ public class FolderWrapper implements Editable, HasEditables, Serializable
   }
 
   @Override
+  public boolean equals(Object arg0)
+  {
+    if(arg0 instanceof FolderWrapper)
+    {
+      FolderWrapper other = (FolderWrapper) arg0;
+      return _folder.equals(other._folder);
+    }
+    else return super.equals(arg0);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return _folder.hashCode();
+  }
+
+  @Override
   public Enumeration<Editable> elements()
   {
     final Vector<Editable> res = new Vector<Editable>();
