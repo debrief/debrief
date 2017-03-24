@@ -76,6 +76,8 @@ public class TrackColorModeHelper
   {
     private final TimeSeriesDatasetDouble _dataset;
     private String _source;
+    private Double _min;
+    private Double _scale;
 
     public MeasuredDatasetColorMode(String source,
         TimeSeriesDatasetDouble dataset)
@@ -94,12 +96,42 @@ public class TrackColorModeHelper
     {
       return _dataset;
     }
+    
+    private void init()
+    {
+      // initialised?
+      if(_min != null)
+        return;
+      
+      // ok, sort out the scaling factors
+      _min = (Double) _dataset.getDataset().min();
+      double max = (Double) _dataset.getDataset().max();
+      double range = max - _min;
+      
+      // we take the cube root of the range. It suits our initial trial data
+      _scale = range / 255d;
+    }
 
     @Override
     public Color colorFor(Watchable thisFix)
     {
-      // TODO find the element nearest this time
-      return Color.YELLOW;
+      // check we have our limits
+      init();
+      
+      // what's the index of the nearest time to this value?
+      int tIndex = _dataset.getIndexNearestTo(thisFix.getTime().getDate().getTime());      
+      
+      if(tIndex != TimeSeriesCore.INVALID_INDEX)
+      {
+        double val = _dataset.getDataset().getDouble(tIndex);
+        int red = (int)((val - _min) / _scale);
+        Color color = new Color(red, 0, 255 - red);
+        return color;
+      }
+      else
+      {
+        return Color.YELLOW;
+      }
     }
   }
 
@@ -156,18 +188,11 @@ public class TrackColorModeHelper
           @Override
           public void process(TimeSeriesCore dataset)
           {
-            // ok, is it a 2D dataset?
+            // ok, is it a 1D dataset?
             if (dataset instanceof TimeSeriesDatasetDouble)
             {
               TimeSeriesDatasetDouble ts = (TimeSeriesDatasetDouble) dataset;
-
-              String hisUnits = ts.getUnits();
-
-              // is it suitable?
-              if ("m".equals(hisUnits) || "\u00b0".equals(hisUnits))
-              {
-                res.add(new MeasuredDatasetColorMode(sensor.getName(), ts));
-              }
+              res.add(new MeasuredDatasetColorMode(sensor.getName(), ts));
             }
           }
         };
