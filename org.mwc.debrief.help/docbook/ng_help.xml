@@ -8886,6 +8886,35 @@ and entry type can be multi-word if surrounded by quotes (").
             </markup>   </screen>
             </para>
           </sect2>
+        <sect2 xml:id="towed_array_annotations">
+          <title>Towed Array Extensions</title>
+          <para><indexterm>
+            <primary>Annotation Data</primary>
+            <secondary>Towed Array Extensions</secondary>
+          </indexterm>In Spring 2017 additional annotations were introduced to
+            support more complex Towed Array datasets
+            <screen width="70"><markup>
+
+;TA_FORE_AFT: YYMMDD HHMMSS AAAAAA BBBBBB [DD.D HH.H] [DD.D HH.H]↵
+;; data from pair of module sensors 
+;; date-time, platform, sensor, two pairs of depth (m) &amp; heading (degs) data.
+
+;TA_MODULES: YYMMDD HHMMSS AAAAAA BBBBBB [DD.D HH.H] ... [DD.D HH.H]↵
+;; data from long series of module sensors 
+;; date-time, platform, sensor, pairs of depth &amp; heading data, to the end of line.
+
+
+;TA_COG_ABS: YYMMDD HHMMSS AAAAAA BBBBBB LAT.Y LONG.X DD.D↵
+;; absolute measurement of towed array aperture Centre of Gravity
+;; date-time, platform, sensor, lat/long (Degrees) depth (m)
+
+;TA_COG_REL: YYMMDD HHMMSS AAAAAA BBBBBB XX.X YY.Y DD.D↵
+;; relative measurement of towed array aperture Centre of Gravity
+;; date-time, platform, sensor, x/y/depth(m)
+
+            </markup>   </screen>
+          </para>
+        </sect2>        
           <sect2 xml:id="replay_dynamic_annotations">
               <title>Dynamic Elements</title>
             
