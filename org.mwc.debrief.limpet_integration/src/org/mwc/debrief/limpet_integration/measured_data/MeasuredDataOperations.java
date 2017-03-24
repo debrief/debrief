@@ -219,11 +219,35 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
      */
     abstract DoubleDataset calc(DoubleDataset val1, DoubleDataset val2);
 
+    abstract String nameFor(String one, String two);
+
+    private String nameFor(TimeSeriesCore one, TimeSeriesCore two)
+    {
+      // are they in the same folder?
+      final String sOne;
+      final String sTwo;
+      if (one.getParent().equals(two.getParent()))
+      {
+        // ok, in the same folder, we don't need more metadata
+        sOne = one.getName();
+        sTwo = two.getName();
+      }
+      else
+      {
+        sOne = one.getPath();
+        sTwo = two.getPath();
+      }
+
+      return nameFor(sOne, sTwo);
+    }
+
     @Override
     public DoubleDataset calculate(List<TimeSeriesDatasetDouble> items)
     {
-      DoubleDataset d1 = (DoubleDataset) items.get(0).getDataset();
-      DoubleDataset d2 = (DoubleDataset) items.get(1).getDataset();
+      final TimeSeriesDatasetDouble ts1 = items.get(0);
+      final TimeSeriesDatasetDouble ts2 = items.get(1);
+      final DoubleDataset d1 = (DoubleDataset) ts1.getDataset();
+      final DoubleDataset d2 = (DoubleDataset) ts2.getDataset();
 
       final DoubleDataset first;
       final DoubleDataset second;
@@ -243,7 +267,11 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       final DoubleDataset res;
       if (first != null)
       {
+        // get the new dataset
         res = calc(first, second);
+
+        // and the name
+        res.setName(nameFor(ts1, ts2));
       }
       else
       {
@@ -342,8 +370,13 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.add(val1, val2, null);
-            res.setName("Sum of " + val1.getName() + " and " + val2.getName());
             return res;
+          }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return "Sum of " + one + " and " + two;
           }
         };
         items
@@ -358,8 +391,13 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.subtract(val1, val2, null);
-            res.setName(val1.getName() + " minus " + val2.getName());
             return res;
+          }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return one + " minus " + two;
           }
         };
         items.add(new DoAction("Subtract datasets", new DatasetsOperation(
@@ -374,9 +412,13 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.multiply(val1, val2, null);
-            res.setName("Product of " + val1.getName() + " and "
-                + val2.getName());
             return res;
+          }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return "Product of " + one + " and " + two;
           }
         };
         items.add(new DoAction("Multiply datasets", new DatasetsOperation(
@@ -392,8 +434,13 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.divide(val1, val2, null);
-            res.setName(val1.getName() + " / " + val2.getName());
             return res;
+          }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return one + " / " + two;
           }
         };
         items.add(new DoAction("Divide datasets", new DatasetsOperation(
@@ -450,7 +497,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
         items.add(new DoAction("Calculate square root", new DatasetsOperation(
             "Do add", doSqrt, fWrappers, fParents, theLayers, "sqrt "
                 + fWrappers.get(0).getUnits())));
-        
+
         // sqrt
         Operation1 doCbrt = new Operation1()
         {
@@ -479,7 +526,6 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
         }
       }
     }
-
   }
 
   /**
