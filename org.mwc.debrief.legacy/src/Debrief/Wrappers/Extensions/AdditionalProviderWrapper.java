@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Vector;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.Wrappers.DataItemWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.HasEditables;
 
 /** make a list of additional data items suitable
@@ -153,15 +155,35 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
   }
 
   @Override
+  @FireExtended
   public void add(Editable point)
   {
-    _provider.add(point);
+    if(point instanceof DataItemWrapper)
+    {
+      DataItemWrapper itemW = (DataItemWrapper) point;
+      DataFolder additionalData = (DataFolder) _provider.get(0);
+      additionalData.add(itemW.getDataItem());
+    }
+    else
+    {
+      System.err.println("Can't add this data object to measured data:" + point);
+    }
   }
 
   @Override
+  @FireExtended
   public void removeElement(Editable point)
   {
-    _provider.remove(point);
+    if(point instanceof DataItemWrapper)
+    {
+      DataItemWrapper itemW = (DataItemWrapper) point;
+      DataFolder additionalData = (DataFolder) _provider.get(0);
+      additionalData.remove(itemW.getDataItem());
+    }
+    else
+    {
+      System.err.println("Can't remove this data object to measured data:" + point);
+    }
   }
 
 }
