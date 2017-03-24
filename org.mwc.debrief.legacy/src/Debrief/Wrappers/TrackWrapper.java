@@ -47,6 +47,7 @@ import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.SplittableLayer;
 import Debrief.Wrappers.Track.TrackColorModeHelper;
+import Debrief.Wrappers.Track.TrackColorModeHelper.DeferredDatasetColorMode;
 import Debrief.Wrappers.Track.TrackColorModeHelper.TrackColorMode;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
@@ -1961,12 +1962,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return _lineStyle;
   }
 
-  /** get the mode used to color the track
+  /**
+   * get the mode used to color the track
    * 
    * @return
    */
   public TrackColorMode getTrackColorMode()
   {
+    // ok, see if we're using a deferred mode. If we are, we should correct it
+    if (_trackColorMode instanceof DeferredDatasetColorMode)
+    {
+      _trackColorMode =
+          TrackColorModeHelper.sortOutDeferredMode(
+              (DeferredDatasetColorMode) _trackColorMode, this);
+    }
+
     return _trackColorMode;
   }
 

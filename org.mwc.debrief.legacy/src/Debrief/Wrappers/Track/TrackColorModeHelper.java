@@ -61,7 +61,7 @@ public class TrackColorModeHelper
       @Override
       public String asString()
       {
-        return "Fix Shades";
+        return "Per-fix Shades";
       }
 
       @Override
@@ -70,6 +70,11 @@ public class TrackColorModeHelper
         return thisFix.getColor();
       }
     };
+  }
+  
+  private static String nameFor(String source, String dataset)
+  {
+    return source + ":" + dataset;
   }
 
   public static class MeasuredDatasetColorMode implements TrackColorMode
@@ -89,7 +94,7 @@ public class TrackColorModeHelper
     @Override
     public String asString()
     {
-      return _source + ":" + _dataset.getPath();
+      return nameFor(_source, _dataset.getPath());
     }
 
     public TimeSeriesDatasetDouble getDataset()
@@ -158,7 +163,7 @@ public class TrackColorModeHelper
     @Override
     public Color colorFor(Watchable thisFix)
     {
-      return null;
+      return Color.GREEN;
     }
   }
 
@@ -232,9 +237,10 @@ public class TrackColorModeHelper
             // ok, is it a 2D dataset?
             if (dataset instanceof TimeSeriesDatasetDouble)
             {
-              TimeSeriesDatasetDouble ts = (TimeSeriesDatasetDouble) dataset;
+              final TimeSeriesDatasetDouble ts = (TimeSeriesDatasetDouble) dataset;
+              final String tsPath = nameFor(sensor.getName(), ts.getPath());
 
-              if (ts.getPath().equals(dName))
+              if (tsPath.equals(dName))
               {
                 matches.add(new MeasuredDatasetColorMode(sensor.getName(), ts));
               }
