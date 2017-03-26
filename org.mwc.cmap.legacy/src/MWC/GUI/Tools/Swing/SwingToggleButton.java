@@ -81,6 +81,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JToggleButton;
 import javax.swing.border.CompoundBorder;
 
 import MWC.GUI.Tool;
@@ -88,7 +89,7 @@ import MWC.GUI.Tool;
 /** extension of Swing button, to create one which implements one
  * of our Debrief tools
  */
-public class SwingToggleButton extends JCheckBox implements ActionListener
+public class SwingToggleButton extends JToggleButton implements ActionListener
 {
 
   /////////////////////////////////////////////////////////
@@ -165,18 +166,18 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
         this.setIcon(null);
         this.setText(theTool.getLabel());
       }
-      else
-      {
-        // try to set the other icon, if we can
-        final String iName = theTool.getImage();
-        if (iName != null)
-        {
-          // try to extend the filename
-          String selectedIconName = iName.substring(0, iName.indexOf("."));
-          selectedIconName += "_.gif";
-          super.setSelectedIcon(new ImageIcon(getClass().getClassLoader().getResource(selectedIconName)));
-        }
-      }
+//      else
+//      {
+//        // try to set the other icon, if we can
+//        final String iName = theTool.getImage();
+//        if (iName != null)
+//        {
+//          // try to extend the filename
+//          String selectedIconName = iName.substring(0, iName.indexOf("."));
+//          selectedIconName += "_.gif";
+//          super.setSelectedIcon(new ImageIcon(getClass().getClassLoader().getResource(selectedIconName)));
+//        }
+//      }
     }
   }
 

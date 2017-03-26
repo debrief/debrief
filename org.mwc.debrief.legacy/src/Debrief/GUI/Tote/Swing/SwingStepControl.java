@@ -1230,6 +1230,54 @@ public final class SwingStepControl extends StepControl implements
 			});
 		}
 	}
+	public static final class ImageToggleButton extends JToggleButton
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public ImageToggleButton(final String name, final String theIcon)
+		{
+			
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
+			java.net.URL iconURL = null;
+		
+			if (loader != null)
+			{
+				iconURL = loader.getResource(theIcon);
+				if (iconURL != null)
+					setIcon(new ImageIcon(iconURL));
+				
+			}
+			
+			// see if we failed to find icon
+			if (iconURL == null)
+				setText(name);
+			
+			setBorderPainted(false);
+			setToolTipText(name);
+			
+			this.setName(name);
+			
+			// update the UI to show just a line instead of a raised border
+			setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory
+					.createEmptyBorder(1, 1, 1, 1)));
+			
+			addMouseListener(new MouseAdapter()
+			{
+				public void mouseEntered(final MouseEvent e)
+				{
+					setBorderPainted(true);
+				}
+				
+				public void mouseExited(final MouseEvent e)
+				{
+					setBorderPainted(false);
+				}
+			});
+		}
+	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class

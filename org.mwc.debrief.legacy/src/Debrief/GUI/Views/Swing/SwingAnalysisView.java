@@ -203,6 +203,7 @@ package Debrief.GUI.Views.Swing;
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Frames.Swing.SwingSession;
 import Debrief.GUI.Tote.Swing.SwingStepControl;
+import Debrief.GUI.Tote.Swing.SwingStepControl.ImageToggleButton;
 import Debrief.GUI.Views.AnalysisView;
 import MWC.GUI.Chart.Swing.SwingChart;
 import MWC.GUI.Dialogs.AWT.RowLayout;
@@ -360,7 +361,7 @@ public class SwingAnalysisView extends AnalysisView
   private void addExtraToolbarButtons()
   {
     // create the manual/auto button
-    final JCheckBox overviewBtn = new SwingStepControl.ImageCheckbox("View overview", "images/overview.png", "images/overview_.gif");
+    final ImageToggleButton overviewBtn = new SwingStepControl.ImageToggleButton("View overview", "images/overview.png");
     overviewBtn.setMargin(new Insets(0, 5, 0, 0));
     overviewBtn.setSelected(false);
     overviewBtn.addItemListener(new ItemListener()
