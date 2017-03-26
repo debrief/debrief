@@ -304,6 +304,7 @@
 
 package Debrief.GUI.Views;
 
+import java.awt.Point;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -549,15 +550,58 @@ abstract public class AnalysisView extends PlainView implements
 		// _theTools.addElement(new MenuItemInfo(null, "Print Chart", new
 		// PrintChart(_theParent, _theChart), null, 'f'));
 		_theTools.addElement(new MenuItemInfo("View", null, "Fit", new FitToWin(
-				_theParent, _theChart), null, 'f'));
+				_theParent, _theChart){
+
+          @Override
+          public void execute()
+          {
+            super.execute();
+            // force screen redraw
+            _theChart.canvasResized();
+          }}, null, 'f'));
 		_theTools.addElement(new MenuItemInfo("View", "Drag", "Pan", new Pan(
 				_theChart, _theParent, null), null, 'P'));
 		_theTools.addElement(new MenuItemInfo("View", "Drag", "Rng Brg",
-				new RangeBearing(_theChart, _theParent, getStatusBar()), null, 'B'));
+				new RangeBearing(_theChart, _theParent, getStatusBar()){
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void areaSelected(WorldLocation theLocation, Point thePoint)
+          {
+            super.areaSelected(theLocation, thePoint);
+            
+            // force redraw
+            getChart().repaint();
+          }}, null, 'B'));
 		_theTools.addElement(new MenuItemInfo("View", "Drag", "Zoom", new ZoomIn(
-				_theChart, _theParent), null, 'I'));
+				_theChart, _theParent){
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void areaSelected(WorldLocation theLocation, Point thePoint)
+          {
+            super.areaSelected(theLocation, thePoint);
+            // force screen redraw
+            this.getChart().canvasResized();
+          }}, null, 'I'));
 		_theTools.addElement(new MenuItemInfo("View", null, "Zoom Out",
-				new ZoomOut(_theParent, _theChart), new java.awt.MenuShortcut(
+				new ZoomOut(_theParent, _theChart){
+
+      @Override
+      public void execute()
+      {
+        super.execute();
+        // force screen redraw
+        _theChart.canvasResized();
+      }}, new java.awt.MenuShortcut(
 						java.awt.event.KeyEvent.VK_SUBTRACT), 'O'));
 
 		// //////////////////////////////////////////////////////////
