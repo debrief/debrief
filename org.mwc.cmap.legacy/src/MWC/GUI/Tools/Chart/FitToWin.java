@@ -112,7 +112,7 @@ public class FitToWin extends PlainTool {
   /////////////////////////////////////////////////////////  
   
   /** keep a reference to the chart which we are acting upon*/
-  private final PlainChart _theChart;  
+  protected final PlainChart _theChart;  
   
   /////////////////////////////////////////////////////////
   // constructor
