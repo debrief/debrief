@@ -80,7 +80,7 @@ public class CreateVPFCoast extends PlainCreate
                         final MWC.GUI.Layers theData,
                         final MWC.GUI.PlainChart theChart)
 	{
-		this(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast.gif");
+		this(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast.png");
 	}
 
   protected String getMyPath()

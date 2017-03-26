@@ -115,7 +115,7 @@ public class ZoomIn extends PlainDragTool  implements Serializable
   //////////////////////////////////////////////////
   public ZoomIn(final PlainChart theChart,
                          final ToolParent theParent){ 
-    super(theChart, theParent, "Zoom in", "images/zoomin.gif");
+    super(theChart, theParent, "Zoom in", "images/zoomin.png");
   }
   
 

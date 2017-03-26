@@ -92,7 +92,7 @@ public class CreateETOPO_unused extends PlainCreateLayer
 										final MWC.GUI.Layers theData,
 										final MWC.GUI.PlainChart theChart)
 	{
-		super(theParent, thePanel, theData, theChart, "ETOPO Gridded Bathy", "images/etopo.gif");
+		super(theParent, thePanel, theData, theChart, "ETOPO Gridded Bathy", "images/etopo.png");
 
     _myParent = theParent;
 	}

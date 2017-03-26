@@ -360,7 +360,7 @@ public class SwingAnalysisView extends AnalysisView
   private void addExtraToolbarButtons()
   {
     // create the manual/auto button
-    final JCheckBox overviewBtn = new SwingStepControl.ImageCheckbox("View overview", "images/overview.gif", "images/overview_.gif");
+    final JCheckBox overviewBtn = new SwingStepControl.ImageCheckbox("View overview", "images/overview.png", "images/overview_.gif");
     overviewBtn.setMargin(new Insets(0, 5, 0, 0));
     overviewBtn.setSelected(false);
     overviewBtn.addItemListener(new ItemListener()

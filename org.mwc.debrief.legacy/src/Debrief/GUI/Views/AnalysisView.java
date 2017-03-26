@@ -604,10 +604,10 @@ abstract public class AnalysisView extends PlainView implements
 
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Label",
 				new CreateLabel(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Label", "images/label.gif"), null, ' '));
+						_theChart, "Label", "images/label.png"), null, ' '));
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Ellipse", "images/ellipse.gif")
+						_theChart, "Ellipse", "images/ellipse.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -619,7 +619,7 @@ abstract public class AnalysisView extends PlainView implements
 		// rectangle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Rectangle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Rectangle", "images/rectangle.gif")
+						_theChart, "Rectangle", "images/rectangle.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -632,7 +632,7 @@ abstract public class AnalysisView extends PlainView implements
 		// arc
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create arc",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Arc", "images/arc.gif")
+						_theChart, "Arc", "images/arc.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -643,7 +643,7 @@ abstract public class AnalysisView extends PlainView implements
 				}, null, ' ')); // circle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Circle", "images/circle.gif")
+						_theChart, "Circle", "images/circle.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -654,7 +654,7 @@ abstract public class AnalysisView extends PlainView implements
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create line",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Line", "images/line.gif")
+						_theChart, "Line", "images/line.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -668,7 +668,7 @@ abstract public class AnalysisView extends PlainView implements
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create polygon",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Polygon", "images/polygon.gif")
+						_theChart, "Polygon", "images/polygon.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{

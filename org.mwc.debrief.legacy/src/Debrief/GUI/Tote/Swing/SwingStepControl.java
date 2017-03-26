@@ -515,7 +515,7 @@ public final class SwingStepControl extends StepControl implements
 		_theToolbar.setMargin(new Insets(0, 0, 0, 0));
 
 		// create the edit button
-		_editStepBtn = new myJButton("Properties", "images/properties.gif");
+		_editStepBtn = new myJButton("Properties", "images/properties.png");
 		_stepActionListener = new ActionListener()
 		{
 			public void actionPerformed(final ActionEvent e)
@@ -526,7 +526,7 @@ public final class SwingStepControl extends StepControl implements
 		_editStepBtn.addActionListener(_stepActionListener);
 
 		// create the manual/auto button
-		_autoBtn = new ImageCheckbox("Auto", "images/timer.gif", "images/timer_down.gif");
+		_autoBtn = new ImageCheckbox("Auto", "images/timer.gif", "images/timer_down.png");
 		_autoBtn.setSelected(false);
 		_itemListener = new ItemListener()
 		{
@@ -539,7 +539,7 @@ public final class SwingStepControl extends StepControl implements
 		_autoBtn.setToolTipText("Step Automatically");
 
 		// create the layer manager viewer button
-		_showLayerMgrBtn = new myJButton("View Layer Manager", "images/layer_mgr.gif");
+		_showLayerMgrBtn = new myJButton("View Layer Manager", "images/layer_mgr.png");
 		_paintActionListener = new ActionListener()
 		{
 			public void actionPerformed(final ActionEvent e)

@@ -44,7 +44,7 @@ public class ZoomOut extends PlainTool
   ////////////////////////////////////////////////////////////
   public ZoomOut(final ToolParent theParent, 
                  final PlainChart theChart){      
-    super(theParent, "Zoom Out", "images/zoomout.gif");
+    super(theParent, "Zoom Out", "images/zoomout.png");
     // remember the chart we are acting upon
     _theChart = theChart;
   }
