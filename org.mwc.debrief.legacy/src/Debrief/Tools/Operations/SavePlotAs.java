@@ -31,7 +31,7 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
   ////////////////////////////////////////////////////////////
   public SavePlotAs(final ToolParent theParent,
                     final Session theSession){
-    this(theParent, theSession,  "Save Plot As...", "images/saveas.gif");
+    this(theParent, theSession,  "Save Plot As...", "images/save_as.png");
   }
 
   public SavePlotAs(final ToolParent theParent,

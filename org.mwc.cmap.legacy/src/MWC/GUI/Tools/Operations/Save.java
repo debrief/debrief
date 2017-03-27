@@ -91,7 +91,7 @@ abstract public class Save extends PlainTool
   public Save(final ToolParent theParent,
               final String theName,
               final String theSuffix){
-    this(theParent, theName, theSuffix, "images/save.gif");
+    this(theParent, theName, theSuffix, "images/save.png");
   }
 
   public Save(final ToolParent theParent,
@@ -103,6 +103,15 @@ abstract public class Save extends PlainTool
 
     _theSuffix = theSuffix;
     _lastDirectory = "";
+  }
+  
+  
+
+  @Override
+  public String getImage()
+  {
+    // TODO Auto-generated method stub
+    return super.getImage();
   }
 
   /////////////////////////////////////////////////////////////

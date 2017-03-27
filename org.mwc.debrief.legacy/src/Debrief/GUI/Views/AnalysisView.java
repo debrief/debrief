@@ -311,7 +311,6 @@ import java.util.Vector;
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.Tools.Operations.ImportData2;
-import Debrief.Tools.Operations.ImportRangeData;
 import Debrief.Tools.Operations.SavePlotAsXML;
 import Debrief.Tools.Operations.SavePlotXML;
 import Debrief.Tools.Palette.CreateLabel;
@@ -343,7 +342,6 @@ import MWC.GUI.Tools.Chart.ZoomIn;
 import MWC.GUI.Tools.Chart.ZoomOut;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor;
-import MWC.GUI.Tools.Operations.ShowVideo;
 import MWC.GUI.Tools.Palette.CreateCoast;
 import MWC.GUI.Tools.Palette.CreateGrid;
 import MWC.GUI.Tools.Palette.CreateLocalGrid;
@@ -521,23 +519,23 @@ abstract public class AnalysisView extends PlainView implements
 		// ' '));
 		_theTools.addElement(new MenuItemInfo("File", null, "Import",
 				new ImportData2(_theParent, null, _theSession), null, ' '));
-		_theTools.addElement(new MenuItemInfo("File", null, "Import Range",
-				new ImportRangeData(_theParent, _theProperties, _theSession.getData()),
-				null, 'G'));
+//		_theTools.addElement(new MenuItemInfo("File", null, "Import Range",
+//				new ImportRangeData(_theParent, _theProperties, _theSession.getData()),
+//				null, 'G'));
 
-		// NOTE: wrap this next creator, in case we haven't got the right files
-		// avaialble
-		try
-		{
-			_theTools.addElement(new MenuItemInfo("File", null, "Record to video",
-					new ShowVideo(_theParent, _theProperties, _theChart.getPanel()),
-					null, ' '));
-		}
-		catch (final java.lang.NoClassDefFoundError e)
-		{
-			System.err.println("Record to video not provided, JMF classes not found");
-			// e.printStackTrace();
-		}
+//		// NOTE: wrap this next creator, in case we haven't got the right files
+//		// avaialble
+//		try
+//		{
+//			_theTools.addElement(new MenuItemInfo("File", null, "Record to video",
+//					new ShowVideo(_theParent, _theProperties, _theChart.getPanel()),
+//					null, ' '));
+//		}
+//		catch (final java.lang.NoClassDefFoundError e)
+//		{
+//			System.err.println("Record to video not provided, JMF classes not found");
+//			// e.printStackTrace();
+//		}
 
 		_theTools.addElement(new MenuItemInfo("View", null, "Repaint", new Repaint(
 				_theParent, _theChart), null, 'R'));
@@ -593,11 +591,11 @@ abstract public class AnalysisView extends PlainView implements
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create ETOPO Bathy", new CreateTOPO(_theParent, _theProperties,
 						_theSession.getData(), _theChart), null, ' '));
-		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Buoy Pattern",
-				new Debrief.Tools.Palette.BuoyPatterns.CreateBuoyPattern(_theParent,
-						_theProperties, _theSession.getData(), _theChart, "Buoy Pattern",
-						"images/buoy.gif"), null, ' '));
+//		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+//				"Create Buoy Pattern",
+//				new Debrief.Tools.Palette.BuoyPatterns.CreateBuoyPattern(_theParent,
+//						_theProperties, _theSession.getData(), _theChart, "Buoy Pattern",
+//						"images/buoy.gif"), null, ' '));
 		// //////////////////////////////////////////////////////////
 		// now the shape creators
 		// //////////////////////////////////////////////////////////
