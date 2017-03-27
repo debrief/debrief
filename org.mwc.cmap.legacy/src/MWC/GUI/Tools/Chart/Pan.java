@@ -133,7 +133,7 @@ public class Pan extends PlainDragTool implements Serializable
                          final ToolParent theParent,
                          final String theImage,
                          final boolean isAlternate){
-    super(theChart, theParent, "Pan", "images/drag.gif", isAlternate);
+    super(theChart, theParent, "Pan", "images/hand.png", isAlternate);
   }
 
 
