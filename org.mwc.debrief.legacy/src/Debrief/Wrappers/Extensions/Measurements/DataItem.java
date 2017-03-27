@@ -31,5 +31,11 @@ public interface DataItem
    * @return
    */
   public DataFolder getParent();
+
+  /** change the name of this item
+   * 
+   * @param name
+   */
+  void setName(final String name);
   
 }

@@ -79,7 +79,7 @@ abstract public class Open extends PlainTool
   ////////////////////////////////////////////////////////////
 	/** the type of file to open
 	 */
-  String _theSuffix;
+  String [] _theSuffixs;
 	
 	/** the last directory we opened from
 	 */
@@ -95,16 +95,16 @@ abstract public class Open extends PlainTool
   /** open an existing data file
    * @param theParent parent application, where we can show the busy cursor
    * @param theLabel the label to put on the button
-   * @param theSuffix file suffix for type of file we are importing
+   * @param theSuffixs file suffix array for type of files we are importing
    * @param theDescription textual description of file type
    */
   public Open(final ToolParent theParent,
               final String theLabel,
-              final String theSuffix,
+              final String  [] theSuffixs,
 							final String theDescription){
     super(theParent, theLabel, "images/open.gif");
     
-    _theSuffix = theSuffix;
+    _theSuffixs = theSuffixs;
 		_lastDirectory = "";
 		_theDescription = theDescription;
   }
@@ -118,15 +118,30 @@ abstract public class Open extends PlainTool
     
     public boolean accept(final File p1, final String p2)
     {
-      return p2.endsWith(_theSuffix);
+      	
+    	for (String string : _theSuffixs) {
+    		if(p2.endsWith(string))
+    			return true;
+		}
+      return false;
     }
     
   }
   
   /** get a filename from the user
    */
-  private java.io.File[] getFileName(){    
-    return MWC.GUI.Dialogs.DialogFactory.getOpenFileName(_theSuffix,
+  private java.io.File[] getFileName(){  
+	StringBuilder bSufix = new StringBuilder();
+	for (int i = 0; i < _theSuffixs.length; i++) {
+		if(i!=0)
+		{
+			bSufix.append(",");
+		}
+		bSufix.append(_theSuffixs[i]);
+		
+	}
+	
+    return MWC.GUI.Dialogs.DialogFactory.getOpenFileName(bSufix.toString(),
 																												 _theDescription,
 																												 _lastDirectory);
   }                             

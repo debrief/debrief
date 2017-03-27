@@ -539,6 +539,9 @@ public class TextLabel extends PlainShape implements Editable
 
 		// convert the location
 		final java.awt.Point theOrigin = dest.toScreen(_theLocation);
+		
+		if(theOrigin==null)
+			return;
 
 		// sort out the color
 		final Color myColor = getColor();

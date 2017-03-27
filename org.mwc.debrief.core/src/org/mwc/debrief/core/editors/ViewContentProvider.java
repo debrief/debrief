@@ -33,9 +33,12 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.core.DebriefPlugin;
 
+import Debrief.Wrappers.Extensions.AdditionalData;
 import Debrief.Wrappers.Extensions.AdditionalProvider;
+import Debrief.Wrappers.Extensions.AdditionalProvider.ExistingChildrenMayNeedToBeWrapped;
 import Debrief.Wrappers.Extensions.AdditionalProviderWrapper;
 import Debrief.Wrappers.Extensions.ExtensionContentProvider;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
@@ -119,47 +122,108 @@ public class ViewContentProvider implements IStructuredContentProvider,
 
         final HasEditables thisL = (HasEditables) pl.getEditable();
 
-        // right, do they have their own order?
-        if (thisL.hasOrderedChildren())
-        {
-          int index = 0;
-          final Enumeration<Editable> numer = thisL.elements();
-          while (numer.hasMoreElements())
-          {
-            final Editable thisP = (Editable) numer.nextElement();
-            final EditableWrapper pw =
-                new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl
-                    .getLayers(), index);
-            list.add(pw);
-            index++;
-          }
-        }
-        else
-        {
-          final Enumeration<Editable> numer = thisL.elements();
-          if (numer != null)
-          {
-            while (numer.hasMoreElements())
-            {
-              final Editable thisP = (Editable) numer.nextElement();
-              final EditableWrapper pw =
-                  new EditableWrapper(thisP, pl, pl.getLayers());
-              list.add(pw);
-            }
-          }
-        }
+        final boolean childrenHaveBeenWrapped;
 
         // is this a data provider?
         if (thisL instanceof AdditionalProvider)
         {
           AdditionalProvider container = (AdditionalProvider) thisL;
+          AdditionalData additionalData = container.getAdditionalData();
 
-          // ok, we need to wrap this container
+          // ok, check if it implements the interface, AND it wants them wrapped
+          final boolean childrenShouldBeWrapped =
+              container instanceof AdditionalProvider.ExistingChildrenMayNeedToBeWrapped
+                  && ((AdditionalProvider.ExistingChildrenMayNeedToBeWrapped) container)
+                      .childrenNeedWrapping();
+
+          // and is there any additional data?
+          if (childrenShouldBeWrapped && additionalData.size() > 0)
+          {
+            // ok, do the children need to be wrapped?
+            ExistingChildrenMayNeedToBeWrapped ecw =
+                (ExistingChildrenMayNeedToBeWrapped) container;
+
+            // ok, get the collective name
+            final String collectiveName = ecw.getItemsName();
+
+            // ok. are there other child items? If so, we need to demote them
+            final Enumeration<Editable> numer = thisL.elements();
+            if (numer.hasMoreElements())
+            {
+              // yes, there are children present
+              Layer wrappedElements =
+                  new ChildDataWrapper(collectiveName, numer, thisL
+                      .hasOrderedChildren(), (Layer) thisL);
+
+              // ok, wrap it.
+              final EditableWrapper pw =
+                  new EditableWrapper.OrderedEditableWrapper(wrappedElements,
+                      pl, pl.getLayers(), 0);
+              list.add(pw);
+
+              // children handled. remember that
+              childrenHaveBeenWrapped = true;
+            }
+            else
+            {
+              childrenHaveBeenWrapped = false;
+            }
+          }
+          else
+          {
+            // don't need wrapping
+            childrenHaveBeenWrapped = false;
+          }
+
+          // ok, we still need to wrap this container
           Editable addData =
-              new AdditionalProviderWrapper(container.getAdditionalData(),
+              new AdditionalProviderWrapper(additionalData,
                   getContentProviderExtensions());
-          EditableWrapper pw = new EditableWrapper(addData, pl, pl.getLayers());
+          EditableWrapper pw =
+              new EditableWrapper.OrderedEditableWrapper(addData, pl, pl
+                  .getLayers(), 1);
           list.add(pw);
+        }
+        else
+        {
+          // no additional data present
+          childrenHaveBeenWrapped = false;
+        }
+
+        // have the children been wrapped?
+        if (!childrenHaveBeenWrapped)
+        {
+          // no, let's do it
+
+          // right, do they have their own order?
+          if (thisL.hasOrderedChildren())
+          {
+            int index = 0;
+            final Enumeration<Editable> numer = thisL.elements();
+            while (numer.hasMoreElements())
+            {
+              final Editable thisP = (Editable) numer.nextElement();
+              final EditableWrapper pw =
+                  new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl
+                      .getLayers(), index);
+              list.add(pw);
+              index++;
+            }
+          }
+          else
+          {
+            final Enumeration<Editable> numer = thisL.elements();
+            if (numer != null)
+            {
+              while (numer.hasMoreElements())
+              {
+                final Editable thisP = (Editable) numer.nextElement();
+                final EditableWrapper pw =
+                    new EditableWrapper(thisP, pl, pl.getLayers());
+                list.add(pw);
+              }
+            }
+          }
         }
 
         // ok, done.
@@ -190,6 +254,79 @@ public class ViewContentProvider implements IStructuredContentProvider,
         res = pw.hasChildren();
     }
     return res;
+  }
+
+  private static class ChildDataWrapper extends BaseLayer
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private final String collectiveName;
+    private final Enumeration<Editable> numer;
+    private final boolean hasOrderedChildren;
+    private final Layer parent;
+
+    public ChildDataWrapper(final String collName,
+        final Enumeration<Editable> enumerator, final boolean orderedChildren, Layer parent)
+    {
+      collectiveName = collName;
+      numer = enumerator;
+      hasOrderedChildren = orderedChildren;
+      this.parent = parent;
+    }
+
+    @Override
+    public String toString()
+    {
+      return collectiveName;
+    }
+
+    @Override
+    public Enumeration<Editable> elements()
+    {
+      return numer;
+    }
+
+    @Override
+    public boolean hasOrderedChildren()
+    {
+      return hasOrderedChildren;
+    }
+
+    @Override
+    public void add(Editable thePlottable)
+    {
+      parent.add(thePlottable);
+    }
+
+    @Override
+    public boolean hasEditor()
+    {
+      return parent.hasEditor();
+    }
+
+    @Override
+    public EditorType getInfo()
+    {
+      return parent.getInfo();
+    }
+
+    @Override
+    public void setVisible(boolean visible)
+    {
+      parent.setVisible(visible);
+    }
+
+    @Override
+    public boolean getVisible()
+    {
+      return parent.getVisible();
+    }
+    
+    
+
   }
 
   private List<ExtensionContentProvider> getContentProviderExtensions()

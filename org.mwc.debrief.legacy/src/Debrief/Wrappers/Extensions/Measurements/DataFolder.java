@@ -17,7 +17,7 @@ public class DataFolder extends ArrayList<DataItem> implements DataItem,
    */
   private static final long serialVersionUID = 1L;
 
-  public static final String DEFAULT_NAME = "Measurements";
+  public static final String DEFAULT_NAME = "Additional data";
 
   private String _name;
 
@@ -28,6 +28,29 @@ public class DataFolder extends ArrayList<DataItem> implements DataItem,
     this(DEFAULT_NAME);
   }
 
+  public static interface DatasetOperator
+  {
+    void process(TimeSeriesCore dataset);
+  }
+  
+  public void walkThisDataset(DatasetOperator operator)
+  {
+    for(DataItem item: this)
+    {
+      if(item instanceof TimeSeriesCore)
+      {
+        TimeSeriesCore ts = (TimeSeriesCore) item;
+        operator.process(ts);
+      }
+      else if(item instanceof DataFolder)
+      {
+        DataFolder folder = (DataFolder) item;
+        folder.walkThisDataset(operator);
+      }
+    }
+  }
+  
+  
   @Override
   public boolean add(DataItem item)
   {

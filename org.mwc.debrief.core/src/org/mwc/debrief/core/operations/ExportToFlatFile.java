@@ -35,6 +35,8 @@ import org.mwc.debrief.core.wizards.FlatFilenameWizardPage;
 import Debrief.ReaderWriter.FlatFile.FlatFileExporter;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.ArrayOffsetHelper;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GenericData.TimePeriod;
@@ -117,10 +119,22 @@ public class ExportToFlatFile extends TimeControllerOperation
 			if (thisS.getVisible())
 				sensorCount++;
 
-			// does it have an array offset
-			if (thisS.getSensorOffset() != null)
-				if (thisS.getSensorOffset().getValue() != 0)
-					foundOne = true;
+      // is a legacy mode?
+      final ArrayCentreMode arrayMode = thisS.getArrayCentreMode();
+      if (arrayMode instanceof ArrayOffsetHelper.LegacyArrayOffsetModes)
+      {
+        if (thisS.getSensorOffset() != null
+            && thisS.getSensorOffset().getValue() != 0)
+        {
+          foundOne = true;
+        }
+      }
+      else
+      {
+        // ok, we're using measured data. Assume it's suitable, since by definition
+        // it contains an estimate of array location
+        foundOne = true;
+      }
 		}
 
 		// right, special handling depending on run mode

@@ -20,6 +20,9 @@ import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 import org.mwc.debrief.core.providers.measured_data.FolderWrapper;
 
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 import MWC.GUI.Editable;
 
 public class MeasuredDataImageHelper implements ViewLabelImageHelper
@@ -27,12 +30,34 @@ public class MeasuredDataImageHelper implements ViewLabelImageHelper
 
 	public ImageDescriptor getImageFor(final Editable editable)
 	{
-		ImageDescriptor res = null;
+		final ImageDescriptor res;
 		
 		if (editable instanceof FolderWrapper)
+		{
 			res = CorePlugin.getImageDescriptor("icons/16/folder.png");
+		}
 		else if (editable instanceof DatasetWrapper)
-			res = CorePlugin.getImageDescriptor("icons/16/measurement.png");		 
+		{
+		  // sort out the correct number of dimensions
+		  DatasetWrapper sw = (DatasetWrapper) editable;
+		  TimeSeriesCore ds = sw.getDataset();
+		  if(ds instanceof TimeSeriesDatasetDouble2)
+		  {
+	      res = CorePlugin.getImageDescriptor("icons/16/dataset_2.png");
+		  }
+		  else if(ds instanceof TimeSeriesDatasetDouble)
+      {
+        res = CorePlugin.getImageDescriptor("icons/16/dataset_1.png");
+      }
+		  else
+		  {
+		    res = null;
+		  }
+		}
+		else
+		{
+		  res = null;
+		}
 		return res;
 	}
 

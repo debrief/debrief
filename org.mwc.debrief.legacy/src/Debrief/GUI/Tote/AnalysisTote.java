@@ -348,6 +348,10 @@ abstract public class AnalysisTote implements Pane,
           nearSec = nearSecs[0];
         }
       }
+      else
+      {
+        nearSec = pw;
+      }
 
       tc.update(nearSec, pw, _theCurrentTime);
 

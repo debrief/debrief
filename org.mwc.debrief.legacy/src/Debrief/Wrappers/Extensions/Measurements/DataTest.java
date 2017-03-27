@@ -7,12 +7,13 @@ import java.io.ObjectOutputStream;
 
 import junit.framework.TestCase;
 
+@Deprecated
 public class DataTest extends TestCase
 {
 
   public void testSerialise()
   {
-    TimeSeriesDouble original = new TimeSeriesDouble("Data", "Seconds");
+    TimeSeriesTmpDouble original = new TimeSeriesTmpDouble("Data", "Seconds");
 
     original.add(12L, 100d);
     original.add(15L, 200d);
@@ -42,7 +43,7 @@ public class DataTest extends TestCase
       bis.close();
       iis.close();
 
-      TimeSeriesDouble clone = (TimeSeriesDouble) oj;
+      TimeSeriesCore clone = (TimeSeriesCore) oj;
 
       clone.printAll();
     }
@@ -65,15 +66,15 @@ public class DataTest extends TestCase
     d0_1.add(d0_1_2);
     d0.add(d0_2);
 
-    TimeSeriesDouble timeD1 = new TimeSeriesDouble("TimeDouble", "Some units");
+    TimeSeriesTmpDouble timeD1 = new TimeSeriesTmpDouble("TimeDouble", "Some units");
     timeD1.add(12L, 13D);
     timeD1.add(14L, 15D);
 
-    TimeSeriesDouble timeD2 = new TimeSeriesDouble("TimeDouble", "Some units");
+    TimeSeriesTmpDouble timeD2 = new TimeSeriesTmpDouble("TimeDouble", "Some units");
     timeD2.add(22L, 23D);
     timeD2.add(34L, 25D);
 
-    TimeSeriesDouble timeS1 = new TimeSeriesDouble("TimeString", "Some units");
+    TimeSeriesTmpDouble timeS1 = new TimeSeriesTmpDouble("TimeString", "Some units");
     timeS1.add(12L, 313d);
     timeS1.add(14L, 315D);
 
@@ -87,7 +88,7 @@ public class DataTest extends TestCase
 
   public void testDataset()
   {
-    TimeSeriesDouble timeD = new TimeSeriesDouble("TimeDouble", "Some units");
+    TimeSeriesTmpDouble timeD = new TimeSeriesTmpDouble("TimeDouble", "Some units");
 
     timeD.printAll();
 

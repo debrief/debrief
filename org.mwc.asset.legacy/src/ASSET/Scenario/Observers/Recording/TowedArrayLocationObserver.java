@@ -155,7 +155,7 @@ public class TowedArrayLocationObserver extends RecordStatusToFileObserverType
     // ok, see if we are ready to sort out the array locations
     for (Double thisO : _offsets)
     {
-      ArrayLength sensorOffset = new ArrayLength(thisO);
+      ArrayLength sensorOffset = new ArrayLength(-thisO);
 
       // get the backtrace to this distance
       FixWrapper pos = track.getBacktraceTo(debTime, sensorOffset, true);

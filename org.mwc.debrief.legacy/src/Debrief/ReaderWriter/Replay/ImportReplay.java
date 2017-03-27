@@ -66,6 +66,7 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.PlainLineImporter.ImportRequiresFinalisation;
 import MWC.Utilities.ReaderWriter.ReaderMonitor;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -1080,7 +1081,6 @@ public class ImportReplay extends PlainImporterBase
         // loop through the lines
         while (thisLine != null)
         {
-
           // keep line counter
           lineCounter++;
 
@@ -1089,9 +1089,11 @@ public class ImportReplay extends PlainImporterBase
 
           // read another line
           thisLine = br.readLine();
-
         }
 
+        // see if any importers need to finalise
+        finaliseImporters();
+        
         // lastly have a go at formatting these tracks
         for (int k = 0; k < _myFormatters.length; k++)
         {
@@ -1133,6 +1135,35 @@ public class ImportReplay extends PlainImporterBase
       MWC.Utilities.Errors.Trace.trace(e);
       // show the message dialog
       super.readError(fName, lineCounter, "Missing field error", thisLine);
+    }
+  }
+
+  /** some importers may need to finalize, if there is end of import
+   * processing to conduct. Trigger that here
+   */
+  private void finaliseImporters()
+  {
+    if (_extensionImporters != null)
+    {
+      for (final ExtensibleLineImporter importer : _extensionImporters)
+      {
+        if(importer instanceof PlainLineImporter.ImportRequiresFinalisation)
+        {
+          PlainLineImporter.ImportRequiresFinalisation fin = (ImportRequiresFinalisation) importer;
+          fin.finalise();
+        }
+      }
+    }
+    if (_coreImporters != null)
+    {
+      for (final PlainLineImporter importer : _coreImporters)
+      {
+        if(importer instanceof PlainLineImporter.ImportRequiresFinalisation)
+        {
+          PlainLineImporter.ImportRequiresFinalisation fin = (ImportRequiresFinalisation) importer;
+          fin.finalise();
+        }
+      }
     }
   }
 

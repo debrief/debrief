@@ -256,6 +256,8 @@ public class SwingCanvas extends javax.swing.JComponent
   // member variables
   ////////////////////////////////////////////////////////////
 
+	
+	private final Object LOCK = new Object();
   /**
 	 * 
 	 */
@@ -963,61 +965,65 @@ public class SwingCanvas extends javax.swing.JComponent
    */
   private void paintPlot()
   {
-    if (_dblBuff == null)
-    {
-      // we may need to recreate the image if
-      // we have just restored this session
-      final java.awt.Dimension sz = this.getSize();
-
-      // check that we are looking at a valid plot (the panel isn't minimised)
-      if ((sz.width <= 0) || (sz.height <= 0))
-      {
-        // don't bother with repaint - there's no plot visible anyway
-      }
-      else
-      {
-        _dblBuff = createImage(sz.width,
-                               sz.height);
-      }
-
-      // see if we have a screen size yet - if not we can't create our buffer
-      if (_dblBuff == null)
-      {
-        return;
-      }
-
-    }
-
-    // temporarily set the dblBuff object to null,
-    // to stop anybody borrowing it - and write to a
-    // temporary buffer
-    final java.awt.Image tmpBuff = _dblBuff;
-    _dblBuff = null;
-
-
-    // hey, let's double-buffer it
-    final java.awt.Graphics g1 = tmpBuff.getGraphics();
-
-    // prepare the ground (remember the graphics dest for a start)
-    startDraw(g1);
-
-    // erase background
-    final java.awt.Dimension sz = this.getSize();
-    g1.setColor(this.getBackgroundColor());
-    g1.fillRect(0, 0, sz.width, sz.height);
-
-    // do the actual paint
-    paintIt(this);
-
-    // all finished, close it now
-    endDraw(null);
-
-    // and dispose
-    g1.dispose();
-
-    // put the image back in our buffer
-    _dblBuff = tmpBuff;
-
+	  synchronized (LOCK)
+	  {
+	
+	    if (_dblBuff == null)
+	    {
+	      // we may need to recreate the image if
+	      // we have just restored this session
+	      final java.awt.Dimension sz = this.getSize();
+	
+	      // check that we are looking at a valid plot (the panel isn't minimised)
+	      if ((sz.width <= 0) || (sz.height <= 0))
+	      {
+	        // don't bother with repaint - there's no plot visible anyway
+	      }
+	      else
+	      {
+	        _dblBuff = createImage(sz.width,
+	                               sz.height);
+	      }
+	
+	      // see if we have a screen size yet - if not we can't create our buffer
+	      if (_dblBuff == null)
+	      {
+	        return;
+	      }
+	
+	    }
+	
+	    // temporarily set the dblBuff object to null,
+	    // to stop anybody borrowing it - and write to a
+	    // temporary buffer
+	    final java.awt.Image tmpBuff = _dblBuff;
+	    _dblBuff = null;
+	
+	
+	    // hey, let's double-buffer it
+	    final java.awt.Graphics g1 = tmpBuff.getGraphics();
+	
+	    // prepare the ground (remember the graphics dest for a start)
+	    startDraw(g1);
+	
+	    // erase background
+	    final java.awt.Dimension sz = this.getSize();
+	    g1.setColor(this.getBackgroundColor());
+	    g1.fillRect(0, 0, sz.width, sz.height);
+	
+	    // do the actual paint
+	    paintIt(this);
+	
+	    // all finished, close it now
+	    endDraw(null);
+	
+	    // and dispose
+	    g1.dispose();
+	
+	    // put the image back in our buffer
+	    _dblBuff = tmpBuff;
+	
+	}
   }
 
   /**

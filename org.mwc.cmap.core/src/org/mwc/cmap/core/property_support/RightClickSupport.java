@@ -605,24 +605,27 @@ public class RightClickSupport
 	{
 		final Vector<MethodDescriptor> res = new Vector<MethodDescriptor>();
 
-    final int aLen = a.length;
-    final int bLen = b.length;
+    if (a != null && b != null)
+    {
+      final int aLen = a.length;
+      final int bLen = b.length;
 
-		for (int cnta = 0; cnta < aLen; cnta++)
-		{
-			final MethodDescriptor thisP = a[cnta];
-			if (b != null)
-			{
-				for (int cntb = 0; cntb < bLen; cntb++)
-				{
-					final MethodDescriptor thatP = b[cntb];
-					if (thisP.getDisplayName().equals(thatP.getDisplayName()))
-					{
-						res.add(thisP);
-					}
-				}
-			}
-		}
+      for (int cnta = 0; cnta < aLen; cnta++)
+      {
+        final MethodDescriptor thisP = a[cnta];
+        if (b != null)
+        {
+          for (int cntb = 0; cntb < bLen; cntb++)
+          {
+            final MethodDescriptor thatP = b[cntb];
+            if (thisP.getDisplayName().equals(thatP.getDisplayName()))
+            {
+              res.add(thisP);
+            }
+          }
+        }
+      }
+    }
 		return res.toArray(demo);
 	}
 

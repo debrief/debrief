@@ -161,13 +161,24 @@ package Debrief.Wrappers;
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Tools.Properties.ArrayCentreModePropertyEditor;
 import Debrief.Wrappers.Extensions.AdditionalData;
 import Debrief.Wrappers.Extensions.AdditionalProvider;
+import Debrief.Wrappers.Extensions.AdditionalProvider.ExistingChildrenMayNeedToBeWrapped;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
+import Debrief.Wrappers.Track.ArrayOffsetHelper;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.DeferredDatasetArrayMode;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.MeasuredDatasetArrayMode;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -181,10 +192,11 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class SensorWrapper extends TacticalDataWrapper implements
-    GriddableSeriesMarker, Cloneable, AdditionalProvider
+    GriddableSeriesMarker, Cloneable, AdditionalProvider, ExistingChildrenMayNeedToBeWrapped
 {
 
   /**
@@ -209,7 +221,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * fwd/backward of the attack datum, or whether it's a dragged sensor that follows the track of
    * it's host platform (like a towed array).
    */
-  private boolean _wormInHole = true;
+  private ArrayCentreMode _arrayCentreMode = LegacyArrayOffsetModes.WORM;
 
   /**
    * the radiated (source) transmitted frequency
@@ -219,11 +231,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
   private HiResDate _lastDataFrequency = new HiResDate(0,
       TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
-  
-  /** handler for supplemental data
+
+  /**
+   * handler for supplemental data
    * 
    */
   private AdditionalData _additionalData;
+
 
   // //////////////////////////////////////
   // constructors
@@ -248,9 +262,12 @@ public class SensorWrapper extends TacticalDataWrapper implements
     this.setHost(other.getHost());
     this.setColor(other.getColor());
     this.setVisible(other.getVisible());
-    this.setWormInHole(other.getWormInHole());
     this.setSensorOffset(other.getSensorOffset());
     this.setLineThickness(other.getLineThickness());
+    this.setArrayCentreMode(other.getArrayCentreMode());
+    // note: we no longer use the boolean worm in hole
+    // mode, it's part of the above array centre mode
+    // this.setWormInHole(other.getWormInHole());
   }
 
   // //////////////////////////////////////
@@ -370,11 +387,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
       scw.setSensor(this);
     }
   }
-  
+
   @Override
   public AdditionalData getAdditionalData()
   {
-    if(_additionalData == null)
+    if (_additionalData == null)
     {
       _additionalData = new AdditionalData();
     }
@@ -629,26 +646,84 @@ public class SensorWrapper extends TacticalDataWrapper implements
   // constructor
   // ///////////////////////////////////////////
 
+  /**
+   * 
+   * @return yes/no for whether to use worm in hole
+   * @deprecated we no long use this boolean mode. We now allow custom array modes - so please use
+   *             {@link #setArrayCentreMode(String)}
+   */
   public Boolean getWormInHole()
   {
-    return _wormInHole;
+    return getArrayCentreMode().equals(LegacyArrayOffsetModes.WORM);
   }
 
+  /**
+   * Set the array centre mode to worm in hole.
+   * 
+   * @param wormInHole
+   *          boolean yes/no
+   * @deprecated we no long use this boolean mode. We now allow custom array modes - so please use
+   *             {@link #setArrayCentreMode(String)}.
+   */
+  @Deprecated
   public void setWormInHole(final Boolean wormInHole)
   {
-    // see if this is a changed setting
-    if (wormInHole != _wormInHole)
+    // sort out the new mode
+    final ArrayCentreMode mode =
+        wormInHole ? LegacyArrayOffsetModes.WORM : LegacyArrayOffsetModes.PLAIN;
+
+    setArrayCentreMode(mode);
+  }
+
+  /**
+   * get the current array centre mode. Note: this now includes the ability to name a measured data
+   * source as the origin for the sensor
+   * 
+   * @return one of {@link #ArrayCentreMode} or the name of a specific dataset
+   */
+  public ArrayCentreMode getArrayCentreMode()
+  {
+    // ok, see if we're using a deferred mode. If we are, we should correct it
+    if (_arrayCentreMode instanceof DeferredDatasetArrayMode)
+    {
+      _arrayCentreMode =
+          ArrayOffsetHelper.sortOutDeferredMode(
+              (DeferredDatasetArrayMode) _arrayCentreMode, this);
+    }
+
+    return _arrayCentreMode;
+  }
+
+  /**
+   * get the current array centre mode. Note: this now includes the ability to name a measured data
+   * source as the origin for the sensor
+   * 
+   * @param one
+   *          of {@link #ArrayCentreMode} or the name of a specific dataset
+   */
+  public void setArrayCentreMode(final ArrayCentreMode mode)
+  {
+    if (mode != _arrayCentreMode)
     {
       // remember the new value
-      _wormInHole = wormInHole;
+      _arrayCentreMode = mode;
 
       // we've got to recalculate our positions now, really.
       clearChildOffsets();
 
       // ok, fire the property change - to tell folks we've moved
-      firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, wormInHole);
-
+      firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, _arrayCentreMode);
     }
+  }
+
+  /**
+   * retrieve any measured datasets that are capable of providing a location for the sensor
+   * 
+   * @return list of suitable datasets
+   */
+  private List<ArrayCentreMode> getAdditionalArrayCentreModes()
+  {
+    return ArrayOffsetHelper.getAdditionalArrayCentreModes(this);
   }
 
   public WorldDistance.ArrayLength getSensorOffset()
@@ -705,7 +780,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
   /**
    * the definition of what is editable about this object
    */
-  public final class SensorInfo extends Editable.EditorType
+  public final class SensorInfo extends Editable.EditorType implements Editable.DynamicDescriptors
   {
 
     /**
@@ -729,7 +804,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
     {
       try
       {
-        final PropertyDescriptor[] res =
+        PropertyDescriptor[] res =
             {
                 prop("Name", "the name for this sensor"),
                 prop("Visible", "whether this sensor data is visible"),
@@ -737,12 +812,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
                     "the thickness to draw these sensor lines"),
                 displayProp("DefaultColor", "Default color",
                     "the default colour to plot this set of sensor data"),
-                displayProp("SensorOffset", "Sensor offset",
-                    "the forward/backward offset (m) of this sensor from the attack datum"),
-                displayProp(
-                    "WormInHole",
-                    "Worm in hole",
-                    "whether the origin of this sensor is offset in straight line, or back along the host track"),
                 displayProp("Coverage", "Start/Finish DTG",
                     "the time coverage for this sensor"),
                 displayLongProp("VisibleFrequency", "Visible frequency",
@@ -751,11 +820,38 @@ public class SensorWrapper extends TacticalDataWrapper implements
                 displayExpertProp("BaseFrequency", "Base frequency",
                     "The base frequency of the source for this sound", OPTIONAL),
                 displayExpertLongProp("ResampleDataAt", "Resample data at",
-                    "the sensor cut sample rate",TEMPORAL, 
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
+                    "the sensor cut sample rate", TEMPORAL,
+                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                displayExpertLongProp("ArrayCentreMode", "Array Centre Mode",
+                    "the method used to calculate the array centre", SPATIAL,
+                    ArrayCentreModePropertyEditor.class)};
 
         res[2]
             .setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+
+        // the array centre editor needs to know about our data. Inject the suitable
+        // array centre options
+        List<ArrayCentreMode> arrayCentres = getAdditionalArrayCentreModes();
+        ArrayCentreModePropertyEditor.setCustomModes(arrayCentres);
+
+        // hey, only bother with the sensor offset if we're in a legacy mode
+        ArrayCentreMode curMode = getArrayCentreMode();
+        if (curMode instanceof LegacyArrayOffsetModes)
+        {
+          List<PropertyDescriptor> tmpList =
+              new ArrayList<PropertyDescriptor>();
+          tmpList.addAll(Arrays.asList(res));
+
+          // ok, add the sensor offset distance
+          tmpList
+              .add(displayProp("SensorOffset", "Sensor offset",
+                  "the forward/backward offset (m) of this sensor from the attack datum"));
+
+          res = tmpList.toArray(res);
+          
+          // NOTE: this info class to implement Editable.DynamicDescriptors 
+          // to avoid these descriptors being cached
+        }
 
         return res;
       }
@@ -1256,7 +1352,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
   public String getCoverage()
   {
     final String res;
-    if(_myContacts.isEmpty())
+    if (_myContacts.isEmpty())
     {
       res = "n/a";
     }
@@ -1264,12 +1360,14 @@ public class SensorWrapper extends TacticalDataWrapper implements
     {
       final SensorContactWrapper first =
           (SensorContactWrapper) _myContacts.first();
-      final SensorContactWrapper last = (SensorContactWrapper) _myContacts.last();
+      final SensorContactWrapper last =
+          (SensorContactWrapper) _myContacts.last();
       res =
-          FullFormatDateTime.toString(first.getDTG().getDate().getTime()) + " - "
+          FullFormatDateTime.toString(first.getDTG().getDate().getTime())
+              + " - "
               + FullFormatDateTime.toString(last.getDTG().getDate().getTime());
     }
-      
+
     return res;
   }
 
@@ -1289,6 +1387,80 @@ public class SensorWrapper extends TacticalDataWrapper implements
   {
     throw new RuntimeException(
         "should not have called manual save for Sensor Wrapper");
+  }
+
+  /**
+   * use the specified measured dataset to produce a sensor origin
+   * 
+   * @param dataset
+   * @param time
+   * @param nearestTrackFix
+   * @return
+   */
+  public WorldLocation getMeasuredLocationAt(
+      final MeasuredDatasetArrayMode measuredMode, HiResDate time,
+      WorldLocation hostLocation)
+  {
+    // ok, is it a relative or absolute dataset
+    TimeSeriesDatasetDouble2 dataset = measuredMode.getDataset();
+
+    final String units = dataset.getUnits();
+
+    final int index = dataset.getIndexNearestTo(time.getDate().getTime());
+
+    final WorldLocation res;
+
+    if (index == TimeSeriesDatasetDouble2.INVALID_INDEX)
+    {
+      // ok, failed
+      res = null;
+    }
+    else
+    {
+      double val1 = dataset.getValue1At(index);
+      double val2 = dataset.getValue2At(index);
+
+      if (units.equals("m"))
+      {
+        // ok, relative calculation
+        double rangeM = Math.sqrt(Math.pow(val1, 2) + Math.pow(val2, 2));
+        double angleRads = Math.atan2(val1, val2);
+
+        res =
+            hostLocation.add(new WorldVector(angleRads, new WorldDistance(
+                rangeM, WorldDistance.METRES), new WorldDistance(0,
+                WorldDistance.METRES)));
+
+      }
+      else
+      {
+        // ok, absolute location
+        res = new WorldLocation(val1, val2, 0);
+      }
+    }
+
+    return res;
+  }
+
+  public WorldLocation getArrayCentre(HiResDate time, WorldLocation hostLocation,
+      TrackWrapper track)
+  {
+    return ArrayOffsetHelper.getArrayCentre(this, time, hostLocation, track);
+  }
+
+  @Override
+  public String getItemsName()
+  {
+    return "Cuts (" + this.size() + " items)";
+  }
+
+  @Override
+  public boolean childrenNeedWrapping()
+  {
+    // this is always true, since objects using a sensor-wrapper
+    // always expect the cuts to be returned from the
+    // elements() call
+    return true;
   }
 
 }

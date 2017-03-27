@@ -9,9 +9,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import junit.framework.TestCase;
-
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 
 public class DatasetWrapper implements Editable, Serializable
   {
@@ -38,8 +39,9 @@ public class DatasetWrapper implements Editable, Serializable
         try
         {
           final PropertyDescriptor[] myRes = {
-              displayProp("ItemCount", "Number of items", "Number of items in this dataset", TEMPORAL),
-              displayProp("Units", "Units for data", "Units for this dataset", TEMPORAL)
+              displayProp("ItemCount", "Number of items", "Number of items in this dataset", FORMAT),
+              displayProp("Units", "Units for data", "Units for this dataset", FORMAT),
+              displayProp("Name", "Name", "Name for this dataset", FORMAT)
               };
 
           return myRes;
@@ -53,11 +55,11 @@ public class DatasetWrapper implements Editable, Serializable
     }
     
     
-    final TimeSeriesDouble _data;
+    final TimeSeriesCore _data;
     
     private transient DatasetWrapperInfo _myEditor = null;
 
-    public DatasetWrapper(final TimeSeriesDouble folder)
+    public DatasetWrapper(final TimeSeriesCore folder)
     {
       _data = folder;
     }
@@ -98,6 +100,12 @@ public class DatasetWrapper implements Editable, Serializable
       return _data.getName();
     }
 
+    @FireReformatted
+    public void setName(final String name)
+    {
+      _data.setName(name);
+    }
+    
     @Override
     public boolean hasEditor()
     {
@@ -114,11 +122,11 @@ public class DatasetWrapper implements Editable, Serializable
     {
       public void testSerialise()
       {
-        TimeSeriesDouble original =
-            new TimeSeriesDouble("Data", "Seconds");
-
-        original.add(12L, 100d);
-        original.add(15L, 200d);
+        long[] times = new long[]{12L, 14L};
+        double[] values = new double[]{100d, 200d};
+        
+        TimeSeriesDatasetDouble original =
+            new TimeSeriesDatasetDouble("Data", "Seconds", times, values);
         
         DatasetWrapper wrapper = new DatasetWrapper(original);
         
@@ -159,7 +167,7 @@ public class DatasetWrapper implements Editable, Serializable
 
     }
 
-    public TimeSeriesDouble getDataset()
+    public TimeSeriesCore getDataset()
     {
       return _data;
     }

@@ -349,7 +349,8 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	}
 
 	// find hte sensor
-	private SensorWrapper getSensor(final String name)
+	@SuppressWarnings("deprecation")
+  private SensorWrapper getSensor(final String name)
 	{
 		final Enumeration<Editable> iter = myTrack.getSensors().elements();
 		SensorWrapper res = null;

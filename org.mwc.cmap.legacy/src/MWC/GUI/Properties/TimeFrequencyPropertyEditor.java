@@ -166,7 +166,6 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
     return new HiResDate(_myFreq);
   }
 
-
   public void setValue(final Object p1)
   {
     if (p1 instanceof HiResDate)

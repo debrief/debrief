@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class TimeSeriesDoubleHandler extends
@@ -75,7 +75,7 @@ abstract public class TimeSeriesDoubleHandler extends
   private static final String NAME = "Name";
   private static final String MY_TYPE = "TimeSeriesDouble";
 
-  public static void exportThisDataset(final TimeSeriesDouble dataset,
+  public static void exportThisDataset(final TimeSeriesDatasetDouble dataset,
       final Element parent, final Document doc)
   {
     final Element ds = doc.createElement(MY_TYPE);
@@ -135,20 +135,24 @@ abstract public class TimeSeriesDoubleHandler extends
     addHandler(new MeasurementHandler());
   }
 
-  abstract public void addDataset(TimeSeriesDouble dataset);
+  abstract public void addDataset(TimeSeriesDatasetDouble dataset);
 
   @Override
   public final void elementClosed()
   {
-    // create the dataset
-    final TimeSeriesDouble dataset = new TimeSeriesDouble(_name, _units);
-
-    final Iterator<Long> iIter = _indices.iterator();
-    final Iterator<Double> vIter = _values.iterator();
-    while (iIter.hasNext())
+    // sort out the lists
+    long[] times = new long[_indices.size()];
+    double[] values = new double[_values.size()];
+    
+    // put the data into arrays
+    for(int i = 0; i<_indices.size();i++)
     {
-      dataset.add(iIter.next(), vIter.next());
-    }
+      times[i] = _indices.get(i);
+      values[i] = _values.get(i);
+     }
+    
+    // create the dataset
+    final TimeSeriesDatasetDouble dataset = new TimeSeriesDatasetDouble(_name, _units, times, values);
 
     // and store it
     addDataset(dataset);

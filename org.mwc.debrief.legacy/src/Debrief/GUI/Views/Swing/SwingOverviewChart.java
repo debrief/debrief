@@ -120,6 +120,17 @@ final class SwingOverviewChart extends SwingChart implements java.beans.Property
         // add ourselves as the listener
         setChartDragListener(this);
       }
+
+      @Override
+      public void areaSelected(WorldLocation theLocation, Point thePoint)
+      {
+        super.areaSelected(theLocation, thePoint);
+        
+        // force screen redraw
+        _targetChart.canvasResized();
+      }
+			
+			
     };
 
     _myZoom.execute();

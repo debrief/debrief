@@ -83,6 +83,17 @@ package MWC.Utilities.ReaderWriter;
 public interface PlainLineImporter 
 {
 
+  /** interface for importers that need to be finalised
+   * 
+   */
+  public static interface ImportRequiresFinalisation
+  {
+    /** perform any end of import processing
+     * 
+     */
+    public void finalise();
+  }
+  
   /**
    * the normal token delimiter (for comma & white-space separated fields)
    */

@@ -20,9 +20,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDouble;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.DataItem;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
+import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble2;
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -54,10 +55,15 @@ abstract public class DataFolderHandler extends
         final DataFolder childFolder = (DataFolder) child;
         exportThisFolder(childFolder, df, doc);
       }
-      else if (child instanceof TimeSeriesDouble)
+      else if (child instanceof TimeSeriesDatasetDouble)
       {
-        final TimeSeriesDouble childD = (TimeSeriesDouble) child;
+        final TimeSeriesDatasetDouble childD = (TimeSeriesDatasetDouble) child;
         TimeSeriesDoubleHandler.exportThisDataset(childD, df, doc);
+      }
+      else if (child instanceof TimeSeriesDatasetDouble2)
+      {
+        final TimeSeriesDatasetDouble2 childD = (TimeSeriesDatasetDouble2) child;
+        TimeSeries2DoubleHandler.exportThisDataset(childD, df, doc);
       }
     }
 
@@ -88,7 +94,15 @@ abstract public class DataFolderHandler extends
     addHandler(new TimeSeriesDoubleHandler()
     {
       @Override
-      public void addDataset(final TimeSeriesDouble dataset)
+      public void addDataset(final TimeSeriesDatasetDouble dataset)
+      {
+        _folder.add(dataset);
+      }
+    });
+    addHandler(new TimeSeries2DoubleHandler()
+    {
+      @Override
+      public void addDataset(final TimeSeriesDatasetDouble2 dataset)
       {
         _folder.add(dataset);
       }
