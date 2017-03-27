@@ -102,7 +102,7 @@ abstract public class Open extends PlainTool
               final String theLabel,
               final String  [] theSuffixs,
 							final String theDescription){
-    super(theParent, theLabel, "images/open.gif");
+    super(theParent, theLabel, "images/plot_file.png");
     
     _theSuffixs = theSuffixs;
 		_lastDirectory = "";

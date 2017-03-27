@@ -80,7 +80,7 @@ import MWC.GUI.Tools.PlainTool;
               final MWC.GUI.Properties.PropertiesPanel thePanel,
               final MWC.GUI.Layers theData){
 
-    super(theParent, theLabel, "images/layer_mgr.gif");
+    super(theParent, theLabel, "images/layer_mgr.png");
 
     // store the properties window, it's the destination we have to use
     _theProperties = thePanel;

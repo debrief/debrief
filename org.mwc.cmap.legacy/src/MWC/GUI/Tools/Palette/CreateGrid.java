@@ -65,7 +65,7 @@ public class CreateGrid extends PlainCreate
 										final MWC.GUI.Layers theData,
 										final MWC.GUI.PlainChart theChart)
 	{
-		super(theParent, thePanel, theLayer, theData, theChart, "Grid", "images/grid.gif");
+		super(theParent, thePanel, theLayer, theData, theChart, "Grid", "images/grid_add.png");
 	}
 
 	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)

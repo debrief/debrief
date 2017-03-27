@@ -515,7 +515,7 @@ public final class SwingStepControl extends StepControl implements
 		_theToolbar.setMargin(new Insets(0, 0, 0, 0));
 
 		// create the edit button
-		_editStepBtn = new myJButton("Properties", "images/properties.gif");
+		_editStepBtn = new myJButton("Properties", "images/list.png");
 		_stepActionListener = new ActionListener()
 		{
 			public void actionPerformed(final ActionEvent e)
@@ -526,7 +526,7 @@ public final class SwingStepControl extends StepControl implements
 		_editStepBtn.addActionListener(_stepActionListener);
 
 		// create the manual/auto button
-		_autoBtn = new ImageCheckbox("Auto", "images/timer.gif", "images/timer_down.gif");
+		_autoBtn = new ImageToggleButton("Auto", "images/clock.png");
 		_autoBtn.setSelected(false);
 		_itemListener = new ItemListener()
 		{
@@ -539,7 +539,7 @@ public final class SwingStepControl extends StepControl implements
 		_autoBtn.setToolTipText("Step Automatically");
 
 		// create the layer manager viewer button
-		_showLayerMgrBtn = new myJButton("View Layer Manager", "images/layer_mgr.gif");
+		_showLayerMgrBtn = new myJButton("View Layer Manager", "images/outline.png");
 		_paintActionListener = new ActionListener()
 		{
 			public void actionPerformed(final ActionEvent e)
@@ -550,15 +550,15 @@ public final class SwingStepControl extends StepControl implements
 		_showLayerMgrBtn.addActionListener(_paintActionListener);
 
 		// create the simple buttons
-		_startBtn = new myJButton("First", "images/first.gif");
-		_largeBwd = new RepeaterButton("Large bwd", "images/double_prior.gif");
-		_smallBwd = new RepeaterButton("Step bwd", "images/prior.gif");
+		_startBtn = new myJButton("First", "images/media_beginning.png");
+		_largeBwd = new RepeaterButton("Large bwd", "images/media_back.png");
+		_smallBwd = new RepeaterButton("Step bwd", "images/media_rewind.png");
 
 		_timeTxt = new JLabel("-----", JLabel.CENTER);
 		_timeTxt.setName("Time Text");
-		_smallFwd = new RepeaterButton("Step fwd", ("images/next.gif"));
-		_largeFwd = new RepeaterButton("Large fwd", "images/double_next.gif");
-		_endBtn = new myJButton("Last", "images/last.gif");
+		_smallFwd = new RepeaterButton("Step fwd", ("images/media_fast_forward.png"));
+		_largeFwd = new RepeaterButton("Large fwd", "images/media_forward.png");
+		_endBtn = new myJButton("Last", "images/media_end.png");
 
 		// add the buttons to the step panel
 		_bottomRow.add(_editStepBtn);
@@ -578,7 +578,7 @@ public final class SwingStepControl extends StepControl implements
 		_thePainterSelector.setToolTipText("Current Display Mode");
 
 		// the filtering support
-		_filterBtn = new myJButton("Filter", "images/filter_up.gif");
+		_filterBtn = new myJButton("Filter", "images/filter.png");
 		_filterBtn.setToolTipText("Track & Time toolbox");
 		_filterActionListener = new ActionListener()
 		{
@@ -1223,6 +1223,54 @@ public final class SwingStepControl extends StepControl implements
 					setBorderPainted(true);
 				}
 
+				public void mouseExited(final MouseEvent e)
+				{
+					setBorderPainted(false);
+				}
+			});
+		}
+	}
+	public static final class ImageToggleButton extends JToggleButton
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public ImageToggleButton(final String name, final String theIcon)
+		{
+			
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
+			java.net.URL iconURL = null;
+		
+			if (loader != null)
+			{
+				iconURL = loader.getResource(theIcon);
+				if (iconURL != null)
+					setIcon(new ImageIcon(iconURL));
+				
+			}
+			
+			// see if we failed to find icon
+			if (iconURL == null)
+				setText(name);
+			
+			setBorderPainted(false);
+			setToolTipText(name);
+			
+			this.setName(name);
+			
+			// update the UI to show just a line instead of a raised border
+			setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory
+					.createEmptyBorder(1, 1, 1, 1)));
+			
+			addMouseListener(new MouseAdapter()
+			{
+				public void mouseEntered(final MouseEvent e)
+				{
+					setBorderPainted(true);
+				}
+				
 				public void mouseExited(final MouseEvent e)
 				{
 					setBorderPainted(false);

@@ -78,7 +78,7 @@ public class PrintChart extends PlainTool {
    * @param theChart the chart we are to resize
    */
   public PrintChart(final ToolParent theParent,final PlainChart theChart){
-    super(theParent, "Print Chart","images/fit_to_win.gif");
+    super(theParent, "Print Chart","images/fit_to_win.png");
   }
 
   /////////////////////////////////////////////////////////

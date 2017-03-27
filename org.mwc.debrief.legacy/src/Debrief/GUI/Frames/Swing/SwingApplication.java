@@ -467,7 +467,7 @@ public final class SwingApplication extends Application
     });
 
     // try to give the application an icon
-    final java.net.URL iconURL = getClass().getClassLoader().getResource("images/icon.gif");
+    final java.net.URL iconURL = getClass().getClassLoader().getResource("images/icon.png");
     if (iconURL != null)
     {
       final ImageIcon myIcon = new ImageIcon(iconURL);

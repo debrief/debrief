@@ -107,7 +107,7 @@ public class RangeBearing extends PlainDragTool implements java.io.Serializable
   public RangeBearing(final PlainChart theChart,
                       final ToolParent theParent,
                       final StatusBar theBar){
-    super(theChart, theParent, "Range Brg", "images/rng_brg.gif");
+    super(theChart, theParent, "Range Brg", "images/rng_brg.png");
     _theBar = theBar;
 
   }

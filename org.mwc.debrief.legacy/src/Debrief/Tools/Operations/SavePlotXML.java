@@ -28,7 +28,7 @@ public final class SavePlotXML extends SavePlotAsXML
   //////////////////////////////////
   public SavePlotXML(final ToolParent theParent,
                   final Session theSession){
-    super(theParent, theSession, "Save Plot", "images/save.gif");
+    super(theParent, theSession, "Save Plot", "images/save.png");
 
   }
 

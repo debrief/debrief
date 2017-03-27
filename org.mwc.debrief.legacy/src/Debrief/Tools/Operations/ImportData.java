@@ -165,7 +165,7 @@ public final class ImportData extends PlainTool
 	public ImportData(final ToolParent theParent, final Application theApplication,
 			final Session theSessionVal)
 	{
-		super(theParent, "Import data", "images/import_rep.gif");
+		super(theParent, "Import data", "images/track_file.png");
 		// store the Session
 		_theSession = theSessionVal;
 		_theApplication = theApplication;

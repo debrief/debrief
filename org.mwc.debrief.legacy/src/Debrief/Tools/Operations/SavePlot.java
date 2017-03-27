@@ -28,7 +28,7 @@ final class SavePlot extends SavePlotAs
   //////////////////////////////////
   public SavePlot(final ToolParent theParent,
                   final Session theSession){
-    super(theParent, theSession, "Save Plot", "images/save.gif");
+    super(theParent, theSession, "Save Plot", "images/save.png");
     
   }
 	

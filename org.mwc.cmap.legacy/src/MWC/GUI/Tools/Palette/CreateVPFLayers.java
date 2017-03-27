@@ -92,7 +92,7 @@ public class CreateVPFLayers extends PlainCreate
 										final MWC.GUI.Layers theData,
 										final MWC.GUI.PlainChart theChart)
 	{
-		super(theParent, thePanel, theLayer, theData, theChart, "VPF Layers", "images/vpf.gif");
+		super(theParent, thePanel, theLayer, theData, theChart, "VPF Layers", "images/vpf.png");
 		
 		// are we getting our toolparent initialised?
 		if(theParent != null)

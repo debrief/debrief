@@ -59,7 +59,7 @@ public class CreateScale extends PlainCreate
 										final MWC.GUI.Layers theData,
 										final MWC.GUI.PlainChart theChart)
 	{
-		super(theParent, thePanel, theLayer, theData, theChart, "Scale", "images/scale.gif");
+		super(theParent, thePanel, theLayer, theData, theChart, "Scale", "images/scale_add.png");
 	}
 
 	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)

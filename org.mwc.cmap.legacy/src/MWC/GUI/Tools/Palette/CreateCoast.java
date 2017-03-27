@@ -69,7 +69,7 @@ public class CreateCoast extends PlainCreate
 										final MWC.GUI.Layers theData,
                     final MWC.GUI.PlainChart theChart)
 	{
-		super(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast.gif");
+		super(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast_add.png");
 	}
 
 	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)

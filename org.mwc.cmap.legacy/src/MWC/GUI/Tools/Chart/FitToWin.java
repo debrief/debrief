@@ -125,7 +125,7 @@ public class FitToWin extends PlainTool {
    */
   public FitToWin(final ToolParent theParent, 
                   final PlainChart theChart){      
-    super(theParent, "fit to win","images/fit_to_win.gif");
+    super(theParent, "fit to win","images/fit_to_win.png");
     // remember the chart we are acting upon
     _theChart = theChart;
   }

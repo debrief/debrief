@@ -97,7 +97,7 @@ public class Repaint extends PlainTool
   public Repaint(final ToolParent theParent,
                  final PlainChart theChart)
   {
-    super(theParent, "Redraw", "images/repaint.gif");
+    super(theParent, "Redraw", "images/repaint.png");
     _theChart = theChart;
   }
   

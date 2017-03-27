@@ -135,7 +135,7 @@ public final class NewSession extends PlainTool
 
   public NewSession(final Application application, final boolean loadLayers)
   {
-    super(application, "New Plot", "images/new.gif");
+    super(application, "New Plot", "images/create_project.png");
     _theApplication = application;
     _loadDefaultLayers = loadLayers;
   }

@@ -72,7 +72,7 @@ public class CreateLocalGrid extends PlainCreate
                          final MWC.GUI.Layers theData,
                          final MWC.GUI.PlainChart theChart)
   {
-    super(theParent, thePanel, theLayer, theData, theChart, "Local Grid", "images/local_grid.gif");
+    super(theParent, thePanel, theLayer, theData, theChart, "Local Grid", "images/local_grid_add.png");
   }
 
   protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)

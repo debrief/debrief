@@ -119,7 +119,7 @@ public class CreateTOPO extends PlainCreateLayer
 			final MWC.GUI.PlainChart theChart)
 	{
 		super(theParent, thePanel, theData, theChart, "TOPO Gridded Bathy",
-				"images/etopo.gif");
+				"images/etopo_add.png");
 
 		_myParent = theParent;
 	}
