@@ -1140,7 +1140,7 @@
    <extension
          point="org.mwc.debrief.core.OutlineContentProvider">
       <helper
-            contentProvider="org.mwc.debrief.core.providers.MeasuredDataProvider"
+            contentProvider="Debrief.Wrappers.Extensions.Measurements.Wrappers.MeasuredDataProvider"
             imageProvider="org.mwc.debrief.core.providers.MeasuredDataImageHelper">
       </helper>
    </extension>
