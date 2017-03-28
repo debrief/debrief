@@ -61,6 +61,10 @@ public final class StepperChartPanel extends ChartPanel implements StepperListen
     super(chart, useBuffer);
     this._myStepper = stepper;
 
+    // increase the maximum draw height, so it doesn't get scaled
+    this.setMaximumDrawHeight(1600);
+    this.setMaximumDrawWidth(1600);
+
     if (_myStepper != null)
     {
       _myStepper.addStepperListener(this);
