@@ -120,11 +120,15 @@ package Debrief.Tools.FilterOperations;
 //
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -159,8 +163,10 @@ import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Wrappers.ISecondaryTrack;
+import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Editable;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.BearingRateFormatter;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
@@ -174,6 +180,8 @@ import MWC.GUI.JFreeChart.RelativeDateAxis;
 import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.ptplot.Swing.SwingPlot;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -525,11 +533,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				// in which case we will insert the
 				// panel in a floating toolbar.
 
-				// MWC.GUI.Properties.Swing.SwingPropertiesPanel sp =
-				// (MWC.GUI.Properties.Swing.SwingPropertiesPanel) _thePanel;
-				// SwingPlot mySwingPlot = new MySwingPlot(panel, _thePanel,
-				// theXYPlot);
-				// sp.addThisPanel(mySwingPlot);
+				 MWC.GUI.Properties.Swing.SwingPropertiesPanel sp =
+				 (MWC.GUI.Properties.Swing.SwingPropertiesPanel) _thePanel;
+				 SwingPlot mySwingPlot = new MySwingPlot(panel, _thePanel,
+				 theXYPlot);
+				 sp.addThisPanel(mySwingPlot);
 			}
 			else
 				_thePanel.add(panel);
@@ -1451,4 +1459,118 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			return _wizard;
 		}
 	}
+	
+
+  /////////////////////////////////////////////////////
+  // put plot in a closeable box
+  //////////////////////////////////////////////////////
+  static private final class MySwingPlot extends SwingPlot
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    /**
+     * the XYPlot we are showing. we have a link to it, so that
+     * we can open it's editor
+     */
+    private NewFormattedJFreeChart _xyPlot = null;
+
+    /*
+    * @param thePlot
+    * @param theParent
+    */
+    public MySwingPlot(final JPanel thePlot,
+                       final PropertiesPanel theParent,
+                       final NewFormattedJFreeChart xyPlot)
+    {
+      super(thePlot, theParent);
+      _xyPlot = xyPlot;
+    }
+
+    protected final void initForm()
+    {
+      super.initForm();
+
+      // and the WMF button
+      final JButton wmfBtn = new JButton("WMF");
+      wmfBtn.addActionListener(new java.awt.event.ActionListener()
+      {
+        /**
+         * Invoked when an action occurs.
+         */
+        public void actionPerformed(final ActionEvent e)
+        {
+          doWMF();
+        }
+      });
+      super._buttonPanel.add(wmfBtn);
+
+      // and the edit properties button
+      final JButton editBtn = new JButton("Edit");
+      editBtn.addActionListener(new java.awt.event.ActionListener()
+      {
+        /**
+         * Invoked when an action occurs.
+         */
+        public void actionPerformed(final ActionEvent e)
+        {
+          doEdit();
+        }
+      });
+      super._buttonPanel.add(editBtn);
+    }
+
+    private StepperChartPanel getPanel()
+    {
+      return (StepperChartPanel) _thePlot;
+    }
+
+    /**
+     * open up an editor for the xy plot
+     */
+    public final void doEdit()
+    {
+      super._theParent.addEditor(_xyPlot.getInfo(), null);
+    }
+
+    public final void doWMF()
+    {
+      // TODO: reinstate this
+      
+      // get the old background colour
+      Paint oldColor = _xyPlot.getBackgroundPaint();
+
+      // set the background to clear
+      _xyPlot.setBackgroundPaint(null);
+
+      // create the metafile graphics
+      final MetafileCanvasGraphics2d mf =
+          new MetafileCanvasGraphics2d(System.getProperty("user.home"),
+              (Graphics2D) getPanel().getGraphics());
+
+      // copy the projection
+      final MWC.Algorithms.Projections.FlatProjection fp = new FlatProjection();
+      fp.setScreenArea(_thePlot.getSize());
+      mf.setProjection(fp);
+
+      // start drawing
+      mf.startDraw(null);
+
+      // sort out the background colour
+      mf.setBackgroundColor(java.awt.Color.white);
+
+      // ask the canvas to paint the image
+      getPanel().paintWMFComponent(mf);
+
+      // and finish
+      mf.endDraw(null);
+
+      // and restore the background colour
+      _xyPlot.setBackgroundPaint(oldColor);
+
+    }
+
+  }
 }
