@@ -15,6 +15,7 @@ import org.eclipse.january.metadata.AxesMetadata;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
@@ -517,12 +518,18 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       // create any?
       if (!items.isEmpty())
       {
-        parent.add(new Separator("Calculations"));
+        // marker, to separate the hard sums
+        parent.add(new Separator());
+
+        // ok, put new items into a child menu
+        MenuManager childMenu = new MenuManager("Calculations");
+        parent.add(childMenu);
+        
         // and add them all
 
         for (IAction item : items)
         {
-          parent.add(item);
+          childMenu.add(item);
         }
       }
     }
