@@ -50,7 +50,7 @@ public class DebriefFormatDateTime
 	 * related to Debrief storing 0 and trying to write this to disk. Problem
 	 * probably occured during Hi-Res times transition.
 	 */
-	private static final String INVALID_DATE_STRING = "700101 000000";
+//	private static final String INVALID_DATE_STRING = "700101 000000";
 
 	/**
 	 * we use static instances of patterns. just initialise them once
