@@ -1384,11 +1384,4 @@ public final class SwingStepControl extends StepControl implements
 
 		}
 	}
-
-	public static void main(final String[] args)
-	{
-		final testStepper st = new testStepper("here");
-		st.testStepperFormatting();
-	}
-
 }
