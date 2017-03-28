@@ -2079,7 +2079,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		proj.setScreenArea(new Dimension(300, 300));
 
 		final Graphics gr = f2.getContentPane().getGraphics();
-		final MetafileCanvasGraphics2d m2 = new MetafileCanvasGraphics2d("c:\\",
+		final MetafileCanvasGraphics2d m2 = new MetafileCanvasGraphics2d(System.getProperty("user.home"),
 				(Graphics2D) gr);
 
 		m2.setProjection(proj);

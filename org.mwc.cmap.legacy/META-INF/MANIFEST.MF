@@ -211,6 +211,7 @@ Export-Package:
    javax.media.protocol,
    javax.media,
    MWC.GUI",
+ MWC.GUI.ptplot.Swing,
  MWC.GenericData;uses:="MWC.GUI.Shapes.Symbols,junit.framework,MWC.Algorithms",
  MWC.TacticalData;uses:="junit.framework,MWC.GenericData,MWC.GUI",
  MWC.TacticalData.GND;

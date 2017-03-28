@@ -90,7 +90,13 @@ public class WriteMetafile extends PlainTool
 			// do we just want to create it in the temp directory?
 			if (_writeToFile)
 			{
-				mf = new MetafileCanvas(getParent().getProperty(PROP_NAME));
+			  String targetDirectory = getParent().getProperty(PROP_NAME);
+			  if(targetDirectory == null)
+			  {
+			    targetDirectory = System.getProperty("user.home");
+			  }
+			  
+				mf = new MetafileCanvas(targetDirectory);
 			}
 			else
 			{
@@ -180,7 +186,7 @@ public class WriteMetafile extends PlainTool
 	public static void main(final String[] args)
 	{
 
-		final MetafileCanvas mf = new MetafileCanvas("c:\\");
+		final MetafileCanvas mf = new MetafileCanvas(System.getProperty("user.home"));
 
 		// copy the projection
 		final MWC.Algorithms.Projections.FlatProjection fp = new MWC.Algorithms.Projections.FlatProjection();
