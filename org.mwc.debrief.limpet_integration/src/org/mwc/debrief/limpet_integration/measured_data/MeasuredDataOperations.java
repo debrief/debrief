@@ -15,15 +15,16 @@ import org.eclipse.january.metadata.AxesMetadata;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
+import Debrief.Wrappers.Extensions.Measurements.Wrappers.DatasetWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -43,8 +44,8 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
     private List<Layer> _fParents;
 
     public DatasetsOperation(String title, Calculate operation,
-        List<TimeSeriesDatasetDouble> fWrappers, List<Layer> fParents, Layers theLayers,
-        final String units)
+        List<TimeSeriesDatasetDouble> fWrappers, List<Layer> fParents,
+        Layers theLayers, final String units)
     {
       super(title);
       _operation = operation;
@@ -90,7 +91,8 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       DoubleDataset dResult = _operation.calculate(items);
 
       // put the times back in
-      AxesMetadata times = items.get(0).getDataset().getFirstMetadata(AxesMetadata.class);
+      AxesMetadata times =
+          items.get(0).getDataset().getFirstMetadata(AxesMetadata.class);
       dResult.addMetadata(times);
 
       TimeSeriesDatasetDouble res =
@@ -104,14 +106,14 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
     private DataFolder getTarget()
     {
       DataFolder target = _items.get(0).getParent();
-      
-      if(_items.size()  == 2)
+
+      if (_items.size() == 2)
       {
         DataFolder folder2 = _items.get(1).getParent();
 
         if (target.equals(folder2))
         {
-          // ok, keep the target, they're both in 
+          // ok, keep the target, they're both in
           // the same directory
         }
         else
@@ -127,7 +129,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           }
         }
       }
- 
+
       return target;
     }
 
@@ -173,27 +175,28 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
     {
       // how many parents
       Layer singleLayer = null;
-      for(Layer thisLayer: _fParents)
+      for (Layer thisLayer : _fParents)
       {
-        if(singleLayer == null)
+        if (singleLayer == null)
         {
           singleLayer = thisLayer;
         }
-        else if(thisLayer != singleLayer)
+        else if (thisLayer != singleLayer)
         {
           singleLayer = null;
           break;
         }
       }
-      
+
       _theLayers.fireExtended(null, singleLayer);
     }
   }
 
-  /** perform operation on the set of time series datasets
+  /**
+   * perform operation on the set of time series datasets
    * 
    * @author ian
-   *
+   * 
    */
   private interface Calculate
   {
@@ -208,7 +211,8 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
    */
   abstract private class Operation2 implements Calculate
   {
-    /** do calculation on these two datasets
+    /**
+     * do calculation on these two datasets
      * 
      * @param val1
      * @param val2
@@ -216,11 +220,35 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
      */
     abstract DoubleDataset calc(DoubleDataset val1, DoubleDataset val2);
 
+    abstract String nameFor(String one, String two);
+
+    private String nameFor(TimeSeriesCore one, TimeSeriesCore two)
+    {
+      // are they in the same folder?
+      final String sOne;
+      final String sTwo;
+      if (one.getParent().equals(two.getParent()))
+      {
+        // ok, in the same folder, we don't need more metadata
+        sOne = one.getName();
+        sTwo = two.getName();
+      }
+      else
+      {
+        sOne = one.getPath();
+        sTwo = two.getPath();
+      }
+
+      return nameFor(sOne, sTwo);
+    }
+
     @Override
     public DoubleDataset calculate(List<TimeSeriesDatasetDouble> items)
     {
-      DoubleDataset d1 = (DoubleDataset) items.get(0).getDataset();
-      DoubleDataset d2 = (DoubleDataset) items.get(1).getDataset();
+      final TimeSeriesDatasetDouble ts1 = items.get(0);
+      final TimeSeriesDatasetDouble ts2 = items.get(1);
+      final DoubleDataset d1 = (DoubleDataset) ts1.getDataset();
+      final DoubleDataset d2 = (DoubleDataset) ts2.getDataset();
 
       final DoubleDataset first;
       final DoubleDataset second;
@@ -240,7 +268,11 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       final DoubleDataset res;
       if (first != null)
       {
+        // get the new dataset
         res = calc(first, second);
+
+        // and the name
+        res.setName(nameFor(ts1, ts2));
       }
       else
       {
@@ -268,7 +300,8 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
       return res;
     }
 
-    /** do a calculation with a single dataset
+    /**
+     * do a calculation with a single dataset
      * 
      * @param val1
      * @return
@@ -338,12 +371,19 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.add(val1, val2, null);
-            res.setName("Sum of " + val1.getName() + " and " + val2.getName());
             return res;
           }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return "Sum of " + one + " and " + two;
+          }
         };
-        items.add(new DoAction("Add datasets", new DatasetsOperation("Do add",
-            doAdd, fWrappers,  fParents, theLayers, fWrappers.get(0).getUnits())));
+        items
+            .add(new DoAction("Add datasets", new DatasetsOperation("Do add",
+                doAdd, fWrappers, fParents, theLayers, fWrappers.get(0)
+                    .getUnits())));
 
         Operation2 doSubtract = new Operation2()
         {
@@ -352,13 +392,18 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.subtract(val1, val2, null);
-            res.setName(val1.getName() + " minus " + val2.getName());
             return res;
+          }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return one + " minus " + two;
           }
         };
         items.add(new DoAction("Subtract datasets", new DatasetsOperation(
-            "Do add", doSubtract, fWrappers,  fParents, theLayers, fWrappers.get(0)
-                .getUnits())));
+            "Do add", doSubtract, fWrappers, fParents, theLayers, fWrappers
+                .get(0).getUnits())));
 
         // multiply and divide
         Operation2 doMultiply = new Operation2()
@@ -368,14 +413,18 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.multiply(val1, val2, null);
-            res.setName("Product of " + val1.getName() + " and "
-                + val2.getName());
             return res;
+          }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return "Product of " + one + " and " + two;
           }
         };
         items.add(new DoAction("Multiply datasets", new DatasetsOperation(
-            "Do add", doMultiply, fWrappers,  fParents, theLayers, fWrappers.get(0)
-                .getUnits()
+            "Do add", doMultiply, fWrappers, fParents, theLayers, fWrappers
+                .get(0).getUnits()
                 + "x" + fWrappers.get(1).getUnits())));
 
         // multiply and divide
@@ -386,13 +435,18 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           {
             final DoubleDataset res =
                 (DoubleDataset) Maths.divide(val1, val2, null);
-            res.setName(val1.getName() + " / " + val2.getName());
             return res;
+          }
+
+          @Override
+          String nameFor(String one, String two)
+          {
+            return one + " / " + two;
           }
         };
         items.add(new DoAction("Divide datasets", new DatasetsOperation(
-            "Do add", doDivide, fWrappers,  fParents, theLayers, fWrappers.get(0)
-                .getUnits()
+            "Do add", doDivide, fWrappers, fParents, theLayers, fWrappers
+                .get(0).getUnits()
                 + "/" + fWrappers.get(1).getUnits())));
 
       }
@@ -410,13 +464,12 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
             return res;
           }
         };
-        items
-            .add(new DoAction("Calculate Absolute", new DatasetsOperation(
-                "Do add", doAbs, fWrappers,  fParents, theLayers, fWrappers.get(0)
-                    .getUnits())));
+        items.add(new DoAction("Calculate Absolute", new DatasetsOperation(
+            "Do add", doAbs, fWrappers, fParents, theLayers, fWrappers.get(0)
+                .getUnits())));
 
-        // multiply and divide
-        Operation1 doDivide = new Operation1()
+        // inv
+        Operation1 doInverse = new Operation1()
         {
           @Override
           public DoubleDataset calc(DoubleDataset val1)
@@ -428,23 +481,58 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator
           }
         };
         items.add(new DoAction("Calculate inverse", new DatasetsOperation(
-            "Do add", doDivide, fWrappers,  fParents, theLayers, "1 / "
+            "Do add", doInverse, fWrappers, fParents, theLayers, "1 / "
+                + fWrappers.get(0).getUnits())));
+
+        // sqrt
+        Operation1 doSqrt = new Operation1()
+        {
+          @Override
+          public DoubleDataset calc(DoubleDataset val1)
+          {
+            final DoubleDataset res = (DoubleDataset) Maths.sqrt(val1, null);
+            res.setName("Square root of " + val1.getName());
+            return res;
+          }
+        };
+        items.add(new DoAction("Calculate square root", new DatasetsOperation(
+            "Do add", doSqrt, fWrappers, fParents, theLayers, "sqrt "
+                + fWrappers.get(0).getUnits())));
+
+        // sqrt
+        Operation1 doCbrt = new Operation1()
+        {
+          @Override
+          public DoubleDataset calc(DoubleDataset val1)
+          {
+            final DoubleDataset res = (DoubleDataset) Maths.cbrt(val1, null);
+            res.setName("Cube Root of " + val1.getName());
+            return res;
+          }
+        };
+        items.add(new DoAction("Calculate cube root", new DatasetsOperation(
+            "Do add", doCbrt, fWrappers, fParents, theLayers, "cbrt "
                 + fWrappers.get(0).getUnits())));
       }
 
       // create any?
       if (!items.isEmpty())
       {
-        parent.add(new Separator("Calculations"));
+        // marker, to separate the hard sums
+        parent.add(new Separator());
+
+        // ok, put new items into a child menu
+        MenuManager childMenu = new MenuManager("Calculations");
+        parent.add(childMenu);
+        
         // and add them all
 
         for (IAction item : items)
         {
-          parent.add(item);
+          childMenu.add(item);
         }
       }
     }
-
   }
 
   /**

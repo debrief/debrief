@@ -1,18 +1,18 @@
-package org.mwc.debrief.core.providers.measured_data;
+package Debrief.Wrappers.Extensions.Measurements.Wrappers;
 
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-import org.mwc.debrief.core.providers.MeasuredDataProvider;
-
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.HasEditables;
 
-public class FolderWrapper implements Editable, HasEditables, Serializable
+public class FolderWrapper implements Editable, HasEditables, Serializable,
+    DataItemWrapper
 {
   /**
    * 
@@ -24,6 +24,24 @@ public class FolderWrapper implements Editable, HasEditables, Serializable
   public FolderWrapper(final DataFolder folder)
   {
     _folder = folder;
+  }
+
+  @Override
+  public boolean equals(Object arg0)
+  {
+    if (arg0 instanceof FolderWrapper)
+    {
+      FolderWrapper other = (FolderWrapper) arg0;
+      return _folder.equals(other._folder);
+    }
+    else
+      return super.equals(arg0);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return _folder.hashCode();
   }
 
   @Override
@@ -100,5 +118,11 @@ public class FolderWrapper implements Editable, HasEditables, Serializable
       DatasetWrapper dw = (DatasetWrapper) item;
       _folder.remove(dw._data);
     }
+  }
+
+  @Override
+  public DataItem getDataItem()
+  {
+    return _folder;
   }
 }

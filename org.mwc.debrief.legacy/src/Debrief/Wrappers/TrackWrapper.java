@@ -27,6 +27,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -36,6 +37,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import Debrief.ReaderWriter.Replay.FormatTracks;
+import Debrief.Tools.Properties.TrackColorModePropertyEditor;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
@@ -44,6 +46,9 @@ import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.SplittableLayer;
+import Debrief.Wrappers.Track.TrackColorModeHelper;
+import Debrief.Wrappers.Track.TrackColorModeHelper.DeferredDatasetColorMode;
+import Debrief.Wrappers.Track.TrackColorModeHelper.TrackColorMode;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
 import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
@@ -56,9 +61,9 @@ import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -105,17 +110,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * class containing editable details of a track
    */
-  public static final class trackInfo extends Editable.EditorType implements
+  public final class trackInfo extends Editable.EditorType implements
       Editable.DynamicDescriptors
   {
-
-    /**
-     * we cache static collections of the property & method descriptors. The sets of descriptors are
-     * (mostly) identical for each object of this type, so we can re-use them
-     */
-    private static PropertyDescriptor[] _coreDescriptors;
-    private static MethodDescriptor[] _methodDescriptors;
-    private static PropertyDescriptor[] _coreDescriptorsWithSymbols;
 
     /**
      * constructor for this editor, takes the actual track as a parameter
@@ -131,19 +128,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     @Override
     public final MethodDescriptor[] getMethodDescriptors()
     {
-      if (_methodDescriptors == null)
-      {
-        // just add the reset color field first
-        final Class<TrackWrapper> c = TrackWrapper.class;
-        _methodDescriptors =
-            new MethodDescriptor[]
-            {
-                method(c, "exportThis", null, "Export Shape"),
-                method(c, "resetLabels", null, "Reset DTG Labels"),
-                method(c, "calcCourseSpeed", null,
-                    "Generate calculated Course and Speed")};
-
-      }
+      // just add the reset color field first
+      final Class<TrackWrapper> c = TrackWrapper.class;
+      MethodDescriptor[] _methodDescriptors =
+          new MethodDescriptor[]
+          {
+              method(c, "exportThis", null, "Export Shape"),
+              method(c, "resetLabels", null, "Reset DTG Labels"),
+              method(c, "calcCourseSpeed", null,
+                  "Generate calculated Course and Speed")};
 
       return _methodDescriptors;
     }
@@ -159,75 +152,70 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       try
       {
-        // have we already cached the descriptors?
-        if (_coreDescriptors == null)
-        {
-          _coreDescriptors =
-              new PropertyDescriptor[]
-              {
-                  displayExpertLongProp("SymbolType", "Symbol type",
-                      "the type of symbol plotted for this label", FORMAT,
-                      SymbolFactoryPropertyEditor.class),
-                  displayExpertLongProp("LineThickness", "Line thickness",
-                      "the width to draw this track", FORMAT,
-                      LineWidthPropertyEditor.class),
-                  expertProp("Name", "the track name"),
-                  displayExpertProp(
-                      "InterpolatePoints",
-                      "Interpolate points",
-                      "whether to interpolate points between known data points",
-                      SPATIAL),
-                  expertProp("Color", "the track color", FORMAT),
-                  displayExpertProp("EndTimeLabels", "Start/End time labels",
-                      "Whether to label track start/end with 6-figure DTG",
-                      VISIBILITY),
-                  displayExpertProp("SymbolColor", "Symbol color",
-                      "the color of the symbol (when used)", FORMAT),
-                  displayExpertProp(
-                      "PlotArrayCentre",
-                      "Plot array centre",
-                      "highlight the sensor array centre when non-zero array length provided",
-                      VISIBILITY),
-                  displayExpertProp("TrackFont", "Track font",
-                      "the track label font", FORMAT),
-                  displayExpertProp("NameVisible", "Name visible",
-                      "show the track label", VISIBILITY),
-                  displayExpertProp("PositionsVisible", "Positions visible",
-                      "show individual Positions", VISIBILITY),
-                  displayExpertProp("NameAtStart", "Name at start",
-                      "whether to show the track name at the start (or end)",
-                      VISIBILITY),
-                  displayExpertProp("LinkPositions", "Link positions",
-                      "whether to join the track points", VISIBILITY),
-                  expertProp("Visible", "whether the track is visible",
-                      VISIBILITY),
-                  displayExpertLongProp("NameLocation", "Name location",
-                      "relative location of track label", FORMAT,
-                      MWC.GUI.Properties.LocationPropertyEditor.class),
-                  displayExpertLongProp("LabelFrequency", "Label frequency",
-                      "the label frequency", TEMPORAL,
-                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                  displayExpertLongProp("SymbolFrequency", "Symbol frequency",
-                      "the symbol frequency", TEMPORAL,
-                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                  displayExpertLongProp("ResampleDataAt", "Resample data at",
-                      "the data sample rate", TEMPORAL,
-                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                  displayExpertLongProp("ArrowFrequency", "Arrow frequency",
-                      "the direction marker frequency", TEMPORAL,
-                      MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                  displayProp("CustomTrailLength", "Custom Snail Trail",
-                      "to specify a custom snail trail length",
-                      Editable.EditorType.TEMPORAL),
-                  displayExpertLongProp("CustomVectorStretch", "Custom Vector Stretch",
-                      "to specify a custom snail vector stretch",
-                      Editable.EditorType.TEMPORAL, FractionPropertyEditor.class),
-                  displayExpertLongProp("LineStyle", "Line style",
-                      "the line style used to join track points", TEMPORAL,
-                      MWC.GUI.Properties.LineStylePropertyEditor.class)};
-        }
+        PropertyDescriptor[] _coreDescriptors =
+            new PropertyDescriptor[]
+            {
+                displayExpertLongProp("SymbolType", "Symbol type",
+                    "the type of symbol plotted for this label", FORMAT,
+                    SymbolFactoryPropertyEditor.class),
+                displayExpertLongProp("LineThickness", "Line thickness",
+                    "the width to draw this track", FORMAT,
+                    LineWidthPropertyEditor.class),
+                expertProp("Name", "the track name"),
+                displayExpertProp("InterpolatePoints", "Interpolate points",
+                    "whether to interpolate points between known data points",
+                    SPATIAL),
+                expertProp("Color", "the track color", FORMAT),
+                displayExpertProp("EndTimeLabels", "Start/End time labels",
+                    "Whether to label track start/end with 6-figure DTG",
+                    VISIBILITY),
+                displayExpertProp("SymbolColor", "Symbol color",
+                    "the color of the symbol (when used)", FORMAT),
+                displayExpertProp(
+                    "PlotArrayCentre",
+                    "Plot array centre",
+                    "highlight the sensor array centre when non-zero array length provided",
+                    VISIBILITY),
+                displayExpertProp("TrackFont", "Track font",
+                    "the track label font", FORMAT),
+                displayExpertProp("NameVisible", "Name visible",
+                    "show the track label", VISIBILITY),
+                displayExpertProp("PositionsVisible", "Positions visible",
+                    "show individual Positions", VISIBILITY),
+                displayExpertProp("NameAtStart", "Name at start",
+                    "whether to show the track name at the start (or end)",
+                    VISIBILITY),
+                displayExpertProp("LinkPositions", "Link positions",
+                    "whether to join the track points", VISIBILITY),
+                expertProp("Visible", "whether the track is visible",
+                    VISIBILITY),
+                displayExpertLongProp("NameLocation", "Name location",
+                    "relative location of track label", FORMAT,
+                    MWC.GUI.Properties.LocationPropertyEditor.class),
+                displayExpertLongProp("LabelFrequency", "Label frequency",
+                    "the label frequency", TEMPORAL,
+                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                displayExpertLongProp("SymbolFrequency", "Symbol frequency",
+                    "the symbol frequency", TEMPORAL,
+                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                displayExpertLongProp("ResampleDataAt", "Resample data at",
+                    "the data sample rate", TEMPORAL,
+                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                displayExpertLongProp("ArrowFrequency", "Arrow frequency",
+                    "the direction marker frequency", TEMPORAL,
+                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                displayProp("CustomTrailLength", "Custom Snail Trail",
+                    "to specify a custom snail trail length",
+                    Editable.EditorType.TEMPORAL),
+                displayExpertLongProp("CustomVectorStretch",
+                    "Custom Vector Stretch",
+                    "to specify a custom snail vector stretch",
+                    Editable.EditorType.TEMPORAL, FractionPropertyEditor.class),
+                displayExpertLongProp("LineStyle", "Line style",
+                    "the line style used to join track points", TEMPORAL,
+                    MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
-        final PropertyDescriptor[] res;
+        PropertyDescriptor[] res;
 
         // SPECIAL CASE: if we have a world scaled symbol, provide
         // editors for
@@ -236,19 +224,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (item._theSnailShape instanceof WorldScaledSym)
         {
           // yes = better create height/width editors
-          if (_coreDescriptorsWithSymbols == null)
-          {
-            _coreDescriptorsWithSymbols =
-                new PropertyDescriptor[_coreDescriptors.length + 2];
-            System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols,
-                2, _coreDescriptors.length);
-            _coreDescriptorsWithSymbols[0] =
-                displayExpertProp("SymbolLength", "Symbol length",
-                    "Length of symbol", FORMAT);
-            _coreDescriptorsWithSymbols[1] =
-                displayExpertProp("SymbolWidth", "Symbol width",
-                    "Width of symbol", FORMAT);
-          }
+          PropertyDescriptor[] _coreDescriptorsWithSymbols =
+              new PropertyDescriptor[_coreDescriptors.length + 2];
+          System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 2,
+              _coreDescriptors.length);
+          _coreDescriptorsWithSymbols[0] =
+              displayExpertProp("SymbolLength", "Symbol length",
+                  "Length of symbol", FORMAT);
+          _coreDescriptorsWithSymbols[1] =
+              displayExpertProp("SymbolWidth", "Symbol width",
+                  "Width of symbol", FORMAT);
 
           // and now use the new value
           res = _coreDescriptorsWithSymbols;
@@ -258,6 +243,30 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           res = _coreDescriptors;
         }
 
+        // TRACK COLORING HANDLING
+        List<TrackColorMode> datasets = getTrackColorModes();
+        if (datasets.size() > 0)
+        {
+          // store the datasets
+          TrackColorModePropertyEditor.setCustomModes(datasets);
+
+          List<PropertyDescriptor> tmpList =
+              new ArrayList<PropertyDescriptor>();
+          tmpList.addAll(Arrays.asList(res));
+
+          // insert the editor
+          tmpList.add(displayExpertLongProp("TrackColorMode",
+              "Track Coloring Mode", "the mode in which to color the track",
+              FORMAT, TrackColorModePropertyEditor.class));
+
+          // ok. if we're in a measuremd mode, it may have a mode selector
+
+          res = tmpList.toArray(res);
+
+          // NOTE: this info class to implement Editable.DynamicDescriptors
+          // to avoid these descriptors being cached
+        }
+
         return res;
       }
       catch (final IntrospectionException e)
@@ -265,7 +274,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         return super.getPropertyDescriptors();
       }
     }
-
   }
 
   private static final String SOLUTIONS_LAYER_NAME = "Solutions";
@@ -374,6 +382,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         }
       }
     }
+  }
+
+  public List<TrackColorMode> getTrackColorModes()
+  {
+    return TrackColorModeHelper.getAdditionalTrackColorModes(this);
   }
 
   /**
@@ -856,6 +869,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   private Duration _customTrailLength = null;
 
   private Double _customVectorStretch = null;
+
+  /**
+   * how to shade the track
+   * 
+   */
+  TrackColorModeHelper.TrackColorMode _trackColorMode = TrackColorModeHelper.LegacyTrackColorModes.PER_FIX;
 
   // //////////////////////////////////////
   // constructors
@@ -1944,6 +1963,33 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   /**
+   * get the mode used to color the track
+   * 
+   * @return
+   */
+  public TrackColorMode getTrackColorMode()
+  {
+    // ok, see if we're using a deferred mode. If we are, we should correct it
+    if (_trackColorMode instanceof DeferredDatasetColorMode)
+    {
+      _trackColorMode =
+          TrackColorModeHelper.sortOutDeferredMode(
+              (DeferredDatasetColorMode) _trackColorMode, this);
+    }
+
+    return _trackColorMode;
+  }
+
+  /** set the mode used to color the track
+   * 
+   * @param trackColorMode
+   */
+  public void setTrackColorMode(TrackColorMode trackColorMode)
+  {
+    this._trackColorMode = trackColorMode;
+  }
+
+  /**
    * the line thickness (convenience wrapper around width)
    * 
    * @return
@@ -2214,7 +2260,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                   // THE ORIGINAL
                   // SEARCH TIME
                   res = getInterpolatedFix(previous, res, srchDTG);
-                  
+
                   // and reset the label
                   res.resetName();
                 }
@@ -2580,7 +2626,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    *          the fix we're painting
    * @param isEndPoint
    *          whether point is one of the ends
-   * @param forceHideLabel 
+   * @param forceHideLabel
    *          whether we wish to hide the label
    */
   private void paintIt(final CanvasType dest, final FixWrapper thisF,
@@ -2601,12 +2647,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       thisF.setLabelFormat("ddHHmm");
       thisF.setLabelShowing(true);
     }
-    
-    if(forceHideLabel)
+
+    if (forceHideLabel)
     {
       thisF.setLabelShowing(false);
     }
-    
 
     // this next method just paints the fix. we've put the
     // call into paintThisFix so we can override the painting
@@ -2620,8 +2665,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       thisF.setLabelShowing(isVis);
       thisF.setLabel(lblVal);
     }
-    
-    if(forceHideLabel)
+
+    if (forceHideLabel)
     {
       thisF.setLabelShowing(isVis);
     }
@@ -2642,6 +2687,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // collate a list of the start & end points
     final List<FixWrapper> endPoints = new ArrayList<FixWrapper>();
+    
+    // use the track color mode
+    final TrackColorMode tMode = getTrackColorMode();
 
     // we need an array to store the polyline of points in. Check it's big
     // enough
@@ -2729,7 +2777,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             newLastFix.setSymbolShowing(true);
           }
 
-          paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix, false);
+          paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix,
+              false);
 
           if (singlePointSegment)
           {
@@ -2743,6 +2792,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // particularly if it's the victim of a
         // copy/paste operation. Tell it about it's children
         fw.setTrackWrapper(this);
+        
+        final Color thisFixColor = tMode.colorFor(fw);
 
         // do our job of identifying the first & last date value
         if (fw.getVisible())
@@ -2796,7 +2847,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         {
           // right, just check if we're a different colour to
           // the previous one
-          final Color thisCol = fw.getColor();
+          final Color thisCol = thisFixColor;
 
           // do we know the previous colour
           if (lastCol == null)
@@ -2858,7 +2909,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
            * set the colour of the track from now on to this colour, so that the "link" to the next
            * fix is set to this colour if left unchanged
            */
-          dest.setColor(fw.getColor());
+          dest.setColor(thisFixColor);
 
           // and remember the last colour
           lastCol = thisCol;
@@ -2883,8 +2934,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
           // ok, we hide the last point for planning legs, if there are
           // more legs to come
-          boolean forceHideLabel = isPlanningTrack &&
-              hasMoreLegs;
+          boolean forceHideLabel = isPlanningTrack && hasMoreLegs;
 
           // ok, get painting
           paintIt(dest, endPoints.get(1), getEndTimeLabels(), forceHideLabel);
@@ -3202,7 +3252,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   protected void paintThisFix(final CanvasType dest,
       final WorldLocation lastLocation, final FixWrapper fw)
   {
-    fw.paintMe(dest, lastLocation, fw.getColor());
+    fw.paintMe(dest, lastLocation,  getTrackColorMode().colorFor(fw));
   }
 
   /**
@@ -3903,49 +3953,52 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     _theLabel.setFont(font);
   }
-  
 
-  /** length of trail to draw
+  /**
+   * length of trail to draw
    */
   public final void setCustomTrailLength(final Duration len)
   {
     // just check that it's a non-null length
-    if(len != null)
+    if (len != null)
     {
-      if(len.getMillis() != 0)
+      if (len.getMillis() != 0)
       {
-        _customTrailLength  = len;
+        _customTrailLength = len;
       }
       else
       {
         _customTrailLength = null;
       }
     }
-    
+
   }
 
-  /** length of trail to plot
+  /**
+   * length of trail to plot
    */
   public final Duration getCustomTrailLength()
   {
     return _customTrailLength;
-  }  
-  
-  /** length of trail to draw
+  }
+
+  /**
+   * length of trail to draw
    */
   public final void setCustomVectorStretch(double stretch)
   {
-    _customVectorStretch  = stretch;
+    _customVectorStretch = stretch;
   }
 
-  /** length of trail to plot
+  /**
+   * length of trail to plot
    */
   public final double getCustomVectorStretch()
   {
     final double res;
-    
+
     // do we have a value?
-    if(_customVectorStretch != null)
+    if (_customVectorStretch != null)
     {
       res = _customVectorStretch;
     }
@@ -3953,10 +4006,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       res = 0;
     }
-    
+
     return res;
-  }  
-  
+  }
+
   @Override
   public void shift(final WorldLocation feature, final WorldVector vector)
   {

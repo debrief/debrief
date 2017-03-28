@@ -1,11 +1,9 @@
-package org.mwc.debrief.core.providers;
+package Debrief.Wrappers.Extensions.Measurements.Wrappers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mwc.debrief.core.providers.measured_data.DatasetWrapper;
-import org.mwc.debrief.core.providers.measured_data.FolderWrapper;
 
 import Debrief.Wrappers.Extensions.ExtensionContentProvider;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;

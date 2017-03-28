@@ -42,6 +42,9 @@ package Debrief.GUI;
  * created in the main() method.
  */
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.AWT.AWTApplication;
 import Debrief.GUI.Frames.Swing.SwingApplication;
@@ -86,18 +89,20 @@ public class DebriefApp {
     public DebriefApp() {
         if (USE_SWING) {
             // try setting the look & feel
-//            try {
-// //           UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-//                UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-//            } catch (ClassNotFoundException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            } catch (InstantiationException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            } catch (IllegalAccessException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            } catch (UnsupportedLookAndFeelException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
+            try {
+ //           UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+//              UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+              UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+              
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (InstantiationException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (UnsupportedLookAndFeelException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             aw = new SwingApplication();
         } else
             aw = new AWTApplication();

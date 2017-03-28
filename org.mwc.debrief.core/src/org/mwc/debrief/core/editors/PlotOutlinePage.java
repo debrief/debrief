@@ -221,6 +221,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       {
         Object obj1 = a;
         Object obj2 = b;
+        
         // do our special case for comparing plottables
         if (obj1 instanceof EditableWrapper)
         {
@@ -233,8 +234,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
           final EditableWrapper pw = (EditableWrapper) obj2;
           obj2 = pw.getEditable();
         }
-
-        return obj1 == obj2;
+        
+        return obj1.equals(obj2);
       }
 
       public int hashCode(final Object element)

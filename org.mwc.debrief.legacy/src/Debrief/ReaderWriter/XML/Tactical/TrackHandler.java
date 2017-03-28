@@ -40,6 +40,9 @@ import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.ICompositeTrackSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
+import Debrief.Wrappers.Track.TrackColorModeHelper;
+import Debrief.Wrappers.Track.TrackColorModeHelper.LegacyTrackColorModes;
+import Debrief.Wrappers.Track.TrackColorModeHelper.TrackColorMode;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
@@ -68,6 +71,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   private static final String END_TIME_LABELS = "EndTimeLabels";
   private static final String CUSTOM_TRAIL_LENGTH = "CustomTrailLength";
   private static final String CUSTOM_VECTOR_STRETCH = "CustomVectorStretch";
+  private static final String COLOR_MODE = "ColorMode";
 
   final MWC.GUI.Layers _theLayers;
 
@@ -126,15 +130,20 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         writeThis(track.getSensors().getVisible()));
     trk.setAttribute(SOLUTIONS_VISIBLE, writeThis(track.getSolutions()
         .getVisible()));
-    
+
     // do we have a vector stretch?
-    if(track.getCustomVectorStretch() != 0)
+    if (track.getCustomVectorStretch() != 0)
     {
-      trk.setAttribute(CUSTOM_VECTOR_STRETCH, writeThis(track.getCustomVectorStretch()));
+      trk.setAttribute(CUSTOM_VECTOR_STRETCH, writeThis(track
+          .getCustomVectorStretch()));
     }
 
     ColourHandler.exportColour(track.getColor(), trk, doc);
     ColourHandler.exportColour(track.getSymbolColor(), trk, doc, SYMBOL_COLOR);
+
+    // and the worm in the hole indicator?
+    TrackColorMode mode = track.getTrackColorMode();
+    trk.setAttribute(COLOR_MODE, mode.asString());
 
     // and the font
     final java.awt.Font theFont = track.getTrackFont();
@@ -145,11 +154,11 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
     // do we have a custom trail length?
     final Duration trailLen = track.getCustomTrailLength();
-    if(trailLen != null)
+    if (trailLen != null)
     {
       DurationHandler.exportDuration(CUSTOM_TRAIL_LENGTH, trailLen, trk, doc);
     }
-    
+
     // and the symbol
     if (track.getSymbolLength() != null)
       WorldDistanceHandler.exportDistance(SYMBOL_LENGTH, track
@@ -338,7 +347,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         addThis(list);
       }
     });
-    
+
     addHandler(new TMAHandler()
     {
       @Override
@@ -362,7 +371,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         }
       }
     });
-    
+
     addHandler(new DurationHandler(CUSTOM_TRAIL_LENGTH)
     {
       @Override
@@ -527,6 +536,29 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
       public void setValue(final String name, final int value)
       {
         _myTrack.setLineThickness(value);
+      }
+    });
+    addAttributeHandler(new HandleAttribute(COLOR_MODE)
+    {
+      @Override
+      public void setValue(final String name, final String value)
+      {
+        final TrackColorMode mode;
+        // ok, handle the string
+        if (LegacyTrackColorModes.PER_FIX.asString().equals(value))
+        {
+          mode = LegacyTrackColorModes.PER_FIX;
+        }
+        else if (LegacyTrackColorModes.OVERRIDE.asString().equals(value))
+        {
+          mode = LegacyTrackColorModes.OVERRIDE;
+        }
+        else
+        {
+          // ok, it must be a datset name
+          mode = new TrackColorModeHelper.DeferredDatasetColorMode(value);
+        }
+        _myTrack.setTrackColorMode(mode);
       }
     });
 

@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Vector;
 
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
+import Debrief.Wrappers.Extensions.Measurements.Wrappers.DataItemWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.HasEditables;
 
 /** make a list of additional data items suitable
@@ -36,6 +38,35 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
   {
     _provider = additionalData;
     _contentProviderExtensions = providers;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((_provider == null) ? 0 : _provider.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AdditionalProviderWrapper other = (AdditionalProviderWrapper) obj;
+    if (_provider == null)
+    {
+      if (other._provider != null)
+        return false;
+    }
+    else if (!_provider.equals(other._provider))
+      return false;
+    return true;
   }
 
   @Override
@@ -124,15 +155,35 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
   }
 
   @Override
+  @FireExtended
   public void add(Editable point)
   {
-    _provider.add(point);
+    if(point instanceof DataItemWrapper)
+    {
+      DataItemWrapper itemW = (DataItemWrapper) point;
+      DataFolder additionalData = (DataFolder) _provider.get(0);
+      additionalData.add(itemW.getDataItem());
+    }
+    else
+    {
+      System.err.println("Can't add this data object to measured data:" + point);
+    }
   }
 
   @Override
+  @FireExtended
   public void removeElement(Editable point)
   {
-    _provider.remove(point);
+    if(point instanceof DataItemWrapper)
+    {
+      DataItemWrapper itemW = (DataItemWrapper) point;
+      DataFolder additionalData = (DataFolder) _provider.get(0);
+      additionalData.remove(itemW.getDataItem());
+    }
+    else
+    {
+      System.err.println("Can't remove this data object to measured data:" + point);
+    }
   }
 
 }

@@ -245,6 +245,7 @@ Export-Package:
    javax.swing",
  Debrief.Wrappers.Extensions;uses:="MWC.GUI",
  Debrief.Wrappers.Extensions.Measurements;uses:="org.eclipse.january.dataset,junit.framework",
+ Debrief.Wrappers.Extensions.Measurements.Wrappers,
  Debrief.Wrappers.Track;
   uses:="Debrief.Wrappers.Extensions.Measurements,
    MWC.GenericData,

@@ -1,4 +1,4 @@
-package org.mwc.debrief.core.providers.measured_data;
+package Debrief.Wrappers.Extensions.Measurements.Wrappers;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -9,12 +9,13 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import junit.framework.TestCase;
+import Debrief.Wrappers.Extensions.Measurements.DataItem;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesCore;
 import Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 
-public class DatasetWrapper implements Editable, Serializable
+public class DatasetWrapper implements Editable, Serializable, DataItemWrapper
   {
     
  /**
@@ -168,6 +169,12 @@ public class DatasetWrapper implements Editable, Serializable
     }
 
     public TimeSeriesCore getDataset()
+    {
+      return _data;
+    }
+
+    @Override
+    public DataItem getDataItem()
     {
       return _data;
     }
