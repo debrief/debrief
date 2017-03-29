@@ -50,55 +50,84 @@
 //
 package MWC.GUI.Tools.Swing;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 import MWC.GUI.Tool;
 
-
-/** extension of normal Swing menu to create a menu item containing
- * a Debrief tool item
+/**
+ * extension of normal Swing menu to create a menu item containing a Debrief tool item
  */
-public class SwingMenuItem extends JMenuItem implements java.awt.event.ActionListener
+public class SwingMenuItem extends JMenuItem implements
+    java.awt.event.ActionListener
 {
   /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	/////////////////////////////////////////////////////////////
+  private static final long serialVersionUID = 1L;
+  // ///////////////////////////////////////////////////////////
   // member variables
-  ////////////////////////////////////////////////////////////
-  /** the Debrief tool we are calling
+  // //////////////////////////////////////////////////////////
+  /**
+   * the Debrief tool we are calling
    */
-  protected Tool _theTool;
-  
-  /////////////////////////////////////////////////////////////
+  final protected Tool _theTool;
+
+  // ///////////////////////////////////////////////////////////
   // constructor
-  ////////////////////////////////////////////////////////////
-  
-  public SwingMenuItem(final Tool theTool){
-    _theTool = theTool;
-  }
-  
-  public SwingMenuItem(final String theLabel, final Tool theTool){
+  // //////////////////////////////////////////////////////////
+  public SwingMenuItem(final String theLabel, final Tool theTool)
+  {
     super(theLabel);
     _theTool = theTool;
     this.addActionListener(this);
   }
-  
-  /////////////////////////////////////////////////////////////
+
+  // ///////////////////////////////////////////////////////////
   // member functions
-  ////////////////////////////////////////////////////////////
-  
-  protected Tool getTool(){
+  // //////////////////////////////////////////////////////////
+
+  @Override
+  public Icon getIcon()
+  {
+    ImageIcon im = null;
+
+    // do we have an icon?
+    final String iconPath = _theTool.getImage();
+    if (iconPath != null)
+    {
+      final java.lang.ClassLoader loader = getClass().getClassLoader();
+      if (loader != null)
+      {
+        final java.net.URL imLoc = loader.getResource(iconPath);
+        if(imLoc != null)
+        {
+          im = new ImageIcon(imLoc);
+        }
+        else
+        {
+          System.out.println("Can't find icon for:" + iconPath);
+        }
+      }
+    }
+    return im;
+  }
+
+  protected Tool getTool()
+  {
     return _theTool;
   }
-  
-  /** callback function for when menu item if selected
+
+  /**
+   * callback function for when menu item if selected
    */
-  public void actionPerformed(final java.awt.event.ActionEvent e){
-    /** check that we have a tool declared
+  public void actionPerformed(final java.awt.event.ActionEvent e)
+  {
+    /**
+     * check that we have a tool declared
      */
-    if(_theTool != null)
+    if (_theTool != null)
       _theTool.execute();
   }
 }
