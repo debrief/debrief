@@ -863,7 +863,7 @@ public class SwingCanvas extends javax.swing.JComponent
     // set the colour in the parent
     setBackground(theColor);
     // invalidate the screen
-    updateMe();
+ //   updateMe();
   }
 
   public final BoundedInteger getLineThickness()
