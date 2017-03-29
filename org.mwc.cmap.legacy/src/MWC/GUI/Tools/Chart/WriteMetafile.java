@@ -56,7 +56,7 @@ public class WriteMetafile extends PlainTool
 	 */
 	public WriteMetafile(final ToolParent theParent, final PlainChart theChart, final Layers theData)
 	{
-		super(theParent, "Write MF", "images/photo_scenery.png");
+		super(theParent, "Write MF", "images/24/save-to-image.png");
 		// remember the chart we are acting upon
 		_theChart = theChart;
 	}

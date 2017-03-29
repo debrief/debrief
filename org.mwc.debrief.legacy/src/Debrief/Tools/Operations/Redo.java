@@ -29,7 +29,7 @@ public final class Redo extends PlainTool
   // constructor
   ////////////////////////////////////////////////////////////
   public Redo(final Application theParent){
-    super(theParent, "Redo", null);
+    super(theParent, "Redo", "images/24/redo.png");
     
     _theParent = theParent;
   }

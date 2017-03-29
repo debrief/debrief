@@ -32,7 +32,7 @@ public final class Undo extends PlainTool
   // constructor
   ////////////////////////////////////////////////////////////
   public Undo(final Application theParent){
-    super(theParent, "Undo", null);
+    super(theParent, "Undo", "images/24/undo.png");
     
     _theParent = theParent;
   }
