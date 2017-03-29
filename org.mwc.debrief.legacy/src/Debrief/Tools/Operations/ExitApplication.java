@@ -83,7 +83,7 @@ public final class ExitApplication extends PlainTool
   }
 
   public ExitApplication(final Application theApplication){
-    super(theApplication, "Exit", "images/exit.gif");
+    super(theApplication, "Exit", "images/24/exit.png");
     _theApplication = theApplication;
   }
   

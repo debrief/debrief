@@ -37,7 +37,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
   public SavePlotAsXML(final ToolParent theParent,
                        final Session theSession)
   {
-    this(theParent, theSession, "Save Plot As...", "images/save_as.png");
+    this(theParent, theSession, "Save Plot As...", "images/24/save-as.png");
   }
 
   public SavePlotAsXML(final ToolParent theParent,

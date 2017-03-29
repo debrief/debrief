@@ -114,6 +114,8 @@ public class MenuItemInfo{
 
   /////////////////////////////////////////////////////////
   // constructor
+
+  // constructor
   /**
    *
    * @param menuName name of the menu we are placing this item on
@@ -128,32 +130,14 @@ public class MenuItemInfo{
                       final String menuItemName,
                       final Tool theTool,
                       final MenuShortcut theShortCut,
-											final char theMnemonic){
+                      final char theMnemonic){
     _menuName     = menuName;
     _menuItemName = menuItemName;
     _toggleGroup  = toggleGroup;
     _theTool      = theTool;
     _theShortCut  = theShortCut;
-		_theMnemonic  = theMnemonic;
+    _theMnemonic  = theMnemonic;
   }
-
-  /**
-   *
-   * @param menuName name of the menu we are placing this item on
-   * @param toggleGroup toggle group this item belongs to (or null)
-   * @param menuItemName the name appearing on the menu
-   * @param theTool the tool to call when this item is selected
-   * @param theShortCut shortcut for this item
-   * @param theMnemonic shortcut key for this command
-   */
-  public MenuItemInfo(final String menuName,
-                      final String toggleGroup,
-                      final Tool theTool,
-                      final MenuShortcut theShortCut,
-											final char theMnemonic){
-    this(menuName, toggleGroup, menuName, theTool, theShortCut, theMnemonic);
-  }
-
 
   /////////////////////////////////////////////////////////
   // member functions
@@ -197,7 +181,8 @@ public class MenuItemInfo{
   public MenuShortcut getShortCut(){
     return _theShortCut;
   }
-	/**
+
+  /**
    * getMnemonic
    *
    * @return the returned char

@@ -278,7 +278,7 @@ abstract public class CoreGUI
       System.err.println("Record to video not provided, JMF classes not found");
       //e.printStackTrace();
     }
-    _theTools.addElement(new MenuItemInfo("File", null,
+    _theTools.addElement(new MenuItemInfo("File", null, "File",
                                           new ShowLayers(_theParent, "Show Outline View", _theProperties, _theData),
                                           null, ' '));
 

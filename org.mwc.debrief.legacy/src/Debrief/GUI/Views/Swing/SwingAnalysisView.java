@@ -622,7 +622,9 @@ public class SwingAnalysisView extends AnalysisView
     _thePanel.setContinuousLayout(false);
     _thePanel.setOneTouchExpandable(true);
 
-    _thePanel.setDividerLocation(_theInfoPanel.getMinimumSize().width);
+    // force the panel to be slightly wider, it's just too narrow on min size
+    // _thePanel.setDividerLocation(_theInfoPanel.getMinimumSize().width);
+    _thePanel.setDividerLocation(_theInfoPanel.getMinimumSize().width + 50);
 
     _thePanel.doLayout();
 
