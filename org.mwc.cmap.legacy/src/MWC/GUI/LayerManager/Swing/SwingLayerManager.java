@@ -166,6 +166,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -174,6 +176,7 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -181,7 +184,9 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -270,7 +275,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		final PlottableNodeEditor editor = new PlottableNodeEditor();
 		_myTree.setCellEditor(new ImmediateEditor(_myTree, renderer, editor));
 		_myTree.setEditable(true);
-
+		_myTree.setRowHeight(0);
 		// we use double-click to edit a node, so prevent the double-click from
 		// opening
 		// up a tree node. We do this by indicating that a triple-click is required
@@ -768,8 +773,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * embedded class used as a renderer - indicates if each layer is visible
 	 */
-	private static class PlottableRenderer extends
-			javax.swing.tree.DefaultTreeCellRenderer
+	private static class PlottableRenderer implements TreeCellRenderer
+			
 	{
 		/**
 		 * 
@@ -779,10 +784,12 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		private final Component strut = Box.createHorizontalStrut(5);
 		private final JPanel panel = new JPanel();
 		private int _xOffset = 0;
+		
+		javax.swing.tree.DefaultTreeCellRenderer proxy = new DefaultTreeCellRenderer();
 
 		public void paint(final java.awt.Graphics g)
 		{
-			super.paint(g);
+			proxy.paint(g);
 
 			// get the location of the check box, to check our ticking
 			if (g != null)
@@ -790,7 +797,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 				try
 				{
 					final FontMetrics fm = g.getFontMetrics();
-					_xOffset = fm.stringWidth(getText()) + strut.getPreferredSize().width;
+					_xOffset = fm.stringWidth(proxy.getText()) + strut.getPreferredSize().width;
 				}
 				finally
 				{
@@ -803,15 +810,19 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		{
 			super();
 			panel.setBackground(UIManager.getColor("Tree.textBackground"));
-			setOpaque(false);
+			proxy.setOpaque(false);
 			checkBox.setOpaque(false);
 			panel.setOpaque(false);
-			panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-			panel.add(this);
+			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			panel.add(proxy);
+			
 			panel.add(strut);
 			panel.add(checkBox);
+			
 
 		}
+		
+		
 
 		public Component getTreeCellRendererComponent(final JTree tree, final Object node,
 				final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus1)
@@ -823,13 +834,17 @@ public class SwingLayerManager extends SwingCustomEditor implements
 				if (data instanceof MWC.GUI.Plottable)
 				{
 					final Plottable pl = (Plottable) tn.getUserObject();
-					super.getTreeCellRendererComponent(tree, node, sel, expanded, leaf,
+					proxy.getTreeCellRendererComponent(tree, node, sel, expanded, leaf,
 							row, hasFocus1);
 
+					
+					
 					checkBox.setSelected(pl.getVisible());
 				}
 			}
-
+			
+			
+			panel.doLayout();
 			return panel;
 		}
 
@@ -852,7 +867,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		public ImmediateEditor(final JTree tree, final PlottableRenderer renderer,
 				final PlottableNodeEditor editor)
 		{
-			super(tree, renderer, editor);
+			super(tree, renderer.proxy, editor);
 			this.renderer = renderer;
 		}
 
@@ -972,7 +987,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		{
 			final Component c = super.getTreeCellRendererComponent(tree, value, selected1,
 					expanded, leaf, row, hasFocus1);
-			setIcon(null);
+			proxy.setIcon(null);
 			return c;
 		}
 
