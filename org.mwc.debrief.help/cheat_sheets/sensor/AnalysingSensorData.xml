@@ -12,27 +12,28 @@
 		<description>
 			To check that you have data:
 			<br/>Open <b>Navigator</b> (using your mouse, or <b>Ctrl+3</b> and typing &apos;navigator&apos;).
-			<br/>Confirm you have sample data-files in navigator. If not, refer to the <b>Finding the sample data</b> cheat-sheet
+			<br/>Confirm you have sample data-files in <b>Navigator</b>. If not, refer to the <b>Finding the sample data</b> cheat-sheet
 		</description>
 	</item>
 	<item title="Open the sample sensor tracks file">
-		<description>To open the sample file, double-click on the <b>sen_tracks.rep</b> file. 
-			If the <b>Import</b> dialog appears, select &apos;Over The Ground&apos; for both tracks; you
-			will see the red and blue vessel tracks.</description>
+		<description>To open the sample file, double-click on the <b>sen_tracks.rep</b> file. The
+			file will then load. If the <b>Import</b> dialog appears, select &apos;Over The
+			Ground&apos; for both tracks; you will see the red and blue vessel tracks.</description>
 	</item>
 	<item title="Fit to window"
 		href="\org.mwc.debrief.help\html\legacy\moving_around.html#Fit_To_Win">
-		<description>The workspace can get cluttered quickly; to make sure all of the data is visible, click on the <b>Fit-to-Window</b> toolbar button.
-		</description>
+		<description>The workspace can get cluttered quickly; to make sure all of the data is
+			visible, click on the <b>Fit-to-Window</b> toolbar button. </description>
 	</item>
 	<item title="Add the SSK track">
-		<description>We will now add the sensor data. Starting from the <b>Navigator</b> view, drag the <b>sen_ssk_sensor.dsf</b> SSK sensor data file onto the plot. You can accept the default options in the import wizard.
-		</description>
+		<description>We will now add the sensor data. Starting from the <b>Navigator</b> view, drag
+			the <b>sen_ssk_sensor.dsf</b> SSK sensor data file onto the plot. You can accept the
+			default options in the import wizard. </description>
 	</item>
 	<item title="Add the FF track">
-		<description>
-			Next, drag the <b>sen_frig_sensor.dsf</b> SSK sensor data file onto the plot.
-			<br/><b>Note:</b> the data will import, but there won&apos;t be any visible changes to the plot area.
+		<description> Next, drag the <b>sen_frig_sensor.dsf</b> SSK sensor data file onto the plot.
+				<br/><b>Note:</b> the data will import, but there won&apos;t be any visible changes
+			to the plot area. Since very high volumes of sensor data are typically loaded, sensor data is hidden by default.
 		</description>
 	</item>
 	<item title="View the sensor data">
@@ -44,35 +45,37 @@
 			each block of sensor data visible, so click on one to select it, and then click on the
 				<b>Reveal Selected Items</b> toolbar button. As you make each set of data visible,
 			you should see its bearing fan appear in the plot area. Overall, there are six blocks of
-			sensor data across the two tracks. </description>
+			sensor data across the two tracks.</description>
 	</item>
 	<item title="Sensor formatting options" skip="true">
-		<description>Sensor lines can be formatted to change their colour, their label, and the location of their label. This formatting can be applied to a single sensor line or a series of sensor lines.
-		</description>
+		<description>Sensor lines can be formatted to change their colour, their label, and the
+			location of their label. This formatting can be applied to a single sensor line or a
+			series of sensor lines. </description>
 	</item>
 	<item title="Format the sensor data">
 		<description>Next, we will simulate the formatting a series of bearing lines to represent
 			the state of a particular sensor. From the <b>Outline View</b>:
-			<br/><b>1.</b> Open the <b>NEW_SSK_BB</b> sensor for the <b>New_SSK</b> track (click on <b>New_SSK</b>, then on <b>Sensors</b> to show the sensor bearings).
+			<br/><b>1.</b> Open the <b>NEW_SSK_BB</b> sensor for the <b>New_SSK</b> track (click on <b>New_SSK</b>, then on <b>Sensors</b>—the sensor bearings will show).
 			<br/><b>2.</b> Select the first five sensor bearings by left-clicking on the top sensor bearing;
 			then, hold down the <b>Shift</b> key, click on the 5th sensor; all 5 items should be selected.
-			<br/><b>3.</b> Switch to the <b>Properties</b> view to show the editable properties for those bearings.
-			<br/><b>4.</b> Click on the <b>Color</b> property, select <b>yellow</b> and Click <b>Ok</b>.
+			<br/><b>3.</b> Switch to the <b>Properties</b> view. This should show the editable properties for those bearings.
+			<br/><b>4.</b> Click on the <b>Color</b> property, select <b>yellow</b>. Click <b>Ok</b>.
 			<br/>You will see the sensor lines on the plot update.</description>
 	</item>
-	<item title="Conduct a plot-lock"
+	<item title="Conduct a plot lock"
 		href="\org.mwc.debrief.help\html\legacy\formatting_data.html#track_shifting">
-		<description>
-			We will now simulate the process of dragging tracks so that their bearing fans match. In the UK this process is called a plot-lock, and in the US it&apos;s called a tie-point.
-			<br/>First though, we must indicate which tracks we want to view the relationship between:
-			<br/><b>1.</b> Right-click on <b>Frigate</b> and then select <b>Make Primary</b>
+		<description> We will now simulate the process of dragging tracks so that their bearing fans
+			match. In the UK this process is called a plot-lock, and in the US it&apos;s called a
+			tie-point. <br/>First though, we must indicate which tracks we want to view the
+			relationship between: <br/><b>1.</b> Right-click on <b>Frigate</b> and then select
+				<b>Make Primary</b>
 			<br/><b>2.</b> Right-click on <b>New_SSK</b> and select <b>Make Secondary</b>
-			<br/>These will both appear in the Track Tote view.
-		</description>
+			<br/>These will both appear in the <b>Track Tote</b> view.</description>
 	</item>
-	<item title="Commence plot-lock"
+	<item title="Commence plot lock"
 		href="\org.mwc.debrief.help\html\legacy\moving_around.html#toggle_buttons">
-		<description>To commence plot lock which will enable us to use the mouse to drag the tracks, click on the <b>Drag Track Segment button</b> on the right side of the globe.
+		<description>To commence plot lock which will enable us to use the mouse to drag the tracks,
+			click on the <b>Drag Whole Feature</b> button; it&apos;s the third button from the left.
 		</description>
 	</item>
 	<item title="Start dragging"
@@ -83,9 +86,9 @@
 			sensor bearing lines against the point on the target track nearest to that DTG.
 			<br/>When the cursor is over the end of a track, it will turn green.
 			<br/><b>1.</b> Move the cursor over the north-west end of the blue track until the cursor turns green.
-			<br/><b>2.</b> Hold down the mouse button and start dragging the track. You will see the track and its sensor data start
+			<br/><b>2.</b> Hold down the mouse button and start dragging the track.<br/> You will see the track and its sensor data start
 			to hover as you drag it, and the bearing errors in the <b>Stacked Dots</b> view will update
-			proportionally. In plot-locking the tracks, you&apos;re trying to minimise the errors
+			accordingly. When plot-locking the tracks, your aim is to minimise the errors
 			displayed on the graph. If you value some sensor data more than others, experiment with
 			hiding the other blocks of sensor data (by making them invisible) - this will unclutter
 			the plot and the stacked dots, making plot-locking easier.</description>
@@ -94,11 +97,10 @@
 		<description> Well done! You&apos;ve completed the steps on loading, managing, and formatting
 			sensor data - supported by a healthy dose of plot-locking.
 			<br/>Having come this far, you now
-			know the initial steps of using Debrief. Sure, you&apos;re not a master yet, but that comes
+			know the initial steps of using Debrief. Sure, you&apos;re a way off mastery, but that comes
 			with a bit of practice, so be sure to run through the steps above again.
 			<br/>You now know
-			about the views, and how to use them to your advantage, so it won&apos;t take you as long
-			next time. Now we&apos;ll move on the next cheat sheet, <b>Using Debrief in Analysis</b>.
+			about the views, and how we can use them to our advantage, so it won&apos;t take you as long next time. Now we&apos;ll move on the next cheat sheet, <b>Using Debrief in Analysis</b>.
 		</description>
 	</item>
 </cheatsheet>

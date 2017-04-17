@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Moving plots">
+	<intro>
+		<description>You can move the plot order by clicking on the plot&apos;s tab, and then dragging
+			it into a new position alongside an existing tab.
+			<br/><b>1.</b> In the <b>Navigator</b> view, double-click
+			on the file “<b>boat2.rep</b>” to open it.
+			<br/><b>2.</b> Select <b>Over the Ground (OTG)</b>, then click on <b>Ok</b>.
+			The file will display in a new tab.
+			<br/>We now have 2 tabs open: <b>boat1.dpf</b> and <b>boat2.rep</b>.
+			<br/><b>3.</b> To move them, left-click and hold on the <b>boat1.dpf</b> tab.
+			<br/><b>4.</b> Either drag the tab on top
+			of or next to the <b>boat2.rep</b> tab (you will see the mouse cursor change to a stacked file
+			set and a shaded box will appear).
+			<br/><b>5.</b> Release the mouse and the tabs will have swapped
+			positions. Now, we&apos;ll take this one step further and view multiple plots. </description>
+	</intro>
+</cheatsheet>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Navigating within the plot area">
+	<intro>
+		<description>In addition to using the mouse to move around the plot area, there are other
+			ways of navigating, including using the tab key to cycle through the 5 drag modes (the 5
+			buttons to the left of the Zoom in button on the main toolbar); or, if you have a mouse
+			with a wheel, you can press the <b>Ctrl</b> key and then use the mouse wheel to zoom in and out
+			of the plot.</description>
+	</intro>
+</cheatsheet>

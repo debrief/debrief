@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Fast View Toolbar">
+	<intro>
+		<description>This
+			particular toolbar contains what are called &apos;fast views&apos;—shortcuts to frequently-used
+			views. By default, this toolbar resides in the bottom-left of the interface, underneath
+			the <b>Outline</b> view (at the moment), but it can be dragged to any position around the
+			outside edge of the interface.
+			<br/><b>1.</b>Move your mouse cursor over the dotted vertical line on
+			the <b>Fast View toolbar</b> and the cursor will change to a 4-direction cursor.<br/><b>2.</b>Left-click
+			and drag it to the top-right corner of the UI (next to the button which says <b>Tactical
+				Analysis</b>, or part thereof).<br/><b>3.</b> Release the mouse and the <b>Fast View toolbar</b> is now in the
+			top right corner of the UI.<br/>Now we will add a view to the toolbar:<br/><b>4.</b>Right-click on the
+			<b>Navigator</b> view tab and select <b>Fast View</b>. The <b>Navigator</b> view button will now be added to
+			the Fast View toolbar.<br/><b>Note:</b> You may find it helpful to keep the <b>Navigator</b> view in the
+			<b>Fast View toolbar</b> as you will likely only want it visible when you need to see and open
+			files/data.<br/>You will notice that both these views have disappeared from the <b>Workbench</b>.
+			This is because views in this toolbar become <b>toggle options</b>: you click once on the
+			button to show it (toggle on), and click on it again to hide it (toggle off).<br/><b>Note:</b> These icons do look similar, so until they&apos;re familiar, remember to mouse-over each to
+			see the tooltip before clicking on it.<br/><b>5.</b> In the <b>Fast View toolbar</b>, click on the
+			left-most button in the toolbar and you will see a drop-down list of all views in
+			Debrief.<br/><b>6.</b> Select the <b>Properties</b> view and the button will display as the 4th icon in the
+			toolbar; the <b>Properties</b> view will also show.<br/>You can drag any view and either stack or
+			position it in the same way as we did with the <b>boat1.rep</b> and <b>boat2.rep</b> files before.
+			</description>
+	</intro>
+</cheatsheet>

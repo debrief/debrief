@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Opening the Navigator view">
+	<intro>
+		<description>The easiest ways to open the <b>Navigator</b> view are either via the menu or
+			the <b>Quick Access</b> dialog.</description>
+	</intro>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Opening views via the menu">
+		<description> To open views using the menus (remember, we&apos;re just concerned with the
+			<b>Navigator</b> view here, but these steps apply to any Debrief view):
+			<br/><b>1.</b> Click on <b>Window</b> on
+			the menu bar
+			<br/><b>2.</b> Mouse-over or click on <b>Show View</b>
+			<br/><b>3.</b> Click on <b>Navigator</b> and that view will open.
+			<br/>Using the convention I described before, this would be:
+			<br/><b>Window</b> > <b>Show View</b> >
+			<b>Navigator</b>.
+			<br/>We will use this convention from here on.
+			<br/>However, a much quicker way to open
+			a view is to use a keyboard combination—a sequence of key presses to perform an action;
+			the only difference here is you must know the name of the view you want to open.
+		</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Opening  and closing views">
+		<description>To open the <b>Quick Access</b> dialog and locate any item within Debrief:
+			<br/><b>1.</b> Press <b>Ctrl+3</b> on your keyboard and the <b>Quick Access</b> popup dialog will show.
+			<br/><b>2.</b> We are searching for the Navigator view, so just start typing &apos;navigator&apos; into the search field and,
+			before you&apos;ve finished typing the word, you will see <b>Views - Navigator - General</b> appear.
+			<br/><b>3.</b> Click on it and the <b>Navigator</b> view will show in the top left of your window.
+			<br/>The <b>Quick Access</b> dialog also &apos;remembers&apos; your choices, so the next time you open it, you will see
+			recently selected items listed beneath the search field; just click on the one you want and it will open.
+			<br/>As you can see, opening views is easy; so is closing them.
+			<br/>To close a view, click on the <b>X</b> icon on the view name tab.
+			
+		</description>
+	</item>
+</cheatsheet>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="View Toolbars">
+	<intro>
+		<description>Each view also has its
+			own mini-toolbar which provides functionality specific to that view.<br/><b>1.</b> Click anywhere on
+			the <b>NELSON</b> track in the <b>boat1.rep</b> editor; the details of that track will appear in the
+			<b>Outline</b> view.<br/><b>2.</b> In the <b>Outline</b> view, click on <b>Track:NELSON</b> to select it.<br/><b>3.</b> In the
+			<b>Outline</b> view&apos;s mini-toolbar, click on the <b>empty check box</b>, second from the right-end—the
+			<b>Nelson</b> track in the plot editor will disappear.<br/><b>4.</b> In the same mini-toolbar, click on the
+			<b>check box with the tick in it</b>—the <b>Nelson</b> track will reappear.</description>
+	</intro>
+</cheatsheet>

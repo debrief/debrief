@@ -57,8 +57,8 @@
                sample data, so ensure you&apos;re not working on data that is shared with other users
                (the master data). The first thing we need to know is whether your Debrief
                installation folder is on your local machine or on a Network Shared Folder.
-			   <br/> • If it&apos;s on a <b>local machine</b> go to <b>Sample Data if Debrief is on a Local Machine</b>
-               <br/> • If it&apos;s on a <b>Network Shared Folder</b>, go to <b>Sample Data if Debrief is on a Network Shared Folder</b>.
+			  <br/> • If it&apos;s on a <b>local machine</b> go to <b>Sample Data if Debrief is on a Local Machine</b>
+              <br/> • If it&apos;s on a <b>Network Shared Folder</b>, go to <b>Sample Data if Debrief is on a Network Shared Folder</b>.
             </onCompletion>
             <param name="path" value="../GettingStarted/GenerateProject.xml"/>
          </task>
@@ -91,17 +91,17 @@
                <intro>We will now copy in an
                   existing set of sample data from the <b>Debrief\DebriefNG</b> Network Shared
                   Folder.
-                  <br/><b>1.</b> Open the <b>Navigator View</b>
-                  <br/><b>2.</b> Define a project for your work. This is a
+                 <br/><b>1.</b> Open the <b>Navigator View</b>
+                 <br/><b>2.</b> Define a project for your work. This is a
                   parent folder where your data (or links to data) is stored.
                   If your <b>Navigator</b> window is empty, refer to the earlier cheat sheet, <b>Generating a project</b>.
-                  <br/>Now we will drag in our data:
-                  <br/><b>3.</b> Open Windows Explorer.
-                  <br/><b>4.</b> Arrange your windows so
+                 <br/>Now we will drag in our data:
+                 <br/><b>3.</b> Open Windows Explorer.
+                 <br/><b>4.</b> Arrange your windows so
                   you can see both your <b>sample data folder</b> and Debrief.
-                  <br/><b>5.</b> Drag the <b>sample data
+                 <br/><b>5.</b> Drag the <b>sample data
                   folder</b> from Explorer and drop it into Debrief <b>Navigator</b>.
-                  <br/><b>6.</b> A dialog will open asking
+                 <br/><b>6.</b> A dialog will open asking
                   you if you wish to <b>Copy files and folders</b> or <b>Link to files and folders</b>, select
                   <b>Copy</b>.</intro>
                <onCompletion>Great, that&apos;s your data now copied in. Now we can move onto the tutorial. Go to <b>Loading a simple scenario</b>.
@@ -171,7 +171,7 @@
             </intro>
             <onCompletion>
                And that concludes Debrief&apos;s Semi-Automatic Track Construction and the end of this tutorial. Don&apos;t forget that we have a comprehensive user manual to help you.
-               <br/>Good luck!
+              <br/>Good luck!
             </onCompletion>
             <param name="path" value="multi_legs.xml"/>
          </task>

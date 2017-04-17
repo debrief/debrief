@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Add a Chart Feature">
+	<intro>
+		<description>Adding a chart feature will not open the <b>Outline</b> view, so we&apos;ll do that
+			first:<br/><b>1.</b> Press <b>Ctrl</b>+<b>3</b> and start typing "outline" in the <b>Quick Access</b>
+			dialog. When <b>Outline</b> - <b>General</b> appears, click on it to open the <b>Outline</b> view. The view
+			will display and you can see the Chart Features folder has already been added from the
+			previous step.<br/><b>2.</b> Click on the <b>Chart Features</b> folder to expand it and you
+			will see the <b>Grid</b> object is already there.<br/><b>3.</b> On the main menu, click on
+			<b>Chart Features</b> and select your required feature (I selected <b>Local Grid</b> - this differs
+			from <b>grid</b> in that you can modify a local origin by changing the <b>Origin</b> attribute in the
+			<b>Properties</b> view).<br/><b>4.</b> Your chart feature will be added to the <b>Outline</b> view >
+			<b>Chart Features</b> and be visible in the <b>plot editor</b>.</description>
+	</intro>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Modify the Local Grid">
+		<description>Now we&apos;ll modify the <b>Local Grid</b> origin as we would to reflect a custom
+			exercise grid:<br/><b>1.</b> Double-click on <b>Local Grid</b> in the <b>Outline</b> view. The
+			<b>Properties</b> view for the <b>Local Grid</b> will open.<br/><b>2.</b> Locate the <b>Origin</b> property
+			and click on the down arrow.<br/><b>3.</b> Click on the <b>Lat Minutes</b> value and change it
+			to <b>11</b>.<br/><b>4.</b> Change the <b>Lat Seconds</b> value to <b>10.63</b>.<br/><b>5.</b> Change the
+			<b>Long Minutes</b> value to <b>41</b>.<br/><b>6.</b> Then, change the <b>Long Seconds</b> value to <b>52.37</b>,
+			click away from the attribute to enter it.<br/>The <b>Local Grid</b> origin should now be on top of
+			the white square on the <b>Nelson</b> track.<br/>Two of the more common and useful chart features
+			include scale and grid.</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Add a Scale">
+		<description>When you add the scale (<b>Chart Features</b> > <b>Scale</b>), the <b>Properties</b> view for the
+			scale will become the active view. Here you can modify a number of attributes,
+			including:<br/><b>•</b> Color<br/><b>•</b> Location<br/><b>•</b> Scale<br/><b>•</b>
+			ScaleStep, etc. It doesn&apos;t look particularly clear on my monitor, so in the
+			<b>Properties</b> view:<br/><b>1.</b> Click on <b>Color Value</b>, and an <b>ellipsis button</b> will show.
+				<br/><b>2.</b> Click on the <b>ellipsis button</b> and the <b>Color</b> palette will show.
+				<br/><b>3.</b> Select a different colour, one which will stand out against the
+			editor background, then click on <b>Ok</b>.<br/><b>4.</b> The <b>Color</b> palette will close and the
+			scale will change to the selected color.<br/>To change the display units:<br/><b>1.</b> In
+			the <b>Properties</b> view, click on the <b>Value</b> cell next to the <b>DisplayUnits</b> attribute and a
+			drop-down arrow will appear.<br/><b>2.</b> Select your preferred units scale; I chose
+			<b>nm</b>. Click away from the <b>Value</b> cell to enter this value. The scale on the plot editor
+			will update accordingly.</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="Temporarily Hide a Chart Feature">
+		<description>To temporarily hide a <b>Chart Feature</b>, either:<br/><b>•</b> Right-click on the
+			feature itself in the <b>Outline</b> view and select <b>Hide Item</b>, or<br/><b>•</b> Left-click on
+			the feature in the <b>Outline</b> view and, in the <b>Properties</b> view, change the <b>Visible</b>
+			attribute to <b>No</b>.</description>
+	</item>
+	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
+		title="To Remove a Chart Feature">
+		<description>To remove a <b>Chart Feature</b>, in the <b>Outline View</b>:<br/><b>1.</b> Click on <b>Chart
+			Feature</b> to expand it. Identify the feature you no longer want.<br/><b>2.</b>
+			Right-click and, in the pop-out menu, select <b>Delete [feature]</b>. The feature will be
+			removed from the Outli<b></b>ne view and the <b>plot editor</b>.</description>
+	</item>
+</cheatsheet>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="How to Find Out What the Shortcut Keys Are">
+	<intro>
+		<description>To find out what other shortcut keys work:<br/><b>1.</b> Press the <b>Alt</b> key and look at the
+			main menu. By default, the <b>File</b> menu is selected (it&apos;s the first in the list); but, if
+			you look at the initial letters of each menu item, they&apos;re underlined.<br/><b>2.</b> Pick any one of
+			those underlined letters and press that key on your keyboard. A drop-down menu will
+			appear, and you can see the options in that menu.<br/>So, if I wanted to view a grid on my
+			<b>boat1.rep</b> plot, I would:<br/><b>3.</b> Click on the <b>boat1.rep</b> tab to select it as the active plot.
+			<br/><b>4.</b> Press <b>Alt</b>, <b>C</b>, <b>G</b> and a <b>grid</b> will display on the <b>boat1.rep</b> plot. You will notice here
+			that the grid doesn&apos;t get added to the <b>boat2.rep</b> file. Each editor is a separate entity,
+			and you need to add objects to each one in turn.<br/>In some drop-down menus, you may also
+			see a pre-programmed keyboard combination next to the more popular commands, e.g., in
+			the <b>File</b> menu (you can access this via <b>Alt</b>, <b>F</b> or <b>ALt</b>+<b>F</b>, both work), you will see that
+			the shortcut key to <b>Close</b> a file is <b>Ctrl</b>+<b>W</b>. This particular shortcut combination is
+			common across the vast majority of Windows applications. If you can learn the common
+			shortcuts, it&apos;ll speed up your work in Debrief enormously.</description>
+	</intro>
+</cheatsheet>

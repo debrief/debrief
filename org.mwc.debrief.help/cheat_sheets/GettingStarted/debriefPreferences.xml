@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Debrief Preferences">
+	<intro>
+		<description>As mentioned, all software is configured a certain way &apos;out of the
+			box&apos;, and Debrief is no different. However, it&apos;s most likely that you&apos;ll
+			either want to change the way it&apos;s setup or know where to make the changes if you
+			later decide to do so. For example, if you prefer <b>Over the Ground (OTG)</b> as the
+			default import mode for track files, then you can change the setting here; the same if
+			you wanted your <b>default range units</b> in miles or nautical miles, etc.<br/>Debrief
+			has a large number of different settings and configurations, all of which can be changed
+			if you prefer alternatives to the preset ones. To change these:<br/><b>1.</b> In
+			Debrief, click on <b>Window</b> > <b>Preferences</b>. The <b>Preferences</b> dialog will
+			open.<br/>We will now look at some of the important settings. Though we won&apos;t
+			change any (as it&apos;s setup just right for the subsequent tutorials), it&apos;s handy
+			to know where they are.<br/><b>2.</b> Click on <b>Maritime Analysis</b> and you will
+			see 3 settings groups: <b>Default Track Import Mode</b>, <b>Default Range Units</b>, and
+				<b>Relative Bearing Format</b>.<br/><b>3.</b> Again, we will leave these at the
+			default setting, but just check that you want <b>Ask User</b> for the <b>Default track
+				import mode</b>, <b>yd</b> for the <b>Default range units</b>; and <b>UK format
+				(R180,,G180)</b> for the <b>Relative bearing format</b>. If not, make your
+			change(s).<br/><b>4.</b> Once you are done, click on the <b>Apply</b> button to commit
+			the changes: <b>Apply</b> makes the changes and leaves the dialog box open, whereas
+			clicking on <b>Ok</b> commits the changes and closes the box.<br/>Now we will look at
+			the different location format options<br/><b>6.</b> Click on the drop-down arrow next
+			to <b>Maritime Analysis</b> and select <b>Formatting</b>.<br/><b>7.</b> You can now
+			choose your location format, either <b>DD°MM.MMM&apos;</b> or <b>DD°MM&apos;
+			SS.SSS”</b>—again, we want the default option.<br/><b>8.</b> If you have downloaded the
+				“<b>Natural Earth</b>” set, click on this in the <b>Maritime Analysis</b> sub-menu.
+				<br/><b>9.</b> Click on the <b>Browse</b> button, navigate to the download location,
+			and double-click on the file to load it.<br/><b>10.</b> Finally, click on the <b>Ok</b>
+			button.<br/>Those are the only settings we need for our tutorials. For the other
+			preference settings, refer to the user guide for further information. Now we will look
+			at working with Debrief.</description>
+	</intro>
+</cheatsheet>

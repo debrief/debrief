@@ -17,35 +17,35 @@
       title="Add Speed constraint">
       <description>
          There are a number of ways to add a speed constraint:
-         <br/><b>1.</b> At the per-leg level, we can expand a <b>Straight Leg Forecast</b> and enter min/max/estimate values for course or speed for each leg.
-         <br/><b>2.</b> We can apply a speed constraint to the whole engagement. 
-         <br/>To do the latter:
-         <br/><b>1.</b> In the <b>Outline</b> view, right-click on the <b>Bearing Data</b> item and select <b>Add speed forecast for period covered by [Selected Legs]</b>. 
-         <br/><b>2.</b> When the <b>New contribution</b> dialog box opens, enter <b>Overall speed</b> as the name of this contribution.
-         <br/><b>3.</b> Click on <b>Ok</b> and the new contribution will appear in the listing in the <b>Maintain Contributions</b> view.
+        <br/><b>1.</b> At the per-leg level, we can expand a <b>Straight Leg Forecast</b> and enter min/max/estimate values for course or speed for each leg.
+        <br/><b>2.</b> We can apply a speed constraint to the whole engagement. 
+        <br/>To do the latter:
+        <br/><b>1.</b> In the <b>Outline</b> view, right-click on the <b>Bearing Data</b> item and select <b>Add speed forecast for period covered by [Selected Legs]</b>. 
+        <br/><b>2.</b> When the <b>New contribution</b> dialog box opens, enter <b>Overall speed</b> as the name of this contribution.
+        <br/><b>3.</b> Click on <b>Ok</b> and the new contribution will appear in the listing in the <b>Maintain Contributions</b> view.
       </description>
    </item>
    <item
       title="Specify speed constraint">
       <description>
          The exercise observer recorded that the target was doing around 9 knots during the whole exercise, so we must enter this constraint to allow for speed keeping errors:
-         <br/><b>1.</b> In the <b>Maintain Contributions</b> view, expand the <b>Speed Forecast</b> control
-         <br/><b>2.</b> Enter a <b>minimum speed</b> of <b>8 knots</b>
-         <br/><b>3.</b> Enter a <b>maximum speed</b> of <b>10 knots</b>
-         <br/><b>4.</b> Enter an <b>(optional) estimate</b> of <b>9 knots</b>
-         <br/><b>5.</b> Click on the <b>Calculate Solution</b> button. 
-         <br/>In the <b>Performance</b> tab, you will see the effectiveness of both the <b>Bearing Data</b> and the <b>Overall speed</b> estimates. The bars are shaded according to the respective color-coded constraint.
+        <br/><b>1.</b> In the <b>Maintain Contributions</b> view, expand the <b>Speed Forecast</b> control
+        <br/><b>2.</b> Enter a <b>minimum speed</b> of <b>8 knots</b>
+        <br/><b>3.</b> Enter a <b>maximum speed</b> of <b>10 knots</b>
+        <br/><b>4.</b> Enter an <b>(optional) estimate</b> of <b>9 knots</b>
+        <br/><b>5.</b> Click on the <b>Calculate Solution</b> button. 
+        <br/>In the <b>Performance</b> tab, you will see the effectiveness of both the <b>Bearing Data</b> and the <b>Overall speed</b> estimates. The bars are shaded according to the respective color-coded constraint.
       </description>
    </item>
    <item
       title="Generate manual TMA solution">
       <description>
          We will now use this information to develop a manual TMA solution. 
-         <br/><b>1.</b> In the <b>Outline</b> view, right-click on the <b>TMA solution</b> and select <b>Convert to Composite Track (legs)</b>.
-         <br/>A manual solution (<b>Track:121200.00_0</b>) will now appear in the <b>Outline</b> view, and the auto TMA solution will be hidden.
-         <br/>Mark the new solution as a secondary track by:
-         <br/><b>2.</b> Left-clicking to select it in the <b>Outline</b> view 
-         <br/><b>3.</b> Click on the <b>2</b> in the <b>Outline</b> view toolbar.
+        <br/><b>1.</b> In the <b>Outline</b> view, right-click on the <b>TMA solution</b> and select <b>Convert to Composite Track (legs)</b>.
+        <br/>A manual solution (<b>Track:121200.00_0</b>) will now appear in the <b>Outline</b> view, and the auto TMA solution will be hidden.
+        <br/>Mark the new solution as a secondary track by:
+        <br/><b>2.</b> Left-clicking to select it in the <b>Outline</b> view 
+        <br/><b>3.</b> Click on the <b>2</b> in the <b>Outline</b> view toolbar.
          We are now ready to manually adjust the solution.
       </description>
    </item>
@@ -53,38 +53,38 @@
       title="Tune manual TMA solution">
       <description>
          To manually tune the TMA solution:
-         <br/><b>1.</b> In the <b>Outline</b> vView, ensure the track is selected
-         <br/><b>2.</b> Click on the <b>Drag Track Segment</b> button on the main application toolbar and the Bearing Residuals window will open.
-         <br/><b>Note:</b> if the <b>Bearing Residuals</b> window is empty, open the <b>Track Tote View</b> and check that your primary track is <b>Ownship</b> and your secondary track is <b>121200.00_0</b>. If they are not, assign these accordingly in the <b>Outline</b> view.
-         <br/>Alternatively, if the ownship sensor cuts are not visible, you will need to clear the <b>Only draw dots for visible sensor points</b> button in the <b>Bearing Residuals</b> view toolbar.
-         <br/><b>3.</b> In the <b>Bearing Residuals</b> view, click on the <b>Shear</b> button.
-         <br/><b>4.</b> In the plot area, begin dragging track segments to minimise the bearing errors.
-         <br/>Don&apos;t worry if your track segment dragging results in a mangled solution, you can delete the manual track from the <b>Outline</b> view and generate a new one from your existing solution.
+        <br/><b>1.</b> In the <b>Outline</b> vView, ensure the track is selected
+        <br/><b>2.</b> Click on the <b>Drag Track Segment</b> button on the main application toolbar and the Bearing Residuals window will open.
+        <br/><b>Note:</b> if the <b>Bearing Residuals</b> window is empty, open the <b>Track Tote View</b> and check that your primary track is <b>Ownship</b> and your secondary track is <b>121200.00_0</b>. If they are not, assign these accordingly in the <b>Outline</b> view.
+        <br/>Alternatively, if the ownship sensor cuts are not visible, you will need to clear the <b>Only draw dots for visible sensor points</b> button in the <b>Bearing Residuals</b> view toolbar.
+        <br/><b>3.</b> In the <b>Bearing Residuals</b> view, click on the <b>Shear</b> button.
+        <br/><b>4.</b> In the plot area, begin dragging track segments to minimise the bearing errors.
+        <br/>Don&apos;t worry if your track segment dragging results in a mangled solution, you can delete the manual track from the <b>Outline</b> view and generate a new one from your existing solution.
       </description>
    </item>
    <item
       title="Merge track segments">
       <description>
          When you are happy with your solution, you can merge the separate track segments into a formal track.
-         <br/><b>1.</b> In the <b>Outline</b> view, expand your manual TMA solution
-         <br/><b>2.</b> Right-click on the <b>Track Segments (5 items)</b> and select <b>Merge all track segments from the popup list</b>.
-         <br/>You now have a track for the subject vessel that can be used for further analysis.
+        <br/><b>1.</b> In the <b>Outline</b> view, expand your manual TMA solution
+        <br/><b>2.</b> Right-click on the <b>Track Segments (5 items)</b> and select <b>Merge all track segments from the popup list</b>.
+        <br/>You now have a track for the subject vessel that can be used for further analysis.
       </description>
    </item>
    <item
       title="Mark your answers">
       <description>
          To check how well you did:
-         <br/><b>1.</b> In the <b>Outline</b> view, select <b>Track:Subject</b>
-         <br/><b>2.</b> Click on <b>Reveal Selected Items</b> (make visible)
-         <br/>This is the actual <b>Truth Track</b>; so, how does it compare with your track?
-         <br/>If you prefer a more quantitative score, produce an <b>XY Plot</b> of the range between your solution and the truth track:
-         <br/><b>1.</b> Ctrl-click on both tracks to select them.
-         <br/><b>2.</b> Right-click and select <b>View XY Plot</b>
-         <br/><b>3.</b> In the <b>View time-variable plot</b> dialog, select <b>Range</b>
-         <br/><b>4.</b> Click on <b>Ok</b>.
-         <br/>You can now see a plot of how well you did.
-         <br/> Ideally, you should be able to achieve an accuracy of around 200 yds, which is not bad when you are using sensor data at around 20000 yds.
+        <br/><b>1.</b> In the <b>Outline</b> view, select <b>Track:Subject</b>
+        <br/><b>2.</b> Click on <b>Reveal Selected Items</b> (make visible)
+        <br/>This is the actual <b>Truth Track</b>; so, how does it compare with your track?
+        <br/>If you prefer a more quantitative score, produce an <b>XY Plot</b> of the range between your solution and the truth track:
+        <br/><b>1.</b> Ctrl-click on both tracks to select them.
+        <br/><b>2.</b> Right-click and select <b>View XY Plot</b>
+        <br/><b>3.</b> In the <b>View time-variable plot</b> dialog, select <b>Range</b>
+        <br/><b>4.</b> Click on <b>Ok</b>.
+        <br/>You can now see a plot of how well you did.
+        <br/> Ideally, you should be able to achieve an accuracy of around 200 yds, which is not bad when you are using sensor data at around 20000 yds.
       </description>
    </item>
 </cheatsheet>

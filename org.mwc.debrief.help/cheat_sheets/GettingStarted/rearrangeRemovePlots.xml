@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Rearranging or removing plots">
+	<intro>
+		<description>To rearrange or remove plots:
+			<br/><b>•</b> To <b>rearrange plots</b>: drag-and-drop a plot onto
+			the top, side or bottom of another plot and, when the shadow border that shows where the
+			plot will be positioned is in the right place, release the mouse.<br/><b>•</b> To <b>remove plots</b>:
+			either close the plot by clicking on the <b>X</b> in its tab, press <b>Ctrl</b>+<b>W</b> on your keyboard, or
+			click on <b>File</b> > <b>Close</b>.
+			<br/>Do this now with the <b>shapes.rep</b> plot:
+			<br/><b>1.</b> Left-click and hold on
+			the <b>shapes.rep</b> tab to select it.<br/><b>2.</b> Drag the tab on top of the <b>boat1.dpf</b> tab and, when
+			the shadow border appears, release it.
+			<br/><b>3.</b> Now, click on the <b>X</b> in the <b>shapes.rep</b> tab to
+			close it.</description>
+	</intro>
+</cheatsheet>

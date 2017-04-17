@@ -6,7 +6,7 @@
       <description>
          We&apos;ve got a Debrief plot file pre-prepared to let you avoid 
          some of the steps in the single-leg tutorial, called  <b>L2_Scenario.dpf</b>.
-         <br/>
+        <br/>
          For this file we have a good set of ownship data for the ownship track, 
          but we didn&apos;t get GPS data for the other participant - though the
          exercise observer did record the platform speed during the trial.
@@ -24,7 +24,7 @@
       <description>         
          Before you load the data-file, close any existing Debrief plots, then drag 
          in the <b>L2_Scenario.dpf</b> data-file from the SATC folder we used in the previous tutorial.
-         <br/><br/>
+        <br/><br/>
          You will see a Blue Ownship track, with a dark green bearing fan.
       </description>
    </item>

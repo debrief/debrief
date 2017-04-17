@@ -3,30 +3,28 @@
 	<intro>
 		<description>In addition to plotting your recorded vehicle data, Debrief is able to show a
 			number of datasets in backdrop form. In the past we offered the Vector Product Format
-			(VPF) vectored dataset and the ETOPO-2 gridded bathymetry, but these have now been
-			superseded by the shiny new &apos;Natural Earth.&apos;
-		</description>
+			(VPF) vectored dataset and the ETOPO-2 gridded bathymetry, but these have been
+			superseded by the shiny new “<b>Natural Earth</b>”.</description>
 	</intro>
 	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
 		title="Obtaining the Natural Earth dataset">
-		<description>Debrief contains a low resolution &apos;Natural Earth&apos; dataset, sufficient to
-			provide coastlines and country boundaries. <br/>However, you can make your analysis
-			plots much more attractive by configuring higher resolution data. <br/>Your workplace
-			may already have a network copy of &apos;Natural Earth&apos; but, if your IT security policy allows it, you will get better
-			performance by copying the data to your hard drive. <br/>If you don&apos;t have access to a
-			copy, you can download it from <b>https://github.com/debrief/NaturalEarth</b> by
-			clicking on the <b>Download zip</b> button (file size is approximately 25 MB). <br/>Once
-			you have downloaded the file, just unzip it in the normal way and save it to a safe
-			location on your hard drive.
-		</description>
+		<description>Debrief contains a small, low resolution subset of the “<b>Natural Earth</b>” dataset,
+			sufficient to provide coastlines and country boundaries.<br/>However, you can make your
+			analysis plots much more attractive by configuring higher resolution data.<br/>Your
+			workplace may already have a network copy of “<b>Natural Earth</b>”; and, if your IT security
+			policy permits it, and you have sufficient storage space on your machine, you will get
+			better performance by copying the data to your hard drive.<br/>If you don&apos;t have access
+			to a copy, you can go to <b>https://github.com/debrief/NaturalEarth</b> and download it by
+			clicking on the Download zip button (file size is approximately 25 MB).<br/>Once you have
+			downloaded the zip-file, just unzip it in the normal way and save it to a safe place on
+			your hard drive.</description>
 	</item>
 	<item href="/org.mwc.debrief.help/html/legacy/external_datasets.html#ne_intro"
 		title="Configuring Debrief with Natural Earth data">
-		<description>The next step is to configure Debrief with the &apos;Natural Earth&apos; data:
-			<br/><b>1.</b> Click on <b>Window</b> > <b>Preferences</b> (or press <b>Alt,W,P</b>)
-			<br/><b>2.</b> Click on <b>Maritime Analysis</b> and select <b>Natural Earth</b>
-			<br/><b>3.</b> Click on the <b>Browse</b> to navigate to your unzipped &apos;Natural Earth&apos; folder.
-			<br/><b>4.</b> Click on <b>Ok</b>.
-		</description>
+		<description>The next step is to configure Debrief with the “<b>Natural Earth</b>” data:
+				<br/><b>1.</b> Click on <b>Window</b> > <b>Preferences</b> (or press <b>Alt</b>,<b>W</b>,<b>P</b>).<br/><b>2.</b>
+			Click on <b>Maritime Analysis</b> and select <b>Natural Earth</b>.<br/><b>3.</b> Click on the <b>Browse</b>
+			to navigate to your unzipped <b>Natural Earth</b> folder.<br/><b>4.</b> Click on
+			<b>Ok</b>.</description>
 	</item>
 </cheatsheet>
