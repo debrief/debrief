@@ -193,22 +193,35 @@ public class BistaticReceiver extends CoreSensor
 					WorldLocation contactLoc = target.getStatus().getLocation();
 					WorldLocation myLoc = host.getStatus().getLocation();
 
+          // determine the bistatic propagation loss
+          RadiatedCharacteristics txChars = transmitter.getRadiatedChars();
+          NarrowbandRadNoise radNoise =
+              (NarrowbandRadNoise) txChars
+                  .getMedium(EnvironmentType.NARROWBAND);
+          double radLevel = radNoise.getBaseNoiseLevel();
+          double baseFreq = radNoise.getFrequency();
 
-					// use the environment to determine the loss
-					// note: we're asking for the loss in BB_Passive, since it's the same 20 Log R calculation
-					int theMedium = EnvironmentType.BROADBAND_PASSIVE;					
-					double legOneLoss = environment.getLossBetween(
-							theMedium, txLoc, contactLoc);
-					double legTwoLoss = environment.getLossBetween(
-							theMedium, contactLoc, myLoc);
+          // NOTE:: don't can't just combine the two separate propagation losses. Calculate
+          // the loss for the overall range
+          final double sep1 = txLoc.rangeFrom(contactLoc);
+          final double sep2 = contactLoc.rangeFrom(myLoc);
+          final double total_sep = sep1 + sep2;
+          // convert to yds
+          final double rng_yds = MWC.Algorithms.Conversions.Degs2m(total_sep);
 
-					// ok, now the remaining value
-					RadiatedCharacteristics txChars = transmitter.getRadiatedChars();
-					NarrowbandRadNoise radNoise = (NarrowbandRadNoise) txChars
-							.getMedium(EnvironmentType.NARROWBAND);
-					double radLevel = radNoise.getBaseNoiseLevel();
-					double baseFreq = radNoise.getBaseNoiseLevel();
-					float remainingNoise = (float) (radLevel - legOneLoss - legTwoLoss);
+          // produce a transmission loss
+          final float remainingNoise;
+          if (rng_yds == 0)
+          {
+            // zero range is a special occurence, since it doesn't get through our log calcs
+            remainingNoise = (float) radLevel;
+          }
+          else
+          {
+            // first sort out the spreading
+            remainingNoise =
+                (float) (radLevel - (20f * Math.log(rng_yds) / Math.log(10d)));
+          }
 
 					// is this sufficient?
 					if (remainingNoise > THRESHOLD)
