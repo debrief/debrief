@@ -59,7 +59,8 @@ public class LocationCalculator implements ILocationCalculator
 	private double getDistance(final WorldLocation start, final WorldLocation end,
 			final WorldLocation watchableLocation)
 	{
-	  final double hyp = new WorldDistance( watchableLocation.rangeFrom(start), WorldDistance.DEGS).getValueIn(_units);
+	  double rangeDegs = watchableLocation.rangeFrom(start);
+    final double hyp = new WorldDistance(rangeDegs, WorldDistance.DEGS).getValueIn(_units);
 	  
 		// angle from start to end
 		final double lineBrg = end.bearingFrom(start);
@@ -67,7 +68,7 @@ public class LocationCalculator implements ILocationCalculator
 		final double delta = pointBrg - lineBrg;
 		
 		// how far along x-section?
-		final double along = hyp * Math.cos(delta);
+		final double along = hyp * Math.sin(delta);
 		
 		return along;
 	}
@@ -125,14 +126,14 @@ public class LocationCalculator implements ILocationCalculator
 		{
 			start = new WorldLocation(0, 0, 0);
 			end = new WorldLocation(0, 2, 0);			
-			watch = new WorldLocation(0, 1.5, 0);	
+			watch = new WorldLocation(1, 1.5, 0);	
 			
 			final double lineLen = new WorldDistance(end.subtract(start))
 				.getValueIn(WorldDistance.MINUTES);
 			assertEquals(60.0 * 2, lineLen);
 						
-			final double d = calc.getDistance(start, end, watch);
-			assertEquals(30.0, d, 0.00001 /* epsilon */);
+			final double d = Math.abs(calc.getDistance(start, end, watch));
+			assertEquals(60.0, d, 0.00001 /* epsilon */);
 		}	
 		
 		public void testDistanceJump()
