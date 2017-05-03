@@ -212,7 +212,7 @@ public class CrossSectionDatasetProvider implements
         assertEquals(1, series.getItemCount());
         final XYDataItem item = series.getDataItem(0);
         assertNotNull(item.getXValue());
-        assertEquals(0.0, item.getYValue()); // depth is 0
+        assertEquals(0.0, item.getYValue(), 0.001); // depth is 0
       }
     }
 
@@ -227,7 +227,7 @@ public class CrossSectionDatasetProvider implements
         {
           final XYDataItem item = series.getDataItem(j);
           assertNotNull(item.getXValue());
-          assertEquals(0.0, item.getYValue()); // depth is 0
+          assertEquals(0.0, item.getYValue(), 0.001); // depth is 0
         }
       }
     }
@@ -243,7 +243,7 @@ public class CrossSectionDatasetProvider implements
         {
           final XYDataItem item = series.getDataItem(j);
           assertNotNull(item.getXValue());
-          assertEquals(0.0, item.getYValue()); // depth is 0
+          assertEquals(0.0, item.getYValue(), 0.001); // depth is 0
         }
       }
     }
