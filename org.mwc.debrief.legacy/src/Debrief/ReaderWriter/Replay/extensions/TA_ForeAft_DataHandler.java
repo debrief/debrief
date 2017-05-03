@@ -46,13 +46,15 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
         {
           super.storeMeasurement(platform_name, sensor_name, folder, dataset, units, theDate,
               measurement);
-          _messages.add("stored");
+          String outStr = "stored:" + dataset + " value of:" + measurement;
+          _messages.add(outStr);
+          
         }
         
       };
       ff.readThisLine(str);
       
-      assertEquals("found items", 2, _messages.size());
+      assertEquals("found items", 4, _messages.size());
       
     }
   }

@@ -101,7 +101,7 @@ public class LocationCalculator implements ILocationCalculator
     
       LocationCalculator calc2 = new LocationCalculator(WorldDistance.DEGS);
       final double d = calc2.getDistance(start, end, watch);
-      assertEquals(1.4552, d, 0.00001);
+      assertEquals(1.4552, d, 0.0001);
     } 
 		
 		public void testGetDistanceMiddle()
