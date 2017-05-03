@@ -41,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -308,25 +309,25 @@ public class NatNarrativeViewer
 
     natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
 
-//    natTable.getUiBindingRegistry().registerMouseDownBinding(
-//        MouseEventMatcher.columnHeaderLeftClick(SWT.NONE), new IMouseAction()
-//        {
-//
-//          @Override
-//          public void run(final NatTable natTable, final MouseEvent event)
-//          {
-//            int columnPosition = natTable.getColumnPositionByX(event.x);
-//            if (columnPosition == getColumnPositionBylabel(SOURCE_LBL))// source
-//            {
-//              System.out.println("//click on source");
-//            }
-//            else if (columnPosition == getColumnPositionBylabel(TYPE_LBL))// type
-//            {
-//              System.out.println("//click on type");
-//            }
-//
-//          }
-//        });
+    // natTable.getUiBindingRegistry().registerMouseDownBinding(
+    // MouseEventMatcher.columnHeaderLeftClick(SWT.NONE), new IMouseAction()
+    // {
+    //
+    // @Override
+    // public void run(final NatTable natTable, final MouseEvent event)
+    // {
+    // int columnPosition = natTable.getColumnPositionByX(event.x);
+    // if (columnPosition == getColumnPositionBylabel(SOURCE_LBL))// source
+    // {
+    // System.out.println("//click on source");
+    // }
+    // else if (columnPosition == getColumnPositionBylabel(TYPE_LBL))// type
+    // {
+    // System.out.println("//click on type");
+    // }
+    //
+    // }
+    // });
     natTable.getUiBindingRegistry().registerDoubleClickBinding(
         MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction()
         {
@@ -443,7 +444,7 @@ public class NatNarrativeViewer
       }
 
       final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-      if (readFontData != null && readFontData.length>0)
+      if (readFontData != null && readFontData.length > 0)
       {
         prefFont = new Font(Display.getDefault(), readFontData);
       }
@@ -530,12 +531,43 @@ public class NatNarrativeViewer
   public void setEntry(final NarrativeEntry entry)
   {
     final List<INatEntry> list = bodyLayer.getBodyDataProvider().getList();
-    final int indexOf = list.indexOf(new NatEntryProxy(dateFormatter, entry));
+    int indexOf = list.indexOf(new NatEntryProxy(dateFormatter, entry));
+
+    // did we find a row?
     if (indexOf > -1)
     {
+      // find 1/2 the number of visible rows, to use as offset
+      final int offset = bodyLayer.getViewportLayer().getRowCount() / 2;
+      
+      // find the currently selected row
+      final int[] cells = bodyLayer.getSelectionLayer().getFullySelectedRowPositions();
+      
+      // move the selection back a bit, so we see both sides of it
+      int revealRow = indexOf;
+      if (cells != null && cells.length == 1)
+      {
+        // ok, are we moving up or down?
+        if (cells[0] < indexOf)
+        {
+          // we're moving down. Do we have enough rows for an offset?
+          if (indexOf < list.size() - offset)
+          {
+            revealRow = indexOf + offset;
+          }
+        }
+        else
+        {
+          // we must be moving up. Do we have enough rows for an offset?
+          if (indexOf > offset)
+          {
+            revealRow = indexOf - offset;
+          }
+        }
+      }
+      
       bodyLayer.getSelectionLayer().doCommand(
-          new SelectRowsCommand(bodyLayer.getSelectionLayer(), 0, indexOf,
-              false, false));
+          new SelectRowsCommand(bodyLayer.getSelectionLayer(), 0, ArrayUtil
+              .asIntArray(indexOf), false, false, revealRow));
     }
 
   }
@@ -642,20 +674,20 @@ public class NatNarrativeViewer
       if (visible)
       {
         hiddenCols.remove((Object) Integer.valueOf(columnPositionBylabel));
-        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(columnPositionBylabel, 100);
+        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(
+            columnPositionBylabel, 100);
       }
       else
       {
         hiddenCols.add(columnPositionBylabel);
-        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(columnPositionBylabel, 0);
+        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(
+            columnPositionBylabel, 0);
       }
 
       if (hiddenCols.size() > 0)
         natTable.doCommand(new MultiColumnHideCommand(natTable,
             toIntArray(hiddenCols)));
-      
-      
-      
+
       natTable.layout(true);
 
     }
