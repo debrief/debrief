@@ -90,11 +90,12 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 */
 	private InvestigateInfo _myEditor = null;
 
-	/**
-	 * keep track of how everybody's getting on
-	 * 
-	 */
-	protected static InvestigateStore.MappedStores _invData;
+	  /**
+   * keep track of how everybody's getting on
+   * 
+   */
+  protected static InvestigateStore.MappedStores _invData =
+      new InvestigateStore.MappedStores();
 
 	/**
 	 * whether to conduct a collaborative investigation
@@ -159,8 +160,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 		_detectionLevel = detectionLevel;
 		_investigateHeight = investigateHeight;
 		_watchType = watchType;
-
-		init();
 	}
 
 	protected InvestigatePattern getPattern()
@@ -169,15 +168,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			_myPattern = new InvestigatePatternFactory.MatchDetectionLevel();
 
 		return _myPattern;
-	}
-
-	/**
-	 * member method to initialise our local data
-	 */
-	private void init()
-	{
-		if (_invData == null)
-			_invData = new InvestigateStore.MappedStores();
 	}
 
 	/**
@@ -623,7 +613,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 */
 	public void restart()
 	{
-		init();
+	  // clear teh store
+	  _invData.clearStores();
 	}
 
 	/**
@@ -1422,7 +1413,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 		public void testRunningMultipleTargets()
 		{
-
 			Investigate._invData.clearStores();
 
 			// initialise the random genny
