@@ -17,6 +17,8 @@
 			SubjectName="RX 2" file_name="rx2_det"/>
 		<CSVDetectionObserver Name="RX3 det" Active="true"
 			SubjectName="RX 3" file_name="rx3_det"/>
+		<CSVStatusObserver Name="TX1_Status" Active="true"
+			file_name="tx1_stat" SubjectName="TX 1"/>
 		<CSVStatusObserver Name="RX1_Status" Active="true"
 			file_name="rx1_stat" SubjectName="RX 1"/>
 		<CSVStatusObserver Name="RX2_Status" Active="true"
