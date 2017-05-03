@@ -211,7 +211,7 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 
 		assertEquals("good speed is low", 0.0001,
 				speed.calculateErrorScoreFor(theGoodRoute), 0.0001);
-		assertEquals("slow score is high", 0.3207,
+		assertEquals("slow score is high", 0.1374,
 				speed.calculateErrorScoreFor(theSlowRoute), 0.0001);
 		assertEquals("fast score is high", 0.2860,
 				speed.calculateErrorScoreFor(theFastRoute), 0.0001);
