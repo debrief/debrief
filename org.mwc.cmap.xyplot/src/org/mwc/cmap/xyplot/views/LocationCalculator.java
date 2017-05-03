@@ -49,8 +49,8 @@ public class LocationCalculator implements ILocationCalculator
 	}
 	
 		
-	/** find the distance from the watch location to the nearest
-	 * point on the line from start to end
+	/** find the distance from start point to the perpendicular
+	 * line meeting the watch point
 	 * @param start
 	 * @param end
 	 * @param watchableLocation
@@ -68,9 +68,9 @@ public class LocationCalculator implements ILocationCalculator
 		final double delta = pointBrg - lineBrg;
 		
 		// how far along x-section?
-		final double along = hyp * Math.sin(delta);
+		final double along = hyp * Math.cos(delta);
 		
-		return along;
+		return  along;
 	}
 	
 	
@@ -133,7 +133,7 @@ public class LocationCalculator implements ILocationCalculator
 			assertEquals(60.0 * 2, lineLen);
 						
 			final double d = Math.abs(calc.getDistance(start, end, watch));
-			assertEquals(60.0, d, 0.00001 /* epsilon */);
+			assertEquals(90.0, d, 0.00001 /* epsilon */);
 		}	
 		
 		public void testDistanceJump()
