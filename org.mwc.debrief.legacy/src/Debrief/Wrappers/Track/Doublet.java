@@ -160,20 +160,35 @@ public final class Doublet implements Comparable<Doublet>
 	@Override
 	public int compareTo(final Doublet o)
 	{
-		int res = 0;
+		final int res;
 		
 		// hmm, do they have the same host DTG?
-		if(_hostFix.getDTG().equals(o._hostFix.getDTG()))
-		{
-			// yes, then lets compare the target fixes. This happens
-			// when the sensor cuts are more frequent than the 
-			// sensor platform positions
-			res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());					
-		}
-		else
-		{		
-			res = _hostFix.getDTG().compareTo(o._hostFix.getDTG());
-		}
+		if(_hostFix != null)
+    {
+      if (_hostFix.getDTG().equals(o._hostFix.getDTG()))
+      {
+        // yes, then lets compare the target fixes. This happens
+        // when the sensor cuts are more frequent than the
+        // sensor platform positions
+        res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
+      }
+      else
+      {
+        res = _hostFix.getDTG().compareTo(o._hostFix.getDTG());
+      }
+    }
+    else
+    {
+      if(_targetFix != null)
+      {
+        res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
+      }
+      else
+      {
+        res = 0;
+      }
+    }
+		
 		return res;
 	}
 

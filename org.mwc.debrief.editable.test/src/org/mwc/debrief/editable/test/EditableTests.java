@@ -134,31 +134,6 @@ public class EditableTests extends TestCase
 	{
 		super.setUp();
 
-//		IPreferenceStore store = PDEPlugin.getDefault().getPreferenceStore();
-//
-//		store.setValue(IPreferenceConstants.ADD_TO_JAVA_SEARCH, true);
-//		try
-//		{
-//
-//			ITargetHandle target = TargetPlatformService.getDefault()
-//					.getWorkspaceTargetHandle();
-//			if (target != null)
-//			{
-//				AddToJavaSearchJob.synchWithTarget(target.getTargetDefinition());
-//			}
-//
-//			else
-//			{
-//				AddToJavaSearchJob.clearAll();
-//			}
-//		}
-//		catch (CoreException e)
-//		{
-//			org.mwc.debrief.editable.test.Activator.log(e);
-//		}
-//		PDEPlugin.getDefault().getPreferenceManager().savePluginPreferences();
-//		waitForJobs();
-
 		Bundle bundle = Platform.getBundle(ORG_MWC_CMAP_LEGACY);
 		URL cmapLegacyURL = FileLocator.resolve(bundle.getEntry("/"));
 		File cmapLegacy = new File(cmapLegacyURL.getPath());

@@ -235,7 +235,7 @@ public class CSVExportDetectionsObserver extends RecordStatusToFileObserverType
 	protected void writeFileHeaderDetails(final String title, long currentDTG)
 			throws IOException
 	{
-		_os.write("Time,Lat, Long,  Bearing (Degs), Frequency (Hz), Strength");
+		_os.write("Time,Lat, Long,  Bearing (Degs), Frequency (Hz), Strength (dB)");
 
 		// end the line
 		_os.write(System.getProperty("line.separator"));

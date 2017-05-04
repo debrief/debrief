@@ -726,8 +726,8 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
       loc3 = CorePlugin.fromClipboard("-12.5\t 13.5");
       assertNotNull("is a location string", loc3);
 
-      loc3 = CorePlugin.fromClipboard("-12.5t 13.5");
-      assertNull("is not a location string", loc3);
+      loc3 = CorePlugin.fromClipboard("-12.5t 14.5");
+      assertNotNull("is not a location string", loc3);
 
       loc3 = CorePlugin.fromClipboard("12 01 02 N 14 12 32 W");
       assertNotNull("is a location string", loc3);

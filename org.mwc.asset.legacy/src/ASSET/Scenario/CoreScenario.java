@@ -214,8 +214,9 @@ public class CoreScenario implements ScenarioType, ISimulation
 		// store the system start time
 		_systemStartTime = System.currentTimeMillis();
 
-		// fire a stepped event to let the recorders store the initial state
-		fireScenarioStepped(this.getTime());
+		// fire a stepped event to let the recorders store the initial state		
+		// No, don't - it's causing the status to go out twice
+		// fireScenarioStepped(this.getTime());
 
 		if (!_myTimer.isRunning())
 		{

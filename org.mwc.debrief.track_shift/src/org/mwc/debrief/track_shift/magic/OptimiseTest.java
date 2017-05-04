@@ -352,7 +352,7 @@ public class OptimiseTest
 			doublets.add(dt);
 			doublets.add(dt2);
 
-			assertEquals("right num", 1, doublets.size());
+			assertEquals("right num", 2, doublets.size());
 			WorldArea coverage = areaFor(doublets);
 			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
 			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
