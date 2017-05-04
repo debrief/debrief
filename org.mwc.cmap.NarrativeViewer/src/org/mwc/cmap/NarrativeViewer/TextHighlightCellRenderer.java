@@ -15,7 +15,6 @@
 package org.mwc.cmap.NarrativeViewer;
 
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.nebula.widgets.grid.internal.CheckBoxRenderer;
 import org.eclipse.nebula.widgets.grid.internal.DefaultCellRenderer;
@@ -26,7 +25,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 
@@ -48,7 +46,7 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
 
   int textBottomMargin = 2;
 
-  private int insideMargin = 3;
+  private final int insideMargin = 3;
 
   int treeIndent = 20;
 
@@ -56,18 +54,22 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
 
   private TextLayout textLayout;
 
-
   protected abstract StyledString getStyledString(String text);
 
-  
+  private boolean isCenteredCheckBoxOnly(final GridItem item)
+  {
+    return !isTree() && item.getImage(getColumn()) == null
+        && item.getText(getColumn()).equals("") && getAlignment() == SWT.CENTER;
+  }
 
   /**
    * {@inheritDoc}
    */
-  public void paint(GC gc, Object value)
+  @Override
+  public void paint(final GC gc, final Object value)
   {
 
-    GridItem item = (GridItem) value;
+    final GridItem item = (GridItem) value;
 
     gc.setFont(item.getFont(getColumn()));
 
@@ -90,7 +92,7 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
     {
       if (item.getParent().isEnabled())
       {
-        Color back = item.getBackground(getColumn());
+        final Color back = item.getBackground(getColumn());
 
         if (back != null)
         {
@@ -110,8 +112,10 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
     }
 
     if (drawBackground)
+    {
       gc.fillRectangle(getBounds().x, getBounds().y, getBounds().width,
           getBounds().height);
+    }
 
     int x = leftMargin;
 
@@ -147,7 +151,7 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
       checkRenderer.paint(gc, null);
     }
 
-    Image image = item.getImage(getColumn());
+    final Image image = item.getImage(getColumn());
     if (image != null)
     {
       int y = getBounds().y;
@@ -159,7 +163,7 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
       x += image.getBounds().width + insideMargin;
     }
 
-    int width = getBounds().width - x - rightMargin;
+    final int width = getBounds().width - x - rightMargin;
 
     if (drawAsSelected)
     {
@@ -178,30 +182,33 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
         textLayout = new TextLayout(gc.getDevice());
         item.getParent().addDisposeListener(new DisposeListener()
         {
-          public void widgetDisposed(DisposeEvent e)
+          @Override
+          public void widgetDisposed(final DisposeEvent e)
           {
-            if(textLayout!=null)
+            if (textLayout != null)
+            {
               textLayout.dispose();
+            }
           }
         });
       }
       textLayout.setFont(gc.getFont());
-      String text = item.getText(getColumn());
+      final String text = item.getText(getColumn());
       textLayout.setText(text);
       textLayout.setAlignment(getAlignment());
       textLayout.setWidth(width < 1 ? 1 : width);
 
-      StyledString styledString = getStyledString(text);
+      final StyledString styledString = getStyledString(text);
       if (styledString != null)
       {
-        StyleRange[] styleRanges = styledString.getStyleRanges();
+        final StyleRange[] styleRanges = styledString.getStyleRanges();
 
         textLayout.setText(text);
         textLayout.setFont(item.getFont(getColumn()));
 
         for (int i = 0; i < styleRanges.length; i++)
         {
-          StyleRange curr = prepareStyleRange(styleRanges[i], true);
+          final StyleRange curr = prepareStyleRange(styleRanges[i], true);
           textLayout.setStyle(curr, curr.start, curr.start + curr.length - 1);
         }
       }
@@ -218,10 +225,13 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
         textLayout = new TextLayout(gc.getDevice());
         item.getParent().addDisposeListener(new DisposeListener()
         {
-          public void widgetDisposed(DisposeEvent e)
+          @Override
+          public void widgetDisposed(final DisposeEvent e)
           {
-            if(textLayout!=null)
+            if (textLayout != null)
+            {
               textLayout.dispose();
+            }
           }
         });
       }
@@ -231,31 +241,31 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
       textLayout.setText(text);
       textLayout.setAlignment(getAlignment());
       textLayout.setWidth(width < 1 ? 1 : width);
-      StyledString styledString = getStyledString(text);
+      final StyledString styledString = getStyledString(text);
       if (styledString != null)
       {
-        StyleRange[] styleRanges = styledString.getStyleRanges();
+        final StyleRange[] styleRanges = styledString.getStyleRanges();
 
         textLayout.setText(text);
         textLayout.setFont(item.getFont(getColumn()));
 
         for (int i = 0; i < styleRanges.length; i++)
         {
-          StyleRange curr = prepareStyleRange(styleRanges[i], true);
+          final StyleRange curr = prepareStyleRange(styleRanges[i], true);
           textLayout.setStyle(curr, curr.start, curr.start + curr.length - 1);
         }
       }
 
       if (item.getParent().isAutoHeight())
       {
-        //get already calculated height from TextLayout 
+        // get already calculated height from TextLayout
         int maxHeight =
             textLayout.getBounds().height + textTopMargin + textBottomMargin;
 
         // Also look at the row header if necessary
         if (item.getParent().isWordWrapHeader())
         {
-          int height =
+          final int height =
               item.getParent().getRowHeaderRenderer().computeSize(gc,
                   SWT.DEFAULT, SWT.DEFAULT, item).y;
           maxHeight = Math.max(maxHeight, height);
@@ -294,7 +304,7 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
 
     if (isCellFocus())
     {
-      Rectangle focusRect =
+      final Rectangle focusRect =
           new Rectangle(getBounds().x, getBounds().y, getBounds().width - 1,
               getBounds().height);
 
@@ -316,7 +326,7 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
   }
 
   private StyleRange prepareStyleRange(StyleRange styleRange,
-      boolean applyColors)
+      final boolean applyColors)
   {
     // if no colors apply or font is set, create a clone and clear the
     // colors and font
@@ -331,11 +341,5 @@ public abstract class TextHighlightCellRenderer extends DefaultCellRenderer
       }
     }
     return styleRange;
-  }
-
-  private boolean isCenteredCheckBoxOnly(GridItem item)
-  {
-    return !isTree() && item.getImage(getColumn()) == null
-        && item.getText(getColumn()).equals("") && getAlignment() == SWT.CENTER;
   }
 }
