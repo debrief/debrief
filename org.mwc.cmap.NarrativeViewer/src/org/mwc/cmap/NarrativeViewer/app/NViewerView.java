@@ -456,11 +456,15 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       final ISelectionChangedListener listener)
   {
     if (_selectionListeners == null)
+    {
       _selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
+    }
 
     // see if we don't already contain it..
     if (!_selectionListeners.contains(listener))
+    {
       _selectionListeners.add(listener);
+    }
   }
 
   @Override
@@ -643,8 +647,12 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   {
     // first update the time
     if (_controlTime.isChecked())
+    {
       if (_controllableTime != null)
+      {
         _controllableTime.setTime(this, newEntry.getDTG(), true);
+      }
+    }
 
     // now update the selection
     final EditableWrapper wrappedEntry = new EditableWrapper(newEntry);
@@ -730,7 +738,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
                 "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
                 null, null);
         if (dialog.open() == IDialogConstants.OK_ID)
+        {
           myViewer.refresh();
+        }
       }
     };
     fontSize.setImageDescriptor(CorePlugin

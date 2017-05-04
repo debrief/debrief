@@ -19,10 +19,10 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.Grid;
@@ -42,23 +42,34 @@ import MWC.TacticalData.NarrativeEntry;
 public class NarrativeViewer
 {
 
-  private final NarrativeViewerModel myModel;
-  private NarrativeViewerActions myActions;
+  public static int getVisibleRows(final Grid grid)
+  {
+    final Rectangle rect = grid.getClientArea();
+    final int iItemHeight = grid.getItemHeight();
+    final int iHeaderHeight = grid.getHeaderHeight();
+    final int iVisibleCount =
+        (rect.height - iHeaderHeight + iItemHeight - 1) / iItemHeight;
+    return iVisibleCount;
+  }
 
+  private final NarrativeViewerModel myModel;
+
+  private NarrativeViewerActions myActions;
   private final GridTableViewer viewer;
+
   private final FilteredGrid filterGrid;
 
   public NarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
   {
-    GridColumnLayout layout = new GridColumnLayout();
+    final GridColumnLayout layout = new GridColumnLayout();
 
     filterGrid =
         new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI | SWT.VIRTUAL, true)
         {
 
           @Override
-          protected void updateGridData(String text)
+          protected void updateGridData(final String text)
           {
 
             myModel.updateFilters();
@@ -79,28 +90,30 @@ public class NarrativeViewer
         {
 
           @Override
-          public boolean accept(NarrativeEntry entry)
+          public boolean accept(final NarrativeEntry entry)
           {
             if (viewer != null && !viewer.getGrid().isDisposed())
             {
-              String filterString = filterGrid.getFilterString();
+              final String filterString = filterGrid.getFilterString();
               if (filterString != null && !filterString.trim().isEmpty())
               {
-                Pattern pattern =
+                final Pattern pattern =
                     Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
 
-                AbstractColumn[] allColumns = myModel.getAllColumns();
-                for (AbstractColumn abstractColumn : allColumns)
+                final AbstractColumn[] allColumns = myModel.getAllColumns();
+                for (final AbstractColumn abstractColumn : allColumns)
                 {
                   if (abstractColumn.isVisible())
                   {
-                    Object property = abstractColumn.getProperty(entry);
+                    final Object property = abstractColumn.getProperty(entry);
                     if (property instanceof String)
                     {
-                      Matcher matcher =
+                      final Matcher matcher =
                           pattern.matcher((CharSequence) property);
                       if (matcher.find())
+                      {
                         return true;
+                      }
 
                     }
                   }
@@ -117,9 +130,11 @@ public class NarrativeViewer
 
   }
 
-  public GridTableViewer getViewer()
+  private void calculateGridRawHeight()
   {
-    return viewer;
+    viewer.getGrid().setRedraw(false);
+    viewer.setInput(new Object());
+    viewer.getGrid().setRedraw(true);
   }
 
   public Composite getControl()
@@ -132,6 +147,16 @@ public class NarrativeViewer
     return filterGrid;
   }
 
+  public NarrativeViewerModel getModel()
+  {
+    return myModel;
+  }
+
+  public GridTableViewer getViewer()
+  {
+    return viewer;
+  }
+
   public NarrativeViewerActions getViewerActions()
   {
     if (myActions == null)
@@ -141,47 +166,9 @@ public class NarrativeViewer
     return myActions;
   }
 
-  public void showFilterDialog(final Column column)
+  public boolean isWrappingEntries()
   {
-    if (!myModel.hasInput())
-    {
-      return;
-    }
-
-    final EntryFilter filter = column.getFilter();
-    if (filter == null)
-    {
-      return;
-    }
-
-    final FilterDialog dialog =
-        new FilterDialog(viewer.getGrid().getShell(), myModel.getInput(),
-            column);
-
-    if (Dialog.OK == dialog.open())
-    {
-      dialog.commitFilterChanges();
-      refresh();
-    }
-  }
-
-  public void setInput(final IRollingNarrativeProvider entryWrapper)
-  {
-    myModel.setInput(entryWrapper);
-    Display.getDefault().asyncExec(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        refresh();
-      }
-    });
-  }
-
-  public void setTimeFormatter(final TimeFormatter timeFormatter)
-  {
-    myModel.setTimeFormatter(timeFormatter);
-    viewer.refresh();
+    return myModel.isWrappingEntries();
   }
 
   public void refresh()
@@ -193,41 +180,6 @@ public class NarrativeViewer
     }
   }
 
-  private void calculateGridRawHeight()
-  {
-    viewer.getGrid().setRedraw(false);
-    viewer.setInput(new Object());
-    viewer.getGrid().setRedraw(true);
-  }
-
-  public boolean isWrappingEntries()
-  {
-    return myModel.isWrappingEntries();
-  }
-
-  public void setWrappingEntries(final boolean shouldWrap)
-  {
-    if (myModel.setWrappingEntries(shouldWrap))
-    {
-      GridColumn[] columns = getViewer().getGrid().getColumns();
-      for (GridColumn gridColumn : columns)
-      {
-        gridColumn.setWordWrap(shouldWrap);
-      }
-      calculateGridRawHeight();
-    }
-  }
-
-  public static int getVisibleRows(Grid grid)
-  {
-    Rectangle rect = grid.getClientArea();
-    int iItemHeight = grid.getItemHeight();
-    int iHeaderHeight = grid.getHeaderHeight();
-    int iVisibleCount =
-        (rect.height - iHeaderHeight + iItemHeight - 1) / iItemHeight;
-    return iVisibleCount;
-  }
-
   /**
    * the controlling time has updated
    * 
@@ -237,15 +189,15 @@ public class NarrativeViewer
   public void setDTG(final HiResDate dtg)
   {
     // find the previous entry (so we know if we're going up or down
-    ISelection curSel = getViewer().getSelection();
+    final ISelection curSel = getViewer().getSelection();
     Boolean goingDown = null;
     NarrativeEntry existingItem = null;
     if (curSel instanceof StructuredSelection)
     {
-      StructuredSelection sel = (StructuredSelection) curSel;
+      final StructuredSelection sel = (StructuredSelection) curSel;
       if (sel.size() == 1)
       {
-        Object item = sel.getFirstElement();
+        final Object item = sel.getFirstElement();
         if (item instanceof NarrativeEntry)
         {
           existingItem = (NarrativeEntry) item;
@@ -265,8 +217,7 @@ public class NarrativeViewer
     for (final Iterator<NarrativeEntry> entryIterator = rows.iterator(); entryIterator
         .hasNext();)
     {
-      final NarrativeEntry narrativeEntry =
-          (NarrativeEntry) entryIterator.next();
+      final NarrativeEntry narrativeEntry = entryIterator.next();
 
       // get the date
       final HiResDate dt = narrativeEntry.getDTG();
@@ -344,7 +295,8 @@ public class NarrativeViewer
    * @param dtg
    *          the selected dtg
    */
-  public void setEntry(final NarrativeEntry entry, NarrativeEntry toReveal)
+  public void
+      setEntry(final NarrativeEntry entry, final NarrativeEntry toReveal)
   {
     try
     {
@@ -368,15 +320,65 @@ public class NarrativeViewer
     }
   }
 
-  public NarrativeViewerModel getModel()
+  public void setInput(final IRollingNarrativeProvider entryWrapper)
   {
-    return myModel;
+    myModel.setInput(entryWrapper);
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        refresh();
+      }
+    });
   }
 
-  public void setSearchMode(boolean checked)
+  public void setSearchMode(final boolean checked)
   {
-
     filterGrid.setFilterMode(checked);
+  }
+
+  public void setTimeFormatter(final TimeFormatter timeFormatter)
+  {
+    myModel.setTimeFormatter(timeFormatter);
+    viewer.refresh();
+  }
+
+  public void setWrappingEntries(final boolean shouldWrap)
+  {
+    if (myModel.setWrappingEntries(shouldWrap))
+    {
+      final GridColumn[] columns = getViewer().getGrid().getColumns();
+      for (final GridColumn gridColumn : columns)
+      {
+        gridColumn.setWordWrap(shouldWrap);
+      }
+      calculateGridRawHeight();
+    }
+  }
+
+  public void showFilterDialog(final Column column)
+  {
+    if (!myModel.hasInput())
+    {
+      return;
+    }
+
+    final EntryFilter filter = column.getFilter();
+    if (filter == null)
+    {
+      return;
+    }
+
+    final FilterDialog dialog =
+        new FilterDialog(viewer.getGrid().getShell(), myModel.getInput(),
+            column);
+
+    if (Window.OK == dialog.open())
+    {
+      dialog.commitFilterChanges();
+      refresh();
+    }
   }
 
 }
