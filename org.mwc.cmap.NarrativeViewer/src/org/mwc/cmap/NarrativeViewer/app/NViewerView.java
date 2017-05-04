@@ -621,7 +621,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           public void run()
           {
             // ok, tell the model to move to the relevant item
-            myViewer.setEntry(entry);
+            myViewer.setEntry(entry, null);
           }
         });
       }

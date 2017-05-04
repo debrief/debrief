@@ -25,8 +25,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.jface.gridviewer.GridColumnLayout;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
+import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
@@ -72,42 +74,44 @@ public class NarrativeViewer
 
     viewer.setAutoPreferredHeight(true);
 
-    myModel = new NarrativeViewerModel(viewer,preferenceStore, new EntryFilter()
-    {
-
-      @Override
-      public boolean accept(NarrativeEntry entry)
-      {
-        if (viewer != null && !viewer.getGrid().isDisposed())
+    myModel =
+        new NarrativeViewerModel(viewer, preferenceStore, new EntryFilter()
         {
-          String filterString = filterGrid.getFilterString();
-          if (filterString != null && !filterString.trim().isEmpty())
+
+          @Override
+          public boolean accept(NarrativeEntry entry)
           {
-            Pattern pattern =
-                Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
-
-            AbstractColumn[] allColumns = myModel.getAllColumns();
-            for (AbstractColumn abstractColumn : allColumns)
+            if (viewer != null && !viewer.getGrid().isDisposed())
             {
-              if (abstractColumn.isVisible())
+              String filterString = filterGrid.getFilterString();
+              if (filterString != null && !filterString.trim().isEmpty())
               {
-                Object property = abstractColumn.getProperty(entry);
-                if (property instanceof String)
-                {
-                  Matcher matcher = pattern.matcher((CharSequence) property);
-                  if (matcher.find())
-                    return true;
+                Pattern pattern =
+                    Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
 
+                AbstractColumn[] allColumns = myModel.getAllColumns();
+                for (AbstractColumn abstractColumn : allColumns)
+                {
+                  if (abstractColumn.isVisible())
+                  {
+                    Object property = abstractColumn.getProperty(entry);
+                    if (property instanceof String)
+                    {
+                      Matcher matcher =
+                          pattern.matcher((CharSequence) property);
+                      if (matcher.find())
+                        return true;
+
+                    }
+                  }
                 }
+                return false;
               }
             }
-            return false;
-          }
-        }
 
-        return true;
-      }
-    });
+            return true;
+          }
+        });
 
     myModel.createTable(this, layout);
 
@@ -214,6 +218,16 @@ public class NarrativeViewer
     }
   }
 
+  public static int getVisibleRows(Grid grid)
+  {
+    Rectangle rect = grid.getClientArea();
+    int iItemHeight = grid.getItemHeight();
+    int iHeaderHeight = grid.getHeaderHeight();
+    int iVisibleCount =
+        (rect.height - iHeaderHeight + iItemHeight - 1) / iItemHeight;
+    return iVisibleCount;
+  }
+
   /**
    * the controlling time has updated
    * 
@@ -222,14 +236,33 @@ public class NarrativeViewer
    */
   public void setDTG(final HiResDate dtg)
   {
+    // find the previous entry (so we know if we're going up or down
+    ISelection curSel = getViewer().getSelection();
+    Boolean goingDown = null;
+    NarrativeEntry existingItem = null;
+    if (curSel instanceof StructuredSelection)
+    {
+      StructuredSelection sel = (StructuredSelection) curSel;
+      if (sel.size() == 1)
+      {
+        Object item = sel.getFirstElement();
+        if (item instanceof NarrativeEntry)
+        {
+          existingItem = (NarrativeEntry) item;
+          goingDown = existingItem.getDTG().lessThanOrEqualTo(dtg);
+        }
+      }
+    }
+
     // find the table entry immediately after or on this DTG
     NarrativeEntry entry = null;
 
     // retrieve the list of visible rows
-    final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+    final LinkedList<NarrativeEntry> rows = myModel.myVisibleRows;
 
     // step through them
-    for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
+    int index = 0;
+    for (final Iterator<NarrativeEntry> entryIterator = rows.iterator(); entryIterator
         .hasNext();)
     {
       final NarrativeEntry narrativeEntry =
@@ -245,34 +278,61 @@ public class NarrativeViewer
         break;
       }
 
+      // let ourselves use the last entry, if we don't find one
+      entry = narrativeEntry;
+
+      index++;
     }
 
     // ok, try to select this entry
     if (entry != null)
     {
-      boolean needsChange = true;
-
-      ISelection curSel = getViewer().getSelection();
-      if (curSel instanceof StructuredSelection)
+      if (!entry.equals(existingItem))
       {
-        StructuredSelection sel = (StructuredSelection) curSel;
-        if (sel.size() == 1)
+        // ok, find the item we want to reveal
+        final NarrativeEntry toReveal;
+
+        // allow 1/3 of the visible rows either side
+        final int offset = getVisibleRows(viewer.getGrid()) / 3;
+
+        final int totalRows = rows.size();
+
+        // do we know the previous entry?
+        if (goingDown != null)
         {
-          Object item = sel.getFirstElement();
-          if (item instanceof NarrativeEntry)
+          if (goingDown)
           {
-            NarrativeEntry nw = (NarrativeEntry) item;
-            if (entry.equals(nw))
+            // ok, going down. We need to show a few rows after the entry
+            if (index < totalRows - offset)
             {
-              needsChange = false;
+              toReveal = rows.get(index + offset);
+            }
+            else
+            {
+              toReveal = null;
+            }
+          }
+          else
+          {
+            // going up, we need to show a few rows before the entry
+            if (index > offset)
+            {
+              final int toRetreive = index - offset;
+              toReveal = rows.get(toRetreive);
+            }
+            else
+            {
+              toReveal = null;
             }
           }
         }
-      }
+        else
+        {
+          toReveal = null;
+        }
 
-      if (needsChange)
-      {
-        setEntry(entry);
+        // ok, go for it.
+        setEntry(entry, toReveal);
       }
     }
 
@@ -284,16 +344,23 @@ public class NarrativeViewer
    * @param dtg
    *          the selected dtg
    */
-  public void setEntry(final NarrativeEntry entry)
+  public void setEntry(final NarrativeEntry entry, NarrativeEntry toReveal)
   {
     try
     {
       viewer.getGrid().setRedraw(false);
       // select this item
       viewer.setSelection(new StructuredSelection(entry));
-  
+
       // make sure the new item is visible
-      viewer.reveal(entry);
+      if (toReveal != null)
+      {
+        viewer.reveal(toReveal);
+      }
+      else
+      {
+        viewer.reveal(entry);
+      }
     }
     finally
     {

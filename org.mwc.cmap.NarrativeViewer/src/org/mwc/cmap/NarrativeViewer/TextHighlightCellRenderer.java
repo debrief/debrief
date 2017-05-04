@@ -15,7 +15,6 @@
 package org.mwc.cmap.NarrativeViewer;
 
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.nebula.widgets.grid.internal.CheckBoxRenderer;
 import org.eclipse.nebula.widgets.grid.internal.DefaultCellRenderer;
@@ -26,7 +25,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 
