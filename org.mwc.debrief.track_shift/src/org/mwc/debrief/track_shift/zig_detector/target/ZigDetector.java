@@ -377,7 +377,7 @@ public class ZigDetector
             optimiseTolerance);
     final double wholeLegScore = wholeLeg.getMinimum();
 
-    System.out.println("Whole leg score is:" + wholeLegScore);
+//    System.out.println("Whole leg score is:" + wholeLegScore);
 
     // ok, now have to slice it
     double bestScore = Double.MAX_VALUE;
