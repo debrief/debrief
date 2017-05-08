@@ -837,7 +837,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               legFound = true;
 
               // tell the leg to share the good news
-              seg.getLayers().fireExtended(null, (HasEditables) secTrack);
+              // share the good news
+              _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper.getSecondaryTrack());
             }
           }
         }
@@ -1161,8 +1162,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         break;
     }
     
-    System.out.println("os start time:"
-        + new Date(osCourse.getDataItem(0).getPeriod().getMiddleMillisecond()));
+//    System.out.println("os start time:"
+//        + new Date(osCourse.getDataItem(0).getPeriod().getMiddleMillisecond()));
 
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
