@@ -40,6 +40,7 @@ import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -132,6 +133,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -318,9 +320,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected boolean _itemSelectedPending = false;
   private ZoneChart ownshipZoneChart;
   private ZoneChart targetZoneChart;
-  final protected TimeSeries ownshipCourseSeries = new TimeSeries("Ownship course");
+  final protected TimeSeries ownshipCourseSeries = new TimeSeries(
+      "Ownship course");
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
-  final protected TimeSeries targetCalculatedSeries = new TimeSeries("Calculated Bearing");
+  final protected TimeSeries targetCalculatedSeries = new TimeSeries(
+      "Calculated Bearing");
 
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Action _modeOne;
@@ -346,7 +350,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   }
 
   abstract protected String getUnits();
+
   abstract protected String getType();
+
   abstract protected void updateData(boolean updateDoublets);
 
   private void contributeToActionBars()
@@ -358,10 +364,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected void fillLocalToolBar(final IToolBarManager toolBarManager)
   {
-//  Note: we have undo/redo buttons on the toolbar. Let's not bother with them here, there are
-//  lots of cuttons on this toolbar.    
-//    toolBarManager.add(undoAction);
-//    toolBarManager.add(redoAction);
+    // Note: we have undo/redo buttons on the toolbar. Let's not bother with them here, there are
+    // lots of cuttons on this toolbar.
+    // toolBarManager.add(undoAction);
+    // toolBarManager.add(redoAction);
     toolBarManager.add(_autoResize);
     toolBarManager.add(_onlyVisible);
     toolBarManager.add(_selectOnClick);
@@ -403,9 +409,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void refreah()
       {
         setEnabled(operationHistory.canUndo(undoContext));
-        if(isEnabled())
+        if (isEnabled())
         {
-          String toolTipText = "Undo " + operationHistory.getUndoOperation(undoContext).getLabel();
+          String toolTipText =
+              "Undo "
+                  + operationHistory.getUndoOperation(undoContext).getLabel();
           setText(toolTipText);
           setToolTipText(toolTipText);
         }
@@ -444,9 +452,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void refreah()
       {
         setEnabled(operationHistory.canRedo(undoContext));
-        if(isEnabled())
+        if (isEnabled())
         {
-          String toolTipText = "Redo " + operationHistory.getRedoOperation(undoContext).getLabel();
+          String toolTipText =
+              "Redo "
+                  + operationHistory.getRedoOperation(undoContext).getLabel();
           setText(toolTipText);
           setToolTipText(toolTipText);
         }
@@ -651,8 +661,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ZoneChart.ZoneListener ownshipListener = getOwnshipListener();
     ZoneChart.ZoneListener targetListener = getTargetListener();
 
-    Zone[] osZones = new ZoneChart.Zone[]{};
-    long[] osTimeValues = new long[]{};
+    Zone[] osZones = new ZoneChart.Zone[]
+    {};
+    long[] osTimeValues = new long[]
+    {};
     final ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
     {
       @Override
@@ -675,11 +687,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ownshipZoneChart =
         ZoneChart.create(undoRedoProvider, "Ownship Legs", "Course", sashForm,
             osZones, ownshipCourseSeries, null, osTimeValues, blueProv,
-            DebriefColors.BLUE, ownshipLegSlicer);
+            DebriefColors.BLUE, ownshipLegSlicer, false);
 
-    
-    final Zone[] tgtZones = getTargetZones().toArray(new Zone[]{});
-    final long[] tgtTimeValues = new long[]{};
+    final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
+    {});
+    final long[] tgtTimeValues = new long[]
+    {};
 
     // we need a color provider for the target legs
     final ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
@@ -732,49 +745,52 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     targetZoneChart =
         ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
-            tgtZones, targetBearingSeries, targetCalculatedSeries,  tgtTimeValues, randomProv,
-            DebriefColors.RED, targetLegSlicer);
-    
+            tgtZones, targetBearingSeries, targetCalculatedSeries,
+            tgtTimeValues, randomProv, DebriefColors.RED, targetLegSlicer, true);
+
     targetZoneChart.addZoneListener(targetListener);
 
     // and set the proportions of space allowed
-    sashForm.setWeights(new int[]{4, 1, 1});
+    sashForm.setWeights(new int[]
+    {4, 1, 1});
     sashForm
         .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
-    
+
     // sort out zone chart visibility
     setZoneChartsVisible(_showZones.isChecked());
   }
 
-  
-  /** create a leg of data for the specified time period
+  /**
+   * create a leg of data for the specified time period
    * 
    * @param secTrack
    * @param leg
    */
-  private void setLeg(final TrackWrapper primaryTrack, final ISecondaryTrack secTrack, final Zone leg)
-  {    
-    TimePeriod zonePeriod = new TimePeriod.BaseTimePeriod(new HiResDate(leg.getStart()), 
-        new HiResDate(leg.getEnd()));
-    
+  private void setLeg(final TrackWrapper primaryTrack,
+      final ISecondaryTrack secTrack, final Zone leg)
+  {
+    TimePeriod zonePeriod =
+        new TimePeriod.BaseTimePeriod(new HiResDate(leg.getStart()),
+            new HiResDate(leg.getEnd()));
+
     RelativeTMASegment otherSegment = null;
-    
+
     // see if there is already a leg for this time
     Enumeration<Editable> iter = secTrack.segments();
     boolean legFound = false;
     while (iter.hasMoreElements())
     {
       Editable nextSeg = iter.nextElement();
-      if(nextSeg instanceof SegmentList)
+      if (nextSeg instanceof SegmentList)
       {
-        // oh, this track has already been split into legs.  We need to iterate through them instead
+        // oh, this track has already been split into legs. We need to iterate through them instead
         SegmentList list = (SegmentList) nextSeg;
         iter = list.elements();
         continue;
       }
-      
+
       // ok, we know we're working through segments
-      
+
       TrackSegment cSeg = (TrackSegment) nextSeg;
 
       if (cSeg instanceof RelativeTMASegment)
@@ -792,14 +808,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           else
           {
-            if(legFound)
+            if (legFound)
             {
               // ok, we've already create our leg. But, this one overlaps
               // with us. we should delete it, unless it's a Dynamic Infill
-              TrackWrapper secondary= (TrackWrapper) secTrack;
+              TrackWrapper secondary = (TrackWrapper) secTrack;
               secondary.removeElement(seg);
-              
-              CorePlugin.logError(Status.INFO, "Existing leg overlaps with auto-generated one. deleting:" + seg, null);
+
+              CorePlugin.logError(Status.INFO,
+                  "Existing leg overlaps with auto-generated one. deleting:"
+                      + seg, null);
             }
             else
             {
@@ -817,21 +835,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 thisF.setColor(leg.getColor());
               }
               legFound = true;
+
+              // tell the leg to share the good news
+              seg.getLayers().fireExtended(null, (HasEditables) secTrack);
             }
           }
         }
       }
       else
       {
-        CorePlugin.logError(Status.WARNING, "Ignoring this leg,  it's not relative TMA:" + cSeg, null);
+        CorePlugin.logError(Status.WARNING,
+            "Ignoring this leg,  it's not relative TMA:" + cSeg, null);
         continue;
       }
     }
-    
-    if(!legFound)
+
+    if (!legFound)
     {
       // ok, we've got to create a new TMA segment
-      
+
       // get the host cuts for this time period
       List<SensorContactWrapper> cuts =
           _myHelper.getBearings(primaryTrack, false, new HiResDate(leg
@@ -843,27 +865,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final double courseDegs;
       final WorldSpeed speed;
       final WorldVector offset;
-      
-      WorldVector defaultOffset = new WorldVector(Math.toDegrees(135), new WorldDistance(2, WorldDistance.NM), 
-          new WorldDistance(0, WorldDistance.METRES));
 
-      
-      if(otherSegment != null)
+      WorldVector defaultOffset =
+          new WorldVector(Math.toDegrees(135), new WorldDistance(2,
+              WorldDistance.NM), new WorldDistance(0, WorldDistance.METRES));
+
+      if (otherSegment != null)
       {
         // ok, put this leg off the end of the previous one
         // collate the other data
         courseDegs = otherSegment.getCourse();
         speed = new WorldSpeed(otherSegment.getSpeed());
-        
+
         // ok, get the last position
         FixWrapper lastFix = null;
         Enumeration<Editable> sIter = otherSegment.elements();
         while (sIter.hasMoreElements())
         {
-          lastFix = (FixWrapper ) sIter.nextElement();
+          lastFix = (FixWrapper) sIter.nextElement();
         }
-        
-        if(lastFix != null)
+
+        if (lastFix != null)
         {
           // ok, build up the vector
           long timePeriod =
@@ -876,24 +898,33 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   new WorldDistance(0, WorldDistance.DEGS));
 
           WorldLocation legStart = lastFix.getFixLocation().add(vector);
-          
+
           // work out the offset from the host at this time
-          Watchable[] matches = primaryTrack.getNearestTo(new HiResDate(leg.getStart()));
-          
-          if(matches != null && matches.length > 0)
+          Watchable[] matches =
+              primaryTrack.getNearestTo(new HiResDate(leg.getStart()));
+
+          if (matches != null && matches.length > 0)
           {
             WorldLocation hostLoc = matches[0].getLocation();
             offset = legStart.subtract(hostLoc);
           }
           else
           {
-            CorePlugin.logError(Status.WARNING, "Couldn't create target leg properly,  couldn't find matching point in ownship leg", null);
+            CorePlugin
+                .logError(
+                    Status.WARNING,
+                    "Couldn't create target leg properly,  couldn't find matching point in ownship leg",
+                    null);
             offset = defaultOffset;
           }
-        }        
+        }
         else
         {
-          CorePlugin.logError(Status.WARNING, "Couldn't create target leg properly,  couldn't last fix in existing leg", null);
+          CorePlugin
+              .logError(
+                  Status.WARNING,
+                  "Couldn't create target leg properly,  couldn't last fix in existing leg",
+                  null);
           offset = defaultOffset;
         }
       }
@@ -903,69 +934,71 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         speed = new WorldSpeed(5, WorldSpeed.Kts);
         offset = defaultOffset;
       }
-      
+
       // take the course from the previous leg
       Layers theLayers = _ourLayersSubject;
       Color override = leg.getColor();
 
       // ok, ready to go
-      RelativeTMASegment newLeg = new RelativeTMASegment(observations,
-              offset, speed,
-              courseDegs, theLayers, override);
-      
+      RelativeTMASegment newLeg =
+          new RelativeTMASegment(observations, offset, speed, courseDegs,
+              theLayers, override);
+
       // ok, now add the leg to the secondary track
       TrackWrapper secondary = (TrackWrapper) secTrack;
       secondary.add(newLeg);
     }
   }
-  
+
   /**
    * slice the target bearings according to these zones
    * 
    * @param ownshipLegs
-   * @param randomProv 
-   * @param secondaryTrack 
+   * @param randomProv
+   * @param secondaryTrack
    * @param targetBearingSeries2
    * @return
    */
   protected List<Zone> sliceTarget(Zone[] ownshipLegs,
-     final List<SensorContactWrapper> doublets, final ColorProvider randomProv, final ISecondaryTrack tgtTrack)
+      final List<SensorContactWrapper> doublets,
+      final ColorProvider randomProv, final ISecondaryTrack tgtTrack)
   {
     ZigDetector slicer = new ZigDetector();
     final List<Zone> zigs = new ArrayList<Zone>();
-   
+
     // check we have some data
-    if(doublets.isEmpty())
+    if (doublets.isEmpty())
     {
-      Application.logError2(Application.ERROR,
-          "List of cuts is empty", null);
+      Application.logError2(Application.ERROR, "List of cuts is empty", null);
       return null;
     }
-    
+
     final IZigStorer zigStorer = new IZigStorer()
     {
       @Override
-      public void storeZig(String scenarioName, long tStart, long tEnd, double rms)
+      public void storeZig(String scenarioName, long tStart, long tEnd,
+          double rms)
       {
         zigs.add(new Zone(tStart, tEnd, randomProv.getZoneColor()));
       }
-      
+
       @Override
       public void finish()
       {
       }
     };
-    
+
     final ILegStorer legStorer = new ILegStorer()
     {
       @Override
-      public void storeLeg(String scenarioName, long tStart, long tEnd, double rms)
+      public void storeLeg(String scenarioName, long tStart, long tEnd,
+          double rms)
       {
         // ok, just ignore it
       }
     };
 
-    final double optimiseTolerance =  0.000001;
+    final double optimiseTolerance = 0.000001;
     final double RMS_ZIG_RATIO = 0.4;
 
     // ok, loop through the ownship legs
@@ -974,19 +1007,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // get the bearings in this leg
       long wholeStart = thisZ.getStart();
       long wholeEnd = thisZ.getEnd();
-      
+
       List<Long> thisLegTimes = new ArrayList<Long>();
       List<Double> thisLegBearings = new ArrayList<Double>();
 
       // get the bearings in this time period
       Iterator<SensorContactWrapper> lIter = doublets.iterator();
-      while(lIter.hasNext())
+      while (lIter.hasNext())
       {
         SensorContactWrapper td = lIter.next();
         long thisTime = td.getDTG().getDate().getTime();
-        if(thisTime >= wholeStart)
+        if (thisTime >= wholeStart)
         {
-          if(thisTime <= wholeEnd)
+          if (thisTime <= wholeEnd)
           {
             thisLegTimes.add(thisTime);
             thisLegBearings.add((Double) td.getBearing());
@@ -998,48 +1031,89 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
         }
       }
-      
-      Activator host = new  Activator();
-      slicer.sliceThis(host.getLog(), Activator.PLUGIN_ID,
-          "Some scenario", wholeStart, wholeEnd, legStorer, zigStorer,
-          RMS_ZIG_RATIO, optimiseTolerance, thisLegTimes, thisLegBearings);
+
+      // get a logger to use
+      final ILog log;
+      if (Activator.getDefault() == null)
+      {
+        log = new Activator().getLog();
+      }
+      else
+      {
+        log = Activator.getDefault().getLog();
+      }
+
+      // slice the leg
+      slicer.sliceThis(log, Activator.PLUGIN_ID, "Some scenario", wholeStart,
+          wholeEnd, legStorer, zigStorer, RMS_ZIG_RATIO, optimiseTolerance,
+          thisLegTimes, thisLegBearings);
+    }
+
+    // special case: if we've manually deleted the target legs, and have to re-create them
+    final long startTime;
+    final long endTime;
+    Enumeration<Editable> segments = tgtTrack.segments();
+    boolean hasData = segments.hasMoreElements();
+
+    // hmm, if it's a normal track, the list may be a list of different data types
+    // have a look at the first one
+    if (hasData)
+    {
+      Editable first = segments.nextElement();
+      if (first instanceof SegmentList)
+      {
+        SegmentList list = (SegmentList) first;
+        hasData = list.size() > 0;
+      }
+    }
+
+    if (hasData)
+    {
+      // we can retrieve the start/end time
+      startTime = tgtTrack.getStartDTG().getDate().getTime();
+      endTime = tgtTrack.getEndDTG().getDate().getTime();
+    }
+    else
+    {
+      // we've got to regenerate the points from the cuts
+      startTime = doublets.get(0).getDTG().getDate().getTime();
+      endTime = doublets.get(doublets.size() - 1).getDTG().getDate().getTime();
     }
 
     // ok, we've got to turn the zigs into legs
-    final long startTime = tgtTrack.getStartDTG().getDate().getTime();
-    final long endTime = tgtTrack.getEndDTG().getDate().getTime();
     final List<Zone> legs = legsFromZigs(startTime, endTime, zigs, randomProv);
-    
+
     // ok, loop through the legs, updating our TMA legs
-    for(Zone leg: legs)
+    for (Zone leg : legs)
     {
-      // ok, see if there is already a leg at this time          
-      setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);          
+      // ok, see if there is already a leg at this time
+      setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);
     }
-    
+
     // ok, fire some updates
-    if(_ourLayersSubject != null)
+    if (_ourLayersSubject != null)
     {
       // share the good news
       _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
-      
+
       // and re-generate the doublets
       updateData(true);
-    }    
-    
+    }
+
     // ok, done.
     return legs;
   }
 
-  protected List<Zone> legsFromZigs(long startTime, long endTime, List<Zone> zigs, ColorProvider randomProv)
+  protected List<Zone> legsFromZigs(long startTime, long endTime,
+      List<Zone> zigs, ColorProvider randomProv)
   {
     List<Zone> legs = new ArrayList<Zone>();
-    
+
     Zone lastZig = null;
-    for(final Zone zig: zigs)
+    for (final Zone zig : zigs)
     {
       // first zig?
-      if(legs.size() == 0)
+      if (legs.size() == 0)
       {
         // ok, run from start time up to this
         legs.add(new Zone(startTime, zig.getStart(), randomProv.getZoneColor()));
@@ -1047,15 +1121,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       else
       {
         // create a leg from the previous end to this start
-        legs.add(new Zone(lastZig.getEnd(), zig.getStart(), randomProv.getZoneColor()));
+        legs.add(new Zone(lastZig.getEnd(), zig.getStart(), randomProv
+            .getZoneColor()));
       }
-      
+
       // remember the zig
       lastZig = zig;
     }
-    
+
     // and insert a trailing leg
-    if(lastZig != null)
+    if (lastZig != null)
     {
       legs.add(new Zone(lastZig.getEnd(), endTime, randomProv.getZoneColor()));
     }
@@ -1064,26 +1139,30 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // ok, no zigs, just one leg
       legs.add(new Zone(startTime, endTime, randomProv.getZoneColor()));
     }
-    
+
     return legs;
   }
-  
-  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse, ZoneChart.ColorProvider colorProvider)
+
+  protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse,
+      ZoneChart.ColorProvider colorProvider)
   {
     final IOwnshipLegDetector detector;
     switch (_sliceMode)
     {
-    case ORIGINAL:
-      detector = new OwnshipLegDetector();
-      break;
-    case AREA_UNDER_CURVE:
-      detector = new CumulativeLegDetector();
-      break;
-    case PEAK_FIT:
-    default:
-      detector = new PeakTrackingOwnshipLegDetector();
-      break;
+      case ORIGINAL:
+        detector = new OwnshipLegDetector();
+        break;
+      case AREA_UNDER_CURVE:
+        detector = new CumulativeLegDetector();
+        break;
+      case PEAK_FIT:
+      default:
+        detector = new PeakTrackingOwnshipLegDetector();
+        break;
     }
+    
+    System.out.println("os start time:"
+        + new Date(osCourse.getDataItem(0).getPeriod().getMiddleMillisecond()));
 
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
@@ -1104,7 +1183,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     for (LegOfData leg : legs)
     {
-      Zone newZone = new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
+      Zone newZone =
+          new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
       res.add(newZone);
     }
 
@@ -1125,19 +1205,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         fireUpdates();
       }
-      
+
       @Override
       public void moved(Zone zone)
       {
         fireUpdates();
       }
-      
+
       @Override
       public void deleted(Zone zone)
       {
         // capture the time period
-        TimePeriod zonePeriod = new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()), 
-            new HiResDate(zone.getEnd()));
+        TimePeriod zonePeriod =
+            new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()),
+                new HiResDate(zone.getEnd()));
 
         // ok, delete the relevant leg
         // see if there is already a leg for this time
@@ -1146,22 +1227,24 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         while (iter.hasMoreElements())
         {
           Editable nextSeg = iter.nextElement();
-          if(nextSeg instanceof SegmentList)
+          if (nextSeg instanceof SegmentList)
           {
-            // oh, this track has already been split into legs.  We need to iterate through them instead
+            // oh, this track has already been split into legs. We need to iterate through them
+            // instead
             SegmentList list = (SegmentList) nextSeg;
             iter = list.elements();
             continue;
           }
-          
+
           // ok, we know we're working through segments
           TrackSegment cSeg = (TrackSegment) nextSeg;
           if (cSeg instanceof RelativeTMASegment)
           {
             RelativeTMASegment seg = (RelativeTMASegment) cSeg;
             TimePeriod legPeriod =
-                new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg.getDTG_End());
-            
+                new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg
+                    .getDTG_End());
+
             if (zonePeriod.equals(legPeriod))
             {
               // ok, delete this segment
@@ -1169,42 +1252,42 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               secTr.removeElement(seg);
             }
           }
-        }        
-        
+        }
+
         // now do some updates, to double-check
         fireUpdates();
       }
-      
+
       @Override
       public void added(Zone zone)
       {
         fireUpdates();
       }
-      
+
       private void fireUpdates()
       {
         // collate the current list of legs
         Zone[] zones = targetZoneChart.getZones();
-        
+
         ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
         TrackWrapper priTrack = _myHelper.getPrimaryTrack();
-        
+
         // fire the finished event
         for (int i = 0; i < zones.length; i++)
         {
           Zone zone = zones[i];
           setLeg(priTrack, secTrack, zone);
         }
-        
+
         // ok, fire some updates
-        if(_ourLayersSubject != null)
+        if (_ourLayersSubject != null)
         {
           // share the good news
           _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
-          
+
           // and re-generate the doublets
           updateData(true);
-        }    
+        }
 
       }
     };
@@ -1719,7 +1802,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
-  /** show/hide the two zone charts
+  /**
+   * show/hide the two zone charts
    * 
    * @param isVisible
    */
@@ -1728,7 +1812,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // hide the charts
     ownshipZoneChart.setVisible(isVisible);
     targetZoneChart.setVisible(isVisible);
-    
+
     // and get the parent to redo the layout
     ownshipZoneChart.getParent().layout(true);
   }
@@ -1757,14 +1841,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       clearPlots();
     }
   }
-  
+
   @Override
-  public void
-      logError(int status, String text, Exception e, boolean revealLog)
+  public void logError(int status, String text, Exception e, boolean revealLog)
   {
     logError(status, text, e);
   }
-
 
   @Override
   public void logStack(int status, String text)
@@ -1946,7 +2028,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             {
               // cool, remember about it.
               _theTrackDataListener = (TrackManager) part;
-              
+
               // hey, new plot. clear the zone charts
               clearZoneCharts();
 
@@ -1963,7 +2045,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // just in case we're ready to start plotting, go
               // for it!
               updateStackedDots(true);
-              
+
               // and the zones
               // initialise the zones
               List<Zone> zones = getTargetZones();
@@ -1984,7 +2066,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             _theTrackDataListener = null;
 
             _myHelper.reset();
-            
+
             // ok, clear the zone charts
             clearZoneCharts();
           }
@@ -2034,10 +2116,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   // ok - if we're on auto update, do the
                   // update
                   updateLinePlotRanges();
-                  
-                  // initialise the zones       
+
+                  // initialise the zones
                   List<Zone> zones = getTargetZones();
-                  if(targetZoneChart != null)
+                  if (targetZoneChart != null)
                   {
                     targetZoneChart.setZones(zones);
                   }
@@ -2162,7 +2244,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _linePlot.setDataset(null);
               _dotPlot.setDataset(null);
               _targetOverviewPlot.setDataset(null);
-              
+
               // ok, clear the zone charts
               clearZoneCharts();
             }
@@ -2174,7 +2256,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         .getActivePage());
   }
 
-  /** collate some zones based on legs in the target track
+  /**
+   * collate some zones based on legs in the target track
    * 
    * @return
    */
@@ -2363,12 +2446,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     }
   }
-  
+
   private void clearZoneCharts()
   {
     ownshipCourseSeries.clear();
     targetBearingSeries.clear();
-    
+
     // and the marked zones
     if (ownshipZoneChart != null)
     {
@@ -2387,54 +2470,63 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       TrackWrapper host = new TrackWrapper();
       host.setName("Host Track");
-      
+
       // create a sensor
       SensorWrapper sensor = new SensorWrapper("Sensor");
       sensor.setHost(host);
       host.add(sensor);
-      
+
       // add some cuts
-      ArrayList<SensorContactWrapper> contacts = new ArrayList<SensorContactWrapper>();
-      for(int i=0;i<30;i++)
+      ArrayList<SensorContactWrapper> contacts =
+          new ArrayList<SensorContactWrapper>();
+      for (int i = 0; i < 30; i++)
       {
         HiResDate thisDTG = new HiResDate(10000 * i);
-        WorldLocation thisLocation = new WorldLocation(2 + 0.01 * i,2 + 0.03 * i,0);
-        SensorContactWrapper scw = new SensorContactWrapper(host.getName(), thisDTG,
-            new WorldDistance(4, WorldDistance.MINUTES), 25d, thisLocation, Color.RED, "" + i, 0, sensor.getName());
+        WorldLocation thisLocation =
+            new WorldLocation(2 + 0.01 * i, 2 + 0.03 * i, 0);
+        SensorContactWrapper scw =
+            new SensorContactWrapper(host.getName(), thisDTG,
+                new WorldDistance(4, WorldDistance.MINUTES), 25d, thisLocation,
+                Color.RED, "" + i, 0, sensor.getName());
         sensor.add(scw);
         contacts.add(scw);
-        
+
         // also create a host track fix at this DTG
         Fix theFix = new Fix(thisDTG, thisLocation, 12d, 3d);
         FixWrapper newF = new FixWrapper(theFix);
         host.add(newF);
       }
-      
+
       // produce the target leg
       TrackWrapper target = new TrackWrapper();
       target.setName("Tgt Track");
-      
+
       // add a TMA leg
       final Layers theLayers = new Layers();
       theLayers.addThisLayer(host);
       theLayers.addThisLayer(target);
-      
-      SensorContactWrapper[] contactArr = contacts.toArray(new SensorContactWrapper[]{});
-      RelativeTMASegment newLeg = new RelativeTMASegment(contactArr, new WorldVector(1, 1, 0), 
-          new WorldSpeed(12, WorldSpeed.Kts), 12d, theLayers, Color.red);
+
+      SensorContactWrapper[] contactArr =
+          contacts.toArray(new SensorContactWrapper[]
+          {});
+      RelativeTMASegment newLeg =
+          new RelativeTMASegment(contactArr, new WorldVector(1, 1, 0),
+              new WorldSpeed(12, WorldSpeed.Kts), 12d, theLayers, Color.red);
       target.add(newLeg);
-      
+
       BaseStackedDotsView view = new BaseStackedDotsView(true, false)
       {
         @Override
         protected void updateData(boolean updateDoublets)
         {
         }
+
         @Override
         protected String getUnits()
         {
           return null;
         }
+
         @Override
         protected String getType()
         {
@@ -2445,16 +2537,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // try to set a zone on the track
       Zone trimmedPeriod = new Zone(150000, 220000, Color.RED);
       view.setLeg(host, target, trimmedPeriod);
-      
+
       // ok, check the leg has changed
-      assertEquals("leg start changed", 150000, target.getStartDTG().getDate().getTime());
-      assertEquals("leg start changed", 220000, target.getEndDTG().getDate().getTime());
-      
+      assertEquals("leg start changed", 150000, target.getStartDTG().getDate()
+          .getTime());
+      assertEquals("leg start changed", 220000, target.getEndDTG().getDate()
+          .getTime());
+
       // ok, also see if we can create a new leg
       trimmedPeriod = new Zone(250000, 320000, Color.RED);
       view.setLeg(host, target, trimmedPeriod);
-      
+
     }
   }
-  
+
 }
