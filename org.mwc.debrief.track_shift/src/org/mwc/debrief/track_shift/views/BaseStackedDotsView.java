@@ -2031,7 +2031,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _theTrackDataListener = (TrackManager) part;
 
               // hey, new plot. clear the zone charts
-              clearZoneCharts();
+              clearZoneCharts(true);
 
               // set the title, so there's something useful in
               // there
@@ -2069,7 +2069,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             _myHelper.reset();
 
             // ok, clear the zone charts
-            clearZoneCharts();
+            clearZoneCharts(true);
           }
         });
     _myPartMonitor.addPartListener(TrackDataProvider.class,
@@ -2100,13 +2100,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 public void tracksUpdated(final WatchableList primary,
                     final WatchableList[] secondaries)
                 {
+                  
+                  // has the primary changed?
+                  final boolean primarySame = _myHelper.getPrimaryTrack().equals(primary);
+                  
+                  // ok, have things changed?
                   _myHelper.initialise(_theTrackDataListener, false,
                       _onlyVisible.isChecked(), _holder, logger, getType(),
                       _needBrg, _needFreq);
 
-                  // check we have sufficient data
-                  // no secondary track. clear the data
-                  clearZoneCharts();
+                  // clear the zone charts, but maybe not the primary
+                  clearZoneCharts(!primarySame);
 
                   // ahh, the tracks have changed, better
                   // update the doublets
@@ -2172,7 +2176,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             updateStackedDots(true);
 
             // and clear the zone charts
-            clearZoneCharts();
+            clearZoneCharts(true);
           }
         });
 
@@ -2247,7 +2251,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _targetOverviewPlot.setDataset(null);
 
               // ok, clear the zone charts
-              clearZoneCharts();
+              clearZoneCharts(true);
             }
           }
         });
@@ -2448,17 +2452,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private void clearZoneCharts()
+  private void clearZoneCharts(boolean osChanged)
   {
-    ownshipCourseSeries.clear();
-    targetBearingSeries.clear();
-
-    // and the marked zones
-    if (ownshipZoneChart != null)
+    if(osChanged)
     {
-      ownshipZoneChart.clearZones();
+      ownshipCourseSeries.clear();
+      
+      if (ownshipZoneChart != null)
+      {
+        ownshipZoneChart.clearZones();
+      }
     }
 
+    // and the secondary
+    targetBearingSeries.clear();
     if (targetZoneChart != null)
     {
       targetZoneChart.clearZones();
