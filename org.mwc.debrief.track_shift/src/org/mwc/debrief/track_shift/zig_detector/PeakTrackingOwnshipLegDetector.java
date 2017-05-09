@@ -19,6 +19,9 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 
     // ok, see if we can find the precision
     final double COURSE_TOLERANCE;
+    
+    // TODO: determine if we need to use a minimum leg length
+    @SuppressWarnings("unused")
     final long minLegLength = 120000;
 
     switch (precision)
