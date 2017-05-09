@@ -2172,8 +2172,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 {
 
                   // has the primary changed?
-                  final boolean primarySame =
-                      _myHelper.getPrimaryTrack().equals(primary);
+                  final boolean primarySame = (_myHelper.getPrimaryTrack() != null) && 
+                      (_myHelper.getPrimaryTrack().equals(primary));
 
                   // ok, have things changed?
                   _myHelper.initialise(_theTrackDataListener, false,
