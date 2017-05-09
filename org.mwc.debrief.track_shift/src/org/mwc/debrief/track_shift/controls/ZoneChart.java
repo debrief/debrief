@@ -6,6 +6,9 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -128,10 +131,39 @@ public class ZoneChart extends Composite
 
     private boolean isDelete(final Zone zone, final double x)
     {
+      final boolean res;
+
+      // see if it's within the buffer zone
       final long pixelXStart = findPixelX(this, zone.start);
       final long pixelXEnd = findPixelX(this, zone.end);
-      return ((x - pixelXStart) > 8 && (x - pixelXStart) >= 0)
-          && ((pixelXEnd - x) > 8 && (pixelXEnd - x) >= 0);
+      boolean inArea =
+          ((x - pixelXStart) > 8 && (x - pixelXStart) >= 0)
+              && ((pixelXEnd - x) > 8 && (pixelXEnd - x) >= 0);
+
+      if (inArea)
+      {
+        // just check if this is the first or last zone
+        if (blockEndDelete
+            && (zones.get(0).equals(zone) || zones.get(zones.size() - 1)
+                .equals(zone)))
+        {
+          // no, we can't delete this zone - since it will chance the period of coverage
+          res = false;
+        }
+        else
+        {
+          // ok, we can delete it
+          res = true;
+        }
+      }
+      else
+      {
+        // nothing to delete
+        res = false;
+      }
+
+      return res;
+
     }
 
     private boolean isResizeEnd(final Zone zone, final double x)
@@ -343,9 +375,7 @@ public class ZoneChart extends Composite
         }
         case EDIT:
         {
-          
-          
-          
+
           if (adding != null)
           {
             final XYPlot plot = (XYPlot) chart.getPlot();
@@ -429,8 +459,7 @@ public class ZoneChart extends Composite
                     };
                 undoRedoProvider.execute(deleteOp);
               }
-              else if (resizeStart
-                  || resizeEnd)
+              else if (resizeStart || resizeEnd)
               {
                 final Zone affect = dragZone;
                 final long startBefore = dragZoneStartBefore;
@@ -642,7 +671,7 @@ public class ZoneChart extends Composite
     EDIT, ZOOM, MERGE
   }
 
-  final public static class Zone
+  final public static class Zone implements Comparable<Zone>
   {
     long start, end;
     private Color color;
@@ -672,7 +701,15 @@ public class ZoneChart extends Composite
     @Override
     public String toString()
     {
-      return "Zone [start=" + start + ", end=" + end + "]";
+      return "Zone [start=" + new Date(start) + ", end=" + new Date(end) + "]";
+    }
+
+    @Override
+    public int compareTo(Zone z)
+    {
+      Long myStart = this.start;
+      Long hisStart = z.start;
+      return myStart.compareTo(hisStart);
     }
 
   }
@@ -737,7 +774,7 @@ public class ZoneChart extends Composite
       final String chartTitle, final String yTitle, final Composite parent,
       final Zone[] zones, final long[] timeValues, final long[] angleValues,
       final ColorProvider blueProv, final Color lineColor,
-      final ZoneSlicer zoneSlicer)
+      final ZoneSlicer zoneSlicer, final boolean blockEndDelete)
   {
     // build the jfreechart Plot
     final TimeSeries xySeries = new TimeSeries("");
@@ -746,19 +783,20 @@ public class ZoneChart extends Composite
     {
       xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
     }
-    
+
     final TimeSeries otherSeries = null;
 
     return create(undoRedoProvider, chartTitle, yTitle, parent, zones,
-        xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer);
+        xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer,
+        blockEndDelete);
   }
 
   public static ZoneChart create(ZoneUndoRedoProvider undoRedoProvider,
       final String chartTitle, final String yTitle, final Composite parent,
-      final Zone[] zones, final TimeSeries xySeries, 
+      final Zone[] zones, final TimeSeries xySeries,
       final TimeSeries otherSeries, final long[] timeValues,
       final ColorProvider blueProv, final Color lineColor,
-      final ZoneSlicer zoneSlicer)
+      final ZoneSlicer zoneSlicer, final boolean blockEndDelete)
   {
 
     if (undoRedoProvider == null)
@@ -783,8 +821,8 @@ public class ZoneChart extends Composite
 
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
-    
-    if(otherSeries != null)
+
+    if (otherSeries != null)
     {
       dataset.addSeries(otherSeries);
     }
@@ -812,7 +850,7 @@ public class ZoneChart extends Composite
     renderer.setSeriesShapesVisible(0, true);
     renderer.setSeriesStroke(0, new BasicStroke(1));
 
-    if(otherSeries != null)
+    if (otherSeries != null)
     {
       renderer.setSeriesStroke(1, new BasicStroke(2));
       renderer.setSeriesPaint(1, Color.GRAY);
@@ -821,13 +859,13 @@ public class ZoneChart extends Composite
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
         new ZoneChart(parent, xylineChart, undoRedoProvider, zones, blueProv,
-            zoneSlicer, xySeries);
+            zoneSlicer, xySeries, blockEndDelete);
 
     // done
     return zoneChart;
   }
 
-  private final List<Zone> zones = new ArrayList<Zone>();
+  private final List<Zone> zones;
   private final Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
   private EditMode mode = EditMode.EDIT;
@@ -892,15 +930,28 @@ public class ZoneChart extends Composite
   private final TimeSeries xySeries;
   private final ZoneUndoRedoProvider undoRedoProvider;
 
+  /**
+   * whether we should prevent the user from deleting the first/last zones
+   * 
+   */
+  private boolean blockEndDelete;
+
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
-      final TimeSeries xySeries)
+      final TimeSeries xySeries, boolean blockEndDelete)
   {
     super(parent, SWT.NONE);
     this.undoRedoProvider = undoRedoProvider;
     this.chart = xylineChart;
     buildUI(xylineChart);
+
+    /**
+     * provide sorted instanceof array list, so we know we can easily get the first/last items
+     */
+    this.zones = new SortedArrayList();
+
+    this.blockEndDelete = blockEndDelete;
     this.zones.addAll(Arrays.asList(zones));
     this.zoneMarkers.clear();
     xylineChart.setAntiAlias(false);
@@ -923,12 +974,12 @@ public class ZoneChart extends Composite
     plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
   }
-  
+
   public void clearZones()
   {
     zoneMarkers.clear();
     zones.clear();
-    
+
     // and from the plot
     final XYPlot thePlot = (XYPlot) chart.getPlot();
     thePlot.clearDomainMarkers();
@@ -1152,7 +1203,7 @@ public class ZoneChart extends Composite
                 // ok, now ditch the old zone lists
                 zones.clear();
                 zoneMarkers.clear();
-                
+
                 if (newZones != null)
                 {
                   // store the zones
@@ -1337,10 +1388,50 @@ public class ZoneChart extends Composite
   final public void setZones(final List<Zone> newZones)
   {
     final XYPlot plot = (XYPlot) chart.getPlot();
-    for(final Zone zone: newZones)
+    for (final Zone zone : newZones)
     {
       addZone(plot, zone);
       zones.add(zone);
+    }
+
+    // and sort them
+  }
+
+  private static class SortedArrayList extends ArrayList<Zone>
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    // resort ourselves
+    private void sortMe()
+    {
+      Collections.sort(this);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Zone> c)
+    {
+      final boolean res = super.addAll(c);
+      sortMe();
+      return res;
+    }
+
+    @Override
+    public boolean add(Zone e)
+    {
+      boolean res = super.add(e);
+      sortMe();
+      return res;
+    }
+
+    @Override
+    public boolean remove(Object o)
+    {
+      boolean res = super.remove(o);
+      sortMe();
+      return res;
     }
   }
 }
