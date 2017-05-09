@@ -327,9 +327,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       "Calculated Bearing");
 
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
+  private Precision _slicePrecision = Precision.MEDIUM;
   private Action _modeOne;
   private Action _modeTwo;
   private Action _modeThree;
+  private Action _precisionOne;
+  private Action _precisionTwo;
+  private Action _precisionThree;
 
   /**
    * 
@@ -734,7 +738,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   .isChecked(), secondary.getStartDTG(), secondary.getEndDTG());
           res =
               sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
-                  secondary);
+                  secondary, _slicePrecision);
         }
         else
         {
@@ -959,13 +963,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * 
    * @param ownshipLegs
    * @param randomProv
+   * @param slicePrecision 
    * @param secondaryTrack
    * @param targetBearingSeries2
    * @return
    */
   protected List<Zone> sliceTarget(Zone[] ownshipLegs,
       final List<SensorContactWrapper> doublets,
-      final ColorProvider randomProv, final ISecondaryTrack tgtTrack)
+      final ColorProvider randomProv, final ISecondaryTrack tgtTrack, Precision slicePrecision)
   {
     ZigDetector slicer = new ZigDetector();
     final List<Zone> zigs = new ArrayList<Zone>();
@@ -1003,7 +1008,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     final double optimiseTolerance = 0.000001;
-    final double RMS_ZIG_RATIO = 0.4;
+    final double RMS_ZIG_RATIO;
+    switch(slicePrecision)
+    {
+      case LOW:
+        RMS_ZIG_RATIO = 0.9;
+        break;
+      case MEDIUM:
+        RMS_ZIG_RATIO = 0.5;
+        break;
+      case HIGH:
+      default:
+        RMS_ZIG_RATIO = 0.1;
+    }
 
     // ok, loop through the ownship legs
     for (final Zone thisZ : ownshipLegs)
@@ -1580,14 +1597,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(_selectOnClick);
     // and the help link
     manager.add(new Separator());
+    
 
     // TEMPORARILY INTRODUCE SLICE MODE
-    MenuManager mm = new MenuManager("Slice mode");
-    manager.add(mm);
-    manager.add(new Separator());
-
-    manager.add(CorePlugin.createOpenHelpAction(
-        "org.mwc.debrief.help.TrackShifting", null, this));
+    MenuManager sliceMenu = new MenuManager("Slice mode");
+    manager.add(sliceMenu);
 
     // ok - try to add modes for the slicing algorithm
     _modeOne = new Action("Original", SWT.TOGGLE)
@@ -1628,10 +1642,66 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     _modeTwo.setChecked(true);
+    sliceMenu.add(_modeOne);
+    sliceMenu.add(_modeTwo);
+    sliceMenu.add(_modeThree);
+    
+    // also allo the target tracking accuracy to vary
+    
 
-    mm.add(_modeOne);
-    mm.add(_modeTwo);
-    mm.add(_modeThree);
+    // TEMPORARILY INTRODUCE SLICE precision
+    MenuManager accuracyMenu = new MenuManager("Target Slice Precision");
+    manager.add(accuracyMenu);
+
+    // ok - try to add modes for the slicing algorithm
+    _precisionOne = new Action("Low", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _slicePrecision = Precision.LOW;
+        _precisionTwo.setChecked(false);
+        _precisionThree.setChecked(false);
+        _precisionOne.setChecked(true);
+        // _modeTwo.setChecked(false);
+      }
+    };
+    _precisionTwo = new Action("Medium", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _slicePrecision = Precision.MEDIUM;
+        _precisionThree.setChecked(false);
+        _precisionOne.setChecked(false);
+        _precisionTwo.setChecked(true);
+      }
+    };
+    _precisionThree = new Action("High", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _slicePrecision = Precision.HIGH;
+        _precisionTwo.setChecked(false);
+        _precisionOne.setChecked(false);
+        _precisionThree.setChecked(true);
+      }
+    };
+    _precisionTwo.setChecked(true);
+
+    accuracyMenu.add(_precisionOne);
+    accuracyMenu.add(_precisionTwo);
+    accuracyMenu.add(_precisionThree);
+
+    // and the help
+    manager.add(new Separator());
+    manager.add(CorePlugin.createOpenHelpAction(
+        "org.mwc.debrief.help.TrackShifting", null, this));
+
   }
 
   protected void makeActions()
