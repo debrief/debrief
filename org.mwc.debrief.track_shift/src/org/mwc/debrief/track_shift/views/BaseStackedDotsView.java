@@ -744,9 +744,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
     targetZoneChart =
-        ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
-            tgtZones, targetBearingSeries, targetCalculatedSeries,
-            tgtTimeValues, randomProv, DebriefColors.RED, targetLegSlicer, true);
+        ZoneChart
+            .create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
+                tgtZones, targetBearingSeries, targetCalculatedSeries,
+                tgtTimeValues, randomProv, DebriefColors.RED, targetLegSlicer,
+                true);
 
     targetZoneChart.addZoneListener(targetListener);
 
@@ -838,7 +840,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
               // tell the leg to share the good news
               // share the good news
-              _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper.getSecondaryTrack());
+              _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper
+                  .getSecondaryTrack());
             }
           }
         }
@@ -1161,9 +1164,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         detector = new PeakTrackingOwnshipLegDetector();
         break;
     }
-    
-//    System.out.println("os start time:"
-//        + new Date(osCourse.getDataItem(0).getPeriod().getMiddleMillisecond()));
 
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
@@ -2100,10 +2100,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 public void tracksUpdated(final WatchableList primary,
                     final WatchableList[] secondaries)
                 {
-                  
+
                   // has the primary changed?
-                  final boolean primarySame = _myHelper.getPrimaryTrack().equals(primary);
-                  
+                  final boolean primarySame =
+                      _myHelper.getPrimaryTrack().equals(primary);
+
                   // ok, have things changed?
                   _myHelper.initialise(_theTrackDataListener, false,
                       _onlyVisible.isChecked(), _holder, logger, getType(),
@@ -2454,10 +2455,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private void clearZoneCharts(boolean osChanged)
   {
-    if(osChanged)
+    if (osChanged)
     {
       ownshipCourseSeries.clear();
-      
+
       if (ownshipZoneChart != null)
       {
         ownshipZoneChart.clearZones();
