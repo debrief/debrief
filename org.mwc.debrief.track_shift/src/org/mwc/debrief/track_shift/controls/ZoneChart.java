@@ -499,7 +499,6 @@ public class ZoneChart extends Composite
                             zoneMarkers.get(affect);
                         affect.start = startBefore;
                         affect.end = endBefore;
-
                         intervalMarker.setStartValue(affect.start);
                         intervalMarker.setEndValue(affect.end);
                         fireZoneResized(affect);
@@ -702,6 +701,17 @@ public class ZoneChart extends Composite
     public String toString()
     {
       return "Zone [start=" + new Date(start) + ", end=" + new Date(end) + "]";
+    }
+
+    /**
+     * does this match an existing zone? Typically used after one end of a zone is dragged
+     * 
+     * @param other the zone we're comparing ourselves to
+     * @return yes/no for matching
+     */
+    protected boolean matches(final Zone other)
+    {
+      return start == other.start || end == other.end;
     }
 
     @Override
@@ -1390,8 +1400,22 @@ public class ZoneChart extends Composite
     final XYPlot plot = (XYPlot) chart.getPlot();
     for (final Zone zone : newZones)
     {
-      addZone(plot, zone);
-      zones.add(zone);
+      // do we already have this zone?
+      boolean found = false;
+      for (final Zone oz : zones)
+      {
+        if (oz.matches(zone))
+        {
+          // yes, we don't need to recreate it
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+      {
+        addZone(plot, zone);
+        zones.add(zone);
+      }
     }
 
     // and sort them
