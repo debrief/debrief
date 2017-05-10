@@ -691,7 +691,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ownshipZoneChart =
         ZoneChart.create(undoRedoProvider, "Ownship Legs", "Course", sashForm,
             osZones, ownshipCourseSeries, null, osTimeValues, blueProv,
-            DebriefColors.BLUE, ownshipLegSlicer, false);
+            DebriefColors.BLUE, ownshipLegSlicer);
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -751,8 +751,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         ZoneChart
             .create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
                 tgtZones, targetBearingSeries, targetCalculatedSeries,
-                tgtTimeValues, randomProv, DebriefColors.RED, targetLegSlicer,
-                true);
+                tgtTimeValues, randomProv, DebriefColors.RED, targetLegSlicer);
 
     targetZoneChart.addZoneListener(targetListener);
 

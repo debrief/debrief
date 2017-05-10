@@ -142,19 +142,8 @@ public class ZoneChart extends Composite
 
       if (inArea)
       {
-        // just check if this is the first or last zone
-        if (blockEndDelete
-            && (zones.get(0).equals(zone) || zones.get(zones.size() - 1)
-                .equals(zone)))
-        {
-          // no, we can't delete this zone - since it will chance the period of coverage
-          res = false;
-        }
-        else
-        {
-          // ok, we can delete it
-          res = true;
-        }
+        // ok, we can delete it
+        res = true;
       }
       else
       {
@@ -784,7 +773,7 @@ public class ZoneChart extends Composite
       final String chartTitle, final String yTitle, final Composite parent,
       final Zone[] zones, final long[] timeValues, final long[] angleValues,
       final ColorProvider blueProv, final Color lineColor,
-      final ZoneSlicer zoneSlicer, final boolean blockEndDelete)
+      final ZoneSlicer zoneSlicer)
   {
     // build the jfreechart Plot
     final TimeSeries xySeries = new TimeSeries("");
@@ -797,8 +786,7 @@ public class ZoneChart extends Composite
     final TimeSeries otherSeries = null;
 
     return create(undoRedoProvider, chartTitle, yTitle, parent, zones,
-        xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer,
-        blockEndDelete);
+        xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer);
   }
 
   public static ZoneChart create(ZoneUndoRedoProvider undoRedoProvider,
@@ -806,7 +794,7 @@ public class ZoneChart extends Composite
       final Zone[] zones, final TimeSeries xySeries,
       final TimeSeries otherSeries, final long[] timeValues,
       final ColorProvider blueProv, final Color lineColor,
-      final ZoneSlicer zoneSlicer, final boolean blockEndDelete)
+      final ZoneSlicer zoneSlicer)
   {
 
     if (undoRedoProvider == null)
@@ -869,7 +857,7 @@ public class ZoneChart extends Composite
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
         new ZoneChart(parent, xylineChart, undoRedoProvider, zones, blueProv,
-            zoneSlicer, xySeries, blockEndDelete);
+            zoneSlicer, xySeries);
 
     // done
     return zoneChart;
@@ -940,16 +928,10 @@ public class ZoneChart extends Composite
   private final TimeSeries xySeries;
   private final ZoneUndoRedoProvider undoRedoProvider;
 
-  /**
-   * whether we should prevent the user from deleting the first/last zones
-   * 
-   */
-  private boolean blockEndDelete;
-
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
-      final TimeSeries xySeries, boolean blockEndDelete)
+      final TimeSeries xySeries)
   {
     super(parent, SWT.NONE);
     this.undoRedoProvider = undoRedoProvider;
@@ -960,8 +942,6 @@ public class ZoneChart extends Composite
      * provide sorted instanceof array list, so we know we can easily get the first/last items
      */
     this.zones = new SortedArrayList();
-
-    this.blockEndDelete = blockEndDelete;
     this.zones.addAll(Arrays.asList(zones));
     this.zoneMarkers.clear();
     xylineChart.setAntiAlias(false);
