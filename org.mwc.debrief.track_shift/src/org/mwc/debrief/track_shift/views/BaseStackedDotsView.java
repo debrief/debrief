@@ -963,14 +963,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * 
    * @param ownshipLegs
    * @param randomProv
-   * @param slicePrecision 
+   * @param slicePrecision
    * @param secondaryTrack
    * @param targetBearingSeries2
    * @return
    */
   protected List<Zone> sliceTarget(Zone[] ownshipLegs,
       final List<SensorContactWrapper> doublets,
-      final ColorProvider randomProv, final ISecondaryTrack tgtTrack, Precision slicePrecision)
+      final ColorProvider randomProv, final ISecondaryTrack tgtTrack,
+      final Precision slicePrecision)
   {
     ZigDetector slicer = new ZigDetector();
     final List<Zone> zigs = new ArrayList<Zone>();
@@ -1009,7 +1010,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     final double optimiseTolerance = 0.000001;
     final double RMS_ZIG_RATIO;
-    switch(slicePrecision)
+    switch (slicePrecision)
     {
       case LOW:
         RMS_ZIG_RATIO = 0.9;
@@ -1597,7 +1598,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(_selectOnClick);
     // and the help link
     manager.add(new Separator());
-    
 
     // TEMPORARILY INTRODUCE SLICE MODE
     MenuManager sliceMenu = new MenuManager("Slice mode");
@@ -1645,9 +1645,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     sliceMenu.add(_modeOne);
     sliceMenu.add(_modeTwo);
     sliceMenu.add(_modeThree);
-    
+
     // also allo the target tracking accuracy to vary
-    
 
     // TEMPORARILY INTRODUCE SLICE precision
     MenuManager accuracyMenu = new MenuManager("Target Slice Precision");
@@ -2101,7 +2100,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _theTrackDataListener = (TrackManager) part;
 
               // hey, new plot. clear the zone charts
-              clearZoneCharts(true);
+              clearZoneCharts(true, true);
 
               // set the title, so there's something useful in
               // there
@@ -2139,7 +2138,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             _myHelper.reset();
 
             // ok, clear the zone charts
-            clearZoneCharts(true);
+            clearZoneCharts(true, true);
           }
         });
     _myPartMonitor.addPartListener(TrackDataProvider.class,
@@ -2172,8 +2171,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 {
 
                   // has the primary changed?
-                  final boolean primarySame = (_myHelper.getPrimaryTrack() != null) && 
-                      (_myHelper.getPrimaryTrack().equals(primary));
+                  final boolean primarySame =
+                      (_myHelper.getPrimaryTrack() != null)
+                          && (_myHelper.getPrimaryTrack().equals(primary));
+                  final boolean secSame =
+                      (_myHelper.getSecondaryTrack() != null)
+                          && secondaries != null
+                          && secondaries.length == 1
+                          && (_myHelper.getSecondaryTrack()
+                              .equals(secondaries[0]));
 
                   // ok, have things changed?
                   _myHelper.initialise(_theTrackDataListener, false,
@@ -2181,7 +2187,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                       _needBrg, _needFreq);
 
                   // clear the zone charts, but maybe not the primary
-                  clearZoneCharts(!primarySame);
+                  clearZoneCharts(!primarySame, !secSame);
 
                   // ahh, the tracks have changed, better
                   // update the doublets
@@ -2247,7 +2253,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             updateStackedDots(true);
 
             // and clear the zone charts
-            clearZoneCharts(true);
+            clearZoneCharts(true, true);
           }
         });
 
@@ -2322,7 +2328,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _targetOverviewPlot.setDataset(null);
 
               // ok, clear the zone charts
-              clearZoneCharts(true);
+              clearZoneCharts(true, true);
             }
           }
         });
@@ -2523,7 +2529,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private void clearZoneCharts(boolean osChanged)
+  private void clearZoneCharts(boolean osChanged, boolean tgtChanged)
   {
     if (osChanged)
     {
@@ -2536,10 +2542,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // and the secondary
-    targetBearingSeries.clear();
-    if (targetZoneChart != null)
+    if (tgtChanged)
     {
-      targetZoneChart.clearZones();
+      targetBearingSeries.clear();
+      if (targetZoneChart != null)
+      {
+        targetZoneChart.clearZones();
+      }
     }
   }
 
