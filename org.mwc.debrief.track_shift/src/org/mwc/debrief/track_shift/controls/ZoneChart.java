@@ -1131,7 +1131,9 @@ public class ZoneChart extends Composite
                     public IStatus execute(final IProgressMonitor monitor,
                         final IAdaptable info) throws ExecutionException
                     {
-
+                      // ditch the zones. We're having a fresh start
+                      clearZones();
+                      
                       // prob have some data - so we can clear the list
                       xySeries.clear();
                       for (final TimeSeriesDataItem item : data)
