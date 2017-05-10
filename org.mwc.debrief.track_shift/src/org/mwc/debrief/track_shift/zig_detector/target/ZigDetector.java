@@ -9,7 +9,10 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.ILogListener;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.osgi.framework.Bundle;
 
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
@@ -112,6 +115,99 @@ public class ZigDetector
       assertEquals("correct", -1, getStart(0, times, 400, 9));
       assertEquals("correct", -1, getStart(0, times, 400, 10));
     }
+
+    public void testMultiSlice()
+    {
+      Long[] times =
+          new Long[]
+          {1248237792000L, 1248237799000L, 1248237896000L, 1248237944000L,
+              1248237990000L, 1248238098000L, 1248238177000L, 1248238249000L,
+              1248238321000L, 1248238393000L, 1248238484000L, 1248238556000L,
+              1248238624000L, 1248238695000L, 1248238759000L, 1248238843000L,
+              1248238931000L, 1248239006000L, 1248239074000L, 1248239162000L,
+              1248239277000L, 1248239353000L, 1248239444000L, 1248239520000L,
+              1248239600000L, 1248239644000L, 1248239735000L, 1248239799000L,
+              1248239891000L, 1248239951000L, 1248240030000L, 1248240090000L,
+              1248240142000L, 1248240198000L, 1248240257000L, 1248240305000L};
+      Double[] bearings =
+          new Double[]
+          {295.8, 295.5, 293.5, 293.0, 292.8, 290.3, 289.0, 288.3, 288.0,
+              288.0, 288.8, 288.8, 288.8, 289.8, 289.8, 291.0, 291.5, 292.3,
+              292.3, 293.0, 293.5, 294.0, 294.3, 294.8, 294.8, 294.8, 295.8,
+              295.8, 295.8, 296.5, 296.5, 297.5, 297.8, 298.3, 299.0, 299.5};
+
+      // start to collate the adta
+      List<Long> tList = Arrays.asList(times);
+      List<Double> tBearings = Arrays.asList(bearings);
+
+      final ZigDetector detector = new ZigDetector();
+      ILog logger = getLogger();
+      ILegStorer legStorer = new ILegStorer()
+      {
+
+        @Override
+        public void storeLeg(String scenarioName, long tStart, long tEnd,
+            double rms)
+        {
+          System.out.println("store it: " + tStart + ", " + tEnd);
+        }
+      };
+      IZigStorer zigStorer = new IZigStorer(){
+
+        @Override
+        public void storeZig(String scenarioName, long tStart, long tEnd,
+            double rms)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public void finish()
+        {
+          // TODO Auto-generated method stub
+          
+        }};
+      detector.sliceThis(logger, "some name", "scenario", times[0],
+          times[times.length - 1], legStorer, zigStorer, 0.1, 0.2, tList, tBearings);
+
+    }
+
+    private ILog getLogger()
+    {
+      ILog logger = new ILog()
+      {
+
+        @Override
+        public void addLogListener(ILogListener listener)
+        {
+          // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public Bundle getBundle()
+        {
+          // TODO Auto-generated method stub
+          return null;
+        }
+
+        @Override
+        public void log(IStatus status)
+        {
+          // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void removeLogListener(ILogListener listener)
+        {
+          // TODO Auto-generated method stub
+
+        }
+      };
+      return logger;
+    }
   }
 
   final SimpleDateFormat dateF = new SimpleDateFormat("HH:mm:ss");
@@ -138,7 +234,7 @@ public class ZigDetector
 
     // and the time of the last item in the first leg
     final long endTime = sliceAt - halfWid;
-    
+
     // ok, loop through
     for (int ctr = 0; ctr < thisLegTimes.size(); ctr++)
     {
@@ -282,7 +378,6 @@ public class ZigDetector
               optimiserTolerance);
       beforeScore = beforeOptimiser.getMinimum();
       // System.out.println(" before:" + _outDates(beforeTimes));
-      
 
     }
 
@@ -314,22 +409,23 @@ public class ZigDetector
       final double beforeNormal = beforeScore * beforeLen / totalCuts;
       final double afterNormal = afterScore * afterLen / totalCuts;
       sum = beforeNormal + afterNormal;
-      
-//      double[] bValues = beforeOptimiser.getParamValues();
-//      msg +=
-//          " ,BEFORE," + dateF.format(times.get(0)) + ","
-//              + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
-//      msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," + beforeNormal;
-//      double[] aValues = afterOptimiser.getParamValues();
-//      msg +=
-//          " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
-//              + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
-//      msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," + afterNormal;
-//      System.out.println(msg  + ",sum," + sum);
+
+      // double[] bValues = beforeOptimiser.getParamValues();
+      // msg +=
+      // " ,BEFORE," + dateF.format(times.get(0)) + ","
+      // + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
+      // msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," +
+      // beforeNormal;
+      // double[] aValues = afterOptimiser.getParamValues();
+      // msg +=
+      // " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
+      // + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
+      // msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," +
+      // afterNormal;
+      // System.out.println(msg + ",sum," + sum);
 
     }
-    
-        
+
     return sum;
   }
 
@@ -367,6 +463,18 @@ public class ZigDetector
     // ok, find the best slice
     // prepare the data
 
+    final int len = thisLegTimes.size();
+    for (int i = 0; i < len; i++)
+    {
+      System.out.print(thisLegTimes.get(i) + "L, ");
+    }
+    System.out.println("");
+
+    for (int i = 0; i < len; i++)
+    {
+      System.out.print(thisLegBearings.get(i) + ", ");
+    }
+
     if (thisLegBearings.size() == 0)
     {
       return;
@@ -377,7 +485,7 @@ public class ZigDetector
             optimiseTolerance);
     final double wholeLegScore = wholeLeg.getMinimum();
 
-//    System.out.println("Whole leg score is:" + wholeLegScore);
+    // System.out.println("Whole leg score is:" + wholeLegScore);
 
     // ok, now have to slice it
     double bestScore = Double.MAX_VALUE;
@@ -393,8 +501,7 @@ public class ZigDetector
     final long BUFFER_SIZE = 300 * 1000;
 
     // TODO - drop this object, it's just for debugging
- //   DateFormat ds = new SimpleDateFormat("hh:mm:ss");
-
+    // DateFormat ds = new SimpleDateFormat("hh:mm:ss");
 
     // find the optimal first slice
     for (int index = 0; index < thisLegTimes.size(); index++)
@@ -410,8 +517,7 @@ public class ZigDetector
             sliceLeg(index, thisLegBearings, thisLegTimes, legOneEnd,
                 legTwoStart, optimiseTolerance);
 
-        
-      //   System.out.println(ds.format(new Date(thisLegTimes.get(index))) + ", " + sum);
+        // System.out.println(ds.format(new Date(thisLegTimes.get(index))) + ", " + sum);
 
         // is this better?
         if ((sum != Double.MAX_VALUE) && (sum < bestScore))
@@ -429,9 +535,10 @@ public class ZigDetector
     // right, how did we get on?
     if (sliceTime != -1)
     {
-//      System.out.println(ds.format(new Date(sliceTime)));
-//      System.out.println("Best score:" + bestScore + " whole score:" + wholeLegScore + " ratio:" + (bestScore / wholeLegScore));
-      
+      // System.out.println(ds.format(new Date(sliceTime)));
+      // System.out.println("Best score:" + bestScore + " whole score:" + wholeLegScore + " ratio:"
+      // + (bestScore / wholeLegScore));
+
       // is this slice acceptable?
       if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
       {
@@ -461,10 +568,10 @@ public class ZigDetector
       log.log(new Status(Status.INFO, PLUGIN_ID,
           "slicing complete, can't slice", null));
     }
-    
+
     // and tell the storer that we're done.
     zigStorer.finish();
-    
+
   }
 
 }
