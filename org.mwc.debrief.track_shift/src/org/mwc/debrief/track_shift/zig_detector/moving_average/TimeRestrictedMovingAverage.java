@@ -3,8 +3,6 @@ package org.mwc.debrief.track_shift.zig_detector.moving_average;
 import java.util.List;
 import java.util.Vector;
 
-import org.omg.CORBA._PolicyStub;
-
 import junit.framework.TestCase;
 
 /** windowed moving average
@@ -106,14 +104,14 @@ public class TimeRestrictedMovingAverage
   public void add(long time, double value)
   {
     // ok, we've moved forwards. Do some deleting
-    long cutOffTime = time - _millis;
-
     List<Long> removeTimes = new Vector<Long>();
     List<Double> removeValues = new Vector<Double>();
 
     for (int i = 0; i < _times.size(); i++)
     {
       Long thisTime = _times.get(i);
+      // note: we're using ABS here, since the series
+      // of values may be running backwards in time
       if (Math.abs(time - thisTime) > _millis)
       {
         removeTimes.add(thisTime);
@@ -199,7 +197,7 @@ public class TimeRestrictedMovingAverage
     }
     else
     {
-      return 0d;
+      return Double.NaN;
     }
   }
 
