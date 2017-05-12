@@ -1,6 +1,5 @@
 package org.mwc.debrief.track_shift.zig_detector.target;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.mwc.debrief.track_shift.zig_detector.LegOfData;
+import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeRestrictedMovingAverage;
 import org.osgi.framework.Bundle;
 
 import flanagan.math.Minimisation;
@@ -348,35 +348,42 @@ public class ZigDetector
       List<Long> tList1 = Arrays.asList(times);
       List<Double> tBearings1 = Arrays.asList(bearings);
 
-//      System.out
-//          .println("last time:" + new Date(tList1.get(tList1.size() - 1)));
+      // System.out
+      // .println("last time:" + new Date(tList1.get(tList1.size() - 1)));
 
       // get the last 40 elements
-      final int start = tList1.size() - 40;
-      final int end = tList1.size() - 1;
+      // final int start = tList1.size() - 50;
+      // final int end = tList1.size() - 1;
+      //
+      // List<Long> tList = tList1.subList(start, end);
+      // List<Double> tBearings = tBearings1.subList(start, end);
 
-      List<Long> tList = tList1.subList(start, end);
-      List<Double> tBearings = tBearings1.subList(start, end);
+      List<Long> tList = tList1;
+      List<Double> tBearings = tBearings1;
 
-      // System.out.println("from:" + new Date(times[0]) + " // to:"
-      // + new Date(times[times.length - 1]) + " // " + times.length + " entries");
+//       System.out.println("from:" + new Date(times[0]) + " // to:"
+//       + new Date(times[times.length - 1]) + " // " + times.length + " entries");
 
       final ZigDetector detector = new ZigDetector();
-      ILog logger = getLogger();
-      ILegStorer legStorer = getLegStorer();
-      IZigStorer zigStorer = getZigStorer();
-      double zigRatio = 0.0015d;
+//      ILog logger = getLogger();
+//      ILegStorer legStorer = getLegStorer();
+//      IZigStorer zigStorer = getZigStorer();
+      double zigRatio = 4.1d;
       double optimiseTolerance = 0.000004;
+      long timeWindow = 180000;
 //      detector.sliceThis(logger, "some name", "scenario", times[0],
 //          times[times.length - 1], legStorer, zigStorer, zigRatio,
 //          optimiseTolerance, tList, tBearings);
-      
-      EventHappened happened = new EventHappened(){
-        public void eventAt(long time)
-        {
-    //      System.out.println("event at " + new Date(time));
-        }};
-      detector.runThrough(optimiseTolerance, tList, tBearings, happened, zigRatio);
+
+       EventHappened happened = new EventHappened()
+       {
+       public void eventAt(long time)
+       {
+        System.out.println("event at " + new Date(time));
+       }
+       };
+       detector.runThrough(optimiseTolerance, tList, tBearings, happened,
+       zigRatio, timeWindow);
 
     }
 
@@ -948,15 +955,16 @@ public class ZigDetector
       @Override
       public void eventAt(long time)
       {
-        // System.out.println("zig end at:" + new Date(time));
+         System.out.println("zig end at:" + new Date(time));
         legStarts.add(time);
       }
     };
 
     // double threshold = 0.002;
+    long timeWindow = 180000L;
 
     runThrough(optimiseTolerance, legTimes, legBearings, fwdListener,
-        RMS_ZIG_RATIO);
+        RMS_ZIG_RATIO, timeWindow);
 
     // ok, now reverse the steps
     EventHappened backListener = new EventHappened()
@@ -964,7 +972,7 @@ public class ZigDetector
       @Override
       public void eventAt(long time)
       {
-        // System.out.println("zig start at:" + new Date(time));
+         System.out.println("zig start at:" + new Date(time));
         legEnds.add(time);
       }
     };
@@ -973,8 +981,9 @@ public class ZigDetector
     Collections.reverse(legBearings);
 
     // ok, now run through it
+    final double reverseZigRation = RMS_ZIG_RATIO * 0.8;
     runThrough(optimiseTolerance, legTimes, legBearings, backListener,
-        RMS_ZIG_RATIO);
+        reverseZigRation, timeWindow);
 
     // ok, now tidy up the data
     List<LegOfData> legs = new ArrayList<LegOfData>();
@@ -1024,23 +1033,26 @@ public class ZigDetector
 
   private void runThrough(final double optimiseTolerance,
       final List<Long> legTimes, final List<Double> legBearings,
-      EventHappened listener, final double threshold)
+      EventHappened listener, final double zigThreshold, final long timeWindow)
   {
 
     final int len = legTimes.size();
-    double lastScore = Double.MIN_VALUE;
 
-    DateFormat df = new SimpleDateFormat("HH:mm:ss");
+    java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
-//    System.out.println("last time:"
-//        + df.format(new Date(legTimes.get(len - 1))));
+    // System.out.println("last time:"
+    // + df.format(new Date(legTimes.get(len - 1))));
+
+    TimeRestrictedMovingAverage mAverage =
+        new TimeRestrictedMovingAverage(timeWindow);
 
     int start = 0;
     for (int end = 0; end < len; end++)
     {
       final long thisTime = legTimes.get(end);
+      @SuppressWarnings("unused")
       Date legEnd = new Date(thisTime);
-      
+
       // we need at least 4 cuts
       if (end >= start + 4)
       {
@@ -1051,41 +1063,44 @@ public class ZigDetector
             optimiseThis(times, bearings, optimiseTolerance);
         double score = optimiser.getMinimum();
 
-        // have we started to turn?
-        final double scoreRatio;
-        if (lastScore != Double.MIN_VALUE)
+        // ok, see how things are going
+        final double avg = mAverage.getAverage();
+
+        // do we have enough data?
+        if (mAverage.isPopulated())
         {
-          double scoreDelta = score - lastScore;
-          double timeDelta = (thisTime - legTimes.get(end - 1)) / 1000;
-          double absTimeDelta = Math.abs(timeDelta);
-          scoreRatio = scoreDelta / absTimeDelta;
-          if (scoreRatio > threshold)
+          // how far have we travelled from the last score?
+          double scoreDelta = Math.abs(score - mAverage.lastValue());
+
+          // ok, is it increasing by more than double the variance?
+          final double variance = mAverage.getVariance();
+
+          // are we twice the variance?
+          if (scoreDelta / variance > zigThreshold)
           {
-            listener.eventAt(legTimes.get(end));
-            // ok, zig start
-            // System.out.println("zig start at:" + new Date(legTimes.get(end)));
+         //   listener.eventAt(thisTime);
 
-            // ok, move the start forward a few
-            // TODO: determine how many cuts we need to move forward.
-            start = calculateNewStart(legTimes, end, 300000);
+            // // ok, move the start past the turn
+            start = calculateNewStart(legTimes, end, 180000);
 
-            // and reset the score ratio
-            lastScore = Double.MIN_VALUE;
+            // and clear the moving average
+            mAverage.clear();
           }
           else
           {
-            // keep tracking it
-            lastScore = score;
+            // move the average forward
+            mAverage.add(thisTime, score);
           }
+
+           System.out.println(df.format(new Date(thisTime)) + ", " + avg + ", "
+           + score + ", " + scoreDelta + ", " + variance + ", " + scoreDelta / variance
+           + ", " + legBearings.get(end) + ", " + (legBearings.get(end-1) - legBearings.get(end)));
         }
         else
         {
-          scoreRatio = 0;
-          lastScore = score;
+          // still building up our initial population
+          mAverage.add(thisTime, score);
         }
-
-        System.out.println(df.format(new Date(legTimes.get(end))) + " ,"
-            + score + " ," + scoreRatio + ", " + legBearings.get(end));
       }
     }
   }
