@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.wst.xml_core.feature"
+      label="%featureName"
+      version="3.4.2.v201211061806-7C7OFm9F7RZHQVHiOz-P0Up"
+      provider-name="%providerName"
+      
+      >
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <plugin
+         id="javax.xml"
+         download-size="190"
+         install-size="190"
+         version="1.3.4.v201005080400"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.xml.resolver"
+         download-size="96"
+         install-size="96"
+         version="1.2.0.v201005080400"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.xml.serializer"
+         download-size="270"
+         install-size="270"
+         version="2.7.1.v201005080400"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.xerces"
+         download-size="1200"
+         install-size="1200"
+         version="2.9.0.v201101211617"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.standard.schemas"
+         download-size="152"
+         install-size="152"
+         version="1.0.501.v201301091615"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.xml.core"
+         download-size="0"
+         install-size="0"
+         version="1.1.702.v201301101836"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.dtd.core"
+         download-size="0"
+         install-size="0"
+         version="1.1.600.v201205171933"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.xsd.core"
+         download-size="0"
+         install-size="0"
+         version="1.1.700.v201204102147"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.sse.core"
+         download-size="0"
+         install-size="0"
+         version="1.1.702.v201301241617"
+         unpack="false"/>
+
+</feature>
