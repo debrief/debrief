@@ -329,10 +329,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Precision _slicePrecision = Precision.MEDIUM;
-  private Action _mode1;
-  private Action _mode2;
-  private Action _mode3;
-  private Action _mode4;
+  private Action _modeThreshold;
+  private Action _modePeak;
+  private Action _modeArea;
+  private Action _modeArtificial;
   private Action _precisionOne;
   private Action _precisionTwo;
   private Action _precisionThree;
@@ -1608,64 +1608,65 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(sliceMenu);
 
     // ok - try to add modes for the slicing algorithm
-    _mode1 = new Action("Original", SWT.TOGGLE)
-    {
-      @Override
-      public void run()
-      {
-        super.run();
-        _sliceMode = SliceMode.ORIGINAL;
-        _mode2.setChecked(false);
-        _mode3.setChecked(false);
-        _mode1.setChecked(true);
-        // _modeTwo.setChecked(false);
-      }
-    };
-    _mode2 = new Action("Peak tracking", SWT.TOGGLE)
+    _modePeak = new Action("Peak tracking", SWT.TOGGLE)
     {
       @Override
       public void run()
       {
         super.run();
         _sliceMode = SliceMode.PEAK_FIT;
-        _mode1.setChecked(false);
-        _mode3.setChecked(false);
-        _mode4.setChecked(false);
-        _mode2.setChecked(true);
+        _modeThreshold.setChecked(false);
+        _modeArea.setChecked(false);
+        _modeArtificial.setChecked(false);
+        _modePeak.setChecked(true);
       }
     };
-    _mode3 = new Action("Area under curve", SWT.TOGGLE)
-    {
-      @Override
-      public void run()
-      {
-        super.run();
-        _sliceMode = SliceMode.AREA_UNDER_CURVE;
-        _mode2.setChecked(false);
-        _mode1.setChecked(false);
-        _mode4.setChecked(false);
-        _mode3.setChecked(true);
-      }
-    };
-    _mode4 = new Action("Artificial legs", SWT.TOGGLE)
+    _modeArtificial = new Action("Artificial legs", SWT.TOGGLE)
     {
       @Override
       public void run()
       {
         super.run();
         _sliceMode = SliceMode.ARTIFICIAL_LEG;
-        _mode1.setChecked(false);
-        _mode2.setChecked(false);
-        _mode3.setChecked(false);
-        _mode4.setChecked(true);
+        _modeThreshold.setChecked(false);
+        _modePeak.setChecked(false);
+        _modeArea.setChecked(false);
+        _modeArtificial.setChecked(true);
+      }
+    };
+    _modeArea = new Action("Area under curve", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.AREA_UNDER_CURVE;
+        _modePeak.setChecked(false);
+        _modeThreshold.setChecked(false);
+        _modeArtificial.setChecked(false);
+        _modeArea.setChecked(true);
+      }
+    };
+    _modeThreshold = new Action("Original", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.ORIGINAL;
+        _modePeak.setChecked(false);
+        _modeArea.setChecked(false);
+        _modeArtificial.setChecked(false);
+        _modeThreshold.setChecked(true);
+        // _modeTwo.setChecked(false);
       }
     };
 
-    _mode2.setChecked(true);
-    sliceMenu.add(_mode1);
-    sliceMenu.add(_mode2);
-    sliceMenu.add(_mode3);
-    sliceMenu.add(_mode4);
+    _modePeak.setChecked(true);
+    sliceMenu.add(_modePeak);
+    sliceMenu.add(_modeArtificial);
+//    sliceMenu.add(_modeThreshold);
+//    sliceMenu.add(_modeArea);
 
     // also allo the target tracking accuracy to vary
 
