@@ -970,15 +970,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @return
    */
   protected List<Zone> sliceTarget(Zone[] ownshipLegs,
-      final List<SensorContactWrapper> doublets,
+      final List<SensorContactWrapper> cuts,
       final ColorProvider randomProv, final ISecondaryTrack tgtTrack,
       final Precision slicePrecision)
   {
     ZigDetector slicer = new ZigDetector();
     final List<Zone> zigs = new ArrayList<Zone>();
+    final List<Zone> legs = new ArrayList<Zone>();
 
     // check we have some data
-    if (doublets.isEmpty())
+    if (cuts.isEmpty())
     {
       Application.logError2(Application.ERROR, "List of cuts is empty", null);
       return null;
@@ -1005,7 +1006,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void storeLeg(String scenarioName, long tStart, long tEnd,
           double rms)
       {
-        // ok, just ignore it
+        Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
+        legs.add(newZone);
+   //     System.out.println("adding leg:" + newZone);
       }
     };
 
@@ -1024,47 +1027,28 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         RMS_ZIG_RATIO = 0.1;
     }
 
+    // get a logger to use
+    final ILog log;
+    if (Activator.getDefault() == null)
+    {
+      log = new Activator().getLog();
+    }
+    else
+    {
+      log = Activator.getDefault().getLog();
+    }
+
     // ok, loop through the ownship legs
     for (final Zone thisZ : ownshipLegs)
     {
-      // get the bearings in this leg
       long wholeStart = thisZ.getStart();
       long wholeEnd = thisZ.getEnd();
 
+      // get the bearings in this leg
       List<Long> thisLegTimes = new ArrayList<Long>();
       List<Double> thisLegBearings = new ArrayList<Double>();
-
-      // get the bearings in this time period
-      Iterator<SensorContactWrapper> lIter = doublets.iterator();
-      while (lIter.hasNext())
-      {
-        SensorContactWrapper td = lIter.next();
-        long thisTime = td.getDTG().getDate().getTime();
-        if (thisTime >= wholeStart)
-        {
-          if (thisTime <= wholeEnd)
-          {
-            thisLegTimes.add(thisTime);
-            thisLegBearings.add((Double) td.getBearing());
-          }
-          else
-          {
-            // ok, we've passed the end
-            break;
-          }
-        }
-      }
-
-      // get a logger to use
-      final ILog log;
-      if (Activator.getDefault() == null)
-      {
-        log = new Activator().getLog();
-      }
-      else
-      {
-        log = Activator.getDefault().getLog();
-      }
+      getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes,
+          thisLegBearings);
 
       // slice the leg
       slicer.sliceThis(log, Activator.PLUGIN_ID, "Some scenario", wholeStart,
@@ -1099,12 +1083,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     else
     {
       // we've got to regenerate the points from the cuts
-      startTime = doublets.get(0).getDTG().getDate().getTime();
-      endTime = doublets.get(doublets.size() - 1).getDTG().getDate().getTime();
+      startTime = cuts.get(0).getDTG().getDate().getTime();
+      endTime = cuts.get(cuts.size() - 1).getDTG().getDate().getTime();
     }
 
     // ok, we've got to turn the zigs into legs
-    final List<Zone> legs = legsFromZigs(startTime, endTime, zigs, randomProv);
+//    final List<Zone> oldLegs = legsFromZigs(startTime, endTime, zigs, randomProv);
 
     // ok, loop through the legs, updating our TMA legs
     for (Zone leg : legs)
@@ -1125,6 +1109,32 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // ok, done.
     return legs;
+  }
+
+  private void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
+      long wholeStart, long wholeEnd, List<Long> thisLegTimes,
+      List<Double> thisLegBearings)
+  {
+    // get the bearings in this time period
+    Iterator<SensorContactWrapper> lIter = cuts.iterator();
+    while (lIter.hasNext())
+    {
+      SensorContactWrapper td = lIter.next();
+      long thisTime = td.getDTG().getDate().getTime();
+      if (thisTime >= wholeStart)
+      {
+        if (thisTime <= wholeEnd)
+        {
+          thisLegTimes.add(thisTime);
+          thisLegBearings.add((Double) td.getBearing());
+        }
+        else
+        {
+          // ok, we've passed the end
+          break;
+        }
+      }
+    }
   }
 
   protected List<Zone> legsFromZigs(long startTime, long endTime,
