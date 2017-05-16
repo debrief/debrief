@@ -1604,7 +1604,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(new Separator());
 
     // TEMPORARILY INTRODUCE SLICE MODE
-    MenuManager sliceMenu = new MenuManager("Slice mode");
+    MenuManager sliceMenu = new MenuManager("Ownship slicing algorithm");
     manager.add(sliceMenu);
 
     // ok - try to add modes for the slicing algorithm
