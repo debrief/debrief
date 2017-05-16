@@ -1,4 +1,4 @@
-package org.mwc.debrief.track_shift.zig_detector;
+package org.mwc.debrief.track_shift.zig_detector.ownship;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.mwc.debrief.track_shift.zig_detector.LegOfData;
 import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeRestrictedMovingAverage;
+import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.osgi.framework.Bundle;
 
 import flanagan.math.Minimisation;
