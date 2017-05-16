@@ -1,5 +1,7 @@
 package org.mwc.debrief.track_shift.zig_detector.target;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -280,58 +282,61 @@ public class ZigDetector
 //              131320, 131410, 131500, 131550, 131640, 131730, 131820, 131910,
 //              132000, 132050, 132140, 132230, 132320, 132410, 132500};
 
-       Long[] times =
-       new Long[]
-       {946697580000L, 946697610000L, 946697640000L, 946697670000L,
-       946697700000L, 946697730000L, 946697760000L, 946697790000L,
-       946697820000L, 946697850000L, 946697880000L, 946697910000L,
-       946697940000L, 946697970000L, 946698000000L, 946698030000L,
-       946698060000L, 946698090000L, 946698120000L, 946698150000L,
-       946698180000L, 946698210000L, 946698240000L, 946698270000L,
-       946698300000L, 946698330000L, 946698360000L, 946698390000L,
-       946698420000L, 946698450000L, 946698480000L, 946698510000L,
-       946698540000L, 946698570000L, 946698600000L, 946698630000L,
-       946698660000L, 946698690000L, 946698720000L, 946698750000L,
-       946698780000L, 946698810000L, 946698840000L, 946698870000L,
-       946698900000L, 946698930000L, 946698960000L, 946698990000L,
-       946699020000L, 946699050000L, 946699080000L, 946699110000L,
-       946699140000L, 946699170000L, 946699200000L, 946699230000L,
-       946699260000L, 946699290000L, 946699320000L, 946699350000L,
-       946699380000L, 946699410000L, 946699440000L, 946699470000L,
-       946699500000L, 946699530000L, 946699560000L, 946699590000L,
-       946699620000L, 946699650000L, 946699680000L, 946699710000L,
-       946699740000L, 946699770000L, 946699800000L, 946699830000L,
-       946699860000L, 946699890000L, 946699920000L, 946699950000L,
-       946699980000L, 946700010000L, 946700040000L, 946700070000L,
-       946700100000L, 946700130000L, 946700160000L, 946700190000L,
-       946700220000L, 946700250000L, 946700280000L, 946700310000L,
-       946700340000L, 946700370000L, 946700400000L, 946700430000L,
-       946700460000L, 946700490000L, 946700520000L, 946700550000L,
-       946700580000L, 946700610000L, 946700640000L, 946700670000L,
-       946700700000L, 946700730000L, 946700760000L, 946700790000L,
-       946700820000L, 946700850000L, 946700880000L, 946700910000L,
-       946700940000L, 946700970000L};
-       Double[] bearings =
-       new Double[]
-       {169.646, 170.095, 170.566, 171.404, 172.021, 172.757, 173.25,
-       173.767, 174.391, 174.958, 175.839, 176.485, 177.282, 177.66,
-       178.444, 179.09, 179.671, 180.518, 181.154, 181.637, 182.147,
-       182.827, 184.006, 184.885, 185.372, 185.981, 186.792, 187.622,
-       188.21, 189.068, 189.749, 190.474, 191.249, 191.877, 192.646,
-       193.669, 194.361, 195.233, 195.728, 196.593, 197.559, 198.217,
-       198.926, 200.114, 201.127, 201.633, 202.505, 203.394, 204.08,
-       205.171, 206.144, 207.017, 207.645, 208.439, 208.99, 210.35,
-       210.857, 211.789, 212.789, 213.717, 214.45, 214.898, 215.881,
-       216.78, 216.815, 218.296, 219.438, 220.025, 220.876, 221.654,
-       222.64, 222.724, 224.254, 224.667, 225.662, 226.705, 227.423,
-       228.14, 228.857, 229.722, 230.722, 231.656, 232.168, 232.893,
-       233.655, 234.592, 235.5, 236.11700000000002, 236.805,
-       237.47199999999998, 237.824, 238.79000000000002, 239.733,
-       239.88500000000002, 240.68200000000002, 241.493, 242.005,
-       242.311, 242.29, 242.64, 242.906, 242.762, 242.99,
-       243.36700000000002, 243.26, 243.59699999999998, 243.704,
-       243.84199999999998, 244.146, 244.18, 244.223, 244.44, 244.929,
-       245.28000000000003};
+//       Long[] times3 =
+//       new Long[]
+//       {946697580000L, 946697610000L, 946697640000L, 946697670000L,
+//       946697700000L, 946697730000L, 946697760000L, 946697790000L,
+//       946697820000L, 946697850000L, 946697880000L, 946697910000L,
+//       946697940000L, 946697970000L, 946698000000L, 946698030000L,
+//       946698060000L, 946698090000L, 946698120000L, 946698150000L,
+//       946698180000L, 946698210000L, 946698240000L, 946698270000L,
+//       946698300000L, 946698330000L, 946698360000L, 946698390000L,
+//       946698420000L, 946698450000L, 946698480000L, 946698510000L,
+//       946698540000L, 946698570000L, 946698600000L, 946698630000L,
+//       946698660000L, 946698690000L, 946698720000L, 946698750000L,
+//       946698780000L, 946698810000L, 946698840000L, 946698870000L,
+//       946698900000L, 946698930000L, 946698960000L, 946698990000L,
+//       946699020000L, 946699050000L, 946699080000L, 946699110000L,
+//       946699140000L, 946699170000L, 946699200000L, 946699230000L,
+//       946699260000L, 946699290000L, 946699320000L, 946699350000L,
+//       946699380000L, 946699410000L, 946699440000L, 946699470000L,
+//       946699500000L, 946699530000L, 946699560000L, 946699590000L,
+//       946699620000L, 946699650000L, 946699680000L, 946699710000L,
+//       946699740000L, 946699770000L, 946699800000L, 946699830000L,
+//       946699860000L, 946699890000L, 946699920000L, 946699950000L,
+//       946699980000L, 946700010000L, 946700040000L, 946700070000L,
+//       946700100000L, 946700130000L, 946700160000L, 946700190000L,
+//       946700220000L, 946700250000L, 946700280000L, 946700310000L,
+//       946700340000L, 946700370000L, 946700400000L, 946700430000L,
+//       946700460000L, 946700490000L, 946700520000L, 946700550000L,
+//       946700580000L, 946700610000L, 946700640000L, 946700670000L,
+//       946700700000L, 946700730000L, 946700760000L, 946700790000L,
+//       946700820000L, 946700850000L, 946700880000L, 946700910000L,
+//       946700940000L, 946700970000L};
+//       Double[] bearings3 =
+//       new Double[]
+//       {169.646, 170.095, 170.566, 171.404, 172.021, 172.757, 173.25,
+//       173.767, 174.391, 174.958, 175.839, 176.485, 177.282, 177.66,
+//       178.444, 179.09, 179.671, 180.518, 181.154, 181.637, 182.147,
+//       182.827, 184.006, 184.885, 185.372, 185.981, 186.792, 187.622,
+//       188.21, 189.068, 189.749, 190.474, 191.249, 191.877, 192.646,
+//       193.669, 194.361, 195.233, 195.728, 196.593, 197.559, 198.217,
+//       198.926, 200.114, 201.127, 201.633, 202.505, 203.394, 204.08,
+//       205.171, 206.144, 207.017, 207.645, 208.439, 208.99, 210.35,
+//       210.857, 211.789, 212.789, 213.717, 214.45, 214.898, 215.881,
+//       216.78, 216.815, 218.296, 219.438, 220.025, 220.876, 221.654,
+//       222.64, 222.724, 224.254, 224.667, 225.662, 226.705, 227.423,
+//       228.14, 228.857, 229.722, 230.722, 231.656, 232.168, 232.893,
+//       233.655, 234.592, 235.5, 236.11700000000002, 236.805,
+//       237.47199999999998, 237.824, 238.79000000000002, 239.733,
+//       239.88500000000002, 240.68200000000002, 241.493, 242.005,
+//       242.311, 242.29, 242.64, 242.906, 242.762, 242.99,
+//       243.36700000000002, 243.26, 243.59699999999998, 243.704,
+//       243.84199999999998, 244.146, 244.18, 244.223, 244.44, 244.929,
+//       245.28000000000003};
+       
+       Long[] times = new Long[]{946699110000L, 946699140000L, 946699170000L, 946699200000L, 946699230000L, 946699260000L, 946699290000L, 946699320000L, 946699350000L, 946699380000L, 946699410000L, 946699440000L, 946699470000L, 946699500000L, 946699530000L, 946699560000L, 946699590000L, 946699620000L, 946699650000L, 946699680000L, 946699710000L, 946699740000L, 946699770000L, 946699800000L, 946699830000L, 946699860000L, 946699890000L, 946699920000L, 946699950000L, 946699980000L, 946700010000L, 946700040000L, 946700070000L, 946700100000L, 946700130000L, 946700160000L, 946700190000L, 946700220000L, 946700250000L, 946700280000L, 946700310000L, 946700340000L, 946700370000L, 946700400000L, 946700430000L, 946700460000L, 946700490000L, 946700520000L, 946700550000L, 946700580000L};
+       Double[] bearings = new Double[]{-152.983, -152.355, -151.561, -151.01, -149.65, -149.143, -148.211, -147.211, -146.283, -145.55, -145.102, -144.119, -143.22, -143.185, -141.704, -140.562, -139.975, -139.124, -138.346, -137.36, -137.276, -135.746, -135.333, -134.338, -133.295, -132.577, -131.86, -131.143, -130.278, -129.278, -128.344, -127.83199999999998, -127.107, -126.345, -125.40799999999999, -124.49999999999999, -123.88299999999998, -123.195, -122.52800000000002, -122.17599999999999, -121.21, -120.267, -120.11499999999998, -119.31799999999998, -118.507, -117.99500000000002, -117.689, -117.71000000000001, -117.36, -117.09399999999998};
 
 //      Long[] times = new Long[timeStr.length];
 //      java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
@@ -363,7 +368,7 @@ public class ZigDetector
       // + new Date(times[times.length - 1]) + " // " + times.length + " entries");
 
       final ZigDetector detector = new ZigDetector();
-      double zigRatio = 15d;
+      double zigRatio = 10d;
       double optimiseTolerance = 0.000004;
       
 //      ILog logger = getLogger();
@@ -377,8 +382,8 @@ public class ZigDetector
     //  Collections.reverse(tList);
     //  Collections.reverse(tBearings);
       
-      long timeWindow = 240000;
-    //  zigRatio = 5d;
+      long timeWindow = 120000;
+      zigRatio = 4d;
       EventHappened happened = new EventHappened()
       {
         public void eventAt(long time)
@@ -962,7 +967,7 @@ public class ZigDetector
       @Override
       public void eventAt(long time)
       {
-        System.out.println("zig end at:" + new Date(time));
+      //  System.out.println("zig end at:" + new Date(time));
         legStarts.add(time);
       }
     };
@@ -974,12 +979,13 @@ public class ZigDetector
         RMS_ZIG_RATIO, timeWindow);
 
     // ok, now reverse the steps
+    @SuppressWarnings("unused")
     EventHappened backListener = new EventHappened()
     {
       @Override
       public void eventAt(long time)
       {
-        System.out.println("zig start at:" + new Date(time));
+    //    System.out.println("zig start at:" + new Date(time));
         legEnds.add(time);
       }
     };
@@ -988,9 +994,10 @@ public class ZigDetector
     Collections.reverse(legBearings);
 
     // ok, now run through it
+    @SuppressWarnings("unused")
     final double reverseZigRation = RMS_ZIG_RATIO * 0.8;
-    runThrough(optimiseTolerance, legTimes, legBearings, backListener,
-        reverseZigRation, timeWindow);
+//    runThrough(optimiseTolerance, legTimes, legBearings, backListener,
+//        reverseZigRation, timeWindow);
 
     // ok, now tidy up the data
     List<LegOfData> legs = new ArrayList<LegOfData>();
@@ -1006,7 +1013,7 @@ public class ZigDetector
           {
             LegOfData newLeg =
                 new LegOfData("Leg:" + (legs.size() + 1), legStart, legEnd);
-            System.out.println("adding leg:" + newLeg);
+      //      System.out.println("adding leg:" + newLeg);
             legs.add(newLeg);
             lastZig = legEnd;
             break;
@@ -1016,7 +1023,7 @@ public class ZigDetector
 
     }
 
-    // ok, shart the good news
+    // ok, share the good news
     LegOfData lastLeg = null;
     for (LegOfData leg : legs)
     {
@@ -1045,15 +1052,25 @@ public class ZigDetector
 
     final int len = legTimes.size();
 
-    @SuppressWarnings("unused")
     java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
+    
+//    for(Long t: legTimes)
+//    {
+//      System.out.print(t + "L, ");
+//    }
+//    System.out.println();
+//    for(Double b: legBearings)
+//    {
+//      System.out.print(b + ", ");
+//    }
+//    System.out.println();
 
     // System.out.println("last time:"
     // + df.format(new Date(legTimes.get(len - 1))));
 
     TimeRestrictedMovingAverage mAverage =
         new TimeRestrictedMovingAverage(timeWindow);
-
+  
     int start = 0;
     for (int end = 0; end < len; end++)
     {
@@ -1066,15 +1083,15 @@ public class ZigDetector
       {
         // ok, if we've got more than entries, just use the most recent onces
 //        start = Math.max(start, end - 20);
-        
+                
         final List<Long> times = legTimes.subList(start, end);
         final List<Double> bearings = legBearings.subList(start, end);
         
-
         Minimisation optimiser =
             optimiseThis(times, bearings, optimiseTolerance);
         double score = optimiser.getMinimum();
 
+        @SuppressWarnings("unused")
         final double lastScore;
         if (mAverage.isEmpty())
         {
@@ -1086,14 +1103,10 @@ public class ZigDetector
         }
 
         // ok, see how things are going
-        @SuppressWarnings("unused")
         final double avg = mAverage.getAverage();
 
         // ok, is it increasing by more than double the variance?
         final double variance = mAverage.getVariance();
-
-        // contribute this score
-        mAverage.add(thisTime, score);
 
         // how far have we travelled from the last score?
         final double scoreDelta;
@@ -1103,24 +1116,36 @@ public class ZigDetector
         }
         else
         {
-          scoreDelta = score - lastScore;
+//          scoreDelta = score - lastScore;
+          scoreDelta = score - avg;
         }
+
+        // contribute this score
+        mAverage.add(thisTime, score);
+        
+//        NumberFormat nf = new DecimalFormat(" 0.0000;-0.0000");
+//
+//        System.out.println(df.format(new Date(thisTime)) + ", " + nf.format(avg) + ", "
+//        + nf.format(score) + ", " + nf.format(scoreDelta) + ", " + nf.format(variance) + ", " + nf.format(scoreDelta
+//        / variance) + ", " + nf.format(legBearings.get(end)) + ", "
+//        + nf.format((legBearings.get(end - 1) - legBearings.get(end))));
 
         // do we have enough data?
         if (mAverage.isPopulated())
         {
-//           System.out.println(df.format(new Date(thisTime)) + ", " + avg + ", "
-//           + score + ", " + scoreDelta + ", " + variance + ", " + scoreDelta
-//           / variance + ", " + legBearings.get(end) + ", "
-//           + (legBearings.get(end - 1) - legBearings.get(end)));
+        	final double thisProportion = scoreDelta / variance;
 
           // are we twice the variance?
-          if (scoreDelta / variance > zigThreshold)
+          if (thisProportion > zigThreshold)
           {
             listener.eventAt(thisTime);
 
+//            System.out.println("diverging. delta:" + scoreDelta + ", variance:"
+//                + variance + ", proportion:" + (scoreDelta / variance)
+//                + " threshold:" + zigThreshold);
+            
             // // ok, move the start past the turn
-            start = calculateNewStart(legTimes, end, 180000);
+            start = calculateNewStart(legTimes, end, 120000);
 
             // and clear the moving average
             mAverage.clear();
@@ -1130,7 +1155,7 @@ public class ZigDetector
         else
         {
           // still building up our initial population
-          mAverage.add(thisTime, score);
+ //         mAverage.add(thisTime, score);
 
 //           System.out.println(df.format(new Date(thisTime)) + ", " + avg + ", "
 //           + score + ", " + scoreDelta + ", " + variance + ", " + scoreDelta
