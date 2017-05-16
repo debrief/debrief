@@ -112,12 +112,13 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
-import org.mwc.debrief.track_shift.zig_detector.CumulativeLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.ArtificalLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
-import org.mwc.debrief.track_shift.zig_detector.LegOfData;
-import org.mwc.debrief.track_shift.zig_detector.OwnshipLegDetector;
-import org.mwc.debrief.track_shift.zig_detector.PeakTrackingOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
+import org.mwc.debrief.track_shift.zig_detector.ownship.CumulativeLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
+import org.mwc.debrief.track_shift.zig_detector.ownship.OwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.ownship.PeakTrackingOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
@@ -202,7 +203,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private enum SliceMode
   {
-    ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE;
+    ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE, ARTIFICIAL_LEG;
   }
 
   /**
@@ -328,9 +329,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Precision _slicePrecision = Precision.MEDIUM;
-  private Action _modeOne;
-  private Action _modeTwo;
-  private Action _modeThree;
+  private Action _mode1;
+  private Action _mode2;
+  private Action _mode3;
+  private Action _mode4;
   private Action _precisionOne;
   private Action _precisionTwo;
   private Action _precisionThree;
@@ -1176,6 +1178,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       case AREA_UNDER_CURVE:
         detector = new CumulativeLegDetector();
         break;
+      case ARTIFICIAL_LEG:
+        detector = new ArtificalLegDetector();
+        break;
       case PEAK_FIT:
       default:
         detector = new PeakTrackingOwnshipLegDetector();
@@ -1603,47 +1608,64 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(sliceMenu);
 
     // ok - try to add modes for the slicing algorithm
-    _modeOne = new Action("Original", SWT.TOGGLE)
+    _mode1 = new Action("Original", SWT.TOGGLE)
     {
       @Override
       public void run()
       {
         super.run();
         _sliceMode = SliceMode.ORIGINAL;
-        _modeTwo.setChecked(false);
-        _modeThree.setChecked(false);
-        _modeOne.setChecked(true);
+        _mode2.setChecked(false);
+        _mode3.setChecked(false);
+        _mode1.setChecked(true);
         // _modeTwo.setChecked(false);
       }
     };
-    _modeTwo = new Action("Peak tracking", SWT.TOGGLE)
+    _mode2 = new Action("Peak tracking", SWT.TOGGLE)
     {
       @Override
       public void run()
       {
         super.run();
         _sliceMode = SliceMode.PEAK_FIT;
-        _modeThree.setChecked(false);
-        _modeOne.setChecked(false);
-        _modeTwo.setChecked(true);
+        _mode1.setChecked(false);
+        _mode3.setChecked(false);
+        _mode4.setChecked(false);
+        _mode2.setChecked(true);
       }
     };
-    _modeThree = new Action("Area under curve", SWT.TOGGLE)
+    _mode3 = new Action("Area under curve", SWT.TOGGLE)
     {
       @Override
       public void run()
       {
         super.run();
         _sliceMode = SliceMode.AREA_UNDER_CURVE;
-        _modeTwo.setChecked(false);
-        _modeOne.setChecked(false);
-        _modeThree.setChecked(true);
+        _mode2.setChecked(false);
+        _mode1.setChecked(false);
+        _mode4.setChecked(false);
+        _mode3.setChecked(true);
       }
     };
-    _modeTwo.setChecked(true);
-    sliceMenu.add(_modeOne);
-    sliceMenu.add(_modeTwo);
-    sliceMenu.add(_modeThree);
+    _mode4 = new Action("Artificial legs", SWT.TOGGLE)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        _sliceMode = SliceMode.ARTIFICIAL_LEG;
+        _mode1.setChecked(false);
+        _mode2.setChecked(false);
+        _mode3.setChecked(false);
+        _mode4.setChecked(true);
+      }
+    };
+
+    _mode2.setChecked(true);
+    sliceMenu.add(_mode1);
+    sliceMenu.add(_mode2);
+    sliceMenu.add(_mode3);
+    sliceMenu.add(_mode4);
 
     // also allo the target tracking accuracy to vary
 

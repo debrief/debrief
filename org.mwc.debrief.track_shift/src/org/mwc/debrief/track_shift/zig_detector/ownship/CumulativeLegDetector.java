@@ -1,7 +1,10 @@
-package org.mwc.debrief.track_shift.zig_detector;
+package org.mwc.debrief.track_shift.zig_detector.ownship;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 public class CumulativeLegDetector implements IOwnshipLegDetector
 {
