@@ -3,13 +3,17 @@ package org.mwc.debrief.track_shift.zig_detector;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
+import org.eclipse.core.runtime.Status;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
-
-import junit.framework.TestCase;
+import org.mwc.debrief.track_shift.Activator;
 
 public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 {
+
+  private static final long MIN_LEG_LENGTH = 120000L;
 
   public List<LegOfData> identifyOwnshipLegs(final long[] times,
       final double[] rawSpeeds, final double[] rawCourses,
@@ -19,10 +23,6 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 
     // ok, see if we can find the precision
     final double COURSE_TOLERANCE;
-    
-    // TODO: determine if we need to use a minimum leg length
-    @SuppressWarnings("unused")
-    final long minLegLength = 120000;
 
     switch (precision)
     {
@@ -65,96 +65,189 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
     double[] downMax = getDownMax(peaks, courses, maxCourse);
     double[] upMin = getUpMin(peaks, courses, minCourse);
     double[] upMax = getUpMax(peaks, courses, maxCourse);
-    
+
     // right, now diff them
     double[] diffMin = getDiff(downMin, upMin);
     double[] diffMax = getDiff(downMax, upMax);
-    
-    boolean[] overThreshold = getOverThreshold(diffMin, diffMax, COURSE_TOLERANCE);
-    
+
+    boolean[] overThreshold =
+        getOverThreshold(diffMin, diffMax, COURSE_TOLERANCE);
+
     double[] legId = getLegIds(overThreshold);
-    
+
+    // find out if 0.5 marks straight legs or zigs
+    final boolean halfIsLeg = isHalfLeg(legId, courseDeltas);
+
+    System.out.println("half is leg:" + halfIsLeg);
+
     // ok, convert them into legs
     LegOfData thisL = null;
-    for(int i=0;i<len;i++)
+    for (int i = 0; i < len; i++)
     {
-      if(i > 0)
+      if (i > 0)
       {
-        double lastLeg = legId[i-1];
+        double lastLeg = legId[i - 1];
         double thisLeg = legId[i];
-        
-        if(thisLeg != lastLeg)
+
+        if (thisLeg != lastLeg)
         {
-          if(thisLeg % 1 == 0)
+          final boolean isWhole = thisLeg % 1 == 0;
+          if (halfIsLeg == isWhole)
           {
-            if(thisL != null)
+            // end of leg
+
+            // do we know the leg?
+            if (thisL == null)
             {
-              // hey, we shouldn't get here
-              throw new RuntimeException("Ownship leg slicing failed: Should not have pending open leg");
+              if (legs.size() == 0)
+              {
+                // ok, first leg. don't worry. Start the leg back at the first entry
+                thisL = new LegOfData("" + thisLeg);
+                thisL.tStart = times[0];
+              }
+              else
+              {
+
+                // hey, we shouldn't get here
+                throw new RuntimeException(
+                    "Ownship leg slicing failed: Should have an open leg ready");
+              }
             }
-            
-            thisL = new LegOfData("" + thisLeg);
-            thisL.tStart = times[i];
+
+            // finish the leg
+            thisL.tEnd = times[i];
+
+            // ok, is the leg long enough?
+            if (thisL.tEnd - thisL.tStart > MIN_LEG_LENGTH)
+            {
+              legs.add(thisL);
+            }
+            thisL = null;
           }
           else
           {
-            if(thisL == null)
+            // start of next leg
+            if (thisL != null)
             {
               // hey, we shouldn't get here
-              throw new RuntimeException("Ownship leg slicing failed: Should have an open leg ready");
+              throw new RuntimeException(
+                  "Ownship leg slicing failed: Should not have pending open leg");
             }
-            thisL.tEnd = times[i];
-            legs.add(thisL);
-            thisL = null;
+            thisL = new LegOfData("" + thisLeg);
+            thisL.tStart = times[i];
           }
         }
       }
     }
-    
+
     // ok, do we have a trailing leg?
-    if(thisL != null)
+    if (thisL != null)
     {
-      thisL.tEnd = times[len-1];
+      thisL.tEnd = times[len - 1];
       legs.add(thisL);
     }
 
     return legs;
   }
 
+  /**
+   * see if 0.5 represents straight legs or zigs
+   * 
+   * @param legId
+   * @param courseDeltas
+   * @return
+   */
+  private static boolean isHalfLeg(double[] legId, double[] courseDeltas)
+  {
+    double halfTotal = 0;
+    int halfCount = 0;
+    double wholeTotal = 0;
+    int wholeCount = 0;
+    for (int i = 0; i < legId.length; i++)
+    {
+      final double thisDelta = courseDeltas[i];
+      if (legId[i] % 1 == 0)
+      {
+        wholeTotal += thisDelta;
+        wholeCount++;
+      }
+      else
+      {
+        halfTotal += thisDelta;
+        halfCount++;
+      }
+    }
+
+    double meanWhole = wholeTotal / wholeCount;
+    double meanHalf = halfTotal / halfCount;
+
+    if (Double.isNaN(meanWhole) || Double.isNaN(meanHalf))
+    {
+      Activator def = Activator.getDefault();
+      if (def != null)
+      {
+        def.getLog()
+            .log(
+                new Status(
+                    Status.WARNING,
+                    "Unable to accurately determine if OS Leg is on 0.5 or 1.0 marker",
+                    null));
+      }
+      else
+      {
+        System.err
+            .println("Unable to accurately determine if OS Leg is on 0.5 or 1.0 marker");
+      }
+    }
+
+    final boolean res;
+    if (meanWhole < meanHalf)
+    {
+      res = false;
+    }
+    else
+    {
+      res = true;
+    }
+
+    return res;
+  }
+
   private double[] getLegIds(boolean[] overThreshold)
   {
     final int len = overThreshold.length;
     double[] overT = new double[len];
-    for (int i = 0;i<len;i++)      
+    for (int i = 0; i < len; i++)
     {
       final double thisLeg;
-      if(i==0)
+      if (i == 0)
       {
         thisLeg = 0.5;
       }
       else
       {
-        final double lastLeg = overT[i-1];
-        if(overThreshold[i] != overThreshold[i-1])
+        final double lastLeg = overT[i - 1];
+        if (overThreshold[i] != overThreshold[i - 1])
         {
           thisLeg = lastLeg + 0.5;
         }
         else
         {
-          thisLeg  = lastLeg;
+          thisLeg = lastLeg;
         }
       }
-        
+
       overT[i] = thisLeg;
     }
     return overT;
   }
 
-  private boolean[] getOverThreshold(double[] diffMin, double[] diffMax, double tolerance)
+  private boolean[] getOverThreshold(double[] diffMin, double[] diffMax,
+      double tolerance)
   {
     final int len = diffMin.length;
     boolean[] overT = new boolean[len];
-    for (int i = 0;i<len;i++)      
+    for (int i = 0; i < len; i++)
     {
       overT[i] = diffMin[i] > tolerance && diffMax[i] > tolerance;
     }
@@ -165,7 +258,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
   {
     final int len = downValues.length;
     double[] diff = new double[len];
-    for (int i = 0;i<len;i++)      
+    for (int i = 0; i < len; i++)
     {
       diff[i] = Math.abs(downValues[i] - upValues[i]);
     }
@@ -225,7 +318,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
     }
     return upMax;
   }
-  
+
   private double[]
       getDownMin(double[] peaks, double[] courses, double minCourse)
   {
@@ -760,37 +853,58 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
       return tmpSeries;
     }
 
-    public void testSetPiece()
-        {
-          TimeSeries tmpSeries = getOSValues();
-    
-          PeakTrackingOwnshipLegDetector detector =
-              new PeakTrackingOwnshipLegDetector();
-          int len = tmpSeries.getItemCount();
-          long[] times = new long[len];
-          double[] speeds = new double[len];
-          double[] courses = new double[len];
-    
-    //      long start = tmpSeries.getDataItem(0).getPeriod().getFirstMillisecond();
-    
-          for (int i = 0; i < len; i++)
-          {
-            times[i] = tmpSeries.getDataItem(i).getPeriod().getFirstMillisecond();
-            speeds[i] = 0d;
-            courses[i] = (Double) tmpSeries.getDataItem(i).getValue();
-          }
-    
-          List<LegOfData> legs =
-              detector
-                  .identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
-          
-          
+    public void testIsHalfLeg()
+    {
+      double[] legIds1 = new double[]
+      {0.5, 0.5, 0.5, 1d, 1d, 1d, 1.5, 1.5};
+      double[] legIds2 = new double[]
+      {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+      double[] courseDeltas1 = new double[]
+      {6, 6, 6, 1, 1, 1, 5, 5, 5};
+      double[] courseDeltas2 = new double[]
+      {1, 1, 1, 5, 5, 5, 1, 1, 1};
 
-          assertEquals("got right num legs:", 2, legs.size());
-          assertEquals("got leg 1 start time right", 946697580000L, legs.get(0).tStart);
-          assertEquals("got leg 1 end time right", 946699020000L, legs.get(0).tEnd);
-          assertEquals("got leg 2 start time right", 946699110000L, legs.get(1).tStart);
-          assertEquals("got leg 2 end time right", 946700970000L, legs.get(1).tEnd);
-        }
+      System.out.println("started");
+
+      assertFalse("right answer", PeakTrackingOwnshipLegDetector.isHalfLeg(
+          legIds1, courseDeltas1));
+      assertTrue("right answer", PeakTrackingOwnshipLegDetector.isHalfLeg(
+          legIds1, courseDeltas2));
+      assertTrue("right answer", PeakTrackingOwnshipLegDetector.isHalfLeg(
+          legIds2, courseDeltas2));
+    }
+
+    public void testSetPiece()
+    {
+      TimeSeries tmpSeries = getOSValues();
+
+      PeakTrackingOwnshipLegDetector detector =
+          new PeakTrackingOwnshipLegDetector();
+      int len = tmpSeries.getItemCount();
+      long[] times = new long[len];
+      double[] speeds = new double[len];
+      double[] courses = new double[len];
+
+      // long start = tmpSeries.getDataItem(0).getPeriod().getFirstMillisecond();
+
+      for (int i = 0; i < len; i++)
+      {
+        times[i] = tmpSeries.getDataItem(i).getPeriod().getFirstMillisecond();
+        speeds[i] = 0d;
+        courses[i] = (Double) tmpSeries.getDataItem(i).getValue();
+      }
+
+      List<LegOfData> legs =
+          detector
+              .identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
+
+      assertEquals("got right num legs:", 2, legs.size());
+      assertEquals("got leg 1 start time right", 946697580000L,
+          legs.get(0).tStart);
+      assertEquals("got leg 1 end time right", 946699020000L, legs.get(0).tEnd);
+      assertEquals("got leg 2 start time right", 946699110000L,
+          legs.get(1).tStart);
+      assertEquals("got leg 2 end time right", 946700970000L, legs.get(1).tEnd);
+    }
   }
 }
