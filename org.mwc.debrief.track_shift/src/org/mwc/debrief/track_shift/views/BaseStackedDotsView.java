@@ -2209,7 +2209,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                       _needBrg, _needFreq);
 
                   // clear the zone charts, but maybe not the primary
-                  clearZoneCharts(!primarySame, !secSame);
+                  clearZoneCharts(!secSame || !primarySame, !secSame);
 
                   // ahh, the tracks have changed, better
                   // update the doublets
