@@ -93,7 +93,8 @@ public class ArrayOffsetHelper
     }
   }
 
-  public static List<ArrayCentreMode> getAdditionalArrayCentreModes(SensorWrapper sensor)
+  public static List<ArrayCentreMode> getAdditionalArrayCentreModes(
+      SensorWrapper sensor)
   {
     final List<ArrayCentreMode> res = new ArrayList<ArrayCentreMode>();
 
@@ -144,44 +145,36 @@ public class ArrayOffsetHelper
     {
       // ok, we need a sensor offset to do this.
       // check we have one
-      final ArrayLength len = sensor.getSensorOffset();
-      if (len != null && len.getValue() != 0)
+      ArrayLength len = sensor.getSensorOffset();
+      if (len == null)
       {
-        // it's ok, we can use our old legacy worm in hole processing
-        boolean inWormMode = arrayCentre.equals(LegacyArrayOffsetModes.WORM);
-        centre =
-            track.getBacktraceTo(time, len, inWormMode)
-                .getLocation();
+        len = new ArrayLength(0);
       }
-      else
-      {
-        centre = null;
-      }
+      // it's ok, we can use our old legacy worm in hole processing
+      boolean inWormMode = arrayCentre.equals(LegacyArrayOffsetModes.WORM);
+      centre = track.getBacktraceTo(time, len, inWormMode).getLocation();
     }
     else
     {
       // not in legacy mode, use measurements
-      MeasuredDatasetArrayMode meas =
-          (MeasuredDatasetArrayMode) arrayCentre;
+      MeasuredDatasetArrayMode meas = (MeasuredDatasetArrayMode) arrayCentre;
 
       // now try get the location from the measured dataset
 
       // do we know the host location?
-      if(hostLocation != null)
+      if (hostLocation != null)
       {
         // ok, get calculating
-        centre =
-            sensor.getMeasuredLocationAt(meas, time, hostLocation);
+        centre = sensor.getMeasuredLocationAt(meas, time, hostLocation);
       }
       else
-      {        
+      {
         // ok, we'll have to find it
         Watchable[] matches = track.getNearestTo(time);
-        if(matches.length == 1)
+        if (matches.length == 1)
         {
           hostLocation = matches[0].getLocation();
-          centre =
-              sensor.getMeasuredLocationAt(meas, time, hostLocation);
+          centre = sensor.getMeasuredLocationAt(meas, time, hostLocation);
         }
         else
         {
@@ -189,17 +182,18 @@ public class ArrayOffsetHelper
         }
       }
     }
-    
+
     return centre;
   }
 
   public static ArrayCentreMode sortOutDeferredMode(
       final DeferredDatasetArrayMode dMode, final SensorWrapper sensor)
-  {    
+  {
     final String dName = dMode.getSourceName();
-    
-    final List<MeasuredDatasetArrayMode> matches = new ArrayList<MeasuredDatasetArrayMode>();
-    
+
+    final List<MeasuredDatasetArrayMode> matches =
+        new ArrayList<MeasuredDatasetArrayMode>();
+
     Object measuredData =
         sensor.getAdditionalData().getThisType(DataFolder.class);
     if (measuredData != null)
@@ -217,7 +211,7 @@ public class ArrayOffsetHelper
           {
             TimeSeriesDatasetDouble2 ts = (TimeSeriesDatasetDouble2) dataset;
 
-            if(ts.getPath().equals(dName))
+            if (ts.getPath().equals(dName))
             {
               matches.add(new MeasuredDatasetArrayMode(ts));
             }
@@ -227,20 +221,21 @@ public class ArrayOffsetHelper
 
       df.walkThisDataset(processor);
     }
-    
+
     final ArrayCentreMode res;
-    
-    if(matches.size() == 1)
+
+    if (matches.size() == 1)
     {
       res = matches.get(0);
     }
     else
     {
-      Application.logStack2(Application.ERROR, "Failed to find measured data source to match:" + dName);
+      Application.logStack2(Application.ERROR,
+          "Failed to find measured data source to match:" + dName);
       res = null;
     }
-    
+
     return res;
   }
-  
+
 }
