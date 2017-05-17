@@ -11,24 +11,28 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.HasEditables;
 
-/** make a list of additional data items suitable
- * for showing in Debrief's Outline View
+/**
+ * make a list of additional data items suitable for showing in Debrief's Outline View
+ * 
  * @author ian
- *
+ * 
  */
-public class AdditionalProviderWrapper implements Editable, HasEditables, Serializable
+public class AdditionalProviderWrapper implements Editable, HasEditables,
+    Serializable
 {
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
-  /** the list of additional data items
+  /**
+   * the list of additional data items
    * 
    */
   private final AdditionalData _provider;
-  
-  /** set of helpers that are able to wrap additional data items
+
+  /**
+   * set of helpers that are able to wrap additional data items
    * 
    */
   private final List<ExtensionContentProvider> _contentProviderExtensions;
@@ -77,7 +81,25 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
 
   public String toString()
   {
-    final int size = _provider.size();
+    // do a sophisticated count
+    int size = 0;
+
+    // loop through our providers
+    for (Object item : _provider)
+    {
+      // see if we have a content provider for this data type
+      List<ExtensionContentProvider> cp = _contentProviderExtensions;
+      for (ExtensionContentProvider provider : cp)
+      {
+        List<Editable> items = provider.itemsFor(item);
+        if (items != null)
+        {
+          size += items.size();
+        }
+      }
+    }
+
+    // produce suitable string decoration
     final String numStr;
     if (size == 0)
     {
@@ -104,7 +126,10 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
       for (ExtensionContentProvider provider : cp)
       {
         List<Editable> items = provider.itemsFor(item);
-        res.addAll(items);
+        if (items != null)
+        {
+          res.addAll(items);
+        }
       }
     }
 
@@ -158,7 +183,7 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
   @FireExtended
   public void add(Editable point)
   {
-    if(point instanceof DataItemWrapper)
+    if (point instanceof DataItemWrapper)
     {
       DataItemWrapper itemW = (DataItemWrapper) point;
       DataFolder additionalData = (DataFolder) _provider.get(0);
@@ -166,7 +191,8 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
     }
     else
     {
-      System.err.println("Can't add this data object to measured data:" + point);
+      System.err
+          .println("Can't add this data object to measured data:" + point);
     }
   }
 
@@ -174,7 +200,7 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
   @FireExtended
   public void removeElement(Editable point)
   {
-    if(point instanceof DataItemWrapper)
+    if (point instanceof DataItemWrapper)
     {
       DataItemWrapper itemW = (DataItemWrapper) point;
       DataFolder additionalData = (DataFolder) _provider.get(0);
@@ -182,7 +208,8 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
     }
     else
     {
-      System.err.println("Can't remove this data object to measured data:" + point);
+      System.err.println("Can't remove this data object to measured data:"
+          + point);
     }
   }
 
