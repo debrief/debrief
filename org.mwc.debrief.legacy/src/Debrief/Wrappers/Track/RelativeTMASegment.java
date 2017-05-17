@@ -58,6 +58,12 @@ import MWC.TacticalData.Fix;
 public class RelativeTMASegment extends CoreTMASegment implements
     NeedsToKnowAboutLayers
 {
+  
+  /** preference name for the cut-off value for shading error plot (when REL TMA is being dragged)
+   * 
+   */
+  public static final String CUT_OFF_VALUE_DEGS = "SHADING_CUT_OFF_VALUE_DEGS";
+  
   /**
    * class containing editable details of a track
    */
