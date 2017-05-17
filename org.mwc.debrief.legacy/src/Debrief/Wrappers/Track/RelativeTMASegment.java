@@ -1089,6 +1089,33 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
     this.add(newItem);
   }
+  
+  
+
+  @Override
+  public void removeElement(Editable p)
+  {
+    // check if its' the first fix
+    final boolean firstRemoved = p.equals(this.elements().nextElement());
+  
+    // let the parent remove the item
+    super.removeElement(p);
+    
+    // did  we remove the first element?
+    // if we did, we have to re-generate the offset from the host track
+    if(firstRemoved)
+    {
+      // ok, where is the new start point?
+      final FixWrapper newStart = (FixWrapper) this.elements().nextElement();
+      
+      // the host location will have changed, since we're related to a new DTG
+      final WorldLocation hostLoc = getHostLocation();
+      
+      // and store the new location
+      _offset = newStart.getLocation().subtract(hostLoc);
+    }
+    
+  }
 
   /**
    * get the time interval of the first two data values
