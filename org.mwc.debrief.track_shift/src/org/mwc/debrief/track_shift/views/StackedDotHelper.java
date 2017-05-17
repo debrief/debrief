@@ -15,6 +15,7 @@
 package org.mwc.debrief.track_shift.views;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -636,6 +637,10 @@ public final class StackedDotHelper
       }
     }
     
+    // find the color for maximum value in the error series
+    Paint errorColor = calculateErrorShadeFor(errorSeries);
+    dotPlot.setBackgroundPaint(errorColor);
+    
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);
 		targetPlot.setDataset(0, targetCourseSeries);
@@ -643,7 +648,38 @@ public final class StackedDotHelper
 		
 	}
 
-	/**
+  /** produce a color shade, according to whether the max error
+   * is inside 3 degrees or not.
+   * @param errorSeries
+   * @return
+   */
+	private Paint calculateErrorShadeFor(TimeSeriesCollection errorSeries)
+  {
+	  final Paint col;
+	  double maxError = 0d;
+	  TimeSeries ts = errorSeries.getSeries(0);
+	  List<?> items = ts.getItems();
+	  for (Iterator <?>iterator = items.iterator(); iterator.hasNext();)
+    {
+      TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
+      double thisE = (Double) item.getValue();
+      maxError = Math.max(maxError, Math.abs(thisE));
+    }
+	  
+	  if(maxError > 3d)
+	  {
+	    col = new Color(1f, 0f, 0f, 0.05f);
+	  }
+	  else
+	  {
+	    final float shade = (float) (0.03f + (3d - maxError) * 0.02f);
+	    col = new Color(0f, 1f, 0f, shade);
+	  }
+	  
+	  return col;
+  }
+
+  /**
 	 * initialise the data, check we've got sensor data & the correct number of
 	 * visible tracks
 	 * 
