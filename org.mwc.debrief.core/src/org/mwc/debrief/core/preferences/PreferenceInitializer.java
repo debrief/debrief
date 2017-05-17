@@ -41,6 +41,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
     store.setDefault(PrefsPage.PreferenceConstants.INFILL_COLOR_STRATEGY,
         DynamicInfillSegment.RANDOM_INFILL);
     store.setDefault(PrefsPage.PreferenceConstants.USE_CUT_COLOR, true);
+    store.setDefault(PrefsPage.PreferenceConstants.CUT_OFF_VALUE_DEGS, 3);
     
   }
 

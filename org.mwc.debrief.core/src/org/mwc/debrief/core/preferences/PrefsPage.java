@@ -16,6 +16,7 @@ package org.mwc.debrief.core.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -26,6 +27,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts;
 
 import Debrief.Wrappers.Track.DynamicInfillSegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 
 /**
  * This class represents a preference page that is contributed to the Preferences dialog. By
@@ -43,7 +45,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 
   public PrefsPage()
   {
-    super("Debrief Preferences", CorePlugin.getImageDescriptor("icons/24/debrief_icon.png"), GRID);
+    super("Debrief Preferences", CorePlugin
+        .getImageDescriptor("icons/24/debrief_icon.png"), GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
     setDescription("Settings applicable to Debrief analysis tool");
   }
@@ -66,10 +69,11 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     addField(new BooleanFieldEditor(PreferenceConstants.ASK_ABOUT_PROJECT,
         "Invite user to create Debrief project if none present",
         getFieldEditorParent()));
-    
+
     // insert a separator
-    Label label = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
-    label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));    
+    Label label =
+        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
     // initialise the import choice tags, if we have to
     String[][] _trackModeTags = new String[3][2];
@@ -88,6 +92,10 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
         "Use sensor cut colors for new TMA leg positions",
         getFieldEditorParent()));
+
+    addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
+        "Cut-off value for acceptable bearing errors in stacked dots (degs)", getFieldEditorParent()));
+
   }
 
   /*
@@ -111,6 +119,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String ASK_ABOUT_PROJECT = "createProject";
     public static final String INFILL_COLOR_STRATEGY =
         DynamicInfillSegment.INFILL_COLOR_STRATEGY;
+    public static final String CUT_OFF_VALUE_DEGS =
+        RelativeTMASegment.CUT_OFF_VALUE_DEGS;
     public static final String USE_CUT_COLOR =
         GenerateTMASegmentFromCuts.USE_CUT_COLOR;
   }
