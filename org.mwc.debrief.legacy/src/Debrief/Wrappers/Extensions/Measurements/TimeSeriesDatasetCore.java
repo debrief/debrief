@@ -114,7 +114,7 @@ abstract public class TimeSeriesDatasetCore extends TimeSeriesCore
     }
   }
 
-  protected LongDataset getTimes()
+  public LongDataset getTimes()
   {
     if (_times == null)
     {
