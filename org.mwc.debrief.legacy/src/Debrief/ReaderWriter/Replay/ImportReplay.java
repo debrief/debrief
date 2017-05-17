@@ -786,12 +786,12 @@ public class ImportReplay extends PlainImporterBase
   {
     HiResDate res = null;
 
-    // is this line invalid
-    if (theLine.length() <= 0)
-      return null;
-
     // ok, trim any leading/trailing whitespace
     final String line = theLine.trim();
+
+    // is this line invalid
+    if (line.length() <= 0)
+      return null;
 
     // what type of item is this?
     final PlainLineImporter thisOne = getImporterFor(line);
