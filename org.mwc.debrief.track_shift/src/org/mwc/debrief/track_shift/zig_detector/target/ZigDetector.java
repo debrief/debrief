@@ -82,8 +82,10 @@ public class ZigDetector
       // (the -3 is relates to the number of variables being considered)
       final double mean = runningSum / (_times.size() - 3);
 
-      final double rms = Math.sqrt(mean);
-      return rms;
+      return mean;
+
+      // final double rms = Math.sqrt(mean);
+      // return rms;
     }
 
   }
@@ -251,101 +253,95 @@ public class ZigDetector
       // -115.85400000000001, -115.82, -115.777, -115.56000000000002,
       // -115.071, -114.71999999999998};
       //
-//      Double[] bearings =
-//          new Double[]
-//          {180d, 180.3, 180.7, 181d, 181.4, 181.7, 182.1, 182.5, 182.8, 183.2,
-//              183.6, 184.1, 184.5, 184.9, 185.3, 185.8, 186.3, 186.7, 187.2,
-//              187.7, 188.2, 188.8, 189.3, 189.8, 190.4, 191d, 191.6, 192.2,
-//              192.8, 193.4, 194.1, 194.8, 195.5, 196.2, 196.9, 197.6, 198.4,
-//              199.2, 200d, 200.8, 201.7, 202.6, 203.4, 204.4, 205.3, 206.1,
-//              206.7, 207.3, 207.9, 208.5, 209.2, 209.9, 210.6, 211.4, 212.2,
-//              213.1, 214d, 214.9, 215.9, 216.9, 218d, 219.1, 220.3, 221.6,
-//              223d, 224.4, 225.9, 227.4, 229.1, 230.8, 232.7, 234.6, 236.6,
-//              238.8, 241d, 243.4, 245.9, 248.2, 250.3, 252.3, 254.3, 256.1,
-//              257.9, 259.6, 261.2, 262.8, 264.3, 265.7, 267.1, 268.4, 269.7,
-//              270.9, 272d, 273.1, 274.2, 275.2, 276.2, 277.1, 278d, 278.8,
-//              279.7, 280.4, 281.2};
-//
-//      int[] timeStr =
-//          new int[]
-//          {120000, 120050, 120140, 120230, 120320, 120410, 120500, 120550,
-//              120640, 120730, 120820, 120910, 121000, 121050, 121140, 121230,
-//              121320, 121410, 121500, 121550, 121640, 121730, 121820, 121910,
-//              122000, 122050, 122140, 122230, 122320, 122410, 122500, 122550,
-//              122640, 122730, 122820, 122910, 123000, 123050, 123140, 123230,
-//              123320, 123410, 123500, 123550, 123640, 123730, 123820, 123910,
-//              124000, 124050, 124140, 124230, 124320, 124410, 124500, 124550,
-//              124640, 124730, 124820, 124910, 125000, 125050, 125140, 125230,
-//              125320, 125410, 125500, 125550, 125640, 125730, 125820, 125910,
-//              130000, 130050, 130140, 130230, 130320, 130410, 130500, 130550,
-//              130640, 130730, 130820, 130910, 131000, 131050, 131140, 131230,
-//              131320, 131410, 131500, 131550, 131640, 131730, 131820, 131910,
-//              132000, 132050, 132140, 132230, 132320, 132410, 132500};
+      // Double[] bearings =
+      // new Double[]
+      // {180d, 180.3, 180.7, 181d, 181.4, 181.7, 182.1, 182.5, 182.8, 183.2,
+      // 183.6, 184.1, 184.5, 184.9, 185.3, 185.8, 186.3, 186.7, 187.2,
+      // 187.7, 188.2, 188.8, 189.3, 189.8, 190.4, 191d, 191.6, 192.2,
+      // 192.8, 193.4, 194.1, 194.8, 195.5, 196.2, 196.9, 197.6, 198.4,
+      // 199.2, 200d, 200.8, 201.7, 202.6, 203.4, 204.4, 205.3, 206.1,
+      // 206.7, 207.3, 207.9, 208.5, 209.2, 209.9, 210.6, 211.4, 212.2,
+      // 213.1, 214d, 214.9, 215.9, 216.9, 218d, 219.1, 220.3, 221.6,
+      // 223d, 224.4, 225.9, 227.4, 229.1, 230.8, 232.7, 234.6, 236.6,
+      // 238.8, 241d, 243.4, 245.9, 248.2, 250.3, 252.3, 254.3, 256.1,
+      // 257.9, 259.6, 261.2, 262.8, 264.3, 265.7, 267.1, 268.4, 269.7,
+      // 270.9, 272d, 273.1, 274.2, 275.2, 276.2, 277.1, 278d, 278.8,
+      // 279.7, 280.4, 281.2};
+      //
+      // int[] timeStr =
+      // new int[]
+      // {120000, 120050, 120140, 120230, 120320, 120410, 120500, 120550,
+      // 120640, 120730, 120820, 120910, 121000, 121050, 121140, 121230,
+      // 121320, 121410, 121500, 121550, 121640, 121730, 121820, 121910,
+      // 122000, 122050, 122140, 122230, 122320, 122410, 122500, 122550,
+      // 122640, 122730, 122820, 122910, 123000, 123050, 123140, 123230,
+      // 123320, 123410, 123500, 123550, 123640, 123730, 123820, 123910,
+      // 124000, 124050, 124140, 124230, 124320, 124410, 124500, 124550,
+      // 124640, 124730, 124820, 124910, 125000, 125050, 125140, 125230,
+      // 125320, 125410, 125500, 125550, 125640, 125730, 125820, 125910,
+      // 130000, 130050, 130140, 130230, 130320, 130410, 130500, 130550,
+      // 130640, 130730, 130820, 130910, 131000, 131050, 131140, 131230,
+      // 131320, 131410, 131500, 131550, 131640, 131730, 131820, 131910,
+      // 132000, 132050, 132140, 132230, 132320, 132410, 132500};
 
-//       Long[] times3 =
-//       new Long[]
-//       {946697580000L, 946697610000L, 946697640000L, 946697670000L,
-//       946697700000L, 946697730000L, 946697760000L, 946697790000L,
-//       946697820000L, 946697850000L, 946697880000L, 946697910000L,
-//       946697940000L, 946697970000L, 946698000000L, 946698030000L,
-//       946698060000L, 946698090000L, 946698120000L, 946698150000L,
-//       946698180000L, 946698210000L, 946698240000L, 946698270000L,
-//       946698300000L, 946698330000L, 946698360000L, 946698390000L,
-//       946698420000L, 946698450000L, 946698480000L, 946698510000L,
-//       946698540000L, 946698570000L, 946698600000L, 946698630000L,
-//       946698660000L, 946698690000L, 946698720000L, 946698750000L,
-//       946698780000L, 946698810000L, 946698840000L, 946698870000L,
-//       946698900000L, 946698930000L, 946698960000L, 946698990000L,
-//       946699020000L, 946699050000L, 946699080000L, 946699110000L,
-//       946699140000L, 946699170000L, 946699200000L, 946699230000L,
-//       946699260000L, 946699290000L, 946699320000L, 946699350000L,
-//       946699380000L, 946699410000L, 946699440000L, 946699470000L,
-//       946699500000L, 946699530000L, 946699560000L, 946699590000L,
-//       946699620000L, 946699650000L, 946699680000L, 946699710000L,
-//       946699740000L, 946699770000L, 946699800000L, 946699830000L,
-//       946699860000L, 946699890000L, 946699920000L, 946699950000L,
-//       946699980000L, 946700010000L, 946700040000L, 946700070000L,
-//       946700100000L, 946700130000L, 946700160000L, 946700190000L,
-//       946700220000L, 946700250000L, 946700280000L, 946700310000L,
-//       946700340000L, 946700370000L, 946700400000L, 946700430000L,
-//       946700460000L, 946700490000L, 946700520000L, 946700550000L,
-//       946700580000L, 946700610000L, 946700640000L, 946700670000L,
-//       946700700000L, 946700730000L, 946700760000L, 946700790000L,
-//       946700820000L, 946700850000L, 946700880000L, 946700910000L,
-//       946700940000L, 946700970000L};
-//       Double[] bearings3 =
-//       new Double[]
-//       {169.646, 170.095, 170.566, 171.404, 172.021, 172.757, 173.25,
-//       173.767, 174.391, 174.958, 175.839, 176.485, 177.282, 177.66,
-//       178.444, 179.09, 179.671, 180.518, 181.154, 181.637, 182.147,
-//       182.827, 184.006, 184.885, 185.372, 185.981, 186.792, 187.622,
-//       188.21, 189.068, 189.749, 190.474, 191.249, 191.877, 192.646,
-//       193.669, 194.361, 195.233, 195.728, 196.593, 197.559, 198.217,
-//       198.926, 200.114, 201.127, 201.633, 202.505, 203.394, 204.08,
-//       205.171, 206.144, 207.017, 207.645, 208.439, 208.99, 210.35,
-//       210.857, 211.789, 212.789, 213.717, 214.45, 214.898, 215.881,
-//       216.78, 216.815, 218.296, 219.438, 220.025, 220.876, 221.654,
-//       222.64, 222.724, 224.254, 224.667, 225.662, 226.705, 227.423,
-//       228.14, 228.857, 229.722, 230.722, 231.656, 232.168, 232.893,
-//       233.655, 234.592, 235.5, 236.11700000000002, 236.805,
-//       237.47199999999998, 237.824, 238.79000000000002, 239.733,
-//       239.88500000000002, 240.68200000000002, 241.493, 242.005,
-//       242.311, 242.29, 242.64, 242.906, 242.762, 242.99,
-//       243.36700000000002, 243.26, 243.59699999999998, 243.704,
-//       243.84199999999998, 244.146, 244.18, 244.223, 244.44, 244.929,
-//       245.28000000000003};
-       
-       Long[] times = new Long[]{946699110000L, 946699140000L, 946699170000L, 946699200000L, 946699230000L, 946699260000L, 946699290000L, 946699320000L, 946699350000L, 946699380000L, 946699410000L, 946699440000L, 946699470000L, 946699500000L, 946699530000L, 946699560000L, 946699590000L, 946699620000L, 946699650000L, 946699680000L, 946699710000L, 946699740000L, 946699770000L, 946699800000L, 946699830000L, 946699860000L, 946699890000L, 946699920000L, 946699950000L, 946699980000L, 946700010000L, 946700040000L, 946700070000L, 946700100000L, 946700130000L, 946700160000L, 946700190000L, 946700220000L, 946700250000L, 946700280000L, 946700310000L, 946700340000L, 946700370000L, 946700400000L, 946700430000L, 946700460000L, 946700490000L, 946700520000L, 946700550000L, 946700580000L};
-       Double[] bearings = new Double[]{-152.983, -152.355, -151.561, -151.01, -149.65, -149.143, -148.211, -147.211, -146.283, -145.55, -145.102, -144.119, -143.22, -143.185, -141.704, -140.562, -139.975, -139.124, -138.346, -137.36, -137.276, -135.746, -135.333, -134.338, -133.295, -132.577, -131.86, -131.143, -130.278, -129.278, -128.344, -127.83199999999998, -127.107, -126.345, -125.40799999999999, -124.49999999999999, -123.88299999999998, -123.195, -122.52800000000002, -122.17599999999999, -121.21, -120.267, -120.11499999999998, -119.31799999999998, -118.507, -117.99500000000002, -117.689, -117.71000000000001, -117.36, -117.09399999999998};
+      Long[] times =
+          new Long[]
+          {946699110000L, 946699140000L, 946699170000L, 946699200000L,
+              946699230000L, 946699260000L, 946699290000L, 946699320000L,
+              946699350000L, 946699380000L, 946699410000L, 946699440000L,
+              946699470000L, 946699500000L, 946699530000L, 946699560000L,
+              946699590000L, 946699620000L, 946699650000L, 946699680000L,
+              946699710000L, 946699740000L, 946699770000L, 946699800000L,
+              946699830000L, 946699860000L, 946699890000L, 946699920000L,
+              946699950000L, 946699980000L, 946700010000L, 946700040000L,
+              946700070000L, 946700100000L, 946700130000L, 946700160000L,
+              946700190000L, 946700220000L, 946700250000L, 946700280000L,
+              946700310000L, 946700340000L, 946700370000L, 946700400000L,
+              946700430000L, 946700460000L, 946700490000L, 946700520000L,
+              946700550000L, 946700580000L, 946700610000L, 946700640000L,
+              946700670000L, 946700700000L, 946700730000L, 946700760000L,
+              946700790000L, 946700820000L, 946700850000L, 946700880000L,
+              946700910000L, 946700940000L, 946700970000L};
+      Double[] bearings =
+          new Double[]
+          {207.017, 207.645, 208.439, 208.99, 210.35, 210.857, 211.789,
+              212.789, 213.717, 214.45, 214.898, 215.881, 216.78, 216.815,
+              218.296, 219.438, 220.025, 220.876, 221.654, 222.64, 222.724,
+              224.254, 224.667, 225.662, 226.705, 227.423, 228.14, 228.857,
+              229.722, 230.722, 231.656, 232.168, 232.893, 233.655, 234.592,
+              235.5, 236.11700000000002, 236.805, 237.47199999999998, 237.824,
+              238.79000000000002, 239.733, 239.88500000000002,
+              240.68200000000002, 241.493, 242.005, 242.311, 242.29, 242.64,
+              242.906, 242.762, 242.99, 243.36700000000002, 243.26,
+              243.59699999999998, 243.704, 243.84199999999998, 244.146, 244.18,
+              244.223, 244.44, 244.929, 245.28000000000003};
 
-//      Long[] times = new Long[timeStr.length];
-//      java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
-//      for (int i = 0; i < timeStr.length; i++)
-//      {
-//        String thisVal = "" + timeStr[i];
-//
-//        times[i] = sdf.parse(thisVal).getTime();
-//      }
+      // Long[] times = new Long[]{946699110000L, 946699140000L, 946699170000L, 946699200000L,
+      // 946699230000L, 946699260000L, 946699290000L, 946699320000L, 946699350000L, 946699380000L,
+      // 946699410000L, 946699440000L, 946699470000L, 946699500000L, 946699530000L, 946699560000L,
+      // 946699590000L, 946699620000L, 946699650000L, 946699680000L, 946699710000L, 946699740000L,
+      // 946699770000L, 946699800000L, 946699830000L, 946699860000L, 946699890000L, 946699920000L,
+      // 946699950000L, 946699980000L, 946700010000L, 946700040000L, 946700070000L, 946700100000L,
+      // 946700130000L, 946700160000L, 946700190000L, 946700220000L, 946700250000L, 946700280000L,
+      // 946700310000L, 946700340000L, 946700370000L, 946700400000L, 946700430000L, 946700460000L,
+      // 946700490000L, 946700520000L, 946700550000L, 946700580000L};
+      // Double[] bearings = new Double[]{-152.983, -152.355, -151.561, -151.01, -149.65, -149.143,
+      // -148.211, -147.211, -146.283, -145.55, -145.102, -144.119, -143.22, -143.185, -141.704,
+      // -140.562, -139.975, -139.124, -138.346, -137.36, -137.276, -135.746, -135.333, -134.338,
+      // -133.295, -132.577, -131.86, -131.143, -130.278, -129.278, -128.344, -127.83199999999998,
+      // -127.107, -126.345, -125.40799999999999, -124.49999999999999, -123.88299999999998,
+      // -123.195, -122.52800000000002, -122.17599999999999, -121.21, -120.267, -120.11499999999998,
+      // -119.31799999999998, -118.507, -117.99500000000002, -117.689, -117.71000000000001, -117.36,
+      // -117.09399999999998};
+
+      // Long[] times = new Long[timeStr.length];
+      // java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
+      // for (int i = 0; i < timeStr.length; i++)
+      // {
+      // String thisVal = "" + timeStr[i];
+      //
+      // times[i] = sdf.parse(thisVal).getTime();
+      // }
 
       // start to collate the adta
       List<Long> tList1 = Arrays.asList(times);
@@ -368,31 +364,31 @@ public class ZigDetector
       // + new Date(times[times.length - 1]) + " // " + times.length + " entries");
 
       final ZigDetector detector = new ZigDetector();
-      double zigRatio = 10d;
-      double optimiseTolerance = 0.000004;
-      
-//      ILog logger = getLogger();
-//      ILegStorer legStorer = getLegStorer();
-//      IZigStorer zigStorer = getZigStorer();
-//      detector.sliceThis(logger, "some name", "scenario", times[0],
-//          times[times.length - 1], legStorer, zigStorer, zigRatio,
-//          optimiseTolerance, tList, tBearings);
+      double zigRatio = 1000d;
+      double optimiseTolerance = 0.0000000004;
+
+       ILog logger = getLogger();
+       ILegStorer legStorer = getLegStorer();
+       IZigStorer zigStorer = getZigStorer();
+       detector.sliceThis(logger, "some name", "scenario", times[0],
+       times[times.length - 1], legStorer, zigStorer, zigRatio,
+       optimiseTolerance, tList, tBearings);
 
       // reverse the arrays
-    //  Collections.reverse(tList);
-    //  Collections.reverse(tBearings);
-      
-      long timeWindow = 120000;
-      zigRatio = 4d;
-      EventHappened happened = new EventHappened()
-      {
-        public void eventAt(long time)
-        {
-        //  System.out.println("event at " + new Date(time));
-        }
-      };
-      detector.runThrough(optimiseTolerance, tList, tBearings, happened,
-          zigRatio, timeWindow);
+//       Collections.reverse(tList);
+//       Collections.reverse(tBearings);
+//
+//      long timeWindow = 120000;
+//      zigRatio = 1000d;
+//      EventHappened happened = new EventHappened()
+//      {
+//        public void eventAt(long time, double score, double threshold)
+//        {
+//           System.out.println("event at " + new Date(time) + " score:" + score);
+//        }
+//      };
+//      detector.runThrough(optimiseTolerance, tList, tBearings, happened,
+//          zigRatio, timeWindow);
 
     }
 
@@ -406,8 +402,8 @@ public class ZigDetector
         public void storeLeg(String scenarioName, long tStart, long tEnd,
             double rms)
         {
-          System.out.println("store it: " + new Date(tStart) + ", "
-              + new Date(tEnd));
+          // System.out.println("store it: " + new Date(tStart) + ", "
+          // + new Date(tEnd));
         }
       };
       return legStorer;
@@ -900,7 +896,7 @@ public class ZigDetector
 
   private static interface EventHappened
   {
-    public void eventAt(long time);
+    public void eventAt(long time, double score, double threshold);
   }
 
   /**
@@ -965,15 +961,16 @@ public class ZigDetector
     EventHappened fwdListener = new EventHappened()
     {
       @Override
-      public void eventAt(long time)
+      public void eventAt(long time, double score, double threshold)
       {
-      //  System.out.println("zig end at:" + new Date(time));
-        legStarts.add(time);
+        System.out
+            .println("zig start at:" + new Date(time) + " score:" + score);
+        legEnds.add(time);
       }
     };
 
     // double threshold = 0.002;
-    long timeWindow = 240000;
+    long timeWindow = 120000;
 
     runThrough(optimiseTolerance, legTimes, legBearings, fwdListener,
         RMS_ZIG_RATIO, timeWindow);
@@ -983,10 +980,10 @@ public class ZigDetector
     EventHappened backListener = new EventHappened()
     {
       @Override
-      public void eventAt(long time)
+      public void eventAt(long time, double score, double threshold)
       {
-    //    System.out.println("zig start at:" + new Date(time));
-        legEnds.add(time);
+        System.out.println("zig end at:" + new Date(time) + " score:" + score);
+        legStarts.add(time);
       }
     };
 
@@ -994,10 +991,9 @@ public class ZigDetector
     Collections.reverse(legBearings);
 
     // ok, now run through it
-    @SuppressWarnings("unused")
-    final double reverseZigRation = RMS_ZIG_RATIO * 0.8;
-//    runThrough(optimiseTolerance, legTimes, legBearings, backListener,
-//        reverseZigRation, timeWindow);
+    final double reverseZigRation = RMS_ZIG_RATIO; // * 0.4;
+    runThrough(optimiseTolerance, legTimes, legBearings, backListener,
+        reverseZigRation, timeWindow);
 
     // ok, now tidy up the data
     List<LegOfData> legs = new ArrayList<LegOfData>();
@@ -1013,7 +1009,7 @@ public class ZigDetector
           {
             LegOfData newLeg =
                 new LegOfData("Leg:" + (legs.size() + 1), legStart, legEnd);
-      //      System.out.println("adding leg:" + newLeg);
+            System.out.println("adding leg:" + newLeg);
             legs.add(newLeg);
             lastZig = legEnd;
             break;
@@ -1036,8 +1032,8 @@ public class ZigDetector
         // do we know the last leg?
         if (lastLeg != null)
         {
-          System.out.println("storing zig at:" + new Date(lastLeg.getEnd())
-              + " to:" + new Date(leg.getStart()));
+          // System.out.println("storing zig at:" + new Date(lastLeg.getEnd())
+          // + " to:" + new Date(leg.getStart()));
           zigStorer.storeZig(leg.getName(), lastLeg.getEnd(), leg.getStart(),
               2d);
         }
@@ -1053,114 +1049,118 @@ public class ZigDetector
     final int len = legTimes.size();
 
     java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
-    
-//    for(Long t: legTimes)
-//    {
-//      System.out.print(t + "L, ");
-//    }
-//    System.out.println();
-//    for(Double b: legBearings)
-//    {
-//      System.out.print(b + ", ");
-//    }
-//    System.out.println();
 
-    // System.out.println("last time:"
-    // + df.format(new Date(legTimes.get(len - 1))));
-
-    TimeRestrictedMovingAverage mAverage =
+    TimeRestrictedMovingAverage avgScore =
         new TimeRestrictedMovingAverage(timeWindow);
-  
+
     int start = 0;
     for (int end = 0; end < len; end++)
     {
       final long thisTime = legTimes.get(end);
-      @SuppressWarnings("unused")
       Date legEnd = new Date(thisTime);
+
+      if (legEnd.toString().contains("17:30"))
+      {
+        // System.out.println("ghw");
+      }
 
       // we need at least 4 cuts
       if (end >= start + 4)
       {
         // ok, if we've got more than entries, just use the most recent onces
-//        start = Math.max(start, end - 20);
-                
+        // start = Math.max(start, end - 20);
+
         final List<Long> times = legTimes.subList(start, end);
         final List<Double> bearings = legBearings.subList(start, end);
-        
+
         Minimisation optimiser =
             optimiseThis(times, bearings, optimiseTolerance);
         double score = optimiser.getMinimum();
 
+        // double[] values = optimiser.getParamValues();
+        // System.out.println("scores: B:" + values[0] + " P:" + values[1] + " Q:" + values[2]);
+
+        // FlanaganArctan func = new FlanaganArctan(times, bearings);
+        // double[] permutation = new double[]{179.7654684, -0.000123539292961681,
+        // 0.000189892808700104};
+        // double[] permutation = new double[]{179.766017, -0.000123519863656172,
+        // 0.0001899251729596};
+        // double score = func.function(permutation);
+
         @SuppressWarnings("unused")
         final double lastScore;
-        if (mAverage.isEmpty())
+        if (avgScore.isEmpty())
         {
           lastScore = score;
         }
         else
         {
-          lastScore = mAverage.lastValue();
+          lastScore = avgScore.lastValue();
         }
 
         // ok, see how things are going
-        final double avg = mAverage.getAverage();
+        final double avg = avgScore.getAverage();
 
         // ok, is it increasing by more than double the variance?
-        final double variance = mAverage.getVariance();
+        final double variance = avgScore.getVariance();
 
         // how far have we travelled from the last score?
         final double scoreDelta;
-        if (mAverage.isEmpty())
+        if (avgScore.isEmpty())
         {
           scoreDelta = Double.NaN;
         }
         else
         {
-//          scoreDelta = score - lastScore;
+          // scoreDelta = score - lastScore;
           scoreDelta = score - avg;
         }
 
         // contribute this score
-        mAverage.add(thisTime, score);
-        
-//        NumberFormat nf = new DecimalFormat(" 0.0000;-0.0000");
-//
-//        System.out.println(df.format(new Date(thisTime)) + ", " + nf.format(avg) + ", "
-//        + nf.format(score) + ", " + nf.format(scoreDelta) + ", " + nf.format(variance) + ", " + nf.format(scoreDelta
-//        / variance) + ", " + nf.format(legBearings.get(end)) + ", "
-//        + nf.format((legBearings.get(end - 1) - legBearings.get(end))));
+        avgScore.add(thisTime, score);
+
+        // final double thisProportion = scoreDelta / variance;
+        final double thisProportion = scoreDelta / (variance * variance);
+
+//        NumberFormat nf = new DecimalFormat(" 0.000000;-0.000000");
+//        System.out.println(df.format(new Date(thisTime)) + " " + nf.format(avg)
+//            + " " + nf.format(score) + " " + nf.format(scoreDelta) + " " + nf.format(variance) + " "
+//            + nf.format(thisProportion) + " "
+//            );
+
 
         // do we have enough data?
-        if (mAverage.isPopulated())
+        if (avgScore.isPopulated())
         {
-        	final double thisProportion = scoreDelta / variance;
 
           // are we twice the variance?
-          if (thisProportion > zigThreshold)
+          if (thisProportion >  zigThreshold)
           {
-            listener.eventAt(thisTime);
+            // System.out.println("this proportion:" + thisProportion);
 
-//            System.out.println("diverging. delta:" + scoreDelta + ", variance:"
-//                + variance + ", proportion:" + (scoreDelta / variance)
-//                + " threshold:" + zigThreshold);
-            
+            listener.eventAt(thisTime, thisProportion, zigThreshold);
+
+            // System.out.println("diverging. delta:" + scoreDelta + ", variance:"
+            // + variance + ", proportion:" + (scoreDelta / variance)
+            // + " threshold:" + zigThreshold);
+
             // // ok, move the start past the turn
             start = calculateNewStart(legTimes, end, 120000);
 
             // and clear the moving average
-            mAverage.clear();
+            avgScore.clear();
           }
 
         }
         else
         {
           // still building up our initial population
- //         mAverage.add(thisTime, score);
+          // mAverage.add(thisTime, score);
 
-//           System.out.println(df.format(new Date(thisTime)) + ", " + avg + ", "
-//           + score + ", " + scoreDelta + ", " + variance + ", " + scoreDelta
-//           / variance + ", " + legBearings.get(end) + ", "
-//           + (legBearings.get(end - 1) - legBearings.get(end)));
+          // System.out.println(df.format(new Date(thisTime)) + ", " + avg + ", "
+          // + score + ", " + scoreDelta + ", " + variance + ", " + scoreDelta
+          // / variance + ", " + legBearings.get(end) + ", "
+          // + (legBearings.get(end - 1) - legBearings.get(end)));
 
         }
       }
