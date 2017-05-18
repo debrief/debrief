@@ -107,7 +107,6 @@ import java.text.ParseException;
 import javax.swing.JOptionPane;
 
 import MWC.GUI.Dialogs.AWT.AWTFile;
-import MWC.GUI.Dialogs.AWT.MessageDialog;
 import MWC.GUI.Dialogs.Swing.SwingFile;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
@@ -179,14 +178,8 @@ public class DialogFactory
     final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
     tmp.setLocation(sz.width / 2,
                     sz.height / 2);
-    // open the dialog
-    final MessageDialog md = new MessageDialog(tmp,
-                                         null,
-                                         title,
-                                         msg,
-                                         null,
-                                         false);
-    md.setVisible(true);
+    
+    JOptionPane.showMessageDialog(tmp, msg, title, JOptionPane.INFORMATION_MESSAGE);
   }
 
 
