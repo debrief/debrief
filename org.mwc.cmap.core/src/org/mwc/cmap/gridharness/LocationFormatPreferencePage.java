@@ -26,9 +26,12 @@ import org.mwc.cmap.core.CorePlugin;
 
 public class LocationFormatPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	private static final String LABEL_DD_MM_MMM = "DD\u00B0MM.MMM\u2032";
 
-	private static final String LABEL_DD_MM_SS_SSS = "DD\u00B0MM\u2032SS.SSS\u2033";
+  public static final String LABEL_DD_DDD = "DD.DDDDD\u00B0";
+
+  public static final String LABEL_DD_MM_MMM = "DD\u00B0MM.MMM\u2032";
+
+  public static final String LABEL_DD_MM_SS_SSS = "DD\u00B0MM\u2032SS.SSS\u2033";
 	
   public static final String PREFS_PAGE_ID = "org.mwc.cmap.core.preferences.LocationFormatPreferencePage";
 
@@ -57,8 +60,9 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage impl
 		locationFormatGroup.setLayout(layout);
 		final String[][] choices = new String[][] {//
 		//
-				{ LABEL_DD_MM_MMM, "true" }, //
-				{ LABEL_DD_MM_SS_SSS, "false" }, //
+				{ LABEL_DD_MM_MMM, LABEL_DD_MM_MMM }, //
+        { LABEL_DD_DDD, LABEL_DD_DDD }, //
+				{ LABEL_DD_MM_SS_SSS, LABEL_DD_MM_SS_SSS } //
 		};
 
 		final RadioGroupFieldEditor formarEditor = new RadioGroupFieldEditor(//

@@ -135,6 +135,65 @@ public class SexagesimalSupport
 			return "_DD_MM_MMM";
 		}
 	};
+	
+
+  public static final SexagesimalFormat _DD_DDD = new SexagesimalFormat()
+  {
+
+    @Override
+    public String format(final Sexagesimal value, final boolean forLongitudeNotLatitude)
+    {
+      final StringBuffer result = new StringBuffer();
+      if(value.getHemi() < 0)
+      {
+        result.append("-");
+      }
+      result.append(XX_XXXXXX.format(value.getDegrees()));
+      result.append('\u00B0');
+      return result.toString();
+    }
+
+    @Override
+    public String getNebulaPattern(final boolean forLongitudeNotLatitude)
+    {
+      final String forLatitude = "##.###\u00B0";
+      // longitude may have 3 digits for degree
+      return forLongitudeNotLatitude ? "#" + forLatitude : forLatitude;
+    }
+
+    @Override
+    public Sexagesimal parse(final String text, final boolean forLongitudeNotLatitude)
+        throws ParseException
+    {
+      String theText = text;
+      theText = theText.trim();
+      final int hemi = getHemisphereSignum(theText, forLongitudeNotLatitude);
+      theText = theText.substring(0, theText.length() - 1).trim();
+
+      final String[] subdivisions = theText.trim().split("[\u2032]");
+      if (subdivisions.length != 2)
+      {
+        throw new ParseException("2 parts expected, actually: "
+            + subdivisions.length + " for: " + theText, -1);
+      }
+      final double degrees = XX_XXXXXX.parse(subdivisions[0]).intValue();
+      return new Sexagesimal(degrees, 0, 0, hemi);
+    }
+
+    @Override
+    public Sexagesimal parseDouble(final double combinedDegrees)
+    {
+      double theCombinedDegrees = combinedDegrees;
+      final int hemi = theCombinedDegrees < 0 ? -1 : 1;
+      final double degrees = Math.abs(theCombinedDegrees);
+      return new Sexagesimal(degrees, 0, 0, hemi);
+    }
+
+    public String getExampleString()
+    {
+      return "_DD_DDD";
+    }
+  };
 
 	public static final SexagesimalFormat _DD_MM_SS_SSS = new SexagesimalFormat()
 	{

@@ -70,6 +70,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.operations.IUndoable;
+import org.mwc.cmap.gridharness.LocationFormatPreferencePage;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
@@ -961,10 +962,22 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
   public SexagesimalFormat getLocationFormat()
   {
     final IPreferenceStore preferenceStore = getPreferenceStore();
-    final boolean noSeconds =
-        preferenceStore.getBoolean(PREF_BASE60_FORMAT_NO_SECONDS);
-    return noSeconds ? SexagesimalSupport._DD_MM_MMM
-        : SexagesimalSupport._DD_MM_SS_SSS;
+    final String format = preferenceStore.getString(PREF_BASE60_FORMAT_NO_SECONDS);
+    final SexagesimalFormat res;
+    switch(format)
+    {
+      case LocationFormatPreferencePage.LABEL_DD_DDD:
+        res = SexagesimalSupport._DD_DDD;
+        break;
+      case LocationFormatPreferencePage.LABEL_DD_MM_MMM:
+        res = SexagesimalSupport._DD_MM_MMM;
+        break;
+      case LocationFormatPreferencePage.LABEL_DD_MM_SS_SSS:
+      default:
+        res = SexagesimalSupport._DD_MM_SS_SSS;
+        break;
+    }
+    return res;
   }
 
   @Override
