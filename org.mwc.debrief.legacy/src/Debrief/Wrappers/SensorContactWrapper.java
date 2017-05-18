@@ -153,6 +153,7 @@ import java.beans.PropertyDescriptor;
 
 import junit.framework.Assert;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
+import Debrief.Wrappers.Track.ArrayOffsetHelper;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -408,15 +409,11 @@ public final class SensorContactWrapper extends
 
 					// better calculate it ourselves then
 					final TrackWrapper parentTrack = (TrackWrapper) theParent;
-
-					// get the origin
-          final boolean isWorm =
-              _mySensor.getArrayCentreMode()
-                  .equals(LegacyArrayOffsetModes.WORM);
-					final FixWrapper backtrack = parentTrack.getBacktraceTo(_DTG,
-							_mySensor.getSensorOffset(), isWorm);
-					if (backtrack != null)
-						_calculatedOrigin = backtrack.getLocation();
+					
+          // retrieve the origin, according to the array centre mode
+          _calculatedOrigin =
+              ArrayOffsetHelper.getArrayCentre(this.getSensor(), _DTG, null,
+                  parentTrack);
 				}
 			}
 
