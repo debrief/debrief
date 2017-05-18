@@ -848,10 +848,13 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		{
 			final Object next = it.next();
 			final PlottableWrapperWithTimeAndOverrideableColor con = (PlottableWrapperWithTimeAndOverrideableColor) next;
-
-			// ok, plot it - and don't make it keep it simple, lets really go
-			// for it man!
-			con.paint(_myHost, canvas, false);
+			
+			if(con.getVisible())
+			{
+  			// ok, plot it - and don't make it keep it simple, lets really go
+  			// for it man!
+  			con.paint(_myHost, canvas, false);
+			}
 		}
 
 		// and restore the line width
