@@ -190,8 +190,9 @@ public abstract class PlainImporterBase implements PlainImporter
   public void readError(final String fName, final int line, final String msg,
       final String thisLine)
   {
-    String res = "Problem reading in " + fName + " at line " + line;
-    res = res + ", " + msg + ":" + thisLine;
+    String res = "Problem at line " + line + " of:\n";
+    res += fName + "\n";
+    res += msg + ":" + thisLine;
     MWC.GUI.Dialogs.DialogFactory.showMessage("Import Error", res);
   }
 
