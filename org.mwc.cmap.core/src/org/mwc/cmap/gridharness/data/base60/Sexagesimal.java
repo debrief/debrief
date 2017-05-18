@@ -25,7 +25,7 @@ public class Sexagesimal {
 	
 	private final int myHemi;
 
-	public Sexagesimal(final int degrees, final double minutes, final double seconds, final int hemi) {
+	public Sexagesimal(final double degrees, final double minutes, final double seconds, final int hemi) {
 		myDegrees = degrees;
 		myMinutes = minutes;
 		mySeconds = seconds;

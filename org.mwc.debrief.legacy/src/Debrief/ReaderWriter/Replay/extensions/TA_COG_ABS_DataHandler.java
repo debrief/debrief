@@ -49,24 +49,18 @@ public class TA_COG_ABS_DataHandler extends Core_TA_Handler
     sensor_name = AbstractPlainLineImporter.checkForQuotedName(st).trim();
 
     // extract the measuremetns
-    try
-    {
-      dLat = Double.valueOf(st.nextToken());
-      dLong = Double.valueOf(st.nextToken());
-      depth = Double.valueOf(st.nextToken());
+    dLat = Double.valueOf(st.nextToken());
+    dLong = Double.valueOf(st.nextToken());
+    depth = Double.valueOf(st.nextToken());
 
-      // ok, try to store the measurement
-      storeMeasurement2D(platform_name, sensor_name, CENTRE_OF_GRAVITY, "LatLong", "\u00b0", theDate,"Lat", "Long", dLat, dLong);
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Depth", "m", theDate, depth);
+    // ok, try to store the measurement
+    storeMeasurement2D(platform_name, sensor_name, CENTRE_OF_GRAVITY,
+        "LatLong", "\u00b0", theDate, "Lat", "Long", dLat, dLong);
+    storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Depth",
+        "m", theDate, depth);
 
-      return null;
+    return null;
 
-    }
-    catch (final NumberFormatException pe)
-    {
-      MWC.Utilities.Errors.Trace.trace(pe, "Whilst importing measured data");
-      return null;
-    }
   }
 
 }
