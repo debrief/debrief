@@ -1020,7 +1020,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         RMS_ZIG_RATIO = 0.9;
         break;
       case MEDIUM:
-        RMS_ZIG_RATIO = 0.5;
+        RMS_ZIG_RATIO = 1000d;
         break;
       case HIGH:
       default:
