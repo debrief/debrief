@@ -149,8 +149,17 @@ abstract public class TimeSeriesDatasetCore extends TimeSeriesCore
       Long val = timeIter.next();
       if (val >= time)
       {
-        return ctr;
+        if(ctr == 0 && val > time)
+        {
+          // hold on, our first value is greater than the time. don't bother
+          return INVALID_INDEX;
+        }
+        else
+        {
+          return ctr;
+        }
       }
+      
       ctr++;
     }
 
