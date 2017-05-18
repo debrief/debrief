@@ -48,26 +48,16 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
     sensor_name = AbstractPlainLineImporter.checkForQuotedName(st).trim();
 
     // extract the measuremetns
-    try
-    {
+    x = Double.valueOf(st.nextToken());
+    y = Double.valueOf(st.nextToken());
+    depth = Double.valueOf(st.nextToken());
 
-      x = Double.valueOf(st.nextToken());
-      y = Double.valueOf(st.nextToken());
-      depth = Double.valueOf(st.nextToken());
+    // ok, try to store the measurement
+    storeMeasurement2D(platform_name, sensor_name, CENTRE_OF_GRAVITY, "XY",
+        "m", theDate, "x", "y", x, y);
+    storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Z", "m",
+        theDate, depth);
 
-      // ok, try to store the measurement
-      storeMeasurement2D(platform_name, sensor_name, CENTRE_OF_GRAVITY, "XY",
-          "m", theDate, "x", "y", x, y);
-      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Z", "m",
-          theDate, depth);
-
-      return null;
-
-    }
-    catch (final NumberFormatException pe)
-    {
-      MWC.Utilities.Errors.Trace.trace(pe, "Whilst importing measured data");
-      return null;
-    }
+    return null;
   }
 }

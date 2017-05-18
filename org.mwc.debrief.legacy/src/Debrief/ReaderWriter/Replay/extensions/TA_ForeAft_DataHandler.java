@@ -21,41 +21,43 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
   {
     this("TA_FORE_AFT", "Fore & Aft");
   }
-  
+
   public TA_ForeAft_DataHandler(String title, String datasetName)
   {
     super(title);
-    
+
     _datasetName = datasetName;
   }
 
   public static class TestMe extends TestCase
   {
-//    
+    //
     private List<String> _messages = new ArrayList<String>();
-    
+
     public void testImport()
     {
-      final String str = ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" [12.75 3.00] [14.75 10.00]";
-      TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler(){
+      final String str =
+          ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" [12.75 3.00] [14.75 10.00]";
+      TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler()
+      {
 
         @Override
         protected void storeMeasurement(String platform_name,
-            String sensor_name, String folder, String dataset, final String units,
-            HiResDate theDate, double measurement)
+            String sensor_name, String folder, String dataset,
+            final String units, HiResDate theDate, double measurement)
         {
-          super.storeMeasurement(platform_name, sensor_name, folder, dataset, units, theDate,
-              measurement);
+          super.storeMeasurement(platform_name, sensor_name, folder, dataset,
+              units, theDate, measurement);
           String outStr = "stored:" + dataset + " value of:" + measurement;
           _messages.add(outStr);
-          
+
         }
-        
+
       };
       ff.readThisLine(str);
-      
+
       assertEquals("found items", 4, _messages.size());
-      
+
     }
   }
 
@@ -91,50 +93,42 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
     sensor_name = AbstractPlainLineImporter.checkForQuotedName(st).trim();
 
     // extract the measuremetns
-    try
+    // ok, parse the rest of the line
+    String remainingText = st.nextToken("");
+
+    Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+    Matcher matcher = pattern.matcher(remainingText);
+
+    int ctr = 1;
+
+    while (matcher.find())
     {
-      // ok, parse the rest of the line
-      String remainingText = st.nextToken("");
 
-      Pattern pattern = Pattern.compile("\\[(.*?)\\]");
-      Matcher matcher = pattern.matcher(remainingText);
+      String block = matcher.group(1);
+      final StringTokenizer blockT = new StringTokenizer(block);
 
-      int ctr = 1;
+      final double depth = Double.valueOf(blockT.nextToken());
+      final double heading = Double.valueOf(blockT.nextToken());
 
-      while (matcher.find())
-      {
+      final String datasetName = nameForRow(ctr);
 
-        String block = matcher.group(1);
-        final StringTokenizer blockT = new StringTokenizer(block);
+      // ok, try to store the measurement
+      storeMeasurement(platform_name, sensor_name, _datasetName + " / "
+          + datasetName, "Heading", "\u00b0", theDate, heading);
+      storeMeasurement(platform_name, sensor_name, _datasetName + " / "
+          + datasetName, "Depth", "m", theDate, depth);
 
-        final double depth = Double.valueOf(blockT.nextToken());
-        final double heading = Double.valueOf(blockT.nextToken());
-
-        final String datasetName = nameForRow(ctr);
-        
-        // ok, try to store the measurement
-        storeMeasurement(platform_name, sensor_name,
-            _datasetName + " / " + datasetName, "Heading", "\u00b0", theDate, heading);
-        storeMeasurement(platform_name, sensor_name,
-            _datasetName + " / " + datasetName, "Depth", "m", theDate, depth);
-
-        ctr++;
-      }
-
-      return null;
-
+      ctr++;
     }
-    catch (final NumberFormatException pe)
-    {
-      MWC.Utilities.Errors.Trace.trace(pe, "Whilst importing measured data");
-      return null;
-    }
+
+    return null;
+
   }
 
   protected String nameForRow(int ctr)
   {
     final String datasetName;
-    
+
     if (ctr == 1)
     {
       datasetName = "Fore";
