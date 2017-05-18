@@ -54,7 +54,7 @@ public class ArrayOffsetHelper
   public static class MeasuredDatasetArrayMode implements ArrayCentreMode
   {
     private final TimeSeriesDatasetDouble2 _source;
-    private boolean _interpolatePositions = false;
+    private boolean _interpolatePositions = true;
 
 
     public MeasuredDatasetArrayMode(TimeSeriesDatasetDouble2 source)
