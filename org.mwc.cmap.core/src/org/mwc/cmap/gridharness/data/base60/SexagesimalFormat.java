@@ -36,6 +36,8 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 
 	public static DecimalFormat XX_XXX = new DecimalFormat("00.000");
 
+  public static DecimalFormat XX_XXXXXX = new DecimalFormat("0.000000");
+
 	public abstract String format(Sexagesimal sexagesimal, boolean forLongitudeNotLatitude);
 
 	public abstract Sexagesimal parse(String text, boolean forLongitudeNotLatitude) throws ParseException;
