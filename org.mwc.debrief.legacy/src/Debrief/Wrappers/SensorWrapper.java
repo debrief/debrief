@@ -194,11 +194,13 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class SensorWrapper extends TacticalDataWrapper implements
-    GriddableSeriesMarker, Cloneable, AdditionalProvider, ExistingChildrenMayNeedToBeWrapped
+    GriddableSeriesMarker, Cloneable, AdditionalProvider,
+    ExistingChildrenMayNeedToBeWrapped
 {
 
   /**
@@ -239,7 +241,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * 
    */
   private AdditionalData _additionalData;
-
 
   // //////////////////////////////////////
   // constructors
@@ -782,7 +783,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
   /**
    * the definition of what is editable about this object
    */
-  public final class SensorInfo extends Editable.EditorType implements Editable.DynamicDescriptors
+  public final class SensorInfo extends Editable.EditorType implements
+      Editable.DynamicDescriptors
   {
 
     /**
@@ -850,8 +852,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
                   "the forward/backward offset (m) of this sensor from the attack datum"));
 
           res = tmpList.toArray(res);
-          
-          // NOTE: this info class to implement Editable.DynamicDescriptors 
+
+          // NOTE: this info class to implement Editable.DynamicDescriptors
           // to avoid these descriptors being cached
         }
 
@@ -877,7 +879,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
     {
       super(val);
     }
-    
+
     public void testMeasuredData()
     {
       TrackWrapper tw = new TrackWrapper();
@@ -886,57 +888,86 @@ public class SensorWrapper extends TacticalDataWrapper implements
       tw.add(sw);
       Layers layers = new Layers();
       layers.addThisLayer(tw);
-      
+
       // get some data
       TA_COG_ABS_DataHandler reader = new TA_COG_ABS_DataHandler();
       reader.setLayers(layers);
-      reader.readThisLine(";TA_COG_ABS: 100112 120200 SENSOR TA_ARRAY 4.0 5.0 19.02");
-      reader.readThisLine(";TA_COG_ABS: 100112 120300 SENSOR TA_ARRAY 5.0 6.0 19.02");
-      reader.readThisLine(";TA_COG_ABS: 100112 120400 SENSOR TA_ARRAY 6.0 7.0 19.02");
-      reader.readThisLine(";TA_COG_ABS: 100112 120500 SENSOR TA_ARRAY 7.0 8.0 19.02");
-      reader.readThisLine(";TA_COG_ABS: 100112 120600 SENSOR TA_ARRAY 8.0 9.0 19.02");
-      reader.readThisLine(";TA_COG_ABS: 100112 120700 SENSOR TA_ARRAY 9.0 10.0 19.02");
+      reader
+          .readThisLine(";TA_COG_ABS: 100112 120200 SENSOR TA_ARRAY 4.0 5.0 19.02");
+      reader
+          .readThisLine(";TA_COG_ABS: 100112 120300 SENSOR TA_ARRAY 5.0 6.0 19.02");
+      reader
+          .readThisLine(";TA_COG_ABS: 100112 120400 SENSOR TA_ARRAY 6.0 7.0 19.02");
+      reader
+          .readThisLine(";TA_COG_ABS: 100112 120500 SENSOR TA_ARRAY 7.0 8.0 19.02");
+      reader
+          .readThisLine(";TA_COG_ABS: 100112 120600 SENSOR TA_ARRAY 8.0 9.0 19.02");
+      reader
+          .readThisLine(";TA_COG_ABS: 100112 120700 SENSOR TA_ARRAY 9.0 10.0 19.02");
       final String dateToken = "100112";
 
-      
       // create the datasets
       reader.finalise();
-      
+
       // check data added
       AdditionalData data = sw.getAdditionalData();
-      
+
       assertNotNull(data);
       assertEquals(1, data.size());
-      
+
       // have a go at setting the mode
       List<ArrayCentreMode> modes = sw.getAdditionalArrayCentreModes();
-      
-      MeasuredDatasetArrayMode plainMode = (MeasuredDatasetArrayMode) modes.get(2);
-      
-      // check we're not interpolating
-      assertFalse("We should not be interpolating", plainMode.getInterpolatePositions());
-      
-      HiResDate theDate = DebriefFormatDateTime.parseThis(dateToken, "120430");
-      WorldLocation loc = sw.getMeasuredLocationAt(plainMode, theDate, null);
-      assertNotNull(loc);      
-      assertEquals("next location", " 07°00'00.00\"N 008°00\'00.00\"E ", loc.toString());
-      
-      // try on a time
-       theDate = DebriefFormatDateTime.parseThis(dateToken, "120400");
-       loc = sw.getMeasuredLocationAt(plainMode, theDate, null);
-      assertNotNull(loc);
-      assertEquals("next location", " 06°00'00.00\"N 007°00\'00.00\"E ", loc.toString());
 
+      ArrayCentreMode plainMode = modes.get(2);
+      
+      // check we found it
+      assertNotNull(plainMode);
+      
+      // check we've got the right mode
+      assertTrue("check we have the correct mode", plainMode instanceof MeasuredDatasetArrayMode);
+            
+      MeasuredDatasetArrayMode arrayMode =
+          (MeasuredDatasetArrayMode) plainMode; 
+
+      // force interpolation off
+      arrayMode.setInterpolatePositions(false);
+
+      // check we're not interpolating
+      assertFalse("We should not be interpolating", arrayMode
+          .getInterpolatePositions());
+
+      HiResDate theDate = DebriefFormatDateTime.parseThis(dateToken, "120430");
+      WorldLocation loc = sw.getMeasuredLocationAt(arrayMode, theDate, null);
+      assertNotNull(loc);
+      assertEquals("next location",
+          " 07\u00B000'00.00\"N 008\u00B000\'00.00\"E ", loc.toString());
+
+      // try on a time
+      theDate = DebriefFormatDateTime.parseThis(dateToken, "120400");
+      loc = sw.getMeasuredLocationAt(arrayMode, theDate, null);
+      assertNotNull(loc);
+      assertEquals("next location",
+          " 06\u00B000'00.00\"N 007\u00B000\'00.00\"E ", loc.toString());
+
+      // try before start
+      theDate = DebriefFormatDateTime.parseThis(dateToken, "120100");
+      loc = sw.getMeasuredLocationAt(arrayMode, theDate, null);
+      assertNull(loc);
+
+      // try after end
+      theDate = DebriefFormatDateTime.parseThis(dateToken, "121100");
+      loc = sw.getMeasuredLocationAt(arrayMode, theDate, null);
+      assertNull(loc);
 
       // try interpolation
       theDate = DebriefFormatDateTime.parseThis(dateToken, "120430");
-      plainMode.setInterpolatePositions(true);
-      
-      loc = sw.getMeasuredLocationAt(plainMode, theDate, null);
-     assertNotNull(loc);
-     assertEquals("next location", " 06°00'00.00\"N 007°00\'00.00\"E ", loc.toString());
+      arrayMode.setInterpolatePositions(true);
+      loc = sw.getMeasuredLocationAt(arrayMode, theDate, null);
+      assertNotNull(loc);
+      assertEquals("next location",
+          " 06\u00B030'00.00\"N 007\u00B030\'00.00\"E ", loc.toString());
 
-      
+      // try before the start
       
     }
 
@@ -1473,7 +1504,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
     final int index = dataset.getIndexNearestTo(time.getDate().getTime());
 
     final WorldLocation res;
-
+    
     if (index == TimeSeriesDatasetDouble2.INVALID_INDEX)
     {
       // ok, failed
@@ -1481,39 +1512,60 @@ public class SensorWrapper extends TacticalDataWrapper implements
     }
     else
     {
-      double val1 = dataset.getValue1At(index);
-      double val2 = dataset.getValue2At(index);
+      double after1 = dataset.getValue1At(index);
+      double after2 = dataset.getValue2At(index);
+      long afterTime = dataset.getTimes().get(index);
 
       // ok, get the location
-      res = getValueAt(hostLocation, units, val1, val2);
-      
+      WorldLocation afterLoc = getValueAt(hostLocation, units, after1, after2);
+
       // right, see if we should be interpolating
-      if(measuredMode.getInterpolatePositions())
+      if (measuredMode.getInterpolatePositions())
       {
         // check the time of the data
-        long dtg = dataset.getTimes().get(index);
-        if(dtg == time.getDate().getTime())
+        if (afterTime == time.getDate().getTime())
         {
           // don't bother, we've got the best value
+          res = afterLoc;
         }
         else
         {
           // ok, we need to interpolate
-          if(index > 0)
+          if (index > 0)
           {
-            double beforeVal1 = dataset.getValue1At(index-1);
-            double beforeVal2 = dataset.getValue2At(index-1);
-            
-            // ok, get the location
-            WorldLocation beforeRes = getValueAt(hostLocation, units, val1, val2);
-            
-            // put the locations, so we can do fix interpolation (with time)
-            // TODO: carry on with this.  
+            double before1 = dataset.getValue1At(index - 1);
+            double before2 = dataset.getValue2At(index - 1);
+            long beforeTime = dataset.getTimes().get(index - 1);
 
+            // ok, get the location
+            WorldLocation beforeLoc =
+                getValueAt(hostLocation, units, before1, before2);
+
+            // put the locations into fixes, so we can do fix interpolation (with time)
+            Fix beforeFix =
+                new Fix(new HiResDate(beforeTime), beforeLoc, 0d, 0d);
+            FixWrapper before = new FixWrapper(beforeFix);
+
+            Fix afterFix = new Fix(new HiResDate(afterTime), afterLoc, 0d, 0d);
+            FixWrapper after = new FixWrapper(afterFix);
+
+            // and now interpolate to find the right value
+            FixWrapper interp = FixWrapper.interpolateFix(before, after, time);
+
+            res = interp.getLocation();
+          }
+          else
+          {
+            // we're using the first value, we can't go back any further
+            res = afterLoc;
           }
         }
       }
-      
+      else
+      {
+        // we don't want to interpolate
+        res = afterLoc;
+      }
     }
 
     return res;
@@ -1530,9 +1582,10 @@ public class SensorWrapper extends TacticalDataWrapper implements
       double angleRads = Math.atan2(val1, val2);
 
       res =
-          hostLocation.add(new WorldVector(angleRads, new WorldDistance(
-              rangeM, WorldDistance.METRES), new WorldDistance(0,
-              WorldDistance.METRES)));
+          hostLocation
+              .add(new WorldVector(angleRads, new WorldDistance(rangeM,
+                  WorldDistance.METRES), new WorldDistance(0,
+                  WorldDistance.METRES)));
 
     }
     else
@@ -1543,8 +1596,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
     return res;
   }
 
-  public WorldLocation getArrayCentre(HiResDate time, WorldLocation hostLocation,
-      TrackWrapper track)
+  public WorldLocation getArrayCentre(HiResDate time,
+      WorldLocation hostLocation, TrackWrapper track)
   {
     return ArrayOffsetHelper.getArrayCentre(this, time, hostLocation, track);
   }
