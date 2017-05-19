@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Extensions.Measurements.DataFolder;
@@ -165,7 +166,15 @@ public class ArrayOffsetHelper
       }
       // it's ok, we can use our old legacy worm in hole processing
       boolean inWormMode = arrayCentre.equals(LegacyArrayOffsetModes.WORM);
-      centre = track.getBacktraceTo(time, len, inWormMode).getLocation();
+      FixWrapper trackPoint = track.getBacktraceTo(time, len, inWormMode);
+      if(trackPoint != null)
+      {
+        centre = trackPoint.getLocation();       
+      }
+      else
+      {
+        centre = null;
+      }
     }
     else
     {
