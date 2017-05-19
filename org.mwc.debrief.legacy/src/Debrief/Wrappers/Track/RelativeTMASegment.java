@@ -604,6 +604,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
           TrackWrapper host = _referenceSensor.getHost();
           if (host != null)
           {
+            @SuppressWarnings("deprecation")
             FixWrapper hostFix =
                 host.getBacktraceTo(startDTG(), _referenceSensor
                     .getSensorOffset(), _referenceSensor.getWormInHole());
@@ -1185,6 +1186,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
         currentStart.add(new WorldVector(theDirection, distDegs, 0));
 
     // and what's the point on the host track
+    @SuppressWarnings("deprecation")
     FixWrapper hostFix =
         this._referenceTrack.getBacktraceTo(theNewStart, _referenceSensor
             .getSensorOffset(), _referenceSensor.getWormInHole());
