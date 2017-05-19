@@ -20,12 +20,17 @@ public class TimeRestrictedMovingAverage
    * 
    */
   boolean _populated = false;
+  
+  /** the minimum number of measurements we require, before a
+   * moving average has stabilised
+   */
+  private int _minSample;
 
   public static class TestMe extends TestCase
   {
     public void testAverage()
     {
-      TimeRestrictedMovingAverage avg = new TimeRestrictedMovingAverage(1000L);
+      TimeRestrictedMovingAverage avg = new TimeRestrictedMovingAverage(1000L, 10);
       
       avg.add(100, 10);
       assertEquals("correct average", 10d, avg.getAverage(), 0.0001);
@@ -67,7 +72,7 @@ public class TimeRestrictedMovingAverage
     
     public void testReverse()
     {
-      TimeRestrictedMovingAverage avg = new TimeRestrictedMovingAverage(300L);
+      TimeRestrictedMovingAverage avg = new TimeRestrictedMovingAverage(300L, 10);
       
       avg.add(1000, 10);
       assertEquals("correct average", 10d, avg.getAverage(), 0.0001);
@@ -89,20 +94,22 @@ public class TimeRestrictedMovingAverage
     }
   }
   
-  public TimeRestrictedMovingAverage(long millis)
+  public TimeRestrictedMovingAverage(long millis, int minSample)
   {
     _millis = millis;
+    _minSample = minSample;
     _times = new Vector<Long>();
     _values = new Vector<Double>();
   }
   
   public boolean isPopulated()
   {
-    return _populated;
+    return _times.size() >= _minSample;
   }
 
   public void add(long time, double value)
   {
+    
     // ok, we've moved forwards. Do some deleting
     List<Long> removeTimes = new Vector<Long>();
     List<Double> removeValues = new Vector<Double>();
@@ -134,7 +141,6 @@ public class TimeRestrictedMovingAverage
     // ok, now add the new items
     _times.add(time);
     _values.add(value);
-    
   }
   
   public int size()
