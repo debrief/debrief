@@ -115,9 +115,7 @@ import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
 import org.mwc.debrief.track_shift.zig_detector.ArtificalLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
-import org.mwc.debrief.track_shift.zig_detector.ownship.CumulativeLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
-import org.mwc.debrief.track_shift.zig_detector.ownship.OwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.ownship.PeakTrackingOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
@@ -201,10 +199,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       };
 
-  private enum SliceMode
-  {
-    ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE, ARTIFICIAL_LEG;
-  }
+//  private enum SliceMode
+//  {
+//    ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE, ARTIFICIAL_LEG;
+//  }
 
   /**
    * helper application to help track creation/activation of new plots
@@ -327,12 +325,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
 
-  private SliceMode _sliceMode = SliceMode.PEAK_FIT;
+//  private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Precision _slicePrecision = Precision.MEDIUM;
-  private Action _modeThreshold;
-  private Action _modePeak;
-  private Action _modeArea;
-  private Action _modeArtificial;
+//  private Action _modeThreshold;
+//  private Action _modePeak;
+//  private Action _modeArea;
+//  private Action _modeArtificial;
   private Action _precisionOne;
   private Action _precisionTwo;
   private Action _precisionThree;
@@ -991,7 +989,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void storeZig(String scenarioName, long tStart, long tEnd,
           double rms)
       {
-        zigs.add(new Zone(tStart, tEnd, randomProv.getZoneColor()));
+        Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
+        System.out.println("Dots adding Zig:");
+        zigs.add(newZone);
       }
 
       @Override
@@ -1020,7 +1020,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         RMS_ZIG_RATIO = 0.9;
         break;
       case MEDIUM:
-        RMS_ZIG_RATIO = 1000d;
+        RMS_ZIG_RATIO = 15d;
         break;
       case HIGH:
       default:
@@ -1088,11 +1088,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // ok, we've got to turn the zigs into legs
-//    final List<Zone> oldLegs = legsFromZigs(startTime, endTime, zigs, randomProv);
+    final List<Zone> oldLegs = legsFromZigs(startTime, endTime, zigs, randomProv);
 
     // ok, loop through the legs, updating our TMA legs
-    for (Zone leg : legs)
-    {
+    for (Zone leg : oldLegs)
+    {      
+      System.out.println("storing leg:" + leg);
       // ok, see if there is already a leg at this time
       setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);
     }
@@ -1175,27 +1176,66 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     return legs;
   }
+  
+  /** determine if this time series contains many identical values - this is an 
+   * indicator for data coming from a simulator, for which turns can't be 
+   * determined by our peak tracking algorithm.
+   * @param dataset
+   * @return
+   */
+  private static boolean containsIdenticalValues(final TimeSeries dataset)
+  {
+    final double MATCH_PROPORTION = 0.2;
+    final int num = dataset.getItemCount();
+    final int numMatches = (int) (num * MATCH_PROPORTION);
+    double lastCourse = 0d;
+    int matchCount = 0;
+
+    for (int ctr = 0; ctr < num; ctr++)
+    {
+      final TimeSeriesDataItem thisItem = dataset.getDataItem(ctr);
+      final double thisCourse = (Double) thisItem.getValue();
+      if(thisCourse == lastCourse)
+      {
+        // ok, count the duplicates
+        matchCount ++;
+      }
+      lastCourse = thisCourse;
+    }
+    
+    return matchCount >= numMatches;
+  }
 
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse,
       ZoneChart.ColorProvider colorProvider)
   {
+    // make a decision on which ownship slicer to use
     final IOwnshipLegDetector detector;
-    switch (_sliceMode)
+    if(containsIdenticalValues(osCourse))
     {
-      case ORIGINAL:
-        detector = new OwnshipLegDetector();
-        break;
-      case AREA_UNDER_CURVE:
-        detector = new CumulativeLegDetector();
-        break;
-      case ARTIFICIAL_LEG:
-        detector = new ArtificalLegDetector();
-        break;
-      case PEAK_FIT:
-      default:
-        detector = new PeakTrackingOwnshipLegDetector();
-        break;
+      detector = new ArtificalLegDetector();
     }
+    else
+    {
+      detector = new PeakTrackingOwnshipLegDetector();
+    }
+    
+//    switch (_sliceMode)
+//    {
+//      case ORIGINAL:
+//        detector = new OwnshipLegDetector();
+//        break;
+//      case AREA_UNDER_CURVE:
+//        detector = new CumulativeLegDetector();
+//        break;
+//      case ARTIFICIAL_LEG:
+//        detector = new ArtificalLegDetector();
+//        break;
+//      case PEAK_FIT:
+//      default:
+//        detector = new PeakTrackingOwnshipLegDetector();
+//        break;
+//    }
 
     final int num = osCourse.getItemCount();
     long[] times = new long[num];
@@ -1614,67 +1654,67 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(new Separator());
 
     // TEMPORARILY INTRODUCE SLICE MODE
-    MenuManager sliceMenu = new MenuManager("Ownship slicing algorithm");
-    manager.add(sliceMenu);
-
-    // ok - try to add modes for the slicing algorithm
-    _modePeak = new Action("Peak tracking", SWT.TOGGLE)
-    {
-      @Override
-      public void run()
-      {
-        super.run();
-        _sliceMode = SliceMode.PEAK_FIT;
-        _modeThreshold.setChecked(false);
-        _modeArea.setChecked(false);
-        _modeArtificial.setChecked(false);
-        _modePeak.setChecked(true);
-      }
-    };
-    _modeArtificial = new Action("Artificial legs", SWT.TOGGLE)
-    {
-      @Override
-      public void run()
-      {
-        super.run();
-        _sliceMode = SliceMode.ARTIFICIAL_LEG;
-        _modeThreshold.setChecked(false);
-        _modePeak.setChecked(false);
-        _modeArea.setChecked(false);
-        _modeArtificial.setChecked(true);
-      }
-    };
-    _modeArea = new Action("Area under curve", SWT.TOGGLE)
-    {
-      @Override
-      public void run()
-      {
-        super.run();
-        _sliceMode = SliceMode.AREA_UNDER_CURVE;
-        _modePeak.setChecked(false);
-        _modeThreshold.setChecked(false);
-        _modeArtificial.setChecked(false);
-        _modeArea.setChecked(true);
-      }
-    };
-    _modeThreshold = new Action("Original", SWT.TOGGLE)
-    {
-      @Override
-      public void run()
-      {
-        super.run();
-        _sliceMode = SliceMode.ORIGINAL;
-        _modePeak.setChecked(false);
-        _modeArea.setChecked(false);
-        _modeArtificial.setChecked(false);
-        _modeThreshold.setChecked(true);
-        // _modeTwo.setChecked(false);
-      }
-    };
-
-    _modePeak.setChecked(true);
-    sliceMenu.add(_modePeak);
-    sliceMenu.add(_modeArtificial);
+//    MenuManager sliceMenu = new MenuManager("Ownship slicing algorithm");
+//    manager.add(sliceMenu);
+//
+//    // ok - try to add modes for the slicing algorithm
+//    _modePeak = new Action("Peak tracking", SWT.TOGGLE)
+//    {
+//      @Override
+//      public void run()
+//      {
+//        super.run();
+//        _sliceMode = SliceMode.PEAK_FIT;
+//        _modeThreshold.setChecked(false);
+//        _modeArea.setChecked(false);
+//        _modeArtificial.setChecked(false);
+//        _modePeak.setChecked(true);
+//      }
+//    };
+//    _modeArtificial = new Action("Artificial legs", SWT.TOGGLE)
+//    {
+//      @Override
+//      public void run()
+//      {
+//        super.run();
+//        _sliceMode = SliceMode.ARTIFICIAL_LEG;
+//        _modeThreshold.setChecked(false);
+//        _modePeak.setChecked(false);
+//        _modeArea.setChecked(false);
+//        _modeArtificial.setChecked(true);
+//      }
+//    };
+//    _modeArea = new Action("Area under curve", SWT.TOGGLE)
+//    {
+//      @Override
+//      public void run()
+//      {
+//        super.run();
+//        _sliceMode = SliceMode.AREA_UNDER_CURVE;
+//        _modePeak.setChecked(false);
+//        _modeThreshold.setChecked(false);
+//        _modeArtificial.setChecked(false);
+//        _modeArea.setChecked(true);
+//      }
+//    };
+//    _modeThreshold = new Action("Original", SWT.TOGGLE)
+//    {
+//      @Override
+//      public void run()
+//      {
+//        super.run();
+//        _sliceMode = SliceMode.ORIGINAL;
+//        _modePeak.setChecked(false);
+//        _modeArea.setChecked(false);
+//        _modeArtificial.setChecked(false);
+//        _modeThreshold.setChecked(true);
+//        // _modeTwo.setChecked(false);
+//      }
+//    };
+//
+//    _modePeak.setChecked(true);
+//    sliceMenu.add(_modePeak);
+//    sliceMenu.add(_modeArtificial);
 //    sliceMenu.add(_modeThreshold);
 //    sliceMenu.add(_modeArea);
 
@@ -2584,8 +2624,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
+  
+  
   public static class TestSlicing extends junit.framework.TestCase
   {
+    public void testOSLegDetector()
+    {
+      TimeSeries osC = new TimeSeries(new FixedMillisecond());
+      long time = 0;
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 22d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      
+      assertFalse(containsIdenticalValues(osC));
+
+      // inject some more duplicates
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+
+      assertTrue(containsIdenticalValues(osC));
+      
+    }
+    
     public void testSetLeg()
     {
       TrackWrapper host = new TrackWrapper();
