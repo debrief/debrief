@@ -44,7 +44,7 @@ public class ZigDetector
       return myTime.compareTo(hisTime);
     }
   }
-  
+
   static class FlanaganArctan implements MinimisationFunction
   {
     private static double calcForecast(final double B, final double P,
@@ -935,12 +935,11 @@ public class ZigDetector
       final List<Long> legTimes, final List<Double> rawLegBearings)
   {
     // check we have some
-    if(legTimes.isEmpty())
+    if (legTimes.isEmpty())
     {
       return;
     }
-    
-    
+
     // ok, find the best slice
     // prepare the data
     final List<Double> legBearings = prepareBearings(rawLegBearings);
@@ -957,8 +956,9 @@ public class ZigDetector
     // System.out.print(legBearings.get(i) + ", ");
     // }
 
-//    System.out.println("## ZigDetector.sliceThis Slicing from:" + new Date(legTimes.get(0)) + " to:"
-//        + new Date(legTimes.get(legTimes.size() - 1)));
+    // System.out.println("## ZigDetector.sliceThis Slicing from:" + new Date(legTimes.get(0)) +
+    // " to:"
+    // + new Date(legTimes.get(legTimes.size() - 1)));
 
     if (legBearings.size() == 0)
     {
@@ -977,8 +977,8 @@ public class ZigDetector
       @Override
       public void eventAt(long time, double score, double threshold)
       {
-//        System.out
-//            .println("zig start at:" + new Date(time) + " score:" + score);
+        // System.out
+        // .println("zig start at:" + new Date(time) + " score:" + score);
         zigStarts.add(new ScoredTime(time, score));
       }
     };
@@ -995,7 +995,7 @@ public class ZigDetector
       @Override
       public void eventAt(long time, double score, double threshold)
       {
-//        System.out.println("zig end at:" + new Date(time) + " score:" + score);
+        // System.out.println("zig end at:" + new Date(time) + " score:" + score);
         zigEnds.add(new ScoredTime(time, score));
       }
     };
@@ -1004,7 +1004,7 @@ public class ZigDetector
     Collections.reverse(legBearings);
 
     // ok, now run through it
-    final double reverseZigRation = RMS_ZIG_RATIO; // * 0.4;
+    final double reverseZigRation = RMS_ZIG_RATIO * 0.5;
     runThrough(optimiseTolerance, legTimes, legBearings, backListener,
         reverseZigRation, timeWindow);
 
@@ -1026,8 +1026,9 @@ public class ZigDetector
           if (legEnd._time > legStart._time)
           {
             LegOfData newLeg =
-                new LegOfData("Leg:" + (legs.size() + 1), legStart._time, legEnd._time);
-//            System.out.println("adding leg:" + newLeg);
+                new LegOfData("Leg:" + (legs.size() + 1), legStart._time,
+                    legEnd._time);
+            // System.out.println("adding leg:" + newLeg);
             legs.add(newLeg);
             lastZig = legEnd._time;
             break;
@@ -1039,18 +1040,35 @@ public class ZigDetector
     // ok, try to broadcast the zigs
     if (zigStorer != null)
     {
-//      LegOfData lastLeg = null;
+      // LegOfData lastLeg = null;
       for (ScoredTime legEnd : zigStarts)
       {
+        boolean matched = false;
         // ok, find the zig end that appears after thie
         for (ScoredTime legStart : zigEnds)
         {
           if (legStart._time > legEnd._time)
           {
             // ok, this will do
-            zigStorer.storeZig("Scenario", legEnd._time, legStart._time, legStart._score);
+            zigStorer.storeZig("Scenario", legEnd._time, legStart._time,
+                legEnd._score);
+            matched = true;
             break;
           }
+        }
+
+        if (!matched)
+        {
+          long newEnd = legEnd._time + 180000;
+          
+          // check the finish point is still in the scenario period
+          // (put it 5 secs before the end, if necessary
+          newEnd = Math.min(newEnd, wholeEnd - 5000);
+          System.err.println("MANUALLY CLOSING ZIG time:" + new Date(legEnd._time) + " new end:" + new Date(newEnd));
+          
+          // ok, we didn't find a zig end. make one up, with a 3 min period
+          zigStorer.storeZig("Scenario", legEnd._time, newEnd,
+              legEnd._score);
         }
       }
     }
@@ -1083,7 +1101,7 @@ public class ZigDetector
     for (int end = 0; end < len; end++)
     {
       final long thisTime = legTimes.get(end);
-//      Date legEnd = new Date(thisTime);
+      // Date legEnd = new Date(thisTime);
 
       // we need at least 4 cuts
       if (end >= start + 4)
@@ -1145,11 +1163,11 @@ public class ZigDetector
 
 //        final long elapsed = (thisTime - firstT) / 1000;
 
-        // NumberFormat nf = new DecimalFormat(" 0.000000;-0.000000");
-        // System.out.println(df.format(new Date(thisTime)) + " " + elapsed + " " + nf.format(avg)
-        // + " " + nf.format(score) + " " + nf.format(scoreDelta) + " " + nf.format(variance) + " "
-        // + nf.format(thisProportion) + " "
-        // );
+//        NumberFormat nf = new DecimalFormat(" 0.000000;-0.000000");
+//        System.out.println(df.format(new Date(thisTime)) + " " + elapsed + " "
+//            + nf.format(avg) + " " + nf.format(score) + " "
+//            + nf.format(scoreDelta) + " " + nf.format(variance) + " "
+//            + nf.format(thisProportion) + " ");
 
         // do we have enough data?
         if (avgScore.isPopulated())
