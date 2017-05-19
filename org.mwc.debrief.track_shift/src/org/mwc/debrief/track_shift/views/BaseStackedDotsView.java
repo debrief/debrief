@@ -990,7 +990,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           double rms)
       {
         Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
-        System.out.println("Dots adding Zig:");
+        System.out.println("got zig:" + newZone);
         zigs.add(newZone);
       }
 
@@ -1008,7 +1008,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
         legs.add(newZone);
-   //     System.out.println("adding leg:" + newZone);
       }
     };
 
@@ -1020,7 +1019,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         RMS_ZIG_RATIO = 0.9;
         break;
       case MEDIUM:
-        RMS_ZIG_RATIO = 15d;
+        RMS_ZIG_RATIO = 20d;
         break;
       case HIGH:
       default:
@@ -1074,18 +1073,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     }
 
-    if (hasData)
-    {
-      // we can retrieve the start/end time
-      startTime = tgtTrack.getStartDTG().getDate().getTime();
-      endTime = tgtTrack.getEndDTG().getDate().getTime();
-    }
-    else
-    {
+//    if (hasData)
+//    {
+//      // we can retrieve the start/end time
+//      startTime = tgtTrack.getStartDTG().getDate().getTime();
+//      endTime = tgtTrack.getEndDTG().getDate().getTime();
+//    }
+//    else
+//    {
       // we've got to regenerate the points from the cuts
       startTime = cuts.get(0).getDTG().getDate().getTime();
       endTime = cuts.get(cuts.size() - 1).getDTG().getDate().getTime();
-    }
+   // }
 
     // ok, we've got to turn the zigs into legs
     final List<Zone> oldLegs = legsFromZigs(startTime, endTime, zigs, randomProv);
@@ -1093,7 +1092,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // ok, loop through the legs, updating our TMA legs
     for (Zone leg : oldLegs)
     {      
-      System.out.println("storing leg:" + leg);
       // ok, see if there is already a leg at this time
       setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);
     }
@@ -1109,7 +1107,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // ok, done.
-    return legs;
+    return oldLegs;
   }
 
   private void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
