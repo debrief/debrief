@@ -1221,6 +1221,9 @@ public class ZigDetector
 
             // and clear the moving average
             avgScore.clear();
+            
+            // and clear the regression
+            regression.clear();
           }
 
         }
