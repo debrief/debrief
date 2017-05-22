@@ -1,7 +1,5 @@
 package org.mwc.debrief.track_shift.zig_detector.target;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,10 +12,10 @@ import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeRestrictedMovingAverage;
 import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.osgi.framework.Bundle;
@@ -27,6 +25,26 @@ import flanagan.math.MinimisationFunction;
 
 public class ZigDetector
 {
+  protected static class ScoredTime implements Comparable<ScoredTime>
+  {
+    private final long _time;
+    private final double _score;
+
+    public ScoredTime(long time, double score)
+    {
+      _time = time;
+      _score = score;
+    }
+
+    @Override
+    public int compareTo(ScoredTime o)
+    {
+      Long myTime = _time;
+      Long hisTime = o._time;
+      return myTime.compareTo(hisTime);
+    }
+  }
+
   static class FlanaganArctan implements MinimisationFunction
   {
     private static double calcForecast(final double B, final double P,
@@ -76,6 +94,7 @@ public class ZigDetector
           thisError += 360;
         }
         final double sqError = Math.pow(thisError, 2);
+
         runningSum += sqError;
       }
       // normalise by dividing by the number cuts - 3
@@ -253,68 +272,68 @@ public class ZigDetector
       // -115.85400000000001, -115.82, -115.777, -115.56000000000002,
       // -115.071, -114.71999999999998};
       //
-      // Double[] bearings =
-      // new Double[]
-      // {180d, 180.3, 180.7, 181d, 181.4, 181.7, 182.1, 182.5, 182.8, 183.2,
-      // 183.6, 184.1, 184.5, 184.9, 185.3, 185.8, 186.3, 186.7, 187.2,
-      // 187.7, 188.2, 188.8, 189.3, 189.8, 190.4, 191d, 191.6, 192.2,
-      // 192.8, 193.4, 194.1, 194.8, 195.5, 196.2, 196.9, 197.6, 198.4,
-      // 199.2, 200d, 200.8, 201.7, 202.6, 203.4, 204.4, 205.3, 206.1,
-      // 206.7, 207.3, 207.9, 208.5, 209.2, 209.9, 210.6, 211.4, 212.2,
-      // 213.1, 214d, 214.9, 215.9, 216.9, 218d, 219.1, 220.3, 221.6,
-      // 223d, 224.4, 225.9, 227.4, 229.1, 230.8, 232.7, 234.6, 236.6,
-      // 238.8, 241d, 243.4, 245.9, 248.2, 250.3, 252.3, 254.3, 256.1,
-      // 257.9, 259.6, 261.2, 262.8, 264.3, 265.7, 267.1, 268.4, 269.7,
-      // 270.9, 272d, 273.1, 274.2, 275.2, 276.2, 277.1, 278d, 278.8,
-      // 279.7, 280.4, 281.2};
-      //
-      // int[] timeStr =
-      // new int[]
-      // {120000, 120050, 120140, 120230, 120320, 120410, 120500, 120550,
-      // 120640, 120730, 120820, 120910, 121000, 121050, 121140, 121230,
-      // 121320, 121410, 121500, 121550, 121640, 121730, 121820, 121910,
-      // 122000, 122050, 122140, 122230, 122320, 122410, 122500, 122550,
-      // 122640, 122730, 122820, 122910, 123000, 123050, 123140, 123230,
-      // 123320, 123410, 123500, 123550, 123640, 123730, 123820, 123910,
-      // 124000, 124050, 124140, 124230, 124320, 124410, 124500, 124550,
-      // 124640, 124730, 124820, 124910, 125000, 125050, 125140, 125230,
-      // 125320, 125410, 125500, 125550, 125640, 125730, 125820, 125910,
-      // 130000, 130050, 130140, 130230, 130320, 130410, 130500, 130550,
-      // 130640, 130730, 130820, 130910, 131000, 131050, 131140, 131230,
-      // 131320, 131410, 131500, 131550, 131640, 131730, 131820, 131910,
-      // 132000, 132050, 132140, 132230, 132320, 132410, 132500};
-
-      Long[] times =
-          new Long[]
-          {946699110000L, 946699140000L, 946699170000L, 946699200000L,
-              946699230000L, 946699260000L, 946699290000L, 946699320000L,
-              946699350000L, 946699380000L, 946699410000L, 946699440000L,
-              946699470000L, 946699500000L, 946699530000L, 946699560000L,
-              946699590000L, 946699620000L, 946699650000L, 946699680000L,
-              946699710000L, 946699740000L, 946699770000L, 946699800000L,
-              946699830000L, 946699860000L, 946699890000L, 946699920000L,
-              946699950000L, 946699980000L, 946700010000L, 946700040000L,
-              946700070000L, 946700100000L, 946700130000L, 946700160000L,
-              946700190000L, 946700220000L, 946700250000L, 946700280000L,
-              946700310000L, 946700340000L, 946700370000L, 946700400000L,
-              946700430000L, 946700460000L, 946700490000L, 946700520000L,
-              946700550000L, 946700580000L, 946700610000L, 946700640000L,
-              946700670000L, 946700700000L, 946700730000L, 946700760000L,
-              946700790000L, 946700820000L, 946700850000L, 946700880000L,
-              946700910000L, 946700940000L, 946700970000L};
       Double[] bearings =
           new Double[]
-          {207.017, 207.645, 208.439, 208.99, 210.35, 210.857, 211.789,
-              212.789, 213.717, 214.45, 214.898, 215.881, 216.78, 216.815,
-              218.296, 219.438, 220.025, 220.876, 221.654, 222.64, 222.724,
-              224.254, 224.667, 225.662, 226.705, 227.423, 228.14, 228.857,
-              229.722, 230.722, 231.656, 232.168, 232.893, 233.655, 234.592,
-              235.5, 236.11700000000002, 236.805, 237.47199999999998, 237.824,
-              238.79000000000002, 239.733, 239.88500000000002,
-              240.68200000000002, 241.493, 242.005, 242.311, 242.29, 242.64,
-              242.906, 242.762, 242.99, 243.36700000000002, 243.26,
-              243.59699999999998, 243.704, 243.84199999999998, 244.146, 244.18,
-              244.223, 244.44, 244.929, 245.28000000000003};
+          {180d, 180.3, 180.7, 181d, 181.4, 181.7, 182.1, 182.5, 182.8, 183.2,
+              183.6, 184.1, 184.5, 184.9, 185.3, 185.8, 186.3, 186.7, 187.2,
+              187.7, 188.2, 188.8, 189.3, 189.8, 190.4, 191d, 191.6, 192.2,
+              192.8, 193.4, 194.1, 194.8, 195.5, 196.2, 196.9, 197.6, 198.4,
+              199.2, 200d, 200.8, 201.7, 202.6, 203.4, 204.4, 205.3, 206.1,
+              206.7, 207.3, 207.9, 208.5, 209.2, 209.9, 210.6, 211.4, 212.2,
+              213.1, 214d, 214.9, 215.9, 216.9, 218d, 219.1, 220.3, 221.6,
+              223d, 224.4, 225.9, 227.4, 229.1, 230.8, 232.7, 234.6, 236.6,
+              238.8, 241d, 243.4, 245.9, 248.2, 250.3, 252.3, 254.3, 256.1,
+              257.9, 259.6, 261.2, 262.8, 264.3, 265.7, 267.1, 268.4, 269.7,
+              270.9, 272d, 273.1, 274.2, 275.2, 276.2, 277.1, 278d, 278.8,
+              279.7, 280.4, 281.2};
+
+      int[] timeStr =
+          new int[]
+          {120000, 120050, 120140, 120230, 120320, 120410, 120500, 120550,
+              120640, 120730, 120820, 120910, 121000, 121050, 121140, 121230,
+              121320, 121410, 121500, 121550, 121640, 121730, 121820, 121910,
+              122000, 122050, 122140, 122230, 122320, 122410, 122500, 122550,
+              122640, 122730, 122820, 122910, 123000, 123050, 123140, 123230,
+              123320, 123410, 123500, 123550, 123640, 123730, 123820, 123910,
+              124000, 124050, 124140, 124230, 124320, 124410, 124500, 124550,
+              124640, 124730, 124820, 124910, 125000, 125050, 125140, 125230,
+              125320, 125410, 125500, 125550, 125640, 125730, 125820, 125910,
+              130000, 130050, 130140, 130230, 130320, 130410, 130500, 130550,
+              130640, 130730, 130820, 130910, 131000, 131050, 131140, 131230,
+              131320, 131410, 131500, 131550, 131640, 131730, 131820, 131910,
+              132000, 132050, 132140, 132230, 132320, 132410, 132500};
+
+      // Long[] times =
+      // new Long[]
+      // {946699110000L, 946699140000L, 946699170000L, 946699200000L,
+      // 946699230000L, 946699260000L, 946699290000L, 946699320000L,
+      // 946699350000L, 946699380000L, 946699410000L, 946699440000L,
+      // 946699470000L, 946699500000L, 946699530000L, 946699560000L,
+      // 946699590000L, 946699620000L, 946699650000L, 946699680000L,
+      // 946699710000L, 946699740000L, 946699770000L, 946699800000L,
+      // 946699830000L, 946699860000L, 946699890000L, 946699920000L,
+      // 946699950000L, 946699980000L, 946700010000L, 946700040000L,
+      // 946700070000L, 946700100000L, 946700130000L, 946700160000L,
+      // 946700190000L, 946700220000L, 946700250000L, 946700280000L,
+      // 946700310000L, 946700340000L, 946700370000L, 946700400000L,
+      // 946700430000L, 946700460000L, 946700490000L, 946700520000L,
+      // 946700550000L, 946700580000L, 946700610000L, 946700640000L,
+      // 946700670000L, 946700700000L, 946700730000L, 946700760000L,
+      // 946700790000L, 946700820000L, 946700850000L, 946700880000L,
+      // 946700910000L, 946700940000L, 946700970000L};
+      // Double[] bearings =
+      // new Double[]
+      // {207.017, 207.645, 208.439, 208.99, 210.35, 210.857, 211.789,
+      // 212.789, 213.717, 214.45, 214.898, 215.881, 216.78, 216.815,
+      // 218.296, 219.438, 220.025, 220.876, 221.654, 222.64, 222.724,
+      // 224.254, 224.667, 225.662, 226.705, 227.423, 228.14, 228.857,
+      // 229.722, 230.722, 231.656, 232.168, 232.893, 233.655, 234.592,
+      // 235.5, 236.11700000000002, 236.805, 237.47199999999998, 237.824,
+      // 238.79000000000002, 239.733, 239.88500000000002,
+      // 240.68200000000002, 241.493, 242.005, 242.311, 242.29, 242.64,
+      // 242.906, 242.762, 242.99, 243.36700000000002, 243.26,
+      // 243.59699999999998, 243.704, 243.84199999999998, 244.146, 244.18,
+      // 244.223, 244.44, 244.929, 245.28000000000003};
 
       // Long[] times = new Long[]{946699110000L, 946699140000L, 946699170000L, 946699200000L,
       // 946699230000L, 946699260000L, 946699290000L, 946699320000L, 946699350000L, 946699380000L,
@@ -334,14 +353,14 @@ public class ZigDetector
       // -119.31799999999998, -118.507, -117.99500000000002, -117.689, -117.71000000000001, -117.36,
       // -117.09399999999998};
 
-      // Long[] times = new Long[timeStr.length];
-      // java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
-      // for (int i = 0; i < timeStr.length; i++)
-      // {
-      // String thisVal = "" + timeStr[i];
-      //
-      // times[i] = sdf.parse(thisVal).getTime();
-      // }
+      Long[] times = new Long[timeStr.length];
+      java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
+      for (int i = 0; i < timeStr.length; i++)
+      {
+        String thisVal = "" + timeStr[i];
+
+        times[i] = sdf.parse(thisVal).getTime();
+      }
 
       // start to collate the adta
       List<Long> tList1 = Arrays.asList(times);
@@ -367,28 +386,28 @@ public class ZigDetector
       double zigRatio = 1000d;
       double optimiseTolerance = 0.0000000004;
 
-       ILog logger = getLogger();
-       ILegStorer legStorer = getLegStorer();
-       IZigStorer zigStorer = getZigStorer();
-       detector.sliceThis(logger, "some name", "scenario", times[0],
-       times[times.length - 1], legStorer, zigStorer, zigRatio,
-       optimiseTolerance, tList, tBearings);
+      // ILog logger = getLogger();
+      // ILegStorer legStorer = getLegStorer();
+      // IZigStorer zigStorer = getZigStorer();
+      // detector.sliceThis(logger, "some name", "scenario", times[0],
+      // times[times.length - 1], legStorer, zigStorer, zigRatio,
+      // optimiseTolerance, tList, tBearings);
 
       // reverse the arrays
-//       Collections.reverse(tList);
-//       Collections.reverse(tBearings);
-//
-//      long timeWindow = 120000;
-//      zigRatio = 1000d;
-//      EventHappened happened = new EventHappened()
-//      {
-//        public void eventAt(long time, double score, double threshold)
-//        {
-//           System.out.println("event at " + new Date(time) + " score:" + score);
-//        }
-//      };
-//      detector.runThrough(optimiseTolerance, tList, tBearings, happened,
-//          zigRatio, timeWindow);
+      // Collections.reverse(tList);
+      // Collections.reverse(tBearings);
+      //
+      long timeWindow = 240000;
+      zigRatio = 15d;
+      EventHappened happened = new EventHappened()
+      {
+        public void eventAt(long time, double score, double threshold)
+        {
+          // System.out.println("event at " + new Date(time) + " score:" + score);
+        }
+      };
+      detector.runThrough(optimiseTolerance, tList, tBearings, happened,
+          zigRatio, timeWindow);
 
     }
 
@@ -442,29 +461,25 @@ public class ZigDetector
         @Override
         public void addLogListener(ILogListener listener)
         {
-          // TODO Auto-generated method stub
-
+          //  not required, class just for testing
         }
 
         @Override
         public Bundle getBundle()
         {
-          // TODO Auto-generated method stub
           return null;
         }
 
         @Override
         public void log(IStatus status)
         {
-          // TODO Auto-generated method stub
-
+          //  not required, class just for testing
         }
 
         @Override
         public void removeLogListener(ILogListener listener)
         {
-          // TODO Auto-generated method stub
-
+          //  not required, class just for testing
         }
       };
       return logger;
@@ -651,248 +666,240 @@ public class ZigDetector
 
     return min;
   }
-
-  /**
-   * @param trialIndex
-   * @param bearings
-   * @param times
-   * @param legOneEnd
-   * @param legTwoStart
-   * @param optimiserTolerance
-   * @param fittedQ
-   * @param fittedP
-   * @param overallScore
-   *          the overall score for this leg
-   * @param BUFFER_REGION
-   * @param straightBar
-   * @param thisSeries
-   * @return
-   */
-  private double sliceLeg(final int trialIndex, final List<Double> bearings,
-      final List<Long> times, final int legOneEnd, final int legTwoStart,
-      final double optimiserTolerance)
-  {
-
-    final List<Long> theseTimes = times;
-    final List<Double> theseBearings = bearings;
-
-    final Date thisD = new Date(times.get(trialIndex));
-
-    // if((legOneEnd == -1) || (legTwoStart == -1))
-    // return Double.MAX_VALUE;
-
-    double beforeScore = Double.MAX_VALUE;
-    double afterScore = Double.MAX_VALUE;
-
-    @SuppressWarnings("unused")
-    String msg = dateF.format(thisD);
-
-    Minimisation beforeOptimiser = null;
-    Minimisation afterOptimiser = null;
-
-    if (legOneEnd != -1)
-    {
-      final List<Long> beforeTimes = theseTimes.subList(0, legOneEnd);
-      final List<Double> beforeBearings = theseBearings.subList(0, legOneEnd);
-      beforeOptimiser =
-          optimiseThis_Legacy(beforeTimes, beforeBearings, beforeBearings
-              .get(0), optimiserTolerance);
-      beforeScore = beforeOptimiser.getMinimum();
-      // System.out.println(" before:" + _outDates(beforeTimes));
-
-    }
-
-    if (legTwoStart != -1)
-    {
-      final List<Long> afterTimes =
-          theseTimes.subList(legTwoStart, theseTimes.size() - 1);
-      final List<Double> afterBearings =
-          theseBearings.subList(legTwoStart, theseTimes.size() - 1);
-      afterOptimiser =
-          optimiseThis_Legacy(afterTimes, afterBearings, afterBearings.get(0),
-              optimiserTolerance);
-      afterScore = afterOptimiser.getMinimum();
-      // System.out.println(" after:" + _outDates(afterTimes));
-    }
-
-    // find the total error sum
-    double sum = Double.MAX_VALUE;
-
-    // do we have both legs?
-    if ((legOneEnd != -1) && (legTwoStart != -1))
-    {
-      final int beforeLen = theseTimes.subList(0, legOneEnd).size();
-      final int afterLen =
-          theseTimes.subList(legTwoStart, theseTimes.size() - 1).size();
-
-      final int totalCuts = beforeLen + afterLen;
-
-      final double beforeNormal = beforeScore * beforeLen / totalCuts;
-      final double afterNormal = afterScore * afterLen / totalCuts;
-      sum = beforeNormal + afterNormal;
-
-      // double[] bValues = beforeOptimiser.getParamValues();
-      // msg +=
-      // " ,BEFORE," + dateF.format(times.get(0)) + ","
-      // + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
-      // msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," +
-      // beforeNormal;
-      // double[] aValues = afterOptimiser.getParamValues();
-      // msg +=
-      // " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
-      // + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
-      // msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," +
-      // afterNormal;
-      // System.out.println(msg + ",sum," + sum);
-
-    }
-
-    return sum;
-  }
-
-  /**
-   * 
-   * @param log
-   *          the logger
-   * @param PLUGIN_ID
-   *          the id of the plugin that is runnign this
-   * @param scenario
-   *          the name of this scenario
-   * @param wholeStart
-   *          overall start time
-   * @param wholeEnd
-   *          overall end time
-   * @param legStorer
-   *          someone interested in legs
-   * @param zigStorer
-   *          someone interested in zigs
-   * @param RMS_ZIG_RATIO
-   *          how much better the slice has to be
-   * @param optimiseTolerance
-   *          when the ARC_TAN fit is good enough
-   * @param thisLegTimes
-   *          bearing times
-   * @param thisLegBearings
-   *          bearing values
-   */
-  public void sliceThis_Original(final ILog log, final String PLUGIN_ID,
-      final String scenario, final long wholeStart, final long wholeEnd,
-      final ILegStorer legStorer, IZigStorer zigStorer,
-      final double RMS_ZIG_RATIO, final double optimiseTolerance,
-      final List<Long> thisLegTimes, final List<Double> thisLegBearings)
-  {
-    // ok, find the best slice
-    // prepare the data
-
-    // final int len = thisLegTimes.size();
-    // for (int i = 0; i < len; i++)
-    // {
-    // System.out.print(thisLegTimes.get(i) + "L, ");
-    // }
-    // System.out.println("===");
-    // for (int i = 0; i < len; i++)
-    // {
-    // System.out.print(thisLegBearings.get(i) + ", ");
-    // }
-
-    if (thisLegBearings.size() == 0)
-    {
-      return;
-    }
-
-    final Minimisation wholeLeg =
-        optimiseThis_Legacy(thisLegTimes, thisLegBearings, thisLegBearings
-            .get(0), optimiseTolerance);
-    final double wholeLegScore = wholeLeg.getMinimum();
-
-    // System.out.println("Whole leg score is:" + wholeLegScore);
-
-    // ok, now have to slice it
-    double bestScore = Double.MAX_VALUE;
-    // int bestSlice = -1;
-    long sliceTime = -1;
-    long bestLegOneEnd = -1;
-    long bestLegTwoStart = -1;
-
-    /**
-     * how long we allow for a turn (millis)
-     * 
-     */
-    final long BUFFER_SIZE = 300 * 1000;
-
-    // TODO - drop this object, it's just for debugging
-    // DateFormat ds = new SimpleDateFormat("hh:mm:ss");
-
-    // find the optimal first slice
-    for (int index = 0; index < thisLegTimes.size(); index++)
-    {
-      final int legOneEnd = getEnd(0, thisLegTimes, BUFFER_SIZE, index);
-      final int legTwoStart = getStart(0, thisLegTimes, BUFFER_SIZE, index);
-
-      // check we have two legitimate legs
-      if (legOneEnd != -1 && legTwoStart != -1)
-      {
-        // what's the total score for slicing at this index?
-        final double sum =
-            sliceLeg(index, thisLegBearings, thisLegTimes, legOneEnd,
-                legTwoStart, optimiseTolerance);
-
-        // System.out.println(ds.format(new Date(thisLegTimes.get(index))) + ", " + sum);
-
-        // is this better?
-        if ((sum != Double.MAX_VALUE) && (sum < bestScore))
-        {
-          // yes - store it.
-          bestScore = sum;
-          // bestSlice = index;
-          sliceTime = thisLegTimes.get(index);
-          bestLegOneEnd = thisLegTimes.get(legOneEnd);
-          bestLegTwoStart = thisLegTimes.get(legTwoStart);
-        }
-      }
-    }
-
-    // right, how did we get on?
-    if (sliceTime != -1)
-    {
-      // System.out.println(ds.format(new Date(sliceTime)));
-      // System.out.println("Best score:" + bestScore + " whole score:" + wholeLegScore + " ratio:"
-      // + (bestScore / wholeLegScore));
-
-      // is this slice acceptable?
-      if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
-      {
-        legStorer.storeLeg(scenario, wholeStart, bestLegOneEnd, bestScore
-            / wholeLegScore * 100);
-        legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd, bestScore
-            / wholeLegScore * 100);
-        if (zigStorer != null)
-        {
-          zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart,
-              bestScore / wholeLegScore * 100);
-        }
-      }
-      else
-      {
-        // right - we couldn't get a good slice. see what the whole score is
-        // SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
-        // + wholeLegScore + " best slice:" + bestScore, null);
-
-        // just store the whole slice
-        legStorer.storeLeg(scenario, wholeStart, wholeEnd, wholeLegScore
-            / wholeLegScore * 100);
-      }
-    }
-    else
-    {
-      log.log(new Status(Status.INFO, PLUGIN_ID,
-          "slicing complete, can't slice", null));
-    }
-
-    // and tell the storer that we're done.
-    zigStorer.finish();
-
-  }
+//
+//  /**
+//   * @param trialIndex
+//   * @param bearings
+//   * @param times
+//   * @param legOneEnd
+//   * @param legTwoStart
+//   * @param optimiserTolerance
+//   * @param fittedQ
+//   * @param fittedP
+//   * @param overallScore
+//   *          the overall score for this leg
+//   * @param BUFFER_REGION
+//   * @param straightBar
+//   * @param thisSeries
+//   * @return
+//   */
+//  private double sliceLeg(final int trialIndex, final List<Double> bearings,
+//      final List<Long> times, final int legOneEnd, final int legTwoStart,
+//      final double optimiserTolerance)
+//  {
+//
+//    final List<Long> theseTimes = times;
+//    final List<Double> theseBearings = bearings;
+//
+//    final Date thisD = new Date(times.get(trialIndex));
+//
+//    // if((legOneEnd == -1) || (legTwoStart == -1))
+//    // return Double.MAX_VALUE;
+//
+//    double beforeScore = Double.MAX_VALUE;
+//    double afterScore = Double.MAX_VALUE;
+//
+//    @SuppressWarnings("unused")
+//    String msg = dateF.format(thisD);
+//
+//    Minimisation beforeOptimiser = null;
+//    Minimisation afterOptimiser = null;
+//
+//    if (legOneEnd != -1)
+//    {
+//      final List<Long> beforeTimes = theseTimes.subList(0, legOneEnd);
+//      final List<Double> beforeBearings = theseBearings.subList(0, legOneEnd);
+//      beforeOptimiser =
+//          optimiseThis_Legacy(beforeTimes, beforeBearings, beforeBearings
+//              .get(0), optimiserTolerance);
+//      beforeScore = beforeOptimiser.getMinimum();
+//      // System.out.println(" before:" + _outDates(beforeTimes));
+//
+//    }
+//
+//    if (legTwoStart != -1)
+//    {
+//      final List<Long> afterTimes =
+//          theseTimes.subList(legTwoStart, theseTimes.size() - 1);
+//      final List<Double> afterBearings =
+//          theseBearings.subList(legTwoStart, theseTimes.size() - 1);
+//      afterOptimiser =
+//          optimiseThis_Legacy(afterTimes, afterBearings, afterBearings.get(0),
+//              optimiserTolerance);
+//      afterScore = afterOptimiser.getMinimum();
+//      // System.out.println(" after:" + _outDates(afterTimes));
+//    }
+//
+//    // find the total error sum
+//    double sum = Double.MAX_VALUE;
+//
+//    // do we have both legs?
+//    if ((legOneEnd != -1) && (legTwoStart != -1))
+//    {
+//      final int beforeLen = theseTimes.subList(0, legOneEnd).size();
+//      final int afterLen =
+//          theseTimes.subList(legTwoStart, theseTimes.size() - 1).size();
+//
+//      final int totalCuts = beforeLen + afterLen;
+//
+//      final double beforeNormal = beforeScore * beforeLen / totalCuts;
+//      final double afterNormal = afterScore * afterLen / totalCuts;
+//      sum = beforeNormal + afterNormal;
+//
+//      // double[] bValues = beforeOptimiser.getParamValues();
+//      // msg +=
+//      // " ,BEFORE," + dateF.format(times.get(0)) + ","
+//      // + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
+//      // msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," +
+//      // beforeNormal;
+//      // double[] aValues = afterOptimiser.getParamValues();
+//      // msg +=
+//      // " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
+//      // + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
+//      // msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," +
+//      // afterNormal;
+//      // System.out.println(msg + ",sum," + sum);
+//
+//    }
+//
+//    return sum;
+//  }
+//
+//  /**
+//   * 
+//   * @param log
+//   *          the logger
+//   * @param PLUGIN_ID
+//   *          the id of the plugin that is runnign this
+//   * @param scenario
+//   *          the name of this scenario
+//   * @param wholeStart
+//   *          overall start time
+//   * @param wholeEnd
+//   *          overall end time
+//   * @param legStorer
+//   *          someone interested in legs
+//   * @param zigStorer
+//   *          someone interested in zigs
+//   * @param RMS_ZIG_RATIO
+//   *          how much better the slice has to be
+//   * @param optimiseTolerance
+//   *          when the ARC_TAN fit is good enough
+//   * @param thisLegTimes
+//   *          bearing times
+//   * @param thisLegBearings
+//   *          bearing values
+//   */
+//  public void sliceThis_Original(final ILog log, final String PLUGIN_ID,
+//      final String scenario, final long wholeStart, final long wholeEnd,
+//      final ILegStorer legStorer, IZigStorer zigStorer,
+//      final double RMS_ZIG_RATIO, final double optimiseTolerance,
+//      final List<Long> thisLegTimes, final List<Double> thisLegBearings)
+//  {
+//    // ok, find the best slice
+//    // prepare the data
+//
+//    // final int len = thisLegTimes.size();
+//    // for (int i = 0; i < len; i++)
+//    // {
+//    // System.out.print(thisLegTimes.get(i) + "L, ");
+//    // }
+//    // System.out.println("===");
+//    // for (int i = 0; i < len; i++)
+//    // {
+//    // System.out.print(thisLegBearings.get(i) + ", ");
+//    // }
+//
+//    if (thisLegBearings.size() == 0)
+//    {
+//      return;
+//    }
+//
+//    final Minimisation wholeLeg =
+//        optimiseThis_Legacy(thisLegTimes, thisLegBearings, thisLegBearings
+//            .get(0), optimiseTolerance);
+//    final double wholeLegScore = wholeLeg.getMinimum();
+//
+//    // ok, now have to slice it
+//    double bestScore = Double.MAX_VALUE;
+//    // int bestSlice = -1;
+//    long sliceTime = -1;
+//    long bestLegOneEnd = -1;
+//    long bestLegTwoStart = -1;
+//
+//    /**
+//     * how long we allow for a turn (millis)
+//     * 
+//     */
+//    final long BUFFER_SIZE = 300 * 1000;
+//
+//    // TODO - drop this object, it's just for debugging
+//    // DateFormat ds = new SimpleDateFormat("hh:mm:ss");
+//
+//    // find the optimal first slice
+//    for (int index = 0; index < thisLegTimes.size(); index++)
+//    {
+//      final int legOneEnd = getEnd(0, thisLegTimes, BUFFER_SIZE, index);
+//      final int legTwoStart = getStart(0, thisLegTimes, BUFFER_SIZE, index);
+//
+//      // check we have two legitimate legs
+//      if (legOneEnd != -1 && legTwoStart != -1)
+//      {
+//        // what's the total score for slicing at this index?
+//        final double sum =
+//            sliceLeg(index, thisLegBearings, thisLegTimes, legOneEnd,
+//                legTwoStart, optimiseTolerance);
+//
+//        // is this better?
+//        if ((sum != Double.MAX_VALUE) && (sum < bestScore))
+//        {
+//          // yes - store it.
+//          bestScore = sum;
+//          // bestSlice = index;
+//          sliceTime = thisLegTimes.get(index);
+//          bestLegOneEnd = thisLegTimes.get(legOneEnd);
+//          bestLegTwoStart = thisLegTimes.get(legTwoStart);
+//        }
+//      }
+//    }
+//
+//    // right, how did we get on?
+//    if (sliceTime != -1)
+//    {
+//      // is this slice acceptable?
+//      if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
+//      {
+//        legStorer.storeLeg(scenario, wholeStart, bestLegOneEnd, bestScore
+//            / wholeLegScore * 100);
+//        legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd, bestScore
+//            / wholeLegScore * 100);
+//        if (zigStorer != null)
+//        {
+//          zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart,
+//              bestScore / wholeLegScore * 100);
+//        }
+//      }
+//      else
+//      {
+//        // right - we couldn't get a good slice. see what the whole score is
+//        // SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
+//        // + wholeLegScore + " best slice:" + bestScore, null);
+//
+//        // just store the whole slice
+//        legStorer.storeLeg(scenario, wholeStart, wholeEnd, wholeLegScore
+//            / wholeLegScore * 100);
+//      }
+//    }
+//    else
+//    {
+//      log.log(new Status(Status.INFO, PLUGIN_ID,
+//          "slicing complete, can't slice", null));
+//    }
+//
+//    // and tell the storer that we're done.
+//    zigStorer.finish();
+//
+//  }
 
   private static interface EventHappened
   {
@@ -930,6 +937,12 @@ public class ZigDetector
       final double RMS_ZIG_RATIO, final double optimiseTolerance,
       final List<Long> legTimes, final List<Double> rawLegBearings)
   {
+    // check we have some
+    if (legTimes.isEmpty())
+    {
+      return;
+    }
+
     // ok, find the best slice
     // prepare the data
     final List<Double> legBearings = prepareBearings(rawLegBearings);
@@ -946,26 +959,30 @@ public class ZigDetector
     // System.out.print(legBearings.get(i) + ", ");
     // }
 
+    // System.out.println("## ZigDetector.sliceThis Slicing from:" + new Date(legTimes.get(0)) +
+    // " to:"
+    // + new Date(legTimes.get(legTimes.size() - 1)));
+
     if (legBearings.size() == 0)
     {
       return;
     }
 
-    final Set<Long> legEnds = new TreeSet<Long>();
-    final Set<Long> legStarts = new TreeSet<Long>();
+    final Set<ScoredTime> zigStarts = new TreeSet<ScoredTime>();
+    final Set<ScoredTime> zigEnds = new TreeSet<ScoredTime>();
 
     // include our start/end values
-    legStarts.add(legTimes.get(0));
-    legEnds.add(legTimes.get(legTimes.size() - 1));
+    // zigEnds.add(legTimes.get(0));
+    // zigStarts.add(legTimes.get(legTimes.size() - 1));
 
     EventHappened fwdListener = new EventHappened()
     {
       @Override
       public void eventAt(long time, double score, double threshold)
       {
-        System.out
-            .println("zig start at:" + new Date(time) + " score:" + score);
-        legEnds.add(time);
+        // System.out
+        // .println("zig start at:" + new Date(time) + " score:" + score);
+        zigStarts.add(new ScoredTime(time, score));
       }
     };
 
@@ -976,14 +993,13 @@ public class ZigDetector
         RMS_ZIG_RATIO, timeWindow);
 
     // ok, now reverse the steps
-    @SuppressWarnings("unused")
     EventHappened backListener = new EventHappened()
     {
       @Override
       public void eventAt(long time, double score, double threshold)
       {
-        System.out.println("zig end at:" + new Date(time) + " score:" + score);
-        legStarts.add(time);
+        // System.out.println("zig end at:" + new Date(time) + " score:" + score);
+        zigEnds.add(new ScoredTime(time, score));
       }
     };
 
@@ -991,51 +1007,88 @@ public class ZigDetector
     Collections.reverse(legBearings);
 
     // ok, now run through it
-    final double reverseZigRation = RMS_ZIG_RATIO; // * 0.4;
+    final double reverseZigRation = RMS_ZIG_RATIO * 0.5;
     runThrough(optimiseTolerance, legTimes, legBearings, backListener,
         reverseZigRation, timeWindow);
 
-    // ok, now tidy up the data
+    // note: we should share the zigs, not the ends.
+    // the parent algorithm may be working through blocks
+    // of sensor data that equate to ownship legs. We
+    // don't wish to slice the data according to legs we've
+    // identified (presumably starting at the first cut),
+    // byt by legs of data
     List<LegOfData> legs = new ArrayList<LegOfData>();
     Long lastZig = null;
-    for (long legStart : legStarts)
+    for (ScoredTime legStart : zigEnds)
     {
-      if (lastZig == null || legStart > lastZig)
+      if (lastZig == null || legStart._time > lastZig)
       {
         // ok, we have start time. find the next leg end time
-        for (long legEnd : legEnds)
+        for (ScoredTime legEnd : zigStarts)
         {
-          if (legEnd > legStart)
+          if (legEnd._time > legStart._time)
           {
             LegOfData newLeg =
-                new LegOfData("Leg:" + (legs.size() + 1), legStart, legEnd);
-            System.out.println("adding leg:" + newLeg);
+                new LegOfData("Leg:" + (legs.size() + 1), legStart._time,
+                    legEnd._time);
+            // System.out.println("adding leg:" + newLeg);
             legs.add(newLeg);
-            lastZig = legEnd;
+            lastZig = legEnd._time;
             break;
           }
         }
       }
-
     }
 
+    // refactor out storing zigs, to simplify method
+    storeZigs(wholeEnd, zigStorer, zigStarts, zigEnds);
+    
     // ok, share the good news
-    LegOfData lastLeg = null;
     for (LegOfData leg : legs)
     {
       if (legStorer != null)
       {
         legStorer.storeLeg(leg.getName(), leg.getStart(), leg.getEnd(), 2d);
       }
-      if (zigStorer != null)
+    }
+
+  }
+
+  private void storeZigs(final long wholeEnd, IZigStorer zigStorer,
+      final Set<ScoredTime> zigStarts, final Set<ScoredTime> zigEnds)
+  {
+    // ok, try to broadcast the zigs
+    if (zigStorer != null)
+    {
+      // LegOfData lastLeg = null;
+      for (ScoredTime legEnd : zigStarts)
       {
-        // do we know the last leg?
-        if (lastLeg != null)
+        boolean matched = false;
+        // ok, find the zig end that appears after thie
+        for (ScoredTime legStart : zigEnds)
         {
-          // System.out.println("storing zig at:" + new Date(lastLeg.getEnd())
-          // + " to:" + new Date(leg.getStart()));
-          zigStorer.storeZig(leg.getName(), lastLeg.getEnd(), leg.getStart(),
-              2d);
+          if (legStart._time > legEnd._time)
+          {
+            // ok, this will do
+            zigStorer.storeZig("Scenario", legEnd._time, legStart._time,
+                legEnd._score);
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched)
+        {
+          long newEnd = legEnd._time + 180000;
+          
+          // check the finish point is still in the scenario period
+          // (put it 5 secs before the end, if necessary
+          newEnd = Math.min(newEnd, wholeEnd - 5000);
+          System.err.println("MANUALLY CLOSING ZIG time:" + new Date(legEnd._time) + " new end:" + new Date(newEnd));
+          
+          // ok, we didn't find a zig end. make one up, with a 3 min period
+          zigStorer.storeZig("Scenario", legEnd._time, newEnd,
+              legEnd._score);
         }
       }
     }
@@ -1048,30 +1101,50 @@ public class ZigDetector
 
     final int len = legTimes.size();
 
-    java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
+//    java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
     TimeRestrictedMovingAverage avgScore =
-        new TimeRestrictedMovingAverage(timeWindow);
+        new TimeRestrictedMovingAverage(timeWindow, 3);
+
+    /** experimental regression analysis of data, it will let
+     * us forecast the next value, rather than using the average
+     */
+    SimpleRegression regression = new SimpleRegression();
+
+//    final long firstT = legTimes.get(0);
 
     int start = 0;
     for (int end = 0; end < len; end++)
     {
       final long thisTime = legTimes.get(end);
-      Date legEnd = new Date(thisTime);
-
-      if (legEnd.toString().contains("17:30"))
-      {
-        // System.out.println("ghw");
-      }
+      
+//       Date legEnd = new Date(thisTime);       
+//       if(legEnd.toString().contains("13:24:10"))
+//       {
+//         float dd = 45 * 34;
+//         float ee = dd + 33;
+//       }
 
       // we need at least 4 cuts
       if (end >= start + 4)
       {
         // ok, if we've got more than entries, just use the most recent onces
         // start = Math.max(start, end - 20);
+        
+        // aah, sub-list end point is exclusive, so we have to add one,
+        // if we can
+        final int increment;
+        if(end < legTimes.size() - 2)
+        {
+          increment = 1;
+        }
+        else
+        {
+          increment = 0;
+        }
 
-        final List<Long> times = legTimes.subList(start, end);
-        final List<Double> bearings = legBearings.subList(start, end);
+        final List<Long> times = legTimes.subList(start, end + increment);
+        final List<Double> bearings = legBearings.subList(start, end + increment);
 
         Minimisation optimiser =
             optimiseThis(times, bearings, optimiseTolerance);
@@ -1116,25 +1189,32 @@ public class ZigDetector
           scoreDelta = score - avg;
         }
 
+        // what's the forecast
+        @SuppressWarnings("unused")
+        double forecast = regression.predict(thisTime);
+        
         // contribute this score
         avgScore.add(thisTime, score);
-
+        
+        // now add a value to the forecast
+        regression.addData(thisTime, score);
+        
         // final double thisProportion = scoreDelta / variance;
-        final double thisProportion = scoreDelta / (variance * variance);
+        final double thisProportion = scoreDelta / variance;
 
+//        final long elapsed = (thisTime - firstT) / 1000;
 //        NumberFormat nf = new DecimalFormat(" 0.000000;-0.000000");
-//        System.out.println(df.format(new Date(thisTime)) + " " + nf.format(avg)
-//            + " " + nf.format(score) + " " + nf.format(scoreDelta) + " " + nf.format(variance) + " "
-//            + nf.format(thisProportion) + " "
-//            );
-
+//        System.out.println(df.format(new Date(thisTime)) + " " + elapsed + " "
+//            + nf.format(avg) + " " + nf.format(score) + " "
+//            + nf.format(scoreDelta) + " " + nf.format(variance) + " "
+//            + nf.format(thisProportion) + " " + nf.format(forecast) + " " + nf.format (score / forecast));
 
         // do we have enough data?
         if (avgScore.isPopulated())
         {
 
           // are we twice the variance?
-          if (thisProportion >  zigThreshold)
+          if (thisProportion > zigThreshold)
           {
             // System.out.println("this proportion:" + thisProportion);
 
@@ -1149,6 +1229,9 @@ public class ZigDetector
 
             // and clear the moving average
             avgScore.clear();
+            
+            // and clear the regression
+            regression.clear();
           }
 
         }
@@ -1232,33 +1315,33 @@ public class ZigDetector
     return res;
 
   }
-
-  final private Minimisation optimiseThis_Legacy(final List<Long> times,
-      final List<Double> bearings, final double initialBearing,
-      final double optimiserTolerance)
-  {
-    // Create instance of Minimisation
-    final Minimisation min = new Minimisation();
-
-    // Create instace of class holding function to be minimised
-    final FlanaganArctan funct = new FlanaganArctan(times, bearings);
-
-    // initial estimates
-    final double firstBearing = bearings.get(0);
-    final double[] start =
-    {firstBearing, 0.0D, 0.0D};
-
-    // initial step sizes
-    final double[] step =
-    {0.2D, 0.3D, 0.3D};
-
-    // convergence tolerance
-    final double ftol = optimiserTolerance;
-
-    // Nelder and Mead minimisation procedure
-    min.nelderMead(funct, start, step, ftol);
-
-    return min;
-  }
+//
+//  final private Minimisation optimiseThis_Legacy(final List<Long> times,
+//      final List<Double> bearings, final double initialBearing,
+//      final double optimiserTolerance)
+//  {
+//    // Create instance of Minimisation
+//    final Minimisation min = new Minimisation();
+//
+//    // Create instace of class holding function to be minimised
+//    final FlanaganArctan funct = new FlanaganArctan(times, bearings);
+//
+//    // initial estimates
+//    final double firstBearing = bearings.get(0);
+//    final double[] start =
+//    {firstBearing, 0.0D, 0.0D};
+//
+//    // initial step sizes
+//    final double[] step =
+//    {0.2D, 0.3D, 0.3D};
+//
+//    // convergence tolerance
+//    final double ftol = optimiserTolerance;
+//
+//    // Nelder and Mead minimisation procedure
+//    min.nelderMead(funct, start, step, ftol);
+//
+//    return min;
+//  }
 
 }

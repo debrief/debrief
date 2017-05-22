@@ -788,6 +788,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   transient int[] _myPts;
 
+  /** when plotting a track, we end up calling "get visible period" very frequently.
+   * So, we'll cache it, together with the time the cached version
+   * was generated. This will let us decide whether to recalculate,
+   * or to use a cached version
+   * 
+   */
+  TimePeriod _cachedPeriod = null;
+  
+  /** the time that we last calculated the time period 
+   * 
+   */
+  long _timeCachedPeriodCalculated = 0;
+  
+
+
   /**
    * the sensor tracks for this vessel
    */
@@ -4780,36 +4795,59 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // _locationListener);
   }
 
+  /** Determine the time period for which we have visible locations
+   * 
+   * @return
+   */
   public TimePeriod getVisiblePeriod()
   {
-    TimePeriod res = null;
-    Enumeration<Editable> pos = getPositions();
-    while (pos.hasMoreElements())
+    // ok, have we determined the visible period recently?
+    final long tNow = System.currentTimeMillis();
+    
+    // how long does the cached value remain valid for?
+    final long ALLOWABLE_PERIOD = 500;
+    if(_cachedPeriod != null && tNow - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
     {
-      FixWrapper editable = (FixWrapper) pos.nextElement();
-      if (editable.getVisible())
+      // still in date, use the last calculated period
+    }
+    else
+    {
+      // ok, calculate a new one
+      TimePeriod res = null;
+      final Enumeration<Editable> pos = getPositions();
+      while (pos.hasMoreElements())
       {
-        HiResDate thisT = editable.getTime();
-        if (res == null)
+        FixWrapper editable = (FixWrapper) pos.nextElement();
+        if (editable.getVisible())
         {
-          res = new TimePeriod.BaseTimePeriod(thisT, thisT);
-        }
-        else
-        {
-          res.extend(thisT);
+          final HiResDate thisT = editable.getTime();
+          if (res == null)
+          {
+            res = new TimePeriod.BaseTimePeriod(thisT, thisT);
+          }
+          else
+          {
+            res.extend(thisT);
+          }
         }
       }
+      // ok, store the new time period
+      _cachedPeriod = res;
+      
+      // remember when it was calculated
+      _timeCachedPeriodCalculated = tNow;
     }
-    return res;
+    
+    return _cachedPeriod;
   }
 
   public boolean isVisibleAt(HiResDate dtg)
-  {
-    TimePeriod period = getVisiblePeriod();
+  {    
     boolean res = false;
-    if (period != null)
+    final TimePeriod visiblePeriod = getVisiblePeriod();
+    if (visiblePeriod != null)
     {
-      res = period.contains(dtg);
+      res = visiblePeriod.contains(dtg);
     }
     return res;
   }
