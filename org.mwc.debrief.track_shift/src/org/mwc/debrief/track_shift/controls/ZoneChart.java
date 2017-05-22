@@ -827,15 +827,14 @@ public class ZoneChart extends Composite
     final TimeSeries otherSeries = null;
 
     return create(undoRedoProvider, chartTitle, yTitle, parent, zones,
-        xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer);
+        xySeries, otherSeries, blueProv, lineColor, zoneSlicer);
   }
 
   public static ZoneChart create(final ZoneUndoRedoProvider undoRedoProviderIn,
       final String chartTitle, final String yTitle, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
-      final TimeSeries otherSeries, final long[] timeValues,
-      final ColorProvider blueProv, final Color lineColor,
-      final ZoneSlicer zoneSlicer)
+      final TimeSeries otherSeries, final ColorProvider blueProv,
+      final Color lineColor, final ZoneSlicer zoneSlicer)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
