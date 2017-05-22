@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
@@ -397,7 +398,7 @@ public class ZigDetector
       // Collections.reverse(tList);
       // Collections.reverse(tBearings);
       //
-      long timeWindow = 180000;
+      long timeWindow = 240000;
       zigRatio = 15d;
       EventHappened happened = new EventHappened()
       {
@@ -1090,27 +1091,50 @@ public class ZigDetector
 
     final int len = legTimes.size();
 
-//    java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
+    @SuppressWarnings("unused")
+    java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
     TimeRestrictedMovingAverage avgScore =
         new TimeRestrictedMovingAverage(timeWindow, 3);
+    
+    SimpleRegression regression = new SimpleRegression();
+    
 
-//    final long firstT = legTimes.get(0);
+    @SuppressWarnings("unused")
+    final long firstT = legTimes.get(0);
 
     int start = 0;
     for (int end = 0; end < len; end++)
     {
       final long thisTime = legTimes.get(end);
-      // Date legEnd = new Date(thisTime);
+      
+//       Date legEnd = new Date(thisTime);       
+//       if(legEnd.toString().contains("13:24:10"))
+//       {
+//         float dd = 45 * 34;
+//         float ee = dd + 33;
+//       }
 
       // we need at least 4 cuts
       if (end >= start + 4)
       {
         // ok, if we've got more than entries, just use the most recent onces
         // start = Math.max(start, end - 20);
+        
+        // aah, sub-list end point is exclusive, so we have to add one,
+        // if we can
+        final int increment;
+        if(end < legTimes.size() - 2)
+        {
+          increment = 1;
+        }
+        else
+        {
+          increment = 0;
+        }
 
-        final List<Long> times = legTimes.subList(start, end);
-        final List<Double> bearings = legBearings.subList(start, end);
+        final List<Long> times = legTimes.subList(start, end + increment);
+        final List<Double> bearings = legBearings.subList(start, end + increment);
 
         Minimisation optimiser =
             optimiseThis(times, bearings, optimiseTolerance);
@@ -1155,19 +1179,27 @@ public class ZigDetector
           scoreDelta = score - avg;
         }
 
+        // what's the forecast
+        @SuppressWarnings("unused")
+        double forecast = regression.predict(thisTime);
+        
         // contribute this score
         avgScore.add(thisTime, score);
+        
+        // now add a value to the forecast
+        regression.addData(thisTime, score);
+        
+        
 
         // final double thisProportion = scoreDelta / variance;
         final double thisProportion = scoreDelta / variance;
 
 //        final long elapsed = (thisTime - firstT) / 1000;
-
 //        NumberFormat nf = new DecimalFormat(" 0.000000;-0.000000");
 //        System.out.println(df.format(new Date(thisTime)) + " " + elapsed + " "
 //            + nf.format(avg) + " " + nf.format(score) + " "
 //            + nf.format(scoreDelta) + " " + nf.format(variance) + " "
-//            + nf.format(thisProportion) + " ");
+//            + nf.format(thisProportion) + " " + nf.format(forecast) + " " + nf.format (score / forecast));
 
         // do we have enough data?
         if (avgScore.isPopulated())
