@@ -16,7 +16,6 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeRestrictedMovingAverage;
 import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.osgi.framework.Bundle;
@@ -765,142 +764,142 @@ public class ZigDetector
 
     return sum;
   }
-
-  /**
-   * 
-   * @param log
-   *          the logger
-   * @param PLUGIN_ID
-   *          the id of the plugin that is runnign this
-   * @param scenario
-   *          the name of this scenario
-   * @param wholeStart
-   *          overall start time
-   * @param wholeEnd
-   *          overall end time
-   * @param legStorer
-   *          someone interested in legs
-   * @param zigStorer
-   *          someone interested in zigs
-   * @param RMS_ZIG_RATIO
-   *          how much better the slice has to be
-   * @param optimiseTolerance
-   *          when the ARC_TAN fit is good enough
-   * @param thisLegTimes
-   *          bearing times
-   * @param thisLegBearings
-   *          bearing values
-   */
-  public void sliceThis_Original(final ILog log, final String PLUGIN_ID,
-      final String scenario, final long wholeStart, final long wholeEnd,
-      final ILegStorer legStorer, IZigStorer zigStorer,
-      final double RMS_ZIG_RATIO, final double optimiseTolerance,
-      final List<Long> thisLegTimes, final List<Double> thisLegBearings)
-  {
-    // ok, find the best slice
-    // prepare the data
-
-    // final int len = thisLegTimes.size();
-    // for (int i = 0; i < len; i++)
-    // {
-    // System.out.print(thisLegTimes.get(i) + "L, ");
-    // }
-    // System.out.println("===");
-    // for (int i = 0; i < len; i++)
-    // {
-    // System.out.print(thisLegBearings.get(i) + ", ");
-    // }
-
-    if (thisLegBearings.size() == 0)
-    {
-      return;
-    }
-
-    final Minimisation wholeLeg =
-        optimiseThis_Legacy(thisLegTimes, thisLegBearings, thisLegBearings
-            .get(0), optimiseTolerance);
-    final double wholeLegScore = wholeLeg.getMinimum();
-
-    // ok, now have to slice it
-    double bestScore = Double.MAX_VALUE;
-    // int bestSlice = -1;
-    long sliceTime = -1;
-    long bestLegOneEnd = -1;
-    long bestLegTwoStart = -1;
-
-    /**
-     * how long we allow for a turn (millis)
-     * 
-     */
-    final long BUFFER_SIZE = 300 * 1000;
-
-    // TODO - drop this object, it's just for debugging
-    // DateFormat ds = new SimpleDateFormat("hh:mm:ss");
-
-    // find the optimal first slice
-    for (int index = 0; index < thisLegTimes.size(); index++)
-    {
-      final int legOneEnd = getEnd(0, thisLegTimes, BUFFER_SIZE, index);
-      final int legTwoStart = getStart(0, thisLegTimes, BUFFER_SIZE, index);
-
-      // check we have two legitimate legs
-      if (legOneEnd != -1 && legTwoStart != -1)
-      {
-        // what's the total score for slicing at this index?
-        final double sum =
-            sliceLeg(index, thisLegBearings, thisLegTimes, legOneEnd,
-                legTwoStart, optimiseTolerance);
-
-        // is this better?
-        if ((sum != Double.MAX_VALUE) && (sum < bestScore))
-        {
-          // yes - store it.
-          bestScore = sum;
-          // bestSlice = index;
-          sliceTime = thisLegTimes.get(index);
-          bestLegOneEnd = thisLegTimes.get(legOneEnd);
-          bestLegTwoStart = thisLegTimes.get(legTwoStart);
-        }
-      }
-    }
-
-    // right, how did we get on?
-    if (sliceTime != -1)
-    {
-      // is this slice acceptable?
-      if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
-      {
-        legStorer.storeLeg(scenario, wholeStart, bestLegOneEnd, bestScore
-            / wholeLegScore * 100);
-        legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd, bestScore
-            / wholeLegScore * 100);
-        if (zigStorer != null)
-        {
-          zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart,
-              bestScore / wholeLegScore * 100);
-        }
-      }
-      else
-      {
-        // right - we couldn't get a good slice. see what the whole score is
-        // SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
-        // + wholeLegScore + " best slice:" + bestScore, null);
-
-        // just store the whole slice
-        legStorer.storeLeg(scenario, wholeStart, wholeEnd, wholeLegScore
-            / wholeLegScore * 100);
-      }
-    }
-    else
-    {
-      log.log(new Status(Status.INFO, PLUGIN_ID,
-          "slicing complete, can't slice", null));
-    }
-
-    // and tell the storer that we're done.
-    zigStorer.finish();
-
-  }
+//
+//  /**
+//   * 
+//   * @param log
+//   *          the logger
+//   * @param PLUGIN_ID
+//   *          the id of the plugin that is runnign this
+//   * @param scenario
+//   *          the name of this scenario
+//   * @param wholeStart
+//   *          overall start time
+//   * @param wholeEnd
+//   *          overall end time
+//   * @param legStorer
+//   *          someone interested in legs
+//   * @param zigStorer
+//   *          someone interested in zigs
+//   * @param RMS_ZIG_RATIO
+//   *          how much better the slice has to be
+//   * @param optimiseTolerance
+//   *          when the ARC_TAN fit is good enough
+//   * @param thisLegTimes
+//   *          bearing times
+//   * @param thisLegBearings
+//   *          bearing values
+//   */
+//  public void sliceThis_Original(final ILog log, final String PLUGIN_ID,
+//      final String scenario, final long wholeStart, final long wholeEnd,
+//      final ILegStorer legStorer, IZigStorer zigStorer,
+//      final double RMS_ZIG_RATIO, final double optimiseTolerance,
+//      final List<Long> thisLegTimes, final List<Double> thisLegBearings)
+//  {
+//    // ok, find the best slice
+//    // prepare the data
+//
+//    // final int len = thisLegTimes.size();
+//    // for (int i = 0; i < len; i++)
+//    // {
+//    // System.out.print(thisLegTimes.get(i) + "L, ");
+//    // }
+//    // System.out.println("===");
+//    // for (int i = 0; i < len; i++)
+//    // {
+//    // System.out.print(thisLegBearings.get(i) + ", ");
+//    // }
+//
+//    if (thisLegBearings.size() == 0)
+//    {
+//      return;
+//    }
+//
+//    final Minimisation wholeLeg =
+//        optimiseThis_Legacy(thisLegTimes, thisLegBearings, thisLegBearings
+//            .get(0), optimiseTolerance);
+//    final double wholeLegScore = wholeLeg.getMinimum();
+//
+//    // ok, now have to slice it
+//    double bestScore = Double.MAX_VALUE;
+//    // int bestSlice = -1;
+//    long sliceTime = -1;
+//    long bestLegOneEnd = -1;
+//    long bestLegTwoStart = -1;
+//
+//    /**
+//     * how long we allow for a turn (millis)
+//     * 
+//     */
+//    final long BUFFER_SIZE = 300 * 1000;
+//
+//    // TODO - drop this object, it's just for debugging
+//    // DateFormat ds = new SimpleDateFormat("hh:mm:ss");
+//
+//    // find the optimal first slice
+//    for (int index = 0; index < thisLegTimes.size(); index++)
+//    {
+//      final int legOneEnd = getEnd(0, thisLegTimes, BUFFER_SIZE, index);
+//      final int legTwoStart = getStart(0, thisLegTimes, BUFFER_SIZE, index);
+//
+//      // check we have two legitimate legs
+//      if (legOneEnd != -1 && legTwoStart != -1)
+//      {
+//        // what's the total score for slicing at this index?
+//        final double sum =
+//            sliceLeg(index, thisLegBearings, thisLegTimes, legOneEnd,
+//                legTwoStart, optimiseTolerance);
+//
+//        // is this better?
+//        if ((sum != Double.MAX_VALUE) && (sum < bestScore))
+//        {
+//          // yes - store it.
+//          bestScore = sum;
+//          // bestSlice = index;
+//          sliceTime = thisLegTimes.get(index);
+//          bestLegOneEnd = thisLegTimes.get(legOneEnd);
+//          bestLegTwoStart = thisLegTimes.get(legTwoStart);
+//        }
+//      }
+//    }
+//
+//    // right, how did we get on?
+//    if (sliceTime != -1)
+//    {
+//      // is this slice acceptable?
+//      if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
+//      {
+//        legStorer.storeLeg(scenario, wholeStart, bestLegOneEnd, bestScore
+//            / wholeLegScore * 100);
+//        legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd, bestScore
+//            / wholeLegScore * 100);
+//        if (zigStorer != null)
+//        {
+//          zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart,
+//              bestScore / wholeLegScore * 100);
+//        }
+//      }
+//      else
+//      {
+//        // right - we couldn't get a good slice. see what the whole score is
+//        // SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
+//        // + wholeLegScore + " best slice:" + bestScore, null);
+//
+//        // just store the whole slice
+//        legStorer.storeLeg(scenario, wholeStart, wholeEnd, wholeLegScore
+//            / wholeLegScore * 100);
+//      }
+//    }
+//    else
+//    {
+//      log.log(new Status(Status.INFO, PLUGIN_ID,
+//          "slicing complete, can't slice", null));
+//    }
+//
+//    // and tell the storer that we're done.
+//    zigStorer.finish();
+//
+//  }
 
   private static interface EventHappened
   {
