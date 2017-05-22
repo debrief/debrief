@@ -667,8 +667,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     Zone[] osZones = new ZoneChart.Zone[]
     {};
-    long[] osTimeValues = new long[]
-    {};
     final ZoneChart.ColorProvider blueProv = new ZoneChart.ColorProvider()
     {
       @Override
@@ -695,9 +693,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
-    final long[] tgtTimeValues = new long[]
-    {};
-
     // we need a color provider for the target legs
     final ZoneChart.ColorProvider randomProv = new ZoneChart.ColorProvider()
     {
