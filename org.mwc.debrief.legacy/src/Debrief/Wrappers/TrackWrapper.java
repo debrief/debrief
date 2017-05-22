@@ -794,12 +794,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * or to use a cached version
    * 
    */
-  TimePeriod cachedPeriod = null;
+  TimePeriod _cachedPeriod = null;
   
   /** the time that we last calculated the time period 
    * 
    */
-  long timeCachedPeriodCalculated = 0;
+  long _timeCachedPeriodCalculated = 0;
   
 
 
@@ -4795,28 +4795,32 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // _locationListener);
   }
 
+  /** Determine the time period for which we have visible locations
+   * 
+   * @return
+   */
   public TimePeriod getVisiblePeriod()
   {
     // ok, have we determined the visible period recently?
     final long tNow = System.currentTimeMillis();
+    
+    // how long does the cached value remain valid for?
     final long ALLOWABLE_PERIOD = 500;
-    if(cachedPeriod != null && tNow - timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
+    if(_cachedPeriod != null && tNow - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
     {
       // still in date, use the last calculated period
     }
     else
     {
       // ok, calculate a new one
-      timeCachedPeriodCalculated = tNow;
-      
       TimePeriod res = null;
-      Enumeration<Editable> pos = getPositions();
+      final Enumeration<Editable> pos = getPositions();
       while (pos.hasMoreElements())
       {
         FixWrapper editable = (FixWrapper) pos.nextElement();
         if (editable.getVisible())
         {
-          HiResDate thisT = editable.getTime();
+          final HiResDate thisT = editable.getTime();
           if (res == null)
           {
             res = new TimePeriod.BaseTimePeriod(thisT, thisT);
@@ -4828,11 +4832,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         }
       }
       // ok, store the new time period
-      cachedPeriod = res;
-
+      _cachedPeriod = res;
+      
+      // remember when it was calculated
+      _timeCachedPeriodCalculated = tNow;
     }
     
-    return cachedPeriod;
+    return _cachedPeriod;
   }
 
   public boolean isVisibleAt(HiResDate dtg)
