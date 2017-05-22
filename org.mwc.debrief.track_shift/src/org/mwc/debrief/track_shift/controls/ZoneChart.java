@@ -58,6 +58,71 @@ import MWC.GUI.Layers;
 
 public class ZoneChart extends Composite
 {
+
+  private final List<Zone> zones;
+  private final Map<Zone, IntervalMarker> zoneMarkers =
+      new HashMap<ZoneChart.Zone, IntervalMarker>();
+  private EditMode mode = EditMode.EDIT;
+  private volatile List<ZoneListener> listeners =
+      new ArrayList<ZoneChart.ZoneListener>(1);
+
+  private final Image handImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand.png").createImage();
+  private final Image addImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/add.png").createImage();
+  private final Image removeImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/remove.png").createImage();
+  private final Image handFistImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand_fist.png").createImage();
+  private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_1.png").createImage();
+  private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_2.png").createImage();
+  /** 24px images for the buttons */
+  private final Image editImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/edit.png").createImage();
+  private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/zoomin.png").createImage();
+  private final Image mergeImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/merge.png").createImage();
+  private final Image fitToWin24 = CorePlugin.getImageDescriptor(
+      "/icons/24/fit_to_win.png").createImage();
+  private final Image calculator24 = CorePlugin.getImageDescriptor(
+      "/icons/24/calculator.png").createImage();
+
+  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
+      .getImageData(), 0, 0);
+  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
+      .getImageData(), 0, 0);
+  private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
+      merge_1Img16.getImageData(), 0, 0);
+  private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
+      merge_2Img16.getImageData(), 0, 0);
+
+  // DnD---
+  private final Cursor removeCursor = new Cursor(Display.getDefault(),
+      removeImg16.getImageData(), 0, 0);
+  private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
+      handFistImg16.getImageData(), 0, 0);
+  private final Cursor resizeCursor = new Cursor(Display.getDefault(),
+      SWT.CURSOR_SIZEWE);
+  private final JFreeChart chart;
+  private CustomChartComposite chartComposite;
+  private Zone dragZone;
+  long dragZoneStartBefore = -1;
+  long dragZoneEndBefore = -1;
+  private double dragStartX = -1;
+  private boolean onDrag = false;
+  private boolean resizeStart = false;
+
+  private boolean resizeEnd = false;
+  private Zone adding = null;
+  private Zone merge_1 = null;
+  private Zone merge_2 = null;
+  private final ColorProvider colorProvider;
+  private final ZoneSlicer zoneSlicer;
+  private final TimeSeries xySeries;
+  private final ZoneUndoRedoProvider undoRedoProvider;
   /**
    * helper class to provide color for zones
    * 
@@ -66,7 +131,7 @@ public class ZoneChart extends Composite
    */
   public interface ColorProvider
   {
-    java.awt.Color getZoneColor();
+    Color getZoneColor();
   }
 
   protected class CustomChartComposite extends ChartComposite
@@ -77,7 +142,7 @@ public class ZoneChart extends Composite
           false, false, false, false, true);
     }
 
-    void fitToData()
+    private void fitToData()
     {
       final Rectangle2D previousArea = getCurrentCoverage();
       final AbstractOperation addOp = new AbstractOperation("Show all data")
@@ -236,6 +301,8 @@ public class ZoneChart extends Composite
           }
           break;
         }
+        default:
+          throw new IllegalArgumentException("Mouse drag mode not supported");
       }
       if (dragZone == null)
       {
@@ -661,7 +728,7 @@ public class ZoneChart extends Composite
 
   final public static class Zone implements Comparable<Zone>
   {
-    long start, end;
+    private long start, end;
     private Color color;
 
     public Zone(final long start, final long end, final Color color)
@@ -719,27 +786,26 @@ public class ZoneChart extends Composite
     @Override
     public void added(final Zone zone)
     {
-
+      // dumb adapter, implementation not necessary
     }
 
     @Override
     public void deleted(final Zone zone)
     {
-
+      // dumb adapter, implementation not necessary
     }
 
     @Override
     public void moved(final Zone zone)
     {
-
+      // dumb adapter, implementation not necessary
     }
 
     @Override
     public void resized(final Zone zone)
     {
-
+      // dumb adapter, implementation not necessary
     }
-
   }
 
   public static interface ZoneListener
@@ -789,7 +855,7 @@ public class ZoneChart extends Composite
         xySeries, otherSeries, timeValues, blueProv, lineColor, zoneSlicer);
   }
 
-  public static ZoneChart create(ZoneUndoRedoProvider undoRedoProvider,
+  public static ZoneChart create(final ZoneUndoRedoProvider undoRedoProviderIn,
       final String chartTitle, final String yTitle, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
       final TimeSeries otherSeries, final long[] timeValues,
@@ -797,7 +863,8 @@ public class ZoneChart extends Composite
       final ZoneSlicer zoneSlicer)
   {
 
-    if (undoRedoProvider == null)
+    final ZoneUndoRedoProvider undoRedoProvider;
+    if (undoRedoProviderIn == null)
     {
       // switch to dummy provider
       undoRedoProvider = new ZoneUndoRedoProvider()
@@ -815,6 +882,10 @@ public class ZoneChart extends Composite
           }
         }
       };
+    }
+    else
+    {
+      undoRedoProvider = undoRedoProviderIn;
     }
 
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
@@ -863,70 +934,6 @@ public class ZoneChart extends Composite
     return zoneChart;
   }
 
-  private final List<Zone> zones;
-  private final Map<Zone, IntervalMarker> zoneMarkers =
-      new HashMap<ZoneChart.Zone, IntervalMarker>();
-  private EditMode mode = EditMode.EDIT;
-  private volatile List<ZoneListener> listeners =
-      new ArrayList<ZoneChart.ZoneListener>(1);
-
-  private final Image handImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/hand.png").createImage();
-  private final Image addImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/add.png").createImage();
-  private final Image removeImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/remove.png").createImage();
-  private final Image handFistImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/hand_fist.png").createImage();
-  private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
-      "/icons/16/merge_1.png").createImage();
-  private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
-      "/icons/16/merge_2.png").createImage();
-  /** 24px images for the buttons */
-  private final Image editImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/edit.png").createImage();
-  private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/zoomin.png").createImage();
-  private final Image mergeImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/merge.png").createImage();
-  private final Image fitToWin24 = CorePlugin.getImageDescriptor(
-      "/icons/24/fit_to_win.png").createImage();
-  private final Image calculator24 = CorePlugin.getImageDescriptor(
-      "/icons/24/calculator.png").createImage();
-
-  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
-      .getImageData(), 0, 0);
-  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
-      .getImageData(), 0, 0);
-  private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
-      merge_1Img16.getImageData(), 0, 0);
-  private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
-      merge_2Img16.getImageData(), 0, 0);
-
-  // DnD---
-  private final Cursor removeCursor = new Cursor(Display.getDefault(),
-      removeImg16.getImageData(), 0, 0);
-  private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
-      handFistImg16.getImageData(), 0, 0);
-  private final Cursor resizeCursor = new Cursor(Display.getDefault(),
-      SWT.CURSOR_SIZEWE);
-  private final JFreeChart chart;
-  private CustomChartComposite chartComposite;
-  private Zone dragZone;
-  long dragZoneStartBefore = -1;
-  long dragZoneEndBefore = -1;
-  private double dragStartX = -1;
-  private boolean onDrag = false;
-  private boolean resizeStart = false;
-
-  private boolean resizeEnd = false;
-  private Zone adding = null;
-  private Zone merge_1 = null;
-  private Zone merge_2 = null;
-  private final ColorProvider colorProvider;
-  private final ZoneSlicer zoneSlicer;
-  private final TimeSeries xySeries;
-  private final ZoneUndoRedoProvider undoRedoProvider;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
