@@ -991,6 +991,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       Application.logError2(Application.ERROR, "List of cuts is empty", null);
       return null;
     }
+    
+    if(ownshipLegs == null || ownshipLegs.length == 0)
+    {
+      Application.logError2(Application.ERROR, "List of ownship legs is empty", null);
+      return null;
+    }
 
     final IZigStorer zigStorer = new IZigStorer()
     {
