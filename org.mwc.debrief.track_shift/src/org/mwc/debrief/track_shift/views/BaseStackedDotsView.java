@@ -110,6 +110,7 @@ import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneChartConfig;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
 import org.mwc.debrief.track_shift.zig_detector.ArtificalLegDetector;
@@ -686,10 +687,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
 
+    ZoneChartConfig oZoneConfig =
+        new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
+            DebriefColors.BLUE);
     ownshipZoneChart =
-        ZoneChart.create(undoRedoProvider, "Ownship Legs", "Course", sashForm,
-            osZones, ownshipCourseSeries, null, blueProv, DebriefColors.BLUE,
-            ownshipLegSlicer);
+        ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
+            ownshipCourseSeries, null, blueProv, ownshipLegSlicer);
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -742,10 +745,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         return res;
       }
     };
+
+    ZoneChartConfig tZoneConfig =
+        new ZoneChart.ZoneChartConfig("Target Legs", "Bearing",
+            DebriefColors.RED);
     targetZoneChart =
-        ZoneChart.create(undoRedoProvider, "Target Legs", "Bearing", sashForm,
-            tgtZones, targetBearingSeries, targetCalculatedSeries,
-            randomProv, DebriefColors.RED, targetLegSlicer);
+        ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
+            targetBearingSeries, targetCalculatedSeries, randomProv,
+            targetLegSlicer);
 
     targetZoneChart.addZoneListener(targetListener);
 
@@ -992,7 +999,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           double rms)
       {
         Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
-     //   System.out.println("got zig:" + newZone);
+        // System.out.println("got zig:" + newZone);
         zigs.add(newZone);
       }
 
@@ -1075,21 +1082,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     }
 
-//    if (hasData)
-//    {
-//      // we can retrieve the start/end time
-//      startTime = tgtTrack.getStartDTG().getDate().getTime();
-//      endTime = tgtTrack.getEndDTG().getDate().getTime();
-//    }
-//    else
-//    {
-//      // we've got to regenerate the points from the cuts
-//      startTime = cuts.get(0).getDTG().getDate().getTime();
-//      endTime = cuts.get(cuts.size() - 1).getDTG().getDate().getTime();
-//    }
+    // if (hasData)
+    // {
+    // // we can retrieve the start/end time
+    // startTime = tgtTrack.getStartDTG().getDate().getTime();
+    // endTime = tgtTrack.getEndDTG().getDate().getTime();
+    // }
+    // else
+    // {
+    // // we've got to regenerate the points from the cuts
+    // startTime = cuts.get(0).getDTG().getDate().getTime();
+    // endTime = cuts.get(cuts.size() - 1).getDTG().getDate().getTime();
+    // }
     // get the start/end from the ownship legs
     startTime = ownshipLegs[0].getStart();
-    endTime = ownshipLegs[ownshipLegs.length-1].getEnd();
+    endTime = ownshipLegs[ownshipLegs.length - 1].getEnd();
 
     // ok, we've got to turn the zigs into legs
     final List<Zone> oldLegs =
@@ -1188,7 +1195,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @param dataset
    * @return
    */
-  private static boolean containsIdenticalValues(final TimeSeries dataset, final Integer NumMatches)
+  private static boolean containsIdenticalValues(final TimeSeries dataset,
+      final Integer NumMatches)
   {
     final int num = dataset.getItemCount();
 
@@ -1202,7 +1210,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final double MATCH_PROPORTION = 0.2;
       numMatches = (int) (num * MATCH_PROPORTION);
     }
-    
+
     double lastCourse = 0d;
     int matchCount = 0;
 
@@ -1214,8 +1222,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         // ok, count the duplicates
         matchCount++;
-        
-        if(matchCount >= numMatches)
+
+        if (matchCount >= numMatches)
         {
           return true;
         }
@@ -2681,8 +2689,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       osC.add(new FixedMillisecond(time++), 21d);
       osC.add(new FixedMillisecond(time++), 20d);
       osC.add(new FixedMillisecond(time++), 20d);
-      
-      assertFalse("check we're verifying single runs of matches", containsIdenticalValues(osC, 3));
+
+      assertFalse("check we're verifying single runs of matches",
+          containsIdenticalValues(osC, 3));
 
       osC.add(new FixedMillisecond(time++), 20d);
       osC.add(new FixedMillisecond(time++), 20d);

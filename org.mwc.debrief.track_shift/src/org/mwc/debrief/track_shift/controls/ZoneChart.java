@@ -59,6 +59,27 @@ import MWC.GUI.Layers;
 public class ZoneChart extends Composite
 {
 
+  
+  /** put some zone config items into a class,
+   * so we have to pass fewer params to
+   * create() function
+   * @author Ian
+   *
+   */
+  public static class ZoneChartConfig
+  {
+    private String _chartTitle;
+    private String _yTitle;
+    private Color _lineColor;
+
+    public ZoneChartConfig(final String chartTitle, final String yTitle, final Color lineColor)
+    {
+      _chartTitle = chartTitle;
+      _yTitle = yTitle;
+      _lineColor = lineColor;
+    }
+  }
+  
   /**
    * helper class to provide color for zones
    * 
@@ -810,10 +831,10 @@ public class ZoneChart extends Composite
     List<Zone> performSlicing();
   }
 
-  public static ZoneChart create(final ZoneUndoRedoProvider undoRedoProvider,
-      final String chartTitle, final String yTitle, final Composite parent,
+  public static ZoneChart create(final ZoneChartConfig config, final ZoneUndoRedoProvider undoRedoProvider,
+      final Composite parent,
       final Zone[] zones, final long[] timeValues, final long[] angleValues,
-      final ColorProvider blueProv, final Color lineColor,
+      final ColorProvider blueProv, 
       final ZoneSlicer zoneSlicer)
   {
     // build the jfreechart Plot
@@ -826,15 +847,16 @@ public class ZoneChart extends Composite
 
     final TimeSeries otherSeries = null;
 
-    return create(undoRedoProvider, chartTitle, yTitle, parent, zones,
-        xySeries, otherSeries, blueProv, lineColor, zoneSlicer);
+    return create(config , undoRedoProvider, parent, zones,
+        xySeries, otherSeries, blueProv, zoneSlicer);
   }
 
-  public static ZoneChart create(final ZoneUndoRedoProvider undoRedoProviderIn,
-      final String chartTitle, final String yTitle, final Composite parent,
+
+  public static ZoneChart create(final ZoneChartConfig config, final ZoneUndoRedoProvider undoRedoProviderIn,
+      final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
       final TimeSeries otherSeries, final ColorProvider blueProv,
-      final Color lineColor, final ZoneSlicer zoneSlicer)
+      final ZoneSlicer zoneSlicer)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -871,9 +893,9 @@ public class ZoneChart extends Composite
     }
 
     final JFreeChart xylineChart =
-        ChartFactory.createTimeSeriesChart(chartTitle, // String
+        ChartFactory.createTimeSeriesChart(config._chartTitle, // String
             "Time", // String timeAxisLabel
-            yTitle, // String valueAxisLabel,
+            config._yTitle, // String valueAxisLabel,
             dataset, false, true, false);
 
     final XYPlot plot = (XYPlot) xylineChart.getPlot();
@@ -888,7 +910,7 @@ public class ZoneChart extends Composite
     final XYLineAndShapeRenderer renderer =
         (XYLineAndShapeRenderer) plot.getRenderer();
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
-    renderer.setSeriesPaint(0, lineColor);
+    renderer.setSeriesPaint(0, config._lineColor);
     renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
     renderer.setSeriesStroke(0, new BasicStroke(1));
