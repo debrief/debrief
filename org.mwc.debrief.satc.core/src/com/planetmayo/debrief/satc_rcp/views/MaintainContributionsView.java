@@ -230,16 +230,16 @@ public class MaintainContributionsView extends ViewPart
   private Chart performanceChart;
 
   private final java.awt.Color[] defaultColors = new java.awt.Color[]
-  {MWC.GUI.Properties.DebriefColors.RED,
-      MWC.GUI.Properties.DebriefColors.GREEN,
-      MWC.GUI.Properties.DebriefColors.YELLOW,
-      MWC.GUI.Properties.DebriefColors.BLUE,
-      MWC.GUI.Properties.DebriefColors.CYAN,
-      MWC.GUI.Properties.DebriefColors.MAGENTA,
-      MWC.GUI.Properties.DebriefColors.DARK_GRAY,
-      MWC.GUI.Properties.DebriefColors.ORANGE,
-      MWC.GUI.Properties.DebriefColors.PINK,
-      MWC.GUI.Properties.DebriefColors.LIGHT_GRAY};
+  {DebriefColors.RED,
+      DebriefColors.GREEN,
+      DebriefColors.YELLOW,
+      DebriefColors.BLUE,
+      DebriefColors.CYAN,
+      DebriefColors.MAGENTA,
+      DebriefColors.DARK_GRAY,
+      DebriefColors.ORANGE,
+      DebriefColors.PINK,
+      DebriefColors.LIGHT_GRAY};
   private XYPlot legPlot;
   private Composite legGraphComposite;
   private PropertyChangeListener _legListener;
@@ -1930,7 +1930,7 @@ public class MaintainContributionsView extends ViewPart
             else
             {
               // ok, calc a new XY, from the origin
-              java.awt.geom.Point2D.Double thisP =
+              Point2D.Double thisP =
                   new Point2D.Double(hostState.dLong, hostState.dLat);
               calc.setStartingGeographicPoint(origin);
               calc.setDestinationGeographicPoint(thisP);
