@@ -1045,7 +1045,7 @@ public class ZoneChart extends Composite
     listeners.add(listener);
   }
 
-  void buildUI(final JFreeChart xylineChart)
+  private void buildUI(final JFreeChart xylineChart)
   {
     setLayout((new GridLayout(2, false)));
     chartComposite = new CustomChartComposite(this, xylineChart);
