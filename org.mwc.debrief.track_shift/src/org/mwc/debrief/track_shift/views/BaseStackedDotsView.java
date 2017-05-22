@@ -1193,11 +1193,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @param dataset
    * @return
    */
-  private static boolean containsIdenticalValues(final TimeSeries dataset)
+  private static boolean containsIdenticalValues(final TimeSeries dataset, final Integer NumMatches)
   {
-    final double MATCH_PROPORTION = 0.2;
     final int num = dataset.getItemCount();
-    final int numMatches = (int) (num * MATCH_PROPORTION);
+
+    final int numMatches;
+    if (NumMatches != null)
+    {
+      numMatches = NumMatches;
+    }
+    else
+    {
+      final double MATCH_PROPORTION = 0.2;
+      numMatches = (int) (num * MATCH_PROPORTION);
+    }
+    
     double lastCourse = 0d;
     int matchCount = 0;
 
@@ -1209,11 +1219,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         // ok, count the duplicates
         matchCount++;
+        
+        if(matchCount >= numMatches)
+        {
+          return true;
+        }
+      }
+      else
+      {
+        matchCount = 0;
       }
       lastCourse = thisCourse;
     }
 
-    return matchCount >= numMatches;
+    return false;
   }
 
   protected ArrayList<Zone> sliceOwnship(TimeSeries osCourse,
@@ -1221,7 +1240,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
     // make a decision on which ownship slicer to use
     final IOwnshipLegDetector detector;
-    if (containsIdenticalValues(osCourse))
+    if (containsIdenticalValues(osCourse, null))
     {
       detector = new ArtificalLegDetector();
     }
@@ -2647,14 +2666,33 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       osC.add(new FixedMillisecond(time++), 21d);
       osC.add(new FixedMillisecond(time++), 20d);
 
-      assertFalse(containsIdenticalValues(osC));
+      assertFalse(containsIdenticalValues(osC, 3));
 
       // inject some more duplicates
       osC.add(new FixedMillisecond(time++), 20d);
       osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
 
-      assertTrue(containsIdenticalValues(osC));
+      assertTrue(containsIdenticalValues(osC, 3));
 
+      osC.clear();
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      
+      assertFalse("check we're verifying single runs of matches", containsIdenticalValues(osC, 3));
+
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+
+      assertTrue(containsIdenticalValues(osC, 3));
     }
 
     public void testSetLeg()
