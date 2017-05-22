@@ -59,70 +59,6 @@ import MWC.GUI.Layers;
 public class ZoneChart extends Composite
 {
 
-  private final List<Zone> zones;
-  private final Map<Zone, IntervalMarker> zoneMarkers =
-      new HashMap<ZoneChart.Zone, IntervalMarker>();
-  private EditMode mode = EditMode.EDIT;
-  private volatile List<ZoneListener> listeners =
-      new ArrayList<ZoneChart.ZoneListener>(1);
-
-  private final Image handImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/hand.png").createImage();
-  private final Image addImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/add.png").createImage();
-  private final Image removeImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/remove.png").createImage();
-  private final Image handFistImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/hand_fist.png").createImage();
-  private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
-      "/icons/16/merge_1.png").createImage();
-  private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
-      "/icons/16/merge_2.png").createImage();
-  /** 24px images for the buttons */
-  private final Image editImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/edit.png").createImage();
-  private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/zoomin.png").createImage();
-  private final Image mergeImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/merge.png").createImage();
-  private final Image fitToWin24 = CorePlugin.getImageDescriptor(
-      "/icons/24/fit_to_win.png").createImage();
-  private final Image calculator24 = CorePlugin.getImageDescriptor(
-      "/icons/24/calculator.png").createImage();
-
-  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
-      .getImageData(), 0, 0);
-  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
-      .getImageData(), 0, 0);
-  private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
-      merge_1Img16.getImageData(), 0, 0);
-  private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
-      merge_2Img16.getImageData(), 0, 0);
-
-  // DnD---
-  private final Cursor removeCursor = new Cursor(Display.getDefault(),
-      removeImg16.getImageData(), 0, 0);
-  private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
-      handFistImg16.getImageData(), 0, 0);
-  private final Cursor resizeCursor = new Cursor(Display.getDefault(),
-      SWT.CURSOR_SIZEWE);
-  private final JFreeChart chart;
-  private CustomChartComposite chartComposite;
-  private Zone dragZone;
-  long dragZoneStartBefore = -1;
-  long dragZoneEndBefore = -1;
-  private double dragStartX = -1;
-  private boolean onDrag = false;
-  private boolean resizeStart = false;
-
-  private boolean resizeEnd = false;
-  private Zone adding = null;
-  private Zone merge_1 = null;
-  private Zone merge_2 = null;
-  private final ColorProvider colorProvider;
-  private final ZoneSlicer zoneSlicer;
-  private final TimeSeries xySeries;
-  private final ZoneUndoRedoProvider undoRedoProvider;
   /**
    * helper class to provide color for zones
    * 
@@ -201,7 +137,7 @@ public class ZoneChart extends Composite
       // see if it's within the buffer zone
       final long pixelXStart = findPixelX(this, zone.start);
       final long pixelXEnd = findPixelX(this, zone.end);
-      boolean inArea =
+      final boolean inArea =
           ((x - pixelXStart) > 8 && (x - pixelXStart) >= 0)
               && ((pixelXEnd - x) > 8 && (pixelXEnd - x) >= 0);
 
@@ -726,16 +662,62 @@ public class ZoneChart extends Composite
     EDIT, ZOOM, MERGE
   }
 
+  private static class SortedArrayList extends ArrayList<Zone>
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean add(final Zone e)
+    {
+      final boolean res = super.add(e);
+      sortMe();
+      return res;
+    }
+
+    @Override
+    public boolean addAll(final Collection<? extends Zone> c)
+    {
+      final boolean res = super.addAll(c);
+      sortMe();
+      return res;
+    }
+
+    @Override
+    public boolean remove(final Object o)
+    {
+      final boolean res = super.remove(o);
+      sortMe();
+      return res;
+    }
+
+    // resort ourselves
+    private void sortMe()
+    {
+      Collections.sort(this);
+    }
+  }
+
   final public static class Zone implements Comparable<Zone>
   {
     private long start, end;
-    private Color color;
+    private final Color color;
 
     public Zone(final long start, final long end, final Color color)
     {
       this.start = start;
       this.end = end;
       this.color = color;
+    }
+
+    @Override
+    public int compareTo(final Zone z)
+    {
+      final Long myStart = this.start;
+      final Long hisStart = z.start;
+      return myStart.compareTo(hisStart);
     }
 
     public Color getColor()
@@ -753,16 +735,11 @@ public class ZoneChart extends Composite
       return start;
     }
 
-    @Override
-    public String toString()
-    {
-      return "Zone [start=" + new Date(start) + ", end=" + new Date(end) + "]";
-    }
-
     /**
      * does this match an existing zone? Typically used after one end of a zone is dragged
      * 
-     * @param other the zone we're comparing ourselves to
+     * @param other
+     *          the zone we're comparing ourselves to
      * @return yes/no for matching
      */
     protected boolean matches(final Zone other)
@@ -771,11 +748,9 @@ public class ZoneChart extends Composite
     }
 
     @Override
-    public int compareTo(Zone z)
+    public String toString()
     {
-      Long myStart = this.start;
-      Long hisStart = z.start;
-      return myStart.compareTo(hisStart);
+      return "Zone [start=" + new Date(start) + ", end=" + new Date(end) + "]";
     }
 
   }
@@ -934,6 +909,78 @@ public class ZoneChart extends Composite
     return zoneChart;
   }
 
+  private final List<Zone> zones;
+  private final Map<Zone, IntervalMarker> zoneMarkers =
+      new HashMap<ZoneChart.Zone, IntervalMarker>();
+  private EditMode mode = EditMode.EDIT;
+  private volatile List<ZoneListener> listeners =
+      new ArrayList<ZoneChart.ZoneListener>(1);
+  private final Image handImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand.png").createImage();
+
+  private final Image addImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/add.png").createImage();
+  private final Image removeImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/remove.png").createImage();
+  private final Image handFistImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand_fist.png").createImage();
+  private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_1.png").createImage();
+
+  private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_2.png").createImage();
+  /** 24px images for the buttons */
+  private final Image editImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/edit.png").createImage();
+  private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/zoomin.png").createImage();
+  private final Image mergeImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/merge.png").createImage();
+  private final Image fitToWin24 = CorePlugin.getImageDescriptor(
+      "/icons/24/fit_to_win.png").createImage();
+  private final Image calculator24 = CorePlugin.getImageDescriptor(
+      "/icons/24/calculator.png").createImage();
+  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
+      .getImageData(), 0, 0);
+  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
+      .getImageData(), 0, 0);
+  private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
+      merge_1Img16.getImageData(), 0, 0);
+  private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
+      merge_2Img16.getImageData(), 0, 0);
+  // DnD---
+  private final Cursor removeCursor = new Cursor(Display.getDefault(),
+      removeImg16.getImageData(), 0, 0);
+
+  private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
+      handFistImg16.getImageData(), 0, 0);
+  private final Cursor resizeCursor = new Cursor(Display.getDefault(),
+      SWT.CURSOR_SIZEWE);
+  private final JFreeChart chart;
+  private CustomChartComposite chartComposite;
+  private Zone dragZone;
+  long dragZoneStartBefore = -1;
+  long dragZoneEndBefore = -1;
+  private double dragStartX = -1;
+  private boolean onDrag = false;
+
+  private boolean resizeStart = false;
+
+  private boolean resizeEnd = false;
+
+  private Zone adding = null;
+
+  private Zone merge_1 = null;
+
+  private Zone merge_2 = null;
+
+  private final ColorProvider colorProvider;
+
+  private final ZoneSlicer zoneSlicer;
+
+  private final TimeSeries xySeries;
+
+  private final ZoneUndoRedoProvider undoRedoProvider;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
@@ -972,16 +1019,6 @@ public class ZoneChart extends Composite
     zoneMarkers.put(zone, mrk);
   }
 
-  public void clearZones()
-  {
-    zoneMarkers.clear();
-    zones.clear();
-
-    // and from the plot
-    final XYPlot thePlot = (XYPlot) chart.getPlot();
-    thePlot.clearDomainMarkers();
-  }
-
   public void addZoneListener(final ZoneListener listener)
   {
     listeners.add(listener);
@@ -999,6 +1036,16 @@ public class ZoneChart extends Composite
     data.verticalSpan = 5;
     chartComposite.setLayoutData(data);
     createToolbar();
+  }
+
+  public void clearZones()
+  {
+    zoneMarkers.clear();
+    zones.clear();
+
+    // and from the plot
+    final XYPlot thePlot = (XYPlot) chart.getPlot();
+    thePlot.clearDomainMarkers();
   }
 
   protected void createToolbar()
@@ -1140,7 +1187,7 @@ public class ZoneChart extends Composite
                     {
                       // ditch the zones. We're having a fresh start
                       clearZones();
-                      
+
                       // prob have some data - so we can clear the list
                       xySeries.clear();
                       for (final TimeSeriesDataItem item : data)
@@ -1364,26 +1411,6 @@ public class ZoneChart extends Composite
     this.mode = mode;
   }
 
-  private long
-      toNearDomainValue(final long x, final boolean ignoreZeroDistence)
-  {
-    long distance = Long.MAX_VALUE;
-    int idx = -1;
-    for (int c = 0; c < xySeries.getItemCount(); c++)
-    {
-      final RegularTimePeriod timePeriod = xySeries.getTimePeriod(c);
-
-      final long cdistance = Math.abs(timePeriod.getLastMillisecond() - x);
-      if ((!ignoreZeroDistence || cdistance != 0) && cdistance < distance)
-      {
-        idx = c;
-        distance = cdistance;
-      }
-    }
-    return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
-        .getLastMillisecond();
-  }
-
   final public void setZones(final List<Zone> newZones)
   {
     final XYPlot plot = (XYPlot) chart.getPlot();
@@ -1410,41 +1437,23 @@ public class ZoneChart extends Composite
     // and sort them
   }
 
-  private static class SortedArrayList extends ArrayList<Zone>
+  private long
+      toNearDomainValue(final long x, final boolean ignoreZeroDistence)
   {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    // resort ourselves
-    private void sortMe()
+    long distance = Long.MAX_VALUE;
+    int idx = -1;
+    for (int c = 0; c < xySeries.getItemCount(); c++)
     {
-      Collections.sort(this);
-    }
+      final RegularTimePeriod timePeriod = xySeries.getTimePeriod(c);
 
-    @Override
-    public boolean addAll(Collection<? extends Zone> c)
-    {
-      final boolean res = super.addAll(c);
-      sortMe();
-      return res;
+      final long cdistance = Math.abs(timePeriod.getLastMillisecond() - x);
+      if ((!ignoreZeroDistence || cdistance != 0) && cdistance < distance)
+      {
+        idx = c;
+        distance = cdistance;
+      }
     }
-
-    @Override
-    public boolean add(Zone e)
-    {
-      boolean res = super.add(e);
-      sortMe();
-      return res;
-    }
-
-    @Override
-    public boolean remove(Object o)
-    {
-      boolean res = super.remove(o);
-      sortMe();
-      return res;
-    }
+    return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
+        .getLastMillisecond();
   }
 }
