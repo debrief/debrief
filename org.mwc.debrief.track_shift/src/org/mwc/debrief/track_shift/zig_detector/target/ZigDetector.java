@@ -462,6 +462,7 @@ public class ZigDetector
         @Override
         public void addLogListener(ILogListener listener)
         {
+          //  not required, class just for testing
         }
 
         @Override
@@ -473,11 +474,13 @@ public class ZigDetector
         @Override
         public void log(IStatus status)
         {
+          //  not required, class just for testing
         }
 
         @Override
         public void removeLogListener(ILogListener listener)
         {
+          //  not required, class just for testing
         }
       };
       return logger;
@@ -1038,6 +1041,23 @@ public class ZigDetector
       }
     }
 
+    // refactor out storing zigs, to simplify method
+    storeZigs(wholeEnd, zigStorer, zigStarts, zigEnds);
+    
+    // ok, share the good news
+    for (LegOfData leg : legs)
+    {
+      if (legStorer != null)
+      {
+        legStorer.storeLeg(leg.getName(), leg.getStart(), leg.getEnd(), 2d);
+      }
+    }
+
+  }
+
+  private void storeZigs(final long wholeEnd, IZigStorer zigStorer,
+      final Set<ScoredTime> zigStarts, final Set<ScoredTime> zigEnds)
+  {
     // ok, try to broadcast the zigs
     if (zigStorer != null)
     {
@@ -1073,15 +1093,6 @@ public class ZigDetector
         }
       }
     }
-    // ok, share the good news
-    for (LegOfData leg : legs)
-    {
-      if (legStorer != null)
-      {
-        legStorer.storeLeg(leg.getName(), leg.getStart(), leg.getEnd(), 2d);
-      }
-    }
-
   }
 
   private void runThrough(final double optimiseTolerance,
@@ -1091,17 +1102,17 @@ public class ZigDetector
 
     final int len = legTimes.size();
 
-    @SuppressWarnings("unused")
-    java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
+//    java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
     TimeRestrictedMovingAverage avgScore =
         new TimeRestrictedMovingAverage(timeWindow, 3);
-    
-    SimpleRegression regression = new SimpleRegression();
-    
 
-    @SuppressWarnings("unused")
-    final long firstT = legTimes.get(0);
+    /** experimental regression analysis of data, it will let
+     * us forecast the next value, rather than using the average
+     */
+    SimpleRegression regression = new SimpleRegression();
+
+//    final long firstT = legTimes.get(0);
 
     int start = 0;
     for (int end = 0; end < len; end++)
@@ -1189,8 +1200,6 @@ public class ZigDetector
         // now add a value to the forecast
         regression.addData(thisTime, score);
         
-        
-
         // final double thisProportion = scoreDelta / variance;
         final double thisProportion = scoreDelta / variance;
 
