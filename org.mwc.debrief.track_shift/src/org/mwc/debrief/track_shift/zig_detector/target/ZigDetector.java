@@ -666,104 +666,104 @@ public class ZigDetector
 
     return min;
   }
-
-  /**
-   * @param trialIndex
-   * @param bearings
-   * @param times
-   * @param legOneEnd
-   * @param legTwoStart
-   * @param optimiserTolerance
-   * @param fittedQ
-   * @param fittedP
-   * @param overallScore
-   *          the overall score for this leg
-   * @param BUFFER_REGION
-   * @param straightBar
-   * @param thisSeries
-   * @return
-   */
-  private double sliceLeg(final int trialIndex, final List<Double> bearings,
-      final List<Long> times, final int legOneEnd, final int legTwoStart,
-      final double optimiserTolerance)
-  {
-
-    final List<Long> theseTimes = times;
-    final List<Double> theseBearings = bearings;
-
-    final Date thisD = new Date(times.get(trialIndex));
-
-    // if((legOneEnd == -1) || (legTwoStart == -1))
-    // return Double.MAX_VALUE;
-
-    double beforeScore = Double.MAX_VALUE;
-    double afterScore = Double.MAX_VALUE;
-
-    @SuppressWarnings("unused")
-    String msg = dateF.format(thisD);
-
-    Minimisation beforeOptimiser = null;
-    Minimisation afterOptimiser = null;
-
-    if (legOneEnd != -1)
-    {
-      final List<Long> beforeTimes = theseTimes.subList(0, legOneEnd);
-      final List<Double> beforeBearings = theseBearings.subList(0, legOneEnd);
-      beforeOptimiser =
-          optimiseThis_Legacy(beforeTimes, beforeBearings, beforeBearings
-              .get(0), optimiserTolerance);
-      beforeScore = beforeOptimiser.getMinimum();
-      // System.out.println(" before:" + _outDates(beforeTimes));
-
-    }
-
-    if (legTwoStart != -1)
-    {
-      final List<Long> afterTimes =
-          theseTimes.subList(legTwoStart, theseTimes.size() - 1);
-      final List<Double> afterBearings =
-          theseBearings.subList(legTwoStart, theseTimes.size() - 1);
-      afterOptimiser =
-          optimiseThis_Legacy(afterTimes, afterBearings, afterBearings.get(0),
-              optimiserTolerance);
-      afterScore = afterOptimiser.getMinimum();
-      // System.out.println(" after:" + _outDates(afterTimes));
-    }
-
-    // find the total error sum
-    double sum = Double.MAX_VALUE;
-
-    // do we have both legs?
-    if ((legOneEnd != -1) && (legTwoStart != -1))
-    {
-      final int beforeLen = theseTimes.subList(0, legOneEnd).size();
-      final int afterLen =
-          theseTimes.subList(legTwoStart, theseTimes.size() - 1).size();
-
-      final int totalCuts = beforeLen + afterLen;
-
-      final double beforeNormal = beforeScore * beforeLen / totalCuts;
-      final double afterNormal = afterScore * afterLen / totalCuts;
-      sum = beforeNormal + afterNormal;
-
-      // double[] bValues = beforeOptimiser.getParamValues();
-      // msg +=
-      // " ,BEFORE," + dateF.format(times.get(0)) + ","
-      // + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
-      // msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," +
-      // beforeNormal;
-      // double[] aValues = afterOptimiser.getParamValues();
-      // msg +=
-      // " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
-      // + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
-      // msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," +
-      // afterNormal;
-      // System.out.println(msg + ",sum," + sum);
-
-    }
-
-    return sum;
-  }
+//
+//  /**
+//   * @param trialIndex
+//   * @param bearings
+//   * @param times
+//   * @param legOneEnd
+//   * @param legTwoStart
+//   * @param optimiserTolerance
+//   * @param fittedQ
+//   * @param fittedP
+//   * @param overallScore
+//   *          the overall score for this leg
+//   * @param BUFFER_REGION
+//   * @param straightBar
+//   * @param thisSeries
+//   * @return
+//   */
+//  private double sliceLeg(final int trialIndex, final List<Double> bearings,
+//      final List<Long> times, final int legOneEnd, final int legTwoStart,
+//      final double optimiserTolerance)
+//  {
+//
+//    final List<Long> theseTimes = times;
+//    final List<Double> theseBearings = bearings;
+//
+//    final Date thisD = new Date(times.get(trialIndex));
+//
+//    // if((legOneEnd == -1) || (legTwoStart == -1))
+//    // return Double.MAX_VALUE;
+//
+//    double beforeScore = Double.MAX_VALUE;
+//    double afterScore = Double.MAX_VALUE;
+//
+//    @SuppressWarnings("unused")
+//    String msg = dateF.format(thisD);
+//
+//    Minimisation beforeOptimiser = null;
+//    Minimisation afterOptimiser = null;
+//
+//    if (legOneEnd != -1)
+//    {
+//      final List<Long> beforeTimes = theseTimes.subList(0, legOneEnd);
+//      final List<Double> beforeBearings = theseBearings.subList(0, legOneEnd);
+//      beforeOptimiser =
+//          optimiseThis_Legacy(beforeTimes, beforeBearings, beforeBearings
+//              .get(0), optimiserTolerance);
+//      beforeScore = beforeOptimiser.getMinimum();
+//      // System.out.println(" before:" + _outDates(beforeTimes));
+//
+//    }
+//
+//    if (legTwoStart != -1)
+//    {
+//      final List<Long> afterTimes =
+//          theseTimes.subList(legTwoStart, theseTimes.size() - 1);
+//      final List<Double> afterBearings =
+//          theseBearings.subList(legTwoStart, theseTimes.size() - 1);
+//      afterOptimiser =
+//          optimiseThis_Legacy(afterTimes, afterBearings, afterBearings.get(0),
+//              optimiserTolerance);
+//      afterScore = afterOptimiser.getMinimum();
+//      // System.out.println(" after:" + _outDates(afterTimes));
+//    }
+//
+//    // find the total error sum
+//    double sum = Double.MAX_VALUE;
+//
+//    // do we have both legs?
+//    if ((legOneEnd != -1) && (legTwoStart != -1))
+//    {
+//      final int beforeLen = theseTimes.subList(0, legOneEnd).size();
+//      final int afterLen =
+//          theseTimes.subList(legTwoStart, theseTimes.size() - 1).size();
+//
+//      final int totalCuts = beforeLen + afterLen;
+//
+//      final double beforeNormal = beforeScore * beforeLen / totalCuts;
+//      final double afterNormal = afterScore * afterLen / totalCuts;
+//      sum = beforeNormal + afterNormal;
+//
+//      // double[] bValues = beforeOptimiser.getParamValues();
+//      // msg +=
+//      // " ,BEFORE," + dateF.format(times.get(0)) + ","
+//      // + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
+//      // msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," +
+//      // beforeNormal;
+//      // double[] aValues = afterOptimiser.getParamValues();
+//      // msg +=
+//      // " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
+//      // + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
+//      // msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," +
+//      // afterNormal;
+//      // System.out.println(msg + ",sum," + sum);
+//
+//    }
+//
+//    return sum;
+//  }
 //
 //  /**
 //   * 
@@ -1315,33 +1315,33 @@ public class ZigDetector
     return res;
 
   }
-
-  final private Minimisation optimiseThis_Legacy(final List<Long> times,
-      final List<Double> bearings, final double initialBearing,
-      final double optimiserTolerance)
-  {
-    // Create instance of Minimisation
-    final Minimisation min = new Minimisation();
-
-    // Create instace of class holding function to be minimised
-    final FlanaganArctan funct = new FlanaganArctan(times, bearings);
-
-    // initial estimates
-    final double firstBearing = bearings.get(0);
-    final double[] start =
-    {firstBearing, 0.0D, 0.0D};
-
-    // initial step sizes
-    final double[] step =
-    {0.2D, 0.3D, 0.3D};
-
-    // convergence tolerance
-    final double ftol = optimiserTolerance;
-
-    // Nelder and Mead minimisation procedure
-    min.nelderMead(funct, start, step, ftol);
-
-    return min;
-  }
+//
+//  final private Minimisation optimiseThis_Legacy(final List<Long> times,
+//      final List<Double> bearings, final double initialBearing,
+//      final double optimiserTolerance)
+//  {
+//    // Create instance of Minimisation
+//    final Minimisation min = new Minimisation();
+//
+//    // Create instace of class holding function to be minimised
+//    final FlanaganArctan funct = new FlanaganArctan(times, bearings);
+//
+//    // initial estimates
+//    final double firstBearing = bearings.get(0);
+//    final double[] start =
+//    {firstBearing, 0.0D, 0.0D};
+//
+//    // initial step sizes
+//    final double[] step =
+//    {0.2D, 0.3D, 0.3D};
+//
+//    // convergence tolerance
+//    final double ftol = optimiserTolerance;
+//
+//    // Nelder and Mead minimisation procedure
+//    min.nelderMead(funct, start, step, ftol);
+//
+//    return min;
+//  }
 
 }
