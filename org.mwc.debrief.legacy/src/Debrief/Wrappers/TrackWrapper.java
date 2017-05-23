@@ -1889,7 +1889,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     SortedSet<Editable> set = null;
 
     // does our track contain any data at all
-    if (_thePositions.size() > 0)
+    if (!_thePositions.isEmpty())
     {
 
       // see if we have _any_ points in range
@@ -2124,7 +2124,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     FixWrapper res = null;
 
     // check that we do actually contain some data
-    if (_thePositions.size() == 0)
+    if (_thePositions.isEmpty())
     {
       return new MWC.GenericData.Watchable[]
       {};
@@ -2189,7 +2189,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           SortedSet<Editable> set = rawPositions.tailSet(nearestFix);
 
           // see if the requested DTG was inside the range of the data
-          if (!set.isEmpty() && (set.size() > 0))
+          if (!set.isEmpty())
           {
             res = (FixWrapper) set.first();
 
@@ -2350,27 +2350,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   private SortedSet<Editable> getRawPositions()
   {
-    SortedSet<Editable> res = null;
-
-    // do we just have the one list?
-    if (_thePositions.size() == 1)
+    final SortedSet<Editable> res = new TreeSet<Editable>();
+    
+    // loop through segments
+    final Enumeration<Editable> segs = _thePositions.elements();
+    while (segs.hasMoreElements())
     {
-      final TrackSegment p = (TrackSegment) _thePositions.first();
-      res = (SortedSet<Editable>) p.getData();
-    }
-    else
-    {
-      // loop through them
-      res = new TreeSet<Editable>();
-      final Enumeration<Editable> segs = _thePositions.elements();
-      while (segs.hasMoreElements())
-      {
-        // get this segment
-        final TrackSegment seg = (TrackSegment) segs.nextElement();
+      // get this segment
+      final TrackSegment seg = (TrackSegment) segs.nextElement();
 
-        // add all the points
-        res.addAll(seg.getData());
-      }
+      // add all the points
+      res.addAll(seg.getData());
     }
     return res;
   }
@@ -2614,7 +2604,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public int numFixes()
   {
-    return getRawPositions().size();
+    int res = 0;
+    
+    // loop through segments
+    final Enumeration<Editable> segs = _thePositions.elements();
+    while (segs.hasMoreElements())
+    {
+      // get this segment
+      final TrackSegment seg = (TrackSegment) segs.nextElement();
+      
+      res += seg.size();
+    }
+    return res;
   }
 
   private void checkPointsArray()
@@ -3048,7 +3049,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
 
       // does it have visible data points?
-      if (thisE.size() == 0)
+      if (thisE.isEmpty())
       {
         continue;
       }
@@ -4753,7 +4754,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public void addFix(FixWrapper theFix)
   {
     // do we have any track segments
-    if (_thePositions.size() == 0)
+    if (_thePositions.isEmpty())
     {
       // nope, add one
       final TrackSegment firstSegment = new TrackSegment(TrackSegment.ABSOLUTE);
