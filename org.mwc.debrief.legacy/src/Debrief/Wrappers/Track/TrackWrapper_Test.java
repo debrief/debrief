@@ -2174,8 +2174,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
     coll = tw.getItemsBetween(new HiResDate(0, 100), new HiResDate(0, 300));
     assertEquals("Return valid point", coll.size(), 2);
+    Thread.sleep(850);
 
     coll = tw.getItemsBetween(new HiResDate(0, 300), new HiResDate(0, 500));
+    Thread.sleep(850);
     assertEquals("Return valid point", coll.size(), 2);
 
     tw.addFix(fw4);
