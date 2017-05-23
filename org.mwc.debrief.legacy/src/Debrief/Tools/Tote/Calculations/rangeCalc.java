@@ -113,6 +113,11 @@ public class rangeCalc extends plainCalc
 	 * remember what units the user prefers
 	 */
 	static String _myUnits = null;
+	
+	/** the time we last retrieved the units (so we 
+	 * can reduce checks)
+	 */
+	static long _unitsRetrievedAt = 0;
 
 	protected static final java.text.NumberFormat _decFormatter = new java.text.DecimalFormat(
 			"0.00");
@@ -259,29 +264,44 @@ public class rangeCalc extends plainCalc
 		_prefsProvider = theParent;
 	}
 
-	protected final static String getMyUnits()
-	{
-		if (_prefsProvider != null)
-		{
-			_myUnits = _prefsProvider
-					.getProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+  protected final static String getMyUnits()
+  {
+    final long tNow = System.currentTimeMillis();
+    final long THRESHOLD = 500;
+    if (_myUnits == null || tNow - _unitsRetrievedAt > THRESHOLD)
+    {
+      // ok, remember the time we last got updated
+      _unitsRetrievedAt = tNow;
+      
+      // now find the value to use
+      if (_prefsProvider != null)
+      {
+        _myUnits =
+            _prefsProvider
+                .getProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
 
-			if (_myUnits.equals(""))
-				_myUnits = null;
-		}
-		else
-		{
-			if (_myUnits == null)
-			{
-				_myUnits = Debrief.GUI.Frames.Application
-						.getThisProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
-			}
-		}
-		if (_myUnits == null)
-			_myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
+        if (_myUnits.equals(""))
+          _myUnits = null;
+      }
+      else
+      {
+        if (_myUnits == null)
+        {
+          _myUnits =
+              Debrief.GUI.Frames.Application
+                  .getThisProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+        }
+      }
+      if (_myUnits == null)
+        _myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
+    }
+    else
+    {
+      // do nothing, just re-use the value
+    }
 
-		return _myUnits;
-	}
+    return _myUnits;
+  }
 
 	/**
 	 * ok, find out what units to use for the range
