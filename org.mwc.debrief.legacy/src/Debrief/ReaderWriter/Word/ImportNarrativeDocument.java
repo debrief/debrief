@@ -746,7 +746,7 @@ public class ImportNarrativeDocument
       return lines;
     }
 
-    public void testAddFCSToTrack() throws FileNotFoundException
+    public void testAddFCSToTrack() throws FileNotFoundException, InterruptedException
     {
       final Layers tLayers = new Layers();
 
@@ -781,15 +781,19 @@ public class ImportNarrativeDocument
       // correct final count
       assertEquals("Got num lines", 371, narrLayer.size());
 
-      // hey, let's have a look tthem
+      // hey, let's have a look them
       TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
       assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
 
-      // hey, let's have a look tthem
+      // hey, let's have a look them
       tw = (TrackWrapper) tLayers.elementAt(6);
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 5, tw.numFixes());
+      
+      // we need to introduce a 500ms delay, so we don't use 
+      // the cahced visible period
+      Thread.sleep(550);
 
       final TimePeriod bounds = tw.getVisiblePeriod();
       // in our sample data we have several FCSs at the same time,

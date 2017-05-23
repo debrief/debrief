@@ -788,20 +788,30 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   transient int[] _myPts;
 
-  /** when plotting a track, we end up calling "get visible period" very frequently.
-   * So, we'll cache it, together with the time the cached version
-   * was generated. This will let us decide whether to recalculate,
-   * or to use a cached version
+  /**
+   * when plotting a track, we end up calling "get visible period" very frequently. So, we'll cache
+   * it, together with the time the cached version was generated. This will let us decide whether to
+   * recalculate, or to use a cached version
    * 
    */
-  TimePeriod _cachedPeriod = null;
-  
-  /** the time that we last calculated the time period 
-   * 
-   */
-  long _timeCachedPeriodCalculated = 0;
-  
+  transient TimePeriod _cachedPeriod = null;
 
+  /**
+   * the time that we last calculated the time period
+   * 
+   */
+  transient long _timeCachedPeriodCalculated = 0;
+
+  /**
+   * the time that we last calculated the set of raw positions
+   * 
+   */
+  transient long _timeCachedRawPositionsCalculated = 0;
+
+  /**
+   * cache the set of raw positions, since we frequently end up re-calculating them lost of times
+   */
+  transient TreeSet<Editable> _cachedRawPositions = null;
 
   /**
    * the sensor tracks for this vessel
@@ -889,7 +899,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * how to shade the track
    * 
    */
-  TrackColorModeHelper.TrackColorMode _trackColorMode = TrackColorModeHelper.LegacyTrackColorModes.PER_FIX;
+  TrackColorModeHelper.TrackColorMode _trackColorMode =
+      TrackColorModeHelper.LegacyTrackColorModes.PER_FIX;
 
   // //////////////////////////////////////
   // constructors
@@ -1889,7 +1900,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     SortedSet<Editable> set = null;
 
     // does our track contain any data at all
-    if (_thePositions.size() > 0)
+    if (!_thePositions.isEmpty())
     {
 
       // see if we have _any_ points in range
@@ -1995,7 +2006,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return _trackColorMode;
   }
 
-  /** set the mode used to color the track
+  /**
+   * set the mode used to color the track
    * 
    * @param trackColorMode
    */
@@ -2124,7 +2136,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     FixWrapper res = null;
 
     // check that we do actually contain some data
-    if (_thePositions.size() == 0)
+    if (_thePositions.isEmpty())
     {
       return new MWC.GenericData.Watchable[]
       {};
@@ -2189,7 +2201,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           SortedSet<Editable> set = rawPositions.tailSet(nearestFix);
 
           // see if the requested DTG was inside the range of the data
-          if (!set.isEmpty() && (set.size() > 0))
+          if (!set.isEmpty())
           {
             res = (FixWrapper) set.first();
 
@@ -2350,18 +2362,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   private SortedSet<Editable> getRawPositions()
   {
-    SortedSet<Editable> res = null;
+    final long tNow = System.currentTimeMillis();
+    final long THRESHOLD = 500;
+    if (_cachedRawPositions == null
+        || tNow - _timeCachedRawPositionsCalculated > THRESHOLD)
+    {
+      _timeCachedRawPositionsCalculated = tNow;
 
-    // do we just have the one list?
-    if (_thePositions.size() == 1)
-    {
-      final TrackSegment p = (TrackSegment) _thePositions.first();
-      res = (SortedSet<Editable>) p.getData();
-    }
-    else
-    {
-      // loop through them
-      res = new TreeSet<Editable>();
+      _cachedRawPositions = new TreeSet<Editable>();
+
+      // loop through segments
       final Enumeration<Editable> segs = _thePositions.elements();
       while (segs.hasMoreElements())
       {
@@ -2369,10 +2379,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final TrackSegment seg = (TrackSegment) segs.nextElement();
 
         // add all the points
-        res.addAll(seg.getData());
+        _cachedRawPositions.addAll(seg.getData());
       }
     }
-    return res;
+    return _cachedRawPositions;
   }
 
   /**
@@ -2614,7 +2624,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public int numFixes()
   {
-    return getRawPositions().size();
+    int res = 0;
+
+    // loop through segments
+    final Enumeration<Editable> segs = _thePositions.elements();
+    while (segs.hasMoreElements())
+    {
+      // get this segment
+      final TrackSegment seg = (TrackSegment) segs.nextElement();
+
+      res += seg.size();
+    }
+    return res;
   }
 
   private void checkPointsArray()
@@ -2702,7 +2723,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // collate a list of the start & end points
     final List<FixWrapper> endPoints = new ArrayList<FixWrapper>();
-    
+
     // use the track color mode
     final TrackColorMode tMode = getTrackColorMode();
 
@@ -2807,7 +2828,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // particularly if it's the victim of a
         // copy/paste operation. Tell it about it's children
         fw.setTrackWrapper(this);
-        
+
         final Color thisFixColor = tMode.colorFor(fw);
 
         // do our job of identifying the first & last date value
@@ -3048,7 +3069,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
 
       // does it have visible data points?
-      if (thisE.size() == 0)
+      if (thisE.isEmpty())
       {
         continue;
       }
@@ -3267,7 +3288,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   protected void paintThisFix(final CanvasType dest,
       final WorldLocation lastLocation, final FixWrapper fw)
   {
-    fw.paintMe(dest, lastLocation,  getTrackColorMode().colorFor(fw));
+    fw.paintMe(dest, lastLocation, getTrackColorMode().colorFor(fw));
   }
 
   /**
@@ -4753,7 +4774,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public void addFix(FixWrapper theFix)
   {
     // do we have any track segments
-    if (_thePositions.size() == 0)
+    if (_thePositions.isEmpty())
     {
       // nope, add one
       final TrackSegment firstSegment = new TrackSegment(TrackSegment.ABSOLUTE);
@@ -4795,7 +4816,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // _locationListener);
   }
 
-  /** Determine the time period for which we have visible locations
+  /**
+   * Determine the time period for which we have visible locations
    * 
    * @return
    */
@@ -4803,10 +4825,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // ok, have we determined the visible period recently?
     final long tNow = System.currentTimeMillis();
-    
+
     // how long does the cached value remain valid for?
     final long ALLOWABLE_PERIOD = 500;
-    if(_cachedPeriod != null && tNow - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
+    if (_cachedPeriod != null
+        && tNow - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
     {
       // still in date, use the last calculated period
     }
@@ -4833,16 +4856,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
       // ok, store the new time period
       _cachedPeriod = res;
-      
+
       // remember when it was calculated
       _timeCachedPeriodCalculated = tNow;
     }
-    
+
     return _cachedPeriod;
   }
 
   public boolean isVisibleAt(HiResDate dtg)
-  {    
+  {
     boolean res = false;
     final TimePeriod visiblePeriod = getVisiblePeriod();
     if (visiblePeriod != null)
