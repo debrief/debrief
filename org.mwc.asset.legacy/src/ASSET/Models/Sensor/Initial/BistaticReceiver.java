@@ -379,7 +379,7 @@ public class BistaticReceiver extends CoreSensor
 			DetectionList detections = new DetectionList();
 			receiver.detects(env, detections, rx, scenario, 20000);
 
-			assertEquals("got some detections", 2, detections.size());
+			assertEquals("got some detections", 1, detections.size());
 
 			showDetections(detections);
 
