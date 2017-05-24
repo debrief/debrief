@@ -516,6 +516,7 @@ public final class StackedDotHelper
         else
         {
           Enumeration<Editable> points = segment.elements();
+          Double lastCourse = null;
           while (points.hasMoreElements())
           {
             FixWrapper fw = (FixWrapper) points.nextElement();
@@ -525,9 +526,25 @@ public final class StackedDotHelper
               final FixedMillisecond thisMilli =
                   new FixedMillisecond(fw.getDateTimeGroup().getDate()
                       .getTime());
+              
               double tgtCourse =
                   MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
-              double tgtSpeed = fw.getSpeed();
+              final double tgtSpeed = fw.getSpeed();
+
+              // see if we need to change the domain of the course to match
+              // the previous value
+              if(lastCourse != null)
+              {
+                if(tgtCourse - lastCourse > 190)
+                {
+                  tgtCourse = tgtCourse - 360;
+                }
+                else if(tgtCourse - lastCourse < -180)
+                {
+                  tgtCourse = 360 + tgtCourse;
+                }
+              }
+              lastCourse = tgtCourse;
 
               // we use the raw color for infills, to help find which
               // infill we're referring to (esp in random infills)
