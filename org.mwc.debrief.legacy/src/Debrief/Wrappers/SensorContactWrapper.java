@@ -462,13 +462,19 @@ public final class SensorContactWrapper extends
       scw.setDTG(theDate);
       sw.add(scw);
 
-      final Fix fx = new Fix();
-      fx.setLocation(location);
-      fx.setTime(theDate);
-      fx.setCourse(0);
-      final FixWrapper fw = new FixWrapper(fx);
+      Fix fx1 = new Fix();
+      fx1.setLocation(location);
+      fx1.setTime(theDate);
+      fx1.setCourse(0);
+       FixWrapper fw1 = new FixWrapper(fx1);
       final TrackWrapper host = new TrackWrapper();
-      host.addFix(fw);
+      host.addFix(fw1);
+      Fix fx2 = new Fix();
+      fx2.setLocation(location);
+      fx2.setTime(new HiResDate(2000));
+      fx2.setCourse(0);
+      FixWrapper fw2 = new FixWrapper(fx2);
+      host.add(fw2);
 
       host.add(sw);
 
@@ -498,7 +504,8 @@ public final class SensorContactWrapper extends
       assertEquals("should be offset location", locationBitSouth, wl);
 
       // and try again, giving the host a course this time
-      fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
+      fx1.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
+      fx2.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
       sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1,
           WorldDistance.DEGS)));
       wl = scw.getCalculatedOrigin(host);
@@ -506,8 +513,10 @@ public final class SensorContactWrapper extends
       assertEquals("should be centre of rectangle", locationBitEast, wl);
 
       // check offset knows about track being shifted
-      fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(0.0));
-      fw.setFixLocation(location2);
+      fx1.setCourse(MWC.Algorithms.Conversions.Degs2Rads(0.0));
+      fw1.setFixLocation(location2);
+      fx2.setCourse(MWC.Algorithms.Conversions.Degs2Rads(0.0));
+      fw2.setFixLocation(location2);
       wl = scw.getCalculatedOrigin(host);
       assertNotNull("should be a location", wl);
       assertEquals("should be centre of rectangle", locationBitNorth2, wl);
