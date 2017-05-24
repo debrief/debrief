@@ -112,12 +112,12 @@ public class rangeCalc extends plainCalc
 	/**
 	 * remember what units the user prefers
 	 */
-	static String _myUnits = null;
+	private static String _myUnits = null;
 	
 	/** the time we last retrieved the units (so we 
 	 * can reduce checks)
 	 */
-	static long _unitsRetrievedAt = 0;
+	private static long _unitsRetrievedAt = 0;
 
 	protected static final java.text.NumberFormat _decFormatter = new java.text.DecimalFormat(
 			"0.00");
@@ -247,7 +247,9 @@ public class rangeCalc extends plainCalc
 			res = formatter.format(calculate(primary, secondary, time));
 		}
 		else
+		{
 			res = NOT_APPLICABLE;
+		}
 
 		return res;
 	}
@@ -294,10 +296,6 @@ public class rangeCalc extends plainCalc
       }
       if (_myUnits == null)
         _myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
-    }
-    else
-    {
-      // do nothing, just re-use the value
     }
 
     return _myUnits;

@@ -870,8 +870,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * working parameters
    */
-  transient private TimePeriod _myTimePeriod;
-
   transient private WorldArea _myWorldArea;
 
   transient private final PropertyChangeListener _locationListener;
@@ -1291,10 +1289,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public Enumeration<Editable> contiguousElements()
   {
-    WrappedSegments we = new WrappedSegments();
+    WrappedIterators we = new WrappedIterators();
     
-//    final Vector<Editable> res = new Vector<Editable>(0, 1);
-
     if (_mySensors != null)
     {
       final Enumeration<Editable> iter = _mySensors.elements();
@@ -1305,7 +1301,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if (sw.getVisible())
         {
           we.add(sw.elements());
-//          res.addAll(sw._myContacts);
         }
       }
     }
@@ -2275,7 +2270,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * @author Ian
    * 
    */
-  private static class WrappedSegments implements Enumeration<Editable>
+  private static class WrappedIterators implements Enumeration<Editable>
   {
 
     List<Enumeration<MWC.GUI.Editable>> lists = new ArrayList<>();
@@ -2283,7 +2278,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     private int currentList = 0;
     private Enumeration<MWC.GUI.Editable> currentIter;
 
-    public WrappedSegments(SegmentList segments)
+    public WrappedIterators(SegmentList segments)
     {
       Enumeration<Editable> ele = segments.elements();
       while (ele.hasMoreElements())
@@ -2295,7 +2290,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       currentIter = this.lists.get(0);
     }
     
-    public WrappedSegments()
+    public WrappedIterators()
     {
       currentIter = null;
     }
@@ -2353,7 +2348,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // list.add(seg);
     // }
 
-    return new WrappedSegments(_thePositions);
+    return new WrappedIterators(_thePositions);
   }
 
 //  private SortedSet<Editable> getPositionsBetween(final FixWrapper starter2,
@@ -2374,6 +2369,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final boolean getPositionsVisible()
   {
     return _showPositions;
+  }
+
+  /**
+   * ensure the cached set of raw positions gets cleared
+   * 
+   */
+  public void flushPeriodCache()
+  {
+    _cachedPeriod = null;
+  }
+
+  /**
+   * ensure the cached set of raw positions gets cleared
+   * 
+   */
+  public void flushPositionCache()
+  {
+    _cachedRawPositions = null;
   }
 
   private SortedSet<Editable> getRawPositions()
@@ -3524,24 +3537,26 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else
+    else if (point instanceof FixWrapper)
     {
+      final FixWrapper fw = (FixWrapper) point;
       // loop through the segments
       final Enumeration<Editable> segments = _thePositions.elements();
       while (segments.hasMoreElements())
       {
         final TrackSegment seg = (TrackSegment) segments.nextElement();
         seg.removeElement(point);
+        
         // and stop listening to it (if it's a fix)
-        if (point instanceof FixWrapper)
-        {
-          final FixWrapper fw = (FixWrapper) point;
-          fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-              _locationListener);
+        fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+            _locationListener);
 
-          // remember that we've made a change
-          modified = true;
-        }
+        // remember that we've made a change
+        modified = true;
+        
+        // we've also got to clear the cache
+        flushPeriodCache();
+        flushPositionCache();
       }
     }
 
@@ -4816,18 +4831,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // tell the fix about it's daddy
     theFix.setTrackWrapper(this);
 
-    // and extend the start/end DTGs
-    if (_myTimePeriod == null)
-    {
-      _myTimePeriod =
-          new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix
-              .getDateTimeGroup());
-    }
-    else
-    {
-      _myTimePeriod.extend(theFix.getDateTimeGroup());
-    }
-
     if (_myWorldArea == null)
     {
       _myWorldArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
@@ -4837,10 +4840,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       _myWorldArea.extend(theFix.getLocation());
     }
 
-    // we want to listen out for the fix being moved. better listen in to it
-    //
-    // theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-    // _locationListener);
+    // flush any cached values for time period & lists of positions
+    flushPeriodCache();
+    flushPositionCache();
   }
 
   /**
