@@ -387,14 +387,14 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
     return res;
   }
-  
+
   /**
    * get the bounds of this set of layers (return our SPECIAL area in absence of bounds)
    */
   public WorldArea getBounds()
   {
     WorldArea res = getRawBounds();
-    
+
     // did we find anything?
     if (res == null)
     {
@@ -533,6 +533,33 @@ public class Layers implements Serializable, Plottable, PlottablesType
   public double rangeFrom(final WorldLocation other)
   {
     return -1;
+  }
+
+  /** create a version of the supplied layer name
+   * that doesn't exist, by appending a counter
+   * @param prefix
+   * @return
+   */
+  public String createUniqueLayerName(final String prefix)
+  {
+    String res = prefix;
+
+    if (findLayer(prefix) != null)
+    {
+      // ok, that one is taken
+      // we'll have to increment it
+      int ctr = 1;
+      while (findLayer(prefix + "_" + ctr) != null)
+      {
+        // nope, taken. increment
+        ctr++;
+      }
+
+      // ok, we now have a name to use
+      res += "_" + ctr;
+    }
+
+    return res;
   }
 
   /**
@@ -899,12 +926,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
         this.addThisLayer(formatL);
       }
       formatL.add((Editable) theListener);
-      
+
       // ok, clear out the lists
       _newItemListeners.clear();
     }
-    
-    
+
   }
 
   /**
@@ -915,23 +941,23 @@ public class Layers implements Serializable, Plottable, PlottablesType
   public List<INewItemListener> getNewItemListeners()
   {
     // do we need to rescan the listeners?
-    if(_newItemListeners.size() == 0)
+    if (_newItemListeners.size() == 0)
     {
       Layer fLayer = findLayer(FORMATTERS);
-      if(fLayer != null)
+      if (fLayer != null)
       {
         Enumeration<Editable> fEnum = fLayer.elements();
         while (fEnum.hasMoreElements())
         {
           Editable thisE = (Editable) fEnum.nextElement();
-          if(thisE instanceof INewItemListener)
+          if (thisE instanceof INewItemListener)
           {
             _newItemListeners.add((INewItemListener) thisE);
           }
         }
       }
     }
-    
+
     return _newItemListeners;
   }
 
@@ -1107,11 +1133,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
      *          the layer that has a new item
      * @param item
      *          the new item (null if this is actually just a new layer)
-     * @param theSymbology 
+     * @param theSymbology
      */
     void newItem(Layer parent, Editable item, String theSymbology);
-    
-    /** the data has been reloaded, forget any existing state
+
+    /**
+     * the data has been reloaded, forget any existing state
      * 
      */
     void reset();
@@ -1168,7 +1195,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
      * @param parent
      *          the layer containing the item
      */
-    public void dataExtended(Layers theData, Plottable newItem, HasEditables parent);
+    public void dataExtended(Layers theData, Plottable newItem,
+        HasEditables parent);
   }
 
   // //////////////////////////////////////////////////////////////////////////
