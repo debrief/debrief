@@ -855,11 +855,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   private MWC.GUI.Shapes.Symbols.PlainSymbol _theSnailShape;
 
   /**
-   * working ZERO location value, to reduce number of working values
-   */
-  final private WorldLocation _zeroLocation = new WorldLocation(0, 0, 0);
-
-  /**
    * flag for if there is a pending update to track - particularly if it's a relative one
    */
   private boolean _relativeUpdatePending = false;
@@ -868,8 +863,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   // member functions
   // //////////////////////////////////////
 
-  transient private FixWrapper finisher;
-
   transient private HiResDate lastDTG;
 
   transient private FixWrapper lastFix;
@@ -877,9 +870,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * working parameters
    */
-  // for getFixesBetween
-  transient private FixWrapper starter;
-
   transient private TimePeriod _myTimePeriod;
 
   transient private WorldArea _myWorldArea;
@@ -1253,9 +1243,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     // and our utility objects
-    finisher = null;
     lastFix = null;
-    starter = null;
 
     // and our editor
     _myEditor = null;
@@ -1303,7 +1291,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public Enumeration<Editable> contiguousElements()
   {
-    final Vector<Editable> res = new Vector<Editable>(0, 1);
+    WrappedSegments we = new WrappedSegments();
+    
+//    final Vector<Editable> res = new Vector<Editable>(0, 1);
 
     if (_mySensors != null)
     {
@@ -1314,7 +1304,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // is it visible?
         if (sw.getVisible())
         {
-          res.addAll(sw._myContacts);
+          we.add(sw.elements());
+//          res.addAll(sw._myContacts);
         }
       }
     }
@@ -1329,7 +1320,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         // is it visible?
         if (sw.getVisible())
         {
-          res.addAll(sw.getData());
+          we.add(sw.elements());
         }
       }
     }
@@ -1342,17 +1333,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final TMAWrapper sw = (TMAWrapper) iter.nextElement();
         if (sw.getVisible())
         {
-          res.addAll(sw._myContacts);
+          we.add(sw.elements());
         }
       }
     }
 
     if (_thePositions != null)
     {
-      res.addAll(getRawPositions());
+      
+      we.add(getPositionIterator());
     }
 
-    return res.elements();
+    return we;
   }
 
   /**
@@ -2286,7 +2278,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   private static class WrappedSegments implements Enumeration<Editable>
   {
 
-    List<TrackSegment> lists = new ArrayList<>();
+    List<Enumeration<MWC.GUI.Editable>> lists = new ArrayList<>();
 
     private int currentList = 0;
     private Enumeration<MWC.GUI.Editable> currentIter;
@@ -2297,10 +2289,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       while (ele.hasMoreElements())
       {
         TrackSegment seg = (TrackSegment) ele.nextElement();
-        lists.add(seg);
+        lists.add(seg.elements());
       }
 
-      currentIter = this.lists.get(0).elements();
+      currentIter = this.lists.get(0);
+    }
+    
+    public WrappedSegments()
+    {
+      currentIter = null;
+    }
+    
+    public void add(Enumeration<MWC.GUI.Editable> item)
+    {
+      lists.add(item);
+      
+      if(currentIter == null)
+      {
+        currentIter = lists.get(0);
+      }
     }
 
     @Override
@@ -2309,7 +2316,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       while (currentList < lists.size() - 1 && !currentIter.hasMoreElements())
       {
         currentList++;
-        currentIter = lists.get(currentList).elements();
+        currentIter = lists.get(currentList);
       }
 
       return currentIter.hasMoreElements();
@@ -2321,7 +2328,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       while (currentList < lists.size() - 1 && !currentIter.hasMoreElements())
       {
         currentList++;
-        currentIter = lists.get(currentList).elements();
+        currentIter = lists.get(currentList);
       }
 
       return currentIter.nextElement();
@@ -2349,15 +2356,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return new WrappedSegments(_thePositions);
   }
 
-  private SortedSet<Editable> getPositionsBetween(final FixWrapper starter2,
-      final FixWrapper finisher2)
-  {
-    // first get them all as one list
-    final SortedSet<Editable> pts = getRawPositions();
-
-    // now do the sort
-    return pts.subSet(starter2, finisher2);
-  }
+//  private SortedSet<Editable> getPositionsBetween(final FixWrapper starter2,
+//      final FixWrapper finisher2)
+//  {
+//    // first get them all as one list
+//    final SortedSet<Editable> pts = getRawPositions();
+//
+//    // now do the sort
+//    return pts.subSet(starter2, finisher2);
+//  }
 
   /**
    * whether positions are being shown
