@@ -40,8 +40,8 @@ import MWC.GUI.Layers;
  */
 public class MergeTracks implements RightClickContextItemGenerator
 {
-
-	/**
+  
+  /**
 	 * @param parent
 	 * @param theLayers
 	 * @param parentLayers
@@ -126,6 +126,22 @@ public class MergeTracks implements RightClickContextItemGenerator
 			}
 			final String title = "Merge track segments - into new track: "
 					+ targetTrackName;
+			
+			// check if the target name already exists
+			if(theLayers.findLayer(targetTrackName) != null)
+			{
+			  // ok, we'll have to increment it
+			  int ctr = 1;
+			  while(theLayers.findLayer(targetTrackName + "_" + ctr) != null)
+			  {
+			    ctr++;
+			  }
+			  
+			  // ok, we now have a name to use
+			  targetTrackName += "_" + ctr;
+			}
+			
+			
 			final TrackWrapper newTrack = new TrackWrapper();
 			newTrack.setName(targetTrackName);
 			// create this operation
