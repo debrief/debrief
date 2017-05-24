@@ -4706,7 +4706,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public Enumeration<Editable> segments()
   {
-    return elements();
+    return _thePositions.elements();
   }
 
   /**
