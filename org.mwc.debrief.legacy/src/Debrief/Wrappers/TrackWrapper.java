@@ -2342,16 +2342,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return _LabelAtStart;
   }
 
-  // private SortedSet<Editable> getPositionsBetween(final FixWrapper starter2,
-  // final FixWrapper finisher2)
-  // {
-  // // first get them all as one list
-  // final SortedSet<Editable> pts = getRawPositions();
-  //
-  // // now do the sort
-  // return pts.subSet(starter2, finisher2);
-  // }
-
   /**
    * the relative location of the label
    * 
@@ -2903,6 +2893,26 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return res;
   }
 
+  /** whether this is single point track. Single point tracks get special processing.
+   * 
+   * @return
+   */
+  private boolean isSinglePointTrack()
+  {
+    final boolean res;
+    if(_thePositions.size() == 1)
+    {
+      TrackSegment first = (TrackSegment) _thePositions.elements().nextElement();
+      res = first.size() == 1;
+    }
+    else
+    {
+      res = false;
+    }
+    
+    return res;
+  }
+  
   public boolean isVisibleAt(final HiResDate dtg)
   {
     boolean res = false;
@@ -3549,12 +3559,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // hmm, if we're plotting date labels at the ends,
     // shift the track name so that it's opposite
     Integer oldLoc = null;
-    if (this.getEndTimeLabels())
+    if (this.getEndTimeLabels() && !isSinglePointTrack())
     {
-      oldLoc = _theLabel.getRelativeLocation();
+      oldLoc = getNameLocation();
       final int theLoc =
           LabelLocationPropertyEditor.oppositeFor(hostFix.getLabelLocation());
-      _theLabel.setRelativeLocation(theLoc);
+      setNameLocation(theLoc);
     }
 
     // and paint it
