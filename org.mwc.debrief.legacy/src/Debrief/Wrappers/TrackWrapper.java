@@ -883,8 +883,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   // for getFixesBetween
   transient private FixWrapper starter;
 
-  transient private TimePeriod _myTimePeriod;
-
   transient private WorldArea _myWorldArea;
 
   transient private final PropertyChangeListener _locationListener;
@@ -2360,6 +2358,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return _showPositions;
   }
 
+  /**
+   * ensure the cached set of raw positions gets cleared
+   * 
+   */
+  public void flushPeriodCache()
+  {
+    _cachedPeriod = null;
+  }
+
+  /**
+   * ensure the cached set of raw positions gets cleared
+   * 
+   */
+  public void flushPositionCache()
+  {
+    _cachedRawPositions = null;
+  }
+
   private SortedSet<Editable> getRawPositions()
   {
     final long tNow = System.currentTimeMillis();
@@ -3508,24 +3524,26 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else
+    else if (point instanceof FixWrapper)
     {
+      final FixWrapper fw = (FixWrapper) point;
       // loop through the segments
       final Enumeration<Editable> segments = _thePositions.elements();
       while (segments.hasMoreElements())
       {
         final TrackSegment seg = (TrackSegment) segments.nextElement();
         seg.removeElement(point);
+        
         // and stop listening to it (if it's a fix)
-        if (point instanceof FixWrapper)
-        {
-          final FixWrapper fw = (FixWrapper) point;
-          fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-              _locationListener);
+        fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+            _locationListener);
 
-          // remember that we've made a change
-          modified = true;
-        }
+        // remember that we've made a change
+        modified = true;
+        
+        // we've also got to clear the cache
+        flushPeriodCache();
+        flushPositionCache();
       }
     }
 
@@ -4796,18 +4814,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // tell the fix about it's daddy
     theFix.setTrackWrapper(this);
 
-    // and extend the start/end DTGs
-    if (_myTimePeriod == null)
-    {
-      _myTimePeriod =
-          new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix
-              .getDateTimeGroup());
-    }
-    else
-    {
-      _myTimePeriod.extend(theFix.getDateTimeGroup());
-    }
-
     if (_myWorldArea == null)
     {
       _myWorldArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
@@ -4816,6 +4822,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       _myWorldArea.extend(theFix.getLocation());
     }
+
+    // flush any cached values for time period & lists of positions
+    flushPeriodCache();
+    flushPositionCache();
 
     // we want to listen out for the fix being moved. better listen in to it
     //
