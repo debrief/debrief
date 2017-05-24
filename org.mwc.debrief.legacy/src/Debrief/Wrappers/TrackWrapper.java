@@ -1932,30 +1932,48 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         else
         {
           // bugger that - get the real data
-
-          // have a go..
-          if (starter == null)
+          
+          final Enumeration<Editable> iter = getPositionIterator();
+          set = new TreeSet<Editable>();
+          final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+          while(iter.hasMoreElements())
           {
-            starter = new FixWrapper(new Fix((start), _zeroLocation, 0.0, 0.0));
+            final FixWrapper nextF = (FixWrapper) iter.nextElement();
+            final HiResDate dtg = nextF.getDateTimeGroup();
+            if(period.contains(dtg))
+            {
+              set.add(nextF);
+            }
+            else if(dtg.greaterThan(end))
+            {
+              // ok, we've passed the end
+              break;
+            }
           }
-          else
-          {
-            starter.getFix().setTime(new HiResDate(0, start.getMicros() - 1));
-          }
-
-          if (finisher == null)
-          {
-            finisher =
-                new FixWrapper(new Fix(new HiResDate(0, end.getMicros() + 1),
-                    _zeroLocation, 0.0, 0.0));
-          }
-          else
-          {
-            finisher.getFix().setTime(new HiResDate(0, end.getMicros() + 1));
-          }
-
-          // ok, ready, go for it.
-          set = getPositionsBetween(starter, finisher);
+//
+//          // have a go..
+//          if (starter == null)
+//          {
+//            starter = new FixWrapper(new Fix((start), _zeroLocation, 0.0, 0.0));
+//          }
+//          else
+//          {
+//            starter.getFix().setTime(new HiResDate(0, start.getMicros() - 1));
+//          }
+//
+//          if (finisher == null)
+//          {
+//            finisher =
+//                new FixWrapper(new Fix(new HiResDate(0, end.getMicros() + 1),
+//                    _zeroLocation, 0.0, 0.0));
+//          }
+//          else
+//          {
+//            finisher.getFix().setTime(new HiResDate(0, end.getMicros() + 1));
+//          }
+//
+//          // ok, ready, go for it.
+//          set = getPositionsBetween(starter, finisher);
         }
 
       }
@@ -4818,8 +4836,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // _locationListener);
   }
 
-  long skipCount = 0;
-
   /**
    * Determine the time period for which we have visible locations
    * 
@@ -4836,12 +4852,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         && tNow - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
     {
       // still in date, use the last calculated period
-      skipCount++;
-
-      if (skipCount % 100 == 0)
-      {
-        System.out.println(skipCount);
-      }
     }
     else
     {
