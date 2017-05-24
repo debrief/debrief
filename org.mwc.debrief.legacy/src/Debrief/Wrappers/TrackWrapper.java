@@ -786,7 +786,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * keep a list of points waiting to be plotted
    * 
    */
-  transient int[] _myPts;
+  transient private int[] _myPts;
 
   /**
    * when plotting a track, we end up calling "get visible period" very frequently. So, we'll cache
@@ -794,24 +794,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * recalculate, or to use a cached version
    * 
    */
-  transient TimePeriod _cachedPeriod = null;
+  transient private TimePeriod _cachedPeriod = null;
 
   /**
    * the time that we last calculated the time period
    * 
    */
-  transient long _timeCachedPeriodCalculated = 0;
+  transient private long _timeCachedPeriodCalculated = 0;
 
   /**
    * the time that we last calculated the set of raw positions
    * 
    */
-  transient long _timeCachedRawPositionsCalculated = 0;
+  transient private long _timeCachedRawPositionsCalculated = 0;
 
   /**
    * cache the set of raw positions, since we frequently end up re-calculating them lost of times
    */
-  transient TreeSet<Editable> _cachedRawPositions = null;
+  transient private TreeSet<Editable> _cachedRawPositions = null;
 
   /**
    * the sensor tracks for this vessel
@@ -832,7 +832,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * keep track of how far we are through our array of points
    * 
    */
-  transient int _ptCtr = 0;
+  transient private int _ptCtr = 0;
 
   /**
    * whether or not to show the Positions
@@ -884,7 +884,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * how to shade the track
    * 
    */
-  TrackColorModeHelper.TrackColorMode _trackColorMode =
+  private TrackColorModeHelper.TrackColorMode _trackColorMode =
       TrackColorModeHelper.LegacyTrackColorModes.PER_FIX;
 
   // //////////////////////////////////////
