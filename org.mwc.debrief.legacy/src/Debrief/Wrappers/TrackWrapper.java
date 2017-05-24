@@ -2368,8 +2368,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         || tNow - _timeCachedRawPositionsCalculated > THRESHOLD)
     {
       _timeCachedRawPositionsCalculated = tNow;
-
-      _cachedRawPositions = new TreeSet<Editable>();
+      
+      if(_cachedRawPositions == null)
+      {
+        _cachedRawPositions = new TreeSet<Editable>();
+      }
+      else
+      {
+        _cachedRawPositions.clear();
+      }
 
       // loop through segments
       final Enumeration<Editable> segs = _thePositions.elements();
