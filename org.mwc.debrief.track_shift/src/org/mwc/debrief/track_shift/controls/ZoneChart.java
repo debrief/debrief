@@ -1351,7 +1351,7 @@ public class ZoneChart extends Composite
             {
               // ok, go for it.
               final TrackWrapper thisT = (TrackWrapper) thisL;
-              final Enumeration<Editable> posits = thisT.getPositions();
+              final Enumeration<Editable> posits = thisT.getPositionIterator();
               while (posits.hasMoreElements())
               {
                 final FixWrapper thisF =

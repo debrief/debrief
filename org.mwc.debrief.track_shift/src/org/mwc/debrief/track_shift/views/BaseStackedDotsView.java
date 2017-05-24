@@ -128,6 +128,7 @@ import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -849,6 +850,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             }
           }
         }
+      }
+      else if(cSeg instanceof AbsoluteTMASegment)
+      { 
+        System.err.println("Incomplete. Still have to support dragging absolute segments");
       }
       else
       {
@@ -2485,6 +2490,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
             final Zone newZ =
                 new Zone(rel.getDTG_Start().getDate().getTime(), rel
+                    .getDTG_End().getDate().getTime(), color);
+            zones.add(newZ);
+          }
+          else if(thisSeg instanceof AbsoluteTMASegment)
+          {
+            AbsoluteTMASegment seg = (AbsoluteTMASegment) thisSeg;
+            FixWrapper firstE = (FixWrapper) thisSeg.elements().nextElement();
+            final Color color = firstE.getColor();            
+            final Zone newZ =
+                new Zone(seg.getDTG_Start().getDate().getTime(), seg
                     .getDTG_End().getDate().getTime(), color);
             zones.add(newZ);
           }

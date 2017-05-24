@@ -221,8 +221,16 @@ final class ImportSensor extends AbstractPlainLineImporter {
 	    // and ditch some whitespace
 	    sensorName = sensorName.trim();
 	 
-	    // and lastly read in the message (to the end of the line)
-	    String labelTxt =st.nextToken("\r");
+      // and lastly read in the message (to the end of the line)
+      final String labelTxt;
+      if (st.hasMoreTokens())
+      {
+        labelTxt = st.nextToken("\r");
+      }
+      else
+      {
+        labelTxt = null;
+      }
 	    
 	    // did we find anything
 	    if(labelTxt != null)
