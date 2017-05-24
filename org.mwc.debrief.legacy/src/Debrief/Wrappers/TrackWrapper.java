@@ -286,10 +286,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   private static class WrappedIterators implements Enumeration<Editable>
   {
 
-    List<Enumeration<MWC.GUI.Editable>> lists = new ArrayList<>();
-
+    private final List<Enumeration<Editable>> lists = new ArrayList<>();
     private int currentList = 0;
-    private Enumeration<MWC.GUI.Editable> currentIter;
+    private Enumeration<Editable> currentIter;
 
     public WrappedIterators()
     {
