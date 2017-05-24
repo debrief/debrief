@@ -1305,13 +1305,13 @@ public final class SensorContactWrapper extends
     // do we need an origin
     final WorldLocation origin = getCalculatedOrigin(track);
 
-    final TimePeriod trackPeriod =
-        new TimePeriod.BaseTimePeriod(track.getStartDTG(), track.getEndDTG());
-    if (!trackPeriod.contains(this.getTime()))
-    {
-      // don't bother trying to plot it, we're outside the parent period
-      return;
-    }
+//    final TimePeriod trackPeriod =
+//        new TimePeriod.BaseTimePeriod(track.getStartDTG(), track.getEndDTG());
+//    if (!trackPeriod.contains(this.getTime()))
+//    {
+//      // don't bother trying to plot it, we're outside the parent period
+//      return;
+//    }
 
     // ok, we have the start - convert it to a point
     final Point pt = new Point(dest.toScreen(origin));

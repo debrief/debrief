@@ -1869,6 +1869,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final ArrayLength sensorOffset, final boolean wormInHole)
   {
     FixWrapper res = null;
+    
+    // special case - for single point tracks
+    if(isSinglePointTrack())
+    {
+      TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
+      return (FixWrapper) seg.first();
+    }
 
     if (wormInHole && sensorOffset != null)
     {
@@ -2380,8 +2387,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // check that we do actually contain some data
     if (_thePositions.isEmpty())
     {
-      return new MWC.GenericData.Watchable[]
+      return new Watchable[]
       {};
+    }
+    else if(isSinglePointTrack())
+    {
+      TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
+      FixWrapper fix = (FixWrapper) seg.first();
+      return new Watchable[]{fix};
     }
 
     // special case - if we've been asked for an invalid time value
@@ -2897,7 +2910,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * 
    * @return
    */
-  private boolean isSinglePointTrack()
+  public boolean isSinglePointTrack()
   {
     final boolean res;
     if(_thePositions.size() == 1)
@@ -2916,12 +2929,23 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public boolean isVisibleAt(final HiResDate dtg)
   {
     boolean res = false;
-    final TimePeriod visiblePeriod = getVisiblePeriod();
-    if (visiblePeriod != null)
+    
+    // special case - single track
+    if(isSinglePointTrack())
     {
-      res = visiblePeriod.contains(dtg);
+      // we'll assume it's never ending.
+      res = true;
     }
-    return res;
+    else
+    {
+      final TimePeriod visiblePeriod = getVisiblePeriod();
+      if (visiblePeriod != null)
+      {
+        res = visiblePeriod.contains(dtg);
+      }
+    }
+    
+     return res;
   }
 
   /**
