@@ -317,7 +317,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
   /**
    * flag for whether to show the label
    */
-  private Boolean _showLabel;
+  private boolean _showLabel;
 
   /**
    * the track we are a part of (note, we're making it static so that when we serialise it we don't
@@ -441,7 +441,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
     _myArea = null;
     _theLabel = null;
     setFont(null);
-    _showLabel = null;
+    _showLabel = false;
 
   }
 
@@ -832,16 +832,13 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
   public final boolean getLabelShowing()
   {
-    if (_showLabel == null)
-      _showLabel = Boolean.FALSE;
-
-    return _showLabel.booleanValue();
+    return _showLabel;
   }
 
   @FireReformatted
   public final void setLabelShowing(final boolean val)
   {
-    _showLabel = new Boolean(val);
+    _showLabel = val;
   }
 
   public final boolean getSymbolShowing()
