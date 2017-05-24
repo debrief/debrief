@@ -250,7 +250,7 @@ public class GndDemonstrator extends ViewPart
 			final String theQuery = "insert into roads_geom (id, latVal, longVal, name) VALUES (?,?,?,'aa' );";
 			final PreparedStatement st = conn.prepareStatement(theQuery);
 
-			final Enumeration<Editable> enumer = theTrack.getPositions();
+			final Enumeration<Editable> enumer = theTrack.getPositionIterator();
 			while (enumer.hasMoreElements())
 			{
 				final FixWrapper thisF = (FixWrapper) enumer.nextElement();

@@ -333,6 +333,38 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     assertEquals("got added", 7, this.trackLength());
   }
 
+  public void testListOfLists()
+  {
+    TrackSegment t1 = new TrackSegment(false);
+    long time = 1000;
+    int pos = 1;
+    t1.addFix(createFix(time++, ++pos, pos));
+    t1.addFix(createFix(time++, ++pos, pos));
+    t1.addFix(createFix(time++, ++pos, pos));
+    t1.addFix(createFix(time++, ++pos, pos));
+    t1.addFix(createFix(time++, ++pos, pos));
+    
+    TrackSegment t2 = new TrackSegment(false);
+    t2.addFix(createFix(time++, ++pos, pos));
+    t2.addFix(createFix(time++, ++pos, pos));
+    t2.addFix(createFix(time++, ++pos, pos));
+    t2.addFix(createFix(time++, ++pos, pos));
+
+    TrackWrapper track = new TrackWrapper();
+    track.add(t1);
+    track.add(t2);
+    
+    int ctr = 0;
+    Enumeration<Editable> iter = track.getPositionIterator();
+    while(iter.hasMoreElements())
+    {
+      iter.nextElement();
+      ctr++;
+    }
+    
+    assertEquals("correct num items", 9, ctr);
+  }
+  
   /**
    * Test method for {@link Debrief.Wrappers.TrackWrapper#append(MWC.GUI.Layer)} .
    * @throws InterruptedException 

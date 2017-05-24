@@ -282,7 +282,7 @@ public class DataSupport
 			{
 				final WatchableList thisS = secondaries[i];
 				final TrackSeries thisT = new TrackSeries(thisS.getName(), thisS);
-				final Enumeration<Editable> priPts = primary.getPositions();
+				final Enumeration<Editable> priPts = primary.getPositionIterator();
 				_previousVal = Double.NaN;
 				while (priPts.hasMoreElements())
 				{

@@ -126,7 +126,7 @@ public class CalculateTrackLength implements RightClickContextItemGenerator
             throws ExecutionException
     {
       // get the positions
-      Enumeration<Editable> positions = _subject.getPositions();
+      Enumeration<Editable> positions = _subject.getPositionIterator();
 
       double distanceDegs = 0;
       WorldLocation lastLoc = null;

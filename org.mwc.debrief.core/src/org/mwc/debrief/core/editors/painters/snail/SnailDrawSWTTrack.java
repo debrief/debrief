@@ -323,7 +323,7 @@ final class SnailDrawSWTTrack
           if (trk.getNameVisible() && !titlePlotted)
           {
 
-            final Enumeration<Editable> numer = trk.getPositions();
+            final Enumeration<Editable> numer = trk.getPositionIterator();
             if (numer.hasMoreElements())
             {
               // is this the first fix of the track?

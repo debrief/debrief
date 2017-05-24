@@ -17,7 +17,6 @@ package org.mwc.debrief.track_shift.views;
 import java.awt.Color;
 import java.awt.Paint;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -457,29 +456,37 @@ public final class StackedDotHelper
 			return;
 		}
 
-		final Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(
-				startDTG, endDTG);
+		// loop through using the iterator
+		Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
+		TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+    while (pIter.hasMoreElements())
+    {
+       FixWrapper fw = (FixWrapper) pIter.nextElement();
+       if(validPeriod.contains(fw.getDateTimeGroup()))
+       {
+         final FixedMillisecond thisMilli = new FixedMillisecond(fw
+             .getDateTimeGroup().getDate().getTime());
+         double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+             .getCourse());
 
-		// loop through th items
-		for (final Iterator<Editable> iterator = hostFixes.iterator(); iterator
-				.hasNext();)
-		{
-			final Editable editable = (Editable) iterator.next();
-			final FixWrapper fw = (FixWrapper) editable;
-			final FixedMillisecond thisMilli = new FixedMillisecond(fw
-					.getDateTimeGroup().getDate().getTime());
-			double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
-					.getCourse());
+         // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+         if (flipAxes && ownshipCourse > 180)
+             ownshipCourse -= 360;
 
-			// stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-			if (flipAxes)
-				if (ownshipCourse > 180)
-					ownshipCourse -= 360;
-
-			final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
-					ownshipCourse, fw.getColor(), true, null);
-			osCourseValues.addOrUpdate(crseBearing);
-		}
+         final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+             ownshipCourse, fw.getColor(), true, null);
+         osCourseValues.addOrUpdate(crseBearing);
+       }
+       else
+       {
+         // have we passed the end of the requested period?
+         if(fw.getDateTimeGroup().greaterThan(endDTG))
+         {
+           // ok, drop out
+           break;
+         }
+       }
+    }
 
     // sort out the target course/speed
     Enumeration<Editable> segments = _secondaryTrack.segments();

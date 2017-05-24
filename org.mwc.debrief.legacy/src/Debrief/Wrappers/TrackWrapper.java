@@ -874,9 +874,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   transient private FixWrapper lastFix;
 
-  // for getNearestTo
-  transient private FixWrapper nearestFix;
-
   /**
    * working parameters
    */
@@ -1176,7 +1173,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     // and my objects
     // first ask them to close themselves
-    final Enumeration<Editable> it = getPositions();
+    final Enumeration<Editable> it = getPositionIterator();
     while (it.hasMoreElements())
     {
       final Editable val = it.nextElement();
@@ -1258,7 +1255,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // and our utility objects
     finisher = null;
     lastFix = null;
-    nearestFix = null;
     starter = null;
 
     // and our editor
@@ -1422,7 +1418,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
-    final Enumeration<Editable> fixWrappers = getPositions();
+    final Enumeration<Editable> fixWrappers = getPositionIterator();
     while (fixWrappers.hasMoreElements())
     {
       final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
@@ -1488,7 +1484,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
     // cycle through the fixes
-    final Enumeration<Editable> fixes = getPositions();
+    final Enumeration<Editable> fixes = getPositionIterator();
     while (fixes.hasMoreElements())
     {
       final FixWrapper thisF = (FixWrapper) fixes.nextElement();
@@ -1529,7 +1525,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
     // cycle through the fixes
-    final Enumeration<Editable> fixes = getPositions();
+    final Enumeration<Editable> fixes = getPositionIterator();
     while (fixes.hasMoreElements())
     {
       final FixWrapper thisF = (FixWrapper) fixes.nextElement();
@@ -1699,7 +1695,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
     else
     {
-      final Enumeration<Editable> it = getPositions();
+      final Enumeration<Editable> it = getPositionIterator();
 
       while (it.hasMoreElements())
       {
@@ -2151,10 +2147,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       return new MWC.GenericData.Watchable[]
       {fix};
     }
-
-    // see if this is the DTG we have just requestsed
-    if ((srchDTG.equals(lastDTG)) && (lastFix != null))
+    else if ((srchDTG.equals(lastDTG)) && (lastFix != null))
     {
+      // see if this is the DTG we have just requestsed
       res = lastFix;
     }
     else
@@ -2175,71 +2170,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         {
           // yes it's inside our data range, find the first fix
           // after the indicated point
-
-          // right, increment the time, since we want to allow matching
-          // points
-          // HiResDate DTG = new HiResDate(0, srchDTG.getMicros() + 1);
-
-          // see if we have to create our local temporary fix
-          if (nearestFix == null)
+          Enumeration<Editable> pIter = getPositionIterator();
+          FixWrapper previous = null;
+          while (pIter.hasMoreElements())
           {
-            nearestFix =
-                new FixWrapper(new Fix(srchDTG, _zeroLocation, 0.0, 0.0));
-          }
-          else
-          {
-            nearestFix.getFix().setTime(srchDTG);
-          }
+            final FixWrapper fw = (FixWrapper) pIter.nextElement();
 
-          // right, we really should be filtering the list according to if
-          // the
-          // points are visible.
-          // how do we do filters?
-
-          // get the data. use tailSet, since it's inclusive...
-          final SortedSet<Editable> rawPositions = getRawPositions();
-          SortedSet<Editable> set = rawPositions.tailSet(nearestFix);
-
-          // see if the requested DTG was inside the range of the data
-          if (!set.isEmpty())
-          {
-            res = (FixWrapper) set.first();
-
-            // is this one visible?
-            if (!res.getVisible())
+            if (fw.getVisible())
             {
-
-              // right, the one we found isn't visible. duplicate the
-              // set, so that
-              // we can remove items
-              // without affecting the parent
-              TreeSet<Editable> tmpSet = new TreeSet<Editable>(set);
-
-              // ok, start looping back until we find one
-              while ((!res.getVisible()) && (!tmpSet.isEmpty()))
+              if (fw.getDTG().greaterThanOrEqualTo(srchDTG))
               {
-                // the first one wasn't, remove it
-                tmpSet.remove(res);
-                if (!tmpSet.isEmpty())
-                {
-                  res = (FixWrapper) tmpSet.first();
-                }
+                res = fw;
+                break;
               }
-
-              // SPECIAL CASE: when the time period is after
-              // the end of the filtered period, the above logic will
-              // result in the very last point on the list being
-              // selected. In truth, the first point on the
-              // list is closer to the requested time.
-              // when this happens, return the first item in the
-              // original list.
-              if (tmpSet.size() == 0)
-              {
-                res = (FixWrapper) set.first();
-              }
-
+              // and remember the previous one
+              previous = fw;
             }
-
           }
 
           // right, that's the first points on or before the indicated
@@ -2250,37 +2196,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           {
             if (getInterpolatePoints())
             {
-              // right - just check that we aren't actually on the
-              // correct time
-              // point.
-              // HEY, USE THE ORIGINAL SEARCH TIME, NOT THE
-              // INCREMENTED ONE,
-              // SINCE WE DON'T WANT TO COMPARE AGAINST A MODIFIED
-              // TIME
-
               if (!res.getTime().equals(srchDTG))
               {
-
-                // right, we haven't found an actual data point.
-                // Better calculate
-                // one
-
-                // hmm, better also find the point before our one.
-                // the
-                // headSet operation is exclusive - so we need to
-                // find the one
-                // after the first
-                final SortedSet<Editable> otherSet =
-                    rawPositions.headSet(nearestFix);
-
-                FixWrapper previous = null;
-
-                if (!otherSet.isEmpty())
-                {
-                  previous = (FixWrapper) otherSet.last();
-                }
-
-                // did it work?
+                // do we know the previous time?
                 if (previous != null)
                 {
                   // cool, sort out the interpolated point USING
@@ -2340,6 +2258,79 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return new TrackWrapper_Support.IteratorWrapper(res.iterator());
   }
 
+  /**
+   * utility class to let us iterate through all positions without having to copy/paste them into a
+   * new object
+   * 
+   * @author Ian
+   * 
+   */
+  private static class WrappedSegments implements Enumeration<Editable>
+  {
+
+    List<TrackSegment> lists = new ArrayList<>();
+
+    private int currentList = 0;
+    private Enumeration<MWC.GUI.Editable> currentIter;
+
+    public WrappedSegments(SegmentList segments)
+    {
+      Enumeration<Editable> ele = segments.elements();
+      while (ele.hasMoreElements())
+      {
+        TrackSegment seg = (TrackSegment) ele.nextElement();
+        lists.add(seg);
+      }
+
+      currentIter = this.lists.get(0).elements();
+    }
+
+    @Override
+    public boolean hasMoreElements()
+    {
+      while (currentList < lists.size() - 1 && !currentIter.hasMoreElements())
+      {
+        currentList++;
+        currentIter = lists.get(currentList).elements();
+      }
+
+      return currentIter.hasMoreElements();
+    }
+
+    @Override
+    public Editable nextElement()
+    {
+      while (currentList < lists.size() - 1 && !currentIter.hasMoreElements())
+      {
+        currentList++;
+        currentIter = lists.get(currentList).elements();
+      }
+
+      return currentIter.nextElement();
+    }
+
+  }
+
+  /**
+   * provide iterator for all positions that doesn't require a new list to be generated
+   * 
+   * @return iterator through all positions
+   */
+  public Enumeration<Editable> getPositionIterator()
+  {
+    // loop through segments
+    // final Enumeration<Editable> segs = _thePositions.elements();
+    // List<TrackSegment> list = new ArrayList<TrackSegment>();
+    // while (segs.hasMoreElements())
+    // {
+    // // get this segment
+    // final TrackSegment seg = (TrackSegment) segs.nextElement();
+    // list.add(seg);
+    // }
+
+    return new WrappedSegments(_thePositions);
+  }
+
   private SortedSet<Editable> getPositionsBetween(final FixWrapper starter2,
       final FixWrapper finisher2)
   {
@@ -2368,8 +2359,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         || tNow - _timeCachedRawPositionsCalculated > THRESHOLD)
     {
       _timeCachedRawPositionsCalculated = tNow;
-      
-      if(_cachedRawPositions == null)
+
+      if (_cachedRawPositions == null)
       {
         _cachedRawPositions = new TreeSet<Editable>();
       }
@@ -2590,7 +2581,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     final TimePeriod thePeriod = new TimePeriod.BaseTimePeriod(start, end);
 
     // step through our fixes
-    final Enumeration<Editable> iter = getPositions();
+    final Enumeration<Editable> iter = getPositionIterator();
     while (iter.hasMoreElements())
     {
       final FixWrapper fw = (FixWrapper) iter.nextElement();
@@ -3014,7 +3005,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       if (labelColor == null)
       {
         // nope - do we have any legs?
-        final Enumeration<Editable> numer = this.getPositions();
+        final Enumeration<Editable> numer = this.getPositionIterator();
         if (numer.hasMoreElements())
         {
           // ok, use the colour of the first point
@@ -3604,6 +3595,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       return;
     }
+    if (_thePositions.size() == 0)
+    {
+      return;
+    }
+
     final long freq = theVal.getMicros();
 
     // briefly check if we are revealing/hiding all times (ie if freq is 1
@@ -3611,7 +3607,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (freq == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
     {
       // show all of the labels
-      final Enumeration<Editable> iter = getPositions();
+      final Enumeration<Editable> iter = getPositionIterator();
       while (iter.hasMoreElements())
       {
         final FixWrapper fw = (FixWrapper) iter.nextElement();
@@ -3625,13 +3621,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // frequency
 
       // hide all of the labels/symbols first
-      final Enumeration<Editable> enumA = getPositions();
+      final Enumeration<Editable> enumA = getPositionIterator();
       while (enumA.hasMoreElements())
       {
         final FixWrapper fw = (FixWrapper) enumA.nextElement();
         setter.execute(fw, false);
       }
-
       if (freq == 0)
       {
         // we can ignore this, since we have just hidden all of the
@@ -4582,7 +4577,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public void calcCourseSpeed()
   {
     // step through our fixes
-    final Enumeration<Editable> iter = getPositions();
+    final Enumeration<Editable> iter = getPositionIterator();
     FixWrapper prevFw = null;
     while (iter.hasMoreElements())
     {
@@ -4823,6 +4818,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // _locationListener);
   }
 
+  long skipCount = 0;
+
   /**
    * Determine the time period for which we have visible locations
    * 
@@ -4839,12 +4836,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         && tNow - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
     {
       // still in date, use the last calculated period
+      skipCount++;
+
+      if (skipCount % 100 == 0)
+      {
+        System.out.println(skipCount);
+      }
     }
     else
     {
       // ok, calculate a new one
       TimePeriod res = null;
-      final Enumeration<Editable> pos = getPositions();
+      final Enumeration<Editable> pos = getPositionIterator();
       while (pos.hasMoreElements())
       {
         FixWrapper editable = (FixWrapper) pos.nextElement();
