@@ -2892,15 +2892,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public boolean isTMATrack()
   {
     boolean res = false;
-    if (_thePositions != null)
+    if (_thePositions != null && !_thePositions.isEmpty()
+        && _thePositions.first() instanceof CoreTMASegment)
     {
-      if (!_thePositions.isEmpty())
-      {
-        if (_thePositions.first() instanceof CoreTMASegment)
-        {
-          res = true;
-        }
-      }
+      res = true;
     }
 
     return res;
@@ -3775,7 +3770,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else if (point == _mySensors)
+    else if (point.equals(_mySensors))
     {
       // ahh, the user is trying to delete all the solution, cycle through
       // them
@@ -3796,7 +3791,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else if (point == _myDynamicShapes)
+    else if (point.equals(_myDynamicShapes))
     {
       // ahh, the user is trying to delete all the solution, cycle through
       // them
@@ -3818,7 +3813,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else if (point == _mySolutions)
+    else if (point.equals(_mySolutions))
     {
       // ahh, the user is trying to delete all the solution, cycle through
       // them
