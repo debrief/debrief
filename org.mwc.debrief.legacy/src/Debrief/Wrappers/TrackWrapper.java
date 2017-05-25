@@ -4540,15 +4540,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           if (tmaLastLoc != null)
           {
             // have we found any movement yet?
-            if (!moved)
+            if (!moved && fw.getLocation() != null
+                && !fw.getLocation().equals(tmaLastLoc))
             {
-              // see if this represents a change
-              if (fw.getLocation() != null
-                  && !fw.getLocation().equals(tmaLastLoc))
-              {
-                moved = true;
-              }
-            }
+              moved = true;
+            }            
 
             // dump the location into the fix
             fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
