@@ -3538,25 +3538,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     // does the first label have a colour?
-    if (_theLabel.getColor() == null)
-    {
-      // check we have a colour
-      Color labelColor = getColor();
-
-      // did we ourselves have a colour?
-      if (labelColor == null)
-      {
-        // nope - do we have any legs?
-        final Enumeration<Editable> numer = this.getPositionIterator();
-        if (numer.hasMoreElements())
-        {
-          // ok, use the colour of the first point
-          final FixWrapper pos = (FixWrapper) numer.nextElement();
-          labelColor = pos.getColor();
-        }
-      }
-      _theLabel.setColor(labelColor);
-    }
+    fixLabelColor();
 
     // ok, sort out the correct location
     final FixWrapper hostFix;
@@ -3593,6 +3575,29 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (oldLoc != null)
     {
       _theLabel.setRelativeLocation(oldLoc);
+    }
+  }
+
+  private void fixLabelColor()
+  {
+    if (_theLabel.getColor() == null)
+    {
+      // check we have a colour
+      Color labelColor = getColor();
+
+      // did we ourselves have a colour?
+      if (labelColor == null)
+      {
+        // nope - do we have any legs?
+        final Enumeration<Editable> numer = this.getPositionIterator();
+        if (numer.hasMoreElements())
+        {
+          // ok, use the colour of the first point
+          final FixWrapper pos = (FixWrapper) numer.nextElement();
+          labelColor = pos.getColor();
+        }
+      }
+      _theLabel.setColor(labelColor);
     }
   }
 
@@ -4063,7 +4068,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // getting the
             // fix immediately before the requested time
             final HiResDate thisDTG = new HiResDate(0, start_time);
-            final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
+            final Watchable[] list = this.getNearestTo(thisDTG);
             // check we found some
             if (list.length > 0)
             {
@@ -4381,7 +4386,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * @param font
    *          the font to use for the label
    */
-  public final void setTrackFont(final java.awt.Font font)
+  public final void setTrackFont(final Font font)
   {
     _theLabel.setFont(font);
   }

@@ -164,7 +164,6 @@ import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;

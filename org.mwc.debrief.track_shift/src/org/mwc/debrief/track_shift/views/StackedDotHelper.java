@@ -474,7 +474,6 @@ public final class StackedDotHelper
           (FixWrapper) _primaryTrack.getPositionIterator().nextElement();
 
       Enumeration<Editable> segments = _secondaryTrack.segments();
-      TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
       while (segments.hasMoreElements())
       {
         Editable nextE = segments.nextElement();
