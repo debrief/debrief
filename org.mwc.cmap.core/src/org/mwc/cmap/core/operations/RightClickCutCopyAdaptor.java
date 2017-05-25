@@ -702,7 +702,7 @@ public class RightClickCutCopyAdaptor
 		private boolean isPositionThere(final TrackWrapper tw, final FixWrapper fw2)
 		{
 			boolean itemFound;
-			final Enumeration<Editable> enumer = tw.getPositions();
+			final Enumeration<Editable> enumer = tw.getPositionIterator();
 			itemFound = false;
 			while (enumer.hasMoreElements())
 			{

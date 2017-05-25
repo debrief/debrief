@@ -864,12 +864,12 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   }
 
   /**
-   * Test method for {@link Debrief.Wrappers.TrackWrapper#getPositions()}.
+   * Test method for {@link Debrief.Wrappers.TrackWrapper#getPositionIterator()).
    */
 
   public void testGetPositions()
   {
-    final Enumeration<Editable> list = _tw.getPositions();
+    final Enumeration<Editable> list = _tw.getPositionIterator();
     // check the length
     _ctr = 0;
     while (list.hasMoreElements())
@@ -1881,7 +1881,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   private int countVisibleFixes(final TrackWrapper tw)
   {
     int ctr = 0;
-    final Enumeration<Editable> iter = tw.getPositions();
+    final Enumeration<Editable> iter = tw.getPositionIterator();
     while (iter.hasMoreElements())
     {
       final Plottable thisE = (Plottable) iter.nextElement();
