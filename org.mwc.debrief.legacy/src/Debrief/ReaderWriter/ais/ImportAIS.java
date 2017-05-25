@@ -398,7 +398,7 @@ public class ImportAIS
       assertEquals("got new tracks", len, tLayers.size());
 
       final TrackWrapper thisT = (TrackWrapper) tLayers.findLayer("BW LIONESS");
-      final Enumeration<Editable> fixes = thisT.getPositions();
+      final Enumeration<Editable> fixes = thisT.getPositionIterator();
       while (fixes.hasMoreElements())
       {
         final FixWrapper thisF = (FixWrapper) fixes.nextElement();
@@ -515,7 +515,7 @@ public class ImportAIS
       assertEquals("got new tracks", 15, tLayers.size());
 
       final TrackWrapper thisT = (TrackWrapper) tLayers.findLayer("LOLLAND");
-      final Enumeration<Editable> fixes = thisT.getPositions();
+      final Enumeration<Editable> fixes = thisT.getPositionIterator();
       while (fixes.hasMoreElements())
       {
         final FixWrapper thisF = (FixWrapper) fixes.nextElement();

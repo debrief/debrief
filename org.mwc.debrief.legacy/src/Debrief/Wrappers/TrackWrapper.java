@@ -865,17 +865,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   transient private long _timeCachedPeriodCalculated = 0;
 
   /**
-   * the time that we last calculated the set of raw positions
-   * 
-   */
-  transient private long _timeCachedRawPositionsCalculated = 0;
-
-  /**
-   * cache the set of raw positions, since we frequently end up re-calculating them lost of times
-   */
-  transient private TreeSet<Editable> _cachedRawPositions = null;
-
-  /**
    * the sensor tracks for this vessel
    */
   final private BaseLayer _mySensors;
@@ -1840,7 +1829,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public void flushPositionCache()
   {
-    _cachedRawPositions = null;
   }
 
   /**
@@ -2527,17 +2515,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   /**
-   * get the position data, not all the sensor/contact/position data mixed together
-   * 
-   * @return
-   */
-  public final Enumeration<Editable> getPositions()
-  {
-    final SortedSet<Editable> res = getRawPositions();
-    return new TrackWrapper_Support.IteratorWrapper(res.iterator());
-  }
-
-  /**
    * whether positions are being shown
    * 
    * @return
@@ -2545,38 +2522,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final boolean getPositionsVisible()
   {
     return _showPositions;
-  }
-
-  private SortedSet<Editable> getRawPositions()
-  {
-    final long tNow = System.currentTimeMillis();
-    final long THRESHOLD = 500;
-    if (_cachedRawPositions == null
-        || tNow - _timeCachedRawPositionsCalculated > THRESHOLD)
-    {
-      _timeCachedRawPositionsCalculated = tNow;
-
-      if (_cachedRawPositions == null)
-      {
-        _cachedRawPositions = new TreeSet<Editable>();
-      }
-      else
-      {
-        _cachedRawPositions.clear();
-      }
-
-      // loop through segments
-      final Enumeration<Editable> segs = _thePositions.elements();
-      while (segs.hasMoreElements())
-      {
-        // get this segment
-        final TrackSegment seg = (TrackSegment) segs.nextElement();
-
-        // add all the points
-        _cachedRawPositions.addAll(seg.getData());
-      }
-    }
-    return _cachedRawPositions;
   }
 
   /**
