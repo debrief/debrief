@@ -1758,7 +1758,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
         .firstElement());
     assertEquals(
         "correct title",
-        "Sorry, 'Positions' and 'test track' overlap in time. Please correct this and retry",
+        "Sorry, '010005.10' and 'test track' overlap in time. Please correct this and retry",
         _messages._messages.firstElement());
     assertEquals("correct title", MessageProvider.ERROR,
         (int) _messages._statuses.firstElement());
