@@ -1869,6 +1869,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final ArrayLength sensorOffset, final boolean wormInHole)
   {
     FixWrapper res = null;
+    
+    // special case - for single point tracks
+    if(isSinglePointTrack())
+    {
+      TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
+      return (FixWrapper) seg.first();
+    }
 
     if (wormInHole && sensorOffset != null)
     {
@@ -2380,8 +2387,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // check that we do actually contain some data
     if (_thePositions.isEmpty())
     {
-      return new MWC.GenericData.Watchable[]
+      return new Watchable[]
       {};
+    }
+    else if(isSinglePointTrack())
+    {
+      TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
+      FixWrapper fix = (FixWrapper) seg.first();
+      return new Watchable[]{fix};
     }
 
     // special case - if we've been asked for an invalid time value
@@ -2879,15 +2892,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public boolean isTMATrack()
   {
     boolean res = false;
-    if (_thePositions != null)
+    if (_thePositions != null && !_thePositions.isEmpty()
+        && _thePositions.first() instanceof CoreTMASegment)
     {
-      if (!_thePositions.isEmpty())
-      {
-        if (_thePositions.first() instanceof CoreTMASegment)
-        {
-          res = true;
-        }
-      }
+      res = true;
     }
 
     return res;
@@ -2897,7 +2905,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * 
    * @return
    */
-  private boolean isSinglePointTrack()
+  public boolean isSinglePointTrack()
   {
     final boolean res;
     if(_thePositions.size() == 1)
@@ -2916,12 +2924,23 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public boolean isVisibleAt(final HiResDate dtg)
   {
     boolean res = false;
-    final TimePeriod visiblePeriod = getVisiblePeriod();
-    if (visiblePeriod != null)
+    
+    // special case - single track
+    if(isSinglePointTrack())
     {
-      res = visiblePeriod.contains(dtg);
+      // we'll assume it's never ending.
+      res = true;
     }
-    return res;
+    else
+    {
+      final TimePeriod visiblePeriod = getVisiblePeriod();
+      if (visiblePeriod != null)
+      {
+        res = visiblePeriod.contains(dtg);
+      }
+    }
+    
+     return res;
   }
 
   /**
@@ -3519,25 +3538,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     // does the first label have a colour?
-    if (_theLabel.getColor() == null)
-    {
-      // check we have a colour
-      Color labelColor = getColor();
-
-      // did we ourselves have a colour?
-      if (labelColor == null)
-      {
-        // nope - do we have any legs?
-        final Enumeration<Editable> numer = this.getPositionIterator();
-        if (numer.hasMoreElements())
-        {
-          // ok, use the colour of the first point
-          final FixWrapper pos = (FixWrapper) numer.nextElement();
-          labelColor = pos.getColor();
-        }
-      }
-      _theLabel.setColor(labelColor);
-    }
+    fixLabelColor();
 
     // ok, sort out the correct location
     final FixWrapper hostFix;
@@ -3574,6 +3575,29 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (oldLoc != null)
     {
       _theLabel.setRelativeLocation(oldLoc);
+    }
+  }
+
+  private void fixLabelColor()
+  {
+    if (_theLabel.getColor() == null)
+    {
+      // check we have a colour
+      Color labelColor = getColor();
+
+      // did we ourselves have a colour?
+      if (labelColor == null)
+      {
+        // nope - do we have any legs?
+        final Enumeration<Editable> numer = this.getPositionIterator();
+        if (numer.hasMoreElements())
+        {
+          // ok, use the colour of the first point
+          final FixWrapper pos = (FixWrapper) numer.nextElement();
+          labelColor = pos.getColor();
+        }
+      }
+      _theLabel.setColor(labelColor);
     }
   }
 
@@ -3751,7 +3775,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else if (point == _mySensors)
+    else if (point.equals(_mySensors))
     {
       // ahh, the user is trying to delete all the solution, cycle through
       // them
@@ -3772,7 +3796,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else if (point == _myDynamicShapes)
+    else if (point.equals(_myDynamicShapes))
     {
       // ahh, the user is trying to delete all the solution, cycle through
       // them
@@ -3794,7 +3818,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // remember that we've made a change
       modified = true;
     }
-    else if (point == _mySolutions)
+    else if (point.equals(_mySolutions))
     {
       // ahh, the user is trying to delete all the solution, cycle through
       // them
@@ -4044,7 +4068,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // getting the
             // fix immediately before the requested time
             final HiResDate thisDTG = new HiResDate(0, start_time);
-            final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
+            final Watchable[] list = this.getNearestTo(thisDTG);
             // check we found some
             if (list.length > 0)
             {
@@ -4362,7 +4386,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * @param font
    *          the font to use for the label
    */
-  public final void setTrackFont(final java.awt.Font font)
+  public final void setTrackFont(final Font font)
   {
     _theLabel.setFont(font);
   }
@@ -4516,15 +4540,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           if (tmaLastLoc != null)
           {
             // have we found any movement yet?
-            if (!moved)
+            if (!moved && fw.getLocation() != null
+                && !fw.getLocation().equals(tmaLastLoc))
             {
-              // see if this represents a change
-              if (fw.getLocation() != null
-                  && !fw.getLocation().equals(tmaLastLoc))
-              {
-                moved = true;
-              }
-            }
+              moved = true;
+            }            
 
             // dump the location into the fix
             fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
