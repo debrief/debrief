@@ -3834,7 +3834,23 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public Enumeration<Editable> segments()
   {
-    return _thePositions.elements();
+    
+    final TreeSet<Editable> res = new TreeSet<Editable>();
+
+    // ok, we want to wrap our fast-data as a set of plottables
+    // see how many track segments we have
+    if (_thePositions.size() == 1)
+    {
+      // just the one, insert it
+      res.add(_thePositions.first());
+    }
+    else
+    {
+      // more than one, insert them as a tree
+      res.add(_thePositions);
+    }
+
+    return new TrackWrapper_Support.IteratorWrapper(res.iterator());
   }
 
   /**
