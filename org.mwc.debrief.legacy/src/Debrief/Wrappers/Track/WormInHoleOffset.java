@@ -118,7 +118,7 @@ public class WormInHoleOffset
 
 		private void outputTrack(final TrackWrapper track)
 		{
-			final Enumeration<Editable> numer = track.getPositions();
+			final Enumeration<Editable> numer = track.getPositionIterator();
 			while (numer.hasMoreElements())
 			{
 				final FixWrapper thisF = (FixWrapper) numer.nextElement();
@@ -127,7 +127,8 @@ public class WormInHoleOffset
 			}
 		}
 
-		public void testData() throws InterruptedException
+		@SuppressWarnings("deprecation")
+    public void testData() throws InterruptedException
 		{
 			final TrackWrapper track = getDummyTrack();
 
@@ -301,7 +302,7 @@ public class WormInHoleOffset
 		// start off by bracketing the time. work back along the track legs until we
 		// find the two positions either side
 		// of the time we're looking for
-		final Enumeration<Editable> enumer = track.getPositions();
+		final Enumeration<Editable> enumer = track.getPositionIterator();
 
 		final Vector<FixWrapper> backTrack = new Vector<FixWrapper>();
 		FixWrapper nextPoint = null;

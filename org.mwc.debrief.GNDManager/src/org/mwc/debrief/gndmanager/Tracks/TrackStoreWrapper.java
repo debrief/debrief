@@ -194,7 +194,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			final ObjectNode oNode = (ObjectNode) _doc;
 
 			// ok, start off with the points
-			final Enumeration<Editable> posits = tw.getPositions();
+			final Enumeration<Editable> posits = tw.getPositionIterator();
 
 			final ArrayNode locs = _mapper.createArrayNode();
 			final ArrayNode times = _mapper.createArrayNode();
