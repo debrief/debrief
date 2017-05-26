@@ -378,6 +378,13 @@ public class TrackWrapper_Support
       }
 
       super.add(segment);
+      
+      // if we've just got the one, set it's name to positions
+      if (this.size() == 1)
+      {
+        final TrackSegment first = (TrackSegment) getData().iterator().next();
+        first.setName("Positions");
+      }
     }
 
     @Override
