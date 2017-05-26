@@ -386,7 +386,7 @@ public class BistaticReceiver extends CoreSensor
 			detections.clear();
 			receiver.detects(env, detections, rx, scenario, 40000);
 
-			assertEquals("got some detections", 2, detections.size());
+			assertEquals("got some detections", 1, detections.size());
 
 			// ok, do some steps
 			for (int i = 0; i < 10; i++)
