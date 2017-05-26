@@ -18,6 +18,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.ColoredWatchable;
 import MWC.GenericData.HiResDate;
@@ -366,6 +367,12 @@ public class DynamicInfillSegment extends TrackSegment implements
   {
     checkListeners();
 
+    // do we still have a parent? if not, we've prob been deleted
+    if(this.getWrapper() == null)
+    {
+      return false;
+    }
+    
     // ok, do we know our tracks?
     if (_before == null)
     {
@@ -585,7 +592,12 @@ public class DynamicInfillSegment extends TrackSegment implements
     // also make it dotted, since it's artificially generated
     this.setLineStyle(CanvasType.DOTTED);
     
-    // ok, also try to fire track shifted
+    // ok, also try to fire track shifted, if we know our parent
+    // (we may not know it when we're first generated)
+    if(this.getWrapper() != null)
+    {
+      this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this);
+    }
 
   }
 
