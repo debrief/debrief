@@ -34,7 +34,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
@@ -56,6 +55,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
@@ -359,6 +359,8 @@ public final class StackedDotHelper
     while (iter.hasNext())
     {
       final Doublet thisD = iter.next();
+      
+      System.out.println(thisD.getDTG().getDate() + " " + (int)thisD.getMeasuredBearing());
 
       try
       {

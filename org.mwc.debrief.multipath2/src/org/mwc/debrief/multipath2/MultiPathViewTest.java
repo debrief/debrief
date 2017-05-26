@@ -16,7 +16,8 @@ package org.mwc.debrief.multipath2;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+
+import MWC.TacticalData.TrackDataProvider;
 
 /**
 

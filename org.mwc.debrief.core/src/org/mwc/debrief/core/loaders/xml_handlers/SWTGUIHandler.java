@@ -25,13 +25,13 @@ import java.awt.Color;
 import java.util.Vector;
 
 import org.mwc.cmap.core.DataTypes.Temporal.*;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.GUI.*;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
+import MWC.TacticalData.TrackDataProvider;
 
 abstract public class SWTGUIHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader

@@ -29,7 +29,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.CursorRegistry;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
@@ -49,6 +48,7 @@ import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.TrackDataProvider;
 
 /**
  * @author ian.mayo

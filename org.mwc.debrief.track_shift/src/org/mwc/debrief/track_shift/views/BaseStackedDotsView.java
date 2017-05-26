@@ -98,9 +98,6 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -151,6 +148,9 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.TrackDataProvider;
+import MWC.TacticalData.TrackDataProvider.TrackDataListener;
+import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
 
 /**
  */

@@ -584,6 +584,9 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     // also make it dotted, since it's artificially generated
     this.setLineStyle(CanvasType.DOTTED);
+    
+    // ok, also try to fire track shifted
+
   }
 
   private static Color getColorStrategy(Color trackColor)

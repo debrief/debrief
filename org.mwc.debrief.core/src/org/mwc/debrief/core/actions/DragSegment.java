@@ -29,7 +29,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.CursorRegistry;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.plotViewer.editors.chart.CoreTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
@@ -44,6 +43,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.TrackDataProvider;
 
 /**
  * @author ian.mayo

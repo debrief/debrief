@@ -14,10 +14,10 @@
  */
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.ReaderWriter.XML.GUI.PrimarySecondaryHandler;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.TrackDataProvider;
 
 /**
  * Title: Debrief 2000 Description: Debrief 2000 Track Analysis Software

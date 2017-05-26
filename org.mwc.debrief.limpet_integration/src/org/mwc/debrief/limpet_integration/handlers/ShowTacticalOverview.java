@@ -47,7 +47,6 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
@@ -65,6 +64,7 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.TrackDataProvider;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
