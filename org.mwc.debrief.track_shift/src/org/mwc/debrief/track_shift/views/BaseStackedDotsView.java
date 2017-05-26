@@ -412,7 +412,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void propertyChange(PropertyChangeEvent evt)
       {
-        System.out.println("sec moved");
         if (evt.getNewValue() instanceof DynamicInfillSegment)
         {
           updateStackedDots(true);
