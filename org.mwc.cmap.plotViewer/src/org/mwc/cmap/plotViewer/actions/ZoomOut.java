@@ -30,7 +30,10 @@ public class ZoomOut extends CoreEditorAction
 	{
 		final PlainChart theChart = getChart();
 
-		final WorldArea oldArea = theChart.getDataArea();
+		// get the currently visible data area (which we will restore on undo
+		final WorldArea oldArea = theChart.getCanvas().getProjection().getVisibleDataArea();
+
+		// create the zoom out action
 		final Action theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(theChart,
 				oldArea, 2.0);
 
