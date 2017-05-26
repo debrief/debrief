@@ -910,6 +910,16 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   {
     assertEquals("have correct num", 6, _tw.numFixes());
   }
+  
+  public void testSinglePoint()
+  {
+    TrackWrapper tw = new TrackWrapper();
+    assertFalse(tw.isSinglePointTrack());
+    tw.add(createFix(100, 12, 13));
+    assertTrue(tw.isSinglePointTrack());
+    tw.add(createFix(200, 12, 13));
+    assertFalse(tw.isSinglePointTrack());
+  }
 
   /**
    * Test method for {@link Debrief.Wrappers.TrackWrapper#rangeFrom(MWC.GenericData.WorldLocation)}

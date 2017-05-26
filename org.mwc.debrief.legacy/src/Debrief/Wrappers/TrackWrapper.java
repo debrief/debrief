@@ -2861,7 +2861,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       // So, do fancy trick to check the  first element is non-null,
       // and the second is null
       Enumeration<Editable> elems = first.elements();
-      if(elems.nextElement() != null && elems.nextElement() == null)
+      if(elems != null && elems.nextElement() != null && !elems.hasMoreElements())
       {
         res = true;
       }
