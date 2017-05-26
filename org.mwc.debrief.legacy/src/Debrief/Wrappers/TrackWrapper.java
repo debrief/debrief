@@ -2856,7 +2856,19 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if(_thePositions.size() == 1)
     {
       TrackSegment first = (TrackSegment) _thePositions.elements().nextElement();
-      res = first.size() == 1;
+
+      // we want to avoid getting the size() of the list. 
+      // So, do fancy trick to check the  first element is non-null,
+      // and the second is null
+      Enumeration<Editable> elems = first.elements();
+      if(elems.nextElement() != null && elems.nextElement() == null)
+      {
+        res = true;
+      }
+      else
+      {
+        res = false;
+      }
     }
     else
     {
