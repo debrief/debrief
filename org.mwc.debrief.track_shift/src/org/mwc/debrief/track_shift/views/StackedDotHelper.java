@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
@@ -305,6 +306,8 @@ public final class StackedDotHelper
       TimeSeriesCollection targetSpeedSeries, TimeSeries ownshipCourseSeries,
       TimeSeries targetBearingSeries, TimeSeries targetCalculatedSeries)
   {
+    // System.out.println("updating bearing data:" + ctr++);
+
     // do we even have a primary track
     if (_primaryTrack == null)
       return;
@@ -338,17 +341,43 @@ public final class StackedDotHelper
 
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
-
     final TimeSeries measuredValues = new TimeSeries("Measured");
     final TimeSeries ambigValues = new TimeSeries("Ambiguous Bearing");
     final TimeSeries calculatedValues = new TimeSeries("Calculated");
-
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
-
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
-
     final TimeSeries allCuts = new TimeSeries("Sensor cuts");
+
+    // createa list of series, so we can pause their updates
+    List<Series> sList = new Vector<Series>();
+    sList.add(errorValues);
+    sList.add(measuredValues);
+    sList.add(ambigValues);
+    sList.add(calculatedValues);
+    sList.add(osCourseValues);
+    sList.add(tgtCourseValues);
+    sList.add(tgtSpeedValues);
+    sList.add(allCuts);
+    sList.add(targetCalculatedSeries);
+    sList.add(targetBearingSeries);
+    sList.add(ownshipCourseSeries);
+
+    List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
+    tList.add(targetCourseSeries);
+    tList.add(targetSpeedSeries);
+    tList.add(errorSeries);
+    tList.add(actualSeries);
+
+    // now switch off updates
+    for (final Series series : sList)
+    {
+      series.setNotify(false);
+    }
+    for (final TimeSeriesCollection series : tList)
+    {
+      series.setNotify(false);
+    }
 
     // clear the existing target datasets
     targetCourseSeries.removeAllSeries();
@@ -359,8 +388,6 @@ public final class StackedDotHelper
     while (iter.hasNext())
     {
       final Doublet thisD = iter.next();
-      
-      System.out.println(thisD.getDTG().getDate() + " " + (int)thisD.getMeasuredBearing());
 
       try
       {
@@ -683,7 +710,9 @@ public final class StackedDotHelper
       actualSeries.addSeries(ambigValues);
 
     if (calculatedValues.getItemCount() > 0)
+    {
       actualSeries.addSeries(calculatedValues);
+    }
 
     if (tgtCourseValues.getItemCount() > 0)
       targetCourseSeries.addSeries(tgtCourseValues);
@@ -698,7 +727,6 @@ public final class StackedDotHelper
 
     if (calculatedValues.getItemCount() > 0)
     {
-      targetCalculatedSeries.clear();
       targetCalculatedSeries.addAndOrUpdate(calculatedValues);
     }
 
@@ -745,6 +773,16 @@ public final class StackedDotHelper
     targetPlot.setDataset(0, targetCourseSeries);
     targetPlot.setDataset(1, targetSpeedSeries);
 
+    // now switch off updates
+    for (final Series series : sList)
+    {
+      series.setNotify(true);
+    }
+    // now switch off updates
+    for (final TimeSeriesCollection series : tList)
+    {
+      series.setNotify(true);
+    }
   }
 
   /**
