@@ -176,7 +176,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 	{
     // update the current datasets
     _myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverviewPlot,
-        _theTrackDataListener, _onlyVisible.isChecked(),
+        _myTrackDataProvider, _onlyVisible.isChecked(),
         showCourse.isChecked(), flipCourse.isChecked(), _holder, this,
         updateDoublets, _targetCourseSeries, _targetSpeedSeries,
         ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries);
