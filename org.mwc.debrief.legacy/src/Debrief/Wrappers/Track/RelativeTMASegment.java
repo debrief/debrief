@@ -1125,7 +1125,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
   }
 
   /**
-   * get the time interval of the first two data values
+   * get the mean interval between the time steps
    * 
    * @return
    */
@@ -1139,18 +1139,28 @@ public class RelativeTMASegment extends CoreTMASegment implements
       // special case, return useful gap
       res = 5000;
     }
-    else if (startGap)
-    {
-      res =
-          dArr[1].getDTG().getDate().getTime()
-              - dArr[0].getDTG().getDate().getTime();
-    }
     else
     {
-      int len = dArr.length;
-      res =
-          dArr[len - 1].getDTG().getDate().getTime()
-              - dArr[len - 2].getDTG().getDate().getTime();
+      int count = 0;
+      long sum = 0;
+      long lastTime = 0;
+      for (int i = 0; i < dArr.length; i++)
+      {
+        FixWrapper fixWrapper = dArr[i];
+        final long thisTime = fixWrapper.getDateTimeGroup().getDate().getTime();
+        if(i > 0)
+        {
+          final long thisDiff = thisTime - lastTime;
+          sum += thisDiff;
+          count++;
+        }
+        
+        // ok, remember time
+        lastTime = thisTime;
+      }
+      
+      // ok, and now the mean
+      res = sum / count;
     }
 
     return res;
@@ -1236,18 +1246,19 @@ public class RelativeTMASegment extends CoreTMASegment implements
       long oldStartT = startDTG().getDate().getTime();
       long newStartT = theNewStart.getDate().getTime();
       final long typicalDelta = typicalTimeStep(true);
-      long thisT = oldStartT - typicalDelta;
+      
+      // ok, insert new fix at the new start time
+      addFix(theLoc, newStartT);
 
-      while (thisT > newStartT)
+      // now walk forwards until we meet the old start time
+      long thisT = newStartT + typicalDelta;
+      
+      while (thisT < oldStartT)
       {
         addFix(theLoc, thisT);
 
-        thisT -= typicalDelta;
+        thisT += typicalDelta;
       }
-
-      // and create one at the end time
-      addFix(theLoc, newStartT);
-
     }
 
     // and sort out the new offset
