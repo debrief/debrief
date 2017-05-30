@@ -868,6 +868,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final TrackSegment cSeg = (TrackSegment) nextSeg;
       final TimePeriod legPeriod =
           new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
+      
+      // remember that segment, it may prove useful to us
+      if (cSeg instanceof RelativeTMASegment)
+      {
+        RelativeTMASegment seg = (RelativeTMASegment) cSeg;
+        otherSegment = seg;
+      }      
 
       if (zonePeriod.overlaps(legPeriod))
       {
