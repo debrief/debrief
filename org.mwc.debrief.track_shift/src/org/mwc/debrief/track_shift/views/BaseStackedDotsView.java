@@ -2728,8 +2728,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private void clearZoneCharts(boolean osChanged, boolean tgtChanged,
-      boolean clearTgtBearings)
+  private void clearZoneCharts(final boolean osChanged, final boolean tgtChanged,
+      final boolean clearTgtData)
   {
     if (osChanged)
     {
@@ -2744,9 +2744,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // and the secondary
     if (tgtChanged)
     {
-      if (clearTgtBearings)
+      if (clearTgtData)
       {
         targetBearingSeries.clear();
+        targetCalculatedSeries.clear();
       }
 
       if (targetZoneChart != null)
