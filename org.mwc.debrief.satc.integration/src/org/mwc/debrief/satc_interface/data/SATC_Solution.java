@@ -41,7 +41,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.jfree.util.ReadOnlyIterator;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
@@ -76,6 +75,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.TrackDataProvider;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;

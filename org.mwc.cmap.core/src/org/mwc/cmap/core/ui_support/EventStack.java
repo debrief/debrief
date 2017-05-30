@@ -38,7 +38,7 @@ public class EventStack
 			setDaemon(true);
 		}
 	
-		synchronized public void setNextEvent(final Runnable runnable)
+		synchronized private void setNextEvent(final Runnable runnable)
 		{
 			// store the time we received this
 			eventReceivedTime = System.currentTimeMillis();

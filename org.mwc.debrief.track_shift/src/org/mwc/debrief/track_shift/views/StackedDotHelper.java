@@ -28,13 +28,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
@@ -56,6 +56,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
@@ -305,6 +306,8 @@ public final class StackedDotHelper
       TimeSeriesCollection targetSpeedSeries, TimeSeries ownshipCourseSeries,
       TimeSeries targetBearingSeries, TimeSeries targetCalculatedSeries)
   {
+    // System.out.println("updating bearing data:" + ctr++);
+
     // do we even have a primary track
     if (_primaryTrack == null)
       return;
@@ -338,142 +341,257 @@ public final class StackedDotHelper
 
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
-
     final TimeSeries measuredValues = new TimeSeries("Measured");
     final TimeSeries ambigValues = new TimeSeries("Ambiguous Bearing");
     final TimeSeries calculatedValues = new TimeSeries("Calculated");
-
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
-
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
-
     final TimeSeries allCuts = new TimeSeries("Sensor cuts");
 
-    // clear the existing target datasets
-    targetCourseSeries.removeAllSeries();
-    targetSpeedSeries.removeAllSeries();
+    // createa list of series, so we can pause their updates
+    List<Series> sList = new Vector<Series>();
+    sList.add(errorValues);
+    sList.add(measuredValues);
+    sList.add(ambigValues);
+    sList.add(calculatedValues);
+    sList.add(osCourseValues);
+    sList.add(tgtCourseValues);
+    sList.add(tgtSpeedValues);
+    sList.add(allCuts);
+    sList.add(targetCalculatedSeries);
+    sList.add(targetBearingSeries);
+    sList.add(ownshipCourseSeries);
 
-    // ok, run through the points on the primary track
-    final Iterator<Doublet> iter = _primaryDoublets.iterator();
-    while (iter.hasNext())
+    List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
+    tList.add(targetCourseSeries);
+    tList.add(targetSpeedSeries);
+    tList.add(errorSeries);
+    tList.add(actualSeries);
+
+    // ok, wrap the switching on/off of notify in try/catch,
+    // to be sure to switch notify back on at end
+    try
     {
-      final Doublet thisD = iter.next();
 
-      try
+      // now switch off updates
+      for (final Series series : sList)
       {
-        // obvious stuff first (stuff that doesn't need the tgt data)
-        final Color thisColor = thisD.getColor();
-        double measuredBearing = thisD.getMeasuredBearing();
-        double ambigBearing = thisD.getAmbiguousMeasuredBearing();
-        final HiResDate currentTime = thisD.getDTG();
-        final FixedMillisecond thisMilli =
-            new FixedMillisecond(currentTime.getDate().getTime());
+        series.setNotify(false);
+      }
+      for (final TimeSeriesCollection series : tList)
+      {
+        series.setNotify(false);
+      }
 
-        // put the measured bearing back in the positive domain
-        if (measuredBearing < 0)
-          measuredBearing += 360d;
+      // clear the existing target datasets
+      targetCourseSeries.removeAllSeries();
+      targetSpeedSeries.removeAllSeries();
 
-        // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-        if (flipAxes)
-          if (measuredBearing > 180)
-            measuredBearing -= 360;
+      // ok, run through the points on the primary track
+      final Iterator<Doublet> iter = _primaryDoublets.iterator();
+      while (iter.hasNext())
+      {
+        final Doublet thisD = iter.next();
 
-        final ColouredDataItem mBearing =
-            new ColouredDataItem(thisMilli, measuredBearing, thisColor, false,
-                null);
-
-        // and add them to the series
-        measuredValues.addOrUpdate(mBearing);
-
-        if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+        try
         {
-          if (flipAxes)
-            if (ambigBearing > 180)
-              ambigBearing -= 360;
+          // obvious stuff first (stuff that doesn't need the tgt data)
+          final Color thisColor = thisD.getColor();
+          double measuredBearing = thisD.getMeasuredBearing();
+          double ambigBearing = thisD.getAmbiguousMeasuredBearing();
+          final HiResDate currentTime = thisD.getDTG();
+          final FixedMillisecond thisMilli =
+              new FixedMillisecond(currentTime.getDate().getTime());
 
-          final ColouredDataItem amBearing =
-              new ColouredDataItem(thisMilli, ambigBearing, thisColor, false,
-                  null);
-          ambigValues.addOrUpdate(amBearing);
+          // put the measured bearing back in the positive domain
+          if (measuredBearing < 0)
+            measuredBearing += 360d;
+
+          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+          if (flipAxes)
+            if (measuredBearing > 180)
+              measuredBearing -= 360;
+
+          final ColouredDataItem mBearing =
+              new ColouredDataItem(thisMilli, measuredBearing, thisColor,
+                  false, null);
+
+          // and add them to the series
+          measuredValues.addOrUpdate(mBearing);
+
+          if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+          {
+            if (flipAxes)
+              if (ambigBearing > 180)
+                ambigBearing -= 360;
+
+            final ColouredDataItem amBearing =
+                new ColouredDataItem(thisMilli, ambigBearing, thisColor, false,
+                    null);
+            ambigValues.addOrUpdate(amBearing);
+          }
+
+          // do we have target data?
+          if (thisD.getTarget() != null)
+          {
+            // and has this target fix know it's location?
+            // (it may not, if it's a relative leg that has been extended)
+            if (thisD.getTarget().getFixLocation() != null)
+            {
+              double calculatedBearing = thisD.getCalculatedBearing(null, null);
+              final Color calcColor = thisD.getTarget().getColor();
+              final double thisError =
+                  thisD.calculateBearingError(measuredBearing,
+                      calculatedBearing);
+              final ColouredDataItem newError =
+                  new ColouredDataItem(thisMilli, thisError, thisColor, false,
+                      null);
+
+              if (flipAxes)
+                if (calculatedBearing > 180)
+                  calculatedBearing -= 360;
+
+              final ColouredDataItem cBearing =
+                  new ColouredDataItem(thisMilli, calculatedBearing, calcColor,
+                      true, null);
+
+              errorValues.addOrUpdate(newError);
+              calculatedValues.addOrUpdate(cBearing);
+            }
+          }
+
+        }
+        catch (final SeriesException e)
+        {
+          CorePlugin.logError(Status.INFO,
+              "some kind of trip whilst updating bearing plot", e);
         }
 
-        // do we have target data?
-        if (thisD.getTarget() != null)
+      }
+
+      // just double-check we've still got our primary doublets
+      if (_primaryDoublets == null)
+      {
+        CorePlugin.logError(Status.WARNING,
+            "FOR SOME REASON PRIMARY DOUBLETS IS NULL - INVESTIGATE", null);
+        return;
+      }
+
+      if (_primaryDoublets.size() == 0)
+      {
+        CorePlugin.logError(Status.WARNING,
+            "FOR SOME REASON PRIMARY DOUBLETS IS ZERO LENGTH - INVESTIGATE",
+            null);
+        return;
+      }
+
+      // right, we do course in a special way, since it isn't dependent on the
+      // target track. Do course here.
+      final HiResDate startDTG = _primaryDoublets.first().getDTG();
+      final HiResDate endDTG = _primaryDoublets.last().getDTG();
+
+      if (startDTG.greaterThan(endDTG))
+      {
+        System.err.println("in the wrong order, start:" + startDTG + " end:"
+            + endDTG);
+        return;
+      }
+
+      // special case - if the primary track is a single location
+      if (_primaryTrack.isSinglePointTrack())
+      {
+        // ok, it's a single point. We'll use the sensor cut times for the course data
+
+        // get the single location
+        FixWrapper loc =
+            (FixWrapper) _primaryTrack.getPositionIterator().nextElement();
+
+        Enumeration<Editable> segments = _secondaryTrack.segments();
+        while (segments.hasMoreElements())
         {
-          // and has this target fix know it's location?
-          // (it may not, if it's a relative leg that has been extended)
-          if (thisD.getTarget().getFixLocation() != null)
+          Editable nextE = segments.nextElement();
+          // if there's just one segment - then we need to wrap it
+          final SegmentList segList;
+          if (nextE instanceof SegmentList)
           {
-            double calculatedBearing = thisD.getCalculatedBearing(null, null);
-            final Color calcColor = thisD.getTarget().getColor();
-            final double thisError =
-                thisD.calculateBearingError(measuredBearing, calculatedBearing);
-            final ColouredDataItem newError =
-                new ColouredDataItem(thisMilli, thisError, thisColor, false,
-                    null);
+            segList = (SegmentList) nextE;
+          }
+          else
+          {
+            segList = new SegmentList();
+            segList.addSegment((TrackSegment) nextE);
+          }
 
-            if (flipAxes)
-              if (calculatedBearing > 180)
-                calculatedBearing -= 360;
+          Enumeration<Editable> segIter = segList.elements();
+          while (segIter.hasMoreElements())
+          {
+            TrackSegment segment = (TrackSegment) segIter.nextElement();
 
-            final ColouredDataItem cBearing =
-                new ColouredDataItem(thisMilli, calculatedBearing, calcColor,
-                    true, null);
+            Enumeration<Editable> enumer = segment.elements();
+            while (enumer.hasMoreElements())
+            {
+              FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
 
-            errorValues.addOrUpdate(newError);
-            calculatedValues.addOrUpdate(cBearing);
+              double ownshipCourse =
+                  MWC.Algorithms.Conversions.Rads2Degs(loc.getCourse());
+
+              // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+              if (flipAxes && ownshipCourse > 180)
+                ownshipCourse -= 360;
+              final FixedMillisecond thisMilli =
+                  new FixedMillisecond(thisTgtFix.getDateTimeGroup().getDate()
+                      .getTime());
+              final ColouredDataItem crseBearing =
+                  new ColouredDataItem(thisMilli, ownshipCourse,
+                      loc.getColor(), true, null);
+              osCourseValues.addOrUpdate(crseBearing);
+            }
+
           }
         }
-
       }
-      catch (final SeriesException e)
+      else
       {
-        CorePlugin.logError(Status.INFO,
-            "some kind of trip whilst updating bearing plot", e);
+
+        // loop through using the iterator
+        Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
+        TimePeriod validPeriod =
+            new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+        while (pIter.hasMoreElements())
+        {
+          FixWrapper fw = (FixWrapper) pIter.nextElement();
+          if (validPeriod.contains(fw.getDateTimeGroup()))
+          {
+            final FixedMillisecond thisMilli =
+                new FixedMillisecond(fw.getDateTimeGroup().getDate().getTime());
+            double ownshipCourse =
+                MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
+
+            // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+            if (flipAxes && ownshipCourse > 180)
+              ownshipCourse -= 360;
+
+            final ColouredDataItem crseBearing =
+                new ColouredDataItem(thisMilli, ownshipCourse, fw.getColor(),
+                    true, null);
+            osCourseValues.addOrUpdate(crseBearing);
+          }
+          else
+          {
+            // have we passed the end of the requested period?
+            if (fw.getDateTimeGroup().greaterThan(endDTG))
+            {
+              // ok, drop out
+              break;
+            }
+          }
+        }
       }
 
-    }
-
-    // just double-check we've still got our primary doublets
-    if (_primaryDoublets == null)
-    {
-      CorePlugin.logError(Status.WARNING,
-          "FOR SOME REASON PRIMARY DOUBLETS IS NULL - INVESTIGATE", null);
-      return;
-    }
-
-    if (_primaryDoublets.size() == 0)
-    {
-      CorePlugin
-          .logError(Status.WARNING,
-              "FOR SOME REASON PRIMARY DOUBLETS IS ZERO LENGTH - INVESTIGATE",
-              null);
-      return;
-    }
-
-    // right, we do course in a special way, since it isn't dependent on the
-    // target track. Do course here.
-    final HiResDate startDTG = _primaryDoublets.first().getDTG();
-    final HiResDate endDTG = _primaryDoublets.last().getDTG();
-
-    if (startDTG.greaterThan(endDTG))
-    {
-      System.err.println("in the wrong order, start:" + startDTG + " end:"
-          + endDTG);
-      return;
-    }
-
-    // special case - if the primary track is a single location
-    if (_primaryTrack.isSinglePointTrack())
-    {
-      // ok, it's a single point. We'll use the sensor cut times for the course data
-
-      // get the single location
-      FixWrapper loc =
-          (FixWrapper) _primaryTrack.getPositionIterator().nextElement();
-
+      // sort out the target course/speed
       Enumeration<Editable> segments = _secondaryTrack.segments();
+      TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
       while (segments.hasMoreElements())
       {
         Editable nextE = segments.nextElement();
@@ -494,255 +612,186 @@ public final class StackedDotHelper
         {
           TrackSegment segment = (TrackSegment) segIter.nextElement();
 
-          Enumeration<Editable> enumer = segment.elements();
-          while (enumer.hasMoreElements())
+          // is this an infill segment
+          final boolean isInfill = segment instanceof DynamicInfillSegment;
+
+          // check it's in range
+          if (segment.startDTG().greaterThan(endDTG)
+              || segment.endDTG().lessThan(startDTG))
           {
-            FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
-
-            double ownshipCourse =
-                MWC.Algorithms.Conversions.Rads2Degs(loc.getCourse());
-
-            // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-            if (flipAxes && ownshipCourse > 180)
-              ownshipCourse -= 360;
-            final FixedMillisecond thisMilli =
-                new FixedMillisecond(thisTgtFix.getDateTimeGroup().getDate()
-                    .getTime());
-            final ColouredDataItem crseBearing =
-                new ColouredDataItem(thisMilli, ownshipCourse, loc.getColor(),
-                    true, null);
-            osCourseValues.addOrUpdate(crseBearing);
+            // ok, we can skip this one
           }
-
-        }
-      }
-    }
-    else
-    {
-
-      // loop through using the iterator
-      Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
-      TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
-      while (pIter.hasMoreElements())
-      {
-        FixWrapper fw = (FixWrapper) pIter.nextElement();
-        if (validPeriod.contains(fw.getDateTimeGroup()))
-        {
-          final FixedMillisecond thisMilli =
-              new FixedMillisecond(fw.getDateTimeGroup().getDate().getTime());
-          double ownshipCourse =
-              MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
-
-          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-          if (flipAxes && ownshipCourse > 180)
-            ownshipCourse -= 360;
-
-          final ColouredDataItem crseBearing =
-              new ColouredDataItem(thisMilli, ownshipCourse, fw.getColor(),
-                  true, null);
-          osCourseValues.addOrUpdate(crseBearing);
-        }
-        else
-        {
-          // have we passed the end of the requested period?
-          if (fw.getDateTimeGroup().greaterThan(endDTG))
+          else
           {
-            // ok, drop out
-            break;
-          }
-        }
-      }
-    }
-
-    // sort out the target course/speed
-    Enumeration<Editable> segments = _secondaryTrack.segments();
-    TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
-    while (segments.hasMoreElements())
-    {
-      Editable nextE = segments.nextElement();
-      // if there's just one segment - then we need to wrap it
-      final SegmentList segList;
-      if (nextE instanceof SegmentList)
-      {
-        segList = (SegmentList) nextE;
-      }
-      else
-      {
-        segList = new SegmentList();
-        segList.addSegment((TrackSegment) nextE);
-      }
-
-      Enumeration<Editable> segIter = segList.elements();
-      while (segIter.hasMoreElements())
-      {
-        TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-        // is this an infill segment
-        final boolean isInfill = segment instanceof DynamicInfillSegment;
-
-        // check it's in range
-        if (segment.startDTG().greaterThan(endDTG)
-            || segment.endDTG().lessThan(startDTG))
-        {
-          // ok, we can skip this one
-        }
-        else
-        {
-          Enumeration<Editable> points = segment.elements();
-          Double lastCourse = null;
-          while (points.hasMoreElements())
-          {
-            FixWrapper fw = (FixWrapper) points.nextElement();
-            if (period.contains(fw.getDateTimeGroup()))
+            Enumeration<Editable> points = segment.elements();
+            Double lastCourse = null;
+            while (points.hasMoreElements())
             {
-              // ok, create a point for it
-              final FixedMillisecond thisMilli =
-                  new FixedMillisecond(fw.getDateTimeGroup().getDate()
-                      .getTime());
-
-              double tgtCourse =
-                  MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
-              final double tgtSpeed = fw.getSpeed();
-
-              // see if we need to change the domain of the course to match
-              // the previous value
-              if (lastCourse != null)
+              FixWrapper fw = (FixWrapper) points.nextElement();
+              if (period.contains(fw.getDateTimeGroup()))
               {
-                if (tgtCourse - lastCourse > 190)
+                // ok, create a point for it
+                final FixedMillisecond thisMilli =
+                    new FixedMillisecond(fw.getDateTimeGroup().getDate()
+                        .getTime());
+
+                double tgtCourse =
+                    MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
+                final double tgtSpeed = fw.getSpeed();
+
+                // see if we need to change the domain of the course to match
+                // the previous value
+                if (lastCourse != null)
                 {
-                  tgtCourse = tgtCourse - 360;
+                  if (tgtCourse - lastCourse > 190)
+                  {
+                    tgtCourse = tgtCourse - 360;
+                  }
+                  else if (tgtCourse - lastCourse < -180)
+                  {
+                    tgtCourse = 360 + tgtCourse;
+                  }
                 }
-                else if (tgtCourse - lastCourse < -180)
+                lastCourse = tgtCourse;
+
+                // we use the raw color for infills, to help find which
+                // infill we're referring to (esp in random infills)
+                final Color courseColor;
+                final Color speedColor;
+                if (isInfill)
                 {
-                  tgtCourse = 360 + tgtCourse;
+                  courseColor = fw.getColor();
+                  speedColor = fw.getColor();
                 }
-              }
-              lastCourse = tgtCourse;
+                else
+                {
+                  courseColor = fw.getColor().brighter();
+                  speedColor = fw.getColor().darker();
+                }
 
-              // we use the raw color for infills, to help find which
-              // infill we're referring to (esp in random infills)
-              final Color courseColor;
-              final Color speedColor;
-              if (isInfill)
-              {
-                courseColor = fw.getColor();
-                speedColor = fw.getColor();
+                final ColouredDataItem crseBearingItem =
+                    new ColouredDataItem(thisMilli, tgtCourse, courseColor,
+                        isInfill, null);
+                tgtCourseValues.addOrUpdate(crseBearingItem);
+                final ColouredDataItem tgtSpeedItem =
+                    new ColouredDataItem(thisMilli, tgtSpeed, speedColor,
+                        isInfill, null);
+                tgtSpeedValues.addOrUpdate(tgtSpeedItem);
               }
-              else
-              {
-                courseColor = fw.getColor().brighter();
-                speedColor = fw.getColor().darker();
-              }
-
-              final ColouredDataItem crseBearingItem =
-                  new ColouredDataItem(thisMilli, tgtCourse, courseColor,
-                      isInfill, null);
-              tgtCourseValues.addOrUpdate(crseBearingItem);
-              final ColouredDataItem tgtSpeedItem =
-                  new ColouredDataItem(thisMilli, tgtSpeed, speedColor,
-                      isInfill, null);
-              tgtSpeedValues.addOrUpdate(tgtSpeedItem);
             }
           }
         }
       }
-    }
 
-    // sort out the sensor cuts (all of them, not just those when we have target legs)
-    final List<SensorContactWrapper> theBearings =
-        getBearings(_primaryTrack, onlyVis, _secondaryTrack.getStartDTG(),
-            _secondaryTrack.getEndDTG());
-    for (final SensorContactWrapper cut : theBearings)
-    {
-      final double theBearing;
-
-      // ensure it's in the positive domain
-      if (cut.getBearing() < 0)
+      // sort out the sensor cuts (all of them, not just those when we have target legs)
+      final List<SensorContactWrapper> theBearings =
+          getBearings(_primaryTrack, onlyVis, _secondaryTrack.getStartDTG(),
+              _secondaryTrack.getEndDTG());
+      for (final SensorContactWrapper cut : theBearings)
       {
-        theBearing = cut.getBearing() + 360;
-      }
-      else
-      {
-        theBearing = cut.getBearing();
-      }
+        final double theBearing;
 
-      // ok, store it.
-      allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut
-          .getDTG().getDate().getTime()), theBearing));
-    }
-
-    // ok, add these new series
-    if (errorValues.getItemCount() > 0)
-      errorSeries.addSeries(errorValues);
-
-    actualSeries.addSeries(measuredValues);
-
-    if (ambigValues.getItemCount() > 0)
-      actualSeries.addSeries(ambigValues);
-
-    if (calculatedValues.getItemCount() > 0)
-      actualSeries.addSeries(calculatedValues);
-
-    if (tgtCourseValues.getItemCount() > 0)
-      targetCourseSeries.addSeries(tgtCourseValues);
-
-    if (tgtSpeedValues.getItemCount() > 0)
-      targetSpeedSeries.addSeries(tgtSpeedValues);
-
-    if (showCourse)
-    {
-      targetCourseSeries.addSeries(osCourseValues);
-    }
-
-    if (calculatedValues.getItemCount() > 0)
-    {
-      targetCalculatedSeries.clear();
-      targetCalculatedSeries.addAndOrUpdate(calculatedValues);
-    }
-
-    // and the course data for the zone chart
-    if (!osCourseValues.isEmpty())
-    {
-      if (ownshipCourseSeries != null)
-      {
-        // is it currently empty?
-        if (ownshipCourseSeries.isEmpty())
+        // ensure it's in the positive domain
+        if (cut.getBearing() < 0)
         {
-          ownshipCourseSeries.addAndOrUpdate(osCourseValues);
+          theBearing = cut.getBearing() + 360;
         }
         else
         {
-          // ok, ignore it. we only assign the data in the first pass
+          theBearing = cut.getBearing();
         }
-      }
-    }
 
-    // and the bearing data for the zone chart
-    if (!allCuts.isEmpty())
-    {
-      if (targetBearingSeries != null)
+        // ok, store it.
+        allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut
+            .getDTG().getDate().getTime()), theBearing));
+      }
+
+      // ok, add these new series
+      if (errorValues.getItemCount() > 0)
+        errorSeries.addSeries(errorValues);
+
+      actualSeries.addSeries(measuredValues);
+
+      if (ambigValues.getItemCount() > 0)
+        actualSeries.addSeries(ambigValues);
+
+      if (calculatedValues.getItemCount() > 0)
       {
-        // is it currently empty?
-        if (targetBearingSeries.isEmpty())
+        actualSeries.addSeries(calculatedValues);
+      }
+
+      if (tgtCourseValues.getItemCount() > 0)
+        targetCourseSeries.addSeries(tgtCourseValues);
+
+      if (tgtSpeedValues.getItemCount() > 0)
+        targetSpeedSeries.addSeries(tgtSpeedValues);
+
+      if (showCourse)
+      {
+        targetCourseSeries.addSeries(osCourseValues);
+      }
+
+      if (calculatedValues.getItemCount() > 0)
+      {
+        targetCalculatedSeries.addAndOrUpdate(calculatedValues);
+      }
+
+      // and the course data for the zone chart
+      if (!osCourseValues.isEmpty())
+      {
+        if (ownshipCourseSeries != null)
         {
-          targetBearingSeries.addAndOrUpdate(allCuts);
-        }
-        else
-        {
-          // ok, ignore it. we only assign the data in the first pass
+          // is it currently empty?
+          if (ownshipCourseSeries.isEmpty())
+          {
+            ownshipCourseSeries.addAndOrUpdate(osCourseValues);
+          }
+          else
+          {
+            // ok, ignore it. we only assign the data in the first pass
+          }
         }
       }
+
+      // and the bearing data for the zone chart
+      if (!allCuts.isEmpty())
+      {
+        if (targetBearingSeries != null)
+        {
+          // is it currently empty?
+          if (targetBearingSeries.isEmpty())
+          {
+            targetBearingSeries.addAndOrUpdate(allCuts);
+          }
+          else
+          {
+            // ok, ignore it. we only assign the data in the first pass
+          }
+        }
+      }
+
+      // find the color for maximum value in the error series
+      Paint errorColor = calculateErrorShadeFor(errorSeries);
+      dotPlot.setBackgroundPaint(errorColor);
+
+      dotPlot.setDataset(errorSeries);
+      linePlot.setDataset(actualSeries);
+      targetPlot.setDataset(0, targetCourseSeries);
+      targetPlot.setDataset(1, targetSpeedSeries);
     }
-
-    // find the color for maximum value in the error series
-    Paint errorColor = calculateErrorShadeFor(errorSeries);
-    dotPlot.setBackgroundPaint(errorColor);
-
-    dotPlot.setDataset(errorSeries);
-    linePlot.setDataset(actualSeries);
-    targetPlot.setDataset(0, targetCourseSeries);
-    targetPlot.setDataset(1, targetSpeedSeries);
-
+    finally
+    {
+      // now switch off updates
+      for (final Series series : sList)
+      {
+        series.setNotify(true);
+      }
+      // now switch off updates
+      for (final TimeSeriesCollection series : tList)
+      {
+        series.setNotify(true);
+      }
+    }
   }
 
   /**

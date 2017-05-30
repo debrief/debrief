@@ -545,10 +545,10 @@ public class ZoneChart extends Composite
                       final IAdaptable info) throws ExecutionException
                   {
                     plot.removeDomainMarker(deleteIntervalMarker);
+                    resize.end = delete.end;
                     zoneMarkers.remove(delete);
                     zones.remove(delete);
                     fireZoneRemoved(delete);
-                    resize.end = delete.end;
                     assert resizeIntervalMarker != null;
                     resizeIntervalMarker.setStartValue(resize.start);
                     resizeIntervalMarker.setEndValue(resize.end);
@@ -563,10 +563,10 @@ public class ZoneChart extends Composite
                       final IAdaptable info) throws ExecutionException
                   {
                     plot.removeDomainMarker(deleteIntervalMarker);
+                    resize.end = delete.end;
                     zoneMarkers.remove(delete);
                     zones.remove(delete);
                     fireZoneRemoved(delete);
-                    resize.end = delete.end;
                     assert resizeIntervalMarker != null;
                     resizeIntervalMarker.setStartValue(resize.start);
                     resizeIntervalMarker.setEndValue(resize.end);

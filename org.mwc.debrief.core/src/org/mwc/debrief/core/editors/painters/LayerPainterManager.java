@@ -17,8 +17,9 @@ package org.mwc.debrief.core.editors.painters;
 import java.beans.*;
 import java.util.*;
 
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.core.editors.painters.highlighters.*;
+
+import MWC.TacticalData.TrackDataProvider;
 
 /**
  * @author ian.mayo

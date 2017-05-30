@@ -321,7 +321,17 @@ public class TrackWrapper_Support
     @Override
     public void add(final Editable item)
     {
-      System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO SEGMENT LIST");
+      // ok, when the cut/paste operations are done/undone
+      // we may get asked to put back a previously
+      // removed track segment
+      if (item instanceof TrackSegment)
+      {
+        addSegment((TrackSegment) item);
+      }
+      else
+      {
+        System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO SEGMENT LIST");
+      }
     }
 
     @FireExtended
@@ -378,7 +388,7 @@ public class TrackWrapper_Support
       }
 
       super.add(segment);
-      
+
       // if we've just got the one, set it's name to positions
       if (this.size() == 1)
       {
@@ -392,8 +402,16 @@ public class TrackWrapper_Support
     {
       super.removeElement(p);
 
+      // if it's a dynamic infill, we've got to clear it
+      if (p instanceof DynamicInfillSegment)
+      {
+        DynamicInfillSegment fill = (DynamicInfillSegment) p;
+        fill.clear();
+      }
+
       TrackSegment seg = (TrackSegment) p;
       seg.setWrapper(null);
+
     }
 
     @Override

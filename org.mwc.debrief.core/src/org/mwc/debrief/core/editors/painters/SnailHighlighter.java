@@ -20,7 +20,6 @@ import java.awt.Graphics2D;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTAnnotation;
 import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTBuoyPattern;
@@ -38,6 +37,7 @@ import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.TrackDataProvider;
 
 /**
  * painter which plots all data, and draws a square rectangle around tactical

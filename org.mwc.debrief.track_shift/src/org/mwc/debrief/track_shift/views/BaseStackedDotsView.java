@@ -21,6 +21,8 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -98,10 +100,6 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
@@ -129,6 +127,7 @@ import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -138,6 +137,7 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Plottable;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Properties.DebriefColors;
@@ -151,6 +151,9 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.TrackDataProvider;
+import MWC.TacticalData.TrackDataProvider.TrackDataListener;
+import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
 
 /**
  */
@@ -246,14 +249,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final StackedDotHelper _myHelper;
 
   /**
-   * our track-data provider
-   */
-  protected TrackManager _theTrackDataListener;
-
-  /**
    * our listener for tracks being shifted...
    */
-  protected TrackShiftListener _myShiftListener;
+  final protected TrackShiftListener _myShiftListener;
 
   /**
    * buttons for which plots to show
@@ -296,7 +294,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private CombinedDomainXYPlot _combined;
 
-  protected TrackDataListener _myTrackDataListener;
+  final protected TrackDataListener _myTrackDataListener;
 
   /**
    * does our output need bearing in the data?
@@ -336,6 +334,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Action _precisionOne;
   private Action _precisionTwo;
   private Action _precisionThree;
+  private final PropertyChangeListener _infillListener;
 
   /**
    * 
@@ -353,6 +352,74 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // the
     // interface is shown
     makeActions();
+
+    // declare the listeners
+    _myShiftListener = new TrackShiftListener()
+    {
+      public void trackShifted(final WatchableList subject)
+      {
+        // the tracks have moved, we haven't changed
+        // the tracks or
+        // anything like that...
+        updateStackedDots(false);
+      }
+    };
+
+    final ErrorLogger logger = this;
+    _myTrackDataListener = new TrackDataListener()
+    {
+      public void tracksUpdated(final WatchableList primary,
+          final WatchableList[] secondaries)
+      {
+
+        // has the primary changed?
+        final boolean primarySame =
+            (_myHelper.getPrimaryTrack() != null)
+                && (_myHelper.getPrimaryTrack().equals(primary));
+        final boolean secSame =
+            (_myHelper.getSecondaryTrack() != null) && secondaries != null
+                && secondaries.length == 1
+                && (_myHelper.getSecondaryTrack().equals(secondaries[0]));
+
+        // ok, have things changed?
+        _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
+            .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+
+        // clear the zone charts, but maybe not the primary
+        clearZoneCharts(!secSame || !primarySame, !secSame, !secSame);
+
+        // ahh, the tracks have changed, better
+        // update the doublets
+
+        // ok, do the recalc
+        updateStackedDots(true);
+
+        // ok - if we're on auto update, do the
+        // update
+        updateLinePlotRanges();
+
+        // initialise the zones
+        updateTargetZones();
+        // List<Zone> zones = getTargetZones();
+        // if (targetZoneChart != null)
+        // {
+        // targetZoneChart.setZones(zones);
+        // }
+      }
+    };
+
+    _infillListener = new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(PropertyChangeEvent evt)
+      {
+        if (evt.getNewValue() instanceof DynamicInfillSegment)
+        {
+          updateStackedDots(true);
+        }
+      }
+    };
+
   }
 
   abstract protected String getUnits();
@@ -797,37 +864,47 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       // ok, we know we're working through segments
-
-      TrackSegment cSeg = (TrackSegment) nextSeg;
-
+      // check the time period for this leg
+      final TrackSegment cSeg = (TrackSegment) nextSeg;
+      final TimePeriod legPeriod =
+          new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
+      
+      // remember that segment, it may prove useful to us
       if (cSeg instanceof RelativeTMASegment)
       {
         RelativeTMASegment seg = (RelativeTMASegment) cSeg;
         otherSegment = seg;
-        TimePeriod legPeriod =
-            new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg.getDTG_End());
-        if (zonePeriod.overlaps(legPeriod))
+      }      
+
+      if (zonePeriod.overlaps(legPeriod))
+      {
+        // just check the periods don't match - if they match, we don't need to do anything
+        if (zonePeriod.equals(legPeriod))
         {
-          // just check the periods don't match - if they match, we don't need to do anything
-          if (zonePeriod.equals(legPeriod))
+          // ok, we can have a rest
+          legFound = true;
+          continue;
+        }
+        else
+        {
+
+          if (legFound)
           {
-            // ok, we can have a rest
+            // ok, we've already create our leg. But, this one overlaps
+            // with us. we should delete it, unless it's a Dynamic Infill
+            TrackWrapper secondary = (TrackWrapper) secTrack;
+            secondary.removeElement(cSeg);
+
+            CorePlugin.logError(Status.INFO,
+                "Existing leg overlaps with auto-generated one. deleting:"
+                    + cSeg, null);
           }
           else
           {
-            if (legFound)
+            if (cSeg instanceof RelativeTMASegment)
             {
-              // ok, we've already create our leg. But, this one overlaps
-              // with us. we should delete it, unless it's a Dynamic Infill
-              TrackWrapper secondary = (TrackWrapper) secTrack;
-              secondary.removeElement(seg);
-
-              CorePlugin.logError(Status.INFO,
-                  "Existing leg overlaps with auto-generated one. deleting:"
-                      + seg, null);
-            }
-            else
-            {
+              RelativeTMASegment seg = (RelativeTMASegment) cSeg;
+              otherSegment = seg;
               // leg not found yet. this one will do!
 
               // ok, set this leg to the relevant time period
@@ -848,18 +925,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper
                   .getSecondaryTrack());
             }
+            else if (cSeg instanceof AbsoluteTMASegment)
+            {
+              AbsoluteTMASegment at = (AbsoluteTMASegment) cSeg;
+              at.setDTG_Start(zonePeriod.getStartDTG());
+              at.setDTG_End(zonePeriod.getEndDTG());
+              //
+              // // tell the leg to share the good news
+              // // share the good news
+              // _ourLayersSubject.fireExtended(at, (HasEditables) _myHelper
+              // .getSecondaryTrack());
+            }
+            else
+            {
+              CorePlugin.logError(Status.WARNING,
+                  "Ignoring this leg,  it's not relative TMA:" + cSeg, null);
+              continue;
+            }
+
           }
         }
-      }
-      else if(cSeg instanceof AbsoluteTMASegment)
-      { 
-        System.err.println("Incomplete. Still have to support dragging absolute segments");
-      }
-      else
-      {
-        CorePlugin.logError(Status.WARNING,
-            "Ignoring this leg,  it's not relative TMA:" + cSeg, null);
-        continue;
       }
     }
 
@@ -996,10 +1081,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       Application.logError2(Application.ERROR, "List of cuts is empty", null);
       return null;
     }
-    
-    if(ownshipLegs == null || ownshipLegs.length == 0)
+
+    if (ownshipLegs == null || ownshipLegs.length == 0)
     {
-      Application.logError2(Application.ERROR, "List of ownship legs is empty", null);
+      Application.logError2(Application.ERROR, "List of ownship legs is empty",
+          null);
       return null;
     }
 
@@ -1353,20 +1439,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
 
           // ok, we know we're working through segments
-          TrackSegment cSeg = (TrackSegment) nextSeg;
-          if (cSeg instanceof RelativeTMASegment)
-          {
-            RelativeTMASegment seg = (RelativeTMASegment) cSeg;
-            TimePeriod legPeriod =
-                new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg
-                    .getDTG_End());
+          final TrackSegment cSeg = (TrackSegment) nextSeg;
 
-            if (zonePeriod.equals(legPeriod))
-            {
-              // ok, delete this segment
-              TrackWrapper secTr = (TrackWrapper) secTrack;
-              secTr.removeElement(seg);
-            }
+          final TimePeriod legPeriod =
+              new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
+
+          if (zonePeriod.equals(legPeriod))
+          {
+            // ok, delete this segment
+            final TrackWrapper secTr = (TrackWrapper) secTrack;
+            secTr.removeElement(cSeg);
           }
         }
 
@@ -1385,13 +1467,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // collate the current list of legs
         Zone[] zones = targetZoneChart.getZones();
 
-        ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
-        TrackWrapper priTrack = _myHelper.getPrimaryTrack();
+        final ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
+        final TrackWrapper priTrack = _myHelper.getPrimaryTrack();
 
         // fire the finished event
         for (int i = 0; i < zones.length; i++)
         {
-          Zone zone = zones[i];
+          final Zone zone = zones[i];
           setLeg(priTrack, secTrack, zone);
         }
 
@@ -1400,6 +1482,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
           // share the good news
           _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
+
+          // do a fire extended, so the outline re-calculates itself
+          _ourLayersSubject.fireExtended(null, (HasEditables) _myHelper
+              .getSecondaryTrack());
 
           // and re-generate the doublets
           updateData(true);
@@ -1676,12 +1762,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // are we listening to any layers?
     if (_ourLayersSubject != null)
-      _ourLayersSubject.removeDataReformattedListener(_layersListener);
-
-    if (_theTrackDataListener != null)
     {
-      _theTrackDataListener.removeTrackShiftListener(_myShiftListener);
-      _theTrackDataListener.removeTrackDataListener(_myTrackDataListener);
+      _ourLayersSubject.removeDataReformattedListener(_layersListener);
+      _ourLayersSubject.removeDataExtendedListener(_layersListener);
+    }
+
+    if (_myTrackDataProvider != null)
+    {
+      _myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
+      _myTrackDataProvider.removeTrackDataListener(_myTrackDataListener);
     }
 
     // stop the part monitor
@@ -1961,7 +2050,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // we need to get a fresh set of data pairs - the number may
             // have
             // changed
-            _myHelper.initialise(_theTrackDataListener, true, _onlyVisible
+            _myHelper.initialise(_myTrackDataProvider, true, _onlyVisible
                 .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
 
             // and a new plot please
@@ -2000,6 +2089,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // and get the parent to redo the layout
     ownshipZoneChart.getParent().layout(true);
+
+    // we should probably update them, true
+    updateTargetZones();
   }
 
   /**
@@ -2071,23 +2163,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   void updateStackedDots(final boolean updateDoublets)
   {
-    if (Thread.currentThread() == Display.getDefault().getThread())
+
+    final Runnable updateEvent = new Runnable()
     {
-      // it's ok we're already in a display thread
-      wrappedUpdateStackedDots(updateDoublets);
-    }
-    else
-    {
-      // we're not in the display thread - make it so!
-      Display.getDefault().syncExec(new Runnable()
+      public void run()
       {
-        public void run()
+        // update the current datasets
+        wrappedUpdateStackedDots(updateDoublets);
+      }
+    };
+
+    final Runnable doUpdate = new Runnable()
+    {
+      public void run()
+      {
+        if (Thread.currentThread() == Display.getDefault().getThread())
         {
-          // update the current datasets
-          wrappedUpdateStackedDots(updateDoublets);
+          // it's ok we're already in a display thread
+          updateEvent.run();
         }
-      });
-    }
+        else
+        {
+          // we're not in the display thread - make it so!
+          Display.getDefault().syncExec(updateEvent);
+        }
+      }
+    };
+
+    doUpdate.run();
   }
 
   /**
@@ -2201,61 +2304,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             }
           }
         });
-
-    _myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            // is it a new one?
-            if (part != _theTrackDataListener)
-            {
-              // cool, remember about it.
-              _theTrackDataListener = (TrackManager) part;
-
-              // hey, new plot. clear the zone charts
-              clearZoneCharts(true, true);
-
-              // set the title, so there's something useful in
-              // there
-              _myChart.setTitle("");
-
-              // ok - fire off the event for the new tracks
-              _myHelper
-                  .initialise(_theTrackDataListener, false, _onlyVisible
-                      .isChecked(), _holder, logger, getType(), _needBrg,
-                      _needFreq);
-
-              // just in case we're ready to start plotting, go
-              // for it!
-              updateStackedDots(true);
-
-              // and the zones
-              // initialise the zones
-              List<Zone> zones = getTargetZones();
-              if (targetZoneChart != null)
-              {
-                targetZoneChart.setZones(zones);
-              }
-            }
-          }
-        });
-    _myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            // ok, ditch it.
-            _theTrackDataListener = null;
-
-            _myHelper.reset();
-
-            // ok, clear the zone charts
-            clearZoneCharts(true, true);
-          }
-        });
     _myPartMonitor.addPartListener(TrackDataProvider.class,
         PartMonitor.ACTIVATED, new PartMonitor.ICallback()
         {
@@ -2264,65 +2312,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           {
             // cool, remember about it.
             final TrackDataProvider dataP = (TrackDataProvider) part;
-
-            // do we need to generate the shift listener?
-            if (_myShiftListener == null)
-            {
-              _myShiftListener = new TrackShiftListener()
-              {
-                public void trackShifted(final WatchableList subject)
-                {
-                  // the tracks have moved, we haven't changed
-                  // the tracks or
-                  // anything like that...
-                  updateStackedDots(false);
-                }
-              };
-
-              _myTrackDataListener = new TrackDataListener()
-              {
-                public void tracksUpdated(final WatchableList primary,
-                    final WatchableList[] secondaries)
-                {
-
-                  // has the primary changed?
-                  final boolean primarySame =
-                      (_myHelper.getPrimaryTrack() != null)
-                          && (_myHelper.getPrimaryTrack().equals(primary));
-                  final boolean secSame =
-                      (_myHelper.getSecondaryTrack() != null)
-                          && secondaries != null
-                          && secondaries.length == 1
-                          && (_myHelper.getSecondaryTrack()
-                              .equals(secondaries[0]));
-
-                  // ok, have things changed?
-                  _myHelper.initialise(_theTrackDataListener, false,
-                      _onlyVisible.isChecked(), _holder, logger, getType(),
-                      _needBrg, _needFreq);
-
-                  // clear the zone charts, but maybe not the primary
-                  clearZoneCharts(!secSame || !primarySame, !secSame);
-
-                  // ahh, the tracks have changed, better
-                  // update the doublets
-
-                  // ok, do the recalc
-                  updateStackedDots(true);
-
-                  // ok - if we're on auto update, do the
-                  // update
-                  updateLinePlotRanges();
-
-                  // initialise the zones
-                  List<Zone> zones = getTargetZones();
-                  if (targetZoneChart != null)
-                  {
-                    targetZoneChart.setZones(zones);
-                  }
-                }
-              };
-            }
 
             // is this the one we're already listening to?
             if (_myTrackDataProvider != dataP)
@@ -2336,6 +2325,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 _myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
                 _myTrackDataProvider
                     .removeTrackDataListener(_myTrackDataListener);
+
+                // remove ourselves as a location listener from the sec track, if there is one
+                WatchableList[] secs =
+                    _myTrackDataProvider.getSecondaryTracks();
+                if (secs != null && secs.length == 1)
+                {
+                  TrackWrapper secT = (TrackWrapper) secs[0];
+                  secT.removePropertyChangeListener(
+                      TrackWrapper.LOCATION_CHANGED, _infillListener);
+                }
               }
 
               // ok, start listening to it anyway
@@ -2343,8 +2342,41 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _myTrackDataProvider.addTrackShiftListener(_myShiftListener);
               _myTrackDataProvider.addTrackDataListener(_myTrackDataListener);
 
+              // special case = we have to register to listen to infills changing
+              // since they aren't triggered by the UI (mouse drag) events.
+
+              WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
+              if (secs != null && secs.length == 1)
+              {
+                TrackWrapper secT = (TrackWrapper) secs[0];
+                secT.addPropertyChangeListener(TrackWrapper.LOCATION_CHANGED,
+                    _infillListener);
+              }
+
+              // hey, new plot. clear the zone charts
+              clearZoneCharts(true, true, true);
+
+              // set the title, so there's something useful in
+              // there
+              _myChart.setTitle("");
+
+              // ok - fire off the event for the new tracks
+              _myHelper
+                  .initialise(_myTrackDataProvider, false, _onlyVisible
+                      .isChecked(), _holder, logger, getType(), _needBrg,
+                      _needFreq);
+
               // hey - fire a dot update
               updateStackedDots(true);
+
+              // and the zones
+              // initialise the zones
+              List<Zone> zones = getTargetZones();
+              if (targetZoneChart != null)
+              {
+                targetZoneChart.setZones(zones);
+              }
+
             }
           }
         });
@@ -2362,13 +2394,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             if (tdp == _myTrackDataProvider)
             {
               _myTrackDataProvider = null;
+
+              // hey - lets clear our plot
+              updateStackedDots(true);
+
+              // and the helper
+              _myHelper.reset();
+
+              // and clear the zone charts
+              clearZoneCharts(true, true, true);
             }
 
-            // hey - lets clear our plot
-            updateStackedDots(true);
-
-            // and clear the zone charts
-            clearZoneCharts(true, true);
           }
         });
 
@@ -2383,7 +2419,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // do we need to create our listener
             if (_layersListener == null)
             {
-              _layersListener = new Layers.DataListener()
+              _layersListener = new Layers.DataListener2()
               {
                 public void dataExtended(final Layers theData)
                 {
@@ -2397,12 +2433,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 public void dataReformatted(final Layers theData,
                     final Layer changedLayer)
                 {
-                  _myHelper.initialise(_theTrackDataListener, false,
+                  _myHelper.initialise(_myTrackDataProvider, false,
                       _onlyVisible.isChecked(), _holder, logger, getType(),
                       _needBrg, _needFreq);
 
                   updateStackedDots(true);
 
+                }
+
+                @Override
+                public void dataExtended(Layers theData, Plottable newItem,
+                    HasEditables parent)
+                {
+                  // ok, see if this is our secondary track
+                  if (parent != null
+                      && parent.equals(_myHelper.getSecondaryTrack()))
+                  {
+                    // also update the zone charts, the secondary
+                    // may have been split/merged
+                    updateTargetZones();
+                  }
                 }
               };
             }
@@ -2413,8 +2463,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // nope, stop listening to the old one (if there is
               // one!)
               if (_ourLayersSubject != null)
+              {
                 _ourLayersSubject
                     .removeDataReformattedListener(_layersListener);
+                _ourLayersSubject.removeDataExtendedListener(_layersListener);
+              }
 
               // and remember the new one
               _ourLayersSubject = theLayers;
@@ -2422,6 +2475,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             // now start listening to the new one.
             theLayers.addDataReformattedListener(_layersListener);
+            theLayers.addDataExtendedListener(_layersListener);
           }
         });
     _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
@@ -2443,7 +2497,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _targetOverviewPlot.setDataset(null);
 
               // ok, clear the zone charts
-              clearZoneCharts(true, true);
+              clearZoneCharts(true, true, true);
             }
           }
         });
@@ -2451,6 +2505,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // ok we're all ready now. just try and see if the current part is valid
     _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
         .getActivePage());
+  }
+
+  /**
+   * the layesr manager has told use that the sec track has been extended. So, update the zones.
+   */
+  private void updateTargetZones()
+  {
+    if (targetZoneChart != null && targetZoneChart.getVisible())
+    {
+      // clear the zone charts, but maybe not the primary
+      clearZoneCharts(false, true, false);
+
+      // do we have a target zone chart?
+      if (targetZoneChart != null)
+      {
+        // initialise the zones
+        final List<Zone> zones = getTargetZones();
+        targetZoneChart.setZones(zones);
+      }
+    }
   }
 
   /**
@@ -2493,11 +2567,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     .getDTG_End().getDate().getTime(), color);
             zones.add(newZ);
           }
-          else if(thisSeg instanceof AbsoluteTMASegment)
+          else if (thisSeg instanceof AbsoluteTMASegment)
           {
             AbsoluteTMASegment seg = (AbsoluteTMASegment) thisSeg;
             FixWrapper firstE = (FixWrapper) thisSeg.elements().nextElement();
-            final Color color = firstE.getColor();            
+            final Color color = firstE.getColor();
             final Zone newZ =
                 new Zone(seg.getDTG_Start().getDate().getTime(), seg
                     .getDTG_End().getDate().getTime(), color);
@@ -2654,7 +2728,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private void clearZoneCharts(boolean osChanged, boolean tgtChanged)
+  private void clearZoneCharts(final boolean osChanged, final boolean tgtChanged,
+      final boolean clearTgtData)
   {
     if (osChanged)
     {
@@ -2669,7 +2744,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // and the secondary
     if (tgtChanged)
     {
-      targetBearingSeries.clear();
+      if (clearTgtData)
+      {
+        targetBearingSeries.clear();
+        targetCalculatedSeries.clear();
+      }
+
       if (targetZoneChart != null)
       {
         targetZoneChart.clearZones();

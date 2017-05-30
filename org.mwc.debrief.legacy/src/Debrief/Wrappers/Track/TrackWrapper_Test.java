@@ -910,6 +910,16 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   {
     assertEquals("have correct num", 6, _tw.numFixes());
   }
+  
+  public void testSinglePoint()
+  {
+    TrackWrapper tw = new TrackWrapper();
+    assertFalse(tw.isSinglePointTrack());
+    tw.add(createFix(100, 12, 13));
+    assertTrue(tw.isSinglePointTrack());
+    tw.add(createFix(200, 12, 13));
+    assertFalse(tw.isSinglePointTrack());
+  }
 
   /**
    * Test method for {@link Debrief.Wrappers.TrackWrapper#rangeFrom(MWC.GenericData.WorldLocation)}
@@ -1251,7 +1261,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     assertEquals("start with correct points", 5, seg2.size());
 
     seg2.setDTG_End(new HiResDate(200000));
-    assertEquals("more points after stretch", 11, seg2.size());
+    assertEquals("more points after stretch", 10, seg2.size());
     assertEquals("new end time", 200000, seg2.getDTG_End().getDate().getTime());
 
     // now try to stretch the start
@@ -1259,7 +1269,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     seg2.setDTG_Start(new HiResDate(80002));
     assertEquals("new start time", 80002, seg2.getDTG_Start().getDate()
         .getTime());
-    assertEquals("more points after stretch", 17, seg2.size());
+    assertEquals("more points after stretch", 13, seg2.size());
 
     // have a look at the times
     Iterator<Editable> sIter = seg2.getData().iterator();

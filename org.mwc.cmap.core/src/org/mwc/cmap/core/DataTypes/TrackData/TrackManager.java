@@ -25,6 +25,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.TrackDataProvider;
 
 /**
  * embedded class which manages the primary & secondary tracks

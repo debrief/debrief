@@ -36,7 +36,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 	protected void updateData(final boolean updateDoublets)
 	{
 		// update the current datasets
-		_myHelper.updateFrequencyData(_dotPlot, _linePlot, _theTrackDataListener,
+		_myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
 				_onlyVisible.isChecked(), _holder, this, updateDoublets);		
 		
 		// hide the line for the base freq dataset

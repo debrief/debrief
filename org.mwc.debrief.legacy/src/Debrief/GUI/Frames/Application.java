@@ -226,18 +226,34 @@
 
 package Debrief.GUI.Frames;
 
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.MenuShortcut;
 import java.awt.datatransfer.Clipboard;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Tools.Operations.*;
-import MWC.GUI.*;
+import Debrief.Tools.Operations.CloseSession;
+import Debrief.Tools.Operations.ExitApplication;
+import Debrief.Tools.Operations.ImportData2;
+import Debrief.Tools.Operations.NewSession;
+import Debrief.Tools.Operations.OpenPlotXML;
+import Debrief.Tools.Operations.Redo;
+import Debrief.Tools.Operations.Undo;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Tool;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Toolbar;
 import MWC.GUI.Dialogs.ApplicationProperties;
 import MWC.GUI.DragDrop.FileDropSupport;
-import MWC.GUI.Tools.*;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.MenuItemInfo;
 import MWC.Utilities.Errors.Trace;
 
 public abstract class Application implements ToolParent, ActionListener,
@@ -896,7 +912,7 @@ public abstract class Application implements ToolParent, ActionListener,
 		 */
 
 	}
-
+	
 	/**
 	 * get the value of this named property
 	 * 
