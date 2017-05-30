@@ -1050,7 +1050,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
       // note: we don't want one large leap. So, insert a few points
       long oldEndT = endDTG().getDate().getTime();
       long newEndT = newEnd.getDate().getTime();
-      final long typicalDelta = typicalTimeStep(false);
+      final long typicalDelta = typicalTimeStep();
       long thisT = oldEndT + typicalDelta;
 
       while (thisT < newEndT)
@@ -1129,7 +1129,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
    * 
    * @return
    */
-  private long typicalTimeStep(boolean startGap)
+  private long typicalTimeStep()
   {
     final long res;
     FixWrapper[] dArr = this.getData().toArray(new FixWrapper[]
@@ -1245,7 +1245,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
       // note: we don't want one large leap. So, insert a few points
       long oldStartT = startDTG().getDate().getTime();
       long newStartT = theNewStart.getDate().getTime();
-      final long typicalDelta = typicalTimeStep(true);
+      final long typicalDelta = typicalTimeStep();
       
       // ok, insert new fix at the new start time
       addFix(theLoc, newStartT);

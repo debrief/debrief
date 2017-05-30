@@ -101,7 +101,6 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
-import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
@@ -2170,8 +2169,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     doUpdate.run();
   }
-
-  EventStack dotUpateQueue = new EventStack(100);
 
   /**
    * the track has been moved, update the dots
