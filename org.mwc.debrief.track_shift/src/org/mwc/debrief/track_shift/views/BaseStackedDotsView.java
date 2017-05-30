@@ -386,7 +386,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
 
         // clear the zone charts, but maybe not the primary
-        clearZoneCharts(!secSame || !primarySame, !secSame);
+        clearZoneCharts(!secSame || !primarySame, !secSame, !secSame);
 
         // ahh, the tracks have changed, better
         // update the doublets
@@ -399,11 +399,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         updateLinePlotRanges();
 
         // initialise the zones
-        List<Zone> zones = getTargetZones();
-        if (targetZoneChart != null)
-        {
-          targetZoneChart.setZones(zones);
-        }
+        updateTargetZones();
+//        List<Zone> zones = getTargetZones();
+//        if (targetZoneChart != null)
+//        {
+//          targetZoneChart.setZones(zones);
+//        }
       }
     };
 
@@ -1470,6 +1471,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
           // share the good news
           _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
+          
+          // do a fire extended, so the outline re-calculates itself
+          _ourLayersSubject.fireExtended(null, (HasEditables) _myHelper.getSecondaryTrack());
 
           // and re-generate the doublets
           updateData(true);
@@ -2335,7 +2339,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               }
 
               // hey, new plot. clear the zone charts
-              clearZoneCharts(true, true);
+              clearZoneCharts(true, true, true);
 
               // set the title, so there's something useful in
               // there
@@ -2383,7 +2387,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _myHelper.reset();
 
               // and clear the zone charts
-              clearZoneCharts(true, true);
+              clearZoneCharts(true, true, true);
             }
 
           }
@@ -2427,23 +2431,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     HasEditables parent)
                 {
                   // ok, see if this is our secondary track
-                  if(parent != null && parent.equals(_myHelper.getSecondaryTrack()))
+                  if (parent != null
+                      && parent.equals(_myHelper.getSecondaryTrack()))
                   {
                     // also update the zone charts, the secondary
                     // may have been split/merged
-                    
-                    if(targetZoneChart != null && targetZoneChart.getVisible())
-                    {
-                      // clear the zone charts, but maybe not the primary
-                      clearZoneCharts(false, true);
-                      
-                      // initialise the zones
-                      List<Zone> zones = getTargetZones();
-                      if (targetZoneChart != null)
-                      {
-                        targetZoneChart.setZones(zones);
-                      }                    
-                    }
+                    updateTargetZones();
                   }
                 }
               };
@@ -2489,7 +2482,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _targetOverviewPlot.setDataset(null);
 
               // ok, clear the zone charts
-              clearZoneCharts(true, true);
+              clearZoneCharts(true, true, true);
             }
           }
         });
@@ -2497,6 +2490,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // ok we're all ready now. just try and see if the current part is valid
     _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
         .getActivePage());
+  }
+
+  /** the layesr manager has told use that the sec track
+   * has been extended. So, update the zones.
+   */
+  private void updateTargetZones()
+  {
+    if (targetZoneChart != null && targetZoneChart.getVisible())
+    {
+      // clear the zone charts, but maybe not the primary
+      clearZoneCharts(false, true, false);
+
+      // do we have a target zone chart?
+      if (targetZoneChart != null)
+      {
+        // initialise the zones
+        final List<Zone> zones = getTargetZones();
+        targetZoneChart.setZones(zones);
+      }
+    }
   }
 
   /**
@@ -2700,7 +2713,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private void clearZoneCharts(boolean osChanged, boolean tgtChanged)
+  private void clearZoneCharts(boolean osChanged, boolean tgtChanged, boolean clearTgtBearings)
   {
     if (osChanged)
     {
@@ -2715,7 +2728,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // and the secondary
     if (tgtChanged)
     {
-      targetBearingSeries.clear();
+      if(clearTgtBearings)
+      {
+        targetBearingSeries.clear();
+      }
+      
       if (targetZoneChart != null)
       {
         targetZoneChart.clearZones();
