@@ -878,6 +878,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           if (zonePeriod.equals(legPeriod))
           {
             // ok, we can have a rest
+            legFound = true;
+            continue;
           }
           else
           {
@@ -1421,18 +1423,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
 
           // ok, we know we're working through segments
-          TrackSegment cSeg = (TrackSegment) nextSeg;
+          final TrackSegment cSeg = (TrackSegment) nextSeg;
           if (cSeg instanceof RelativeTMASegment)
           {
-            RelativeTMASegment seg = (RelativeTMASegment) cSeg;
-            TimePeriod legPeriod =
+            final RelativeTMASegment seg = (RelativeTMASegment) cSeg;
+            final TimePeriod legPeriod =
                 new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg
                     .getDTG_End());
 
             if (zonePeriod.equals(legPeriod))
             {
               // ok, delete this segment
-              TrackWrapper secTr = (TrackWrapper) secTrack;
+              final TrackWrapper secTr = (TrackWrapper) secTrack;
               secTr.removeElement(seg);
             }
           }
@@ -1453,13 +1455,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // collate the current list of legs
         Zone[] zones = targetZoneChart.getZones();
 
-        ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
-        TrackWrapper priTrack = _myHelper.getPrimaryTrack();
+        final ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
+        final TrackWrapper priTrack = _myHelper.getPrimaryTrack();
 
         // fire the finished event
         for (int i = 0; i < zones.length; i++)
         {
-          Zone zone = zones[i];
+          final Zone zone = zones[i];
           setLeg(priTrack, secTrack, zone);
         }
 
