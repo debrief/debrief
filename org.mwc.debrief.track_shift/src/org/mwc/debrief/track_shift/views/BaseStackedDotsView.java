@@ -400,11 +400,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
         // initialise the zones
         updateTargetZones();
-//        List<Zone> zones = getTargetZones();
-//        if (targetZoneChart != null)
-//        {
-//          targetZoneChart.setZones(zones);
-//        }
+        // List<Zone> zones = getTargetZones();
+        // if (targetZoneChart != null)
+        // {
+        // targetZoneChart.setZones(zones);
+        // }
       }
     };
 
@@ -864,39 +864,40 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       // ok, we know we're working through segments
+      // check the time period for this leg
+      final TrackSegment cSeg = (TrackSegment) nextSeg;
+      final TimePeriod legPeriod =
+          new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
 
-      TrackSegment cSeg = (TrackSegment) nextSeg;
-
-      if (cSeg instanceof RelativeTMASegment)
+      if (zonePeriod.overlaps(legPeriod))
       {
-        RelativeTMASegment seg = (RelativeTMASegment) cSeg;
-        otherSegment = seg;
-        TimePeriod legPeriod =
-            new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg.getDTG_End());
-        if (zonePeriod.overlaps(legPeriod))
+        // just check the periods don't match - if they match, we don't need to do anything
+        if (zonePeriod.equals(legPeriod))
         {
-          // just check the periods don't match - if they match, we don't need to do anything
-          if (zonePeriod.equals(legPeriod))
+          // ok, we can have a rest
+          legFound = true;
+          continue;
+        }
+        else
+        {
+
+          if (legFound)
           {
-            // ok, we can have a rest
-            legFound = true;
-            continue;
+            // ok, we've already create our leg. But, this one overlaps
+            // with us. we should delete it, unless it's a Dynamic Infill
+            TrackWrapper secondary = (TrackWrapper) secTrack;
+            secondary.removeElement(cSeg);
+
+            CorePlugin.logError(Status.INFO,
+                "Existing leg overlaps with auto-generated one. deleting:"
+                    + cSeg, null);
           }
           else
           {
-            if (legFound)
+            if (cSeg instanceof RelativeTMASegment)
             {
-              // ok, we've already create our leg. But, this one overlaps
-              // with us. we should delete it, unless it's a Dynamic Infill
-              TrackWrapper secondary = (TrackWrapper) secTrack;
-              secondary.removeElement(seg);
-
-              CorePlugin.logError(Status.INFO,
-                  "Existing leg overlaps with auto-generated one. deleting:"
-                      + seg, null);
-            }
-            else
-            {
+              RelativeTMASegment seg = (RelativeTMASegment) cSeg;
+              otherSegment = seg;
               // leg not found yet. this one will do!
 
               // ok, set this leg to the relevant time period
@@ -917,19 +918,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper
                   .getSecondaryTrack());
             }
+            else if (cSeg instanceof AbsoluteTMASegment)
+            {
+              AbsoluteTMASegment at = (AbsoluteTMASegment) cSeg;
+              at.setDTG_Start(zonePeriod.getStartDTG());
+              at.setDTG_End(zonePeriod.getEndDTG());
+              //
+              // // tell the leg to share the good news
+              // // share the good news
+              // _ourLayersSubject.fireExtended(at, (HasEditables) _myHelper
+              // .getSecondaryTrack());
+            }
+            else
+            {
+              CorePlugin.logError(Status.WARNING,
+                  "Ignoring this leg,  it's not relative TMA:" + cSeg, null);
+              continue;
+            }
+
           }
         }
-      }
-      else if (cSeg instanceof AbsoluteTMASegment)
-      {
-        System.err
-            .println("Incomplete. Still have to support dragging absolute segments");
-      }
-      else
-      {
-        CorePlugin.logError(Status.WARNING,
-            "Ignoring this leg,  it's not relative TMA:" + cSeg, null);
-        continue;
       }
     }
 
@@ -1425,19 +1433,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           // ok, we know we're working through segments
           final TrackSegment cSeg = (TrackSegment) nextSeg;
-          if (cSeg instanceof RelativeTMASegment)
-          {
-            final RelativeTMASegment seg = (RelativeTMASegment) cSeg;
-            final TimePeriod legPeriod =
-                new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg
-                    .getDTG_End());
 
-            if (zonePeriod.equals(legPeriod))
-            {
-              // ok, delete this segment
-              final TrackWrapper secTr = (TrackWrapper) secTrack;
-              secTr.removeElement(seg);
-            }
+          final TimePeriod legPeriod =
+              new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
+
+          if (zonePeriod.equals(legPeriod))
+          {
+            // ok, delete this segment
+            final TrackWrapper secTr = (TrackWrapper) secTrack;
+            secTr.removeElement(cSeg);
           }
         }
 
@@ -1471,9 +1475,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
           // share the good news
           _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
-          
+
           // do a fire extended, so the outline re-calculates itself
-          _ourLayersSubject.fireExtended(null, (HasEditables) _myHelper.getSecondaryTrack());
+          _ourLayersSubject.fireExtended(null, (HasEditables) _myHelper
+              .getSecondaryTrack());
 
           // and re-generate the doublets
           updateData(true);
@@ -2077,6 +2082,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // and get the parent to redo the layout
     ownshipZoneChart.getParent().layout(true);
+
+    // we should probably update them, true
+    updateTargetZones();
   }
 
   /**
@@ -2492,8 +2500,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         .getActivePage());
   }
 
-  /** the layesr manager has told use that the sec track
-   * has been extended. So, update the zones.
+  /**
+   * the layesr manager has told use that the sec track has been extended. So, update the zones.
    */
   private void updateTargetZones()
   {
@@ -2713,7 +2721,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private void clearZoneCharts(boolean osChanged, boolean tgtChanged, boolean clearTgtBearings)
+  private void clearZoneCharts(boolean osChanged, boolean tgtChanged,
+      boolean clearTgtBearings)
   {
     if (osChanged)
     {
@@ -2728,11 +2737,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // and the secondary
     if (tgtChanged)
     {
-      if(clearTgtBearings)
+      if (clearTgtBearings)
       {
         targetBearingSeries.clear();
       }
-      
+
       if (targetZoneChart != null)
       {
         targetZoneChart.clearZones();
