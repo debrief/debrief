@@ -137,6 +137,7 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Plottable;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Properties.DebriefColors;
@@ -1745,7 +1746,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // are we listening to any layers?
     if (_ourLayersSubject != null)
+    {
       _ourLayersSubject.removeDataReformattedListener(_layersListener);
+      _ourLayersSubject.removeDataExtendedListener(_layersListener);
+    }
 
     if (_myTrackDataProvider != null)
     {
@@ -2396,7 +2400,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // do we need to create our listener
             if (_layersListener == null)
             {
-              _layersListener = new Layers.DataListener()
+              _layersListener = new Layers.DataListener2()
               {
                 public void dataExtended(final Layers theData)
                 {
@@ -2417,6 +2421,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   updateStackedDots(true);
 
                 }
+
+                @Override
+                public void dataExtended(Layers theData, Plottable newItem,
+                    HasEditables parent)
+                {
+                  // ok, see if this is our secondary track
+                  if(parent != null && parent.equals(_myHelper.getSecondaryTrack()))
+                  {
+                    // also update the zone charts, the secondary
+                    // may have been split/merged
+                    
+                    if(targetZoneChart != null && targetZoneChart.getVisible())
+                    {
+                      // clear the zone charts, but maybe not the primary
+                      clearZoneCharts(false, true);
+                      
+                      // initialise the zones
+                      List<Zone> zones = getTargetZones();
+                      if (targetZoneChart != null)
+                      {
+                        targetZoneChart.setZones(zones);
+                      }                    
+                    }
+                  }
+                }
               };
             }
 
@@ -2426,8 +2455,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // nope, stop listening to the old one (if there is
               // one!)
               if (_ourLayersSubject != null)
+              {
                 _ourLayersSubject
                     .removeDataReformattedListener(_layersListener);
+                _ourLayersSubject.removeDataExtendedListener(_layersListener);
+              }
 
               // and remember the new one
               _ourLayersSubject = theLayers;
@@ -2435,6 +2467,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             // now start listening to the new one.
             theLayers.addDataReformattedListener(_layersListener);
+            theLayers.addDataExtendedListener(_layersListener);
           }
         });
     _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
