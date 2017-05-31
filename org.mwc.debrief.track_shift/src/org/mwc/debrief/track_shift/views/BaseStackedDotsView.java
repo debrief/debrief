@@ -213,24 +213,24 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /**
    * helper application to help track creation/activation of new plots
    */
-  private PartMonitor _myPartMonitor;
+  protected PartMonitor _myPartMonitor;
 
   /**
    * the errors we're plotting
    */
-  XYPlot _dotPlot;
+  protected XYPlot _dotPlot;
 
   /**
    * and the actual values
    * 
    */
-  XYPlot _linePlot;
+  protected XYPlot _linePlot;
 
   /**
    * and the actual values
    * 
    */
-  XYPlot _targetOverviewPlot;
+  protected XYPlot _targetOverviewPlot;
 
   /**
    * declare the tgt course dataset, we need to give it to the renderer
@@ -267,17 +267,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * flag indicating whether we should show cross-hairs
    * 
    */
-  Action _showCrossHairs;
+  private Action _showCrossHairs;
 
   /**
    * flag indicating whether we should only show stacked dots for visible fixes
    */
-  Action _onlyVisible;
+  protected Action _onlyVisible;
 
   /**
    * flag indicating whether we should select the clicked item in the Outline View
    */
-  Action _selectOnClick;
+  private Action _selectOnClick;
 
   /**
    * our layers listener...
@@ -291,9 +291,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected TrackDataProvider _myTrackDataProvider;
 
-  ChartComposite _holder;
+  protected ChartComposite _holder;
 
-  JFreeChart _myChart;
+  private JFreeChart _myChart;
 
   private Vector<Action> _customActions;
 
@@ -332,12 +332,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
 
-  // private SliceMode _sliceMode = SliceMode.PEAK_FIT;
   private Precision _slicePrecision = Precision.MEDIUM;
-  // private Action _modeThreshold;
-  // private Action _modePeak;
-  // private Action _modeArea;
-  // private Action _modeArtificial;
   private Action _precisionOne;
   private Action _precisionTwo;
   private Action _precisionThree;
