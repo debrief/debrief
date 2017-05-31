@@ -35,12 +35,12 @@ public class TimeSpot implements IEventEntry
   GanttCheckpoint _presentation;
   final Color _color;
 
-  public TimeSpot(final WatchableList spot)
+  public TimeSpot(final NarrativeEntry entry)
   {
-    _source = spot;
-    _name = spot.getName();
-    _time.setTime(spot.getStartDTG().getDate());
-    _color = spot.getColor();
+    _source = entry;
+    _name = "";// entry.getName();
+    _time.setTime(entry.getDTG().getDate());
+    _color = Color.red;
   }
 
   public TimeSpot(final Watchable spot)
@@ -51,24 +51,28 @@ public class TimeSpot implements IEventEntry
     _color = spot.getColor();
   }
 
-  public TimeSpot(final NarrativeEntry entry)
+  public TimeSpot(final WatchableList spot)
   {
-    _source = entry;
-    _name = "";// entry.getName();
-    _time.setTime(entry.getDTG().getDate());
-    _color = Color.red;
+    _source = spot;
+    _name = spot.getName();
+    _time.setTime(spot.getStartDTG().getDate());
+    _color = spot.getColor();
   }
 
   @Override
-  public Object getSource()
+  public List<IEventEntry> getChildren()
   {
-    return _source;
+    return null;
   }
 
   @Override
-  public Calendar getStart()
+  public org.eclipse.swt.graphics.Color getColor()
   {
-    return _time;
+    if (_color != null)
+    {
+      return ColorUtils.convertAWTtoSWTColor(_color);
+    }
+    return null;
   }
 
   @Override
@@ -86,27 +90,15 @@ public class TimeSpot implements IEventEntry
   }
 
   @Override
-  public org.eclipse.swt.graphics.Color getColor()
+  public Object getSource()
   {
-    if (_color != null)
-      return ColorUtils.convertAWTtoSWTColor(_color);
-    return null;
+    return _source;
   }
 
   @Override
-  public boolean isVisible()
+  public Calendar getStart()
   {
-    if (getSource() instanceof Plottable)
-    {
-      return ((Plottable) getSource()).getVisible();
-    }
-    return true;
-  }
-
-  @Override
-  public List<IEventEntry> getChildren()
-  {
-    return null;
+    return _time;
   }
 
   @Override
@@ -132,5 +124,15 @@ public class TimeSpot implements IEventEntry
       return res.toString();
     }
     return "";
+  }
+
+  @Override
+  public boolean isVisible()
+  {
+    if (getSource() instanceof Plottable)
+    {
+      return ((Plottable) getSource()).getVisible();
+    }
+    return true;
   }
 }

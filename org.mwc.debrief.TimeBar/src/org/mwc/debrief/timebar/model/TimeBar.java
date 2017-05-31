@@ -54,14 +54,39 @@ public class TimeBar implements IEventEntry
   Object _source;
   List<IEventEntry> _children = new ArrayList<IEventEntry>();
 
-  public TimeBar(final WatchableList bar)
+  protected TimeBar(final BaseLayer tacticalItems)
   {
     // _start.setTime(bar.getStartDTG().getDate());
-    _start.setTime(bar.getStartDTG().getDate());
-    _end.setTime(bar.getEndDTG().getDate());
-    _eventName = bar.getName();
-    _source = bar;
-    _color = bar.getColor();
+    _eventName = tacticalItems.getName();
+    _source = tacticalItems;
+
+    final Enumeration<Editable> enumer = tacticalItems.elements();
+    TimePeriod coverage = null;
+    while (enumer.hasMoreElements())
+    {
+      final Editable sensor = enumer.nextElement();
+      if (sensor instanceof TacticalDataWrapper)
+      {
+        final TacticalDataWrapper item = (TacticalDataWrapper) sensor;
+        _children.add(new TimeBar((TacticalDataWrapper) sensor));
+        final TimePeriod thisP =
+            new TimePeriod.BaseTimePeriod(item.getStartDTG(), item.getEndDTG());
+
+        if (coverage == null)
+        {
+          coverage = thisP;
+        }
+        else
+        {
+          coverage.extend(thisP.getStartDTG());
+          coverage.extend(thisP.getEndDTG());
+        }
+      }
+    }
+
+    _start.setTimeInMillis(coverage.getStartDTG().getDate().getTime());
+    _end.setTimeInMillis(coverage.getEndDTG().getDate().getTime());
+
   }
 
   public TimeBar(final ContributionWrapper contribution)
@@ -104,11 +129,39 @@ public class TimeBar implements IEventEntry
       if (next instanceof ContributionWrapper)
       {
         // does it have a date component?
-        ContributionWrapper cw = (ContributionWrapper) next;
+        final ContributionWrapper cw = (ContributionWrapper) next;
         if (cw.get_Start() != null)
         {
           _children.add(new TimeBar(cw));
         }
+      }
+    }
+  }
+
+  public TimeBar(final SegmentList segments)
+  {
+    _source = segments;
+    _eventName = segments.getName();
+    final HiResDate startDate = segments.getWrapper().getStartDTG();
+    if (startDate != null)
+    {
+      _start.setTime(startDate.getDate());
+    }
+    final HiResDate endDate = segments.getWrapper().getEndDTG();
+    if (endDate != null)
+    {
+      _end.setTime(endDate.getDate());
+    }
+    _color = segments.getWrapper().getColor();
+
+    // also work through the segments, if there's more than one
+    if (segments.size() > 1)
+    {
+      final Enumeration<Editable> elems = segments.elements();
+      while (elems.hasMoreElements())
+      {
+        final TrackSegment thisE = (TrackSegment) elems.nextElement();
+        _children.add(new TimeBar(thisE));
       }
     }
   }
@@ -120,44 +173,32 @@ public class TimeBar implements IEventEntry
     _color = sensorOrSolution.getColor();
     final HiResDate startDate = sensorOrSolution.getStartDTG();
     if (startDate != null)
+    {
       _start.setTime(startDate.getDate());
+    }
     final HiResDate endDate = sensorOrSolution.getEndDTG();
     if (endDate != null)
+    {
       _end.setTime(endDate.getDate());
+    }
   }
 
-  protected TimeBar(BaseLayer tacticalItems)
+  public TimeBar(final TrackSegment thisE)
   {
-    // _start.setTime(bar.getStartDTG().getDate());
-    _eventName = tacticalItems.getName();
-    _source = tacticalItems;
-
-    Enumeration<Editable> enumer = tacticalItems.elements();
-    TimePeriod coverage = null;
-    while (enumer.hasMoreElements())
+    _source = thisE;
+    _eventName = thisE.getName();
+    final HiResDate startDate = thisE.startDTG();
+    if (startDate != null)
     {
-      final Editable sensor = enumer.nextElement();
-      if (sensor instanceof TacticalDataWrapper)
-      {
-        TacticalDataWrapper item = (TacticalDataWrapper) sensor;
-        _children.add(new TimeBar((TacticalDataWrapper) sensor));
-        TimePeriod thisP =
-            new TimePeriod.BaseTimePeriod(item.getStartDTG(), item.getEndDTG());
-
-        if (coverage == null)
-        {
-          coverage = thisP;
-        }
-        else
-        {
-          coverage.extend(thisP.getStartDTG());
-          coverage.extend(thisP.getEndDTG());
-        }
-      }
+      _start.setTime(startDate.getDate());
     }
-
-    _start.setTimeInMillis(coverage.getStartDTG().getDate().getTime());
-    _end.setTimeInMillis(coverage.getEndDTG().getDate().getTime());
+    final HiResDate endDate = thisE.endDTG();
+    if (endDate != null)
+    {
+      _end.setTime(endDate.getDate());
+    }
+    final FixWrapper firstF = (FixWrapper) thisE.elements().nextElement();
+    _color = firstF.getColor();
 
   }
 
@@ -167,67 +208,43 @@ public class TimeBar implements IEventEntry
     final SegmentList segments = track.getSegments();
     _children.add(new TimeBar(segments));
 
-    BaseLayer theSensors = track.getSensors();
+    final BaseLayer theSensors = track.getSensors();
     if (theSensors != null && theSensors.size() > 0)
     {
       _children.add(new TimeBar(theSensors));
     }
 
-    BaseLayer theSolutions = track.getSolutions();
+    final BaseLayer theSolutions = track.getSolutions();
     if (theSolutions != null && theSolutions.size() > 0)
     {
       _children.add(new TimeBar(theSolutions));
     }
   }
 
-  public TimeBar(final SegmentList segments)
+  public TimeBar(final WatchableList bar)
   {
-    _source = segments;
-    _eventName = segments.getName();
-    final HiResDate startDate = segments.getWrapper().getStartDTG();
-    if (startDate != null)
-      _start.setTime(startDate.getDate());
-    final HiResDate endDate = segments.getWrapper().getEndDTG();
-    if (endDate != null)
-      _end.setTime(endDate.getDate());
-    _color = segments.getWrapper().getColor();
-
-    // also work through the segments, if there's more than one
-    if (segments.size() > 1)
-    {
-      Enumeration<Editable> elems = segments.elements();
-      while (elems.hasMoreElements())
-      {
-        TrackSegment thisE = (TrackSegment) elems.nextElement();
-        _children.add(new TimeBar(thisE));
-      }
-    }
-  }
-
-  public TimeBar(TrackSegment thisE)
-  {
-    _source = thisE;
-    _eventName = thisE.getName();
-    final HiResDate startDate = thisE.startDTG();
-    if (startDate != null)
-      _start.setTime(startDate.getDate());
-    final HiResDate endDate = thisE.endDTG();
-    if (endDate != null)
-      _end.setTime(endDate.getDate());
-    FixWrapper firstF = (FixWrapper) thisE.elements().nextElement();
-    _color = firstF.getColor();
-
-  }
-
-  public Object getSource()
-  {
-    return _source;
+    // _start.setTime(bar.getStartDTG().getDate());
+    _start.setTime(bar.getStartDTG().getDate());
+    _end.setTime(bar.getEndDTG().getDate());
+    _eventName = bar.getName();
+    _source = bar;
+    _color = bar.getColor();
   }
 
   @Override
-  public Calendar getStart()
+  public List<IEventEntry> getChildren()
   {
-    return _start;
+    return _children;
+  }
+
+  @Override
+  public org.eclipse.swt.graphics.Color getColor()
+  {
+    if (_color != null)
+    {
+      return ColorUtils.convertAWTtoSWTColor(_color);
+    }
+    return null;
   }
 
   @Override
@@ -243,11 +260,21 @@ public class TimeBar implements IEventEntry
   }
 
   @Override
-  public org.eclipse.swt.graphics.Color getColor()
+  public Object getSource()
   {
-    if (_color != null)
-      return ColorUtils.convertAWTtoSWTColor(_color);
-    return null;
+    return _source;
+  }
+
+  @Override
+  public Calendar getStart()
+  {
+    return _start;
+  }
+
+  @Override
+  public String getToolTipText()
+  {
+    return "";
   }
 
   @Override
@@ -258,17 +285,5 @@ public class TimeBar implements IEventEntry
       return ((Plottable) getSource()).getVisible();
     }
     return true;
-  }
-
-  @Override
-  public List<IEventEntry> getChildren()
-  {
-    return _children;
-  }
-
-  @Override
-  public String getToolTipText()
-  {
-    return "";
   }
 }
