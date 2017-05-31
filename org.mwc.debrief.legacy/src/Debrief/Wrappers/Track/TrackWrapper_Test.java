@@ -483,15 +483,15 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     track.addFix(fix);
     
     assertNotNull("returned an area", layers.getBounds());
-    assertEquals("correct location", " 50°51'17.63\"N 001°20'32.10\"W ", layers.getBounds().getCentre().toString());
-    assertEquals("correct location", " 51°12'08.27\"N 001°58'07.62\"W ", layers.getBounds().getTopLeft().toString());
-    assertEquals("correct location", " 50°30'26.99\"N 000°42'56.58\"W ", layers.getBounds().getBottomRight().toString());
+    assertEquals("correct location", " 50\u00B051'17.63\"N 001\u00B020'32.10\"W ", layers.getBounds().getCentre().toString());
+    assertEquals("correct location", " 51\u00B012'08.27\"N 001\u00B058'07.62\"W ", layers.getBounds().getTopLeft().toString());
+    assertEquals("correct location", " 50\u00B030'26.99\"N 000\u00B042'56.58\"W ", layers.getBounds().getBottomRight().toString());
     
     // ok, now put the track in the layers
     layers.addThisLayer(track);
-    assertEquals("correct location", " 10°00'00.00\"N 020°00'00.00\"E ", layers.getBounds().getCentre().toString());
-    assertEquals("correct location", " 10°00'42.43\"N 019°59'16.92\"E ", layers.getBounds().getTopLeft().toString());
-    assertEquals("correct location", " 09°59'17.57\"N 020°00'43.08\"E ", layers.getBounds().getBottomRight().toString());
+    assertEquals("correct location", " 10\u00B000'00.00\"N 020\u00B000'00.00\"E ", layers.getBounds().getCentre().toString());
+    assertEquals("correct location", " 10\u00B000'42.43\"N 019\u00B059'16.92\"E ", layers.getBounds().getTopLeft().toString());
+    assertEquals("correct location", " 09\u00B059'17.57\"N 020\u00B000'43.08\"E ", layers.getBounds().getBottomRight().toString());
     
   }
 
