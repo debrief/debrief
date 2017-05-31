@@ -57,7 +57,7 @@ public class TimeBar implements IEventEntry
   public TimeBar(final WatchableList bar)
   {
     // _start.setTime(bar.getStartDTG().getDate());
-    _start.setTimeInMillis(bar.getStartDTG().getMicros());
+    _start.setTime(bar.getStartDTG().getDate());
     _end.setTime(bar.getEndDTG().getDate());
     _eventName = bar.getName();
     _source = bar;
@@ -117,6 +117,7 @@ public class TimeBar implements IEventEntry
   {
     _source = sensorOrSolution;
     _eventName = sensorOrSolution.getName();
+    _color = sensorOrSolution.getColor();
     final HiResDate startDate = sensorOrSolution.getStartDTG();
     if (startDate != null)
       _start.setTime(startDate.getDate());
@@ -167,7 +168,7 @@ public class TimeBar implements IEventEntry
     _children.add(new TimeBar(segments));
 
     BaseLayer theSensors = track.getSensors();
-    if (theSensors != null  && theSensors.size() > 0)
+    if (theSensors != null && theSensors.size() > 0)
     {
       _children.add(new TimeBar(theSensors));
     }
