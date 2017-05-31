@@ -204,7 +204,9 @@ import java.util.Vector;
 
 import MWC.GUI.Layer.BackgroundLayer;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * Plain implementation of layer manager. In addition to managing a set of layers this class
@@ -399,6 +401,26 @@ public class Layers implements Serializable, Plottable, PlottablesType
     if (res == null)
     {
       res = getDebriefOrigin();
+    }
+    else if(res.getHeight() == 0 && res.getWidth() == 0)
+    {
+      // ok, expand it, so we've got some coverage
+      final double diagExtendNm = 1d;
+      final WorldLocation centre = res.getCentreAtSurface();
+      
+      // create the new corners
+      final WorldLocation newTL =
+           centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(315),
+              new WorldDistance(diagExtendNm, WorldDistance.NM)
+                  .getValueIn(WorldDistance.DEGS), 0));
+      final WorldLocation newBR =
+           centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(135),
+              new WorldDistance(diagExtendNm, WorldDistance.NM)
+                  .getValueIn(WorldDistance.DEGS), 0));
+      
+      // and extend the area to include the new corners
+      res.extend(newTL);
+      res.extend(newBR);
     }
 
     return res;
