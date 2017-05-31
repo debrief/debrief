@@ -167,6 +167,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SHOW_ZONES = "SHOW_ZONES";
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
+  private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
 
   /*
    * Undo and redo actions
@@ -263,6 +264,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Action _showZones;
 
   /**
+   * flag indicating whether we should show cross-hairs
+   * 
+   */
+  Action _showCrossHairs;
+
+  /**
    * flag indicating whether we should only show stacked dots for visible fixes
    */
   Action _onlyVisible;
@@ -335,6 +342,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Action _precisionTwo;
   private Action _precisionThree;
   private final PropertyChangeListener _infillListener;
+
+  /**
+   * text label associated with the cross-hair marker
+   * 
+   */
+  private XYTextAnnotation crossHairAnnotation;
 
   /**
    * 
@@ -443,6 +456,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // toolBarManager.add(redoAction);
     toolBarManager.add(_autoResize);
     toolBarManager.add(_onlyVisible);
+    toolBarManager.add(_showCrossHairs);
     toolBarManager.add(_selectOnClick);
     toolBarManager.add(_showLinePlot);
     toolBarManager.add(_showDotPlot);
@@ -868,13 +882,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final TrackSegment cSeg = (TrackSegment) nextSeg;
       final TimePeriod legPeriod =
           new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
-      
+
       // remember that segment, it may prove useful to us
       if (cSeg instanceof RelativeTMASegment)
       {
         RelativeTMASegment seg = (RelativeTMASegment) cSeg;
         otherSegment = seg;
-      }      
+      }
 
       if (zonePeriod.overlaps(legPeriod))
       {
@@ -1551,8 +1565,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     lineRend.setPaint(Color.DARK_GRAY);
     _linePlot.setRenderer(lineRend);
 
-    _linePlot.setDomainCrosshairVisible(true);
-    _linePlot.setRangeCrosshairVisible(true);
+    _linePlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
+    _linePlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
     _linePlot.setDomainCrosshairPaint(Color.GRAY);
     _linePlot.setRangeCrosshairPaint(Color.GRAY);
     _linePlot.setDomainCrosshairStroke(new BasicStroke(3.0f));
@@ -1633,14 +1647,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverviewPlot.setDomainGridlineStroke(new BasicStroke(2));
 
     // and the plot object to display the cross hair value
-    final XYTextAnnotation annot = new XYTextAnnotation("-----", 2, 2);
-    annot.setTextAnchor(TextAnchor.TOP_LEFT);
+    crossHairAnnotation = new XYTextAnnotation("-----", 2, 2);
+    crossHairAnnotation.setTextAnchor(TextAnchor.TOP_LEFT);
 
     Font annotationFont = new Font("Courier", Font.BOLD, 16);
-    annot.setFont(annotationFont);
-    annot.setPaint(Color.DARK_GRAY);
-    annot.setBackgroundPaint(Color.white);
-    _linePlot.addAnnotation(annot);
+    crossHairAnnotation.setFont(annotationFont);
+    crossHairAnnotation.setPaint(Color.DARK_GRAY);
+    crossHairAnnotation.setBackgroundPaint(Color.white);
+    if (_showCrossHairs.isChecked())
+    {
+      _linePlot.addAnnotation(crossHairAnnotation);
+    }
 
     // give them a high contrast backdrop
     _dotPlot.setBackgroundPaint(Color.white);
@@ -1680,14 +1697,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final double xVal = _linePlot.getRangeAxis().getLowerBound();
         final double yVal = _linePlot.getDomainAxis().getUpperBound();
         boolean annotChanged = false;
-        if (annot.getX() != yVal)
+        if (crossHairAnnotation.getX() != yVal)
         {
-          annot.setX(yVal);
+          crossHairAnnotation.setX(yVal);
           annotChanged = true;
         }
-        if (annot.getY() != xVal)
+        if (crossHairAnnotation.getY() != xVal)
         {
-          annot.setY(xVal);
+          crossHairAnnotation.setY(xVal);
           annotChanged = true;
         }
         // and write the text
@@ -1700,15 +1717,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         _df.setTimeZone(TimeZone.getTimeZone("GMT"));
         final String dateVal = _df.format(newDate);
         final String theMessage = " [" + dateVal + "," + numA + "]";
-        if (!theMessage.equals(annot.getText()))
+        if (!theMessage.equals(crossHairAnnotation.getText()))
         {
-          annot.setText(theMessage);
+          crossHairAnnotation.setText(theMessage);
           annotChanged = true;
         }
-        if (annotChanged)
+        if (annotChanged && _showCrossHairs.isChecked())
         {
-          _linePlot.removeAnnotation(annot);
-          _linePlot.addAnnotation(annot);
+          _linePlot.removeAnnotation(crossHairAnnotation);
+          _linePlot.addAnnotation(crossHairAnnotation);
         }
 
         // ok, do we also have a selection event pending
@@ -1780,6 +1797,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected void fillLocalPullDown(final IMenuManager manager)
   {
+    manager.add(_showCrossHairs);
     manager.add(_onlyVisible);
     manager.add(_selectOnClick);
     // and the help link
@@ -2073,6 +2091,36 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         .setToolTipText("Reveal the respective TMA Fix when an error clicked on plot");
     _selectOnClick.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/outline.png"));
+
+    _showCrossHairs =
+        new Action("Show/hide crosshair marker", IAction.AS_CHECK_BOX)
+        {
+
+          @Override
+          public void run()
+          {
+            super.run();
+
+            _linePlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
+            _linePlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
+
+            if (_showCrossHairs.isChecked())
+            {
+              // ok, show it
+              _linePlot.removeAnnotation(crossHairAnnotation);
+              _linePlot.addAnnotation(crossHairAnnotation);
+            }
+            else
+            {
+              _linePlot.removeAnnotation(crossHairAnnotation);
+            }
+          }
+        };
+    _showCrossHairs.setText("Show cross-hair marker");
+    _showCrossHairs.setChecked(true);
+    _showCrossHairs.setToolTipText("Show/hide cross-hair marker");
+    _showCrossHairs.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/fix.png"));
 
   }
 
@@ -2615,6 +2663,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final Boolean showZones = memento.getBoolean(SHOW_ZONES);
       final Boolean doSelectOnClick = memento.getBoolean(SELECT_ON_CLICK);
       final Boolean showOnlyVis = memento.getBoolean(SHOW_ONLY_VIS);
+      final Boolean showCrosshairs = memento.getBoolean(SHOW_CROSSHAIRS);
       if (showLineVal != null)
       {
         _showLinePlot.setChecked(showLineVal);
@@ -2639,6 +2688,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         _showTargetOverview.setChecked(showOverview);
       }
+      if (showCrosshairs != null)
+      {
+        _showCrossHairs.setChecked(showCrosshairs);
+      }
     }
   }
 
@@ -2654,6 +2707,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     memento.putBoolean(SHOW_ZONES, _showZones.isChecked());
     memento.putBoolean(SELECT_ON_CLICK, _selectOnClick.isChecked());
     memento.putBoolean(SHOW_ONLY_VIS, _onlyVisible.isChecked());
+    memento.putBoolean(SHOW_CROSSHAIRS, _showCrossHairs.isChecked());
+
   }
 
   private void showFixAtThisTime(final Date newDate)
@@ -2728,8 +2783,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private void clearZoneCharts(final boolean osChanged, final boolean tgtChanged,
-      final boolean clearTgtData)
+  private void clearZoneCharts(final boolean osChanged,
+      final boolean tgtChanged, final boolean clearTgtData)
   {
     if (osChanged)
     {
