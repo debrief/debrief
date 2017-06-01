@@ -51,22 +51,12 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
   /** the provider for the time offset
    *
    */
-  private OffsetProvider _provider = null;
+  private final OffsetProvider _provider;
 
-  /**
-   * Constructs a new data pair.
-   *
-   * @param period  the time period.
-   * @param value  the value associated with the time period.
+  /** whether the symbol is visible in the parent object for
+   * this data item
    */
-  private ColouredDataItem(final RegularTimePeriod period,
-                          final double value,
-                          final Color myColor,
-                          final boolean connectToPrevious) {
-    super(period, value);
-    _myColor = myColor;
-    _connectToPrevious = connectToPrevious;
-  }
+  private final boolean _parentSymVisible;
 
   /**
    * Constructs a new data pair.
@@ -76,17 +66,25 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
    * @param myColor           the color for this point
    * @param connectToPrevious whether to connect to the previous point (used when we're passing through zero)
    * @param provider          If we're plotting relative times, this is an object which can supply the zero time to use
+   * @param parentSymVisible TODO
    * @see ColouredDataItem#ColouredDataItem(TimePeriod period,double value,Color myColor,boolean connectToPrevious)
    */
   public ColouredDataItem(final RegularTimePeriod period,
                           final double value,
                           final Color myColor,
                           final boolean connectToPrevious,
-                          final OffsetProvider provider) {
-    this(period, value, myColor, connectToPrevious);
+                          final OffsetProvider provider, boolean parentSymVisible) {
+    super(period, value);
+    _myColor = myColor;
+    _connectToPrevious = connectToPrevious;
     _provider = provider;
+    _parentSymVisible = parentSymVisible;
   }
 
+  public boolean isParentSymVisible()
+  {
+    return _parentSymVisible;
+  }
 
 
   /** get the color for this point

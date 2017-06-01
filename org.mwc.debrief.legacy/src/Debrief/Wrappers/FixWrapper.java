@@ -286,7 +286,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  * The fix wrapper has the responsibility for the GUI and data aspects of the fix, tying the two
  * together.
  */
-public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
+public class FixWrapper extends PlainWrapper implements Watchable,
     CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
     CreateEditorForParent
 {
@@ -319,12 +319,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
    */
   private boolean _showLabel;
 
-  /**
-   * the track we are a part of (note, we're making it static so that when we serialise it we don't
-   * store a full copy of the parent track and all it's other fixes. We don't need to store it since
-   * it gets set when we add it to a new parent layer
-   */
-  private transient TrackWrapper _trackWrapper;
+
   /**
    * the font to draw this track in.
    */
@@ -372,6 +367,18 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
    * 
    */
   private boolean _userLabelSupplied = false;
+
+  /** the segment we're inside
+   * 
+   */
+  private TrackSegment _parentSegment;
+  
+  /**
+   * the track we are a part of (note, we're making it static so that when we serialise it we don't
+   * store a full copy of the parent track and all it's other fixes. We don't need to store it since
+   * it gets set when we add it to a new parent layer
+   */
+  private transient TrackWrapper _trackWrapper;
 
   /**
    * take a static reference for the list of property descriptors for this object, since we
@@ -1194,7 +1201,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
                       MyDateFormatPropertyEditor.class, FORMAT),
                   displayLongProp("LabelLocation", "Label location",
                       "the label location",
-                      MWC.GUI.Properties.LocationPropertyEditor.class, FORMAT)};
+                      LocationPropertyEditor.class, FORMAT)};
         }
       }
       catch (final IntrospectionException e)
@@ -1600,5 +1607,16 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
     return res;
   }
+
+  public void setSegment(TrackSegment trackSegment)
+  {
+    _parentSegment = trackSegment;
+  }
+  
+  public TrackSegment getSegment()
+  {
+    return _parentSegment;
+  }
+  
 
 }
