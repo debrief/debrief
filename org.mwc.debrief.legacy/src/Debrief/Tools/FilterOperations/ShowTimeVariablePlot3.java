@@ -933,7 +933,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                   connectToPrevious =
                       insertWrappingPoints(lastSecondaryValue, thisVal,
                           lastTime, currentTime, thisColor, thisSeries,
-                          connectToPrevious, provider, theAdder, myOperation._clipMax);
+                          connectToPrevious, provider, theAdder,
+                          myOperation._clipMax);
                 }
                 // ////////////////////////////////////////////////
                 // THANK YOU, WE'RE PLEASED TO RETURN YOU TO
@@ -1048,8 +1049,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               {
                 // add extra points, if we need to
                 connectToPrevious =
-                    insertWrappingPoints(lastSecondaryValue, thisVal,
-                        lastTime, currentTime, thisColor, thisSeries, connectToPrevious,
+                    insertWrappingPoints(lastSecondaryValue, thisVal, lastTime,
+                        currentTime, thisColor, thisSeries, connectToPrevious,
                         provider, theAdder, myOperation._clipMax);
               }
 
@@ -1069,15 +1070,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
                     final TrackSegment prevSeg = prevFix.getSegment();
                     // is it from a different segment?
-                    if (!thisSeg.equals(prevSeg))
+                    if (!thisSeg.equals(prevSeg)
+                        && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
                     {
-                      // was it dynamic, but we're not?
-                      if (prevSeg instanceof DynamicInfillSegment
-                          && !(thisSeg instanceof DynamicInfillSegment))
-                      {
-                        // ok, use the previous color
-                        thisColor = prevFix.getColor();
-                      }
+                      // ok, use the previous color
+                      thisColor = prevFix.getColor();
                     }
                   }
                 }
@@ -1131,6 +1128,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   /**
    * method to decide if we need to insert extra (non-joined) points to reflect fact that data wraps
    * through 360 degs
+   * 
    * @param lastSecondaryValue
    *          the last value calculated
    * @param thisVal
@@ -1150,13 +1148,12 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    * 
    * @return whether the next line segment should connect to this one
    */
-  private static boolean insertWrappingPoints(
-      final double lastSecondaryValue, final double thisVal,
-      final HiResDate lastTime, final HiResDate currentTime,
-      final Color thisColor, final Series thisSeries,
-      final boolean connectToPrevious, final ColouredDataItem.OffsetProvider provider,
-      final VersatileSeriesAdder theAdder,
-      final double clipMax)
+  private static boolean insertWrappingPoints(final double lastSecondaryValue,
+      final double thisVal, final HiResDate lastTime,
+      final HiResDate currentTime, final Color thisColor,
+      final Series thisSeries, final boolean connectToPrevious,
+      final ColouredDataItem.OffsetProvider provider,
+      final VersatileSeriesAdder theAdder, final double clipMax)
   {
     boolean connectToPrev = connectToPrevious;
     // is this the first point?
