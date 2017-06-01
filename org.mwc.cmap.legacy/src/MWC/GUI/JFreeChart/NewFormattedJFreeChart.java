@@ -227,11 +227,29 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 * @param title
 	 *          the new title to use
 	 */
-	public Font getTitleFont()
+	public Font getLegendFont()
 	{
-		return this.getTitle().getFont();
+	  return this.getLegend().getItemFont();
+		
 	}
 
+  public void setLegendFont(final Font legendFont)
+  {
+    this.getLegend().setItemFont(legendFont);
+  }
+
+  /**
+   * the title of this plot
+   * 
+   * @param title
+   *          the new title to use
+   */
+  public Font getTitleFont()
+  {
+    return this.getTitle().getFont();
+  }
+	
+	
 	public Font getTickFont()
 	{
 		return this.getXYPlot().getRangeAxis().getTickLabelFont();
@@ -619,6 +637,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 								EditorType.FORMAT),
 						displayProp("AxisFont", "Axis font", "font to use for the plot axis titles",
 								EditorType.FORMAT),
+		            displayProp("LegendFont", "Legend font", "font to use for the legend",
+		                EditorType.FORMAT),
 						displayProp("TickFont", "Tick font", "font to use for the plot axis tick mark labels",
 								EditorType.FORMAT),
 						displayProp("ShowLegend", "Show legend", "whether to show legend",
