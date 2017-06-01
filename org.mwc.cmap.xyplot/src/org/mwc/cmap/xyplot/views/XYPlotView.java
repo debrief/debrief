@@ -1082,12 +1082,12 @@ public class XYPlotView extends ViewPart
     manager.add(_fitToWindow);
     manager.add(_switchAxes);
     manager.add(_hideCrosshairs);
+    manager.add(_showSymbols);
     manager.add(_growPlot);
     manager.add(new Separator());
     manager.add(_exportToWMF);
     manager.add(_exportToClipboard);
     manager.add(_editMyProperties);
-    manager.add(_showSymbols);
   }
 
   void fillContextMenu(final IMenuManager manager)
