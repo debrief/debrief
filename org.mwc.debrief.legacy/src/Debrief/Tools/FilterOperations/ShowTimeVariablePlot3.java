@@ -597,7 +597,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         public void add(final Series thisSeries, final HiResDate theTime,
             final double data, final Color thisColor,
             final boolean connectToPrevious,
-            final ColouredDataItem.OffsetProvider provider1)
+            final ColouredDataItem.OffsetProvider provider1,
+            boolean parentIsVisible)
         {
           // HI-RES NOT DONE - FixedMillisecond should be converted
           // some-how to
@@ -605,7 +606,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
           final TimeSeriesDataItem newItem =
               new ColouredDataItem(new FixedMillisecond((long) (theTime
                   .getMicros() / 1000d)), data, thisColor, connectToPrevious,
-                  provider1);
+                  provider1, parentIsVisible);
 
           // To change body of implemented methods use File | Settings
           // | File
@@ -634,14 +635,16 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         public void add(final Series thisSeries, final HiResDate theTime,
             final double data, final Color thisColor,
             final boolean connectToPrevious,
-            final ColouredDataItem.OffsetProvider provider1)
+            final ColouredDataItem.OffsetProvider provider1,
+            boolean parentIsVisible)
         {
           // HI-RES NOT DONE - FixedMillisecond should be converted
           // some-how to
           // FixedMicroSecond
           final ColouredDataItem newItem =
               new ColouredDataItem(new FixedMillisecond(theTime.getDate()
-                  .getTime()), data, thisColor, connectToPrevious, provider1);
+                  .getTime()), data, thisColor, connectToPrevious, provider1,
+                  parentIsVisible);
 
           // To change body of implemented methods use File | Settings
           // | File
@@ -1252,14 +1255,14 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
           // indicate whether to join the point to it's previous
           // one.
           theAdder.add(thisSeries, firstDate, firstCourse, thisColor, true,
-              provider);
+              provider, false);
 
           // now that we use the inverse of the firstPoint value
           // to
           // indicate whether to join the point to it's previous
           // one.
           theAdder.add(thisSeries, secondDate, secondCourse, thisColor, false,
-              provider);
+              provider, false);
 
           // right, we're about to cross zero degrees, don't connect
           // to
@@ -1404,10 +1407,12 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
      *          whether to connect to the previous one
      * @param provider
      *          something to do something with.
+     * @param parentIsVisible
+     *          TODO
      */
     void add(Series thisSeries, HiResDate theTime, double data,
         Color thisColor, boolean connectToPrevious,
-        ColouredDataItem.OffsetProvider provider);
+        ColouredDataItem.OffsetProvider provider, boolean parentIsVisible);
 
     void addSeries(AbstractSeriesDataset collection, Series thisSeries,
         Color defaultColor);
@@ -1453,9 +1458,20 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     }
     else
     {
+      final boolean parentIsVis;
+      if (thisSecondary instanceof FixWrapper)
+      {
+        FixWrapper fw = (FixWrapper) thisSecondary;
+        parentIsVis = fw.getSymbolShowing();
+      }
+      else
+      {
+        parentIsVis = false;
+      }
+
       // yes, we have data - create the data point
       theAdder.add(thisSeries, currentTime, data, thisColor, connectToPrev,
-          provider);
+          provider, parentIsVis);
 
       // right, we've displayed a valid point, allow the next one to
       // connect to

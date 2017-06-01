@@ -415,7 +415,7 @@ public final class StackedDotHelper
 
           final ColouredDataItem mBearing =
               new ColouredDataItem(thisMilli, measuredBearing, thisColor,
-                  false, null);
+                  false, null, true);
 
           // and add them to the series
           measuredValues.addOrUpdate(mBearing);
@@ -428,7 +428,7 @@ public final class StackedDotHelper
 
             final ColouredDataItem amBearing =
                 new ColouredDataItem(thisMilli, ambigBearing, thisColor, false,
-                    null);
+                    null, true);
             ambigValues.addOrUpdate(amBearing);
           }
 
@@ -446,7 +446,7 @@ public final class StackedDotHelper
                       calculatedBearing);
               final ColouredDataItem newError =
                   new ColouredDataItem(thisMilli, thisError, thisColor, false,
-                      null);
+                      null, true);
 
               if (flipAxes)
                 if (calculatedBearing > 180)
@@ -454,7 +454,7 @@ public final class StackedDotHelper
 
               final ColouredDataItem cBearing =
                   new ColouredDataItem(thisMilli, calculatedBearing, calcColor,
-                      true, null);
+                      true, null, true);
 
               errorValues.addOrUpdate(newError);
               calculatedValues.addOrUpdate(cBearing);
@@ -544,7 +544,7 @@ public final class StackedDotHelper
                       .getTime());
               final ColouredDataItem crseBearing =
                   new ColouredDataItem(thisMilli, ownshipCourse,
-                      loc.getColor(), true, null);
+                      loc.getColor(), true, null, true);
               osCourseValues.addOrUpdate(crseBearing);
             }
 
@@ -574,7 +574,7 @@ public final class StackedDotHelper
 
             final ColouredDataItem crseBearing =
                 new ColouredDataItem(thisMilli, ownshipCourse, fw.getColor(),
-                    true, null);
+                    true, null, true);
             osCourseValues.addOrUpdate(crseBearing);
           }
           else
@@ -671,11 +671,11 @@ public final class StackedDotHelper
 
                 final ColouredDataItem crseBearingItem =
                     new ColouredDataItem(thisMilli, tgtCourse, courseColor,
-                        isInfill, null);
+                        isInfill, null, true);
                 tgtCourseValues.addOrUpdate(crseBearingItem);
                 final ColouredDataItem tgtSpeedItem =
                     new ColouredDataItem(thisMilli, tgtSpeed, speedColor,
-                        isInfill, null);
+                        isInfill, null, true);
                 tgtSpeedValues.addOrUpdate(tgtSpeedItem);
               }
             }
@@ -1030,7 +1030,7 @@ public final class StackedDotHelper
 
         final ColouredDataItem mFreq =
             new ColouredDataItem(thisMilli, measuredFreq, thisColor, false,
-                null);
+                null, true);
 
         // final ColouredDataItem corrFreq = new ColouredDataItem(
         // new FixedMillisecond(currentTime.getDate().getTime()),
@@ -1046,7 +1046,7 @@ public final class StackedDotHelper
 
           final ColouredDataItem corrFreq =
               new ColouredDataItem(thisMilli, correctedFreq, thisColor, true,
-                  null);
+                  null, true);
 
           // did we get a base frequency? We may have a track
           // with a section of data that doesn't have frequency, you see.
@@ -1056,13 +1056,14 @@ public final class StackedDotHelper
             final double thisError =
                 thisD.calculateFreqError(measuredFreq, predictedFreq);
             final ColouredDataItem bFreq =
-                new ColouredDataItem(thisMilli, baseFreq, thisColor, true, null);
+                new ColouredDataItem(thisMilli, baseFreq, thisColor, true,
+                    null, true);
             final ColouredDataItem pFreq =
                 new ColouredDataItem(thisMilli, predictedFreq, calcColor,
-                    false, null);
+                    false, null, true);
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
-                    null);
+                    null, true);
             baseValues.addOrUpdate(bFreq);
             predictedValues.addOrUpdate(pFreq);
             errorValues.addOrUpdate(eFreq);
