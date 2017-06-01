@@ -931,10 +931,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                 {
                   // add extra points, if we need to
                   connectToPrevious =
-                      insertWrappingPoints(theCalculation, lastSecondaryValue,
-                          thisVal, lastTime, currentTime, thisColor,
-                          thisSeries, connectToPrevious, provider, theAdder,
-                          myOperation._clipMax);
+                      insertWrappingPoints(lastSecondaryValue, thisVal,
+                          lastTime, currentTime, thisColor, thisSeries,
+                          connectToPrevious, provider, theAdder, myOperation._clipMax);
                 }
                 // ////////////////////////////////////////////////
                 // THANK YOU, WE'RE PLEASED TO RETURN YOU TO
@@ -951,15 +950,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
                     final TrackSegment prevSeg = prevFix.getSegment();
                     // is it from a different segment?
-                    if (!thisSeg.equals(prevSeg))
+                    if (!thisSeg.equals(prevSeg)
+                        && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
                     {
-                      // was it dynamic, but we're not?
-                      if (prevSeg instanceof DynamicInfillSegment
-                          && !(thisSeg instanceof DynamicInfillSegment))
-                      {
-                        // ok, use the previous color
-                        thisColor = prevFix.getColor();
-                      }
+                      // ok, use the previous color
+                      thisColor = prevFix.getColor();
                     }
                   }
                 }
@@ -1053,10 +1048,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               {
                 // add extra points, if we need to
                 connectToPrevious =
-                    insertWrappingPoints(theCalculation, lastSecondaryValue,
-                        thisVal, lastTime, currentTime, thisColor, thisSeries,
-                        connectToPrevious, provider, theAdder,
-                        myOperation._clipMax);
+                    insertWrappingPoints(lastSecondaryValue, thisVal,
+                        lastTime, currentTime, thisColor, thisSeries, connectToPrevious,
+                        provider, theAdder, myOperation._clipMax);
               }
 
               // is this fix visible?
@@ -1137,9 +1131,6 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   /**
    * method to decide if we need to insert extra (non-joined) points to reflect fact that data wraps
    * through 360 degs
-   * 
-   * @param theCalculation
-   * 
    * @param lastSecondaryValue
    *          the last value calculated
    * @param thisVal
@@ -1152,19 +1143,20 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    *          the colour of this data point
    * @param thisSeries
    *          the data series we add our new point(s) to
-   * @param connectToPrev
-   *          whether the next data point should connect to these
    * @param theAdder
    * @param clipMax
+   * @param connectToPrev
+   *          whether the next data point should connect to these
+   * 
    * @return whether the next line segment should connect to this one
    */
   private static boolean insertWrappingPoints(
-      final toteCalculation theCalculation, final double lastSecondaryValue,
-      final double thisVal, final HiResDate lastTime,
-      final HiResDate currentTime, final Color thisColor,
-      final Series thisSeries, final boolean connectToPrevious,
-      final ColouredDataItem.OffsetProvider provider,
-      final VersatileSeriesAdder theAdder, final double clipMax)
+      final double lastSecondaryValue, final double thisVal,
+      final HiResDate lastTime, final HiResDate currentTime,
+      final Color thisColor, final Series thisSeries,
+      final boolean connectToPrevious, final ColouredDataItem.OffsetProvider provider,
+      final VersatileSeriesAdder theAdder,
+      final double clipMax)
   {
     boolean connectToPrev = connectToPrevious;
     // is this the first point?

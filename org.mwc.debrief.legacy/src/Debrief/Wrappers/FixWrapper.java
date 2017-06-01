@@ -286,7 +286,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  * The fix wrapper has the responsibility for the GUI and data aspects of the fix, tying the two
  * together.
  */
-public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
+public class FixWrapper extends PlainWrapper implements Watchable,
     CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
     CreateEditorForParent
 {
@@ -1201,7 +1201,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
                       MyDateFormatPropertyEditor.class, FORMAT),
                   displayLongProp("LabelLocation", "Label location",
                       "the label location",
-                      MWC.GUI.Properties.LocationPropertyEditor.class, FORMAT)};
+                      LocationPropertyEditor.class, FORMAT)};
         }
       }
       catch (final IntrospectionException e)
