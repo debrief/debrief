@@ -411,6 +411,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	public void addFixSilent(final FixWrapper fix)
 	{
 		super.add(fix);
+		
+		// store this segment in the fix
+		fix.setSegment(this);
 
 		// and register the listener (if we know our track)
 		if (_myTrack != null)
@@ -421,8 +424,21 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					_myTrack.getLocationListener());
 		}
 	}
+	
+	
 
-	/**
+	@Override
+  public void removeElement(Editable p)
+  {
+	  // disconnect this fix from us
+	  FixWrapper fw = (FixWrapper) p;
+	  fw.setSegment(null);
+
+	  // and let the list do its stuff
+    super.removeElement(p);
+  }
+
+  /**
 	 * add the elements in the indicated layer to us.
 	 * 
 	 */
