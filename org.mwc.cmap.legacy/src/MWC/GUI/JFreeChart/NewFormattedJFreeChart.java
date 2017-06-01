@@ -42,196 +42,186 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
 /**
- * ******************************************************************* embedded
- * class for plot for which we can control some of the formatting (line width,
- * axis steps/sizes, labels
+ * ******************************************************************* embedded class for plot for
+ * which we can control some of the formatting (line width, axis steps/sizes, labels
  * *******************************************************************
  */
 public class NewFormattedJFreeChart extends JFreeChart implements
-		MWC.GUI.Editable
+    MWC.GUI.Editable
 {
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	// ////////////////////////////////////////////////
-	// member variables
-	// ////////////////////////////////////////////////
-	/**
-	 * the width of the data-line
-	 */
-	private int _dataLineWidth = 3;
+  // ////////////////////////////////////////////////
+  // member variables
+  // ////////////////////////////////////////////////
+  /**
+   * the width of the data-line
+   */
+  private int _dataLineWidth = 3;
 
-	/**
-	 * our editable details
-	 */
-	transient private Editable.EditorType _myEditor = null;
+  /**
+   * our editable details
+   */
+  transient private Editable.EditorType _myEditor = null;
 
-	/**
-	 * the interval & format of the date axis
-	 */
-	private DateAxisEditor.MWCDateTickUnitWrapper _theDateTick = new DateAxisEditor.MWCDateTickUnitWrapper(
-			DateTickUnitType.MINUTE, Calendar.MINUTE, "HH:mm");
+  /**
+   * the interval & format of the date axis
+   */
+  private DateAxisEditor.MWCDateTickUnitWrapper _theDateTick =
+      new DateAxisEditor.MWCDateTickUnitWrapper(DateTickUnitType.MINUTE,
+          Calendar.MINUTE, "HH:mm");
 
-	/**
-	 * the time offset supplier
-	 */
-	private SwitchableTimeOffsetProvider _provider = null;
+  /**
+   * the time offset supplier
+   */
+  private SwitchableTimeOffsetProvider _provider = null;
 
-	private Duration _fixedDuration;
+  private Duration _fixedDuration;
 
-	// ////////////////////////////////////////////////
-	// constructor
-	// ////////////////////////////////////////////////
+  // ////////////////////////////////////////////////
+  // constructor
+  // ////////////////////////////////////////////////
 
-	/**
-	 * Constructs a chart.
-	 * <P>
-	 * Note that the ChartFactory class contains static methods that will return a
-	 * ready-made chart.
-	 * 
-	 * @param title
-	 *          the main chart title.
-	 * @param titleFont
-	 *          the font for displaying the chart title.
-	 * @param plot
-	 *          controller of the visual representation of the data.
-	 * @param createLegend
-	 *          a flag indicating whether or not a legend should be created for
-	 *          the chart.
-	 */
-	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot,
-			final boolean createLegend)
-	{
-		super(title, titleFont, plot, createLegend);
-		
-		_fixedDuration = new Duration(3, Duration.HOURS);
+  /**
+   * Constructs a chart.
+   * <P>
+   * Note that the ChartFactory class contains static methods that will return a ready-made chart.
+   * 
+   * @param title
+   *          the main chart title.
+   * @param titleFont
+   *          the font for displaying the chart title.
+   * @param plot
+   *          controller of the visual representation of the data.
+   * @param createLegend
+   *          a flag indicating whether or not a legend should be created for the chart.
+   */
+  public NewFormattedJFreeChart(final String title, final Font titleFont,
+      final Plot plot, final boolean createLegend)
+  {
+    super(title, titleFont, plot, createLegend);
 
-		// update the line width's we're using
-		this.setDataLineWidth(_dataLineWidth);
-		
-		// let's not show symbols by default, eh?
-		this.setShowSymbols(false);
-	}
+    _fixedDuration = new Duration(3, Duration.HOURS);
 
-	/**
-	 * Constructs a chart.
-	 * <P>
-	 * Note that the ChartFactory class contains static methods that will return a
-	 * ready-made chart.
-	 * 
-	 * @param title
-	 *          the main chart title.
-	 * @param titleFont
-	 *          the font for displaying the chart title.
-	 * @param plot
-	 *          controller of the visual representation of the data.
-	 * @param createLegend
-	 *          a flag indicating whether or not a legend should be created for
-	 *          the chart.
-	 * @param stepper
-	 *          the provider of the time offset
-	 */
-	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot,
-			final boolean createLegend, final StepperListener.StepperController stepper)
-	{
+    // update the line width's we're using
+    this.setDataLineWidth(_dataLineWidth);
 
-		this(title, titleFont, plot, createLegend);
+    // let's not show symbols by default, eh?
+    this.setShowSymbols(false);
+  }
 
-		_provider = new SwitchableTimeOffsetProvider(stepper);
-	}
+  /**
+   * Constructs a chart.
+   * <P>
+   * Note that the ChartFactory class contains static methods that will return a ready-made chart.
+   * 
+   * @param title
+   *          the main chart title.
+   * @param titleFont
+   *          the font for displaying the chart title.
+   * @param plot
+   *          controller of the visual representation of the data.
+   * @param createLegend
+   *          a flag indicating whether or not a legend should be created for the chart.
+   * @param stepper
+   *          the provider of the time offset
+   */
+  public NewFormattedJFreeChart(final String title, final Font titleFont,
+      final Plot plot, final boolean createLegend,
+      final StepperListener.StepperController stepper)
+  {
 
-	// ////////////////////////////////////////////////
-	// member methods
-	// ////////////////////////////////////////////////
+    this(title, titleFont, plot, createLegend);
 
-	/**
-	 * the width of the data line
-	 * 
-	 * @return width in pixels
-	 */
-	public int getDataLineWidth()
-	{
-		return _dataLineWidth;
-	}
+    _provider = new SwitchableTimeOffsetProvider(stepper);
+  }
 
-	/**
-	 * set the width of the data line
-	 * 
-	 * @param dataLineWidth
-	 *          width in pixels
-	 */
-	public void setDataLineWidth(final int dataLineWidth)
-	{
-		this._dataLineWidth = dataLineWidth;
+  // ////////////////////////////////////////////////
+  // member methods
+  // ////////////////////////////////////////////////
 
-		// and update the data
-		final XYPlot thePlot = (XYPlot) getPlot();
-		final Stroke[] theStrokes = new Stroke[]
-		{ new BasicStroke(_dataLineWidth) };
-		for (int i = 0; i < theStrokes.length; i++)
-		{
-			final Stroke stroke = theStrokes[i];
-			thePlot.getRenderer().setSeriesStroke(i, stroke);
-		}
-	}
+  /**
+   * the width of the data line
+   * 
+   * @return width in pixels
+   */
+  public int getDataLineWidth()
+  {
+    return _dataLineWidth;
+  }
 
-	/**
-	 * Returns the Stroke used to draw any shapes for a series.
-	 * 
-	 * @param index
-	 *          the series (zero-based index).
-	 * @return the Stroke used to draw any shapes for a series.
-	 */
-	public Stroke getSeriesStroke(final int index)
-	{
-		final XYPlot plot = (XYPlot) getPlot();
-		Stroke res = plot.getRenderer().getSeriesStroke(index);
+  /**
+   * set the width of the data line
+   * 
+   * @param dataLineWidth
+   *          width in pixels
+   */
+  public void setDataLineWidth(final int dataLineWidth)
+  {
+    this._dataLineWidth = dataLineWidth;
 
-		res = new BasicStroke(_dataLineWidth);
+    // and update the data
+    final XYPlot thePlot = (XYPlot) getPlot();
+    final Stroke[] theStrokes = new Stroke[]
+    {new BasicStroke(_dataLineWidth)};
+    for (int i = 0; i < theStrokes.length; i++)
+    {
+      final Stroke stroke = theStrokes[i];
+      thePlot.getRenderer().setSeriesStroke(i, stroke);
+    }
+  }
 
-		return res;
-	}
+  /**
+   * Returns the Stroke used to draw any shapes for a series.
+   * 
+   * @param index
+   *          the series (zero-based index).
+   * @return the Stroke used to draw any shapes for a series.
+   */
+  public Stroke getSeriesStroke(final int index)
+  {
+    final XYPlot plot = (XYPlot) getPlot();
+    Stroke res = plot.getRenderer().getSeriesStroke(index);
 
-	/**
-	 * the title of this plot
-	 * 
-	 * @return
-	 */
-	public String getTitleText()
-	{
-		return this.getTitle().getText();
-	}
+    res = new BasicStroke(_dataLineWidth);
 
-	public void setTitleText(final String text)
-	{
-		this.getTitle().setText(text);
-	}
+    return res;
+  }
 
-	/**
-	 * the title of this plot
-	 * 
-	 * @param title
-	 *          the new title to use
-	 */
-	public void setTitleFont(final Font titleFont)
-	{
-		this.getTitle().setFont(titleFont);
-	}
+  /**
+   * the title of this plot
+   * 
+   * @return
+   */
+  public String getTitleText()
+  {
+    return this.getTitle().getText();
+  }
 
-	/**
-	 * the title of this plot
-	 * 
-	 * @param title
-	 *          the new title to use
-	 */
-	public Font getLegendFont()
-	{
-	  return this.getLegend().getItemFont();
-		
-	}
+  public void setTitleText(final String text)
+  {
+    this.getTitle().setText(text);
+  }
+
+  /**
+   * the title of this plot
+   * 
+   * @param title
+   *          the new title to use
+   */
+  public void setTitleFont(final Font titleFont)
+  {
+    this.getTitle().setFont(titleFont);
+  }
+
+  public Font getLegendFont()
+  {
+    return this.getLegend().getItemFont();
+  }
 
   public void setLegendFont(final Font legendFont)
   {
@@ -248,410 +238,418 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   {
     return this.getTitle().getFont();
   }
-	
-	
-	public Font getTickFont()
-	{
-		return this.getXYPlot().getRangeAxis().getTickLabelFont();
-	}
 
-	public void setTickFont(final Font tickFont)
-	{
-		this.getXYPlot().getRangeAxis().setTickLabelFont(tickFont);
-		this.getXYPlot().getDomainAxis().setTickLabelFont(tickFont);
-	}
+  public Font getTickFont()
+  {
+    return this.getXYPlot().getRangeAxis().getTickLabelFont();
+  }
 
-	public Font getAxisFont()
-	{
-		return this.getXYPlot().getRangeAxis().getLabelFont();
-	}
+  public void setTickFont(final Font tickFont)
+  {
+    this.getXYPlot().getRangeAxis().setTickLabelFont(tickFont);
+    this.getXYPlot().getDomainAxis().setTickLabelFont(tickFont);
+  }
 
-	public void setAxisFont(final Font axisFont)
-	{
-		this.getXYPlot().getRangeAxis().setLabelFont(axisFont);
-		this.getXYPlot().getDomainAxis().setLabelFont(axisFont);
-	}
+  public Font getAxisFont()
+  {
+    return this.getXYPlot().getRangeAxis().getLabelFont();
+  }
 
-	public void setFixedDuration(final Duration dur)
-	{
-		_fixedDuration = dur;
-		
-		// right, we've remembered the value, but if the plot is already
-		// set to display fixed duration we need to fire the data to the
-		// plot
-		if(getDisplayFixedDuration())
-		{
-			// yes, we're displaying fixed duration, remind
-			// everybody what's happening
-			setDisplayFixedDuration(true);
-		}
-	}
-	
-	public Duration getFixedDuration()
-	{
-		return _fixedDuration;
-	}
-	
-	public void setDisplayFixedDuration(final boolean val)
-	{
-		final XYPlot xp = this.getXYPlot();
-		if(xp instanceof StepperXYPlot)
-		{
-	    final StepperXYPlot	stp = (StepperXYPlot) xp;
-	    if(val)
-	    stp.setFixedDuration(_fixedDuration);
-	    else
-	    	stp.setFixedDuration(null);
-		}
-		
-		this.fireChartChanged();
-	}
-	
-	public boolean getDisplayFixedDuration()
-	{
-		boolean res = false;
-		final XYPlot xp = this.getXYPlot();
-		if(xp instanceof StepperXYPlot)
-		{
-	    final StepperXYPlot	stp = (StepperXYPlot) xp;
-	    res = (stp.getFixedDuration() != null);
-		}
-		
-		return res;
-	}
-	
-	/**
-	 * accessor to get hold of the time offset provider
-	 * 
-	 * @return
-	 */
-	public SwitchableTimeOffsetProvider getTimeOffsetProvider()
-	{
-		return _provider;
-	}
+  public void setAxisFont(final Font axisFont)
+  {
+    this.getXYPlot().getRangeAxis().setLabelFont(axisFont);
+    this.getXYPlot().getDomainAxis().setLabelFont(axisFont);
+  }
 
-	public boolean isShowSymbols()
-	{
-		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
-				.getRenderer();
-		return sx.getBaseShapesVisible();
-	}
+  public void setFixedDuration(final Duration dur)
+  {
+    _fixedDuration = dur;
 
-	public void setShowSymbols(final boolean showSymbols)
-	{
-		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
-				.getRenderer();
-		sx.setBaseShapesVisible(showSymbols);
+    // right, we've remembered the value, but if the plot is already
+    // set to display fixed duration we need to fire the data to the
+    // plot
+    if (getDisplayFixedDuration())
+    {
+      // yes, we're displaying fixed duration, remind
+      // everybody what's happening
+      setDisplayFixedDuration(true);
+    }
+  }
 
-		this.fireChartChanged();
-	}
+  public Duration getFixedDuration()
+  {
+    return _fixedDuration;
+  }
 
-	public boolean isShowLegend()
-	{
-		return getLegend() != null;
-	}
+  public void setDisplayFixedDuration(final boolean val)
+  {
+    final XYPlot xp = this.getXYPlot();
+    if (xp instanceof StepperXYPlot)
+    {
+      final StepperXYPlot stp = (StepperXYPlot) xp;
+      if (val)
+        stp.setFixedDuration(_fixedDuration);
+      else
+        stp.setFixedDuration(null);
+    }
 
-	public void setShowLegend(final boolean showLegend)
-	{
-		if (showLegend)
-		{
-			if (!isShowLegend())
-			{
-				LegendTitle legend = new LegendTitle(getPlot());
-				legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-				legend.setFrame(new LineBorder());
-				legend.setBackgroundPaint(Color.white);
-				legend.setPosition(RectangleEdge.BOTTOM);
-				addLegend(legend);
-			}
-		}
-		else
-		{
-			if (isShowLegend())
-			{
-				removeLegend();
-			}
-		}
+    this.fireChartChanged();
+  }
 
-		this.fireChartChanged();
-	}
+  public boolean getDisplayFixedDuration()
+  {
+    boolean res = false;
+    final XYPlot xp = this.getXYPlot();
+    if (xp instanceof StepperXYPlot)
+    {
+      final StepperXYPlot stp = (StepperXYPlot) xp;
+      res = (stp.getFixedDuration() != null);
+    }
 
-	public String getY_AxisTitle()
-	{
-		return getXYPlot().getRangeAxis().getLabel();
-	}
+    return res;
+  }
 
-	public void setY_AxisTitle(final String yTitle)
-	{
-		this.getXYPlot().getRangeAxis().setLabel(yTitle);
-	}
+  /**
+   * accessor to get hold of the time offset provider
+   * 
+   * @return
+   */
+  public SwitchableTimeOffsetProvider getTimeOffsetProvider()
+  {
+    return _provider;
+  }
 
-	public String getX_AxisTitle()
-	{
-		return getXYPlot().getDomainAxis().getLabel();
-	}
+  public boolean isShowSymbols()
+  {
+    final DefaultXYItemRenderer sx =
+        (DefaultXYItemRenderer) getXYPlot().getRenderer();
+    return sx.getBaseShapesVisible();
+  }
 
-	public void setX_AxisTitle(final String xTitle)
-	{
-		this.getXYPlot().getDomainAxis().setLabel(xTitle);
-	}
+  public void setShowSymbols(final boolean showSymbols)
+  {
+    final DefaultXYItemRenderer sx =
+        (DefaultXYItemRenderer) getXYPlot().getRenderer();
+    sx.setBaseShapesVisible(showSymbols);
 
-	public DateAxisEditor.MWCDateTickUnitWrapper getDateTickUnits()
-	{
-		return _theDateTick;
-	}
+    this.fireChartChanged();
+  }
 
-	public void setDateTickUnits(final DateAxisEditor.MWCDateTickUnitWrapper theDateTick)
-	{
-		final ValueAxis hd = this.getXYPlot().getDomainAxis();
+  public boolean isShowLegend()
+  {
+    return getLegend() != null;
+  }
 
-		// store the current tick
-		_theDateTick = theDateTick;
+  public void setShowLegend(final boolean showLegend)
+  {
+    if (showLegend)
+    {
+      if (!isShowLegend())
+      {
+        LegendTitle legend = new LegendTitle(getPlot());
+        legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+        legend.setFrame(new LineBorder());
+        legend.setBackgroundPaint(Color.white);
+        legend.setPosition(RectangleEdge.BOTTOM);
+        addLegend(legend);
+      }
+    }
+    else
+    {
+      if (isShowLegend())
+      {
+        removeLegend();
+      }
+    }
 
-		if (theDateTick.isAutoScale())
-		{
-			hd.setAutoTickUnitSelection(true);
-		}
-		else
-		{
-			// cancel auto calc
-			hd.setAutoTickUnitSelection(false);
+    this.fireChartChanged();
+  }
 
-			// get the date axis
-			final ValueAxis va = this.getXYPlot().getDomainAxis();
-			final DateAxis da = (DateAxis) va;
+  public String getY_AxisTitle()
+  {
+    return getXYPlot().getRangeAxis().getLabel();
+  }
 
-			// and set the tick
-			da.setTickUnit(_theDateTick.getUnit());
+  public void setY_AxisTitle(final String yTitle)
+  {
+    this.getXYPlot().getRangeAxis().setLabel(yTitle);
+  }
 
-		}
-	}
+  public String getX_AxisTitle()
+  {
+    return getXYPlot().getDomainAxis().getLabel();
+  }
 
-	// ////////////////////////////////////////////////
-	// editable methods
-	// ////////////////////////////////////////////////
+  public void setX_AxisTitle(final String xTitle)
+  {
+    this.getXYPlot().getDomainAxis().setLabel(xTitle);
+  }
 
-	/**
-	 * the editable details for this track
-	 * 
-	 * @return the details
-	 */
-	public final Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new PlotInfo(this);
+  public DateAxisEditor.MWCDateTickUnitWrapper getDateTickUnits()
+  {
+    return _theDateTick;
+  }
 
-		return _myEditor;
-	}
+  public void setDateTickUnits(
+      final DateAxisEditor.MWCDateTickUnitWrapper theDateTick)
+  {
+    final ValueAxis hd = this.getXYPlot().getDomainAxis();
 
-	/**
-	 * the name of this object
-	 * 
-	 * @return the name of this editable object
-	 */
-	public String getName()
-	{
-		return getTitleText();
-	}
+    // store the current tick
+    _theDateTick = theDateTick;
 
-	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
-	 */
-	public boolean hasEditor()
-	{
-		return true;
-	}
+    if (theDateTick.isAutoScale())
+    {
+      hd.setAutoTickUnitSelection(true);
+    }
+    else
+    {
+      // cancel auto calc
+      hd.setAutoTickUnitSelection(false);
 
-	/**
-	 * find out if we're in relative time plotting mode
-	 * 
-	 * @return
-	 */
-	public boolean getRelativeTimes()
-	{
-		boolean res = false;
+      // get the date axis
+      final ValueAxis va = this.getXYPlot().getDomainAxis();
+      final DateAxis da = (DateAxis) va;
 
-		// do we have a provider?
-		if (_provider != null)
-		{
-			// is it active?
-			res = _provider.isApplied();
-		}
-		return res;
-	}
+      // and set the tick
+      da.setTickUnit(_theDateTick.getUnit());
 
-	/**
-	 * update whether we're in relative time plotting mode
-	 * 
-	 * @param val
-	 */
-	public void setRelativeTimes(final boolean val)
-	{
-		if (_provider != null)
-		{
-			// update whether it's active
-			_provider.setApplied(val);
+    }
+  }
 
-			// get the date axis
-			final ValueAxis va = this.getXYPlot().getDomainAxis();
-			final RelativeDateAxis da = (RelativeDateAxis) va;
+  // ////////////////////////////////////////////////
+  // editable methods
+  // ////////////////////////////////////////////////
 
-			// do rescale
-			da.configure();
+  /**
+   * the editable details for this track
+   * 
+   * @return the details
+   */
+  public final Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor = new PlotInfo(this);
 
-			// and tell it what we're doing
-			da.setRelativeTimes(val);
+    return _myEditor;
+  }
 
-			// and trigger repaint
-			this.fireChartChanged();
+  /**
+   * the name of this object
+   * 
+   * @return the name of this editable object
+   */
+  public String getName()
+  {
+    return getTitleText();
+  }
 
-			// hey, do the rescale here, it works better
-			getXYPlot().getRangeAxis().setAutoRange(true);
-			da.setAutoRange(true);
-		}
+  /**
+   * whether there is any edit information for this item this is a convenience function to save
+   * creating the EditorType data first
+   * 
+   * @return yes/no
+   */
+  public boolean hasEditor()
+  {
+    return true;
+  }
 
-	}
+  /**
+   * find out if we're in relative time plotting mode
+   * 
+   * @return
+   */
+  public boolean getRelativeTimes()
+  {
+    boolean res = false;
 
-	/**
-	 * *******************************************************************
-	 * embedded class which optionally applies an offset to the time value
-	 * received
-	 * *******************************************************************
-	 */
-	public static class SwitchableTimeOffsetProvider implements
-			ColouredDataItem.OffsetProvider
-	{
-		/**
-		 * whether we are active
-		 */
-		private boolean _applied = false;
+    // do we have a provider?
+    if (_provider != null)
+    {
+      // is it active?
+      res = _provider.isApplied();
+    }
+    return res;
+  }
 
-		/**
-		 * the time controller
-		 */
-		private final StepperListener.StepperController _stepper;
+  /**
+   * update whether we're in relative time plotting mode
+   * 
+   * @param val
+   */
+  public void setRelativeTimes(final boolean val)
+  {
+    if (_provider != null)
+    {
+      // update whether it's active
+      _provider.setApplied(val);
 
-		// ////////////////////////////////////////////////
-		// constructor
-		// ////////////////////////////////////////////////
+      // get the date axis
+      final ValueAxis va = this.getXYPlot().getDomainAxis();
+      final RelativeDateAxis da = (RelativeDateAxis) va;
 
-		/**
-		 * create a time offset provider
-		 * 
-		 * @param stepper
-		 */
-		public SwitchableTimeOffsetProvider(
-				final StepperListener.StepperController stepper)
-		{
-			this._stepper = stepper;
-		}
+      // do rescale
+      da.configure();
 
-		/**
-		 * whether we are active
-		 * 
-		 * @return
-		 */
-		public boolean isApplied()
-		{
-			return _applied;
-		}
+      // and tell it what we're doing
+      da.setRelativeTimes(val);
 
-		/**
-		 * change whether we are active
-		 * 
-		 * @param applied
-		 */
-		public void setApplied(final boolean applied)
-		{
-			_applied = applied;
-		}
+      // and trigger repaint
+      this.fireChartChanged();
 
-		/**
-		 * offset the provided time by the desired amount
-		 * 
-		 * @param val
-		 *          the actual time value
-		 * @return the processed time value
-		 */
-		public long offsetTimeFor(final long val)
-		{
-			long res = val;
+      // hey, do the rescale here, it works better
+      getXYPlot().getRangeAxis().setAutoRange(true);
+      da.setAutoRange(true);
+    }
 
-			if (_applied)
-			{
-				if (_stepper != null)
-				{
-					final HiResDate dt = _stepper.getTimeZero();
-					if (dt != null)
-						res -= dt.getMicros();
-				}
-			}
-			return res;
-		}
-	}
+  }
 
-	/**
-	 * ******************************************************************* class
-	 * containing editable details of this plot
-	 * *******************************************************************
-	 */
-	public final class PlotInfo extends Editable.EditorType
-	{
+  /**
+   * ******************************************************************* embedded class which
+   * optionally applies an offset to the time value received
+   * *******************************************************************
+   */
+  public static class SwitchableTimeOffsetProvider implements
+      ColouredDataItem.OffsetProvider
+  {
+    /**
+     * whether we are active
+     */
+    private boolean _applied = false;
 
-		/**
-		 * constructor for this editor, takes the actual track as a parameter
-		 * 
-		 * @param data
-		 *          track being edited
-		 */
-		public PlotInfo(final NewFormattedJFreeChart data)
-		{
-			super(data, data.getName(), "");
-		}
+    /**
+     * the time controller
+     */
+    private final StepperListener.StepperController _stepper;
 
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
+    // ////////////////////////////////////////////////
+    // constructor
+    // ////////////////////////////////////////////////
 
-						 displayLongProp("DataLineWidth", "Data line width", "the width to draw the data lines",
-						 MWC.GUI.Properties.LineWidthPropertyEditor.class),
-						 displayProp("TitleText", "Title text", "the title of this plot"),
-						 displayProp("FixedDuration", "Fixed duration", "How long a time-span to display", EditorType.TEMPORAL),
-						 displayProp("DisplayFixedDuration", "Display fixed duration", "Whether to show a limited time period (in Grow mode)", EditorType.TEMPORAL),
-						 displayProp("X_AxisTitle", "X axis title", "the x axis title of this plot"),
-						 displayProp("Y_AxisTitle", "Y axis title", "the y axis title of this plot"),
-						 displayProp("RelativeTimes", "Relative times",
-						 "whether to plot times relative to an anchor value (tZero)",
-						 EditorType.TEMPORAL),
-						displayLongProp("DateTickUnits", "Date tick units", "the minutes separation to the axis",
-								DateAxisEditor.class, EditorType.TEMPORAL),
-						displayProp("ShowSymbols", "Show symbols", "whether to show symbols at the data points",
-								EditorType.VISIBILITY),
-						displayProp("TitleFont", "Title font", "font to use for the plot title",
-								EditorType.FORMAT),
-						displayProp("AxisFont", "Axis font", "font to use for the plot axis titles",
-								EditorType.FORMAT),
-		            displayProp("LegendFont", "Legend font", "font to use for the legend",
-		                EditorType.FORMAT),
-						displayProp("TickFont", "Tick font", "font to use for the plot axis tick mark labels",
-								EditorType.FORMAT),
-						displayProp("ShowLegend", "Show legend", "whether to show legend",
-								EditorType.VISIBILITY),
-				};
-				return res;
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
+    /**
+     * create a time offset provider
+     * 
+     * @param stepper
+     */
+    public SwitchableTimeOffsetProvider(
+        final StepperListener.StepperController stepper)
+    {
+      this._stepper = stepper;
+    }
 
-	}
+    /**
+     * whether we are active
+     * 
+     * @return
+     */
+    public boolean isApplied()
+    {
+      return _applied;
+    }
+
+    /**
+     * change whether we are active
+     * 
+     * @param applied
+     */
+    public void setApplied(final boolean applied)
+    {
+      _applied = applied;
+    }
+
+    /**
+     * offset the provided time by the desired amount
+     * 
+     * @param val
+     *          the actual time value
+     * @return the processed time value
+     */
+    public long offsetTimeFor(final long val)
+    {
+      long res = val;
+
+      if (_applied)
+      {
+        if (_stepper != null)
+        {
+          final HiResDate dt = _stepper.getTimeZero();
+          if (dt != null)
+            res -= dt.getMicros();
+        }
+      }
+      return res;
+    }
+  }
+
+  /**
+   * ******************************************************************* class containing editable
+   * details of this plot *******************************************************************
+   */
+  public final class PlotInfo extends Editable.EditorType
+  {
+
+    /**
+     * constructor for this editor, takes the actual track as a parameter
+     * 
+     * @param data
+     *          track being edited
+     */
+    public PlotInfo(final NewFormattedJFreeChart data)
+    {
+      super(data, data.getName(), "");
+    }
+
+    public final PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+            {
+
+                displayLongProp("DataLineWidth", "Data line width",
+                    "the width to draw the data lines",
+                    MWC.GUI.Properties.LineWidthPropertyEditor.class),
+                displayProp("TitleText", "Title text", "the title of this plot"),
+                displayProp("FixedDuration", "Fixed duration",
+                    "How long a time-span to display", EditorType.TEMPORAL),
+                displayProp("DisplayFixedDuration", "Display fixed duration",
+                    "Whether to show a limited time period (in Grow mode)",
+                    EditorType.TEMPORAL),
+                displayProp("X_AxisTitle", "X axis title",
+                    "the x axis title of this plot"),
+                displayProp("Y_AxisTitle", "Y axis title",
+                    "the y axis title of this plot"),
+                displayProp(
+                    "RelativeTimes",
+                    "Relative times",
+                    "whether to plot times relative to an anchor value (tZero)",
+                    EditorType.TEMPORAL),
+                displayLongProp("DateTickUnits", "Date tick units",
+                    "the minutes separation to the axis", DateAxisEditor.class,
+                    EditorType.TEMPORAL),
+                displayProp("ShowSymbols", "Show symbols",
+                    "whether to show symbols at the data points",
+                    EditorType.VISIBILITY),
+                displayProp("TitleFont", "Title font",
+                    "font to use for the plot title", EditorType.FORMAT),
+                displayProp("AxisFont", "Axis font",
+                    "font to use for the plot axis titles", EditorType.FORMAT),
+                displayProp("LegendFont", "Legend font",
+                    "font to use for the legend", EditorType.FORMAT),
+                displayProp("TickFont", "Tick font",
+                    "font to use for the plot axis tick mark labels",
+                    EditorType.FORMAT),
+                displayProp("ShowLegend", "Show legend",
+                    "whether to show legend", EditorType.VISIBILITY),};
+        return res;
+      }
+      catch (final IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
+
+  }
 
 }
