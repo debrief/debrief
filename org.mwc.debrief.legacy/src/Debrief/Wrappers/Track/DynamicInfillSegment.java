@@ -6,6 +6,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.Enumeration;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
@@ -477,9 +479,7 @@ public class DynamicInfillSegment extends TrackSegment implements
         interpolator.interpolate(times, depths);
 
     // what's the interval?
-    long tDelta =
-        oneElements[1].getDateTimeGroup().getDate().getTime()
-            - oneElements[0].getDateTimeGroup().getDate().getTime();
+    long tDelta = meanIntervalFor(_before);
 
     // just check it's achievable
     if (tDelta == 0)
@@ -517,10 +517,31 @@ public class DynamicInfillSegment extends TrackSegment implements
     // DR entry
     for (long tNow = tStart; tNow <= tEnd; tNow += tDelta)
     {
-      final double thisLat = latInterp.value(tNow);
-      final double thisLong = longInterp.value(tNow);
-      final double thisDepth = depthInterp.value(tNow);
-
+      // sort out the location & details for this infill location
+      final double thisLat;
+      final double thisLong;
+      final double thisDepth;
+      final double nextTime;
+      
+      if(tNow + tDelta < tEnd)
+      {
+        // ok, use an interpolated value
+        thisLat = latInterp.value(tNow);
+        thisLong = longInterp.value(tNow);
+        thisDepth = depthInterp.value(tNow);
+        nextTime = tNow;
+      }
+      else
+      {
+        // special case, if we're the last fix
+        // then work out the course speed to the first point on the 
+        // after segment, not the interpolated value
+        thisLat = twoElements[0].getFixLocation().getLat();
+        thisLong= twoElements[0].getFixLocation().getLong();
+        thisDepth = twoElements[0].getFixLocation().getDepth();
+        nextTime = twoElements[0].getDTG().getDate().getTime();
+      }
+      
       // create the new location
       final WorldLocation newLocation =
           new WorldLocation(thisLat, thisLong, thisDepth);
@@ -530,7 +551,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
       // how long since the last position?
       final double timeSecs =
-          (tNow - origin.getTime().getDate().getTime()) / 1000;
+          (nextTime - origin.getTime().getDate().getTime()) / 1000;
 
       // start off with the course
       double thisCourseRads = offset.getBearing();
@@ -548,11 +569,11 @@ public class DynamicInfillSegment extends TrackSegment implements
 
       // convert the speed
       final WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
-
+      final double speedYps = theSpeed
+          .getValueIn(WorldSpeed.ft_sec) / 3;
       // create the fix
       final Fix newFix =
-          new Fix(new HiResDate(tNow), newLocation, thisCourseRads, theSpeed
-              .getValueIn(WorldSpeed.ft_sec) / 3);
+          new Fix(new HiResDate(tNow), newLocation, thisCourseRads, speedYps);
 
       final FixWrapper fw = new FixWrapper(newFix);
       fw.setSymbolShowing(true);
@@ -576,9 +597,9 @@ public class DynamicInfillSegment extends TrackSegment implements
       {
         this.addFix(fw);
       }
-
+      
       // move along the bus, please (used if we're doing a DR Track).
-      origin = fw;
+      origin = fw;           
     }
 
     // sort out our name
@@ -599,6 +620,59 @@ public class DynamicInfillSegment extends TrackSegment implements
       this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this);
     }
 
+  }
+
+  private static long meanIntervalFor(TrackSegment segment)
+  {
+    long sum = 0;
+    int ctr = 0;
+    long lastTime = -1;
+    Enumeration<Editable> iter = segment.elements();
+    while(iter.hasMoreElements())
+    {
+      FixWrapper thisF = (FixWrapper) iter.nextElement();
+      final long thisTime = thisF.getDTG().getDate().getTime();
+      if(lastTime == -1)
+      {
+        // ok we don't have anything to add, yet
+      }
+      else
+      {
+        sum += thisTime - lastTime;
+        ctr++;
+      }
+
+      lastTime = thisTime;
+    }
+    
+    // what's the average?
+    final double mean = sum / ctr;
+    
+    // trim it to a whole second, if it's large enough
+    final long res;
+    res = roundToInterval(mean);
+    
+    return res;
+  }
+
+  private static long roundToInterval(final double mean)
+  {
+    final long res;
+    final long MINUTE = 60000;
+    final long SECOND = 1000;
+    if(mean > MINUTE)
+    {
+      res = (long) (MINUTE * (Math.floor(mean / MINUTE)));
+    }
+    else if(mean > SECOND)
+    {
+      res = (long) (SECOND * (Math.floor(mean / SECOND)));      
+    }
+    else
+    {
+      res = (long) mean;
+    }
+    return res;
   }
 
   private static Color getColorStrategy(Color trackColor)
@@ -719,4 +793,33 @@ public class DynamicInfillSegment extends TrackSegment implements
     return _myColor;
   }
 
+  public static class TestInterp extends TestCase
+  {
+    public void testSimple()
+    {
+      // generate the location spline
+      final double[] times = new double[]{500, 2000, 4000, 5000};
+      final double[] longs = new double[]{1d, 1d, 3d, 4d};
+      final double[] lats = new double[]{1d, 2d, 4d, 5d};
+
+      final UnivariateInterpolator interpolator = new SplineInterpolator();
+      final UnivariateFunction latInterp = interpolator.interpolate(times, lats);
+      final UnivariateFunction longInterp =
+          interpolator.interpolate(times, longs);
+
+      assertEquals(2.447, latInterp.value(2500), 0.01);
+      assertEquals(1.3421, longInterp.value(2500), 0.001);
+    }
+    
+    public void testRound()
+    {
+      assertEquals(6000, roundToInterval(6100));
+      assertEquals(100, roundToInterval(100));
+      assertEquals(1000, roundToInterval(1100));
+      assertEquals(59000, roundToInterval(59900));
+      assertEquals(60000, roundToInterval(69900));
+      assertEquals(2220000, roundToInterval(2269900));
+    }
+  }
+  
 }
