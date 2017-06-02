@@ -17,8 +17,10 @@ package MWC.GUI.JFreeChart;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.LegendItem;
@@ -58,6 +60,8 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
    * 
    */
   private XYPlot _myPlot;
+  
+  private double _symbolSize = 6;
 
   /**
    * Constructs a new renderer.
@@ -86,6 +90,68 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
   {
     super.setPlot(thePlot);
     _myPlot = thePlot;
+  }
+
+  public void setSymbolSize(double size)
+  {
+    _symbolSize = size;
+  }
+  
+  public double getSymbolSize()
+  {
+    return _symbolSize;
+  }
+  
+  
+  @Override
+  public Shape getSeriesShape(int series)
+  {
+    Shape theShape = super.getSeriesShape(series);
+    final double defaultScale = 6;
+    
+    final Shape newShape;
+    if(theShape instanceof Rectangle2D)
+    {
+      Rectangle2D rect = (Rectangle2D) theShape;
+      double ht = rect.getHeight() / defaultScale * _symbolSize;
+      double wid = rect.getWidth() / defaultScale * _symbolSize;
+      newShape = new Rectangle2D.Double( -wid/2, -ht/2, wid, ht);
+    }
+    else if(theShape instanceof Ellipse2D)
+    {
+      Ellipse2D ell = (Ellipse2D) theShape;
+      double ht = ell.getHeight() / defaultScale * _symbolSize;
+      double wid = ell.getWidth() / defaultScale * _symbolSize;
+      newShape = new Ellipse2D.Double(-wid/2,  -ht/2, wid, ht);
+    }
+    else if(theShape instanceof Polygon)
+    {
+      Polygon helloPoly = (Polygon) theShape;
+      
+      // retrieve the points
+      int[] xp = helloPoly.xpoints;
+      int[] yp = helloPoly.ypoints;
+      int np = helloPoly.npoints;
+      
+      // create a new array, to store the data
+      int[] newX = new int[np];
+      int[] newY = new int[np];
+      
+      for(int i=0;i<np;i++)
+      {
+        newX[i] = (int) (((double)xp[i]) / defaultScale * _symbolSize);
+        newY[i] = (int) (((double)yp[i]) / defaultScale * _symbolSize);
+      }
+      
+      newShape = new Polygon(newX, newY, np);
+    }
+    else
+    {
+      newShape = theShape;
+    }
+    
+    // ok, scale this shape;
+    return newShape;
   }
 
   @Override
