@@ -38,6 +38,8 @@ import org.jfree.ui.RectangleInsets;
 
 import MWC.GUI.Editable;
 import MWC.GUI.StepperListener;
+import MWC.GUI.Properties.GraphicSizePropertyEditor;
+import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
@@ -75,10 +77,9 @@ public class NewFormattedJFreeChart extends JFreeChart implements
       {
         final PropertyDescriptor[] res =
             {
-
-                displayLongProp("DataLineWidth", "Data line width",
-                    "the width to draw the data lines",
-                    MWC.GUI.Properties.LineWidthPropertyEditor.class),
+                displayExpertLongProp("DataLineWidth", "Data line width",
+                    "the width to draw the data lines", EditorType.FORMAT,
+                    LineWidthPropertyEditor.class),
                 displayProp("TitleText", "Title text", "the title of this plot"),
                 displayProp("FixedDuration", "Fixed duration",
                     "How long a time-span to display", EditorType.TEMPORAL),
@@ -100,15 +101,18 @@ public class NewFormattedJFreeChart extends JFreeChart implements
                 displayProp("ShowSymbols", "Show symbols",
                     "whether to show symbols at the data points",
                     EditorType.VISIBILITY),
+                displayExpertLongProp("SymbolSize", "Symbol size",
+                    "whether to show S/M/L symbols", EditorType.FORMAT,
+                    GraphicSizePropertyEditor.class),
                 displayProp("TitleFont", "Title font",
                     "font to use for the plot title", EditorType.FORMAT),
                 displayProp("AxisFont", "Axis font",
                     "font to use for the plot axis titles", EditorType.FORMAT),
-                displayProp("LegendFont", "Legend font",
-                    "font to use for the legend", EditorType.FORMAT),
                 displayProp("TickFont", "Tick font",
                     "font to use for the plot axis tick mark labels",
                     EditorType.FORMAT),
+                displayProp("LegendFont", "Legend font",
+                    "font to use for the legend", EditorType.FORMAT),
                 displayProp("ShowLegend", "Show legend",
                     "whether to show legend", EditorType.VISIBILITY),};
         return res;
@@ -202,8 +206,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   // ////////////////////////////////////////////////
@@ -398,6 +402,13 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     res = new BasicStroke(_dataLineWidth);
 
     return res;
+  }
+
+  public double getSymbolSize()
+  {
+    final ColourStandardXYItemRenderer renderer =
+        (ColourStandardXYItemRenderer) this.getXYPlot().getRenderer();
+    return renderer.getSymbolSize();
   }
 
   public Font getTickFont()
@@ -595,10 +606,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   }
 
-  // ////////////////////////////////////////////////
-  // editable methods
-  // ////////////////////////////////////////////////
-
   public void setShowLegend(final boolean showLegend)
   {
     if (showLegend)
@@ -624,12 +631,26 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     this.fireChartChanged();
   }
 
+  // ////////////////////////////////////////////////
+  // editable methods
+  // ////////////////////////////////////////////////
+
   public void setShowSymbols(final boolean showSymbols)
   {
     final DefaultXYItemRenderer sx =
         (DefaultXYItemRenderer) getXYPlot().getRenderer();
     sx.setBaseShapesVisible(showSymbols);
 
+    this.fireChartChanged();
+  }
+
+  public void setSymbolSize(final double size)
+  {
+    final ColourStandardXYItemRenderer renderer =
+        (ColourStandardXYItemRenderer) this.getXYPlot().getRenderer();
+    renderer.setSymbolSize(size);
+
+    // ok, trigger redraw
     this.fireChartChanged();
   }
 
