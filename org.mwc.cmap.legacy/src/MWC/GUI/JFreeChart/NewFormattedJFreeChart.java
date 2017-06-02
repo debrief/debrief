@@ -53,8 +53,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 {
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   // ////////////////////////////////////////////////
@@ -252,11 +252,21 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   {
     return this.getXYPlot().getRangeAxis().getTickLabelFont();
   }
+  
+  public Font getLegendFont()
+  {
+    return this.getLegend().getItemFont();
+  }
 
   public void setTickFont(final Font tickFont)
   {
     this.getXYPlot().getRangeAxis().setTickLabelFont(tickFont);
     this.getXYPlot().getDomainAxis().setTickLabelFont(tickFont);
+  }
+
+  public void setLegendFont(final Font legendFont)
+  {
+    this.getLegend().setItemFont(legendFont);
   }
 
   public Font getAxisFont()
@@ -649,6 +659,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
                 displayProp("TickFont", "Tick font",
                     "font to use for the plot axis tick mark labels",
                     EditorType.FORMAT),
+                displayProp("LegendFont", "Legend font",
+                    "font to use for the legend", EditorType.FORMAT),
                 displayProp("ShowLegend", "Show legend",
                     "whether to show legend", EditorType.VISIBILITY),};
         return res;
