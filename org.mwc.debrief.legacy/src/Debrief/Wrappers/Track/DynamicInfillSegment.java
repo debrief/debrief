@@ -515,7 +515,9 @@ public class DynamicInfillSegment extends TrackSegment implements
     // get going then! Note, we go past the end of the required data,
     // - so that we can generate the correct course and speed for the last
     // DR entry
-    for (long tNow = tStart; tNow <= tEnd; tNow += tDelta)
+    // Note: we drop out at least tDelta before the end. Having a really small
+    // last point sends the maths screwy.
+    for (long tNow = tStart; tNow <= tEnd - tDelta; tNow += tDelta)
     {
       // sort out the location & details for this infill location
       final double thisLat;
