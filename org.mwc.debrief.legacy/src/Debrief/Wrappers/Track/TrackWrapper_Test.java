@@ -761,7 +761,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     final TrackSegment infill = new DynamicInfillSegment(ts1, ts2);
 
     // check there are the correct number of items
-    assertEquals("wrong num entries", 7, infill.size());
+    assertEquals("wrong num entries", 6, infill.size());
 
   }
 
@@ -790,7 +790,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     final TrackSegment infill = new DynamicInfillSegment(ts1, ts2);
 
     // check there are the correct number of items
-    assertEquals("wrong num entries", 7, infill.size());
+    assertEquals("wrong num entries", 6, infill.size());
 
     // Enumeration<Editable> numer = infill.elements();
     // double minCourse = Math.toRadians(90);

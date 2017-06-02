@@ -112,6 +112,7 @@ import org.junit.runners.Suite;
   org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.testCutPaste.class,
   org.mwc.cmap.core.property_support.RightClickSupport.testMe.class,
   org.mwc.cmap.core.ui_support.PartMonitor.TestNarrativeViewer.class,
+  Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
 })
 
 @RunWith(Suite.class)
