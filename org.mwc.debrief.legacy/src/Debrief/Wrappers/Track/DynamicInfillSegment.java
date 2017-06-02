@@ -634,12 +634,9 @@ public class DynamicInfillSegment extends TrackSegment implements
     {
       FixWrapper thisF = (FixWrapper) iter.nextElement();
       final long thisTime = thisF.getDTG().getDate().getTime();
-      if(lastTime == -1)
+      if(lastTime != -1)
       {
-        // ok we don't have anything to add, yet
-      }
-      else
-      {
+        // ok, we've got a previous value we can compare to
         sum += thisTime - lastTime;
         ctr++;
       }
