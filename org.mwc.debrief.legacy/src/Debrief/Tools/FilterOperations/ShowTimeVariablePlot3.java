@@ -710,9 +710,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       if (secondaryItems == null)
       {
         Application.logError2(ToolParent.WARNING,
-            "Insufficient points found in primary track."
+            "Insufficient points found in secondary track."
                 + "\nPlease check coverage of time controller bars", null);
-        return null;
+        continue;
       }
       else
       {

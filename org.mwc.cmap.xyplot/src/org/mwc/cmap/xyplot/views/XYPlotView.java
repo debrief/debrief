@@ -1601,7 +1601,7 @@ public class XYPlotView extends ViewPart
     _provider = prov;
     if (_provider != null)
     {
-      final AbstractSeriesDataset ds = _provider.getDataset(false);
+      final AbstractSeriesDataset ds = _provider.getDataset(true);
       if (ds != null)
       {
         // store the dataset

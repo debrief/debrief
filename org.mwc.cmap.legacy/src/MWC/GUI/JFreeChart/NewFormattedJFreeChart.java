@@ -355,7 +355,17 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   public Font getLegendFont()
   {
-    return this.getLegend().getItemFont();
+    final LegendTitle legend = this.getLegend();
+    final Font res;
+    if(legend != null)
+    {
+      res = legend.getItemFont();
+    }
+    else
+    {
+      res = LegendTitle.DEFAULT_ITEM_FONT;
+    }
+    return res;
   }
 
   /**
@@ -571,7 +581,11 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   public void setLegendFont(final Font legendFont)
   {
-    this.getLegend().setItemFont(legendFont);
+    final LegendTitle legend = this.getLegend();
+    if (legend != null)
+    {
+      legend.setItemFont(legendFont);
+    }
   }
 
   /**
