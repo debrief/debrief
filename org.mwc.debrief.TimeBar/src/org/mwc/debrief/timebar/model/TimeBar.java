@@ -197,9 +197,16 @@ public class TimeBar implements IEventEntry
     {
       _end.setTime(endDate.getDate());
     }
-    final FixWrapper firstF = (FixWrapper) thisE.elements().nextElement();
-    _color = firstF.getColor();
 
+    if (thisE.elements().hasMoreElements())
+    {
+      final FixWrapper firstF = (FixWrapper) thisE.elements().nextElement();
+      _color = firstF.getColor();
+    }
+    else
+    {
+      _color = Color.green;
+    }
   }
 
   public TimeBar(final TrackWrapper track)
