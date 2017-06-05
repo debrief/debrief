@@ -486,10 +486,13 @@ public class DynamicInfillSegment extends TrackSegment implements
       throw new RuntimeException(
           "cannot generate infill when calculated step time is zero");
 
-    // also give the time delta a minimum step size (10 secs), we were getting
+    // also give the time delta a maximu, step size (10 secs), we were getting
     // really
     // screwy infills generated with tiny time deltas
     tDelta = Math.max(tDelta, 10000);
+
+    // also produce a minimum time, in case the tracks either side are really sparse
+    tDelta = Math.min(tDelta, 60000);
 
     // sort out the start & end times of the infill segment
     final long tStart = _before.endDTG().getDate().getTime() + tDelta;
