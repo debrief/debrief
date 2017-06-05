@@ -1451,7 +1451,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       if (thisSecondary instanceof FixWrapper)
       {
         FixWrapper fw = (FixWrapper) thisSecondary;
-        parentIsVis = fw.getSymbolShowing();
+        parentIsVis = fw.getSymbolShowing() || fw.getArrowShowing();
       }
       else
       {
