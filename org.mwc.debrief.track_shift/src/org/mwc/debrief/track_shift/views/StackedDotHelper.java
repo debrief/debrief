@@ -615,8 +615,8 @@ public final class StackedDotHelper
           // is this an infill segment
           final boolean isInfill = segment instanceof DynamicInfillSegment;
 
-          // check it's in range
-          if (segment.startDTG().greaterThan(endDTG)
+          // check it has values, and is in range
+          if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
               || segment.endDTG().lessThan(startDTG))
           {
             // ok, we can skip this one
