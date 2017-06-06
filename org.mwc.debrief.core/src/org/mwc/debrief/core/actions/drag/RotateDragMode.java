@@ -242,7 +242,7 @@ public class RotateDragMode extends DragMode
 		final WorldLocation workingLoc;
 		final double originalBearing;
 		final WorldLocation _origin;
-		Double lastRotate = null;
+	//	Double lastRotate = null;
 		final protected TrackWrapper _parent;
 		final protected Layers _layers;
 
@@ -270,10 +270,13 @@ public class RotateDragMode extends DragMode
 			final double brg = originalBearing - thisVector.getBearing();
 
 			// undo the previous turn
-			if (lastRotate != null)
-			{
-				_segment.rotate(-lastRotate, _origin);
-			}
+      // NO: we don't need to undo the previous operation. we aren't doing an XOR 
+      // paint any more
+
+//			if (lastRotate != null)
+//			{
+//				_segment.rotate(-lastRotate, _origin);
+//			}
 
 			_segment.rotate(brg, _origin);
 
@@ -281,7 +284,7 @@ public class RotateDragMode extends DragMode
 			// _segment.clearBounds();
 
 			// and remember it
-			lastRotate = new Double(brg);
+		//	lastRotate = new Double(brg);
 
 			// and tell the props view to update itself
 			updatePropsView(_segment, _parent, _layers);

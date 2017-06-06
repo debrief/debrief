@@ -32,7 +32,7 @@ public class StretchDragMode extends RotateDragMode
 	
 	public static class StretchOperation extends RotateOperation
 	{
-		private Double lastRange;
+//		private Double lastRange;
 
 		public StretchOperation(final WorldLocation cursorLoc, final WorldLocation origin,
 				final CoreTMASegment segment, final TrackWrapper parent, final Layers theLayers)
@@ -54,10 +54,12 @@ public class StretchDragMode extends RotateDragMode
 			final double rng =  thisVector.getRange(); //- _originalDistDegs;
 	
 			// undo the previous turn
-			if (lastRange != null)
-			{
-				seg.stretch(-lastRange, _origin);
-			}
+      // NO: we don't need to undo the previous operation. we aren't doing an XOR 
+      // paint any more
+//			if (lastRange != null)
+//			{
+//				seg.stretch(-lastRange, _origin);
+//			}
 	
 			// now do the current one
 			seg.stretch(rng, _origin);
@@ -66,7 +68,7 @@ public class StretchDragMode extends RotateDragMode
 			seg.clearBounds();
 			
 			// and remember it
-			lastRange = new Double(rng);
+	//		lastRange = new Double(rng);
 			
 			// and tell the props view to update itself
 			updatePropsView(seg, _parent, _layers);

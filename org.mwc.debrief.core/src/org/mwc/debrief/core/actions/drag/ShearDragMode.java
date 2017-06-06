@@ -32,7 +32,7 @@ public class ShearDragMode extends RotateDragMode
 	public static class ShearOperation extends RotateOperation
 	{
 
-		private WorldLocation _lastLoc;
+//		private WorldLocation _lastLoc;
 		
 		public ShearOperation(final WorldLocation cursorLoc, final WorldLocation origin,
 				final CoreTMASegment segment, final TrackWrapper parentTrack, final Layers theLayers)
@@ -48,10 +48,12 @@ public class ShearDragMode extends RotateDragMode
 			final CoreTMASegment seg = (CoreTMASegment) _segment;
 			
 			// undo the previous turn
-			if (_lastLoc != null)
-			{
-				seg.shear(_lastLoc, _origin);
-			}
+			// NO: we don't need to undo the previous operation. we aren't doing an XOR 
+			// paint any more
+//			if (_lastLoc != null)
+//			{
+//				seg.shear(_lastLoc, _origin);
+//			}
 
 			seg.shear(workingLoc, _origin);
 			
@@ -59,7 +61,7 @@ public class ShearDragMode extends RotateDragMode
 			seg.clearBounds();
 
 			// and remember it
-			_lastLoc = new WorldLocation(workingLoc);
+	//		_lastLoc = new WorldLocation(workingLoc);
 
 			// and tell the props view to update itself
 			updatePropsView(seg, _parent, _layers);
