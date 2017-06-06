@@ -140,7 +140,7 @@ public class RotateDragMode extends DragMode
 			// find the nearest segment
 			final TrackSegment seg = findNearest(track, cursorLoc);
 
-			if (seg != null)
+			if (seg != null && !seg.isEmpty())
 			{
 				final FixWrapper first = (FixWrapper) seg.first();
 				final FixWrapper last = (FixWrapper) seg.last();

@@ -370,11 +370,11 @@ public class DynamicInfillSegment extends TrackSegment implements
     checkListeners();
 
     // do we still have a parent? if not, we've prob been deleted
-    if(this.getWrapper() == null)
+    if (this.getWrapper() == null)
     {
       return false;
     }
-    
+
     // ok, do we know our tracks?
     if (_before == null)
     {
@@ -432,6 +432,13 @@ public class DynamicInfillSegment extends TrackSegment implements
     // check we know our data
     if (_before == null || _after == null)
       return;
+    
+    // check we have data
+    if(_before.isEmpty() || _after.isEmpty())
+    {
+      Application.logError2(Application.ERROR, "Can't reconstruct infill, before/after segment is missing data", null);
+      return;
+    }
 
     // now the num to use
     final int oneUse = Math.min(2, _before.size());
@@ -527,8 +534,8 @@ public class DynamicInfillSegment extends TrackSegment implements
       final double thisLong;
       final double thisDepth;
       final double nextTime;
-      
-      if(tNow + tDelta < tEnd)
+
+      if (tNow + tDelta < tEnd)
       {
         // ok, use an interpolated value
         thisLat = latInterp.value(tNow);
@@ -539,14 +546,14 @@ public class DynamicInfillSegment extends TrackSegment implements
       else
       {
         // special case, if we're the last fix
-        // then work out the course speed to the first point on the 
+        // then work out the course speed to the first point on the
         // after segment, not the interpolated value
         thisLat = twoElements[0].getFixLocation().getLat();
-        thisLong= twoElements[0].getFixLocation().getLong();
+        thisLong = twoElements[0].getFixLocation().getLong();
         thisDepth = twoElements[0].getFixLocation().getDepth();
         nextTime = twoElements[0].getDTG().getDate().getTime();
       }
-      
+
       // create the new location
       final WorldLocation newLocation =
           new WorldLocation(thisLat, thisLong, thisDepth);
@@ -574,8 +581,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
       // convert the speed
       final WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
-      final double speedYps = theSpeed
-          .getValueIn(WorldSpeed.ft_sec) / 3;
+      final double speedYps = theSpeed.getValueIn(WorldSpeed.ft_sec) / 3;
       // create the fix
       final Fix newFix =
           new Fix(new HiResDate(tNow), newLocation, thisCourseRads, speedYps);
@@ -602,9 +608,9 @@ public class DynamicInfillSegment extends TrackSegment implements
       {
         this.addFix(fw);
       }
-      
+
       // move along the bus, please (used if we're doing a DR Track).
-      origin = fw;           
+      origin = fw;
     }
 
     // sort out our name
@@ -617,12 +623,13 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     // also make it dotted, since it's artificially generated
     this.setLineStyle(CanvasType.DOTTED);
-    
+
     // ok, also try to fire track shifted, if we know our parent
     // (we may not know it when we're first generated)
-    if(this.getWrapper() != null)
+    if (this.getWrapper() != null)
     {
-      this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, this);
+      this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null,
+          this);
     }
 
   }
@@ -633,11 +640,11 @@ public class DynamicInfillSegment extends TrackSegment implements
     int ctr = 0;
     long lastTime = -1;
     Enumeration<Editable> iter = segment.elements();
-    while(iter.hasMoreElements())
+    while (iter.hasMoreElements())
     {
       FixWrapper thisF = (FixWrapper) iter.nextElement();
       final long thisTime = thisF.getDTG().getDate().getTime();
-      if(lastTime != -1)
+      if (lastTime != -1)
       {
         // ok, we've got a previous value we can compare to
         sum += thisTime - lastTime;
@@ -646,14 +653,23 @@ public class DynamicInfillSegment extends TrackSegment implements
 
       lastTime = thisTime;
     }
-    
+
     // what's the average?
-    final double mean = sum / ctr;
-    
+    final double mean;
+    if (ctr > 0)
+    {
+      mean = sum / ctr;
+    }
+    else
+    {
+      // oops, we haven't found any fixes. Just give a safe answer.
+      mean = 10000;
+    }
+
     // trim it to a whole second, if it's large enough
     final long res;
     res = roundToInterval(mean);
-    
+
     return res;
   }
 
@@ -662,13 +678,13 @@ public class DynamicInfillSegment extends TrackSegment implements
     final long res;
     final long MINUTE = 60000;
     final long SECOND = 1000;
-    if(mean > MINUTE)
+    if (mean > MINUTE)
     {
       res = (long) (MINUTE * (Math.floor(mean / MINUTE)));
     }
-    else if(mean > SECOND)
+    else if (mean > SECOND)
     {
-      res = (long) (SECOND * (Math.floor(mean / SECOND)));      
+      res = (long) (SECOND * (Math.floor(mean / SECOND)));
     }
     else
     {
@@ -688,15 +704,15 @@ public class DynamicInfillSegment extends TrackSegment implements
     final Color res;
     switch (colorStrategy)
     {
-    case RANDOM_INFILL:
-      res = Color.getHSBColor((float) (Math.random() * 360f), 0.8f, 0.8f);
-      break;
-    case GREEN_INFILL:
-      res = Color.GREEN;
-      break;
-    case DARKER_INFILL:
-    default:
-      res = trackColor;
+      case RANDOM_INFILL:
+        res = Color.getHSBColor((float) (Math.random() * 360f), 0.8f, 0.8f);
+        break;
+      case GREEN_INFILL:
+        res = Color.GREEN;
+        break;
+      case DARKER_INFILL:
+      default:
+        res = trackColor;
     }
 
     // see what the
@@ -800,19 +816,23 @@ public class DynamicInfillSegment extends TrackSegment implements
     public void testSimple()
     {
       // generate the location spline
-      final double[] times = new double[]{500, 2000, 4000, 5000};
-      final double[] longs = new double[]{1d, 1d, 3d, 4d};
-      final double[] lats = new double[]{1d, 2d, 4d, 5d};
+      final double[] times = new double[]
+      {500, 2000, 4000, 5000};
+      final double[] longs = new double[]
+      {1d, 1d, 3d, 4d};
+      final double[] lats = new double[]
+      {1d, 2d, 4d, 5d};
 
       final UnivariateInterpolator interpolator = new SplineInterpolator();
-      final UnivariateFunction latInterp = interpolator.interpolate(times, lats);
+      final UnivariateFunction latInterp =
+          interpolator.interpolate(times, lats);
       final UnivariateFunction longInterp =
           interpolator.interpolate(times, longs);
 
       assertEquals(2.447, latInterp.value(2500), 0.01);
       assertEquals(1.3421, longInterp.value(2500), 0.001);
     }
-    
+
     public void testRound()
     {
       assertEquals(6000, roundToInterval(6100));
@@ -823,5 +843,5 @@ public class DynamicInfillSegment extends TrackSegment implements
       assertEquals(2220000, roundToInterval(2269900));
     }
   }
-  
+
 }

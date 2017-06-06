@@ -58,12 +58,13 @@ import MWC.TacticalData.Fix;
 public class RelativeTMASegment extends CoreTMASegment implements
     NeedsToKnowAboutLayers
 {
-  
-  /** preference name for the cut-off value for shading error plot (when REL TMA is being dragged)
+
+  /**
+   * preference name for the cut-off value for shading error plot (when REL TMA is being dragged)
    * 
    */
   public static final String CUT_OFF_VALUE_DEGS = "SHADING_CUT_OFF_VALUE_DEGS";
-  
+
   /**
    * class containing editable details of a track
    */
@@ -185,12 +186,17 @@ public class RelativeTMASegment extends CoreTMASegment implements
   /**
    * base constructor - sorts out the obvious
    * 
-   * @param courseDegs our course
-   * @param speed our speed
-   * @param offset offset from ownship track at start time
+   * @param courseDegs
+   *          our course
+   * @param speed
+   *          our speed
+   * @param offset
+   *          offset from ownship track at start time
    * @param theLayers
-   * @param trackName name of the track we're relative to
-   * @param sensorName name of the track sensor that is holding us
+   * @param trackName
+   *          name of the track we're relative to
+   * @param sensorName
+   *          name of the track sensor that is holding us
    */
   public RelativeTMASegment(final double courseDegs, final WorldSpeed speed,
       final WorldVector offset, final Layers theLayers, String trackName,
@@ -264,8 +270,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
     createPointsFrom(observations, override);
   }
 
-
-  
   /**
    * 
    * @param sensor
@@ -575,6 +579,14 @@ public class RelativeTMASegment extends CoreTMASegment implements
   {
     WorldLocation res = null;
 
+    final HiResDate startDTG = startDTG();
+    if(this.isEmpty())
+    {
+      Application.logError2(ErrorLogger.ERROR,
+          "Empty track, can't find host location", null);
+      return null;
+    }
+
     // have we sorted out our reference track yet?
     if (_referenceTrack == null)
     {
@@ -588,7 +600,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
       {
         // ok, we don't need to worry about interpolating positions, since
         // our time stamps match those of the sensor.
-        Watchable[] items = _referenceSensor.getNearestTo(startDTG());
+        Watchable[] items = _referenceSensor.getNearestTo(startDTG);
         final Watchable hostLocation;
 
         // hmm,
@@ -606,7 +618,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
           {
             @SuppressWarnings("deprecation")
             FixWrapper hostFix =
-                host.getBacktraceTo(startDTG(), _referenceSensor
+                host.getBacktraceTo(startDTG, _referenceSensor
                     .getSensorOffset(), _referenceSensor.getWormInHole());
             if (hostFix != null)
             {
@@ -633,7 +645,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
           Application.logError2(ErrorLogger.ERROR,
               "Unable to find host location for this segment", null);
         }
-
       }
       else
       {
@@ -642,7 +653,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
         _referenceTrack.setInterpolatePoints(true);
 
-        final Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
+        final Watchable[] pts = _referenceTrack.getNearestTo(startDTG);
         if (pts.length > 0)
         {
           res = pts[0].getLocation();
@@ -763,22 +774,31 @@ public class RelativeTMASegment extends CoreTMASegment implements
       TimePeriod hisPeriod =
           new TimePeriod.BaseTimePeriod(theTrack.getStartDTG(), theTrack
               .getEndDTG());
-      if (getDTG_Start().lessThan(hisPeriod.getStartDTG())
-          || getDTG_End().greaterThan(hisPeriod.getEndDTG()))
+      final HiResDate myStart = getDTG_Start();
+      if (myStart == null)
       {
-        if (this.getWrapper() != null)
-        {
-          TrackWrapper wrapper = this.getWrapper();
-          wrapper.removeElement(this);
-          wrapper.firePropertyChange(EXTENDED, null, this);
-          _myParent.logError(ToolParent.WARNING,
-              "Deleting leg " + this.getName() + ",  host data not available", null);
-        }
+        Application.logError2(ErrorLogger.ERROR,
+            "This track contains no fixes", null);
       }
       else
       {
-        // ok, store it (including clearing any previous one)
-        setTrack(theTrack);
+        if (myStart.lessThan(hisPeriod.getStartDTG())
+            || getDTG_End().greaterThan(hisPeriod.getEndDTG()))
+        {
+          if (this.getWrapper() != null)
+          {
+            TrackWrapper wrapper = this.getWrapper();
+            wrapper.removeElement(this);
+            wrapper.firePropertyChange(EXTENDED, null, this);
+            _myParent.logError(ToolParent.WARNING, "Deleting leg "
+                + this.getName() + ",  host data not available", null);
+          }
+        }
+        else
+        {
+          // ok, store it (including clearing any previous one)
+          setTrack(theTrack);
+        }
       }
     }
   }
@@ -1096,32 +1116,33 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
     this.add(newItem);
   }
-  
-  
 
   @Override
   public void removeElement(Editable p)
   {
     // check if its' the first fix
     final boolean firstRemoved = p.equals(this.elements().nextElement());
-  
+
     // let the parent remove the item
     super.removeElement(p);
-    
-    // did  we remove the first element?
+
+    // did we remove the first element?
     // if we did, we have to re-generate the offset from the host track
-    if(firstRemoved)
+    // - and check we still have elements
+    if (firstRemoved && !this.isEmpty())
     {
-      // ok, where is the new start point?
+      // ok, generate a new offset
+
+      // where is the new start point
       final FixWrapper newStart = (FixWrapper) this.elements().nextElement();
-      
+
       // the host location will have changed, since we're related to a new DTG
       final WorldLocation hostLoc = getHostLocation();
-      
+
       // and store the new location
       _offset = newStart.getLocation().subtract(hostLoc);
     }
-    
+
   }
 
   /**
@@ -1148,17 +1169,17 @@ public class RelativeTMASegment extends CoreTMASegment implements
       {
         FixWrapper fixWrapper = dArr[i];
         final long thisTime = fixWrapper.getDateTimeGroup().getDate().getTime();
-        if(i > 0)
+        if (i > 0)
         {
           final long thisDiff = thisTime - lastTime;
           sum += thisDiff;
           count++;
         }
-        
+
         // ok, remember time
         lastTime = thisTime;
       }
-      
+
       // ok, and now the mean
       res = sum / count;
     }
@@ -1246,13 +1267,13 @@ public class RelativeTMASegment extends CoreTMASegment implements
       long oldStartT = startDTG().getDate().getTime();
       long newStartT = theNewStart.getDate().getTime();
       final long typicalDelta = typicalTimeStep();
-      
+
       // ok, insert new fix at the new start time
       addFix(theLoc, newStartT);
 
       // now walk forwards until we meet the old start time
       long thisT = newStartT + typicalDelta;
-      
+
       while (thisT < oldStartT)
       {
         addFix(theLoc, thisT);

@@ -3602,32 +3602,37 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         final CoreTMASegment tma = (CoreTMASegment) seg;
 
-        final WorldLocation firstLoc = seg.first().getBounds().getCentre();
-        final WorldLocation lastLoc = seg.last().getBounds().getCentre();
-        final Font f = new Font("Sans Serif", Font.PLAIN, 11);
-        final Color c = _theLabel.getColor();
-
-        // tell the segment it's being stretched
-        final String spdTxt =
-            MWC.Utilities.TextFormatting.GeneralFormat
-                .formatOneDecimalPlace(tma.getSpeed()
-                    .getValueIn(WorldSpeed.Kts));
-
-        // copied this text from RelativeTMASegment
-        double courseVal = tma.getCourse();
-        if (courseVal < 0)
+        // check the segment has some data
+        if (!seg.isEmpty())
         {
-          courseVal += 360;
+          final WorldLocation firstLoc = seg.first().getBounds().getCentre();
+          final WorldLocation lastLoc = seg.last().getBounds().getCentre();
+          final Font f = new Font("Sans Serif", Font.PLAIN, 11);
+          final Color c = _theLabel.getColor();
+
+          // tell the segment it's being stretched
+          final String spdTxt =
+              MWC.Utilities.TextFormatting.GeneralFormat
+                  .formatOneDecimalPlace(tma.getSpeed().getValueIn(
+                      WorldSpeed.Kts));
+
+          // copied this text from RelativeTMASegment
+          double courseVal = tma.getCourse();
+          if (courseVal < 0)
+          {
+            courseVal += 360;
+          }
+
+          String textLabel =
+              "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
+
+          // ok, now plot it
+          CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+              lastLoc, 1.2, true);
+          textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
+          CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+              lastLoc, 1.2, false);
         }
-
-        String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
-
-        // ok, now plot it
-        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-            lastLoc, 1.2, true);
-        textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
-        CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-            lastLoc, 1.2, false);
       }
     }
   }
