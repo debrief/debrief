@@ -1128,22 +1128,19 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
     // did we remove the first element?
     // if we did, we have to re-generate the offset from the host track
-    if (firstRemoved)
+    // - and check we still have elements
+    if (firstRemoved && !this.isEmpty())
     {
-      // check we still have elements
-      if (this.elements().hasMoreElements())
-      {
-        // ok, generate a new offset
-        
-        // where is the new start point
-        final FixWrapper newStart = (FixWrapper) this.elements().nextElement();
+      // ok, generate a new offset
 
-        // the host location will have changed, since we're related to a new DTG
-        final WorldLocation hostLoc = getHostLocation();
+      // where is the new start point
+      final FixWrapper newStart = (FixWrapper) this.elements().nextElement();
 
-        // and store the new location
-        _offset = newStart.getLocation().subtract(hostLoc);
-      }
+      // the host location will have changed, since we're related to a new DTG
+      final WorldLocation hostLoc = getHostLocation();
+
+      // and store the new location
+      _offset = newStart.getLocation().subtract(hostLoc);
     }
 
   }
