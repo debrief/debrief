@@ -23,6 +23,8 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import java.awt.Color;
+
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.FixWrapper;
@@ -66,10 +68,22 @@ abstract public class DynamicInfillSegmentHandler extends
   protected TrackSegment createTrack()
   {
     // get the color form the first item
-    FixWrapper first = super._fixes.firstElement();
+    final Color fixColor;
+    if(super._fixes.isEmpty())
+    {
+      // no fixes in solution.
+      // updated logic means this shouldn't happen. 
+      // But, robustly handle it, if it does.
+      fixColor = Color.red;
+    }
+    else
+    {
+      FixWrapper first = super._fixes.firstElement();
+      fixColor = first.getColor();      
+    }
 
     final TrackSegment res =
-        new DynamicInfillSegment(_beforeName, _afterName, first.getColor());
+        new DynamicInfillSegment(_beforeName, _afterName, fixColor);
     return res;
   }
 

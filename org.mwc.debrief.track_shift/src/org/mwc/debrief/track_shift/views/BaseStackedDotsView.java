@@ -2613,12 +2613,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           else if (thisSeg instanceof AbsoluteTMASegment)
           {
             AbsoluteTMASegment seg = (AbsoluteTMASegment) thisSeg;
-            FixWrapper firstE = (FixWrapper) thisSeg.elements().nextElement();
-            final Color color = firstE.getColor();
-            final Zone newZ =
-                new Zone(seg.getDTG_Start().getDate().getTime(), seg
-                    .getDTG_End().getDate().getTime(), color);
-            zones.add(newZ);
+            if(!thisSeg.isEmpty())
+            {
+              FixWrapper firstE = (FixWrapper) thisSeg.elements().nextElement();
+              final Color color = firstE.getColor();
+              final Zone newZ =
+                  new Zone(seg.getDTG_Start().getDate().getTime(), seg
+                      .getDTG_End().getDate().getTime(), color);
+              zones.add(newZ);
+            }
           }
         }
       }

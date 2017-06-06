@@ -886,7 +886,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		final WorldLocation firstLoc = this.getTrackStart();
 
 		// do we have a start point?
-		if (firstLoc != null)
+		if (firstLoc != null && !this.isEmpty())
 		{
 			// yes, sort range
 			res = firstLoc.rangeFrom(other);

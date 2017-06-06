@@ -71,7 +71,7 @@ abstract public class AbsoluteTMASegmentHandler extends CoreTMASegmentHandler
 
     // ok, the track has it's fixes. pass through to set the time,
     // if necessary
-    if(rel.getDTG_Start() == null)
+    if(rel.getDTG_Start() == null && !rel.isEmpty())
     {
       FixWrapper firstF = (FixWrapper) rel.first();
       FixWrapper lastF = (FixWrapper) rel.last();
