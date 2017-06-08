@@ -51,6 +51,8 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
    */
   private final TimeSeriesCollection _dataset;
 
+  private boolean _lightweightMode = false;
+
   /**
    * Constructs a new renderer.
    * <p>
@@ -74,25 +76,52 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
     _dataset = dataset;
   }
 
+  public void setLightweightMode(boolean light)
+  {
+    _lightweightMode = light;
+  }
+
+  @Override
+  public boolean getItemShapeVisible(int series, int item)
+  {
+    final boolean res;
+    if (_lightweightMode)
+    {
+      res = false;
+    }
+    else
+    {
+      res = super.getItemShapeVisible(series, item);
+    }
+    return res;
+  }
+
   @Override
   public boolean getItemShapeFilled(int row, int column)
   {
     boolean res = true;
 
-    final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
-    // get the data series
-    final TimeSeries bts = tsc.getSeries(row);
-    final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-    if (tsdp instanceof ColouredDataItem)
+    if (_lightweightMode)
     {
-      final ColouredDataItem item = (ColouredDataItem) tsdp;
-      if (item.connectToPrevious())
+      res = false;
+    }
+    else
+    {
+      final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
+      // get the data series
+      final TimeSeries bts = tsc.getSeries(row);
+      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+      if (tsdp instanceof ColouredDataItem)
       {
-        res = false;
-      }
-      else
-      {
-        res = true;
+        final ColouredDataItem item = (ColouredDataItem) tsdp;
+        if (item.connectToPrevious())
+        {
+          res = false;
+        }
+        else
+        {
+          res = true;
+        }
       }
     }
 
@@ -102,10 +131,9 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
   @Override
   public Paint getItemPaint(final int row, final int column)
   {
-    Color theColor = null;
-
     Paint res = null;
-
+    Color theColor = null;
+    
     final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
     // get the data series
     final TimeSeries bts = tsc.getSeries(row);

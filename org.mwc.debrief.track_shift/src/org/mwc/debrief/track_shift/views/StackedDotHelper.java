@@ -61,6 +61,11 @@ import MWC.TacticalData.TrackDataProvider;
 public final class StackedDotHelper
 {
   /**
+   * the maximum number of items we plot as symbols. Above this we just use a line
+   */
+  private final int MAX_ITEMS_TO_PLOT = 1000;
+
+  /**
    * the track being dragged
    */
   private TrackWrapper _primaryTrack;
@@ -197,7 +202,6 @@ public final class StackedDotHelper
                         targetFix = (FixWrapper) items.first();
                       }
                     }
-
                   }
                 }
               }
@@ -294,6 +298,8 @@ public final class StackedDotHelper
    * @param targetSpeedSeries
    * @param ownshipCourseSeries
    * @param targetBearingSeries
+   * @param overviewSpeedRenderer
+   * @param _overviewCourseRenderer
    * 
    * @param currentOffset
    *          how far the current track has been dragged
@@ -304,7 +310,9 @@ public final class StackedDotHelper
       final ErrorLogger logger, final boolean updateDoublets,
       TimeSeriesCollection targetCourseSeries,
       TimeSeriesCollection targetSpeedSeries, TimeSeries ownshipCourseSeries,
-      TimeSeries targetBearingSeries, TimeSeries targetCalculatedSeries)
+      TimeSeries targetBearingSeries, TimeSeries targetCalculatedSeries,
+      ResidualXYItemRenderer overviewSpeedRenderer,
+      WrappingResidualRenderer overviewCourseRenderer)
   {
     // System.out.println("updating bearing data:" + ctr++);
 
@@ -721,13 +729,27 @@ public final class StackedDotHelper
       }
 
       if (tgtCourseValues.getItemCount() > 0)
+      {
         targetCourseSeries.addSeries(tgtCourseValues);
 
+        System.out.println("tgt Course: " + tgtCourseValues.getItemCount());
+
+        // ok, sort out the renderer
+        overviewCourseRenderer.setLightweightMode(tgtCourseValues
+            .getItemCount() > MAX_ITEMS_TO_PLOT);
+      }
+
       if (tgtSpeedValues.getItemCount() > 0)
+      {
         targetSpeedSeries.addSeries(tgtSpeedValues);
+
+        overviewSpeedRenderer
+            .setLightweightMode(tgtSpeedValues.getItemCount() > MAX_ITEMS_TO_PLOT);
+      }
 
       if (showCourse)
       {
+        System.out.println("Course: " + osCourseValues.getItemCount());
         targetCourseSeries.addSeries(osCourseValues);
       }
 
