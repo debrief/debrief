@@ -595,9 +595,11 @@ public class DynamicInfillSegment extends TrackSegment implements
       fw.resetName();
 
       // and copy the other formatting
-      fw.setLabelFormat(labelFormat);
       fw.setLabelLocation(labelLoc);
       fw.setLabelShowing(labelOn);
+      fw.setLabelFormatSilent(labelFormat);
+      // note "silent" usage in line above, as optimisation to reduce calls to SimpleDateFormat
+      // constructor
 
       // only add it if we're still in the time period. We generate one
       // position
