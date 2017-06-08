@@ -425,7 +425,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         if (evt.getNewValue() instanceof DynamicInfillSegment)
         {
-          updateStackedDots(true);
+          updateStackedDots(false);
         }
       }
     };
