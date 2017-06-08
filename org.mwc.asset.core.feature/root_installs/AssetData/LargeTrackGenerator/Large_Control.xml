@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="AreaResults"
+	xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+	</ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="Doomsday Timer" Active="true">
+			<Duration Value="12" Units="hours" />
+		</TimeObserver>
+		<DebriefReplayObserver Name="Debrief tracks"
+			record_detections="false" record_positions="true" Active="true"
+			record_decisions="false" file_name="tracks">
+		</DebriefReplayObserver>
+		<DebriefReplayObserver Name="Sensor Cuts"
+			record_detections="true" record_positions="false" Active="true"
+			record_decisions="false" file_name="cuts">
+		</DebriefReplayObserver>
+	</ObserverList>
+</ScenarioController>
