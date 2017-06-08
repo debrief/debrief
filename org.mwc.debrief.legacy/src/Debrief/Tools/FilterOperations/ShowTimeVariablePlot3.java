@@ -606,7 +606,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
           final TimeSeriesDataItem newItem =
               new ColouredDataItem(new FixedMillisecond((long) (theTime
                   .getMicros() / 1000d)), data, thisColor, connectToPrevious,
-                  provider1, parentIsVisible);
+                  provider1, parentIsVisible, true);
 
           // To change body of implemented methods use File | Settings
           // | File
@@ -644,7 +644,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
           final ColouredDataItem newItem =
               new ColouredDataItem(new FixedMillisecond(theTime.getDate()
                   .getTime()), data, thisColor, connectToPrevious, provider1,
-                  parentIsVisible);
+                  parentIsVisible, true);
 
           // To change body of implemented methods use File | Settings
           // | File
