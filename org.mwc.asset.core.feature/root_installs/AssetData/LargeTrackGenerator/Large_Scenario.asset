@@ -2,9 +2,8 @@
 <Scenario Name="Area search scenario" xmlns="http://www.mwc.org/asset"
 	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1"
 	ShowName="false" ShowActivity="false" ShowSymbol="true">
-	<StepTime Units="seconds" Value="7" />
-	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR"
-		SeaState="1">
+	<StepTime Units="seconds" Value="2" ></StepTime>
+	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
 	</Environment>
 	<Participants>
 		<Surface Name="FisherOne">
@@ -26,26 +25,18 @@
 				</Location>
 				<Speed Value="0" Units="kts" />
 			</Status>
-			<Waterfall Name="Southern Trawl" IsActive="true">
-				<Evade Name="">
-					<Duration Value="15" Units="minutes" />
-					<FleeHeight Value="0.0" Units="ft" />
-					<FleeSpeed Value="6" Units="kts" />
-					<TargetType>
-						<Type Name="BLUE" />
-					</TargetType>
-				</Evade><RectangleWander Name="Random patrol">
+			<Waterfall Name="Southern Trawl" IsActive="true"><RectangleWander Name="Random patrol">
 					<Area>
 						<TopLeft>
 							<relativeLocation>
-								<North Value="160.0" Units="nm" />
+								<North Value="50" Units="nm" />
 								<East Value="0.0" Units="nm" />
 							</relativeLocation>
 						</TopLeft>
 						<BottomRight>
 							<relativeLocation>
 								<North Value="0.0" Units="nm" />
-								<East Value="160.0" Units="nm" />
+								<East Value="50" Units="nm" />
 							</relativeLocation>
 						</BottomRight>
 					</Area>
@@ -66,10 +57,11 @@
 		<Surface Name="SearchOne" PaintDecisions="true">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
-				<TypedCookieSensor>
+				<TypedCookieSensor DetectionIntervalMillis="10000"
+					ProducesRange="false">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
-						<DetectionRange Value="20" Units="nm" />
+						<DetectionRange Value="40" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 			</SensorFit>
@@ -82,32 +74,31 @@
 				</Location>
 				<Speed Value="14" Units="kts" />
 			</Status>
-			<Sequence Name="T23 Search">
-
-				<Switch Name="Do a search" Index="2">
-					<OutwardSpiralSearch Name="160_Outward">
-						<TrackSpacing Value="20" Units="nm" />
-						<Width Value="160" Units="nm" />
-						<Height Value="160" Units="nm" />
-					</OutwardSpiralSearch>
-					<InwardSpiralSearch Name="160_Inward">
-						<TrackSpacing Value="20" Units="nm" />
-						<Width Value="160" Units="nm" />
-						<Height Value="160" Units="nm" />
-					</InwardSpiralSearch>
-					<LadderSearch2 Name="160_Ladder">
-						<TrackSpacing Value="20" Units="nm" />
-						<Width Value="160" Units="nm" />
-						<Height Value="160" Units="nm" />
-					</LadderSearch2>
-
-				</Switch>
-				<Terminate Name="Search done" />
-			</Sequence>
+			<Waterfall Name="Blue behaviour">
+				<Trail Name="">
+					<TrailRange Value="4000" Units="m" />
+					<AllowableError Value="1500" Units="m" />
+					<TargetType>
+						<Type Name="RED" ></Type>
+					</TargetType>
+				</Trail>
+				<Wander Name="Wander around">
+					<Range Value="200" Units="km" />
+					<Location>
+						<relativeLocation>
+							<North Value="10" Units="nm" />
+							<East Value="-2" Units="nm" />
+						</relativeLocation>
+						
+					</Location>
+					<Speed Value="4" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</Wander></Waterfall>
+			
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="kts" />
-				<MaxSpeed Value="15.0" Units="kts" />
+				<MaxSpeed Value="5" Units="kts" />
 				<AccelerationRate Value="1.0" Units="kts/s" />
 				<DecelerationRate Value="1.0" Units="kts/s" />
 				<TurningCircle Value="400.0" Units="m" />

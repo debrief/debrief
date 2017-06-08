@@ -576,7 +576,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
                 final ColouredDataItem newItem =
                     new ColouredDataItem(new FixedMillisecond(thisPosition
                         .getDTG().getDate().getTime()), thisVal, thisColor,
-                        true, null, true);
+                        true, null, true, true);
 
                 thisSeries.add(newItem);
               }

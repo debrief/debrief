@@ -343,6 +343,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * 
    */
   private XYTextAnnotation crossHairAnnotation;
+  protected ResidualXYItemRenderer _overviewSpeedRenderer;
+  protected WrappingResidualRenderer _overviewCourseRenderer;
 
   /**
    * 
@@ -423,7 +425,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         if (evt.getNewValue() instanceof DynamicInfillSegment)
         {
-          updateStackedDots(true);
+          updateStackedDots(false);
         }
       }
     };
@@ -1615,23 +1617,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverviewPlot.setRangeAxis(1, overviewSpeed);
     absBrgAxis.setAutoRangeIncludesZero(false);
     _targetOverviewPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-    final DefaultXYItemRenderer overviewCourseRenderer =
+    _overviewCourseRenderer =
         new WrappingResidualRenderer(null, null, _targetCourseSeries, 0, 360);
-    overviewCourseRenderer.setSeriesPaint(0, DebriefColors.RED.brighter());
-    overviewCourseRenderer.setSeriesPaint(1, DebriefColors.BLUE);
-    overviewCourseRenderer.setSeriesShape(0, new Ellipse2D.Double(-4.0, -4.0,
+    _overviewCourseRenderer.setSeriesPaint(0, DebriefColors.RED.brighter());
+    _overviewCourseRenderer.setSeriesPaint(1, DebriefColors.BLUE);
+    _overviewCourseRenderer.setSeriesShape(0, new Ellipse2D.Double(-4.0, -4.0,
         8.0, 8.0));
-    overviewCourseRenderer.setSeriesShapesVisible(1, false);
-    overviewCourseRenderer.setSeriesStroke(0, new BasicStroke(2f));
-    overviewCourseRenderer.setSeriesStroke(1, new BasicStroke(2f));
-    final DefaultXYItemRenderer overviewSpeedRenderer =
+    _overviewCourseRenderer.setSeriesShapesVisible(1, false);
+    _overviewCourseRenderer.setSeriesStroke(0, new BasicStroke(2f));
+    _overviewCourseRenderer.setSeriesStroke(1, new BasicStroke(2f));
+    _overviewSpeedRenderer =
         new ResidualXYItemRenderer(null, null, _targetSpeedSeries);
-    overviewSpeedRenderer.setPaint(DebriefColors.RED.darker());
-    overviewSpeedRenderer.setSeriesShape(0, new Rectangle2D.Double(-4.0, -4.0,
+    _overviewSpeedRenderer.setPaint(DebriefColors.RED.darker());
+    _overviewSpeedRenderer.setSeriesShape(0, new Rectangle2D.Double(-4.0, -4.0,
         8.0, 8.0));
-    overviewSpeedRenderer.setSeriesStroke(0, new BasicStroke(2f));
-    _targetOverviewPlot.setRenderer(0, overviewCourseRenderer);
-    _targetOverviewPlot.setRenderer(1, overviewSpeedRenderer);
+    _overviewSpeedRenderer.setSeriesStroke(0, new BasicStroke(2f));
+    _targetOverviewPlot.setRenderer(0, _overviewCourseRenderer);
+    _targetOverviewPlot.setRenderer(1, _overviewSpeedRenderer);
     _targetOverviewPlot.mapDatasetToRangeAxis(0, 0);
     _targetOverviewPlot.mapDatasetToRangeAxis(1, 1);
     _targetOverviewPlot.setRangeAxisLocation(0, AxisLocation.TOP_OR_LEFT);
@@ -1783,6 +1785,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
       _myTrackDataProvider.removeTrackDataListener(_myTrackDataListener);
+
+      // remove ourselves as a location listener from the sec track, if there is one
+      WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
+      if (secs != null && secs.length == 1)
+      {
+        TrackWrapper secT = (TrackWrapper) secs[0];
+        secT.removePropertyChangeListener(TrackWrapper.LOCATION_CHANGED,
+            _infillListener);
+      }
     }
 
     // stop the part monitor
@@ -2436,6 +2447,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             if (tdp == _myTrackDataProvider)
             {
+              // remove ourselves as a location listener from the sec track, if there is one
+              WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
+              if (secs != null && secs.length == 1)
+              {
+                TrackWrapper secT = (TrackWrapper) secs[0];
+                secT.removePropertyChangeListener(
+                    TrackWrapper.LOCATION_CHANGED, _infillListener);
+              }
+
               _myTrackDataProvider = null;
 
               // hey - lets clear our plot
@@ -2613,7 +2633,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           else if (thisSeg instanceof AbsoluteTMASegment)
           {
             AbsoluteTMASegment seg = (AbsoluteTMASegment) thisSeg;
-            if(!thisSeg.isEmpty())
+            if (!thisSeg.isEmpty())
             {
               FixWrapper firstE = (FixWrapper) thisSeg.elements().nextElement();
               final Color color = firstE.getColor();

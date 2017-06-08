@@ -58,6 +58,8 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
    */
   private final boolean _parentSymVisible;
 
+  private boolean _isFilled;
+
   /**
    * Constructs a new data pair.
    *
@@ -66,26 +68,42 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
    * @param myColor           the color for this point
    * @param connectToPrevious whether to connect to the previous point (used when we're passing through zero)
    * @param provider          If we're plotting relative times, this is an object which can supply the zero time to use
-   * @param parentSymVisible TODO
+   * @param parentSymVisible  whether the parent object this relates to is visible
+   * @param isFilled          whether we want this shape to be filled
    * @see ColouredDataItem#ColouredDataItem(TimePeriod period,double value,Color myColor,boolean connectToPrevious)
    */
   public ColouredDataItem(final RegularTimePeriod period,
                           final double value,
                           final Color myColor,
                           final boolean connectToPrevious,
-                          final OffsetProvider provider, boolean parentSymVisible) {
+                          final OffsetProvider provider, 
+                          final boolean parentSymVisible, 
+                          final boolean isFilled) {
     super(period, value);
     _myColor = myColor;
     _connectToPrevious = connectToPrevious;
     _provider = provider;
     _parentSymVisible = parentSymVisible;
+    _isFilled = isFilled;
   }
 
+  /** whether we wish this shape to be filled
+   * 
+   * @return
+   */
+  public boolean isShapeFilled()
+  {
+    return _isFilled;
+  }
+  
+  /** whether the parent object this item refers to is visible
+   * 
+   * @return
+   */
   public boolean isParentSymVisible()
   {
     return _parentSymVisible;
   }
-
 
   /** get the color for this point
    *

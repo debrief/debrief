@@ -1057,8 +1057,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   @FireReformatted
   public final void setLabelFormat(final String format)
   {
-    _theFormat = format;
-
+    // store the value
+    setLabelFormatSilent(format);
+    
     // just check that the user isn't keeping the value as null
     if (format == null)
       return;
@@ -1071,6 +1072,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       df.setTimeZone(TimeZone.getTimeZone("GMT"));
       this.setLabel(df.format(this.getTime().getDate()));
     }
+  }
+  
+  public final void setLabelFormatSilent(final String format)
+  {
+    _theFormat = format;
   }
 
   /**
