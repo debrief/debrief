@@ -36,18 +36,21 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.TimePeriod.BaseTimePeriod;
 
 /**
  * @author ian.mayo
  * 
  */
-public class ShowCutsForThisTMASegment implements RightClickContextItemGenerator
+public class ShowCutsForThisTMASegment implements
+    RightClickContextItemGenerator
 {
   private static class ShowCutsOperation extends CMAPOperation
   {
@@ -226,7 +229,30 @@ public class ShowCutsForThisTMASegment implements RightClickContextItemGenerator
           list.add(new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg
               .getDTG_End()));
         }
+      }
 
+      // do another pass, and look for dynamic infills
+      if (suitableSegments != null)
+      {
+        for (int i = 0; i < subjects.length; i++)
+        {
+          Editable editable = subjects[i];
+          if (editable instanceof DynamicInfillSegment)
+          {
+            DynamicInfillSegment infill = (DynamicInfillSegment) editable;
+            BaseTimePeriod thisPeriod =
+                new TimePeriod.BaseTimePeriod(infill.startDTG(), infill
+                    .endDTG());
+
+            // loop through the sensors we've decided to use
+            for (SensorWrapper s : suitableSegments.keySet())
+            {
+              // add a reference to display it for this segment
+              ArrayList<TimePeriod> hisList = suitableSegments.get(s);
+              hisList.add(thisPeriod);
+            }
+          }
+        }
       }
 
       // did it work?
@@ -247,15 +273,14 @@ public class ShowCutsForThisTMASegment implements RightClickContextItemGenerator
             getOperation(theLayers, suitableSegments);
 
         // and now wrap it in an action
-        Action doIt =
-            new Action(getTitlePrefix() + phrase)
-            {
-              @Override
-              public void run()
-              {
-                runIt(action);
-              }
-            };
+        Action doIt = new Action(getTitlePrefix() + phrase)
+        {
+          @Override
+          public void run()
+          {
+            runIt(action);
+          }
+        };
 
         // ok, go for it
         parent.add(doIt);
@@ -268,7 +293,7 @@ public class ShowCutsForThisTMASegment implements RightClickContextItemGenerator
   {
     return "Only display sensor cuts for selected ";
   }
-  
+
   /**
    * move the operation generation to a method, so it can be overwritten (in testing)
    * 
