@@ -190,38 +190,57 @@ public class DebriefFormatDateTime
 
 	}
 
-	/**
-	 * parse a date string using our format
-	 */
-	public static HiResDate parseThis(final String dateToken, final String timeToken)
-	{
-		// do we have millis?
-		final int decPoint = timeToken.indexOf(".");
-		String milliStr, timeStr;
-		if (decPoint > 0)
-		{
-			milliStr = timeToken.substring(decPoint, timeToken.length());
-			timeStr = timeToken.substring(0, decPoint);
-		}
-		else
-		{
-			milliStr = "";
-			timeStr = timeToken;
-		}
 
-		
-		// sort out if we have to padd
-		// check the date for missing leading zeros
-		final String theDateToken = String.format("%06d", Integer.parseInt(dateToken));
-		timeStr = String.format("%06d", Integer.parseInt(timeStr));
+  private static String padToken(final String token)
+  {
+    final String res;
+     if(token.length()==6)
+      {
+       res = token;
+      }
+      else
+      {
+        final int numMissing = 6 - token.length();
+        StringBuffer buffer = new StringBuffer(6);
+        for(int i=0;i<numMissing;i++)
+        {
+          buffer.append("0");
+        }
+        buffer.append(token);
+        res = buffer.toString();
+      }
+     return res;
+  }
 
-		final String composite = theDateToken + " " + timeStr + milliStr;
+  /**
+   * parse a date string using our format
+   */
+  public static HiResDate parseThis(final String dateToken, final String timeToken)
+  {
+    // do we have millis?
+    final int decPoint = timeToken.indexOf(".");
+    String milliStr, timeStr;
+    if (decPoint > 0)
+    {
+      milliStr = timeToken.substring(decPoint, timeToken.length());
+      timeStr = timeToken.substring(0, decPoint);
+    }
+    else
+    {
+      milliStr = "";
+      timeStr = timeToken;
+    }
 
-//		if (milliStr.length() > 0)
-//			composite += milliStr;
+    
+    // sort out if we have to padd
+    // check the date for missing leading zeros
+    final String theDateToken = padToken(dateToken);
+    timeStr = padToken(timeStr);
 
-		return parseThis(composite);
-	}
+    final String composite = theDateToken + " " + timeStr + milliStr;
+
+    return parseThis(composite);
+  }
 
 	/**
 	 * parse a date string using our format
@@ -362,20 +381,22 @@ public class DebriefFormatDateTime
 			assertEquals("matches", "700101 000000.000011", res);
 
 		}
+		
+		public void testPadding2()
+		{
+		  assertEquals("000001", padToken("1"));
+      assertEquals("001001", padToken("1001"));
+      assertEquals("101001", padToken("101001"));
+		}
 
-		// TODO FIX-TEST
 		@SuppressWarnings("deprecation")
-		public void NtestPadding()
+		public void testPadding()
 		{
 			HiResDate val = parseThis("700101", "010000");
-			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
-			// Date(70,00,01,01,00,00).getTime());
 			assertEquals("correct date", new Date(70, 00, 01, 02, 00, 00),
 					val.getDate());
 
 			val = parseThis("080101", "010000");
-			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
-			// Date(70,00,01,01,00,00).getTime());
 			assertEquals("correct date", new Date(108, 00, 01, 01, 00, 00),
 					val.getDate());
 
