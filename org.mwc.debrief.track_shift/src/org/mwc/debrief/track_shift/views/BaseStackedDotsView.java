@@ -1785,6 +1785,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
       _myTrackDataProvider.removeTrackDataListener(_myTrackDataListener);
+
+      // remove ourselves as a location listener from the sec track, if there is one
+      WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
+      if (secs != null && secs.length == 1)
+      {
+        TrackWrapper secT = (TrackWrapper) secs[0];
+        secT.removePropertyChangeListener(TrackWrapper.LOCATION_CHANGED,
+            _infillListener);
+      }
     }
 
     // stop the part monitor
@@ -2438,6 +2447,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             if (tdp == _myTrackDataProvider)
             {
+              // remove ourselves as a location listener from the sec track, if there is one
+              WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
+              if (secs != null && secs.length == 1)
+              {
+                TrackWrapper secT = (TrackWrapper) secs[0];
+                secT.removePropertyChangeListener(
+                    TrackWrapper.LOCATION_CHANGED, _infillListener);
+              }
+
               _myTrackDataProvider = null;
 
               // hey - lets clear our plot
@@ -2615,7 +2633,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           else if (thisSeg instanceof AbsoluteTMASegment)
           {
             AbsoluteTMASegment seg = (AbsoluteTMASegment) thisSeg;
-            if(!thisSeg.isEmpty())
+            if (!thisSeg.isEmpty())
             {
               FixWrapper firstE = (FixWrapper) thisSeg.elements().nextElement();
               final Color color = firstE.getColor();
