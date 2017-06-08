@@ -98,6 +98,83 @@ public final class StackedDotHelper
         needFrequency);
   }
 
+  private static Enumeration<Editable> _cachedIterator;
+  private static FixWrapper _cachedValue;
+  private static HiResDate _cachedTime;
+  private static TrackWrapper _cachedTrack;
+
+  private static void resetCache()
+  {
+    _cachedIterator = null;
+    _cachedValue = null;
+    _cachedTime = null;
+    _cachedTrack = null;
+  }
+
+  private static FixWrapper getNearestPositionOnTargetTrack(
+      final TrackWrapper host, final HiResDate dtg)
+  {
+    final FixWrapper res;
+
+    // check we're in the period for the track
+    if (dtg.greaterThanOrEqualTo(host.getStartDTG())
+        && dtg.lessThanOrEqualTo(host.getEndDTG()))
+    {
+      // ok, worth trying
+      boolean needReset = false;
+      if (host != _cachedTrack)
+      {
+        needReset = true;
+      }
+
+      if (_cachedTime != null && dtg.lessThan(_cachedTime))
+      {
+        needReset = true;
+      }
+
+      if (needReset)
+      {
+        _cachedValue = null;
+        _cachedTrack = host;
+        _cachedIterator = null;
+      }
+
+      if (_cachedIterator == null)
+      {
+        _cachedIterator = _cachedTrack.getPositionIterator();
+      }
+
+      if (_cachedValue != null
+          && _cachedValue.getDTG().greaterThanOrEqualTo(dtg))
+      {
+        _cachedTime = dtg;
+        return _cachedValue;
+      }
+      else
+      {
+        // carry on walking forward
+        while (_cachedIterator.hasMoreElements())
+        {
+          _cachedTime = dtg;
+          _cachedValue = (FixWrapper) _cachedIterator.nextElement();
+          if (_cachedValue.getDateTimeGroup().greaterThanOrEqualTo(dtg))
+          {
+            return _cachedValue;
+          }
+        }
+      }
+      // failed to find it
+      res = null;
+    }
+    else
+    {
+      // out of period
+      res = null;
+    }
+
+    return res;
+  }
+
   /**
    * sort out data of interest
    * 
@@ -132,6 +209,10 @@ public final class StackedDotHelper
         if (!onlyVis || (onlyVis && wrapper.getVisible()))
         {
           final Enumeration<Editable> cuts = wrapper.elements();
+
+          // we're walking through ownship track again, so reset the cache
+          resetCache();
+
           while (cuts.hasMoreElements())
           {
             final SensorContactWrapper scw =
@@ -182,35 +263,53 @@ public final class StackedDotHelper
                 }
               }
 
-              final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-              if ((matches != null) && (matches.length > 0)
-                  && (targetFix != null))
+              if (targetFix != null)
               {
-                final FixWrapper hostFix = (FixWrapper) matches[0];
-
-                final Doublet thisDub =
-                    new Doublet(scw, targetFix, targetParent, hostFix);
-
-                // if we've no target track add all the points
-                if (targetTrack == null)
+                final FixWrapper hostFix;
+                final boolean newWay = false;
+                if (newWay)
                 {
-                  // store our data
-                  res.add(thisDub);
+                  hostFix =
+                      getNearestPositionOnTargetTrack(sensorHost, scw.getDTG());
                 }
                 else
                 {
-                  // if we've got a target track we only add points
-                  // for which we
-                  // have
-                  // a target location
-                  if (targetFix != null)
+                  Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+                  if (matches != null && matches.length == 1)
+                  {
+                    hostFix = (FixWrapper) matches[0];
+                  }
+                  else
+                  {
+                    hostFix = null;
+                  }
+                }
+                if ((hostFix != null))
+                {
+
+                  final Doublet thisDub =
+                      new Doublet(scw, targetFix, targetParent, hostFix);
+
+                  // if we've no target track add all the points
+                  if (targetTrack == null)
                   {
                     // store our data
                     res.add(thisDub);
                   }
-                } // if we know the track
-              } // if there are any matching items
-              // if we find a match
+                  else
+                  {
+                    // if we've got a target track we only add points
+                    // for which we
+                    // have
+                    // a target location
+                    if (targetFix != null)
+                    {
+                      // store our data
+                      res.add(thisDub);
+                    }
+                  } // if we know the track
+                } // if there are any matching items
+              } // if we find a match
             } // if cut is visible
           } // loop through cuts
         } // if sensor is visible
@@ -235,7 +334,10 @@ public final class StackedDotHelper
         while (theElements.hasMoreElements())
         {
           final TrackSegment ts = (TrackSegment) theElements.nextElement();
-          _theSegments.add(ts);
+          if (ts.getVisible())
+          {
+            _theSegments.add(ts);
+          }
         }
 
       }
