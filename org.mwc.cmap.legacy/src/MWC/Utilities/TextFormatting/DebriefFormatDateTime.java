@@ -43,7 +43,7 @@ public class DebriefFormatDateTime
      * different time-zone or daylight savings mode
      */
     @SuppressWarnings("deprecation")
-    public void not_testPadding()
+    public void notTestPadding()
     {
       HiResDate val = parseThis("700101", "010000");
       assertEquals("correct date", new Date(70, 00, 01, 02, 00, 00), val
