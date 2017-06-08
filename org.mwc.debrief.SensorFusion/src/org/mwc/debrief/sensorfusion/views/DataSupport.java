@@ -486,7 +486,7 @@ public class DataSupport
     final ColouredDataItem cd =
         new ColouredDataItem(
             new FixedMillisecond(hiResDate.getDate().getTime()), val, color,
-            connectToPrevious, null, true);
+            connectToPrevious, null, true, true);
 
     return cd;
   }
