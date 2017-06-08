@@ -153,6 +153,35 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
     // ok, scale this shape;
     return newShape;
   }
+  
+  
+
+  @Override
+  public boolean getItemShapeFilled(int row, int column)
+  {
+    final XYDataset data = _myPlot.getDataset();
+
+    boolean res = super.getItemShapeVisible(row, column);
+
+    if (data instanceof TimeSeriesCollection)
+    {
+      final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
+      // get the data series
+      final TimeSeries bts = tsc.getSeries(row);
+      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+      if (tsdp instanceof ColouredDataItem)
+      {
+        final ColouredDataItem cdi = (ColouredDataItem) tsdp;
+        // is the base renderer set to show all
+        if (this.getBaseShapesVisible() && cdi.isShapeFilled())
+          res = true;
+        else
+          res = false;
+      }
+    }
+
+    return res;
+  }
 
   @Override
   public boolean getItemShapeVisible(int row, int column)
