@@ -18,4 +18,10 @@
             id="org.mwc.debrief.track_shift.views.FrequencyResidualsView">
       </view>         
    </extension>
+   <extension
+         point="org.mwc.cmap.core.RightClickSupport">
+      <helper
+            class="org.mwc.debrief.track_shift.operations.ResolveAmbiguity">
+      </helper>
+   </extension>
 </plugin>
