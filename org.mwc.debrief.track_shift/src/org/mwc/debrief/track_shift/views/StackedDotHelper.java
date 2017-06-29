@@ -453,8 +453,10 @@ public final class StackedDotHelper
 
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
+    final TimeSeries ambigErrorValues =
+        new TimeSeries(_primaryTrack.getName() + "(A)");
     final TimeSeries measuredValues = new TimeSeries("Measured");
-    final TimeSeries ambigValues = new TimeSeries("Ambiguous Bearing");
+    final TimeSeries ambigValues = new TimeSeries("Measured (Ambiguous)");
     final TimeSeries calculatedValues = new TimeSeries("Calculated");
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
@@ -464,6 +466,7 @@ public final class StackedDotHelper
     // createa list of series, so we can pause their updates
     List<Series> sList = new Vector<Series>();
     sList.add(errorValues);
+    sList.add(ambigErrorValues);
     sList.add(measuredValues);
     sList.add(ambigValues);
     sList.add(calculatedValues);
@@ -543,8 +546,8 @@ public final class StackedDotHelper
                 ambigBearing -= 360;
 
             final ColouredDataItem amBearing =
-                new ColouredDataItem(thisMilli, ambigBearing, thisColor, false,
-                    null, true, parentIsNotDynamic);
+                new ColouredDataItem(thisMilli, ambigBearing, thisColor
+                    .darker(), false, null, true, parentIsNotDynamic);
             ambigValues.addOrUpdate(amBearing);
           }
 
@@ -557,12 +560,12 @@ public final class StackedDotHelper
             {
               double calculatedBearing = thisD.getCalculatedBearing(null, null);
               final Color calcColor = thisD.getTarget().getColor();
-              final double thisError =
+              final double thisTrueError =
                   thisD.calculateBearingError(measuredBearing,
                       calculatedBearing);
-              final ColouredDataItem newError =
-                  new ColouredDataItem(thisMilli, thisError, thisColor, false,
-                      null, true, parentIsNotDynamic);
+              final ColouredDataItem newTrueError =
+                  new ColouredDataItem(thisMilli, thisTrueError, thisColor,
+                      false, null, true, parentIsNotDynamic);
 
               if (flipAxes)
                 if (calculatedBearing > 180)
@@ -572,8 +575,25 @@ public final class StackedDotHelper
                   new ColouredDataItem(thisMilli, calculatedBearing, calcColor,
                       true, null, true, parentIsNotDynamic);
 
-              errorValues.addOrUpdate(newError);
+              errorValues.addOrUpdate(newTrueError);
               calculatedValues.addOrUpdate(cBearing);
+
+              // and the ambiguous error
+              if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+              {
+                if (flipAxes)
+                  if (ambigBearing > 180)
+                    ambigBearing -= 360;
+
+                final double thisAmnigError =
+                    thisD
+                        .calculateBearingError(ambigBearing, calculatedBearing);
+                final ColouredDataItem newAmbigError =
+                    new ColouredDataItem(thisMilli, thisAmnigError, thisColor
+                        .darker(), false, null, true, parentIsNotDynamic);
+                ambigErrorValues.addOrUpdate(newAmbigError);
+              }
+
             }
           }
 
@@ -841,6 +861,8 @@ public final class StackedDotHelper
       // ok, add these new series
       if (errorValues.getItemCount() > 0)
         errorSeries.addSeries(errorValues);
+      if (ambigErrorValues.getItemCount() > 0)
+        errorSeries.addSeries(ambigErrorValues);
 
       actualSeries.addSeries(measuredValues);
 
