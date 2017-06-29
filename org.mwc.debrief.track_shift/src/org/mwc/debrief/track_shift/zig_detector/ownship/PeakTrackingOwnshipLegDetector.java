@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
-import org.mwc.debrief.track_shift.Activator;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
 
@@ -244,7 +244,7 @@ public class PeakTrackingOwnshipLegDetector implements IOwnshipLegDetector
 
     if (Double.isNaN(meanWhole) || Double.isNaN(meanHalf))
     {
-      final Activator def = Activator.getDefault();
+      final TrackShiftActivator def = TrackShiftActivator.getDefault();
       if (def != null)
       {
         def.getLog()
