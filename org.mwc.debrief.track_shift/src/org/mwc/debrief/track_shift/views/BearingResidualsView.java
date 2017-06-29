@@ -27,7 +27,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.track_shift.Activator;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GenericData.HiResDate;
@@ -67,7 +67,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     scaleError.setChecked(false);
     scaleError
         .setToolTipText("Show symbol scaled to per-cut error when dragging");
-    scaleError.setImageDescriptor(Activator
+    scaleError.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/scale.png"));
 
     // see if there's an existing setting for this.
@@ -86,7 +86,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         };
     flipCourse.setChecked(false);
     flipCourse.setToolTipText("Use +/- 180 scale for absolute data");
-    flipCourse.setImageDescriptor(Activator
+    flipCourse.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/swap_axis.png"));
 
     // now the course action
@@ -102,7 +102,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     };
     showCourse.setChecked(true);
     showCourse.setToolTipText("Show ownship course in overview chart");
-    showCourse.setImageDescriptor(Activator
+    showCourse.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/ShowCourse.png"));
 
     _autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)

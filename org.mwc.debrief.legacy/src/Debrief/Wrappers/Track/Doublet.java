@@ -61,7 +61,7 @@ public final class Doublet implements Comparable<Doublet>
 		}
 	}
 
-	public static final double INVALID_BASE_FREQUENCY = -1d;
+	public static final double INVALID_BASE_FREQUENCY = Double.NaN;
 
 	/**
 	 * Calculate the current doppler shift between the two positons
