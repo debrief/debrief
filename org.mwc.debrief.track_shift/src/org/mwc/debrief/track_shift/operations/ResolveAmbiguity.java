@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -233,4 +235,13 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
 
   }
 
+  public static class TestMe extends TestCase
+  {
+    public void testGenerate()
+    {
+      // TODO: test the class
+      fail("not implemented");
+    }
+  }
+  
 }
