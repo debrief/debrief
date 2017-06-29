@@ -456,7 +456,7 @@ public final class StackedDotHelper
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
     final TimeSeries measuredValues = new TimeSeries("Measured");
-    final TimeSeries ambigValues = new TimeSeries("Ambiguous Bearing");
+    final TimeSeries ambigValues = new TimeSeries("Measured (Ambiguous)");
     final TimeSeries calculatedValues = new TimeSeries("Calculated");
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
