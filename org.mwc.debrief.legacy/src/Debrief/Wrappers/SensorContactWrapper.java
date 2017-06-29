@@ -154,6 +154,7 @@ import java.beans.PropertyDescriptor;
 import junit.framework.Assert;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
+import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -688,7 +689,7 @@ public final class SensorContactWrapper extends
     else
     {
       _hasAmbiguous = false;
-      _bearingAmbig = 0d;
+      _bearingAmbig = Doublet.INVALID_BASE_FREQUENCY;
     }
 
     // do we have frequency data?
@@ -700,7 +701,7 @@ public final class SensorContactWrapper extends
     else
     {
       _hasFreq = false;
-      _freq = 0d;
+      _freq = Doublet.INVALID_BASE_FREQUENCY;
     }
 
     // store the origin, and update the far end if required
