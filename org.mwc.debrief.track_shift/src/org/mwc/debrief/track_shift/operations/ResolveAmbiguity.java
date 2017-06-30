@@ -41,13 +41,13 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
     public void operate(SensorContactWrapper contact);
   }
 
-  private static class ResolveAmbiguityOperation extends CMAPOperation
+  private static class OperateOnSourceSensor extends CMAPOperation
   {
     final private List<RelativeTMASegment> _segments;
     final private IOperator _operator;
     final private Layers _layers;
 
-    public ResolveAmbiguityOperation(final Layers layers, final String title,
+    public OperateOnSourceSensor(final Layers layers, final String title,
         final List<RelativeTMASegment> segments, final IOperator operator)
     {
       super(title);
@@ -138,7 +138,7 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
         @Override
         public void run()
         {
-          CorePlugin.run(new ResolveAmbiguityOperation(theLayers,
+          CorePlugin.run(new OperateOnSourceSensor(theLayers,
               "Change color to " + t.name, segments, new IOperator()
               {
                 @Override
@@ -149,6 +149,35 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
               }));
         }
       });
+    }
+  }
+
+  private void collateSegments(final List<RelativeTMASegment> allSegments,
+      final List<RelativeTMASegment> ambigSegments,
+      final List<RelativeTMASegment> nonAmbigSegments)
+  {
+    // ok, sort out which ones have ambiguous data
+    for (final RelativeTMASegment seg : allSegments)
+    {
+      // try to get the sensor
+      final SensorWrapper sensor = seg.getReferenceSensor();
+
+      // try to get the cut nearest the start of this segment
+      final Watchable[] nearest = sensor.getNearestTo(seg.getDTG_Start());
+      if (nearest != null && nearest.length > 0)
+      {
+        final SensorContactWrapper scw = (SensorContactWrapper) nearest[0];
+
+        // is it ambiguous
+        if (Double.isNaN(scw.getAmbiguousBearing()))
+        {
+          nonAmbigSegments.add(seg);
+        }
+        else
+        {
+          ambigSegments.add(seg);
+        }
+      }
     }
   }
 
@@ -185,29 +214,7 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
     }
     else
     {
-      // ok, sort out which ones have ambiguous data
-      for (final RelativeTMASegment seg : allSegments)
-      {
-        // try to get the sensor
-        final SensorWrapper sensor = seg.getReferenceSensor();
-
-        // try to get the cut nearest the start of this segment
-        final Watchable[] nearest = sensor.getNearestTo(seg.getDTG_Start());
-        if (nearest != null && nearest.length > 0)
-        {
-          final SensorContactWrapper scw = (SensorContactWrapper) nearest[0];
-
-          // is it ambiguous
-          if (Double.isNaN(scw.getAmbiguousBearing()))
-          {
-            nonAmbigSegments.add(seg);
-          }
-          else
-          {
-            ambigSegments.add(seg);
-          }
-        }
-      }
+      collateSegments(allSegments, ambigSegments, nonAmbigSegments);
     }
 
     // we will only get here if the segments all have ambiguous data
@@ -218,62 +225,38 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
     if (!ambigSegments.isEmpty())
     {
       // generate the operations
-      parent.add(new Action("Keep Port bearings", DebriefPlugin
-          .getImageDescriptor("icons/16/sensor_contact.png"))
-      {
-        @Override
-        public void run()
-        {
-          CorePlugin.run(new ResolveAmbiguityOperation(theLayers,
-              "Keep Port bearings", ambigSegments, new IOperator()
-              {
+      parent.add(wrapThis(theLayers, "Keep Port bearings",
+          "icons/16/sensor_contact.png", "Keep Port bearings", ambigSegments,
+          new IOperator()
+          {
 
-                @Override
-                public void operate(final SensorContactWrapper contact)
-                {
-                  contact.keepPortBearing();
-                }
-              }));
-        }
-      });
-      parent.add(new Action("Keep Starboard bearings", DebriefPlugin
-          .getImageDescriptor("icons/16/sensor_contact_inv.png"))
-      {
-        @Override
-        public void run()
-        {
-          CorePlugin.run(new ResolveAmbiguityOperation(theLayers,
-              "Keep Starboard bearings", ambigSegments, new IOperator()
-              {
+            @Override
+            public void operate(final SensorContactWrapper contact)
+            {
+              contact.keepPortBearing();
+            }
+          }));
+      parent.add(wrapThis(theLayers, "Keep Starboard bearings",
+          "icons/16/sensor_contact_inv.png", "Keep Starboard bearings",
+          ambigSegments, new IOperator()
+          {
 
-                @Override
-                public void operate(final SensorContactWrapper contact)
-                {
-                  contact.keepStarboardBearing();
-                }
-              }));
-
-        }
-      });
-      parent.add(new Action("Restore ambiguous bearing bearings", DebriefPlugin
-          .getImageDescriptor("icons/16/ascend.png"))
-      {
-        @Override
-        public void run()
-        {
-          CorePlugin.run(new ResolveAmbiguityOperation(theLayers,
-              "Restore ambiguous bearings", ambigSegments, new IOperator()
-              {
-
-                @Override
-                public void operate(final SensorContactWrapper contact)
-                {
-                  contact.setHasAmbiguousBearing(true);
-                }
-              }));
-
-        }
-      });
+            @Override
+            public void operate(final SensorContactWrapper contact)
+            {
+              contact.keepStarboardBearing();
+            }
+          }));
+      parent.add(wrapThis(theLayers, "Restore ambiguous bearing bearings",
+          "icons/16/ascend.png", "Restore ambiguous bearings", ambigSegments,
+          new IOperator()
+          {
+            @Override
+            public void operate(final SensorContactWrapper contact)
+            {
+              contact.setHasAmbiguousBearing(true);
+            }
+          }));
 
       final MenuManager changeColor =
           new MenuManager("Change sensor cut color to", DebriefPlugin
@@ -291,47 +274,53 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
   private Action generateAmbigBearings(final Layers theLayers,
       final List<RelativeTMASegment> segments)
   {
-    return new Action("Calculate ambiguous bearing", DebriefPlugin
-        .getImageDescriptor("icons/16/calculator.png"))
+    return wrapThis(theLayers, "Calculate ambiguous bearing",
+        "icons/16/calculator.png", "Generate ambiguous bearings (for testing)",
+        segments, new IOperator()
+        {
+
+          @Override
+          public void operate(final SensorContactWrapper contact)
+          {
+            // ok, we need to find the ownship course
+            final Watchable[] nearest =
+                contact.getSensor().getHost().getNearestTo(contact.getDTG());
+            if (nearest != null && nearest.length > 0)
+            {
+              final FixWrapper fix = (FixWrapper) nearest[0];
+              final double course = fix.getCourseDegs();
+              final double brg = contact.getBearing();
+              final double relBrg = brg - course;
+              double ambigBrg = course - relBrg;
+
+              // trim the bearing
+              while (ambigBrg > 360)
+              {
+                ambigBrg -= 360;
+              }
+              while (ambigBrg < 0)
+              {
+                ambigBrg += 360;
+              }
+
+              contact.setAmbiguousBearing(ambigBrg);
+              contact.setHasAmbiguousBearing(true);
+            }
+          }
+        });
+  }
+
+  private Action wrapThis(final Layers theLayers, final String title,
+      final String icon, final String description,
+      final List<RelativeTMASegment> segments, final IOperator operator)
+  {
+    return new Action(title, DebriefPlugin.getImageDescriptor(icon))
     {
       @Override
       public void run()
       {
-        CorePlugin.run(new ResolveAmbiguityOperation(theLayers,
-            "Generate ambiguous bearings (for testing)", segments,
-            new IOperator()
-            {
-
-              @Override
-              public void operate(final SensorContactWrapper contact)
-              {
-                // ok, we need to find the ownship course
-                final Watchable[] nearest =
-                    contact.getSensor().getHost()
-                        .getNearestTo(contact.getDTG());
-                if (nearest != null && nearest.length > 0)
-                {
-                  final FixWrapper fix = (FixWrapper) nearest[0];
-                  final double course = fix.getCourseDegs();
-                  final double brg = contact.getBearing();
-                  final double relBrg = brg - course;
-                  double ambigBrg = course - relBrg;
-
-                  // trim the bearing
-                  while (ambigBrg > 360)
-                  {
-                    ambigBrg -= 360;
-                  }
-                  while (ambigBrg < 0)
-                  {
-                    ambigBrg += 360;
-                  }
-
-                  contact.setAmbiguousBearing(ambigBrg);
-                  contact.setHasAmbiguousBearing(true);
-                }
-              }
-            }));
+        CorePlugin.run(new OperateOnSourceSensor(theLayers, description,
+            segments, operator));
 
       }
     };
