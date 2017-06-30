@@ -866,6 +866,12 @@ public final class StackedDotHelper
                 }
                 lastCourse = tgtCourse;
 
+                // trim to +/- domain if we're flipping axes
+                if (flipAxes && tgtCourse > 180)
+                {
+                  tgtCourse -= 360;
+                }
+
                 // we use the raw color for infills, to help find which
                 // infill we're referring to (esp in random infills)
                 final Color courseColor;
