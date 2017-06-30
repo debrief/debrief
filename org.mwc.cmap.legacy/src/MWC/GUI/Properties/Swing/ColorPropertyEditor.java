@@ -109,18 +109,18 @@ public class ColorPropertyEditor extends
   // member functions
   ////////////////////////////////////////////////////////////
 
-  /** initialise the list of colours
-   */
-  protected Vector<NamedColor> createColors()
-  {
-    final Vector<NamedColor> res = super.createColors();
-
-    // and append our custom item
-    res.add(new NamedColor(CUSTOM_LABEL, Color.white));
-
-    return res;
-
-  }
+//  /** initialise the list of colours
+//   */
+//  public Vector<NamedColor> createColors()
+//  {
+//    final Vector<NamedColor> res = super.createColors();
+//
+//    // and append our custom item
+//    res.add(new NamedColor(CUSTOM_LABEL, Color.white));
+//
+//    return res;
+//
+//  }
 
   /** whether we can provide a custom editor component
    * @return yes, of course
@@ -296,7 +296,7 @@ public class ColorPropertyEditor extends
     private int _currentValue;
 
     @SuppressWarnings("unchecked")
-		public TickableComboBox(final java.util.Vector<?> list)
+		public TickableComboBox(final Vector<?> list)
     {
       super(list);
       this.setRenderer(new ColorRenderer());

@@ -523,6 +523,29 @@ public final class StackedDotHelper
           final FixedMillisecond thisMilli =
               new FixedMillisecond(currentTime.getDate().getTime());
 
+          final boolean hasAmbiguous = !Double.isNaN(ambigBearing);
+          final boolean bearingToPort;
+          if (hasAmbiguous)
+          {
+            // ok, we need to make the color darker if it's starboard
+            bearingToPort = thisD.getSensorCut().isBearingToPort();
+          }
+          else
+          {
+            bearingToPort = true;
+          }
+
+          // make the color darker, if it's to stbg
+          final Color bearingColor;
+          if (bearingToPort)
+          {
+            bearingColor = thisColor;
+          }
+          else
+          {
+            bearingColor = thisColor.darker();
+          }
+
           // put the measured bearing back in the positive domain
           if (measuredBearing < 0)
             measuredBearing += 360d;
@@ -533,21 +556,37 @@ public final class StackedDotHelper
               measuredBearing -= 360;
 
           final ColouredDataItem mBearing =
-              new ColouredDataItem(thisMilli, measuredBearing, thisColor,
+              new ColouredDataItem(thisMilli, measuredBearing, bearingColor,
                   false, null, true, parentIsNotDynamic);
 
           // and add them to the series
           measuredValues.addOrUpdate(mBearing);
 
-          if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+          if (hasAmbiguous)
           {
-            if (flipAxes)
-              if (ambigBearing > 180)
-                ambigBearing -= 360;
+            // put the ambig baering into the correct domain
+            while (ambigBearing < 0)
+            {
+              ambigBearing += 360;
+            }
+
+            if (flipAxes && ambigBearing > 180)
+              ambigBearing -= 360;
+
+            // make the color darker, if we're on the stbd bearnig
+            final Color ambigColor;
+            if (bearingToPort)
+            {
+              ambigColor = thisColor.darker();
+            }
+            else
+            {
+              ambigColor = thisColor;
+            }
 
             final ColouredDataItem amBearing =
-                new ColouredDataItem(thisMilli, ambigBearing, thisColor
-                    .darker(), false, null, true, parentIsNotDynamic);
+                new ColouredDataItem(thisMilli, ambigBearing, ambigColor,
+                    false, null, true, parentIsNotDynamic);
             ambigValues.addOrUpdate(amBearing);
           }
 
@@ -559,38 +598,59 @@ public final class StackedDotHelper
             if (thisD.getTarget().getFixLocation() != null)
             {
               double calculatedBearing = thisD.getCalculatedBearing(null, null);
-              final Color calcColor = thisD.getTarget().getColor();
+              final Color errorColor = thisD.getTarget().getColor();
               final double thisTrueError =
                   thisD.calculateBearingError(measuredBearing,
                       calculatedBearing);
-              final ColouredDataItem newTrueError =
-                  new ColouredDataItem(thisMilli, thisTrueError, thisColor,
-                      false, null, true, parentIsNotDynamic);
 
               if (flipAxes)
                 if (calculatedBearing > 180)
                   calculatedBearing -= 360;
 
+              final Color brgColor;
+              if (bearingToPort)
+              {
+                brgColor = errorColor;
+              }
+              else
+              {
+                brgColor = errorColor.darker();
+              }
+
+              final ColouredDataItem newTrueError =
+                  new ColouredDataItem(thisMilli, thisTrueError, brgColor,
+                      false, null, true, parentIsNotDynamic);
+
               final ColouredDataItem cBearing =
-                  new ColouredDataItem(thisMilli, calculatedBearing, calcColor,
+                  new ColouredDataItem(thisMilli, calculatedBearing, brgColor,
                       true, null, true, parentIsNotDynamic);
 
               errorValues.addOrUpdate(newTrueError);
               calculatedValues.addOrUpdate(cBearing);
 
               // and the ambiguous error
-              if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+              if (hasAmbiguous)
               {
                 if (flipAxes)
                   if (ambigBearing > 180)
                     ambigBearing -= 360;
 
+                final Color ambigColor;
+                if (bearingToPort)
+                {
+                  ambigColor = errorColor.darker();
+                }
+                else
+                {
+                  ambigColor = errorColor;
+                }
+
                 final double thisAmnigError =
                     thisD
                         .calculateBearingError(ambigBearing, calculatedBearing);
                 final ColouredDataItem newAmbigError =
-                    new ColouredDataItem(thisMilli, thisAmnigError, thisColor
-                        .darker(), false, null, true, parentIsNotDynamic);
+                    new ColouredDataItem(thisMilli, thisAmnigError, ambigColor,
+                        false, null, true, parentIsNotDynamic);
                 ambigErrorValues.addOrUpdate(newAmbigError);
               }
 
@@ -1229,7 +1289,7 @@ public final class StackedDotHelper
 
           // did we get a base frequency? We may have a track
           // with a section of data that doesn't have frequency, you see.
-          if (baseFreq != Doublet.INVALID_BASE_FREQUENCY)
+          if (!Double.isNaN(baseFreq))
           {
             final double predictedFreq = thisD.getPredictedFrequency();
             final double thisError =

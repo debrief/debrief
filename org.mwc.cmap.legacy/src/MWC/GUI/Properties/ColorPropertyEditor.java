@@ -129,7 +129,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
   /**
    * initialise the list of colours
    */
-  protected Vector<NamedColor> createColors()
+  public static Vector<NamedColor> createColors()
   {
     final Vector<NamedColor> theColors = new Vector<NamedColor>();
     theColors.addElement(new NamedColor("Red", DebriefColors.RED));
@@ -284,7 +284,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
   /**
    * inner class, which contains a colour together with its name
    */
-  public class NamedColor
+  public static class NamedColor
   {
     /**
      * name of this colour

@@ -23,6 +23,8 @@ import org.osgi.framework.BundleContext;
  */
 public class TrackShiftActivator extends AbstractUIPlugin {
 
+  public static String PLUGIN_ID = "org.mwc.debrief.track_shift";
+  
 	//The shared instance.
 	private static TrackShiftActivator plugin;
 	

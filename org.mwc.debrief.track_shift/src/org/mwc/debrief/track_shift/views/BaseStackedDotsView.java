@@ -104,7 +104,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
-import org.mwc.debrief.track_shift.Activator;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -1145,13 +1145,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // get a logger to use
     final ILog log;
-    if (Activator.getDefault() == null)
+    if (TrackShiftActivator.getDefault() == null)
     {
-      log = new Activator().getLog();
+      log = new TrackShiftActivator().getLog();
     }
     else
     {
-      log = Activator.getDefault().getLog();
+      log = TrackShiftActivator.getDefault().getLog();
     }
 
     // ok, loop through the ownship legs
@@ -1167,7 +1167,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           thisLegBearings);
 
       // slice the leg
-      slicer.sliceThis(log, Activator.PLUGIN_ID, "Some scenario", wholeStart,
+      slicer.sliceThis(log, TrackShiftActivator.PLUGIN_ID, "Some scenario", wholeStart,
           wholeEnd, legStorer, zigStorer, RMS_ZIG_RATIO, optimiseTolerance,
           thisLegTimes, thisLegBearings);
     }
@@ -2005,7 +2005,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     _showLinePlot.setChecked(true);
     _showLinePlot.setToolTipText("Show the actuals plot");
-    _showLinePlot.setImageDescriptor(Activator
+    _showLinePlot.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/stacked_lines.png"));
 
     _showDotPlot = new Action("Error plot", IAction.AS_CHECK_BOX)
@@ -2032,7 +2032,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     _showDotPlot.setChecked(true);
     _showDotPlot.setToolTipText("Show the error plot");
-    _showDotPlot.setImageDescriptor(Activator
+    _showDotPlot.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/stacked_dots.png"));
 
     _showTargetOverview = new Action("Target Overview", IAction.AS_CHECK_BOX)
@@ -2053,7 +2053,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     _showTargetOverview.setChecked(true);
     _showTargetOverview.setToolTipText("Show the overview plot");
-    _showTargetOverview.setImageDescriptor(Activator
+    _showTargetOverview.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/tgt_overview.png"));
 
     // get an error logger
@@ -2084,7 +2084,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _onlyVisible.setText("Only plot visible data");
     _onlyVisible.setChecked(true);
     _onlyVisible.setToolTipText("Only draw dots for visible data points");
-    _onlyVisible.setImageDescriptor(Activator
+    _onlyVisible.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/reveal.png"));
 
     _selectOnClick =
