@@ -2,9 +2,9 @@ package org.mwc.debrief.track_shift.operations;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-
-import junit.framework.TestCase;
+import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -21,8 +21,10 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.DebriefPlugin;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import MWC.GUI.Editable;
@@ -76,6 +78,7 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
+      final Set<TrackWrapper> tracks = new HashSet<TrackWrapper>();
       for (final RelativeTMASegment t : _segments)
       {
         final SensorWrapper sensor = t.getReferenceSensor();
@@ -91,7 +94,13 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
           }
         }
 
-        _layers.fireReformatted(sensor.getHost());
+        tracks.add(sensor.getHost());
+      }
+      
+      // and fire updates (probably just the one)
+      for(TrackWrapper t: tracks)
+      {
+        _layers.fireReformatted(t);
       }
 
       return Status.OK_STATUS;
@@ -232,16 +241,46 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
 
       }
     });
-
-  }
-
-  public static class TestMe extends TestCase
-  {
-    public void testGenerate()
+    holder.add(new Action("TEST calculate ambiguous bearing bearings")
     {
-      // TODO: test the class
-      fail("not implemented");
-    }
+      @Override
+      public void run()
+      {
+        CorePlugin.run(new ResolveAmbiguityOperation(theLayers,
+            "Generate ambiguous bearings", segments, new IOperator()
+            {
+
+              @Override
+              public void operate(final SensorContactWrapper contact)
+              {
+                // ok, we need to find the ownship course
+                Watchable[] nearest = contact.getSensor().getHost().getNearestTo(contact.getDTG());
+                if(nearest != null && nearest.length > 0)
+                {
+                  FixWrapper fix = (FixWrapper) nearest[0];
+                  double course = fix.getCourseDegs();
+                  double brg = contact.getBearing();
+                  double relBrg = brg - course;
+                  double ambigBrg = course - relBrg;
+                  
+                  // trim the bearing
+                  while(ambigBrg > 360)
+                  {
+                    ambigBrg -= 360;
+                  }
+                  while(ambigBrg < 0)
+                  {
+                    ambigBrg += 360;
+                  }
+                  
+                  contact.setAmbiguousBearing(ambigBrg);
+                  contact.setHasAmbiguousBearing(true);
+                }
+              }
+            }));
+
+      }
+    });
   }
-  
+
 }
