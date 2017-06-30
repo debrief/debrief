@@ -44,7 +44,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private static final String SHOW_COURSE = "SHOW_COURSE";
   private static final String SCALE_ERROR = "SCALE_ERROR";
   private Action showCourse;
-  private Action flipCourse;
+  private Action relativeAxes;
   private Action scaleError;
 
   // protected Action _5degResize;
@@ -73,20 +73,35 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // see if there's an existing setting for this.
 
     // now the course action
-    flipCourse =
+    relativeAxes =
         new Action("Use +/- 180 scale for absolute data", IAction.AS_CHECK_BOX)
         {
           @Override
           public void run()
           {
             super.run();
+            
+            final double minVal;
+            final double maxVal;
+            if(relativeAxes.isChecked())
+            {
+              minVal = -180d;
+              maxVal = 180d;
+            }
+            else
+            {
+              minVal = 0d;
+              maxVal = 360d;
+            }
+            
+            _overviewCourseRenderer.setRange(minVal, maxVal);
 
             processShowCourse();
           }
         };
-    flipCourse.setChecked(false);
-    flipCourse.setToolTipText("Use +/- 180 scale for absolute data");
-    flipCourse.setImageDescriptor(TrackShiftActivator
+    relativeAxes.setChecked(false);
+    relativeAxes.setToolTipText("Use +/- 180 scale for absolute data");
+    relativeAxes.setImageDescriptor(TrackShiftActivator
         .getImageDescriptor("icons/24/swap_axis.png"));
 
     // now the course action
@@ -145,7 +160,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   @Override
   protected void fillLocalToolBar(final IToolBarManager manager)
   {
-    manager.add(flipCourse);
+    manager.add(relativeAxes);
     manager.add(scaleError);
     super.fillLocalToolBar(manager);
 
@@ -153,7 +168,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   protected void fillLocalPullDown(final IMenuManager manager)
   {
-    manager.add(flipCourse);
+    manager.add(relativeAxes);
     manager.add(scaleError);
     super.fillLocalPullDown(manager);
   }
@@ -173,7 +188,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // update the current datasets
     _myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverviewPlot,
         _myTrackDataProvider, _onlyVisible.isChecked(), showCourse.isChecked(),
-        flipCourse.isChecked(), _holder, this, updateDoublets,
+        relativeAxes.isChecked(), _holder, this, updateDoublets,
         _targetCourseSeries, _targetSpeedSeries, ownshipCourseSeries,
         targetBearingSeries, targetCalculatedSeries, _overviewSpeedRenderer,
         _overviewCourseRenderer);
