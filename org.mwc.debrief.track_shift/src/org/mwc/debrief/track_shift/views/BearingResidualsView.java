@@ -80,6 +80,21 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           public void run()
           {
             super.run();
+            
+            final double minVal;
+            final double maxVal;
+            if(flipCourse.isChecked())
+            {
+              minVal = -180d;
+              maxVal = 180d;
+            }
+            else
+            {
+              minVal = 0d;
+              maxVal = 360d;
+            }
+            
+            _overviewCourseRenderer.setRange(minVal, maxVal);
 
             processShowCourse();
           }

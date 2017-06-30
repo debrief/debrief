@@ -17,9 +17,9 @@ import org.jfree.ui.RectangleEdge;
 public class WrappingResidualRenderer extends ResidualXYItemRenderer
 {
   
-  final double min;
-  final double max;
-  final double range;
+  double min;
+  double max;
+  double range;
   LinearInterpolator interpolator = new LinearInterpolator();
   final OverflowCondition overflowCondition;
 
@@ -291,7 +291,7 @@ public class WrappingResidualRenderer extends ResidualXYItemRenderer
         y0 = y0 > max ? y0 - range : y0;
         y1 = y1 > max ? y1 - range : y1;
 
-        LinearFunction lf = interpolator.interpolate(new double[]{y0, y1 + (max - min)}, new double[]{x0, x1});;
+        LinearFunction lf = interpolator.interpolate(new double[]{y0, y1 + (max - min)}, new double[]{x0, x1});
         double xmid = lf.value(max);
         drawPrimaryLine(state, g2, plot, x0, y0, xmid, max, pass, series, item,
             domainAxis, rangeAxis, dataArea);
@@ -352,5 +352,17 @@ public class WrappingResidualRenderer extends ResidualXYItemRenderer
     {
       drawFirstPassShape(g2, pass, series, item, state.workingLine);
     }
+  }
+
+  /** update the wrapping ranges
+   * 
+   * @param minVal
+   * @param maxVal
+   */
+  public void setRange(final double minVal, final double maxVal)
+  {
+    min = minVal;
+    max = maxVal;
+    range = max - min;
   }
 }
