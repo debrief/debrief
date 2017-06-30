@@ -841,8 +841,8 @@ public final class SensorContactWrapper extends
       setBearing(bearing2);
       setAmbiguousBearing(bearing1);
     }
-    
-    // aah, we've switched hte bearings, clear the cached  port flag
+
+    // aah, we've switched hte bearings, clear the cached port flag
     _cachedPortBearing = null;
 
     // remember we're morally ambiguous
@@ -1342,13 +1342,39 @@ public final class SensorContactWrapper extends
     if (this.getHasBearing())
     {
 
+      // see if we have ambiguous data
+      final boolean hasAmbig = !Double.isNaN(_bearingAmbig);
+
       // and convert to screen coords
       final WorldLocation theFarEnd =
           getFarEnd(dest.getProjection().getDataArea());
       final Point farEnd = dest.toScreen(theFarEnd);
 
+      final Color baseColor = getColor();
+
+      final Color bearingOneColor;
+      final Color bearingTwoColor;
+      if (hasAmbig && getHasAmbiguousBearing())
+      {
+        if (isBearingToPort())
+        {
+          bearingOneColor = baseColor;
+          bearingTwoColor = baseColor.darker();
+        }
+        else
+        {
+          bearingOneColor = baseColor.darker();
+          bearingTwoColor = baseColor;
+        }
+      }
+      else
+      {
+        bearingOneColor = baseColor;
+        bearingTwoColor = null;
+      }
+
       // set the colour
-      dest.setColor(getColor());
+      dest.setColor(bearingOneColor);
 
       // only use line styles if we are allowed to (it is a particular problem
       // when in snail mode)
@@ -1399,24 +1425,26 @@ public final class SensorContactWrapper extends
           _theLabel.setColor(getColor());
           _theLabel.paint(dest);
         }
+
+        // do we have an ambiguous bearing
+        if (this.getHasAmbiguousBearing())
+        {
+          dest.setColor(bearingTwoColor);
+
+          final WorldLocation theOtherFarEnd =
+              getAmbiguousFarEnd(dest.getProjection().getDataArea());
+          final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
+          // draw the line
+          dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
+        }
+
+        if (!keep_simple)
+        {
+
+          // restore the solid line style, for the next poor bugger
+          dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
+        }
       }
-    }
-
-    // do we have an ambiguous bearing
-    if (this.getHasAmbiguousBearing())
-    {
-      final WorldLocation theOtherFarEnd =
-          getAmbiguousFarEnd(dest.getProjection().getDataArea());
-      final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
-      // draw the line
-      dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
-    }
-
-    if (!keep_simple)
-    {
-
-      // restore the solid line style, for the next poor bugger
-      dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
     }
 
   }
@@ -1525,7 +1553,7 @@ public final class SensorContactWrapper extends
   public final void setHasAmbiguousBearing(final boolean val)
   {
     _hasAmbiguous = val;
-    
+
     // and clear the cached value
     _cachedPortBearing = null;
   }
