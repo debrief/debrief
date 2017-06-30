@@ -71,6 +71,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -295,7 +296,7 @@ public class ColorPropertyEditor extends
     private int _currentValue;
 
     @SuppressWarnings("unchecked")
-		public TickableComboBox(final java.util.Vector<?> list)
+		public TickableComboBox(final Vector<?> list)
     {
       super(list);
       this.setRenderer(new ColorRenderer());
