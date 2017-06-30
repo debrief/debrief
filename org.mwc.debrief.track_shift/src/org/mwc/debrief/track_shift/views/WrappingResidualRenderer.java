@@ -145,15 +145,15 @@ public class WrappingResidualRenderer extends ResidualXYItemRenderer
     public boolean isOverflow(double y0, double x0, double y1, double x1);
   }
 
-  double min;
+  private double min;
 
-  double max;
+  private double max;
 
-  double range;
+  private double range;
 
-  LinearInterpolator interpolator = new LinearInterpolator();
+  private LinearInterpolator interpolator = new LinearInterpolator();
 
-  final OverflowCondition overflowCondition;
+  private final OverflowCondition overflowCondition;
 
   /**
    * 
