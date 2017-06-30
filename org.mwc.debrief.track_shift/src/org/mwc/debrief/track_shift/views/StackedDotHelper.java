@@ -464,7 +464,7 @@ public final class StackedDotHelper
     final TimeSeries allCuts = new TimeSeries("Sensor cuts");
 
     // createa list of series, so we can pause their updates
-    List<Series> sList = new Vector<Series>();
+    List<TimeSeries> sList = new Vector<TimeSeries>();
     sList.add(errorValues);
     sList.add(ambigErrorValues);
     sList.add(measuredValues);
@@ -490,18 +490,22 @@ public final class StackedDotHelper
     {
 
       // now switch off updates
-      for (final Series series : sList)
-      {
-        series.setNotify(false);
-      }
       for (final TimeSeriesCollection series : tList)
       {
         series.setNotify(false);
+      }
+      for (final TimeSeries series : sList)
+      {
+        series.setNotify(false);
+        
+        // and clear the list
+        series.clear();        
       }
 
       // clear the existing target datasets
       targetCourseSeries.removeAllSeries();
       targetSpeedSeries.removeAllSeries();
+      
 
       // ok, run through the points on the primary track
       final Iterator<Doublet> iter = _primaryDoublets.iterator();
@@ -604,8 +608,17 @@ public final class StackedDotHelper
                       calculatedBearing);
 
               if (flipAxes)
+              {
                 if (calculatedBearing > 180)
                   calculatedBearing -= 360;
+              }
+              else
+              {
+                if (calculatedBearing < 0)
+                {
+                  calculatedBearing += 360;
+                }
+              }
 
               final Color brgColor;
               if (bearingToPort)
@@ -907,7 +920,7 @@ public final class StackedDotHelper
               _secondaryTrack.getEndDTG());
       for (final SensorContactWrapper cut : theBearings)
       {
-        final double theBearing;
+        double theBearing;
 
         // ensure it's in the positive domain
         if (cut.getBearing() < 0)
@@ -919,6 +932,22 @@ public final class StackedDotHelper
           theBearing = cut.getBearing();
         }
 
+        // put in the correct domain, if necessary
+        if (flipAxes)
+        {
+          if (theBearing > 180d)
+          {
+            theBearing -= 360d;
+          }
+        }
+        else
+        {
+          if (theBearing < 0)
+          {
+            theBearing += 360;
+          }
+        }
+        
         // ok, store it.
         allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut
             .getDTG().getDate().getTime()), theBearing));
