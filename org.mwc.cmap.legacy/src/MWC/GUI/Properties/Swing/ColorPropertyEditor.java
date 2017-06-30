@@ -71,7 +71,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -109,18 +108,18 @@ public class ColorPropertyEditor extends
   // member functions
   ////////////////////////////////////////////////////////////
 
-  /** initialise the list of colours
-   */
-  protected Vector<NamedColor> createColors()
-  {
-    final Vector<NamedColor> res = super.createColors();
-
-    // and append our custom item
-    res.add(new NamedColor(CUSTOM_LABEL, Color.white));
-
-    return res;
-
-  }
+//  /** initialise the list of colours
+//   */
+//  public Vector<NamedColor> createColors()
+//  {
+//    final Vector<NamedColor> res = super.createColors();
+//
+//    // and append our custom item
+//    res.add(new NamedColor(CUSTOM_LABEL, Color.white));
+//
+//    return res;
+//
+//  }
 
   /** whether we can provide a custom editor component
    * @return yes, of course
