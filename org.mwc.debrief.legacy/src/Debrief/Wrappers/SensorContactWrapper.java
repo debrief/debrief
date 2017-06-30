@@ -154,8 +154,8 @@ import java.beans.PropertyDescriptor;
 import junit.framework.Assert;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
-import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
+import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
@@ -466,7 +466,7 @@ public final class SensorContactWrapper extends
       fx1.setLocation(location);
       fx1.setTime(theDate);
       fx1.setCourse(0);
-       FixWrapper fw1 = new FixWrapper(fx1);
+      FixWrapper fw1 = new FixWrapper(fx1);
       final TrackWrapper host = new TrackWrapper();
       host.addFix(fw1);
       Fix fx2 = new Fix();
@@ -643,6 +643,11 @@ public final class SensorContactWrapper extends
   private double _freq;
 
   /**
+   * the calculation to determine if the bearing is to the port is expensive, so cache the result
+   */
+  private transient Boolean _cachedPortBearing;
+
+  /**
    * default constructor, used when we read in from XML
    */
   public SensorContactWrapper()
@@ -788,53 +793,60 @@ public final class SensorContactWrapper extends
 
   }
 
+  public final boolean isBearingToPort()
+  {
+    if (_cachedPortBearing == null)
+    {
+      // get the origin
+      final MWC.GenericData.Watchable[] list =
+          _mySensor._myHost.getNearestTo(_DTG);
+      MWC.GenericData.Watchable wa = null;
+      if (list.length > 0)
+      {
+        wa = list[0];
+      }
+
+      // did we find it?
+      if (wa != null)
+      {
+        // find out current course
+        final double course =
+            MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
+
+        // cool, we have a course - we can go for it. remember the bearings
+        final double bearing1 = getBearing();
+
+        // is the first bearing our one?
+        final double relB = relBearing(course, bearing1);
+
+        _cachedPortBearing = relB < 0;
+      }
+    }
+    return _cachedPortBearing;
+  }
+
   private final void ditchBearing(final boolean isPort)
   {
+    // cool, we have a course - we can go for it. remember the bearings
+    final double bearing1 = getBearing();
+    final double bearing2 = getAmbiguousBearing();
 
-    // get the origin
-    final MWC.GenericData.Watchable[] list =
-        _mySensor._myHost.getNearestTo(_DTG);
-    MWC.GenericData.Watchable wa = null;
-    if (list.length > 0)
+    if (isBearingToPort() == isPort)
     {
-      wa = list[0];
+      setBearing(bearing1);
+      setAmbiguousBearing(bearing2);
     }
-
-    // did we find it?
-    if (wa != null)
+    else
     {
-      // find out current course
-      final double course =
-          MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
-
-      // cool, we have a course - we can go for it. remember the bearings
-      final double bearing1 = getBearing();
-      final double bearing2 = getAmbiguousBearing();
-
-      // is the first bearing our one?
-      final double relB = relBearing(course, bearing1);
-
-      // we're only going to show the bearing in 'getBearing', make sure this is
-      // the one we want.
-      if ((relB > 0) && (isPort))
-      {
-        // bearing 1 is starboard, we want to keep port,
-        // better swap them
-        setBearing(bearing2);
-        setAmbiguousBearing(bearing1);
-      }
-
-      if ((relB < 0) && (!isPort))
-      {
-        // bearing 1 is port, we want to keep starboard,
-        // better swap them
-        setBearing(bearing2);
-        setAmbiguousBearing(bearing1);
-      }
-
-      // remember we're morally ambiguous
-      setHasAmbiguousBearing(false);
+      setBearing(bearing2);
+      setAmbiguousBearing(bearing1);
     }
+    
+    // aah, we've switched hte bearings, clear the cached  port flag
+    _cachedPortBearing = null;
+
+    // remember we're morally ambiguous
+    setHasAmbiguousBearing(false);
   }
 
   /**
@@ -1049,7 +1061,8 @@ public final class SensorContactWrapper extends
         totalArea.extend(_calculatedOrigin);
 
         // just use the maximum dimension of the plot
-        final double twiceRange = 2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
+        final double twiceRange =
+            2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
 
         // hey, trim it to something that's at least humanly possible
         rangeToUse = Math.min(twiceRange, MAXIMUM_SENSOR_BEARING_RANGE);
@@ -1314,13 +1327,13 @@ public final class SensorContactWrapper extends
     // do we need an origin
     final WorldLocation origin = getCalculatedOrigin(track);
 
-//    final TimePeriod trackPeriod =
-//        new TimePeriod.BaseTimePeriod(track.getStartDTG(), track.getEndDTG());
-//    if (!trackPeriod.contains(this.getTime()))
-//    {
-//      // don't bother trying to plot it, we're outside the parent period
-//      return;
-//    }
+    // final TimePeriod trackPeriod =
+    // new TimePeriod.BaseTimePeriod(track.getStartDTG(), track.getEndDTG());
+    // if (!trackPeriod.contains(this.getTime()))
+    // {
+    // // don't bother trying to plot it, we're outside the parent period
+    // return;
+    // }
 
     // ok, we have the start - convert it to a point
     final Point pt = new Point(dest.toScreen(origin));
@@ -1512,6 +1525,9 @@ public final class SensorContactWrapper extends
   public final void setHasAmbiguousBearing(final boolean val)
   {
     _hasAmbiguous = val;
+    
+    // and clear the cached value
+    _cachedPortBearing = null;
   }
 
   public final void setHasBearing(final boolean val)
