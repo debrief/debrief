@@ -523,8 +523,7 @@ public final class StackedDotHelper
           final FixedMillisecond thisMilli =
               new FixedMillisecond(currentTime.getDate().getTime());
 
-          final boolean hasAmbiguous =
-              ambigBearing != Doublet.INVALID_BASE_FREQUENCY;
+          final boolean hasAmbiguous = !Double.isNaN(ambigBearing);
           final boolean bearingToPort;
           if (hasAmbiguous)
           {
@@ -563,7 +562,7 @@ public final class StackedDotHelper
           // and add them to the series
           measuredValues.addOrUpdate(mBearing);
 
-          if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+          if (hasAmbiguous)
           {
             // put the ambig baering into the correct domain
             while (ambigBearing < 0)
@@ -630,7 +629,7 @@ public final class StackedDotHelper
               calculatedValues.addOrUpdate(cBearing);
 
               // and the ambiguous error
-              if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+              if (hasAmbiguous)
               {
                 if (flipAxes)
                   if (ambigBearing > 180)
@@ -1290,7 +1289,7 @@ public final class StackedDotHelper
 
           // did we get a base frequency? We may have a track
           // with a section of data that doesn't have frequency, you see.
-          if (baseFreq != Doublet.INVALID_BASE_FREQUENCY)
+          if (!Double.isNaN(baseFreq))
           {
             final double predictedFreq = thisD.getPredictedFrequency();
             final double thisError =
