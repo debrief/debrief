@@ -96,9 +96,9 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
 
         tracks.add(sensor.getHost());
       }
-      
+
       // and fire updates (probably just the one)
-      for(TrackWrapper t: tracks)
+      for (TrackWrapper t : tracks)
       {
         _layers.fireReformatted(t);
       }
@@ -254,25 +254,27 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
               public void operate(final SensorContactWrapper contact)
               {
                 // ok, we need to find the ownship course
-                Watchable[] nearest = contact.getSensor().getHost().getNearestTo(contact.getDTG());
-                if(nearest != null && nearest.length > 0)
+                Watchable[] nearest =
+                    contact.getSensor().getHost()
+                        .getNearestTo(contact.getDTG());
+                if (nearest != null && nearest.length > 0)
                 {
                   FixWrapper fix = (FixWrapper) nearest[0];
                   double course = fix.getCourseDegs();
                   double brg = contact.getBearing();
                   double relBrg = brg - course;
                   double ambigBrg = course - relBrg;
-                  
+
                   // trim the bearing
-                  while(ambigBrg > 360)
+                  while (ambigBrg > 360)
                   {
                     ambigBrg -= 360;
                   }
-                  while(ambigBrg < 0)
+                  while (ambigBrg < 0)
                   {
                     ambigBrg += 360;
                   }
-                  
+
                   contact.setAmbiguousBearing(ambigBrg);
                   contact.setHasAmbiguousBearing(true);
                 }
@@ -282,5 +284,4 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
       }
     });
   }
-
 }
