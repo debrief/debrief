@@ -4213,6 +4213,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       startTime += interval;
     }
+    
+    // move back to millis
+    startTime /= 1000L;
 
     // just check it's not a barking frequency
     if (theVal.getDate().getTime() <= 0)
