@@ -553,9 +553,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     // right, are we a relative or absolute track?
     if (this.getPlotRelative())
+    {
       decimateRelative(theVal, parentTrack, startTime, newItems);
+    }
     else
+    {
       decimateAbsolute(theVal, parentTrack, startTime, newItems);
+    }
 
     // ditch our positions
     this.removeAllElements();
@@ -571,35 +575,37 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     // re-instate the interpolate status
     parentTrack.setInterpolatePoints(oldInterpolateState);
   }
-
+  
   private void decimateAbsolute(final HiResDate theVal,
       final TrackWrapper parentTrack, final long startTime,
       final Vector<FixWrapper> newItems)
   {
-    // right - sort out what time period we're working through
-    for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow +=
-        theVal.getMicros())
-    {
-      // store the new position
-      final Watchable[] matches =
-          parentTrack.getNearestTo(new HiResDate(0, tNow));
-      if (matches.length > 0)
-      {
-        final FixWrapper newF = (FixWrapper) matches[0];
-
-        // do we correct the name?
-        if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
-        {
-          // reset the name
-          newF.resetName();
-        }
-
-        newF.setSymbolShowing(true);
-
-        // add to our working list
-        newItems.add(newF);
-      }
-    }
+    usingIterator(theVal, parentTrack, startTime, newItems);
+    
+//    // right - sort out what time period we're working through
+//    for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow +=
+//        theVal.getMicros())
+//    {
+//      // store the new position
+//      final Watchable[] matches =
+//          parentTrack.getNearestTo(new HiResDate(0, tNow));
+//      if (matches.length > 0)
+//      {
+//        final FixWrapper newF = (FixWrapper) matches[0];
+//
+//        // do we correct the name?
+//        if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
+//        {
+//          // reset the name
+//          newF.resetName();
+//        }
+//
+//        newF.setSymbolShowing(true);
+//
+//        // add to our working list
+//        newItems.add(newF);
+//      }
+//    }
   }
 
   private void decimateRelative(final HiResDate theVal,
@@ -614,7 +620,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     // round myStart time to the supplied interval
     long myStart = this.startDTG().getMicros();
     myStart = (myStart / interval) * interval;
-    
+
     // back to millis
     myStart /= 1000L;
 
@@ -628,15 +634,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
     else
     {
-      boolean useN = false;
-      if (useN)
-      {
-        usingNearest(theVal, parentTrack, newItems, theStartTime);
-      }
-      else
-      {
-        usingIterator(theVal, parentTrack, newItems, theStartTime);
-      }
+      usingIterator(theVal, parentTrack, theStartTime, newItems);
     }
   }
 
@@ -707,9 +705,18 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
   }
 
+  @SuppressWarnings("unused")
+  @Deprecated
+  /** we've deprecated this, since it gets very compuationally expensive
+   * when processing a very long track
+   * @param theVal
+   * @param parentTrack
+   * @param theStartTime
+   * @param newItems
+   */
   private void usingNearest(final HiResDate theVal,
-      final TrackWrapper parentTrack, final Vector<FixWrapper> newItems,
-      long theStartTime)
+      final TrackWrapper parentTrack, final long theStartTime,
+      final Vector<FixWrapper> newItems)
   {
     long tNow;
     FixWrapper lastPositionStored = null;
@@ -765,8 +772,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   }
 
   private void usingIterator(final HiResDate theVal,
-      final TrackWrapper parentTrack, final Vector<FixWrapper> newItems,
-      long theStartTime)
+      final TrackWrapper parentTrack, final long theStartTime,
+      final Vector<FixWrapper> newItems)
   {
     long requiredTime = theStartTime;
     final long interval = theVal.getDate().getTime();
@@ -785,7 +792,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
         lastPositionStored = currentPosition;
 
         // if this is on or after our time, we should use it
-        if(thisTime >= requiredTime)
+        if (thisTime >= requiredTime)
         {
           // and move forwards
           requiredTime += interval;
@@ -840,10 +847,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
           // add to our working list
           newItems.add(newPos);
-          
+
           // and move forward
           lastPositionStored = newPos;
-          
+
           // and move fowards
           requiredTime += interval;
 
@@ -1335,14 +1342,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     // sort out the start time & time steps
     final long currentStartMicros = first.getTime().getMicros();
-    long startTimeMicros = (currentStartMicros / intervalMicros) * intervalMicros;
+    long startTimeMicros =
+        (currentStartMicros / intervalMicros) * intervalMicros;
 
     // just check we're in the range
     if (startTimeMicros < currentStartMicros)
     {
       startTimeMicros += intervalMicros;
     }
-    
+
     // back into millis
     final long startTime = startTimeMicros / 1000L;
 
