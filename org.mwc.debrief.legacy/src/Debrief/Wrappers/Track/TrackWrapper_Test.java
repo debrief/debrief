@@ -14,11 +14,21 @@
  */
 package Debrief.Wrappers.Track;
 
+import static org.junit.Assert.*;
+
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+
+import junit.framework.TestCase;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import flanagan.interpolation.CubicSpline;
 
@@ -54,7 +64,7 @@ import MWC.TacticalData.Fix;
  * @author Administrator
  * 
  */
-public class TrackWrapper_Test extends junit.framework.TestCase
+public class TrackWrapper_Test extends TestCase
 {
 
   protected static class TestMockCanvas extends MockCanvasType
@@ -67,6 +77,57 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     }
   }
 
+  private static FixWrapper getFix(long dtg, double course, double speed)
+  {
+    Fix theFix =
+        new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, speed);
+    FixWrapper res = new FixWrapper(theFix);
+
+    return res;
+  }
+  
+  public void testDecimateRelative()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+    
+    TrackSegment ts = new TrackSegment(TrackSegment.RELATIVE);
+    ts.setName("Some name");
+    
+    for(int i=0;i<12;i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+    
+    parent.add(ts);
+    
+    assertEquals("Before len:",12, ts.size());
+    
+  //  listTimes(ts);
+    
+    // ok, do resample at higher rate
+    final HiResDate interval = new HiResDate(30000);
+    ts.setResampleDataAt(interval);
+
+ //   listTimes(ts);
+
+    assertEquals("After len:", 4, ts.size());
+    
+    
+    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+  }
+  
+  private void listTimes(TrackSegment ts)
+  {
+    Enumeration<Editable> iter = ts.elements();
+    while(iter.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) iter.nextElement();
+      System.out.println(fix.getDTG().getDate().getTime());
+    }
+  }
+  
   private static final String TRACK_NAME = "test track";
 
   public static FixWrapper createFix(final int timeMillis, final int vLatDeg,
@@ -257,7 +318,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   /**
    * @throws java.lang.Exception
    */
-  @Override
+  @Before
   public void setUp() throws Exception
   {
     // give the fixes some names, so we can track them
@@ -279,7 +340,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   /**
    * @throws java.lang.Exception
    */
-  @Override
+  @After
   public void tearDown() throws Exception
   {
   }

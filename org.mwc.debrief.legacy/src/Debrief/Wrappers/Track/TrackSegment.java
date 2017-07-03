@@ -129,7 +129,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       ts0.addFix(newFix4);
       return ts0;
     }
-    
+
     private static class MockParent implements ToolParent
     {
       final private List<String> log;
@@ -138,7 +138,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       {
         this.log = log;
       }
-      
+
       @Override
       public void logError(int status, String text, Exception e)
       {
@@ -606,9 +606,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       final TrackWrapper parentTrack, final long startTime,
       final Vector<FixWrapper> newItems)
   {
-    long tStart = System.currentTimeMillis();
-
-    long tNow = 0;
     long theStartTime = startTime;
 
     // get the time interval
@@ -617,6 +614,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     // round myStart time to the supplied interval
     long myStart = this.startDTG().getMicros();
     myStart = (myStart / interval) * interval;
+    
+    // back to millis
+    myStart /= 1000L;
 
     // set the start time to be the later of our start time and the provided
     // time
@@ -624,68 +624,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     if (this instanceof CoreTMASegment)
     {
-      final CoreTMASegment tma = (CoreTMASegment) this;
-
-      // hey, it's a TMA segment - on steady course/speed. cool
-      final double courseRads =
-          MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
-      final double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
-
-      // find the new start location - after we've slipped
-      final WorldLocation myStartLocation =
-          new WorldLocation(tma.getTrackStart());
-
-      // right - sort out what time period we're working through
-      for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow +=
-          theVal.getMicros())
-      {
-        final Fix theFix =
-            new Fix(new HiResDate(0, tNow), new WorldLocation(myStartLocation),
-                courseRads, speedYps);
-        final FixWrapper newFix = new FixWrapper(theFix);
-        newFix.setSymbolShowing(true);
-
-        // also give it a name
-        newFix.resetName();
-
-        newItems.add(newFix);
-      }
-
-      // right, if it's a relative segment, then we need to shift the
-      // offset to
-      // reflect the new relationship
-      if (tma instanceof RelativeTMASegment)
-      {
-        final FixWrapper myStarter = (FixWrapper) tma.first();
-        final FixWrapper myEnder = (FixWrapper) tma.last();
-        final HiResDate startDTG = new HiResDate(0, theStartTime);
-        final FixWrapper newStarter =
-            FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
-        final WorldLocation newStartLoc = newStarter.getLocation();
-
-        final RelativeTMASegment rel = (RelativeTMASegment) tma;
-        final Watchable[] newHost =
-            rel.getReferenceTrack().getNearestTo(startDTG);
-        if (newHost.length > 0)
-        {
-          final WorldLocation newOrigin = newHost[0].getLocation();
-          final WorldVector newOffset = newStartLoc.subtract(newOrigin);
-          rel.setOffset(newOffset);
-        }
-
-        // is our name date-oriented?
-        if (rel.getName().startsWith(TMA_LEADER))
-        {
-          // yes, calculate a new one
-
-          // lastly, reset the track name
-          rel.sortOutDateLabel(startDTG);
-
-          // and change the track name
-          rel._myTrack.setName(rel.getName());
-        }
-      }
-
+      decimateTMA(theVal, newItems, theStartTime);
     }
     else
     {
@@ -699,9 +638,73 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
         usingIterator(theVal, parentTrack, newItems, theStartTime);
       }
     }
+  }
 
-    System.out
-        .println("decimate took:" + (System.currentTimeMillis() - tStart));
+  private void decimateTMA(final HiResDate theVal,
+      final Vector<FixWrapper> newItems, long theStartTime)
+  {
+    long tNow;
+    final CoreTMASegment tma = (CoreTMASegment) this;
+
+    // hey, it's a TMA segment - on steady course/speed. cool
+    final double courseRads =
+        MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
+    final double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
+
+    // find the new start location - after we've slipped
+    final WorldLocation myStartLocation =
+        new WorldLocation(tma.getTrackStart());
+
+    // right - sort out what time period we're working through
+    for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow +=
+        theVal.getMicros())
+    {
+      final Fix theFix =
+          new Fix(new HiResDate(0, tNow), new WorldLocation(myStartLocation),
+              courseRads, speedYps);
+      final FixWrapper newFix = new FixWrapper(theFix);
+      newFix.setSymbolShowing(true);
+
+      // also give it a name
+      newFix.resetName();
+
+      newItems.add(newFix);
+    }
+
+    // right, if it's a relative segment, then we need to shift the
+    // offset to
+    // reflect the new relationship
+    if (tma instanceof RelativeTMASegment)
+    {
+      final FixWrapper myStarter = (FixWrapper) tma.first();
+      final FixWrapper myEnder = (FixWrapper) tma.last();
+      final HiResDate startDTG = new HiResDate(0, theStartTime);
+      final FixWrapper newStarter =
+          FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
+      final WorldLocation newStartLoc = newStarter.getLocation();
+
+      final RelativeTMASegment rel = (RelativeTMASegment) tma;
+      final Watchable[] newHost =
+          rel.getReferenceTrack().getNearestTo(startDTG);
+      if (newHost.length > 0)
+      {
+        final WorldLocation newOrigin = newHost[0].getLocation();
+        final WorldVector newOffset = newStartLoc.subtract(newOrigin);
+        rel.setOffset(newOffset);
+      }
+
+      // is our name date-oriented?
+      if (rel.getName().startsWith(TMA_LEADER))
+      {
+        // yes, calculate a new one
+
+        // lastly, reset the track name
+        rel.sortOutDateLabel(startDTG);
+
+        // and change the track name
+        rel._myTrack.setName(rel.getName());
+      }
+    }
   }
 
   private void usingNearest(final HiResDate theVal,
@@ -765,7 +768,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       final TrackWrapper parentTrack, final Vector<FixWrapper> newItems,
       long theStartTime)
   {
-    long tNow = theStartTime;
+    long requiredTime = theStartTime;
     final long interval = theVal.getDate().getTime();
     FixWrapper lastPositionStored = null;
 
@@ -776,51 +779,57 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
       long thisTime = currentPosition.getDateTimeGroup().getDate().getTime();
 
-      if (lastPositionStored == null
-          || thisTime >= lastPositionStored.getDTG().getDate().getTime()
-              + interval)
+      if (lastPositionStored == null)
       {
+        // ok, we're on the first cycle
+        lastPositionStored = currentPosition;
 
-        // is this our first?
-        if (lastPositionStored == null)
+        // if this is on or after our time, we should use it
+        if(thisTime >= requiredTime)
         {
-          // ok, just go for it.
-          lastPositionStored = currentPosition;
+          // and move forwards
+          requiredTime += interval;
+
+          // we should also store this, as the first position
+          FixWrapper storeMe = new FixWrapper(currentPosition.getFix());
+
+          // and add it
+          newItems.add(storeMe);
         }
-        else
+      }
+      else
+      {
+        // ok, we've got a before. Generate points while we're after the required time
+        while (thisTime >= requiredTime)
         {
-          long nextTime =
-              lastPositionStored.getDTG().getDate().getTime() + interval;
-
           // ok, we need to generate a position at the new time
           final FixWrapper newPos;
-          if (thisTime == nextTime)
+          if (thisTime == requiredTime)
           {
             // ok, we can just use this one
-            newPos = currentPosition;
+            newPos = new FixWrapper(currentPosition.getFix());
           }
           else
           {
             // ok, we need to generate
             newPos =
                 FixWrapper.interpolateFix(lastPositionStored, currentPosition,
-                    new HiResDate(nextTime));
+                    new HiResDate(requiredTime));
           }
 
           // start off with the course
           final WorldVector offset =
-              newPos.getLocation().subtract(
-                  lastPositionStored.getLocation());
-          lastPositionStored.getFix().setCourse(offset.getBearing());
+              newPos.getLocation().subtract(lastPositionStored.getLocation());
+          newPos.getFix().setCourse(offset.getBearing());
 
           // and now the speed
           final double distYds =
               new WorldDistance(offset.getRange(), WorldDistance.DEGS)
                   .getValueIn(WorldDistance.YARDS);
           final double timeSecs =
-              (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
+              (requiredTime - lastPositionStored.getTime().getMicros()) / 1000000d;
           final double spdYps = distYds / timeSecs;
-          lastPositionStored.getFix().setSpeed(spdYps);
+          newPos.getFix().setSpeed(spdYps);
 
           // do we correct the name?
           if (lastPositionStored.getName().equals(FixWrapper.INTERPOLATED_FIX))
@@ -828,10 +837,18 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
             // reset the name
             lastPositionStored.resetName();
           }
+
+          // add to our working list
+          newItems.add(newPos);
+          
+          // and move forward
+          lastPositionStored = newPos;
+          
+          // and move fowards
+          requiredTime += interval;
+
         }
 
-        // add to our working list
-        newItems.add(lastPositionStored);
       }
     }
   }
@@ -1305,7 +1322,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
 
     // have a go at trimming the start time to a whole number of intervals
-    final long interval = theVal.getMicros();
+    final long intervalMicros = theVal.getMicros();
 
     // do we have a start time (we may just be being tested...)
     if (!this.elements().hasMoreElements())
@@ -1317,14 +1334,17 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     FixWrapper first = (FixWrapper) elements().nextElement();
 
     // sort out the start time & time steps
-    final long currentStart = first.getTime().getMicros();
-    long startTime = (currentStart / interval) * interval;
+    final long currentStartMicros = first.getTime().getMicros();
+    long startTimeMicros = (currentStartMicros / intervalMicros) * intervalMicros;
 
     // just check we're in the range
-    if (startTime < currentStart)
+    if (startTimeMicros < currentStartMicros)
     {
-      startTime += interval;
+      startTimeMicros += intervalMicros;
     }
+    
+    // back into millis
+    final long startTime = startTimeMicros / 1000L;
 
     // just check it's not a barking frequency
     if (theVal.getDate().getTime() <= 0)
