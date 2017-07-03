@@ -137,6 +137,12 @@ public interface SWTPlotHighlighter extends Editable
           }
         }
 
+        // handle empty track
+        if(watch == null)
+        {
+          return;
+        }
+        
         // set the highlight colour
         dest.setColor(_myColor);
         // get the current area of the watchable
