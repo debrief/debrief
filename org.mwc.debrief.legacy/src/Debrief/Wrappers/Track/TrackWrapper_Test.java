@@ -20,7 +20,10 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import flanagan.interpolation.CubicSpline;
+import junit.framework.TestCase;
+
+import org.junit.After;
+import org.junit.Before;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -49,12 +52,13 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import flanagan.interpolation.CubicSpline;
 
 /**
  * @author Administrator
  * 
  */
-public class TrackWrapper_Test extends junit.framework.TestCase
+public class TrackWrapper_Test extends TestCase
 {
 
   protected static class TestMockCanvas extends MockCanvasType
@@ -64,6 +68,277 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     {
       callCount++;
       pointCount += points.length;
+    }
+  }
+
+  private static FixWrapper getFix(long dtg, double course, double speed)
+  {
+    Fix theFix =
+        new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, speed);
+    FixWrapper res = new FixWrapper(theFix);
+
+    return res;
+  }
+
+  public void testSetLabelFrequency()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int num = 3200;
+
+    for (int i = 0; i < num; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    // ok, check before freq
+    assertEquals("no syms", 0, countDecorations(parent, false, false, true));
+
+    // ok, now set freq
+    parent.setLabelFrequency(new HiResDate(50000));
+
+    // ok, check before freq
+    assertEquals("with syms", 640, countDecorations(parent, false, false, true));
+    
+    // ok, now another rate
+    parent.setLabelFrequency(new HiResDate(31111));
+
+    // ok, check before freq
+    assertEquals("with syms", 1029, countDecorations(parent, false, false, true));
+    
+    // ok, now set the original frequency. This will effectively 
+    // check that we're resetting the labels before we decide which 
+    // ones we do want to display
+    parent.setLabelFrequency(new HiResDate(50000));
+
+    // ok, check before freq
+    assertEquals("with syms", 640, countDecorations(parent, false, false, true));
+
+  }
+  
+
+  
+  public void testSetSymbolFrequency()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int num = 3200;
+
+    for (int i = 0; i < num; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    // ok, check before freq
+    assertEquals("no syms", 0, countDecorations(parent, true, false, false));
+
+    // ok, now set freq
+    parent.setSymbolFrequency(new HiResDate(50000));
+
+    System.out.println("elapsed setting syms:"
+        + (System.currentTimeMillis() - startT));
+
+    // ok, check before freq
+    assertEquals("with syms", 640, countDecorations(parent, true, false, false));
+  }
+  
+
+  public void testSetArrowFrequency()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int num = 3200;
+
+    for (int i = 0; i < num; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    // ok, check before freq
+    assertEquals("no syms", 0, countDecorations(parent, false, true, false));
+
+    // ok, now set freq. YES. WE'RE USING A VERY HIGH INTERVAL, as an edge case
+    parent.setArrowFrequency(new HiResDate(50000000));
+
+    System.out.println("elapsed setting syms:"
+        + (System.currentTimeMillis() - startT));
+
+    // ok, check before freq
+    assertEquals("with syms", 1, countDecorations(parent, false, true, false));
+  }
+
+  private static int countDecorations(TrackWrapper parent, final boolean countSyms,
+      final boolean countArrows, final boolean countLabels)
+  {
+    Enumeration<Editable> iter = parent.getPositionIterator();
+    int ctr = 0;
+    while (iter.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) iter.nextElement();
+      if (countSyms && fix.getSymbolShowing())
+      {
+        ctr++;
+      }
+      if (countArrows && fix.getArrowShowing())
+      {
+        ctr++;
+      }
+      if (countLabels && fix.getLabelShowing())
+      {
+        ctr++;
+      }
+    }
+    return ctr;
+  }
+
+  public void testDecimateAbsoluteDown()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int ctr = 12;
+
+    for (int i = 0; i < ctr; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    assertEquals("Before len:", ctr, ts.size());
+
+    // listTimes(ts);
+
+    // ok, do resample at higher rate
+    final HiResDate interval = new HiResDate(30000);
+    ts.setResampleDataAt(interval);
+
+    // listTimes(ts);
+
+    assertEquals("After len:", 4, ts.size());
+    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+  }
+
+  public void testDecimateAbsoluteUp()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int ctr = 12;
+
+    for (int i = 0; i < ctr; i++)
+    {
+      ts.add(getFix(10000 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    assertEquals("Before len:", ctr, ts.size());
+
+    listTimes(ts);
+
+    // ok, do resample at higher rate
+    final HiResDate interval = new HiResDate(8000);
+    ts.setResampleDataAt(interval);
+
+    listTimes(ts);
+
+    assertEquals("After len:", 14, ts.size());
+    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+  }
+
+  public void testDecimateRelativeDown()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.RELATIVE);
+    ts.setName("Some name");
+    final int ctr = 12;
+
+    for (int i = 0; i < ctr; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    assertEquals("Before len:", ctr, ts.size());
+
+    // listTimes(ts);
+
+    // ok, do resample at higher rate
+    final HiResDate interval = new HiResDate(30000);
+    ts.setResampleDataAt(interval);
+
+    // listTimes(ts);
+
+    assertEquals("After len:", 4, ts.size());
+    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+  }
+
+  public void testDecimateRelativeUp()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.RELATIVE);
+    ts.setName("Some name");
+    final int ctr = 12;
+
+    for (int i = 0; i < ctr; i++)
+    {
+      ts.add(getFix(10000 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    assertEquals("Before len:", ctr, ts.size());
+
+    listTimes(ts);
+
+    // ok, do resample at higher rate
+    final HiResDate interval = new HiResDate(8000);
+    ts.setResampleDataAt(interval);
+
+    listTimes(ts);
+
+    assertEquals("After len:", 14, ts.size());
+    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+  }
+
+  private void listTimes(TrackSegment ts)
+  {
+    Enumeration<Editable> iter = ts.elements();
+    while (iter.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) iter.nextElement();
+      System.out.println(fix.getDTG().getDate().getTime());
     }
   }
 
@@ -257,7 +532,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   /**
    * @throws java.lang.Exception
    */
-  @Override
+  @Before
   public void setUp() throws Exception
   {
     // give the fixes some names, so we can track them
@@ -279,14 +554,15 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   /**
    * @throws java.lang.Exception
    */
-  @Override
+  @After
   public void tearDown() throws Exception
   {
   }
 
   /**
    * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)} .
-   * @throws InterruptedException 
+   * 
+   * @throws InterruptedException
    */
 
   public void testAdd() throws InterruptedException
@@ -316,7 +592,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
   /**
    * Test method for {@link Debrief.Wrappers.TrackWrapper#addFix(Debrief.Wrappers.FixWrapper)}.
-   * @throws InterruptedException 
+   * 
+   * @throws InterruptedException
    */
 
   public void testAddFix() throws InterruptedException
@@ -343,7 +620,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     t1.addFix(createFix(time++, ++pos, pos));
     t1.addFix(createFix(time++, ++pos, pos));
     t1.addFix(createFix(time++, ++pos, pos));
-    
+
     TrackSegment t2 = new TrackSegment(false);
     t2.addFix(createFix(time++, ++pos, pos));
     t2.addFix(createFix(time++, ++pos, pos));
@@ -353,21 +630,22 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     TrackWrapper track = new TrackWrapper();
     track.add(t1);
     track.add(t2);
-    
+
     int ctr = 0;
     Enumeration<Editable> iter = track.getPositionIterator();
-    while(iter.hasMoreElements())
+    while (iter.hasMoreElements())
     {
       iter.nextElement();
       ctr++;
     }
-    
+
     assertEquals("correct num items", 9, ctr);
   }
-  
+
   /**
    * Test method for {@link Debrief.Wrappers.TrackWrapper#append(MWC.GUI.Layer)} .
-   * @throws InterruptedException 
+   * 
+   * @throws InterruptedException
    */
 
   public void testAppend() throws InterruptedException
@@ -383,7 +661,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
     // combine the two
     _tw.append(tw2);
-    
+
     // insert delay, to overcome cacheing
     Thread.sleep(550);
 
@@ -462,7 +740,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
     // how was it?
     assertEquals("has segments", "Track segments (3 items)", sl.toString());
-  //  assertEquals("has all fixes", 7, tw.numFixes());
+    // assertEquals("has all fixes", 7, tw.numFixes());
 
     // GO FOR ULTIMATE DECIMATION
     tw.setResampleDataAt(new HiResDate(500000l));
@@ -471,9 +749,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
     // how was it?
     assertEquals("has segments", "Track segments (3 items)", sl.toString());
- //   assertEquals("has all fixes", 49, tw.numFixes());
+    // assertEquals("has all fixes", 49, tw.numFixes());
   }
-  
+
   public void testEmptyLayerBounds()
   {
     Layers layers = new Layers();
@@ -481,18 +759,30 @@ public class TrackWrapper_Test extends junit.framework.TestCase
     track.setName("Track");
     FixWrapper fix = createFix(1000, 10, 20);
     track.addFix(fix);
-    
+
     assertNotNull("returned an area", layers.getBounds());
-    assertEquals("correct location", " 50\u00B051'17.63\"N 001\u00B020'32.10\"W ", layers.getBounds().getCentre().toString());
-    assertEquals("correct location", " 51\u00B012'08.27\"N 001\u00B058'07.62\"W ", layers.getBounds().getTopLeft().toString());
-    assertEquals("correct location", " 50\u00B030'26.99\"N 000\u00B042'56.58\"W ", layers.getBounds().getBottomRight().toString());
-    
+    assertEquals("correct location",
+        " 50\u00B051'17.63\"N 001\u00B020'32.10\"W ", layers.getBounds()
+            .getCentre().toString());
+    assertEquals("correct location",
+        " 51\u00B012'08.27\"N 001\u00B058'07.62\"W ", layers.getBounds()
+            .getTopLeft().toString());
+    assertEquals("correct location",
+        " 50\u00B030'26.99\"N 000\u00B042'56.58\"W ", layers.getBounds()
+            .getBottomRight().toString());
+
     // ok, now put the track in the layers
     layers.addThisLayer(track);
-    assertEquals("correct location", " 10\u00B000'00.00\"N 020\u00B000'00.00\"E ", layers.getBounds().getCentre().toString());
-    assertEquals("correct location", " 10\u00B000'42.43\"N 019\u00B059'16.92\"E ", layers.getBounds().getTopLeft().toString());
-    assertEquals("correct location", " 09\u00B059'17.57\"N 020\u00B000'43.08\"E ", layers.getBounds().getBottomRight().toString());
-    
+    assertEquals("correct location",
+        " 10\u00B000'00.00\"N 020\u00B000'00.00\"E ", layers.getBounds()
+            .getCentre().toString());
+    assertEquals("correct location",
+        " 10\u00B000'42.43\"N 019\u00B059'16.92\"E ", layers.getBounds()
+            .getTopLeft().toString());
+    assertEquals("correct location",
+        " 09\u00B059'17.57\"N 020\u00B000'43.08\"E ", layers.getBounds()
+            .getBottomRight().toString());
+
   }
 
   public void testDecimatePositionsAndData() throws InterruptedException
@@ -600,29 +890,29 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
     // how was it?
     assertEquals("has segments", "Track segments (3 items)", sl.toString());
-    
+
     // insert delay, to overcome cacheing
     Thread.sleep(550);
 
-//    assertEquals("has all fixes", 49, tw.numFixes());
-//    assertEquals("has all sensor cuts", 7,
-//        countCuts(tw.getSensors().elements()));
-//    assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()
-//        .elements()));
-//
-//    // GO FOR ULTIMATE DECIMATION
-//    tw.setResampleDataAt(new HiResDate(4 * 60000));
-//
-//    // insert delay, to overcome cacheing
-//    Thread.sleep(550);
-//
-//    // how was it?
-//    assertEquals("has segments", "Track segments (3 items)", sl.toString());
-//    assertEquals("has all fixes", 7, tw.numFixes());
-//    assertEquals("has all resampled sensor cuts", 2, countCuts(tw.getSensors()
-//        .elements()));
-//    assertEquals("has all tma cuts", 3, countSolutions(tw.getSolutions()
-//        .elements()));
+    // assertEquals("has all fixes", 49, tw.numFixes());
+    // assertEquals("has all sensor cuts", 7,
+    // countCuts(tw.getSensors().elements()));
+    // assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()
+    // .elements()));
+    //
+    // // GO FOR ULTIMATE DECIMATION
+    // tw.setResampleDataAt(new HiResDate(4 * 60000));
+    //
+    // // insert delay, to overcome cacheing
+    // Thread.sleep(550);
+    //
+    // // how was it?
+    // assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    // assertEquals("has all fixes", 7, tw.numFixes());
+    // assertEquals("has all resampled sensor cuts", 2, countCuts(tw.getSensors()
+    // .elements()));
+    // assertEquals("has all tma cuts", 3, countSolutions(tw.getSolutions()
+    // .elements()));
 
   }
 
@@ -931,7 +1221,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
   {
     assertEquals("have correct num", 6, _tw.numFixes());
   }
-  
+
   public void testSinglePoint()
   {
     TrackWrapper tw = new TrackWrapper();
