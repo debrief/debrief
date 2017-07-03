@@ -1857,9 +1857,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final ArrayLength sensorOffset, final boolean wormInHole)
   {
     FixWrapper res = null;
-    
+
     // special case - for single point tracks
-    if(isSinglePointTrack())
+    if (isSinglePointTrack())
     {
       TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
       return (FixWrapper) seg.first();
@@ -2378,11 +2378,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       return new Watchable[]
       {};
     }
-    else if(isSinglePointTrack())
+    else if (isSinglePointTrack())
     {
       TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
       FixWrapper fix = (FixWrapper) seg.first();
-      return new Watchable[]{fix};
+      return new Watchable[]
+      {fix};
     }
 
     // special case - if we've been asked for an invalid time value
@@ -2846,19 +2847,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return res;
   }
 
-  /** whether this is single point track. Single point tracks get special processing.
+  /**
+   * whether this is single point track. Single point tracks get special processing.
    * 
    * @return
    */
   public boolean isSinglePointTrack()
   {
     final boolean res;
-    if(_thePositions.size() == 1)
+    if (_thePositions.size() == 1)
     {
-      TrackSegment first = (TrackSegment) _thePositions.elements().nextElement();
+      TrackSegment first =
+          (TrackSegment) _thePositions.elements().nextElement();
 
-      // we want to avoid getting the size() of the list. 
-      // So, do fancy trick to check the  first element is non-null,
+      // we want to avoid getting the size() of the list.
+      // So, do fancy trick to check the first element is non-null,
       // and the second is null
       Enumeration<Editable> elems = first.elements();
       if (elems != null && elems.hasMoreElements()
@@ -2875,16 +2878,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       res = false;
     }
-    
+
     return res;
   }
-  
+
   public boolean isVisibleAt(final HiResDate dtg)
   {
     boolean res = false;
-    
+
     // special case - single track
-    if(isSinglePointTrack())
+    if (isSinglePointTrack())
     {
       // we'll assume it's never ending.
       res = true;
@@ -2897,8 +2900,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         res = visiblePeriod.contains(dtg);
       }
     }
-    
-     return res;
+
+    return res;
   }
 
   /**
@@ -3852,7 +3855,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public Enumeration<Editable> segments()
   {
-    
+
     final TreeSet<Editable> res = new TreeSet<Editable>();
 
     // ok, we want to wrap our fast-data as a set of plottables
@@ -4041,27 +4044,45 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // so use the start time
           }
 
-          while (start_time <= end_time)
+          
+          long nextMarker = start_time / 1000L;
+          long freqMillis = freq / 1000L;
+          Enumeration<Editable> iter = this.getPositionIterator();
+          while(iter.hasMoreElements())
           {
-            // right, increment the start time by one, because we were
-            // getting the
-            // fix immediately before the requested time
-            final HiResDate thisDTG = new HiResDate(0, start_time);
-            final Watchable[] list = this.getNearestTo(thisDTG);
-            // check we found some
-            if (list.length > 0)
+            FixWrapper nextF = (FixWrapper) iter.nextElement();
+            long hisDate = nextF.getDTG().getDate().getTime();
+            if(hisDate >= nextMarker)
             {
-              final FixWrapper fw = (FixWrapper) list[0];
-              setter.execute(fw, true);
+              setter.execute(nextF, true);
+              // ok, move on to the next one
+              nextMarker += freqMillis;
             }
-            // produce the next time step
-            start_time += freq;
           }
+
+//   this was the old way of doing it, but it's very slow with very long tracks          
+//          while (start_time <= end_time)
+//          {
+//            // right, increment the start time by one, because we were
+//            // getting the
+//            // fix immediately before the requested time
+//            final HiResDate thisDTG = new HiResDate(0, start_time);
+//            final Watchable[] list = this.getNearestTo(thisDTG);
+//            // check we found some
+//            if (list.length > 0)
+//            {
+//              final FixWrapper fw = (FixWrapper) list[0];
+//              setter.execute(fw, true);
+//            }
+//            // produce the next time step
+//            start_time += freq;
+//          }
         }
       }
 
     }
   }
+
 
   @Override
   public final void setInterpolatePoints(final boolean val)
@@ -4213,7 +4234,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     {
       startTime += interval;
     }
-    
+
     // move back to millis
     startTime /= 1000L;
 
@@ -4526,7 +4547,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                 && !fw.getLocation().equals(tmaLastLoc))
             {
               moved = true;
-            }            
+            }
 
             // dump the location into the fix
             fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));

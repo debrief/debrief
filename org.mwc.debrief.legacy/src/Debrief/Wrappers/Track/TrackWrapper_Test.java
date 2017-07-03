@@ -14,23 +14,16 @@
  */
 package Debrief.Wrappers.Track;
 
-import static org.junit.Assert.*;
-
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-
-import flanagan.interpolation.CubicSpline;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -59,6 +52,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import flanagan.interpolation.CubicSpline;
 
 /**
  * @author Administrator
@@ -86,6 +80,133 @@ public class TrackWrapper_Test extends TestCase
     return res;
   }
 
+  public void testSetLabelFrequency()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int num = 3200;
+
+    for (int i = 0; i < num; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    // ok, check before freq
+    assertEquals("no syms", 0, countDecorations(parent, false, false, true));
+
+    // ok, now set freq
+    parent.setLabelFrequency(new HiResDate(50000));
+
+    // ok, check before freq
+    assertEquals("with syms", 640, countDecorations(parent, false, false, true));
+    
+    // ok, now another rate
+    parent.setLabelFrequency(new HiResDate(31111));
+
+    // ok, check before freq
+    assertEquals("with syms", 1029, countDecorations(parent, false, false, true));
+    
+    // ok, now set the original frequency. This will effectively 
+    // check that we're resetting the labels before we decide which 
+    // ones we do want to display
+    parent.setLabelFrequency(new HiResDate(50000));
+
+    // ok, check before freq
+    assertEquals("with syms", 640, countDecorations(parent, false, false, true));
+
+  }
+  
+
+  
+  public void testSetSymbolFrequency()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int num = 3200;
+
+    for (int i = 0; i < num; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    // ok, check before freq
+    assertEquals("no syms", 0, countDecorations(parent, true, false, false));
+
+    // ok, now set freq
+    parent.setSymbolFrequency(new HiResDate(50000));
+
+    System.out.println("elapsed setting syms:"
+        + (System.currentTimeMillis() - startT));
+
+    // ok, check before freq
+    assertEquals("with syms", 640, countDecorations(parent, true, false, false));
+  }
+  
+
+  public void testSetArrowFrequency()
+  {
+    TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+    long startT = System.currentTimeMillis();
+
+    TrackSegment ts = new TrackSegment(TrackSegment.ABSOLUTE);
+    ts.setName("Some name");
+    final int num = 3200;
+
+    for (int i = 0; i < num; i++)
+    {
+      ts.add(getFix(10001 * i, 2, 4));
+    }
+
+    parent.add(ts);
+
+    // ok, check before freq
+    assertEquals("no syms", 0, countDecorations(parent, false, true, false));
+
+    // ok, now set freq. YES. WE'RE USING A VERY HIGH INTERVAL, as an edge case
+    parent.setArrowFrequency(new HiResDate(50000000));
+
+    System.out.println("elapsed setting syms:"
+        + (System.currentTimeMillis() - startT));
+
+    // ok, check before freq
+    assertEquals("with syms", 1, countDecorations(parent, false, true, false));
+  }
+
+  private static int countDecorations(TrackWrapper parent, final boolean countSyms,
+      final boolean countArrows, final boolean countLabels)
+  {
+    Enumeration<Editable> iter = parent.getPositionIterator();
+    int ctr = 0;
+    while (iter.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) iter.nextElement();
+      if (countSyms && fix.getSymbolShowing())
+      {
+        ctr++;
+      }
+      if (countArrows && fix.getArrowShowing())
+      {
+        ctr++;
+      }
+      if (countLabels && fix.getLabelShowing())
+      {
+        ctr++;
+      }
+    }
+    return ctr;
+  }
 
   public void testDecimateAbsoluteDown()
   {
@@ -148,7 +269,7 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("After len:", 14, ts.size());
     System.out.println("test took:" + (System.currentTimeMillis() - startT));
   }
-  
+
   public void testDecimateRelativeDown()
   {
     TrackWrapper parent = new TrackWrapper();
