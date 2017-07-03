@@ -575,37 +575,38 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     // re-instate the interpolate status
     parentTrack.setInterpolatePoints(oldInterpolateState);
   }
-  
+
   private void decimateAbsolute(final HiResDate theVal,
       final TrackWrapper parentTrack, final long startTime,
       final Vector<FixWrapper> newItems)
   {
-    usingIterator(theVal, parentTrack, startTime, newItems);
-    
-//    // right - sort out what time period we're working through
-//    for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow +=
-//        theVal.getMicros())
-//    {
-//      // store the new position
-//      final Watchable[] matches =
-//          parentTrack.getNearestTo(new HiResDate(0, tNow));
-//      if (matches.length > 0)
-//      {
-//        final FixWrapper newF = (FixWrapper) matches[0];
-//
-//        // do we correct the name?
-//        if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
-//        {
-//          // reset the name
-//          newF.resetName();
-//        }
-//
-//        newF.setSymbolShowing(true);
-//
-//        // add to our working list
-//        newItems.add(newF);
-//      }
-//    }
+    // hey, our relative process actually works for absolute, too.
+    decimatePointsTrack(theVal, parentTrack, startTime, newItems, false);
+
+    // // right - sort out what time period we're working through
+    // for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow +=
+    // theVal.getMicros())
+    // {
+    // // store the new position
+    // final Watchable[] matches =
+    // parentTrack.getNearestTo(new HiResDate(0, tNow));
+    // if (matches.length > 0)
+    // {
+    // final FixWrapper newF = (FixWrapper) matches[0];
+    //
+    // // do we correct the name?
+    // if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
+    // {
+    // // reset the name
+    // newF.resetName();
+    // }
+    //
+    // newF.setSymbolShowing(true);
+    //
+    // // add to our working list
+    // newItems.add(newF);
+    // }
+    // }
   }
 
   private void decimateRelative(final HiResDate theVal,
@@ -630,15 +631,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     if (this instanceof CoreTMASegment)
     {
-      decimateTMA(theVal, newItems, theStartTime);
+      decimateRelativeTMA(theVal, newItems, theStartTime);
     }
     else
     {
-      usingIterator(theVal, parentTrack, theStartTime, newItems);
+      decimatePointsTrack(theVal, parentTrack, theStartTime, newItems, true);
     }
   }
 
-  private void decimateTMA(final HiResDate theVal,
+  private void decimateRelativeTMA(final HiResDate theVal,
       final Vector<FixWrapper> newItems, long theStartTime)
   {
     long tNow;
@@ -771,9 +772,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
   }
 
-  private void usingIterator(final HiResDate theVal,
+  private void decimatePointsTrack(final HiResDate theVal,
       final TrackWrapper parentTrack, final long theStartTime,
-      final Vector<FixWrapper> newItems)
+      final Vector<FixWrapper> newItems, final boolean fixRelative)
   {
     long requiredTime = theStartTime;
     final long interval = theVal.getDate().getTime();
@@ -824,19 +825,23 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
                     new HiResDate(requiredTime));
           }
 
-          // start off with the course
-          final WorldVector offset =
-              newPos.getLocation().subtract(lastPositionStored.getLocation());
-          newPos.getFix().setCourse(offset.getBearing());
+          // do we need to fix the track to ensure a DR reconstruction
+          if (fixRelative)
+          {
+            // start off with the course
+            final WorldVector offset =
+                newPos.getLocation().subtract(lastPositionStored.getLocation());
+            newPos.getFix().setCourse(offset.getBearing());
 
-          // and now the speed
-          final double distYds =
-              new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-                  .getValueIn(WorldDistance.YARDS);
-          final double timeSecs =
-              (requiredTime - lastPositionStored.getTime().getMicros()) / 1000000d;
-          final double spdYps = distYds / timeSecs;
-          newPos.getFix().setSpeed(spdYps);
+            // and now the speed
+            final double distYds =
+                new WorldDistance(offset.getRange(), WorldDistance.DEGS)
+                    .getValueIn(WorldDistance.YARDS);
+            final double timeSecs =
+                (requiredTime - lastPositionStored.getTime().getMicros()) / 1000000d;
+            final double spdYps = distYds / timeSecs;
+            newPos.getFix().setSpeed(spdYps);
+          }
 
           // do we correct the name?
           if (lastPositionStored.getName().equals(FixWrapper.INTERPOLATED_FIX))
