@@ -120,7 +120,7 @@ public interface SWTPlotHighlighter extends Editable
 
             // trim to visible period if its a track
             TimePeriod visP = tw.getVisiblePeriod();
-            if (!visP.contains(dtg))
+            if(visP != null && !visP.contains(dtg))
             {
               // ok, before or after?
               if (visP.getStartDTG().greaterThan(dtg))
