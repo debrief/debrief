@@ -23,9 +23,7 @@ import java.util.Iterator;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -48,6 +46,61 @@ import MWC.GenericData.WorldLocation;
  */
 final class SnailDrawSWTTrack
 {
+
+  /**
+   * calculate the correct color fade for the supplied colors/times
+   * 
+   * @param mainCol
+   *          the foreground color
+   * @param backColor
+   *          the background color - to fade out to
+   * @param trail_len
+   *          how long (in time) the trail should be
+   * @param stepTime
+   *          the current step time
+   * @param datumTime
+   *          the time of this data item
+   * @return
+   */
+  public static Color getFadedColorFor(final Color mainCol,
+      final Color backColor, final long trail_len, final HiResDate stepTime,
+      final HiResDate datumTime)
+  {
+
+    // how far back through the time period are we?
+    long our_time = stepTime.getMicros() - datumTime.getMicros();
+
+    // just double check that we have a positive time offset
+    our_time = Math.max(0, our_time);
+
+    float proportion = (((float) trail_len - our_time) / trail_len);
+
+    // just check we've got a realistic proportion
+    proportion = Math.max(0, proportion);
+
+    // now apply this proportion to the indicated color
+    final float backR = backColor.getRed();
+    final float backG = backColor.getGreen();
+    final float backB = backColor.getBlue();
+
+    final int mainR = mainCol.getRed();
+    final int mainG = mainCol.getGreen();
+    final int mainB = mainCol.getBlue();
+
+    // now apply this proportion to the indicated color
+    final float r = (mainR - backR) * proportion;
+    final float g = (mainG - backG) * proportion;
+    final float b = (mainB - backB) * proportion;
+
+    // create the colour shade for this item
+    final int new_r = (int) (backR + r);
+    final int new_g = (int) (backG + g);
+    final int new_b = (int) (backB + b);
+
+    final Color thisCol = new Color(new_r, new_g, new_b);
+
+    return thisCol;
+  }
 
   /**
    * the size of points to draw
@@ -87,62 +140,6 @@ final class SnailDrawSWTTrack
     _fixLists = new java.util.Hashtable<FixWrapper, Collection<Editable>>();
   }
 
-  /**
-   * calculate the correct color fade for the supplied colors/times
-   * 
-   * @param mainCol
-   *          the foreground color
-   * @param backColor
-   *          the background color - to fade out to
-   * @param trail_len
-   *          how long (in time) the trail should be
-   * @param stepTime
-   *          the current step time
-   * @param datumTime
-   *          the time of this data item
-   * @return
-   */
-  public static Color getFadedColorFor(final Color mainCol,
-      final Color backColor, final long trail_len, final HiResDate stepTime,
-      final HiResDate datumTime)
-  {
-
-    // how far back through the time period are we?
-    long our_time = stepTime.getMicros() - datumTime.getMicros();
-
-    // just double check that we have a positive time offset
-    our_time = Math.max(0, our_time);
-
-    float proportion =
-        ((float) ((float) trail_len - our_time) / (float) trail_len);
-
-    // just check we've got a realistic proportion
-    proportion = Math.max(0, proportion);
-
-    // now apply this proportion to the indicated color
-    final float backR = backColor.getRed();
-    final float backG = backColor.getGreen();
-    final float backB = backColor.getBlue();
-
-    final int mainR = mainCol.getRed();
-    final int mainG = mainCol.getGreen();
-    final int mainB = mainCol.getBlue();
-
-    // now apply this proportion to the indicated color
-    final float r = (mainR - backR) * proportion;
-    final float g = (mainG - backG) * proportion;
-    final float b = (mainB - backB) * proportion;
-
-    // create the colour shade for this item
-    final int new_r = (int) (backR + r);
-    final int new_g = (int) (backG + g);
-    final int new_b = (int) (backB + b);
-
-    final Color thisCol = new Color(new_r, new_g, new_b);
-
-    return thisCol;
-  }
-
   // /////////////////////////////////
   // member functions
   // ////////////////////////////////
@@ -160,7 +157,9 @@ final class SnailDrawSWTTrack
 
     // does this object return a track?
     if (trk == null)
+    {
       return thisR;
+    }
 
     // does this track have a custom trail length
     final Duration customTrail = trk.getCustomTrailLength();
@@ -178,7 +177,7 @@ final class SnailDrawSWTTrack
     }
 
     // trim to visible period if its a track
-    TimePeriod visP = trk.getVisiblePeriod();
+    final TimePeriod visP = trk.getVisiblePeriod();
     if (!visP.contains(dtg))
     {
       // ok, before or after?
@@ -198,7 +197,7 @@ final class SnailDrawSWTTrack
     final Collection<Editable> dotPoints;
 
     // do we have these points already?
-    Collection<Editable> myList = _fixLists.get(theFix);
+    final Collection<Editable> myList = _fixLists.get(theFix);
 
     // did we find it?
     if (myList != null)
@@ -228,7 +227,9 @@ final class SnailDrawSWTTrack
       // add the current fix to the list of points if we don't already contain
       // it.
       if (!dotPoints.contains(theFix))
+      {
         dotPoints.add(theFix);
+      }
 
       // check that we found some points for this track
       if (dotPoints != null)
@@ -244,37 +245,37 @@ final class SnailDrawSWTTrack
       if (!dotPoints.isEmpty())
       {
 
-        // NOTE: no, don't.  We're getting a duplicate set of array centre markers
-//         // have a go at plotting the array sensor
-//         if (trk.getPlotArrayCentre()) {
-//         final Enumeration<Editable> enumer = trk.getSensors()
-//         .elements();
-//         while (enumer.hasMoreElements()) {
-//         final SensorWrapper sw = (SensorWrapper) enumer
-//         .nextElement();
-//         final int _mySize = 5;
-//        
-//         // is this sensor visible?
-//         if (sw.getVisible())
-//         {
-//         final WorldLocation centre =
-//         sw.getArrayCentre(dtg, watch.getLocation(), trk);
-//         if (centre != null)
-//         {
-//         final Point pt = dest.toScreen(centre);
-//         dest.drawLine(pt.x - _mySize, pt.y - _mySize, pt.x + _mySize,
-//         pt.y + _mySize);
-//         dest.drawLine(pt.x + _mySize, pt.y - _mySize, pt.x - _mySize,
-//         pt.y + _mySize);
-//         }
-//         else
-//         {
-//         Application.logStack2(Application.ERROR,
-//         "Unable to determine array centre for:" + sw.getName());
-//         }
-//         }
-//         }
-//         }
+        // NOTE: no, don't. We're getting a duplicate set of array centre markers
+        // // have a go at plotting the array sensor
+        // if (trk.getPlotArrayCentre()) {
+        // final Enumeration<Editable> enumer = trk.getSensors()
+        // .elements();
+        // while (enumer.hasMoreElements()) {
+        // final SensorWrapper sw = (SensorWrapper) enumer
+        // .nextElement();
+        // final int _mySize = 5;
+        //
+        // // is this sensor visible?
+        // if (sw.getVisible())
+        // {
+        // final WorldLocation centre =
+        // sw.getArrayCentre(dtg, watch.getLocation(), trk);
+        // if (centre != null)
+        // {
+        // final Point pt = dest.toScreen(centre);
+        // dest.drawLine(pt.x - _mySize, pt.y - _mySize, pt.x + _mySize,
+        // pt.y + _mySize);
+        // dest.drawLine(pt.x + _mySize, pt.y - _mySize, pt.x - _mySize,
+        // pt.y + _mySize);
+        // }
+        // else
+        // {
+        // Application.logStack2(Application.ERROR,
+        // "Unable to determine array centre for:" + sw.getName());
+        // }
+        // }
+        // }
+        // }
 
         // remember the last location
         Point lastLoc = null;
@@ -299,7 +300,9 @@ final class SnailDrawSWTTrack
 
           // initialise the area, if we have to
           if (thisR == null)
+          {
             thisR = new Rectangle(screenP);
+          }
 
           // the color to use for this fix
           final Color newCol;
@@ -413,24 +416,14 @@ final class SnailDrawSWTTrack
     return thisR;
   }
 
-  public final void setJoinPositions(final boolean val)
+  public final boolean getFadePoints()
   {
-    _joinPoints = val;
+    return _fadePoints;
   }
 
   public final boolean getJoinPositions()
   {
     return _joinPoints;
-  }
-
-  public final void setFadePoints(final boolean val)
-  {
-    _fadePoints = val;
-  }
-
-  public final boolean getFadePoints()
-  {
-    return _fadePoints;
   }
 
   /**
@@ -447,6 +440,16 @@ final class SnailDrawSWTTrack
   public final Long getTrailLength()
   {
     return new Long(_trailLength);
+  }
+
+  public final void setFadePoints(final boolean val)
+  {
+    _fadePoints = val;
+  }
+
+  public final void setJoinPositions(final boolean val)
+  {
+    _joinPoints = val;
   }
 
   /**
@@ -466,7 +469,9 @@ final class SnailDrawSWTTrack
 
     // and clear the lists of fixes we are using, so that they are re-calculated
     if (_fixLists != null)
+    {
       _fixLists.clear();
+    }
   }
 
 }

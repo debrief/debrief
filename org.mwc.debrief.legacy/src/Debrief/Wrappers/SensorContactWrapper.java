@@ -462,18 +462,18 @@ public final class SensorContactWrapper extends
       scw.setDTG(theDate);
       sw.add(scw);
 
-      Fix fx1 = new Fix();
+      final Fix fx1 = new Fix();
       fx1.setLocation(location);
       fx1.setTime(theDate);
       fx1.setCourse(0);
-      FixWrapper fw1 = new FixWrapper(fx1);
+      final FixWrapper fw1 = new FixWrapper(fx1);
       final TrackWrapper host = new TrackWrapper();
       host.addFix(fw1);
-      Fix fx2 = new Fix();
+      final Fix fx2 = new Fix();
       fx2.setLocation(location);
       fx2.setTime(new HiResDate(2000));
       fx2.setCourse(0);
-      FixWrapper fw2 = new FixWrapper(fx2);
+      final FixWrapper fw2 = new FixWrapper(fx2);
       host.add(fw2);
 
       host.add(sw);
@@ -793,38 +793,6 @@ public final class SensorContactWrapper extends
 
   }
 
-  public final boolean isBearingToPort()
-  {
-    if (_cachedPortBearing == null)
-    {
-      // get the origin
-      final MWC.GenericData.Watchable[] list =
-          _mySensor._myHost.getNearestTo(_DTG);
-      MWC.GenericData.Watchable wa = null;
-      if (list.length > 0)
-      {
-        wa = list[0];
-      }
-
-      // did we find it?
-      if (wa != null)
-      {
-        // find out current course
-        final double course =
-            MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
-
-        // cool, we have a course - we can go for it. remember the bearings
-        final double bearing1 = getBearing();
-
-        // is the first bearing our one?
-        final double relB = relBearing(course, bearing1);
-
-        _cachedPortBearing = relB < 0;
-      }
-    }
-    return _cachedPortBearing;
-  }
-
   private final void ditchBearing(final boolean isPort)
   {
     // cool, we have a course - we can go for it. remember the bearings
@@ -903,10 +871,6 @@ public final class SensorContactWrapper extends
     return res;
   }
 
-  // ///////////////////////////////////////////
-  // member methods to meet requirements of Plottable interface
-  // ///////////////////////////////////////////
-
   /**
    * get the bearing (in degrees)
    */
@@ -914,6 +878,10 @@ public final class SensorContactWrapper extends
   {
     return MWC.Algorithms.Conversions.Rads2Degs(_bearing);
   }
+
+  // ///////////////////////////////////////////
+  // member methods to meet requirements of Plottable interface
+  // ///////////////////////////////////////////
 
   /**
    * find the data area occupied by this item
@@ -1277,6 +1245,38 @@ public final class SensorContactWrapper extends
     return true;
   }
 
+  public final boolean isBearingToPort()
+  {
+    if (_cachedPortBearing == null)
+    {
+      // get the origin
+      final MWC.GenericData.Watchable[] list =
+          _mySensor._myHost.getNearestTo(_DTG);
+      MWC.GenericData.Watchable wa = null;
+      if (list.length > 0)
+      {
+        wa = list[0];
+      }
+
+      // did we find it?
+      if (wa != null)
+      {
+        // find out current course
+        final double course =
+            MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
+
+        // cool, we have a course - we can go for it. remember the bearings
+        final double bearing1 = getBearing();
+
+        // is the first bearing our one?
+        final double relB = relBearing(course, bearing1);
+
+        _cachedPortBearing = relB < 0;
+      }
+    }
+    return _cachedPortBearing;
+  }
+
   public final void keepPortBearing()
   {
     ditchBearing(true);
@@ -1390,63 +1390,54 @@ public final class SensorContactWrapper extends
         dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
       }
 
-      // only plot the label if we don't want it simple
-      if (!keep_simple)
+      // do we have an ambiguous bearing?
+      if (this.getHasAmbiguousBearing())
       {
+        dest.setColor(bearingTwoColor);
 
+        final WorldLocation theOtherFarEnd =
+            getAmbiguousFarEnd(dest.getProjection().getDataArea());
+        final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
+        // draw the line
+        dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
+      }
+
+      // only plot the label if we don't want it simple
+      if (!keep_simple && getLabelVisible())
+      {
         // restore the solid line style, for the next poor bugger
         dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
 
         // now draw the label
-        if (getLabelVisible())
+        WorldLocation labelPos = null;
+
+        // sort out where to plot it
+        if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
         {
-          WorldLocation labelPos = null;
-
-          // sort out where to plot it
-          if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
-          {
-            // use the start
-            labelPos = origin;
-          }
-          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
-          {
-            // put it at the end
-            labelPos = theFarEnd;
-          }
-          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-          {
-            // calculate the centre point
-            final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
-            labelPos = tmpArea.getCentre();
-          }
-
-          // update it's location
-          _theLabel.setLocation(labelPos);
-          _theLabel.setColor(getColor());
-          _theLabel.paint(dest);
+          // use the start
+          labelPos = origin;
+        }
+        else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
+        {
+          // put it at the end
+          labelPos = theFarEnd;
+        }
+        else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
+        {
+          // calculate the centre point
+          final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
+          labelPos = tmpArea.getCentre();
         }
 
-        // do we have an ambiguous bearing
-        if (this.getHasAmbiguousBearing())
-        {
-          dest.setColor(bearingTwoColor);
+        // update it's location
+        _theLabel.setLocation(labelPos);
+        _theLabel.setColor(getColor());
+        _theLabel.paint(dest);
 
-          final WorldLocation theOtherFarEnd =
-              getAmbiguousFarEnd(dest.getProjection().getDataArea());
-          final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
-          // draw the line
-          dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
-        }
-
-        if (!keep_simple)
-        {
-
-          // restore the solid line style, for the next poor bugger
-          dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
-        }
       }
+      // restore the solid line style, for the next poor bugger
+      dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
     }
-
   }
 
   /**
