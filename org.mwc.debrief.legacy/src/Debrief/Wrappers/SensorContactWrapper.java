@@ -1390,63 +1390,54 @@ public final class SensorContactWrapper extends
         dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
       }
 
-      // only plot the label if we don't want it simple
-      if (!keep_simple)
+      // do we have an ambiguous bearing?
+      if (this.getHasAmbiguousBearing())
       {
+        dest.setColor(bearingTwoColor);
 
+        final WorldLocation theOtherFarEnd =
+            getAmbiguousFarEnd(dest.getProjection().getDataArea());
+        final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
+        // draw the line
+        dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
+      }
+
+      // only plot the label if we don't want it simple
+      if (!keep_simple && getLabelVisible())
+      {
         // restore the solid line style, for the next poor bugger
         dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
 
         // now draw the label
-        if (getLabelVisible())
+        WorldLocation labelPos = null;
+
+        // sort out where to plot it
+        if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
         {
-          WorldLocation labelPos = null;
-
-          // sort out where to plot it
-          if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
-          {
-            // use the start
-            labelPos = origin;
-          }
-          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
-          {
-            // put it at the end
-            labelPos = theFarEnd;
-          }
-          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-          {
-            // calculate the centre point
-            final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
-            labelPos = tmpArea.getCentre();
-          }
-
-          // update it's location
-          _theLabel.setLocation(labelPos);
-          _theLabel.setColor(getColor());
-          _theLabel.paint(dest);
+          // use the start
+          labelPos = origin;
+        }
+        else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
+        {
+          // put it at the end
+          labelPos = theFarEnd;
+        }
+        else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
+        {
+          // calculate the centre point
+          final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
+          labelPos = tmpArea.getCentre();
         }
 
-        // do we have an ambiguous bearing
-        if (this.getHasAmbiguousBearing())
-        {
-          dest.setColor(bearingTwoColor);
+        // update it's location
+        _theLabel.setLocation(labelPos);
+        _theLabel.setColor(getColor());
+        _theLabel.paint(dest);
 
-          final WorldLocation theOtherFarEnd =
-              getAmbiguousFarEnd(dest.getProjection().getDataArea());
-          final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
-          // draw the line
-          dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
-        }
-
-        if (!keep_simple)
-        {
-
-          // restore the solid line style, for the next poor bugger
-          dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
-        }
       }
+      // restore the solid line style, for the next poor bugger
+      dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
     }
-
   }
 
   /**
