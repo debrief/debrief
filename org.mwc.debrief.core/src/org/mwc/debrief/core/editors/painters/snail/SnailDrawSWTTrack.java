@@ -23,9 +23,7 @@ import java.util.Iterator;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
