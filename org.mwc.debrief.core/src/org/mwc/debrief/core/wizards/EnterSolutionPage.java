@@ -28,121 +28,141 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class EnterSolutionPage extends CoreEditableWizardPage
 {
-	private static final String COURSE = "COURSE";
+  private static final String COURSE = "COURSE";
 
-	private static final String SPEED = "SPEED";
+  private static final String SPEED = "SPEED";
 
-	private static final String NULL_SPEED = "0,1";
+  public static String NAME = "Initial SOLUTION";
 
-	public static String NAME = "Initial SOLUTION";
+  public static class SolutionDataItem implements Editable
+  {
+    public WorldSpeed _speed = new WorldSpeed(0, WorldSpeed.Kts);
+    public double _course = 0;
 
-	public static class SolutionDataItem implements Editable
-	{
-		public WorldSpeed _speed = new WorldSpeed(0, WorldSpeed.Kts);
-		public double _course = 0;
+    public WorldSpeed getSpeed()
+    {
+      return _speed;
+    }
 
-		public WorldSpeed getSpeed()
-		{
-			return _speed;
-		}
+    public void setSpeed(final WorldSpeed speed)
+    {
+      _speed = speed;
+    }
 
-		public void setSpeed(final WorldSpeed speed)
-		{
-			_speed = speed;
-		}
+    public double getCourse()
+    {
+      return _course;
+    }
 
-		public double getCourse()
-		{
-			return _course;
-		}
+    public void setCourse(final double course)
+    {
+      _course = course;
+    }
 
-		public void setCourse(final double course)
-		{
-			_course = course;
-		}
+    public EditorType getInfo()
+    {
+      return null;
+    }
 
-		public EditorType getInfo()
-		{
-			return null;
-		}
+    public String getName()
+    {
+      return "Local solution";
+    }
 
-		public String getName()
-		{
-			return "Local solution";
-		}
+    public boolean hasEditor()
+    {
+      return false;
+    }
 
-		public boolean hasEditor()
-		{
-			return false;
-		}
+  }
 
-	}
+  SolutionDataItem _myWrapper;
 
-	SolutionDataItem _myWrapper;
+  Text secondNameText;
+  
+  final private String NULL_SPEED = "5,6";
 
-	Text secondNameText;
+  final private WorldSpeed _defaultSpeed;
 
-	public EnterSolutionPage(final ISelection selection, final String pageTitle,
-			final String pageDescription, final String imagePath, final String helpContext)
-	{
-		super(selection, NAME, pageTitle, pageDescription, imagePath, helpContext,
-				false);
+  final private double _defaultCourse;
 
-		_myWrapper = new SolutionDataItem();
+  public EnterSolutionPage(final ISelection selection, final String pageTitle,
+      final String pageDescription, final String imagePath,
+      final String helpContext, final WorldSpeed defaultSpeed,
+      final double defaultCourse)
+  {
+    super(selection, NAME, pageTitle, pageDescription, imagePath, helpContext,
+        false);
 
-		setDefaults();
-	}
+    _myWrapper = new SolutionDataItem();
+    _defaultSpeed = defaultSpeed;
+    _defaultCourse = defaultCourse;
 
-	private void setDefaults()
-	{
-		final Preferences prefs = getPrefs();
+    setDefaults();
+  }
 
-		if (prefs != null)
-		{
-			final double course = prefs.getDouble(COURSE, 0d);
-			final String speedStr = prefs.get(SPEED, NULL_SPEED);
-			final String[] parts = speedStr.split(",");
-			try 
-			{
-				final double val = MWCXMLReader.readThisDouble(parts[0]);			
-				final int units = Integer.parseInt(parts[1]);
-				final WorldSpeed  speed = new WorldSpeed(val, units);
-				_myWrapper.setCourse(course);
-				_myWrapper.setSpeed(speed);
-			} 
-			catch (final ParseException e) 
-			{
-				MWC.Utilities.Errors.Trace.trace(e);
-			}
-		}
-	}
+  private void setDefaults()
+  {
+    final Preferences prefs = getPrefs();
 
-	@Override
-	public void dispose()
-	{
+    boolean assigned = false;
 
-		// try to store some defaults
-		final Preferences prefs = getPrefs();
+    if (prefs != null)
+    {
+      final double course = prefs.getDouble(COURSE, Double.NaN);
+      if (!Double.isNaN(course))
+      {
+        final String speedStr = prefs.get(SPEED, NULL_SPEED);
+        final String[] parts = speedStr.split(",");
+        try
+        {
+          final double val = MWCXMLReader.readThisDouble(parts[0]);
+          final int units = Integer.parseInt(parts[1]);
+          final WorldSpeed speed = new WorldSpeed(val, units);
+          _myWrapper.setCourse(course);
+          _myWrapper.setSpeed(speed);
+          assigned = true;
+        }
+        catch (final ParseException e)
+        {
+          MWC.Utilities.Errors.Trace.trace(e);
+        }
+      }
+    }
 
-		prefs.putDouble(COURSE, _myWrapper.getCourse());
-		final String spdTxt = _myWrapper.getSpeed().getValue() + ","
-				+ _myWrapper.getSpeed().getUnits();
-		prefs.put(SPEED, spdTxt);
+    if (!assigned)
+    {
+      _myWrapper.setSpeed(_defaultSpeed);
+      _myWrapper.setCourse(_defaultCourse);
+    }
+  }
 
-		super.dispose();
-	}
+  @Override
+  public void dispose()
+  {
+    // try to store some defaults
+    final Preferences prefs = getPrefs();
 
-	protected PropertyDescriptor[] getPropertyDescriptors()
-	{
-		final PropertyDescriptor[] descriptors =
-		{ prop("Course", "the initial estimate of course", getEditable()),
-				prop("Speed", "the initial estimate of speed", getEditable()) };
-		return descriptors;
-	}
+    prefs.putDouble(COURSE, _myWrapper.getCourse());
+    final String spdTxt =
+        _myWrapper.getSpeed().getValue() + ","
+            + _myWrapper.getSpeed().getUnits();
+    prefs.put(SPEED, spdTxt);
 
-	public Editable createMe()
-	{
-		return _myWrapper;
-	}
+    super.dispose();
+  }
+
+  protected PropertyDescriptor[] getPropertyDescriptors()
+  {
+    final PropertyDescriptor[] descriptors =
+        {prop("Course", "the initial estimate of course", getEditable()),
+            prop("Speed", "the initial estimate of speed", getEditable())};
+    return descriptors;
+  }
+
+  public Editable createMe()
+  {
+    return _myWrapper;
+  }
 
 }

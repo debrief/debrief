@@ -26,139 +26,152 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class RangeBearingPage extends CoreEditableWizardPage
 {
-	private static final String RANGE = "RANGE";
-	private static final String BEARING = "BEARING";
-	private static final String NULL_RANGE = "0,1";
+  private static final String RANGE = "RANGE";
+  private static final String BEARING = "BEARING";
 
-	public static class DataItem implements Editable
-	{
-		double _bearing = 0;
-		WorldDistance _range = new WorldDistance(5, WorldDistance.NM);
+  public static class DataItem implements Editable
+  {
+    double _bearing = 0;
+    WorldDistance _range = new WorldDistance(5, WorldDistance.NM);
 
-		public double getBearing()
-		{
-			return _bearing;
-		}
+    public double getBearing()
+    {
+      return _bearing;
+    }
 
-		public EditorType getInfo()
-		{
-			return null;
-		}
+    public EditorType getInfo()
+    {
+      return null;
+    }
 
-		public String getName()
-		{
-			return null;
-		}
+    public String getName()
+    {
+      return null;
+    }
 
-		public WorldDistance getRange()
-		{
-			return _range;
-		}
+    public WorldDistance getRange()
+    {
+      return _range;
+    }
 
-		public boolean hasEditor()
-		{
-			return false;
-		}
+    public boolean hasEditor()
+    {
+      return false;
+    }
 
-		public void setBearing(final double bearing)
-		{
-			_bearing = bearing;
-		}
+    public void setBearing(final double bearing)
+    {
+      _bearing = bearing;
+    }
 
-		public void setRange(final WorldDistance range)
-		{
-			_range = range;
-		}
-	}
+    public void setRange(final WorldDistance range)
+    {
+      _range = range;
+    }
+  }
 
-	public static String NAME = "Initial Offset";
+  public static String NAME = "Initial Offset";
 
-	DataItem _myWrapper;
-	final private String _rangeTitle;
-	final private String _bearingTitle;
+  DataItem _myWrapper;
+  final private String _rangeTitle;
+  final private String _bearingTitle;
+  final private WorldDistance _defaultRange;
+  private double _brgDegs;
 
-	public RangeBearingPage(final ISelection selection, final String pageName,
-			final String pageDescription, final String rangeTitle,
-			final String bearingTitle, final String imagePath,
-			final String helpContext)
-	{
-		super(selection, NAME, pageName, pageDescription, imagePath, helpContext,
-				false);
-		_rangeTitle = rangeTitle;
-		_bearingTitle = bearingTitle;
+  public RangeBearingPage(final ISelection selection, final String pageName,
+      final String pageDescription, final String rangeTitle,
+      final String bearingTitle, final String imagePath,
+      final String helpContext, final WorldDistance defaultRange, final double brgDegs)
+  {
+    super(selection, NAME, pageName, pageDescription, imagePath, helpContext,
+        false);
+    _rangeTitle = rangeTitle;
+    _bearingTitle = bearingTitle;
+    _defaultRange = defaultRange;
+    _brgDegs = brgDegs;
 
-		setDefaults();
-	}
+    setDefaults();
+  }
 
-	private void setDefaults()
-	{
-		final Preferences prefs = getPrefs();
+  private void setDefaults()
+  {
+    final Preferences prefs = getPrefs();
+    boolean assigned = false;
 
-		if (prefs != null)
-		{
-			final double bearing = prefs.getDouble("BEARING", 0d);
-			final String rangeStr = prefs.get(RANGE, NULL_RANGE);
-			final String[] parts = rangeStr.split(",");
-			try
-			{
-				final double val = MWCXMLReader.readThisDouble(parts[0]);
-				final int units = Integer.parseInt(parts[1]);
-				final WorldDistance range = new WorldDistance(val, units);
-				setData(range, bearing);
-			}
-			catch (final ParseException pe)
-			{
-				MWC.Utilities.Errors.Trace.trace(pe);
-			}
-		}
-	}
+    if (prefs != null)
+    {
+      final String rangeStr = prefs.get(RANGE, null);
+      if (rangeStr != null)
+      {
+        final String[] parts = rangeStr.split(",");
+        try
+        {
+          final double val = MWCXMLReader.readThisDouble(parts[0]);
+          final int units = Integer.parseInt(parts[1]);
+          final WorldDistance range = new WorldDistance(val, units);
+          setData(range, _brgDegs);
+          assigned = true;
+        }
+        catch (final ParseException pe)
+        {
+          MWC.Utilities.Errors.Trace.trace(pe);
+        }
+      }
+    }
 
-	public void setData(final WorldDistance range, final double bearing)
-	{
-		createMe();
-		_myWrapper.setRange(range);
-		_myWrapper.setBearing(bearing);
-	}
+    if (!assigned)
+    {
+      // ok, use our default
+      setData(_defaultRange, _brgDegs);
+    }
+  }
 
-	public WorldDistance getRange()
-	{
-		return _myWrapper.getRange();
-	}
+  public void setData(final WorldDistance range, final double bearing)
+  {
+    createMe();
+    _myWrapper.setRange(range);
+    _myWrapper.setBearing(bearing);
+  }
 
-	@Override
-	public void dispose()
-	{
-		// try to store some defaults
-		final Preferences prefs = getPrefs();
-		final WorldDistance res = this.getRange();
-		if (res != null)
-		{
-			prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
-			prefs.putDouble(BEARING, _myWrapper.getBearing());
-		}
+  public WorldDistance getRange()
+  {
+    return _myWrapper.getRange();
+  }
 
-		super.dispose();
-	}
+  @Override
+  public void dispose()
+  {
+    // try to store some defaults
+    final Preferences prefs = getPrefs();
+    final WorldDistance res = this.getRange();
+    if (res != null)
+    {
+      prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
+      prefs.putDouble(BEARING, _myWrapper.getBearing());
+    }
 
-	public double getBearingDegs()
-	{
-		return _myWrapper.getBearing();
-	}
+    super.dispose();
+  }
 
-	protected PropertyDescriptor[] getPropertyDescriptors()
-	{
-		final PropertyDescriptor[] descriptors = {
-				prop("Range", _rangeTitle, getEditable()),
-				prop("Bearing", _bearingTitle, getEditable()) };
-		return descriptors;
-	}
+  public double getBearingDegs()
+  {
+    return _myWrapper.getBearing();
+  }
 
-	protected Editable createMe()
-	{
-		if (_myWrapper == null)
-			_myWrapper = new DataItem();
+  protected PropertyDescriptor[] getPropertyDescriptors()
+  {
+    final PropertyDescriptor[] descriptors =
+        {prop("Range", _rangeTitle, getEditable()),
+            prop("Bearing", _bearingTitle, getEditable())};
+    return descriptors;
+  }
 
-		return _myWrapper;
-	}
+  protected Editable createMe()
+  {
+    if (_myWrapper == null)
+      _myWrapper = new DataItem();
+
+    return _myWrapper;
+  }
 
 }

@@ -74,11 +74,8 @@ public class NewContactWizard extends Wizard
 		rngBearingPage = new RangeBearingPage(null, PAGE_TITLE,
 				"Specify the range/bearing to the contact",
 				"range to contact (0.0 if not known)", "bearing to contact (degs)",
-				imagePath, helpContext);
+				imagePath, helpContext, new WorldDistance(5, WorldDistance.KYDS), 270d);
 		addPage(rngBearingPage);
-
-		// set some default data - like zero range
-		rngBearingPage.setData(new WorldDistance(0, WorldDistance.NM), 270);
 
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
