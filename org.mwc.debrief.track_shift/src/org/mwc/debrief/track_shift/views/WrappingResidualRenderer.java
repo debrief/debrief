@@ -3,6 +3,7 @@ package org.mwc.debrief.track_shift.views;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
+import org.eclipse.core.runtime.Status;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
@@ -13,6 +14,7 @@ import org.jfree.chart.util.LineUtilities;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleEdge;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 
 public class WrappingResidualRenderer extends ResidualXYItemRenderer
 {
@@ -90,8 +92,11 @@ public class WrappingResidualRenderer extends ResidualXYItemRenderer
     {
       if (x < xs[0] || x > xs[1])
       {
-        throw new IllegalArgumentException(String.format(
-            "x needs to be between %s and %s, found %s", xs[0], xs[1], x));
+        TrackShiftActivator.getDefault().getLog().log(
+            new Status(Status.ERROR, TrackShiftActivator.PLUGIN_ID, String
+                .format("x needs to be between %s and %s, found %s", xs[0],
+                    xs[1], x)));
+        return ys[0];
       }
       return ys[0] + (ys[1] - ys[0]) * (x - xs[0]) / (xs[1] - xs[0]);
     }
