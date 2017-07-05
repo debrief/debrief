@@ -18,7 +18,6 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.mwc.cmap.core.wizards.RangeBearingPage;
 import org.mwc.debrief.core.wizards.EnterSolutionPage;
-import org.mwc.debrief.core.wizards.EnterSolutionPage.SolutionDataItem;
 
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
@@ -30,7 +29,7 @@ public class TMAFromSensorWizard extends Wizard
 	EnterSolutionPage enterSolutionPage;
 	private final double _brgDegs;
 	private final WorldDistance _range;
-	private final double _initalCourse;
+	private final double _initialCourse;
 	private final WorldSpeed _initialSpeed;
 	private boolean _showOffset;
 
@@ -46,7 +45,7 @@ public class TMAFromSensorWizard extends Wizard
 	{
 		_brgDegs = brgDegs;
 		_range = range;
-		_initalCourse = initialCourse;
+		_initialCourse = initialCourse;
 		_initialSpeed = initialSpeed;
 		_showOffset = showOffset;
 	}
@@ -57,30 +56,24 @@ public class TMAFromSensorWizard extends Wizard
 
 		final String helpContext = null;
 
-		// now for the easy fields
-		// ok, we need to let the user enter the solution wrapper name
-		selectOffsetPage = new RangeBearingPage(null, PAGE_TITLE,
-				"Now specify the offset to the track start",
-				"range from ownship to start of track",
-				"bearing from ownship to start of track", imagePath, helpContext);
-
-		// give ourselves a default range, if we don't have one
-		WorldDistance theRange = _range;
-		if (theRange == null)
-			theRange = new WorldDistance(5, WorldDistance.NM);
-
-		selectOffsetPage.setData(theRange, _brgDegs);
+    // now for the easy fields
+    // ok, we need to let the user enter the solution wrapper name
+    selectOffsetPage =
+        new RangeBearingPage(null, PAGE_TITLE,
+            "Now specify the offset to the track start",
+            "range from ownship to start of track",
+            "bearing from ownship to start of track", imagePath, helpContext,
+            _range, _brgDegs);
 
 		if (_showOffset)
 		{
 			addPage(selectOffsetPage);
 		}
 
-		enterSolutionPage = new EnterSolutionPage(null, PAGE_TITLE,
-				"This page lets you enter an initial solution", imagePath, helpContext);
-		final SolutionDataItem d2 = (SolutionDataItem) enterSolutionPage.createMe();
-		d2._course = _initalCourse;
-		d2._speed = _initialSpeed;
+    enterSolutionPage =
+        new EnterSolutionPage(null, PAGE_TITLE,
+            "This page lets you enter an initial solution", imagePath,
+            helpContext, _initialSpeed, _initialCourse);
 
 		addPage(enterSolutionPage);
 	}

@@ -93,14 +93,14 @@ public class NewSolutionWizard extends Wizard
 				"Specify the range/bearing to the solution",
 				"range from ownship to centre of ellipse",
 				"bearing from ownship to centre of ellipse (degs)", imagePath,
-				helpContext);
+				helpContext, new WorldDistance(5, WorldDistance.KYDS), 270d);
 		addPage(rngBearingPage);
 		
-		solutionPage = new EnterSolutionPage(null, PAGE_TITLE,
-				"Enter an initial solution\n"
-						+ "This will be stored in the ellipse label", imagePath,
-				helpContext);
-		addPage(solutionPage);
+    solutionPage =
+        new EnterSolutionPage(null, PAGE_TITLE, "Enter an initial solution\n"
+            + "This will be stored in the ellipse label", imagePath,
+            helpContext, new WorldSpeed(12, WorldSpeed.Kts), 45d);
+    addPage(solutionPage);
 
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
