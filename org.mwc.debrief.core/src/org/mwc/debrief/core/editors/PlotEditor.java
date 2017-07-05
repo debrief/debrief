@@ -907,7 +907,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         new EnterBooleanPage(null, false, "Import Sensor data",
             "Please specify if this sensor should be displayed once loaded",
             "yes/no", imagePath, null);
-    final WorldDistance defRange = new WorldDistance(5000, WorldDistance.YARDS);
+    final WorldDistance defRange = new WorldDistance(5, WorldDistance.KYDS);
     final EnterRangePage getRange =
         new EnterRangePage(
             null,
