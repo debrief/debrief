@@ -59,7 +59,7 @@ public class EnterRangePage extends CoreEditableWizardPage
 
 	private static final String RANGE = "RANGE";
 
-	private static final String NULL_RANGE = "0,1";
+	private static final String NULL_RANGE = "0,6";
 
 	public static String NAME = "EnterRange";
 	DataItem _myWrapper;
@@ -106,7 +106,19 @@ public class EnterRangePage extends CoreEditableWizardPage
 		final Preferences prefs = getPrefs();
 		WorldDistance res = this.getRange();
 		if(res == null)
-			res = new WorldDistance(0, WorldDistance.YARDS);
+		{
+		  // do we have default range?
+		  final int units;
+		  if(_defaultRange != null)
+		  {
+		    units = _defaultRange.getUnits();
+		  }
+		  else
+		  {
+		    units = WorldDistance.YARDS;
+		  }
+			res = new WorldDistance(0, units);
+		}
 		
 		prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
 
