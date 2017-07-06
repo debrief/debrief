@@ -644,6 +644,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     long tNow;
     final CoreTMASegment tma = (CoreTMASegment) this;
+    
+    final long startMicros = theStartTime * 1000L;
 
     // hey, it's a TMA segment - on steady course/speed. cool
     final double courseRads =
@@ -655,7 +657,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
         new WorldLocation(tma.getTrackStart());
 
     // right - sort out what time period we're working through
-    for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow +=
+    for (tNow = startMicros; tNow <= endDTG().getMicros(); tNow +=
         theVal.getMicros())
     {
       final Fix theFix =
