@@ -241,7 +241,7 @@ public class GenerateTMASegmentFromCuts implements
     }
   }
 
-  private static class TMAfromCuts extends CMAPOperation
+  public static class TMAfromCuts extends CMAPOperation
   {
 
     private final Layers _layers;
