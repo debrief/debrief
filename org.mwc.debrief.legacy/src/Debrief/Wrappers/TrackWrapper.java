@@ -4259,13 +4259,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       setLabelFrequency(getLabelFrequency());
       setSymbolFrequency(getSymbolFrequency());
       setArrowFrequency(getArrowFrequency());
-      
+
     }
 
-    // remember we may need to regenerate positions
-    // No: don't do this, it mangles the locations. The decimate
-    // correctly calculates the location, but this call overrides them
-    // setRelativePending();
+    // remember we may need to regenerate positions, if we're a TMA solution
+    Editable firstLeg = getSegments().elements().nextElement();
+    if (firstLeg instanceof CoreTMASegment)
+    {
+   //   setRelativePending();
+      sortOutRelativePositions();
+    }
   }
 
   public final void setSymbolColor(final Color col)
