@@ -778,7 +778,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     long requiredTime = theStartTime;
     final long interval = theVal.getDate().getTime();
-    FixWrapper lastPositionStored = null;
+    FixWrapper previousPosition = null;
 
     Enumeration<Editable> iter = parentTrack.getPositionIterator();
     while (iter.hasMoreElements())
@@ -787,11 +787,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
       long thisTime = currentPosition.getDateTimeGroup().getDate().getTime();
 
-      if (lastPositionStored == null)
+      if (previousPosition == null)
       {
-        // ok, we're on the first cycle
-        lastPositionStored = currentPosition;
-
         // if this is on or after our time, we should use it
         if (thisTime >= requiredTime)
         {
@@ -821,7 +818,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           {
             // ok, we need to generate
             newPos =
-                FixWrapper.interpolateFix(lastPositionStored, currentPosition,
+                FixWrapper.interpolateFix(previousPosition, currentPosition,
                     new HiResDate(requiredTime));
           }
 
@@ -830,7 +827,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           {
             // start off with the course
             final WorldVector offset =
-                newPos.getLocation().subtract(lastPositionStored.getLocation());
+                newPos.getLocation().subtract(previousPosition.getLocation());
             newPos.getFix().setCourse(offset.getBearing());
 
             // and now the speed
@@ -838,30 +835,28 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
                 new WorldDistance(offset.getRange(), WorldDistance.DEGS)
                     .getValueIn(WorldDistance.YARDS);
             final double timeSecs =
-                (requiredTime - lastPositionStored.getTime().getMicros()) / 1000000d;
+                (requiredTime - previousPosition.getTime().getDate().getTime()) / 1000d;
             final double spdYps = distYds / timeSecs;
             newPos.getFix().setSpeed(spdYps);
           }
 
           // do we correct the name?
-          if (lastPositionStored.getName().equals(FixWrapper.INTERPOLATED_FIX))
+          if (newPos.getName().equals(FixWrapper.INTERPOLATED_FIX))
           {
             // reset the name
-            lastPositionStored.resetName();
+            newPos.resetName();
           }
 
           // add to our working list
           newItems.add(newPos);
 
-          // and move forward
-          lastPositionStored = newPos;
-
           // and move fowards
           requiredTime += interval;
-
         }
 
       }
+      // and move our marker forward
+      previousPosition = currentPosition;
     }
   }
 
