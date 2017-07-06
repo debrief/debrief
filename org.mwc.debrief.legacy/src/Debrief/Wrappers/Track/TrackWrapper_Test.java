@@ -15,6 +15,8 @@
 package Debrief.Wrappers.Track;
 
 import java.awt.Color;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -405,6 +407,15 @@ public class TrackWrapper_Test extends TestCase
     return fw;
   }
 
+  public static FixWrapper createFix(final long timeMillis, final double vLat,
+      final double vLong, final double course, final double speed)
+  {
+    final FixWrapper fw =
+        new FixWrapper(new Fix(new HiResDate(timeMillis), new WorldLocation(
+            vLat, vLong, 0), Math.toRadians(course), speed));
+    return fw;
+  }
+
   /**
    * fixes we can easily refer to in a test..
    * 
@@ -698,28 +709,28 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("have new items", 9, _ctr);
   }
 
-  public void testDecimate() throws InterruptedException
+  public void testDecimateAbsolute() throws InterruptedException
   {
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts1.addFix(createFix(0 * 1000000l, 32, 33));
+    ts1.addFix(createFix(0 * 1000000l, 31, 34));
     ts1.addFix(createFix(1 * 1000000l, 32, 33));
-    ts1.addFix(createFix(2 * 1000000l, 32, 33));
-    ts1.addFix(createFix(3 * 1000000l, 32, 33));
-    ts1.addFix(createFix(4 * 1000000l, 32, 33));
+    ts1.addFix(createFix(2 * 1000000l, 33, 32));
+    ts1.addFix(createFix(3 * 1000000l, 34, 31));
+    ts1.addFix(createFix(4 * 1000000l, 35, 30));
 
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(5 * 1000000l, 32, 33));
-    ts2.addFix(createFix(6 * 1000000l, 32, 33));
-    ts2.addFix(createFix(7 * 1000000l, 32, 33));
-    ts2.addFix(createFix(8 * 1000000l, 32, 33));
-    ts2.addFix(createFix(9 * 1000000l, 32, 33));
+    ts2.addFix(createFix(5 * 1000000l, 35, 33));
+    ts2.addFix(createFix(6 * 1000000l, 36, 34));
+    ts2.addFix(createFix(7 * 1000000l, 37, 35));
+    ts2.addFix(createFix(8 * 1000000l, 38, 36));
+    ts2.addFix(createFix(9 * 1000000l, 39, 37));
 
     final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts3.addFix(createFix(10 * 1000000l, 32, 33));
-    ts3.addFix(createFix(11 * 1000000l, 32, 33));
-    ts3.addFix(createFix(12 * 1000000l, 32, 33));
-    ts3.addFix(createFix(13 * 1000000l, 32, 33));
-    ts3.addFix(createFix(24 * 1000000l, 32, 33));
+    ts3.addFix(createFix(10 * 1000000l, 32, 37));
+    ts3.addFix(createFix(11 * 1000000l, 31, 36));
+    ts3.addFix(createFix(12 * 1000000l, 30, 35));
+    ts3.addFix(createFix(13 * 1000000l, 29, 34));
+    ts3.addFix(createFix(24 * 1000000l, 28, 33));
 
     final TrackWrapper tw = new TrackWrapper();
     tw.add(ts1);
@@ -731,10 +742,19 @@ public class TrackWrapper_Test extends TestCase
     // check it's got the segs
     assertEquals("has segments", "Track segments (3 items)", sl.toString());
     assertEquals("has all fixes", 15, tw.numFixes());
+    
+    // what's the area before
+    assertEquals("correct wid", 5.8372d, tw.getBounds().getWidth(), 0.001);
+    assertEquals("correct ht", 11d, tw.getBounds().getHeight(), 0.001);
 
     // GO FOR ULTIMATE DECIMATION
     tw.setResampleDataAt(new HiResDate(4 * 1000000l));
 
+    // what's the area before
+    assertEquals("still correct wid", 5.032d, tw.getBounds().getWidth(), 0.001);
+    assertEquals("still correct ht", 10d, tw.getBounds().getHeight(), 0.001);
+    
+    
     // insert delay, to overcome cacheing
     Thread.sleep(550);
 
@@ -750,6 +770,46 @@ public class TrackWrapper_Test extends TestCase
     // how was it?
     assertEquals("has segments", "Track segments (3 items)", sl.toString());
     // assertEquals("has all fixes", 49, tw.numFixes());
+  }
+  
+  public void testDecimateRelative() throws InterruptedException, ParseException
+  {
+    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+    
+    final TrackSegment ts1 = new TrackSegment(TrackSegment.RELATIVE);
+    ts1.addFix(createFix(sdf.parse("13:00:14").getTime(), 0.0, 0.0, 0, 5));
+    ts1.addFix(createFix(sdf.parse("13:01:14").getTime(), 0.5, 0.0, 0, 5));
+    ts1.addFix(createFix(sdf.parse("13:02:14").getTime(), 1.0, 0.0, 90, 5));
+    ts1.addFix(createFix(sdf.parse("13:03:14").getTime(), 1.0, 0.5, 90, 5));
+    ts1.addFix(createFix(sdf.parse("13:04:14").getTime(), 1.0, 1.0, 180, 5));
+    ts1.addFix(createFix(sdf.parse("13:04:14").getTime(), 0.5, 1.0, 180, 5));
+    ts1.addFix(createFix(sdf.parse("13:05:14").getTime(), 0.0, 1.0, 270, 5));
+    ts1.addFix(createFix(sdf.parse("13:06:14").getTime(), 0.0, 0.5, 270, 5));
+    ts1.addFix(createFix(sdf.parse("13:07:14").getTime(), 0.0, 0.0, 315, 5));
+
+    final TrackWrapper tw = new TrackWrapper();
+    tw.add(ts1);
+
+    Enumeration<Editable> pI = tw.getPositionIterator();
+    while(pI.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) pI.nextElement();
+      System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
+    }
+
+    // GO FOR ULTIMATE DECIMATION
+    tw.setResampleDataAt(new HiResDate(60 * 1000L));
+ //   ts1.decimate(new HiResDate(60 * 1000L), tw, sdf.parse("13:01:00").getTime());
+    
+    assertEquals("have correct fixes", 7, ts1.size());
+
+    pI = tw.getPositionIterator();
+    while(pI.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) pI.nextElement();
+      System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
+    }
+
   }
 
   public void testEmptyLayerBounds()

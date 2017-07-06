@@ -49,9 +49,6 @@ public abstract class LoaderManager
 	
 	private void getDataLoaders()
 	{		
-		
-		CorePlugin.logError(Status.INFO, "Starting to load Debrief data importers", null);
-
 		_loaders = new ArrayList<INamedItem>();
 		final IExtensionPoint point = Platform.getExtensionRegistry()
 				.getExtensionPoint(PLUGIN_ID, EXTENSION_POINT_ID);
@@ -76,9 +73,6 @@ public abstract class LoaderManager
 		if (point == null || getToolActionDescriptors().size() == 0) {
 			CorePlugin.logError(Status.WARNING, "No data loaders found", null);
 		}
-
-		CorePlugin.logError(Status.INFO, "Finished loading Debrief importers", null);
-		
 	}
 	
 	

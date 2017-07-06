@@ -4044,45 +4044,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             // so use the start time
           }
 
-          
           long nextMarker = start_time / 1000L;
           long freqMillis = freq / 1000L;
           Enumeration<Editable> iter = this.getPositionIterator();
-          while(iter.hasMoreElements())
+          while (iter.hasMoreElements())
           {
             FixWrapper nextF = (FixWrapper) iter.nextElement();
             long hisDate = nextF.getDTG().getDate().getTime();
-            if(hisDate >= nextMarker)
+            if (hisDate >= nextMarker)
             {
               setter.execute(nextF, true);
               // ok, move on to the next one
               nextMarker += freqMillis;
             }
           }
-
-//   this was the old way of doing it, but it's very slow with very long tracks          
-//          while (start_time <= end_time)
-//          {
-//            // right, increment the start time by one, because we were
-//            // getting the
-//            // fix immediately before the requested time
-//            final HiResDate thisDTG = new HiResDate(0, start_time);
-//            final Watchable[] list = this.getNearestTo(thisDTG);
-//            // check we found some
-//            if (list.length > 0)
-//            {
-//              final FixWrapper fw = (FixWrapper) list[0];
-//              setter.execute(fw, true);
-//            }
-//            // produce the next time step
-//            start_time += freq;
-//          }
         }
       }
-
     }
   }
-
 
   @Override
   public final void setInterpolatePoints(final boolean val)
@@ -4276,10 +4255,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         }
       }
 
+      // ok, also set the arrow, symbol, label frequencies
+      setLabelFrequency(getLabelFrequency());
+      setSymbolFrequency(getSymbolFrequency());
+      setArrowFrequency(getArrowFrequency());
+      
     }
 
     // remember we may need to regenerate positions
-    setRelativePending();
+    // No: don't do this, it mangles the locations. The decimate
+    // correctly calculates the location, but this call overrides them
+    // setRelativePending();
   }
 
   public final void setSymbolColor(final Color col)
