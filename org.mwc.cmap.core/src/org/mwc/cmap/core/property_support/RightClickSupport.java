@@ -375,29 +375,32 @@ public class RightClickSupport
   {
     Map<String, SortedSet<PropertyDescriptor>> res =
         new TreeMap<String, SortedSet<PropertyDescriptor>>();
-    for (PropertyDescriptor thisP : theseProps)
+    if (theseProps != null)
     {
-      final String cat;
-      if (thisP instanceof CategorisedPropertyDescriptor)
+      for (PropertyDescriptor thisP : theseProps)
       {
-        CategorisedPropertyDescriptor catProp =
-            (CategorisedPropertyDescriptor) thisP;
-        cat = catProp.getCategory();
-      }
-      else
-      {
-        cat = "Unknown";
-      }
-      // do we have this list?
-      SortedSet<PropertyDescriptor> thisL = res.get(cat);
-      if (thisL == null)
-      {
-        Comparator<PropertyDescriptor> comparator = new PropertyComparator();
+        final String cat;
+        if (thisP instanceof CategorisedPropertyDescriptor)
+        {
+          CategorisedPropertyDescriptor catProp =
+              (CategorisedPropertyDescriptor) thisP;
+          cat = catProp.getCategory();
+        }
+        else
+        {
+          cat = "Unknown";
+        }
+        // do we have this list?
+        SortedSet<PropertyDescriptor> thisL = res.get(cat);
+        if (thisL == null)
+        {
+          Comparator<PropertyDescriptor> comparator = new PropertyComparator();
 
-        thisL = new TreeSet<PropertyDescriptor>(comparator);
-        res.put(cat, thisL);
+          thisL = new TreeSet<PropertyDescriptor>(comparator);
+          res.put(cat, thisL);
+        }
+        thisL.add(thisP);
       }
-      thisL.add(thisP);
     }
     return res;
   }
@@ -442,10 +445,11 @@ public class RightClickSupport
     }
   }
 
-  /** utility class that sorts property descriptors
+  /**
+   * utility class that sorts property descriptors
    * 
    * @author Ian
-   *
+   * 
    */
   private static class PropertyComparator implements
       Comparator<PropertyDescriptor>
