@@ -30,10 +30,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.function.Function;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
@@ -228,59 +224,6 @@ public class RightClickSupport
     {
       return o1.getName().compareTo(o2.getName());
     }
-
-    @Override
-    public Comparator<PropertyDescriptor> reversed()
-    {
-      throw new IllegalArgumentException("Not yet implemented");
-    }
-
-    @Override
-    public Comparator<PropertyDescriptor> thenComparing(
-        final Comparator<? super PropertyDescriptor> other)
-    {
-      throw new IllegalArgumentException("Not yet implemented");
-    }
-
-    @Override
-    public
-        <U extends Comparable<? super U>>
-        Comparator<PropertyDescriptor>
-        thenComparing(
-            final Function<? super PropertyDescriptor, ? extends U> keyExtractor)
-    {
-      throw new IllegalArgumentException("Not yet implemented");
-    }
-
-    @Override
-    public <U> Comparator<PropertyDescriptor> thenComparing(
-        final Function<? super PropertyDescriptor, ? extends U> keyExtractor,
-        final Comparator<? super U> keyComparator)
-    {
-      throw new IllegalArgumentException("Not yet implemented");
-    }
-
-    @Override
-    public Comparator<PropertyDescriptor> thenComparingDouble(
-        final ToDoubleFunction<? super PropertyDescriptor> keyExtractor)
-    {
-      throw new IllegalArgumentException("Not yet implemented");
-    }
-
-    @Override
-    public Comparator<PropertyDescriptor> thenComparingInt(
-        final ToIntFunction<? super PropertyDescriptor> keyExtractor)
-    {
-      throw new IllegalArgumentException("Not yet implemented");
-    }
-
-    @Override
-    public Comparator<PropertyDescriptor> thenComparingLong(
-        final ToLongFunction<? super PropertyDescriptor> keyExtractor)
-    {
-      throw new IllegalArgumentException("Not yet implemented");
-    }
-
   }
 
   /**
