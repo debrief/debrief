@@ -678,7 +678,7 @@ public class RightClickSupport
             {
               final ListPropertyAction la =
                   new ListPropertyAction(thisP.getDisplayName(), editables,
-                      getter, setter, new Boolean(isChecked()), theLayers,
+                      getter, setter, Boolean.valueOf(isChecked()), theLayers,
                       topLevelLayer);
 
               CorePlugin.run(la);
@@ -1200,13 +1200,13 @@ public class RightClickSupport
       }
 
       // hmm, now do the same for the undoable methods
-      final MWC.GUI.Tools.SubjectAction[] actions =
+      final SubjectAction[] actions =
           getUndoableActionsFor(editables);
       if (actions != null)
       {
         for (int i = 0; i < actions.length; i++)
         {
-          final MWC.GUI.Tools.SubjectAction thisMethD = actions[i];
+          final SubjectAction thisMethD = actions[i];
 
           // create button for this method
           final IAction doThisAction =
@@ -1312,23 +1312,23 @@ public class RightClickSupport
     return res.toArray(demo);
   }
 
-  private static MWC.GUI.Tools.SubjectAction[] getIntersectionFor(
-      final MWC.GUI.Tools.SubjectAction[] a,
-      final MWC.GUI.Tools.SubjectAction[] b,
-      final MWC.GUI.Tools.SubjectAction[] demo)
+  private static SubjectAction[] getIntersectionFor(
+      final SubjectAction[] a,
+      final SubjectAction[] b,
+      final SubjectAction[] demo)
   {
-    final Vector<MWC.GUI.Tools.SubjectAction> res =
-        new Vector<MWC.GUI.Tools.SubjectAction>();
+    final Vector<SubjectAction> res =
+        new Vector<SubjectAction>();
 
     final int aLen = a.length;
     final int bLen = b.length;
 
     for (int cnta = 0; cnta < aLen; cnta++)
     {
-      final MWC.GUI.Tools.SubjectAction thisP = a[cnta];
+      final SubjectAction thisP = a[cnta];
       for (int cntb = 0; cntb < bLen; cntb++)
       {
-        final MWC.GUI.Tools.SubjectAction thatP = b[cntb];
+        final SubjectAction thatP = b[cntb];
         if (thisP.toString().equals(thatP.toString()))
         {
           res.add(thisP);
@@ -1372,12 +1372,12 @@ public class RightClickSupport
   }
 
   /** have a look at the supplied editors, find which properties are common */
-  protected static MWC.GUI.Tools.SubjectAction[] getUndoableActionsFor(
+  protected static SubjectAction[] getUndoableActionsFor(
       final Editable[] editables)
   {
-    MWC.GUI.Tools.SubjectAction[] res = null;
-    final MWC.GUI.Tools.SubjectAction[] demo =
-        new MWC.GUI.Tools.SubjectAction[]
+    SubjectAction[] res = null;
+    final SubjectAction[] demo =
+        new SubjectAction[]
         {};
 
     // right, get the first set of properties
@@ -1409,7 +1409,7 @@ public class RightClickSupport
               // do we have an editor?
               if (thisEditor != null)
               {
-                final MWC.GUI.Tools.SubjectAction[] newSet =
+                final SubjectAction[] newSet =
                     thisEditor.getUndoableActions();
 
                 // find the common ones
