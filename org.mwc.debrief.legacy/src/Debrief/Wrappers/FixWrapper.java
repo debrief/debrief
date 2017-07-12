@@ -1167,10 +1167,14 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     public final BeanInfo[] getAdditionalBeanInfo()
     {
-      final BeanInfo[] res =
-      {getTrackWrapper().getInfo()};
-      return res;
+//      final BeanInfo[] res =
+//      {getTrackWrapper().getInfo()};
+//      return res;
+      // Hey: let's not return the parent track. The parent track is accessible via
+      // it's own menu entry
+      return null;
     }
+    
 
     public final PropertyDescriptor[] getPropertyDescriptors()
     {
