@@ -1092,9 +1092,12 @@ public class RightClickSupport
               }
             }
           }
-          // and a separator
-          subMenu.add(new Separator(thisCat));
-
+          
+          if (subMenu != null)
+          {
+            // and a separator
+            subMenu.add(new Separator(thisCat));
+          }
         }
       }
 
