@@ -37,7 +37,7 @@ public class InsertFurthestOnCircles extends CoreInsertShape
 	{
 		// generate the shape
 		final PlainShape res = new FurthestOnCircleShape(centre, 5, new WorldSpeed(10,
-				WorldSpeed.Kts), 5 * 60 * 1000, 180, 360);
+				WorldSpeed.Kts), FurthestOnCircleShape.DEFAULT_INTERVAL, 180, 360);
 		return res;
 	}
 

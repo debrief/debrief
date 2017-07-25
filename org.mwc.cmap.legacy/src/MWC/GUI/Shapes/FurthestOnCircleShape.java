@@ -156,6 +156,11 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	 */
 	private long _intervalMillis;
 
+	/** the default time interval to use
+	 * 
+	 */
+	public final static long DEFAULT_INTERVAL = 60 * 60 * 1000;
+	
 	/**
 	 * the centre bearing for the arcs
 	 * 
@@ -190,7 +195,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	 *          the colour to plot the wheel
 	 */
 	public FurthestOnCircleShape(final WorldLocation theCentre, final int numRings,
-			final WorldSpeed speed, final int interval, final int arcCentre, final int arcWidth)
+			final WorldSpeed speed, final long interval, final int arcCentre, final int arcWidth)
 	{
 		super(0, "Range Ring");
 
