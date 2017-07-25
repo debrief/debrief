@@ -71,10 +71,6 @@ public class ActiveSym extends PlainSymbol {
                                                             java.awt.Font.PLAIN,
                                                             12);
 
-  public void getMetafile()
-  {
-  }
-
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
     final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
@@ -102,13 +98,8 @@ public class ActiveSym extends PlainSymbol {
     final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y - wid);
     final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y + wid);
 
-    if(showSimplifiedSymbol())
+    if(!showSimplifiedSymbol())
     {
-      // ignore the letter
-    }
-    else
-    {
-
       // do the central character
       // what's the width?
       final String str = "A";
