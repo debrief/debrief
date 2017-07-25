@@ -65,6 +65,7 @@ import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Wrappers.TacticalDataWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -535,6 +536,17 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
                       // work out the last time
                       for (WatchableList thisTrack : theTracks)
                       {
+                        // check it's not a singleton
+                        if(thisTrack instanceof TrackWrapper)
+                        {
+                          TrackWrapper track = (TrackWrapper) thisTrack;
+                          if(track.isSinglePointTrack())
+                          {
+                            // ok, ignore the time bounds, move on to the next one
+                            continue;
+                          }
+                        }
+                        
                         final HiResDate thisTrackEnd = thisTrack.getEndDTG();
 
                         if (thisEnd == null)

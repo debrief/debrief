@@ -164,6 +164,7 @@ import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.Projections.FlatProjection;
@@ -742,7 +743,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
           // Find out if it's a special case (where we don't have time
           // data)
-          if (thisSecondaryTrack.getStartDTG() == null)
+          final boolean secSingleton = (thisSecondaryTrack instanceof TrackWrapper) && (((TrackWrapper)thisSecondaryTrack).isSinglePointTrack());
+          if (thisSecondaryTrack.getStartDTG() == null || secSingleton)
           {
             // do we have any primary data to fall back on (to
             // decide the times
