@@ -459,6 +459,15 @@ public final class SymbolFactory
       _theVesselIds.put(FISHING_VESSEL, "V");
       _theVesselIds.put(WRECK, "W");
 
+      // and the buoys
+      _theVesselIds.put(ACTIVE, "0");
+      _theVesselIds.put(DIFAR, "1");
+      _theVesselIds.put(LOFAR, "2");
+      _theVesselIds.put(BARRA, "3");
+      _theVesselIds.put(HIDAR, "4");
+      _theVesselIds.put(KINGPIN, "5");
+      
+
       /////////////////////////////////////////
       // now the buoys
       /////////////////////////////////////////
