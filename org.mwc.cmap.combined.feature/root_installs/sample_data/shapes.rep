@@ -119,3 +119,10 @@
 ;SENSOR: 951212 051100	NEL_STYLE	@A	22	2	27.78	N	21	1	13.78	W	-13.9	12000	Plain	Cookie	SUBJECT	held	on	Plain	Cookie
 
 ;SENSOR2: 951212 051400.000 NEL_STYLE2 @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414
+
+;TEXT: 0B[LAYER=Buoys] 21.8 0 0 N 22.3 0 0 W Active buoy 
+;TEXT: 1C[LAYER=Buoys] 21.7 0 0 N 22.3 0 0 W Difar buoy 
+;TEXT: 2D[LAYER=Buoys] 21.6 0 0 N 22.3 0 0 W Lofar buoy 
+;TEXT: 3E[LAYER=Buoys] 21.5 0 0 N 22.3 0 0 W Barra buoy 
+;TEXT: 4F[LAYER=Buoys] 21.4 0 0 N 22.3 0 0 W Hidar buoy 
+;TEXT: 5G[LAYER=Buoys] 21.3 0 0 N 22.3 0 0 W Kingpin buoy 
