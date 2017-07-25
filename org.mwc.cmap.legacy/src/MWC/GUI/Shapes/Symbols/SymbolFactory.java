@@ -143,6 +143,8 @@ public final class SymbolFactory
 
   private static final String ACTIVE = "Active";
 
+  private static final String HIDAR = "Hidar";
+
   private static final String MPA = "MPA";
 
   private static final String DESTROYER = "Destroyer";
@@ -457,7 +459,6 @@ public final class SymbolFactory
       _theVesselIds.put(FISHING_VESSEL, "V");
       _theVesselIds.put(WRECK, "W");
 
-
       /////////////////////////////////////////
       // now the buoys
       /////////////////////////////////////////
@@ -467,6 +468,7 @@ public final class SymbolFactory
       buoys.put(LOFAR, MWC.GUI.Shapes.Symbols.Buoys.LofarSym.class);
       buoys.put(BARRA, MWC.GUI.Shapes.Symbols.Buoys.BarraSym.class);
       buoys.put(KINGPIN, MWC.GUI.Shapes.Symbols.Buoys.KingpinSym.class);
+      buoys.put(HIDAR, MWC.GUI.Shapes.Symbols.Buoys.HidarSym.class);
       buoys.put(SQUARE, MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
 
       // just put in the difar sym as a general sonar buoy symbol
