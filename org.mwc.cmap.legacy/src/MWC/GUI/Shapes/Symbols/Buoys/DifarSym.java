@@ -109,7 +109,7 @@ public class DifarSym extends PlainSymbol {
     {
       // do the central character
       // what's the width?
-      final String str = "d";
+      final String str = "D";
       final int strW = dest.getStringWidth(_myFont,str);
       final int strH = dest.getStringHeight(_myFont);
       dest.drawText(_myFont, str, centre.x - strW/2, centre.y + strH/4);
