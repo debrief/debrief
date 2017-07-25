@@ -8548,6 +8548,90 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para></para>
                     </entry>
                   </row>
+                  <row>
+                    <entry>
+                      <para>0</para>
+                    </entry>
+                    <entry>
+                      <para>Active Buoy</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>1</para>
+                    </entry>
+                    <entry>
+                      <para>DIFAR Buoy</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>2</para>
+                    </entry>
+                    <entry>
+                      <para>LOFAR Buoy</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>3</para>
+                    </entry>
+                    <entry>
+                      <para>BARRA Buoy</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>4</para>
+                    </entry>
+                    <entry>
+                      <para>Hidar Buoy</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>5</para>
+                    </entry>
+                    <entry>
+                      <para>Kingpin Marker</para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                    <entry>
+                      <para></para>
+                    </entry>
+                  </row>
                 </tbody>
               </tgroup>
             </table>Here's an illustration of how the new colors appear against the range of Debrief
