@@ -507,26 +507,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
                     || thePrimary.getStartDTG().equals(thePrimary.getEndDTG()))
                 {
                   // ok, it's a singleton. Find the outer bounds of the other data
-                  TimePeriod outerPeriod = null;
-                  for (WatchableList track : theTracks)
-                  {
-                    final HiResDate start = track.getStartDTG();
-                    final HiResDate end = track.getEndDTG();
-                    if (start != null && end != null)
-                    {
-                      if (outerPeriod == null)
-                      {
-                        final TimePeriod thisP =
-                            new TimePeriod.BaseTimePeriod(start, end);
-                        outerPeriod = thisP;
-                      }
-                      else
-                      {
-                        outerPeriod.extend(start);
-                        outerPeriod.extend(end);
-                      }
-                    }
-                  }
+                  final TimePeriod outerPeriod =
+                      calculateOuterPeriod(theTracks);
 
                   if (outerPeriod != null)
                   {
@@ -589,53 +571,17 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
                     else
                     {
                       // ok, we'll have to loop through the data
-                      HiResDate thisEnd = null;
                       // work out the last time
-                      for (WatchableList thisTrack : theTracks)
-                      {
-                        // check it's not a singleton
-                        if (thisTrack instanceof TrackWrapper)
-                        {
-                          TrackWrapper track = (TrackWrapper) thisTrack;
-                          if (track.isSinglePointTrack())
-                          {
-                            // ok, ignore the time bounds, move on to the next one
-                            continue;
-                          }
-                        }
-
-                        final HiResDate thisTrackEnd = thisTrack.getEndDTG();
-
-                        if (thisEnd == null)
-                        {
-                          thisEnd = thisTrackEnd;
-                        }
-                        else
-                        {
-                          if (thisTrackEnd != null)
-                          {
-                            if (thisEnd.lessThan(thisTrackEnd))
-                            {
-                              thisEnd = thisTrackEnd;
-                            }
-                          }
-                        }
-                      }
-
-                      if (thisEnd != null)
-                      {
-                        newEnd = thisEnd;
-                      }
-                      else
-                      {
-                        newEnd = finalEnd;
-                      }
+                      final HiResDate thisEnd = getEarliestEndTime(theTracks);
+                      newEnd = thisEnd != null ? thisEnd : finalEnd;
                     }
                   }
 
                   return ShowTimeVariablePlot3.getDataSeries(thePrimary,
                       theHolder, theTracks, finalStart, newEnd, null);
                 }
+
+               
 
                 @Override
                 public Layers getLayers()
@@ -686,6 +632,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
             }
 
           }
+
         };
 
         // ok - set the image descriptor
@@ -697,6 +644,32 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
       }
     }
 
+  }
+
+  private TimePeriod
+      calculateOuterPeriod(final Vector<WatchableList> theTracks)
+  {
+    TimePeriod outerPeriod = null;
+
+    for (WatchableList track : theTracks)
+    {
+      final HiResDate start = track.getStartDTG();
+      final HiResDate end = track.getEndDTG();
+      if (start != null && end != null)
+      {
+        if (outerPeriod == null)
+        {
+          final TimePeriod thisP = new TimePeriod.BaseTimePeriod(start, end);
+          outerPeriod = thisP;
+        }
+        else
+        {
+          outerPeriod.extend(start);
+          outerPeriod.extend(end);
+        }
+      }
+    }
+    return outerPeriod;
   }
 
   protected WatchableList getPrimary(final Editable[] subjects)
@@ -738,4 +711,40 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
   }
 
+  private HiResDate getEarliestEndTime(
+      final Vector<WatchableList> theTracks)
+  {
+    HiResDate thisEnd = null;
+    for (WatchableList thisTrack : theTracks)
+    {
+      // check it's not a singleton
+      if (thisTrack instanceof TrackWrapper)
+      {
+        TrackWrapper track = (TrackWrapper) thisTrack;
+        if (track.isSinglePointTrack())
+        {
+          // ok, ignore the time bounds, move on to the next one
+          continue;
+        }
+      }
+
+      final HiResDate thisTrackEnd = thisTrack.getEndDTG();
+
+      if (thisEnd == null)
+      {
+        thisEnd = thisTrackEnd;
+      }
+      else
+      {
+        if (thisTrackEnd != null)
+        {
+          if (thisEnd.lessThan(thisTrackEnd))
+          {
+            thisEnd = thisTrackEnd;
+          }
+        }
+      }
+    }
+    return thisEnd;
+  }
 }
