@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -103,7 +104,7 @@ public class ShowTacticalOverview extends AbstractHandler
     for (PlainWrapper subject : subjects)
     {
       ArrayList<Runnable> list = _updaters.get(subject);
-      if(list != null)
+      if (list != null)
       {
         list.clear();
       }
@@ -181,12 +182,13 @@ public class ShowTacticalOverview extends AbstractHandler
    * @param string
    * @param rangeAxis
    * @param soloSeconary
-   * @param period 
+   * @param period
    * @return
    */
   private Chart createRelativeChartFor(final StackedchartsFactory factory,
       final WatchableList pri, final WatchableList sec, final String string,
-      final DependentAxis rangeAxis, final boolean soloSeconary, final TimePeriod period)
+      final DependentAxis rangeAxis, final boolean soloSeconary,
+      final TimePeriod period)
   {
     final String name = pri.getName() + " vs " + sec.getName();
     final Color color = sec.getColor();
@@ -501,7 +503,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // do we have secondaries?
     final WatchableList[] secs = data.getSecondaryTracks();
-    
+
     final TimePeriod period = intersectingPeriodFor(pri, secs);
 
     // ok, produce the chartset model
@@ -629,25 +631,38 @@ public class ShowTacticalOverview extends AbstractHandler
   private TimePeriod intersectingPeriodFor(WatchableList pri,
       WatchableList[] secs)
   {
-    BaseTimePeriod base = new TimePeriod.BaseTimePeriod(pri.getStartDTG(), pri.getEndDTG());
-    if(secs != null)
+    // produce a consolidated list of watchables, including pri and secs
+    final List<WatchableList> list =
+        new ArrayList<WatchableList>(Arrays.asList(secs));
+    list.add(pri);
+
+    BaseTimePeriod base = null;
+    for (WatchableList item : list)
     {
-      for(WatchableList sec: secs)
+      // check it's not a singleton
+      if (item.getStartDTG() != null
+          && !item.getStartDTG().equals(item.getEndDTG()))
       {
-        // check it's not a singleton
-        if(sec.getStartDTG() != null && !sec.getStartDTG().equals(sec.getEndDTG()))
+        final BaseTimePeriod thisP =
+            new TimePeriod.BaseTimePeriod(item.getStartDTG(), item.getEndDTG());
+        if (base == null)
         {
-          BaseTimePeriod thisP = new TimePeriod.BaseTimePeriod(sec.getStartDTG(), sec.getEndDTG());
+          base = thisP;
+        }
+        else
+        {
           base = base.intersects(thisP);
         }
       }
+
     }
     return base;
   }
 
   private void processTrack(final WatchableList track,
       final DependentAxis courseAxis, final DependentAxis speedAxis,
-      final DependentAxis depthAxis, final StackedchartsFactory factory, final TimePeriod period)
+      final DependentAxis depthAxis, final StackedchartsFactory factory,
+      final TimePeriod period)
   {
     final Dataset courseData = factory.createDataset();
     courseData.setName(track.getName() + " Course");
@@ -685,24 +700,23 @@ public class ShowTacticalOverview extends AbstractHandler
       @Override
       public void run()
       {
-
         boolean hasDepth = false;
-        
+
         // now for the actual data
         final Collection<Editable> items =
             track.getItemsBetween(period.getStartDTG(), period.getEndDTG());
-        
+
         // clear the data
         courseData.getMeasurements().clear();
         speedData.getMeasurements().clear();
         depthData.getMeasurements().clear();
-        
-        // create lists of new data items, to reduce 
+
+        // create lists of new data items, to reduce
         // updates
         ArrayList<DataItem> courseD = new ArrayList<DataItem>();
         ArrayList<DataItem> speedD = new ArrayList<DataItem>();
         ArrayList<DataItem> depthD = new ArrayList<DataItem>();
-        
+
         for (final Iterator<Editable> iterator = items.iterator(); iterator
             .hasNext();)
         {
@@ -729,7 +743,7 @@ public class ShowTacticalOverview extends AbstractHandler
             depthD.add(depth);
           }
         }
-        
+
         // store the new items all at once
         courseData.getMeasurements().addAll(courseD);
         speedData.getMeasurements().addAll(speedD);
@@ -745,10 +759,9 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // remember to re-generate this if the track moves
     registerListener(track, toUpdate);
-    
+
     // ok, run it
     toUpdate.run();
-
 
   }
 
@@ -806,11 +819,10 @@ public class ShowTacticalOverview extends AbstractHandler
           charts.getCharts().add(thisChart);
         }
       }
-      
+
       // put the sensor chart at the bottom of the stack (if it has data)
       charts.getCharts().add(sensorChart);
     }
-
 
     return charts;
   }
@@ -877,13 +889,12 @@ public class ShowTacticalOverview extends AbstractHandler
       final WatchableList sec = secs[i];
       processTrack(sec, courseAxis, speedAxis, depthAxis, factory, period);
     }
-    
+
     // did we find some depth data?
-    if(depthAxis.getDatasets().size() > 0)
+    if (depthAxis.getDatasets().size() > 0)
     {
       speedChart.getMaxAxes().add(depthAxis);
     }
-
 
   }
 
