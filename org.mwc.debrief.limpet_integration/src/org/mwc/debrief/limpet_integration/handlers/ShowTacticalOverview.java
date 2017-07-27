@@ -85,95 +85,6 @@ public class ShowTacticalOverview extends AbstractHandler
   Map<PlainWrapper, ArrayList<PropertyChangeListener>> _listeners =
       new HashMap<PlainWrapper, ArrayList<PropertyChangeListener>>();
 
-  private void unregisterListeners()
-  {
-    Set<PlainWrapper> subjects = _listeners.keySet();
-    for (PlainWrapper subject : subjects)
-    {
-      ArrayList<PropertyChangeListener> list = _listeners.get(subject);
-      for (PropertyChangeListener item : list)
-      {
-        subject.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-            item);
-      }
-    }
-    _listeners.clear();
-
-    // tidying = also drop the updaters
-    subjects = _updaters.keySet();
-    for (PlainWrapper subject : subjects)
-    {
-      ArrayList<Runnable> list = _updaters.get(subject);
-      if (list != null)
-      {
-        list.clear();
-      }
-    }
-    _updaters.clear();
-  }
-
-  private void
-      registerListener(final WatchableList list, final Runnable updater)
-  {
-    // ok, can we listen to this type of object?
-    if (!(list instanceof PlainWrapper))
-    {
-      return;
-    }
-
-    PlainWrapper subject = (PlainWrapper) list;
-
-    ArrayList<Runnable> tmpUpdaterList = _updaters.get(subject);
-    final ArrayList<Runnable> thisUpdaters;
-
-    // do we have updaters for this subject?
-    if (tmpUpdaterList != null)
-    {
-      thisUpdaters = tmpUpdaterList;
-    }
-    else
-    {
-      // ok, we're not listening for changes. we should be
-      final ArrayList<Runnable> newList = new ArrayList<Runnable>();
-      thisUpdaters = newList;
-      _updaters.put(subject, tmpUpdaterList);
-    }
-
-    // do we have listeners for this subject
-    final ArrayList<PropertyChangeListener> thisListeners;
-    ArrayList<PropertyChangeListener> tmpListenerList = _listeners.get(subject);
-    if (tmpListenerList != null)
-    {
-      thisListeners = tmpListenerList;
-    }
-    else
-    {
-      // and declare the listener list for this subject
-      final ArrayList<PropertyChangeListener> newListeners =
-          new ArrayList<PropertyChangeListener>();
-      thisListeners = newListeners;
-      _listeners.put(subject, newListeners);
-    }
-
-    final PlainWrapper track = (PlainWrapper) subject;
-    final PropertyChangeListener listener = new PropertyChangeListener()
-    {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt)
-      {
-        for (final Runnable item : thisUpdaters)
-        {
-          item.run();
-        }
-      }
-    };
-    track.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, listener);
-
-    // ok, store the new list
-    thisUpdaters.add(updater);
-    thisListeners.add(listener);
-  }
-
   /**
    * 
    * @param factory
@@ -198,7 +109,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // prepare our axes
     final DependentAxis bearingAxis = factory.createDependentAxis();
-    AngleAxis bearingAxisType = factory.createAngleAxis();
+    final AngleAxis bearingAxisType = factory.createAngleAxis();
     bearingAxisType.setMinVal(0);
     bearingAxisType.setMaxVal(360);
     bearingAxis.setAxisType(bearingAxisType);
@@ -207,7 +118,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     final DependentAxis relBearingAxis = factory.createDependentAxis();
     relBearingAxis.setName("Rel Bearing / ATB");
-    AngleAxis relBearingAxisType = factory.createAngleAxis();
+    final AngleAxis relBearingAxisType = factory.createAngleAxis();
     relBearingAxisType.setMinVal(-180);
     relBearingAxisType.setMaxVal(180);
     relBearingAxisType.setRedGreen(true);
@@ -265,14 +176,8 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // ok, wrap the calculation in a Runnable, so we can add
     // it as a property listener
-    Runnable toUpdate = new Runnable()
+    final Runnable toUpdate = new Runnable()
     {
-
-      @Override
-      public String toString()
-      {
-        return "Relative data: " + pri.getName() + " to " + sec.getName();
-      }
 
       @Override
       public void run()
@@ -280,7 +185,7 @@ public class ShowTacticalOverview extends AbstractHandler
         final Boolean wasInterpolated;
         if (sec instanceof TrackWrapper)
         {
-          TrackWrapper track = (TrackWrapper) sec;
+          final TrackWrapper track = (TrackWrapper) sec;
           wasInterpolated = track.getInterpolatePoints();
           track.setInterpolatePoints(true);
         }
@@ -302,10 +207,10 @@ public class ShowTacticalOverview extends AbstractHandler
         rangeData.getMeasurements().clear();
 
         // store the items in lists, so we have fewer updates
-        List<DataItem> bearingD = new ArrayList<DataItem>();
-        List<DataItem> relBearingD = new ArrayList<DataItem>();
-        List<DataItem> atbD = new ArrayList<DataItem>();
-        List<DataItem> rangeD = new ArrayList<DataItem>();
+        final List<DataItem> bearingD = new ArrayList<DataItem>();
+        final List<DataItem> relBearingD = new ArrayList<DataItem>();
+        final List<DataItem> atbD = new ArrayList<DataItem>();
+        final List<DataItem> rangeD = new ArrayList<DataItem>();
 
         // now for the actual data
         final Collection<Editable> priItems =
@@ -355,6 +260,12 @@ public class ShowTacticalOverview extends AbstractHandler
           final TrackWrapper track = (TrackWrapper) sec;
           track.setInterpolatePoints(wasInterpolated);
         }
+      }
+
+      @Override
+      public String toString()
+      {
+        return "Relative data: " + pri.getName() + " to " + sec.getName();
       }
     };
 
@@ -591,19 +502,19 @@ public class ShowTacticalOverview extends AbstractHandler
           if (timeCont != null && timeProv != null)
           {
 
-            ControllableDate dateC = new ControllableDate()
+            final ControllableDate dateC = new ControllableDate()
             {
-
-              @Override
-              public void setDate(Date time)
-              {
-                timeCont.setTime(this, new HiResDate(time), true);
-              }
 
               @Override
               public Date getDate()
               {
                 return timeProv.getTime().getDate();
+              }
+
+              @Override
+              public void setDate(final Date time)
+              {
+                timeCont.setTime(this, new HiResDate(time), true);
               }
             };
 
@@ -628,16 +539,16 @@ public class ShowTacticalOverview extends AbstractHandler
     return null;
   }
 
-  private TimePeriod intersectingPeriodFor(WatchableList pri,
-      WatchableList[] secs)
+  private TimePeriod intersectingPeriodFor(final WatchableList pri,
+      final WatchableList[] secs)
   {
     // produce a consolidated list of watchables, including pri and secs
     final List<WatchableList> list =
         new ArrayList<WatchableList>(Arrays.asList(secs));
     list.add(pri);
 
-    BaseTimePeriod base = null;
-    for (WatchableList item : list)
+    BaseTimePeriod period = null;
+    for (final WatchableList item : list)
     {
       // check it's not a singleton
       if (item.getStartDTG() != null
@@ -645,18 +556,17 @@ public class ShowTacticalOverview extends AbstractHandler
       {
         final BaseTimePeriod thisP =
             new TimePeriod.BaseTimePeriod(item.getStartDTG(), item.getEndDTG());
-        if (base == null)
+        if (period == null)
         {
-          base = thisP;
+          period = thisP;
         }
         else
         {
-          base = base.intersects(thisP);
+          period = period.intersects(thisP);
         }
       }
-
     }
-    return base;
+    return period;
   }
 
   private void processTrack(final WatchableList track,
@@ -694,7 +604,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
     // ok, wrap the calculation in a Runnable, so we can add
     // it as a property listener
-    Runnable toUpdate = new Runnable()
+    final Runnable toUpdate = new Runnable()
     {
 
       @Override
@@ -713,9 +623,9 @@ public class ShowTacticalOverview extends AbstractHandler
 
         // create lists of new data items, to reduce
         // updates
-        ArrayList<DataItem> courseD = new ArrayList<DataItem>();
-        ArrayList<DataItem> speedD = new ArrayList<DataItem>();
-        ArrayList<DataItem> depthD = new ArrayList<DataItem>();
+        final ArrayList<DataItem> courseD = new ArrayList<DataItem>();
+        final ArrayList<DataItem> speedD = new ArrayList<DataItem>();
+        final ArrayList<DataItem> depthD = new ArrayList<DataItem>();
 
         for (final Iterator<Editable> iterator = items.iterator(); iterator
             .hasNext();)
@@ -766,7 +676,7 @@ public class ShowTacticalOverview extends AbstractHandler
   }
 
   private ChartSet produceChartSet(final WatchableList pri,
-      final WatchableList[] secs, TimePeriod period)
+      final WatchableList[] secs, final TimePeriod period)
   {
     // produce the ChartSet
     final StackedchartsFactory factory = StackedchartsFactoryImpl.init();
@@ -847,7 +757,7 @@ public class ShowTacticalOverview extends AbstractHandler
 
   private void producePerStateCharts(final WatchableList pri,
       final WatchableList[] secs, final StackedchartsFactory factory,
-      final ChartSet charts, TimePeriod period)
+      final ChartSet charts, final TimePeriod period)
   {
     // right, create the charts
     final Chart speedChart = factory.createChart();
@@ -864,7 +774,7 @@ public class ShowTacticalOverview extends AbstractHandler
     final Chart courseChart = factory.createChart();
     final DependentAxis courseAxis = factory.createDependentAxis();
     courseChart.setName("Course");
-    AngleAxis angleType = factory.createAngleAxis();
+    final AngleAxis angleType = factory.createAngleAxis();
     angleType.setMinVal(0d);
     angleType.setMaxVal(360d);
     angleType.setUnits("\u00b0");
@@ -957,5 +867,95 @@ public class ShowTacticalOverview extends AbstractHandler
         }
       }
     }
+  }
+
+  private void
+      registerListener(final WatchableList list, final Runnable updater)
+  {
+    // ok, can we listen to this type of object?
+    if (!(list instanceof PlainWrapper))
+    {
+      return;
+    }
+
+    final PlainWrapper subject = (PlainWrapper) list;
+
+    final ArrayList<Runnable> tmpUpdaterList = _updaters.get(subject);
+    final ArrayList<Runnable> thisUpdaters;
+
+    // do we have updaters for this subject?
+    if (tmpUpdaterList != null)
+    {
+      thisUpdaters = tmpUpdaterList;
+    }
+    else
+    {
+      // ok, we're not listening for changes. we should be
+      final ArrayList<Runnable> newList = new ArrayList<Runnable>();
+      thisUpdaters = newList;
+      _updaters.put(subject, tmpUpdaterList);
+    }
+
+    // do we have listeners for this subject
+    final ArrayList<PropertyChangeListener> thisListeners;
+    final ArrayList<PropertyChangeListener> tmpListenerList =
+        _listeners.get(subject);
+    if (tmpListenerList != null)
+    {
+      thisListeners = tmpListenerList;
+    }
+    else
+    {
+      // and declare the listener list for this subject
+      final ArrayList<PropertyChangeListener> newListeners =
+          new ArrayList<PropertyChangeListener>();
+      thisListeners = newListeners;
+      _listeners.put(subject, newListeners);
+    }
+
+    final PlainWrapper track = subject;
+    final PropertyChangeListener listener = new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        for (final Runnable item : thisUpdaters)
+        {
+          item.run();
+        }
+      }
+    };
+    track.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, listener);
+
+    // ok, store the new list
+    thisUpdaters.add(updater);
+    thisListeners.add(listener);
+  }
+
+  private void unregisterListeners()
+  {
+    Set<PlainWrapper> subjects = _listeners.keySet();
+    for (final PlainWrapper subject : subjects)
+    {
+      final ArrayList<PropertyChangeListener> list = _listeners.get(subject);
+      for (final PropertyChangeListener item : list)
+      {
+        subject.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+            item);
+      }
+    }
+    _listeners.clear();
+
+    // tidying = also drop the updaters
+    subjects = _updaters.keySet();
+    for (final PlainWrapper subject : subjects)
+    {
+      final ArrayList<Runnable> list = _updaters.get(subject);
+      if (list != null)
+      {
+        list.clear();
+      }
+    }
+    _updaters.clear();
   }
 }
