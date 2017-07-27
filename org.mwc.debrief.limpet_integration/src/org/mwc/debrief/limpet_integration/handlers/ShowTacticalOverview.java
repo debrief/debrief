@@ -634,8 +634,12 @@ public class ShowTacticalOverview extends AbstractHandler
     {
       for(WatchableList sec: secs)
       {
-        BaseTimePeriod thisP = new TimePeriod.BaseTimePeriod(sec.getStartDTG(), sec.getEndDTG());
-        base = base.intersects(thisP);
+        // check it's not a singleton
+        if(sec.getStartDTG() != null && !sec.getStartDTG().equals(sec.getEndDTG()))
+        {
+          BaseTimePeriod thisP = new TimePeriod.BaseTimePeriod(sec.getStartDTG(), sec.getEndDTG());
+          base = base.intersects(thisP);
+        }
       }
     }
     return base;
@@ -687,7 +691,7 @@ public class ShowTacticalOverview extends AbstractHandler
         // now for the actual data
         final Collection<Editable> items =
             track.getItemsBetween(period.getStartDTG(), period.getEndDTG());
-
+        
         // clear the data
         courseData.getMeasurements().clear();
         speedData.getMeasurements().clear();
