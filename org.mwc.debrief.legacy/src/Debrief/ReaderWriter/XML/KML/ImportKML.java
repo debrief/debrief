@@ -43,10 +43,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -127,7 +127,9 @@ public class ImportKML
 		lastLayer.setName(trackName);
 
 		// sort out a color
-		final Color theCol = ImportReplay.replayColorFor(colorCounter++);
+    // sort out a color
+    final Color theCol =
+        DebriefColors.RandomColorProvider.getRandomColor(colorCounter++);
 		lastLayer.setColor(theCol);
 
 		target.addThisLayer(lastLayer);
