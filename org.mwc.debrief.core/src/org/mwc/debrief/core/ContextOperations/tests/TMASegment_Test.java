@@ -121,7 +121,9 @@ public final class TMASegment_Test extends junit.framework.TestCase
     for(Editable item: pts)
     {
       FixWrapper fix = (FixWrapper) item;
-      assertNotNull("after resampling, all fixes require labels", fix.getLabel());
+      String label = fix.getLabel();
+      assertNotNull("after resampling, all fixes require labels", label);
+      assertTrue("label has contents", label.length() > 0);
     }
 
 
