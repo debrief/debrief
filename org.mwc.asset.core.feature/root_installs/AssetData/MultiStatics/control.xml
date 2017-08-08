@@ -8,7 +8,7 @@
 			<Duration Value="45" Units="minutes" />
 		</TimeObserver>
 		<DebriefReplayObserver Name="DebriefPlot"
-			record_detections="true" record_positions="true" Active="false"
+			record_detections="true" record_positions="true" Active="true"
 			record_decisions="false" file_name="multi_statics">
 		</DebriefReplayObserver>
 		<CSVDetectionObserver Name="RX1 det" Active="true"

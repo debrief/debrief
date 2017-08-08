@@ -11,7 +11,7 @@
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
-						<North Value="0.0" Units="m" />
+						<North Value="7000000.0" Units="m" />
 						<East Value="100" Units="m" />
 					</relativeLocation>					
 				</Location>
@@ -47,7 +47,7 @@
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
-						<North Value="3000.0" Units="m" />
+						<North Value="7003000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>
 					
@@ -84,7 +84,7 @@
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
-						<North Value="1000.0" Units="m" />
+						<North Value="7001000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>					
 				</Location>
@@ -116,7 +116,7 @@
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
-						<North Value="2000.0" Units="m" />
+						<North Value="7002000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>
 					
@@ -148,7 +148,7 @@
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
-						<North Value="4000.0" Units="m" />
+						<North Value="7004000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>
 					
