@@ -116,6 +116,16 @@ public final class TMASegment_Test extends junit.framework.TestCase
 
     pts = track.getItemsBetween(track.getStartDTG(), track.getEndDTG());
     assertEquals("has more points", 9, pts.size());
+    
+    // check a label is present
+    for(Editable item: pts)
+    {
+      FixWrapper fix = (FixWrapper) item;
+      String label = fix.getLabel();
+      assertNotNull("after resampling, all fixes require labels", label);
+      assertTrue("label has contents", label.length() > 0);
+    }
+
 
 //    RelativeTMASegment seg =
 //        (RelativeTMASegment) sol.getSegments().elements().nextElement();

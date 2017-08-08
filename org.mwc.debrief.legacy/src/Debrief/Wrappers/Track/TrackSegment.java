@@ -570,6 +570,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     {
       final FixWrapper fix = iterator.next();
       this.addFixSilent(fix);
+      
+      // and reset the label on the fix
+      fix.resetName();
     }
 
     // re-instate the interpolate status

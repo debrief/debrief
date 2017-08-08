@@ -754,6 +754,15 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("still correct wid", 5.032d, tw.getBounds().getWidth(), 0.001);
     assertEquals("still correct ht", 10d, tw.getBounds().getHeight(), 0.001);
     
+    // check labels present
+    Enumeration<Editable> pIter = tw.getPositionIterator();
+    while(pIter.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) pIter.nextElement();
+      String label = fix.getLabel();
+      assertNotNull("label is present", label);
+      assertTrue("label has contents", label.length() > 0);
+    }
     
     // insert delay, to overcome cacheing
     Thread.sleep(550);
