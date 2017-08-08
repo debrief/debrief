@@ -16,7 +16,7 @@
    <launcherArgs>
       <programArgs>-data
 @user.home/.AssetNG</programArgs>
-      <vmArgs>-Xms128m -Xmx2000m   -XX:MaxPermSize=512m  -XX:+CMSClassUnloadingEnabled</vmArgs>
+      <vmArgs>-Xms128m -Xmx200m   -XX:MaxPermSize=512m  -XX:+CMSClassUnloadingEnabled</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.asset.core/icons/components.gif"/>
