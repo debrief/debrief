@@ -78,7 +78,7 @@ public class TifLoader extends IPlotLoader.BaseLoader
 										+ fileName, null);
 
 								// quick check, is this a KMZ
-								if(fileName.endsWith(".tif"))
+								if(fileName.toLowerCase().endsWith(".tif"))
 								{
 									// create a layer name from the filename
 									File tmpFile = new File(fileName);

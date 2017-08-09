@@ -78,7 +78,7 @@ public class GPXLoader extends IPlotLoader.BaseLoader
 							// ok - get loading going
 
 							// double check, is this a KMZ
-							if (fileName.endsWith(".gpx"))
+							if (fileName.toLowerCase().endsWith(".gpx"))
 							{
 								// ok - get loading going
 								ImportGPX.doImport(theLayers, inputStream, fileName);

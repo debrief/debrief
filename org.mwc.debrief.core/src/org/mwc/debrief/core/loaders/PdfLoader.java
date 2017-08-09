@@ -48,7 +48,7 @@ public class PdfLoader extends IPlotLoader.BaseLoader
             try
             {
               // ok, get reading
-              if (fileName.endsWith(".pdf"))
+              if (fileName.toLowerCase().endsWith(".pdf"))
               {
                 ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
                 ArrayList<String> strings = iw.importFromPdf(fileName, inputStream);
