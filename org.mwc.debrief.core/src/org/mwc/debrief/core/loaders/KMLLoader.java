@@ -76,13 +76,13 @@ public class KMLLoader extends IPlotLoader.BaseLoader
 										+ fileName, null);
 
 								// quick check, is this a KMZ
-								if(fileName.endsWith(".kmz"))
+								if(fileName.toLowerCase().endsWith(".kmz"))
 								{
 									// ok - get loading going
 									ImportKML.doZipImport(theLayers, inputStream, fileName);
 									
 								}
-								else if(fileName.endsWith(".kml"))
+								else if(fileName.toLowerCase().endsWith(".kml"))
 								{
 									// ok - get loading going
 									ImportKML.doImport(theLayers, inputStream, fileName);									

@@ -78,7 +78,7 @@ public class ShapeLoader extends IPlotLoader.BaseLoader
 										+ fileName, null);
 
 								// quick check, is this a KMZ
-								if(fileName.endsWith(".shp"))
+								if(fileName.toLowerCase().endsWith(".shp"))
 								{
 									// create a layer name from the filename
 									File tmpFile = new File(fileName);

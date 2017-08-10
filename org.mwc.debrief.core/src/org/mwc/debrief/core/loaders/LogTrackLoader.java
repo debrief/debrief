@@ -96,7 +96,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 									+ fileName, null);
 
 							// quick check, is this a .log file
-							if (fileName.endsWith(".csv"))
+							if (fileName.toLowerCase().endsWith(".csv"))
 							{
 								// ok, go for it.
 								importThis(theLayers, fileName, inputStream);

@@ -48,7 +48,7 @@ public class MsDocXLoader extends IPlotLoader.BaseLoader
             try
             {
               // ok, get reading
-              if (fileName.endsWith(".docx"))
+              if (fileName.toLowerCase().endsWith(".docx"))
               {
                 ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
                 ArrayList<String> strings = iw.importFromWordX(fileName, inputStream);
