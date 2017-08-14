@@ -829,6 +829,7 @@ public final class StackedDotHelper
         else
         {
           segList = new SegmentList();
+          segList.setWrapper((TrackWrapper) _secondaryTrack);
           segList.addSegment((TrackSegment) nextE);
         }
 
