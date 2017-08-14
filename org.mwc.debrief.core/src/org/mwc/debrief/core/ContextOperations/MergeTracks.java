@@ -157,7 +157,8 @@ public class MergeTracks implements RightClickContextItemGenerator
       {
         final Editable item = subjects[0];
 
-        CoreTMASegment seg = null;
+        final CoreTMASegment seg;
+        String segmentName = null;
 
         // is it a track?
         if (item instanceof TrackWrapper)
@@ -167,15 +168,26 @@ public class MergeTracks implements RightClickContextItemGenerator
           if (segs.size() == 1)
           {
             final TrackSegment thisSeg = (TrackSegment) segs.first();
-            if (thisSeg instanceof CoreTMASegment)
-            {
-              seg = (CoreTMASegment) thisSeg;
-            }
+            
+            // is it a TMA segment?
+            seg = thisSeg instanceof CoreTMASegment ? (CoreTMASegment) thisSeg : null; 
+            
+            // only one segment, so use the track name
+            segmentName = tw.getName();
+          }
+          else
+          {
+            seg = null;
           }
         }
         else if (item instanceof CoreTMASegment)
         {
           seg = (CoreTMASegment) item;
+          segmentName = item.getName();
+        }
+        else
+        {
+          seg = null;
         }
 
         if (seg != null)
@@ -184,7 +196,7 @@ public class MergeTracks implements RightClickContextItemGenerator
           parent.add(new Separator());
 
           final String title =
-              "Convert " + seg.getName() + " into standalone track";
+              "Convert " + segmentName + " into standalone track";
           final CoreTMASegment target = seg;
           // create this operation
           final Action doMerge = new Action(title)
