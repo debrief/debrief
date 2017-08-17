@@ -17,7 +17,6 @@ package ASSET.Util.XML.Control.Observers;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.Recording.CSVExportDetectionsObserver;
-import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 
 
@@ -31,6 +30,8 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
 
   TargetType _targetType = null;
   String _subjectName = null;
+  String _sensorName = null;
+  private static final String SENSOR_NAME = "SensorName";
   private static final String SUBJECT_NAME = "SubjectName";
   private static final String TARGET_TYPE = "SubjectToTrack";
 
@@ -53,6 +54,13 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
         _subjectName = val;
       }
     });
+    addAttributeHandler(new HandleAttribute(SENSOR_NAME)
+    {
+      public void setValue(String name, final String val)
+      {
+        _sensorName = val;
+      }
+    });
   }
 
   public CSVExportDetectionObserverHandler()
@@ -63,7 +71,7 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
   public void elementClosed()
   {
     // create ourselves
-    final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _targetType, _subjectName);
+    final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _targetType, _subjectName, _sensorName);
 
     setObserver(debriefObserver);
 
@@ -75,9 +83,9 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
 
   }
 
-  protected ScenarioObserver getObserver(String name, boolean isActive, TargetType subject, String subjectName)
+  protected ScenarioObserver getObserver(String name, boolean isActive, TargetType subject, String subjectName, String sensorName)
   {
-    return new CSVExportDetectionsObserver(_directory, _fileName, subject, name, isActive, subjectName);
+    return new CSVExportDetectionsObserver(_directory, _fileName, subject, name, isActive, subjectName, sensorName);
   }
 
 
@@ -90,7 +98,7 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
     final org.w3c.dom.Element thisPart = doc.createElement(type);
 
     // get data item
-    final DebriefReplayObserver bb = (DebriefReplayObserver) toExport;
+    final CSVExportDetectionsObserver bb = (CSVExportDetectionsObserver) toExport;
 
     // output the parent ttributes
     CoreFileObserverHandler.exportThis(bb, thisPart);
