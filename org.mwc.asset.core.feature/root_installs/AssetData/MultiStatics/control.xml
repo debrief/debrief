@@ -11,22 +11,28 @@
 			record_detections="true" record_positions="true" Active="true"
 			record_decisions="false" file_name="multi_statics">
 		</DebriefReplayObserver>
-		<CSVDetectionObserver Name="RX1 det" Active="true"
-			SubjectName="RX 1" file_name="rx1_det"/>
-		<CSVDetectionObserver Name="RX2 det" Active="true"
-			SubjectName="RX 2" file_name="rx2_det"/>
-		<CSVDetectionObserver Name="RX3 det" Active="true"
-			SubjectName="RX 3" file_name="rx3_det"/>
+		<CSVDetectionObserver Name="RX1 Reflected" Active="true"
+			SubjectName="RX 1" file_name="RX1_Reflected" SensorName="RX1_Reflected" />
+		<CSVDetectionObserver Name="RX2 Reflected" Active="true"
+			SubjectName="RX 2" file_name="RX2_Reflected" SensorName="RX2_Reflected" />
+		<CSVDetectionObserver Name="RX1 Reflected" Active="true"
+			SubjectName="RX 3" file_name="RX3_Reflected" SensorName="RX3_Reflected" />
+		<CSVDetectionObserver Name="RX1 Direct" Active="true"
+			SubjectName="RX 1" file_name="RX1_Direct" SensorName="RX1_Direct" />
+		<CSVDetectionObserver Name="RX2 Direct" Active="true"
+			SubjectName="RX 2" file_name="RX2_Direct" SensorName="RX2_Direct" />
+		<CSVDetectionObserver Name="RX3 Direct" Active="true"
+			SubjectName="RX 3" file_name="RX3_Direct" SensorName="RX3_Direct" />
 		<CSVStatusObserver Name="TX1_Status" Active="true"
-			file_name="tx1_stat" SubjectName="TX 1"/>
+			file_name="TX1_stat" SubjectName="TX 1"/>
 		<CSVStatusObserver Name="RX1_Status" Active="true"
-			file_name="rx1_stat" SubjectName="RX 1"/>
+			file_name="RX1_stat" SubjectName="RX 1"/>
 		<CSVStatusObserver Name="RX2_Status" Active="true"
-			file_name="rx2_stat" SubjectName="RX 2"/>
+			file_name="RX2_stat" SubjectName="RX 2"/>
 		<CSVStatusObserver Name="RX3_Status" Active="true"
-			file_name="rx3_stat" SubjectName="RX 3"/>
+			file_name="RX3_stat" SubjectName="RX 3"/>
 		<CSVStatusObserver Name="SSN_Status" Active="true"
-			file_name="ssn_stat" SubjectName="Contact"/>
+			file_name="SSN_stat" SubjectName="Contact"/>
 	</ObserverList>
 </ScenarioController>
 
