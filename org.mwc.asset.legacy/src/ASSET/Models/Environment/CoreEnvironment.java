@@ -68,6 +68,13 @@ abstract public class CoreEnvironment implements EnvironmentType, java.io.Serial
   public CoreEnvironment()
   {
     _myMediums[EnvironmentType.BROADBAND_PASSIVE] = new ASSET.Models.Environment.Mediums.BroadbandMedium();
+    _myMediums[EnvironmentType.NARROWBAND] = new ASSET.Models.Environment.Mediums.BroadbandMedium(){
+
+      @Override
+      public String getName()
+      {
+        return "Narrowband";
+      }};
     _myName = "Core";
   }
 
