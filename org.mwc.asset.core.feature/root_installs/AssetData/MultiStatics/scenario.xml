@@ -77,9 +77,11 @@
 		<Buoy Name="RX 1" IsTransmitting="false">
 			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver Name="RX1_Receiver" Working="true" />
-				<BroadbandSensor Aperture="180.0" Ambiguous="false"
-					CanProduceRange="false" Name="RX1_Direct" Working="true" />
+				<BistaticReceiver Name="RX1_Reflected" Working="true" />
+				<NarrowbandSensor Name="RX1_Direct" Working="true"
+					HasBearing="true">
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
 			</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
@@ -112,9 +114,11 @@
 		<Buoy Name="RX 2" IsTransmitting="false">
 			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver Name="RX2_Receiver" Working="true" />
-				<BroadbandSensor Aperture="180.0" Ambiguous="false"
-					CanProduceRange="false" Name="RX2_Direct" Working="true" />
+				<BistaticReceiver Name="RX2_Reflected" Working="true" />
+				<NarrowbandSensor Name="RX2_Direct" Working="true"
+					HasBearing="true">
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
 			</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
@@ -147,9 +151,11 @@
 		<Buoy Name="RX 3" IsTransmitting="false">
 			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver Name="RX3_Receiver" Working="true" />
-				<BroadbandSensor Aperture="180.0" Ambiguous="false"
-					CanProduceRange="false" Name="RX2_Direct" Working="true" />
+				<BistaticReceiver Name="RX3_Reflected" Working="true" />
+				<NarrowbandSensor Name="RX3_Direct" Working="true"
+					HasBearing="true">
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
 			</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
