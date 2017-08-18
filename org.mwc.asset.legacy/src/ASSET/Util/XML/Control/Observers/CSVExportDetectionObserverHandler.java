@@ -17,42 +17,57 @@ package ASSET.Util.XML.Control.Observers;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.Recording.CSVExportDetectionsObserver;
-import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
-
 
 /**
  * read in a debrief replay observer from file
  */
-abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
+abstract class CSVExportDetectionObserverHandler extends
+    CoreFileObserverHandler
 {
 
   private final static String type = "CSVDetectionObserver";
 
-  TargetType _targetType = null;
-  String _subjectName = null;
+  private TargetType _targetType = null;
+  private String _subjectName = null;
+  private String _sensorName = null;
+  private static final String SENSOR_NAME = "SensorName";
   private static final String SUBJECT_NAME = "SubjectName";
   private static final String TARGET_TYPE = "SubjectToTrack";
 
-
-  public CSVExportDetectionObserverHandler(String type)
+  static public void exportThis(final Object toExport,
+      final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
-    super(type);
+    // create ourselves
+    final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-    addHandler(new TargetTypeHandler(TARGET_TYPE)
+    // get data item
+    final CSVExportDetectionsObserver bb =
+        (CSVExportDetectionsObserver) toExport;
+
+    // output the parent ttributes
+    CoreFileObserverHandler.exportThis(bb, thisPart);
+
+    // output it's attributes
+    if (bb.getSubjectToTrack() != null)
     {
-      public void setTargetType(TargetType type1)
-      {
-        _targetType = type1;
-      }
-    });
-    addAttributeHandler(new HandleAttribute(SUBJECT_NAME)
+      TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(),
+          thisPart, doc);
+    }
+    if (bb.getSensorName() != null)
     {
-      public void setValue(String name, final String val)
-      {
-        _subjectName = val;
-      }
-    });
+      TargetTypeHandler.exportThis(SENSOR_NAME, bb.getSensorName(), thisPart,
+          doc);
+    }
+    if (bb.getSubjectName() != null)
+    {
+      TargetTypeHandler.exportThis(SUBJECT_NAME, bb.getSubjectName(), thisPart,
+          doc);
+    }
+
+    // output it's attributes
+    parent.appendChild(thisPart);
+
   }
 
   public CSVExportDetectionObserverHandler()
@@ -60,10 +75,42 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
     this(type);
   }
 
+  public CSVExportDetectionObserverHandler(final String type)
+  {
+    super(type);
+
+    addHandler(new TargetTypeHandler(TARGET_TYPE)
+    {
+      @Override
+      public void setTargetType(final TargetType type1)
+      {
+        _targetType = type1;
+      }
+    });
+    addAttributeHandler(new HandleAttribute(SUBJECT_NAME)
+    {
+      @Override
+      public void setValue(final String name, final String val)
+      {
+        _subjectName = val;
+      }
+    });
+    addAttributeHandler(new HandleAttribute(SENSOR_NAME)
+    {
+      @Override
+      public void setValue(final String name, final String val)
+      {
+        _sensorName = val;
+      }
+    });
+  }
+
+  @Override
   public void elementClosed()
   {
     // create ourselves
-    final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _targetType, _subjectName);
+    final ScenarioObserver debriefObserver =
+        getObserver(_name, _isActive, _targetType, _subjectName, _sensorName);
 
     setObserver(debriefObserver);
 
@@ -72,39 +119,19 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
 
     // and clear the data
     _targetType = null;
-
+    _sensorName = null;
+    _subjectName = null;
   }
 
-  protected ScenarioObserver getObserver(String name, boolean isActive, TargetType subject, String subjectName)
+  protected ScenarioObserver getObserver(final String name,
+      final boolean isActive, final TargetType subject,
+      final String subjectName, final String sensorName)
   {
-    return new CSVExportDetectionsObserver(_directory, _fileName, subject, name, isActive, subjectName);
+    return new CSVExportDetectionsObserver(_directory, _fileName, subject,
+        name, isActive, subjectName, sensorName);
   }
 
-
+  @Override
   abstract public void setObserver(ScenarioObserver obs);
-
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
-
-    // get data item
-    final DebriefReplayObserver bb = (DebriefReplayObserver) toExport;
-
-    // output the parent ttributes
-    CoreFileObserverHandler.exportThis(bb, thisPart);
-
-    // output it's attributes
-    if (bb.getSubjectToTrack() != null)
-    {
-      TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(), thisPart, doc);
-    }
-
-    // output it's attributes
-    parent.appendChild(thisPart);
-
-  }
-
 
 }

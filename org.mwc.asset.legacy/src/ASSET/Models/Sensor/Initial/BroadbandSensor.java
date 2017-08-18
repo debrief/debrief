@@ -154,9 +154,6 @@ public class BroadbandSensor extends InitialSensor
 
     // use the environment to determine the loss
     res = environment.getLossBetween(EnvironmentType.BROADBAND_PASSIVE, target, host);
-
-    res = -200;
-    
     return res;
   }
 

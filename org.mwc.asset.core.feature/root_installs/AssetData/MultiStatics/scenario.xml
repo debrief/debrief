@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="RB_mini_scenario" xmlns="http://www.mwc.org/asset"
-	ShowSymbol="false" ShowActivity="false" ShowName="false"
-	StartTime="2014-12-12T12:00:00">
+	ShowSymbol="false" ShowActivity="false" ShowName="false" StartTime="2014-12-12T12:00:00">
 	<StepTime Units="seconds" Value="5" />
 	<Participants>
 		<SSN Name="Contact">
-			<Category Type="SUBMARINE" Force="RED"
-				Environment="SUBSURFACE" />
+			<Category Type="SUBMARINE" Force="RED" Environment="SUBSURFACE" />
 			<SensorFit></SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
 						<North Value="7000000.0" Units="m" />
 						<East Value="100" Units="m" />
-					</relativeLocation>					
+					</relativeLocation>
 				</Location>
 				<Speed Value="6" Units="kts"></Speed>
 			</Status>
-			<Sequence  Name="Turns">
+			<Sequence Name="Turns">
 				<Move Name="Travel North" Course="0.0">
 					<Vector Value="4800" Units="m" />
 				</Move>
@@ -25,7 +23,8 @@
 				<Move Name="turn south" Course="180"></Move>
 				<Move Name="turn west" Course="270"></Move>
 			</Sequence>
-			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+			<SSMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="m/s" />
 				<MaxSpeed Value="0.0" Units="m/s" />
 				<AccelerationRate Value="0.0" Units="m/s/s" />
@@ -38,19 +37,19 @@
 			</SSMovementCharacteristics>
 		</SSN>
 		<Buoy Name="TX 1" IsTransmitting="true">
-			<Category Type="BUOY" Force="BLUE"
-				Environment="SUBSURFACE" /><SensorFit>
-	<NarrowbandSensor>
-		<SteadyTime Value="0.0" Units="millis" />
-	</NarrowbandSensor>
-</SensorFit>
+			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
+			<SensorFit>
+				<NarrowbandSensor>
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
+			</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
 						<North Value="7003000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>
-					
+
 				</Location>
 				<Speed Value="0" Units="kts"></Speed>
 			</Status>
@@ -60,8 +59,10 @@
 				</Move>
 			</Sequence>
 			<RadiatedCharacteristics>
-				<Narrowband BaseNoiseLevel="180" Frequency="170" /></RadiatedCharacteristics>
-			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+				<Narrowband BaseNoiseLevel="180" Frequency="170" />
+			</RadiatedCharacteristics>
+			<SSMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="m/s" />
 				<MaxSpeed Value="0.0" Units="m/s" />
 				<AccelerationRate Value="0.0" Units="m/s/s" />
@@ -73,20 +74,21 @@
 				<TurningCircle Value="1000.0" Units="m" />
 			</SSMovementCharacteristics>
 		</Buoy>
-		<Buoy Name="RX 1"  IsTransmitting="false">
-			<Category Type="BUOY" Force="BLUE"
-				Environment="SUBSURFACE" />
+		<Buoy Name="RX 1" IsTransmitting="false">
+			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver Name="RX2_Receiver" Working="true" /><NarrowbandSensor
-					Name="RX2_NB" Working="false">
+				<BistaticReceiver Name="RX1_Reflected" Working="true" />
+				<NarrowbandSensor Name="RX1_Direct" Working="true"
+					HasBearing="true">
 					<SteadyTime Value="0.0" Units="millis" />
-</NarrowbandSensor></SensorFit>
+				</NarrowbandSensor>
+			</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
 						<North Value="7001000.0" Units="m" />
 						<East Value="-500" Units="m" />
-					</relativeLocation>					
+					</relativeLocation>
 				</Location>
 				<Speed Value="0" Units="kts"></Speed>
 			</Status>
@@ -95,7 +97,8 @@
 					<Vector Value="4500" Units="m" />
 				</Move>
 			</Sequence>
-			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+			<SSMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="m/s" />
 				<MaxSpeed Value="0.0" Units="m/s" />
 				<AccelerationRate Value="0.0" Units="m/s/s" />
@@ -107,19 +110,23 @@
 				<TurningCircle Value="1000.0" Units="m" />
 			</SSMovementCharacteristics>
 		</Buoy>
-	
-		<Buoy Name="RX 2"  IsTransmitting="false">
-			<Category Type="BUOY" Force="BLUE"
-				Environment="SUBSURFACE" />
+
+		<Buoy Name="RX 2" IsTransmitting="false">
+			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver Name="RX2_Receiver" Working="true" /></SensorFit>
+				<BistaticReceiver Name="RX2_Reflected" Working="true" />
+				<NarrowbandSensor Name="RX2_Direct" Working="true"
+					HasBearing="true">
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
+			</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
 						<North Value="7002000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>
-					
+
 				</Location>
 				<Speed Value="0" Units="kts"></Speed>
 			</Status>
@@ -128,7 +135,8 @@
 					<Vector Value="4500" Units="m" />
 				</Move>
 			</Sequence>
-			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+			<SSMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="m/s" />
 				<MaxSpeed Value="0.0" Units="m/s" />
 				<AccelerationRate Value="0.0" Units="m/s/s" />
@@ -140,18 +148,22 @@
 				<TurningCircle Value="1000.0" Units="m" />
 			</SSMovementCharacteristics>
 		</Buoy>
-		<Buoy Name="RX 3"  IsTransmitting="false">
-			<Category Type="BUOY" Force="BLUE"
-				Environment="SUBSURFACE" />
+		<Buoy Name="RX 3" IsTransmitting="false">
+			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
-				<BistaticReceiver Name="RX3_Receiver" Working="true" /></SensorFit>
+				<BistaticReceiver Name="RX3_Reflected" Working="true" />
+				<NarrowbandSensor Name="RX3_Direct" Working="true"
+					HasBearing="true">
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
+			</SensorFit>
 			<Status Course="0" Fuel="100">
 				<Location>
 					<relativeLocation>
 						<North Value="7004000.0" Units="m" />
 						<East Value="-500" Units="m" />
 					</relativeLocation>
-					
+
 				</Location>
 				<Speed Value="0" Units="kts"></Speed>
 			</Status>
@@ -160,7 +172,8 @@
 					<Vector Value="4500" Units="m" />
 				</Move>
 			</Sequence>
-			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+			<SSMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="m/s" />
 				<MaxSpeed Value="0.0" Units="m/s" />
 				<AccelerationRate Value="0.0" Units="m/s/s" />
@@ -176,14 +189,12 @@
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 			<grid PlotLabels="true" Units="degs" Visible="true">
-				<font Bold="false" Family="Sans Serif" Italic="false"
-					Size="8" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
 				<Delta Units="nm" Value="10" />
 				<colour Value="DARK_GREY" />
 			</grid>
-			<scale AutoMode="true" DisplayUnits="yd"
-				Location="BottomLeft" Name="World Default" ScaleMax="100000"
-				ScaleStep="50000" Visible="true">
+			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
+				Name="World Default" ScaleMax="100000" ScaleStep="50000" Visible="true">
 				<colour Value="GREY" />
 			</scale>
 		</layer>
