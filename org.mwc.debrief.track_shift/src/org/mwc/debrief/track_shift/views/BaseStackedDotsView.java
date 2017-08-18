@@ -236,18 +236,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * declare the tgt course dataset, we need to give it to the renderer
    * 
    */
-  final TimeSeriesCollection _targetCourseSeries = new TimeSeriesCollection();
+  final protected TimeSeriesCollection _targetCourseSeries = new TimeSeriesCollection();
 
   /**
    * declare the tgt speed dataset, we need to give it to the renderer
    * 
    */
-  final TimeSeriesCollection _targetSpeedSeries = new TimeSeriesCollection();
+  final protected TimeSeriesCollection _targetSpeedSeries = new TimeSeriesCollection();
 
   /**
    * legacy helper class
    */
-  final StackedDotHelper _myHelper;
+  final protected StackedDotHelper _myHelper;
 
   /**
    * our listener for tracks being shifted...
@@ -2190,25 +2190,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   void clearPlots()
   {
+    final Runnable runner = new Runnable()
+    {
+      public void run()
+      {
+        _dotPlot.setDataset(null);
+        _linePlot.setDataset(null);
+        _targetOverviewPlot.setDataset(null);
+        _targetOverviewPlot.setDataset(1, null);
+      }
+    };
+    
     if (Thread.currentThread() == Display.getDefault().getThread())
     {
-      // it's ok we're already in a display thread
-      _dotPlot.setDataset(null);
-      _linePlot.setDataset(null);
-      _targetOverviewPlot.setDataset(null);
+      runner.run();
     }
     else
     {
       // we're not in the display thread - make it so!
-      Display.getDefault().syncExec(new Runnable()
-      {
-        public void run()
-        {
-          _dotPlot.setDataset(null);
-          _linePlot.setDataset(null);
-          _targetOverviewPlot.setDataset(null);
-        }
-      });
+      Display.getDefault().syncExec(runner);
     }
   }
 
@@ -2555,9 +2555,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // yup, stop listening
               _ourLayersSubject.removeDataReformattedListener(_layersListener);
 
-              _linePlot.setDataset(null);
-              _dotPlot.setDataset(null);
-              _targetOverviewPlot.setDataset(null);
+              clearPlots();
 
               // ok, clear the zone charts
               clearZoneCharts(true, true, true);
