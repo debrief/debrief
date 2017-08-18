@@ -28,9 +28,9 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
 
   private final static String type = "CSVDetectionObserver";
 
-  TargetType _targetType = null;
-  String _subjectName = null;
-  String _sensorName = null;
+  private TargetType _targetType = null;
+  private String _subjectName = null;
+  private String _sensorName = null;
   private static final String SENSOR_NAME = "SensorName";
   private static final String SUBJECT_NAME = "SubjectName";
   private static final String TARGET_TYPE = "SubjectToTrack";
@@ -80,7 +80,8 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
 
     // and clear the data
     _targetType = null;
-
+    _sensorName = null;
+    _subjectName = null;
   }
 
   protected ScenarioObserver getObserver(String name, boolean isActive, TargetType subject, String subjectName, String sensorName)
@@ -108,7 +109,16 @@ abstract class CSVExportDetectionObserverHandler extends CoreFileObserverHandler
     {
       TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(), thisPart, doc);
     }
+    if(bb.getSensorName() != null)
+    {
+      TargetTypeHandler.exportThis(SENSOR_NAME, bb.getSensorName(), thisPart, doc);      
+    }
+    if(bb.getSubjectName() != null)
+    {
+      TargetTypeHandler.exportThis(SUBJECT_NAME, bb.getSubjectName(), thisPart, doc);      
+    }
 
+    
     // output it's attributes
     parent.appendChild(thisPart);
 

@@ -128,6 +128,28 @@ public class CSVExportDetectionsObserver extends RecordStatusToFileObserverType
   {
   }
 
+  
+  
+  public String getSubjectName()
+  {
+    return _subjectName;
+  }
+
+  public void setSubjectName(String _subjectName)
+  {
+    this._subjectName = _subjectName;
+  }
+
+  public String getSensorName()
+  {
+    return _sensorName;
+  }
+
+  public void setSensorName(String _sensorName)
+  {
+    this._sensorName = _sensorName;
+  }
+
   /**
    * write these detections to file
    * 
