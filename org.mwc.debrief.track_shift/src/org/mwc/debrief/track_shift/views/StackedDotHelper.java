@@ -26,7 +26,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
@@ -91,24 +90,158 @@ public final class StackedDotHelper
   // MEMBER METHODS
   // ////////////////////////////////////////////////
 
-  public TreeSet<Doublet> getDoublets(final boolean onlyVis,
-      final boolean needBearing, final boolean needFrequency)
-  {
-    return getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
-        needFrequency);
-  }
-
   private static Enumeration<Editable> _cachedIterator;
+
   private static FixWrapper _cachedValue;
   private static HiResDate _cachedTime;
   private static TrackWrapper _cachedTrack;
 
-  private static void resetCache()
+  /**
+   * sort out data of interest
+   * 
+   */
+  public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
+      final ISecondaryTrack targetTrack, final boolean onlyVis,
+      final boolean needBearing, final boolean needFrequency)
   {
-    _cachedIterator = null;
-    _cachedValue = null;
-    _cachedTime = null;
-    _cachedTrack = null;
+    final TreeSet<Doublet> res = new TreeSet<Doublet>();
+
+    // friendly fix-wrapper to save us repeatedly creating it
+    final FixWrapper index =
+        new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0), 0.0, 0.0));
+
+    final Vector<TrackSegment> theSegments;
+    if (targetTrack != null)
+    {
+      theSegments = getTargetLegs(targetTrack);
+    }
+    else
+    {
+      theSegments = null;
+    }
+
+    // loop through our sensor data
+    final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
+    if (sensors != null)
+    {
+      while (sensors.hasMoreElements())
+      {
+        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
+        if (!onlyVis || (onlyVis && wrapper.getVisible()))
+        {
+          final Enumeration<Editable> cuts = wrapper.elements();
+
+          // we're walking through ownship track again, so reset the cache
+          resetCache();
+
+          while (cuts.hasMoreElements())
+          {
+            final SensorContactWrapper scw =
+                (SensorContactWrapper) cuts.nextElement();
+            if (!onlyVis || (onlyVis && scw.getVisible()))
+            {
+              // is this cut suitable for what we're looking for?
+              if (needBearing)
+              {
+                if (!scw.getHasBearing())
+                {
+                  continue;
+                }
+              }
+
+              // aaah, but does it meet the frequency requirement?
+              if (needFrequency)
+              {
+                if (!scw.getHasFrequency())
+                {
+                  continue;
+                }
+              }
+
+              FixWrapper targetFix = null;
+              TrackSegment targetParent = null;
+
+              if (theSegments != null && !theSegments.isEmpty())
+              {
+                final Iterator<TrackSegment> iter = theSegments.iterator();
+                while (iter.hasNext())
+                {
+                  final TrackSegment ts = iter.next();
+
+                  final TimePeriod validPeriod =
+                      new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
+                  if (validPeriod.contains(scw.getDTG()))
+                  {
+                    // sorted. here we go
+                    targetParent = ts;
+
+                    // create an object with the right time
+                    index.getFix().setTime(scw.getDTG());
+
+                    // and find any matching items
+                    final SortedSet<Editable> items = ts.tailSet(index);
+                    if (!items.isEmpty())
+                    {
+                      targetFix = (FixWrapper) items.first();
+                    }
+                  }
+                }
+              }
+
+              if (targetFix != null)
+              {
+                final FixWrapper hostFix;
+                final boolean newWay = false;
+                if (newWay)
+                {
+                  hostFix =
+                      getNearestPositionOnTargetTrack(sensorHost, scw.getDTG());
+                }
+                else
+                {
+                  final Watchable[] matches =
+                      sensorHost.getNearestTo(scw.getDTG());
+                  if (matches != null && matches.length == 1)
+                  {
+                    hostFix = (FixWrapper) matches[0];
+                  }
+                  else
+                  {
+                    hostFix = null;
+                  }
+                }
+                if ((hostFix != null))
+                {
+
+                  final Doublet thisDub =
+                      new Doublet(scw, targetFix, targetParent, hostFix);
+
+                  // if we've no target track add all the points
+                  if (targetTrack == null)
+                  {
+                    // store our data
+                    res.add(thisDub);
+                  }
+                  else
+                  {
+                    // if we've got a target track we only add points
+                    // for which we
+                    // have
+                    // a target location
+                    if (targetFix != null)
+                    {
+                      // store our data
+                      res.add(thisDub);
+                    }
+                  } // if we know the track
+                } // if there are any matching items
+              } // if we find a match
+            } // if cut is visible
+          } // loop through cuts
+        } // if sensor is visible
+      } // loop through sensors
+    }// if there are sensors
+    return res;
   }
 
   private static FixWrapper getNearestPositionOnTargetTrack(
@@ -175,149 +308,6 @@ public final class StackedDotHelper
     return res;
   }
 
-  /**
-   * sort out data of interest
-   * 
-   */
-  public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
-      final ISecondaryTrack targetTrack, final boolean onlyVis,
-      final boolean needBearing, final boolean needFrequency)
-  {
-    final TreeSet<Doublet> res = new TreeSet<Doublet>();
-
-    // friendly fix-wrapper to save us repeatedly creating it
-    final FixWrapper index =
-        new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0), 0.0, 0.0));
-
-    final Vector<TrackSegment> theSegments;
-    if (targetTrack != null)
-    {
-      theSegments = getTargetLegs(targetTrack);
-    }
-    else
-    {
-      theSegments = null;
-    }
-
-    // loop through our sensor data
-    final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
-    if (sensors != null)
-    {
-      while (sensors.hasMoreElements())
-      {
-        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
-        if (!onlyVis || (onlyVis && wrapper.getVisible()))
-        {
-          final Enumeration<Editable> cuts = wrapper.elements();
-
-          // we're walking through ownship track again, so reset the cache
-          resetCache();
-
-          while (cuts.hasMoreElements())
-          {
-            final SensorContactWrapper scw =
-                (SensorContactWrapper) cuts.nextElement();
-            if (!onlyVis || (onlyVis && scw.getVisible()))
-            {
-              // is this cut suitable for what we're looking for?
-              if (needBearing)
-              {
-                if (!scw.getHasBearing())
-                  continue;
-              }
-
-              // aaah, but does it meet the frequency requirement?
-              if (needFrequency)
-              {
-                if (!scw.getHasFrequency())
-                  continue;
-              }
-
-              FixWrapper targetFix = null;
-              TrackSegment targetParent = null;
-
-              if (theSegments != null && !theSegments.isEmpty())
-              {
-                final Iterator<TrackSegment> iter = theSegments.iterator();
-                while (iter.hasNext())
-                {
-                  final TrackSegment ts = iter.next();
-
-                  final TimePeriod validPeriod =
-                      new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
-                  if (validPeriod.contains(scw.getDTG()))
-                  {
-                    // sorted. here we go
-                    targetParent = ts;
-
-                    // create an object with the right time
-                    index.getFix().setTime(scw.getDTG());
-
-                    // and find any matching items
-                    final SortedSet<Editable> items = ts.tailSet(index);
-                    if (!items.isEmpty())
-                    {
-                      targetFix = (FixWrapper) items.first();
-                    }
-                  }
-                }
-              }
-
-              if (targetFix != null)
-              {
-                final FixWrapper hostFix;
-                final boolean newWay = false;
-                if (newWay)
-                {
-                  hostFix =
-                      getNearestPositionOnTargetTrack(sensorHost, scw.getDTG());
-                }
-                else
-                {
-                  Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-                  if (matches != null && matches.length == 1)
-                  {
-                    hostFix = (FixWrapper) matches[0];
-                  }
-                  else
-                  {
-                    hostFix = null;
-                  }
-                }
-                if ((hostFix != null))
-                {
-
-                  final Doublet thisDub =
-                      new Doublet(scw, targetFix, targetParent, hostFix);
-
-                  // if we've no target track add all the points
-                  if (targetTrack == null)
-                  {
-                    // store our data
-                    res.add(thisDub);
-                  }
-                  else
-                  {
-                    // if we've got a target track we only add points
-                    // for which we
-                    // have
-                    // a target location
-                    if (targetFix != null)
-                    {
-                      // store our data
-                      res.add(thisDub);
-                    }
-                  } // if we know the track
-                } // if there are any matching items
-              } // if we find a match
-            } // if cut is visible
-          } // loop through cuts
-        } // if sensor is visible
-      } // loop through sensors
-    }// if there are sensors
-    return res;
-  }
-
   private static Vector<TrackSegment> getTargetLegs(
       final ISecondaryTrack targetTrack)
   {
@@ -350,15 +340,84 @@ public final class StackedDotHelper
     return _theSegments;
   }
 
+  private static void resetCache()
+  {
+    _cachedIterator = null;
+    _cachedValue = null;
+    _cachedTime = null;
+    _cachedTrack = null;
+  }
+
+  /**
+   * produce a color shade, according to whether the max error is inside 3 degrees or not.
+   * 
+   * @param errorSeries
+   * @return
+   */
+  private Paint calculateErrorShadeFor(final TimeSeriesCollection errorSeries)
+  {
+    final Paint col;
+    double maxError = 0d;
+    final TimeSeries ts = errorSeries.getSeries(0);
+    final List<?> items = ts.getItems();
+    for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
+    {
+      final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
+      final boolean useMe;
+      // check this isn't infill
+      if (item instanceof ColouredDataItem)
+      {
+        final ColouredDataItem cd = (ColouredDataItem) item;
+        useMe = cd.isShapeFilled();
+      }
+      else
+      {
+        useMe = true;
+      }
+      if (useMe)
+      {
+        final double thisE = (Double) item.getValue();
+        maxError = Math.max(maxError, Math.abs(thisE));
+      }
+    }
+
+    // retrieve the cut-off value
+    final String prefValue =
+        Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_DEGS);
+    final double cutOffValue;
+    if (prefValue != null && prefValue.length() > 0
+        && Double.valueOf(prefValue) != null)
+    {
+      cutOffValue = Double.valueOf(prefValue);
+    }
+    else
+    {
+      cutOffValue = 3d;
+    }
+
+    if (maxError > cutOffValue)
+    {
+      col = new Color(1f, 0f, 0f, 0.05f);
+    }
+    else
+    {
+      final float shade = (float) (0.03f + (cutOffValue - maxError) * 0.02f);
+      col = new Color(0f, 1f, 0f, shade);
+    }
+
+    return col;
+  }
+
   public List<SensorContactWrapper> getBearings(
       final TrackWrapper primaryTrack, final boolean onlyVis,
-      HiResDate startDTG, HiResDate endDTG)
+      final HiResDate startDTG, final HiResDate endDTG)
   {
     final List<SensorContactWrapper> res =
         new ArrayList<SensorContactWrapper>();
 
     // sort out the outer period
-    TimePeriod targetPeriod = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+    final TimePeriod targetPeriod =
+        new TimePeriod.BaseTimePeriod(startDTG, endDTG);
 
     // loop through our sensor data
     final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
@@ -390,6 +449,134 @@ public final class StackedDotHelper
     return res;
   }
 
+  public TreeSet<Doublet> getDoublets(final boolean onlyVis,
+      final boolean needBearing, final boolean needFrequency)
+  {
+    return getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
+        needFrequency);
+  }
+
+  public TrackWrapper getPrimaryTrack()
+  {
+    return _primaryTrack;
+  }
+
+  public ISecondaryTrack getSecondaryTrack()
+  {
+    return _secondaryTrack;
+  }
+
+  /**
+   * initialise the data, check we've got sensor data & the correct number of visible tracks
+   * 
+   * @param showError
+   * @param onlyVis
+   * @param holder
+   */
+  void initialise(final TrackDataProvider tracks, final boolean showError,
+      final boolean onlyVis, final Composite holder, final ErrorLogger logger,
+      final String dataType, final boolean needBrg, final boolean needFreq)
+  {
+
+    // have we been created?
+    if (holder == null)
+    {
+      return;
+    }
+
+    // are we visible?
+    if (holder.isDisposed())
+    {
+      return;
+    }
+
+    _secondaryTrack = null;
+    _primaryTrack = null;
+
+    // do we have some data?
+    if (tracks == null)
+    {
+      // output error message
+      logger.logError(IStatus.INFO, "Please open a Debrief plot", null);
+      return;
+    }
+
+    // check we have a primary track
+    final WatchableList priTrk = tracks.getPrimaryTrack();
+    if (priTrk == null)
+    {
+      logger.logError(IStatus.INFO,
+          "A primary track must be placed on the Tote", null);
+      return;
+    }
+    else
+    {
+      if (!(priTrk instanceof TrackWrapper))
+      {
+        logger.logError(IStatus.INFO,
+            "The primary track must be a vehicle track", null);
+        return;
+      }
+      else
+      {
+        _primaryTrack = (TrackWrapper) priTrk;
+      }
+    }
+
+    // now the sec track
+    final WatchableList[] secs = tracks.getSecondaryTracks();
+
+    // any?
+    if ((secs == null) || (secs.length == 0))
+    {
+      logger.logError(IStatus.INFO, "No secondary track assigned", null);
+    }
+    else
+    {
+      // too many?
+      if (secs.length > 1)
+      {
+        logger.logError(IStatus.INFO,
+            "Only 1 secondary track may be on the tote", null);
+        return;
+      }
+
+      // correct sort?
+      final WatchableList secTrk = secs[0];
+      if (!(secTrk instanceof ISecondaryTrack))
+      {
+        logger.logError(IStatus.INFO,
+            "The secondary track must be a vehicle track", null);
+        return;
+      }
+      else
+      {
+        _secondaryTrack = (ISecondaryTrack) secTrk;
+      }
+    }
+
+    // must have worked, hooray
+    logger.logError(IStatus.OK, null, null);
+
+    // ok, get the positions
+    updateDoublets(onlyVis, needBrg, needFreq);
+
+  }
+
+  /**
+   * clear our data, all is finished
+   */
+  public void reset()
+  {
+    if (_primaryDoublets != null)
+    {
+      _primaryDoublets.clear();
+    }
+    _primaryDoublets = null;
+    _primaryTrack = null;
+    _secondaryTrack = null;
+  }
+
   /**
    * ok, our track has been dragged, calculate the new series of offsets
    * 
@@ -411,22 +598,29 @@ public final class StackedDotHelper
    *          how far the current track has been dragged
    */
   public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot,
-      XYPlot targetPlot, final TrackDataProvider tracks, final boolean onlyVis,
-      final boolean showCourse, final boolean flipAxes, final Composite holder,
-      final ErrorLogger logger, final boolean updateDoublets,
-      TimeSeriesCollection targetCourseSeries,
-      TimeSeriesCollection targetSpeedSeries, TimeSeries ownshipCourseSeries,
-      TimeSeries targetBearingSeries, TimeSeries targetCalculatedSeries,
-      ResidualXYItemRenderer overviewSpeedRenderer,
-      WrappingResidualRenderer overviewCourseRenderer)
+      final XYPlot targetPlot, final TrackDataProvider tracks,
+      final boolean onlyVis, final boolean showCourse, final boolean flipAxes,
+      final Composite holder, final ErrorLogger logger,
+      final boolean updateDoublets,
+      final TimeSeriesCollection targetCourseSeries,
+      final TimeSeriesCollection targetSpeedSeries,
+      final TimeSeries ownshipCourseSeries,
+      final TimeSeries targetBearingSeries,
+      final TimeSeries targetCalculatedSeries,
+      final ResidualXYItemRenderer overviewSpeedRenderer,
+      final WrappingResidualRenderer overviewCourseRenderer)
   {
     // do we even have a primary track
     if (_primaryTrack == null)
+    {
       return;
+    }
 
     // ok, find the track wrappers
     if (_secondaryTrack == null)
+    {
       initialise(tracks, false, onlyVis, holder, logger, "Bearing", true, false);
+    }
 
     // did it work?
     // if (_secondaryTrack == null)
@@ -434,7 +628,9 @@ public final class StackedDotHelper
 
     // ok - the tracks have moved. better update the doublets
     if (updateDoublets)
+    {
       updateDoublets(onlyVis, true, false);
+    }
 
     // aah - but what if we've ditched our doublets?
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
@@ -464,7 +660,7 @@ public final class StackedDotHelper
     final TimeSeries allCuts = new TimeSeries("Sensor cuts");
 
     // createa list of series, so we can pause their updates
-    List<TimeSeries> sList = new Vector<TimeSeries>();
+    final List<TimeSeries> sList = new Vector<TimeSeries>();
     sList.add(errorValues);
     sList.add(ambigErrorValues);
     sList.add(measuredValues);
@@ -478,7 +674,7 @@ public final class StackedDotHelper
     sList.add(targetBearingSeries);
     sList.add(ownshipCourseSeries);
 
-    List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
+    final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
     tList.add(targetCourseSeries);
     tList.add(targetSpeedSeries);
     tList.add(errorSeries);
@@ -497,15 +693,14 @@ public final class StackedDotHelper
       for (final TimeSeries series : sList)
       {
         series.setNotify(false);
-        
+
         // and clear the list
-        series.clear();        
+        series.clear();
       }
 
       // clear the existing target datasets
       targetCourseSeries.removeAllSeries();
       targetSpeedSeries.removeAllSeries();
-      
 
       // ok, run through the points on the primary track
       final Iterator<Doublet> iter = _primaryDoublets.iterator();
@@ -513,7 +708,7 @@ public final class StackedDotHelper
       {
         final Doublet thisD = iter.next();
 
-        boolean parentIsNotDynamic =
+        final boolean parentIsNotDynamic =
             thisD.getTargetTrack() == null
                 || !(thisD.getTargetTrack() instanceof DynamicInfillSegment);
 
@@ -552,12 +747,18 @@ public final class StackedDotHelper
 
           // put the measured bearing back in the positive domain
           if (measuredBearing < 0)
+          {
             measuredBearing += 360d;
+          }
 
           // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
           if (flipAxes)
+          {
             if (measuredBearing > 180)
+            {
               measuredBearing -= 360;
+            }
+          }
 
           final ColouredDataItem mBearing =
               new ColouredDataItem(thisMilli, measuredBearing, bearingColor,
@@ -575,7 +776,9 @@ public final class StackedDotHelper
             }
 
             if (flipAxes && ambigBearing > 180)
+            {
               ambigBearing -= 360;
+            }
 
             // make the color darker, if we're on the stbd bearnig
             final Color ambigColor;
@@ -610,7 +813,9 @@ public final class StackedDotHelper
               if (flipAxes)
               {
                 if (calculatedBearing > 180)
+                {
                   calculatedBearing -= 360;
+                }
               }
               else
               {
@@ -645,8 +850,12 @@ public final class StackedDotHelper
               if (hasAmbiguous)
               {
                 if (flipAxes)
+                {
                   if (ambigBearing > 180)
+                  {
                     ambigBearing -= 360;
+                  }
+                }
 
                 final Color ambigColor;
                 if (bearingToPort)
@@ -673,7 +882,7 @@ public final class StackedDotHelper
         }
         catch (final SeriesException e)
         {
-          CorePlugin.logError(Status.INFO,
+          CorePlugin.logError(IStatus.INFO,
               "some kind of trip whilst updating bearing plot", e);
         }
 
@@ -682,14 +891,14 @@ public final class StackedDotHelper
       // just double-check we've still got our primary doublets
       if (_primaryDoublets == null)
       {
-        CorePlugin.logError(Status.WARNING,
+        CorePlugin.logError(IStatus.WARNING,
             "FOR SOME REASON PRIMARY DOUBLETS IS NULL - INVESTIGATE", null);
         return;
       }
 
       if (_primaryDoublets.size() == 0)
       {
-        CorePlugin.logError(Status.WARNING,
+        CorePlugin.logError(IStatus.WARNING,
             "FOR SOME REASON PRIMARY DOUBLETS IS ZERO LENGTH - INVESTIGATE",
             null);
         return;
@@ -713,13 +922,13 @@ public final class StackedDotHelper
         // ok, it's a single point. We'll use the sensor cut times for the course data
 
         // get the single location
-        FixWrapper loc =
+        final FixWrapper loc =
             (FixWrapper) _primaryTrack.getPositionIterator().nextElement();
 
-        Enumeration<Editable> segments = _secondaryTrack.segments();
+        final Enumeration<Editable> segments = _secondaryTrack.segments();
         while (segments.hasMoreElements())
         {
-          Editable nextE = segments.nextElement();
+          final Editable nextE = segments.nextElement();
           // if there's just one segment - then we need to wrap it
           final SegmentList segList;
           if (nextE instanceof SegmentList)
@@ -732,22 +941,24 @@ public final class StackedDotHelper
             segList.addSegment((TrackSegment) nextE);
           }
 
-          Enumeration<Editable> segIter = segList.elements();
+          final Enumeration<Editable> segIter = segList.elements();
           while (segIter.hasMoreElements())
           {
-            TrackSegment segment = (TrackSegment) segIter.nextElement();
+            final TrackSegment segment = (TrackSegment) segIter.nextElement();
 
-            Enumeration<Editable> enumer = segment.elements();
+            final Enumeration<Editable> enumer = segment.elements();
             while (enumer.hasMoreElements())
             {
-              FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
+              final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
 
               double ownshipCourse =
                   MWC.Algorithms.Conversions.Rads2Degs(loc.getCourse());
 
               // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
               if (flipAxes && ownshipCourse > 180)
+              {
                 ownshipCourse -= 360;
+              }
               final FixedMillisecond thisMilli =
                   new FixedMillisecond(thisTgtFix.getDateTimeGroup().getDate()
                       .getTime());
@@ -764,13 +975,13 @@ public final class StackedDotHelper
       {
 
         // loop through using the iterator
-        Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
-        TimePeriod validPeriod =
+        final Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
+        final TimePeriod validPeriod =
             new TimePeriod.BaseTimePeriod(startDTG, endDTG);
-        List<Editable> validItems = new LinkedList<Editable>();
+        final List<Editable> validItems = new LinkedList<Editable>();
         while (pIter.hasMoreElements())
         {
-          FixWrapper fw = (FixWrapper) pIter.nextElement();
+          final FixWrapper fw = (FixWrapper) pIter.nextElement();
           if (validPeriod.contains(fw.getDateTimeGroup()))
           {
             validItems.add(fw);
@@ -787,15 +998,15 @@ public final class StackedDotHelper
         }
 
         // ok, now go through the list
-        Iterator<Editable> vIter = validItems.iterator();
-        int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
+        final Iterator<Editable> vIter = validItems.iterator();
+        final int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
         int ctr = 0;
         while (vIter.hasNext())
         {
-          Editable ed = vIter.next();
+          final Editable ed = vIter.next();
           if (ctr++ % freq == 0)
           {
-            FixWrapper fw = (FixWrapper) ed;
+            final FixWrapper fw = (FixWrapper) ed;
             final FixedMillisecond thisMilli =
                 new FixedMillisecond(fw.getDateTimeGroup().getDate().getTime());
             double ownshipCourse =
@@ -803,7 +1014,9 @@ public final class StackedDotHelper
 
             // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
             if (flipAxes && ownshipCourse > 180)
+            {
               ownshipCourse -= 360;
+            }
 
             final ColouredDataItem crseBearing =
                 new ColouredDataItem(thisMilli, ownshipCourse, fw.getColor(),
@@ -815,11 +1028,11 @@ public final class StackedDotHelper
       }
 
       // sort out the target course/speed
-      Enumeration<Editable> segments = _secondaryTrack.segments();
-      TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+      final Enumeration<Editable> segments = _secondaryTrack.segments();
+      final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
       while (segments.hasMoreElements())
       {
-        Editable nextE = segments.nextElement();
+        final Editable nextE = segments.nextElement();
         // if there's just one segment - then we need to wrap it
         final SegmentList segList;
         if (nextE instanceof SegmentList)
@@ -833,10 +1046,10 @@ public final class StackedDotHelper
           segList.addSegment((TrackSegment) nextE);
         }
 
-        Enumeration<Editable> segIter = segList.elements();
+        final Enumeration<Editable> segIter = segList.elements();
         while (segIter.hasMoreElements())
         {
-          TrackSegment segment = (TrackSegment) segIter.nextElement();
+          final TrackSegment segment = (TrackSegment) segIter.nextElement();
 
           // is this an infill segment
           final boolean isInfill = segment instanceof DynamicInfillSegment;
@@ -849,11 +1062,11 @@ public final class StackedDotHelper
           }
           else
           {
-            Enumeration<Editable> points = segment.elements();
+            final Enumeration<Editable> points = segment.elements();
             Double lastCourse = null;
             while (points.hasMoreElements())
             {
-              FixWrapper fw = (FixWrapper) points.nextElement();
+              final FixWrapper fw = (FixWrapper) points.nextElement();
               if (period.contains(fw.getDateTimeGroup()))
               {
                 // ok, create a point for it
@@ -948,7 +1161,7 @@ public final class StackedDotHelper
             theBearing += 360;
           }
         }
-        
+
         // ok, store it.
         allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut
             .getDTG().getDate().getTime()), theBearing));
@@ -956,14 +1169,20 @@ public final class StackedDotHelper
 
       // ok, add these new series
       if (errorValues.getItemCount() > 0)
+      {
         errorSeries.addSeries(errorValues);
+      }
       if (ambigErrorValues.getItemCount() > 0)
+      {
         errorSeries.addSeries(ambigErrorValues);
+      }
 
       actualSeries.addSeries(measuredValues);
 
       if (ambigValues.getItemCount() > 0)
+      {
         actualSeries.addSeries(ambigValues);
+      }
 
       if (calculatedValues.getItemCount() > 0)
       {
@@ -1032,7 +1251,7 @@ public final class StackedDotHelper
       }
 
       // find the color for maximum value in the error series
-      Paint errorColor = calculateErrorShadeFor(errorSeries);
+      final Paint errorColor = calculateErrorShadeFor(errorSeries);
       dotPlot.setBackgroundPaint(errorColor);
 
       dotPlot.setDataset(errorSeries);
@@ -1053,169 +1272,6 @@ public final class StackedDotHelper
         series.setNotify(true);
       }
     }
-  }
-
-  /**
-   * produce a color shade, according to whether the max error is inside 3 degrees or not.
-   * 
-   * @param errorSeries
-   * @return
-   */
-  private Paint calculateErrorShadeFor(TimeSeriesCollection errorSeries)
-  {
-    final Paint col;
-    double maxError = 0d;
-    TimeSeries ts = errorSeries.getSeries(0);
-    List<?> items = ts.getItems();
-    for (Iterator<?> iterator = items.iterator(); iterator.hasNext();)
-    {
-      TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
-      final boolean useMe;
-      // check this isn't infill
-      if (item instanceof ColouredDataItem)
-      {
-        ColouredDataItem cd = (ColouredDataItem) item;
-        useMe = cd.isShapeFilled();
-      }
-      else
-      {
-        useMe = true;
-      }
-      if (useMe)
-      {
-        double thisE = (Double) item.getValue();
-        maxError = Math.max(maxError, Math.abs(thisE));
-      }
-    }
-
-    // retrieve the cut-off value
-    String prefValue =
-        Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_DEGS);
-    final double cutOffValue;
-    if (prefValue != null && prefValue.length() > 0
-        && Double.valueOf(prefValue) != null)
-    {
-      cutOffValue = Double.valueOf(prefValue);
-    }
-    else
-    {
-      cutOffValue = 3d;
-    }
-
-    if (maxError > cutOffValue)
-    {
-      col = new Color(1f, 0f, 0f, 0.05f);
-    }
-    else
-    {
-      final float shade = (float) (0.03f + (cutOffValue - maxError) * 0.02f);
-      col = new Color(0f, 1f, 0f, shade);
-    }
-
-    return col;
-  }
-
-  /**
-   * initialise the data, check we've got sensor data & the correct number of visible tracks
-   * 
-   * @param showError
-   * @param onlyVis
-   * @param holder
-   */
-  void initialise(final TrackDataProvider tracks, final boolean showError,
-      final boolean onlyVis, final Composite holder, final ErrorLogger logger,
-      final String dataType, final boolean needBrg, final boolean needFreq)
-  {
-
-    // have we been created?
-    if (holder == null)
-      return;
-
-    // are we visible?
-    if (holder.isDisposed())
-      return;
-
-    _secondaryTrack = null;
-    _primaryTrack = null;
-
-    // do we have some data?
-    if (tracks == null)
-    {
-      // output error message
-      logger.logError(IStatus.INFO, "Please open a Debrief plot", null);
-      return;
-    }
-
-    // check we have a primary track
-    final WatchableList priTrk = tracks.getPrimaryTrack();
-    if (priTrk == null)
-    {
-      logger.logError(IStatus.INFO,
-          "A primary track must be placed on the Tote", null);
-      return;
-    }
-    else
-    {
-      if (!(priTrk instanceof TrackWrapper))
-      {
-        logger.logError(IStatus.INFO,
-            "The primary track must be a vehicle track", null);
-        return;
-      }
-      else
-        _primaryTrack = (TrackWrapper) priTrk;
-    }
-
-    // now the sec track
-    final WatchableList[] secs = tracks.getSecondaryTracks();
-
-    // any?
-    if ((secs == null) || (secs.length == 0))
-    {
-      logger.logError(IStatus.INFO, "No secondary track assigned", null);
-    }
-    else
-    {
-      // too many?
-      if (secs.length > 1)
-      {
-        logger.logError(IStatus.INFO,
-            "Only 1 secondary track may be on the tote", null);
-        return;
-      }
-
-      // correct sort?
-      final WatchableList secTrk = secs[0];
-      if (!(secTrk instanceof ISecondaryTrack))
-      {
-        logger.logError(IStatus.INFO,
-            "The secondary track must be a vehicle track", null);
-        return;
-      }
-      else
-      {
-        _secondaryTrack = (ISecondaryTrack) secTrk;
-      }
-    }
-
-    // must have worked, hooray
-    logger.logError(IStatus.OK, null, null);
-
-    // ok, get the positions
-    updateDoublets(onlyVis, needBrg, needFreq);
-
-  }
-
-  /**
-   * clear our data, all is finished
-   */
-  public void reset()
-  {
-    if (_primaryDoublets != null)
-      _primaryDoublets.clear();
-    _primaryDoublets = null;
-    _primaryTrack = null;
-    _secondaryTrack = null;
   }
 
   /**
@@ -1256,16 +1312,22 @@ public final class StackedDotHelper
 
     // do we have anything?
     if (_primaryTrack == null)
+    {
       return;
+    }
 
     // ok, find the track wrappers
     if (_secondaryTrack == null)
+    {
       initialise(tracks, false, onlyVis, holder, logger, "Frequency", false,
           true);
+    }
 
     // ok - the tracks have moved. better update the doublets
     if (updateDoublets)
+    {
       updateDoublets(onlyVis, false, true);
+    }
 
     // aah - but what if we've ditched our doublets?
     // aah - but what if we've ditched our doublets?
@@ -1350,7 +1412,7 @@ public final class StackedDotHelper
       }
       catch (final SeriesException e)
       {
-        CorePlugin.logError(Status.INFO,
+        CorePlugin.logError(IStatus.INFO,
             "some kind of trip whilst updating frequency plot", e);
       }
 
@@ -1358,28 +1420,24 @@ public final class StackedDotHelper
 
     // ok, add these new series
     if (errorValues.getItemCount() > 0)
+    {
       errorSeries.addSeries(errorValues);
+    }
 
     actualSeries.addSeries(measuredValues);
     actualSeries.addSeries(correctedValues);
 
     if (predictedValues.getItemCount() > 0)
+    {
       actualSeries.addSeries(predictedValues);
+    }
     if (baseValues.getItemCount() > 0)
+    {
       actualSeries.addSeries(baseValues);
+    }
 
     dotPlot.setDataset(errorSeries);
     linePlot.setDataset(actualSeries);
-  }
-
-  public ISecondaryTrack getSecondaryTrack()
-  {
-    return _secondaryTrack;
-  }
-
-  public TrackWrapper getPrimaryTrack()
-  {
-    return _primaryTrack;
   }
 
 }
