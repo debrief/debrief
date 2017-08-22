@@ -36,18 +36,110 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
 {
 
-  public BearingResidualsView()
-  {
-    super(true, false);
-  }
-
   private static final String SHOW_COURSE = "SHOW_COURSE";
   private static final String SCALE_ERROR = "SCALE_ERROR";
   private Action showCourse;
   private Action relativeAxes;
   private Action scaleError;
 
+  public BearingResidualsView()
+  {
+    super(true, false);
+  }
+
   // protected Action _5degResize;
+
+  @Override
+  protected void addExtras(final IToolBarManager toolBarManager)
+  {
+    super.addExtras(toolBarManager);
+    toolBarManager.add(showCourse);
+  }
+
+  @Override
+  public boolean applyStyling()
+  {
+    return scaleError.isChecked();
+  }
+
+  @Override
+  protected void fillLocalPullDown(final IMenuManager manager)
+  {
+    manager.add(relativeAxes);
+    manager.add(scaleError);
+    super.fillLocalPullDown(manager);
+  }
+
+  @Override
+  protected void fillLocalToolBar(final IToolBarManager manager)
+  {
+    manager.add(relativeAxes);
+    manager.add(scaleError);
+    super.fillLocalToolBar(manager);
+
+  }
+
+  @Override
+  protected String getType()
+  {
+    return "Bearing";
+  }
+
+  @Override
+  protected String getUnits()
+  {
+    return "\u00b0";
+  }
+
+  @Override
+  public long getValueAt(final HiResDate dtg)
+  {
+    // get the time
+    final RegularTimePeriod myTime =
+        new FixedMillisecond(dtg.getMicros() / 1000);
+
+    // get the set of calculated error values that we have stored in the graph
+    final TimeSeriesCollection dataset =
+        (TimeSeriesCollection) _dotPlot.getDataset();
+
+    if (dataset != null)
+    {
+      if (dataset.getSeriesCount() > 0)
+      {
+        final TimeSeries series = dataset.getSeries(0);
+        final int index = series.getIndex(myTime);
+        if (index >= 0)
+        {
+          final TimeSeriesDataItem thisV = series.getDataItem(index);
+          return thisV.getValue().longValue();
+        }
+      }
+    }
+    return 0;
+  }
+
+  @Override
+  public void init(final IViewSite site, final IMemento memento)
+      throws PartInitException
+  {
+    super.init(site, memento);
+
+    if (memento != null)
+    {
+
+      final Boolean doCourse = memento.getBoolean(SHOW_COURSE);
+      if (doCourse != null)
+      {
+        showCourse.setChecked(doCourse.booleanValue());
+      }
+
+      final Boolean doScaleError = memento.getBoolean(SCALE_ERROR);
+      if (doScaleError != null)
+      {
+        scaleError.setChecked(doScaleError.booleanValue());
+      }
+    }
+  }
 
   @Override
   protected void makeActions()
@@ -80,10 +172,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           public void run()
           {
             super.run();
-            
+
             final double minVal;
             final double maxVal;
-            if(relativeAxes.isChecked())
+            if (relativeAxes.isChecked())
             {
               minVal = -180d;
               maxVal = 180d;
@@ -93,7 +185,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
               minVal = 0d;
               maxVal = 360d;
             }
-            
+
             _overviewCourseRenderer.setRange(minVal, maxVal);
 
             processShowCourse();
@@ -150,50 +242,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   }
 
-  @Override
-  protected void addExtras(IToolBarManager toolBarManager)
-  {
-    super.addExtras(toolBarManager);
-    toolBarManager.add(showCourse);
-  }
-
-  @Override
-  protected void fillLocalToolBar(final IToolBarManager manager)
-  {
-    manager.add(relativeAxes);
-    manager.add(scaleError);
-    super.fillLocalToolBar(manager);
-
-  }
-
-  protected void fillLocalPullDown(final IMenuManager manager)
-  {
-    manager.add(relativeAxes);
-    manager.add(scaleError);
-    super.fillLocalPullDown(manager);
-  }
-
-  protected String getUnits()
-  {
-    return "\u00b0";
-  }
-
-  protected String getType()
-  {
-    return "Bearing";
-  }
-
-  protected void updateData(final boolean updateDoublets)
-  {
-    // update the current datasets
-    _myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverviewPlot,
-        _myTrackDataProvider, _onlyVisible.isChecked(), showCourse.isChecked(),
-        relativeAxes.isChecked(), _holder, this, updateDoublets,
-        _targetCourseSeries, _targetSpeedSeries, ownshipCourseSeries,
-        targetBearingSeries, targetCalculatedSeries, _overviewSpeedRenderer,
-        _overviewCourseRenderer);
-  }
-
   private void processShowCourse()
   {
     // ok - redraw the plot we may have changed the course visibility
@@ -201,25 +249,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     // ok - if we're on auto update, do the update
     updateLinePlotRanges();
-  }
-
-  @Override
-  public void init(final IViewSite site, final IMemento memento)
-      throws PartInitException
-  {
-    super.init(site, memento);
-
-    if (memento != null)
-    {
-
-      final Boolean doCourse = memento.getBoolean(SHOW_COURSE);
-      if (doCourse != null)
-        showCourse.setChecked(doCourse.booleanValue());
-
-      final Boolean doScaleError = memento.getBoolean(SCALE_ERROR);
-      if (doScaleError != null)
-        scaleError.setChecked(doScaleError.booleanValue());
-    }
   }
 
   @Override
@@ -232,33 +261,14 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   }
 
   @Override
-  public long getValueAt(HiResDate dtg)
+  protected void updateData(final boolean updateDoublets)
   {
-    // get the time
-    RegularTimePeriod myTime = new FixedMillisecond(dtg.getMicros() / 1000);
-
-    // get the set of calculated error values that we have stored in the graph
-    TimeSeriesCollection dataset = (TimeSeriesCollection) _dotPlot.getDataset();
-
-    if (dataset != null)
-    {
-      if (dataset.getSeriesCount() > 0)
-      {
-        TimeSeries series = dataset.getSeries(0);
-        int index = series.getIndex(myTime);
-        if (index >= 0)
-        {
-          TimeSeriesDataItem thisV = series.getDataItem(index);
-          return thisV.getValue().longValue();
-        }
-      }
-    }
-    return 0;
-  }
-
-  @Override
-  public boolean applyStyling()
-  {
-    return scaleError.isChecked();
+    // update the current datasets
+    _myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverviewPlot,
+        _myTrackDataProvider, _onlyVisible.isChecked(), showCourse.isChecked(),
+        relativeAxes.isChecked(), _holder, this, updateDoublets,
+        _targetCourseSeries, _targetSpeedSeries, ownshipCourseSeries,
+        targetBearingSeries, targetCalculatedSeries, _overviewSpeedRenderer,
+        _overviewCourseRenderer);
   }
 }
