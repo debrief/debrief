@@ -300,6 +300,11 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 				+ MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(System
 						.currentTimeMillis()) + ".rep";
 	}
+	
+	public List<String> getFormatHelpers()
+	{
+	  return _formatHelpers;
+	}
 
 	/**
 	 * determine the normal suffix for this file type

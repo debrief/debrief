@@ -63,6 +63,8 @@ package ASSET.Util.XML.Control.Observers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.w3c.dom.Element;
+
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.Recording.DebriefFormatHelperHandler;
@@ -192,6 +194,17 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     {
       TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(),
           thisPart, doc);
+    }
+    
+    List<String> helpers = bb.getFormatHelpers();
+    if(helpers != null)
+    {
+      for(String t: helpers)
+      {
+        final Element thisHelper = doc.createElement(DebriefFormatHelperHandler.type);
+        thisHelper.setAttribute(DebriefFormatHelperHandler.TEXT, t);
+        thisPart.appendChild(thisHelper);
+      }
     }
 
     // output it's attributes

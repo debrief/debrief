@@ -28,8 +28,8 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class DebriefFormatHelperHandler extends MWCXMLReader
 {
-  private final static String type = "FormatHelper";
-  private final static String TEXT = "Text";
+  public final static String type = "FormatHelper";
+  public final static String TEXT = "Text";
 
   String _text;
 
