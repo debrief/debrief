@@ -1372,7 +1372,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			System.out.println("started at:" + cs.getTime());
 
 			DebriefReplayObserver dro = new DebriefReplayObserver("./test_reports/",
-					"investigate_search.rep", false, true, true, null, "plotter", true);
+					"investigate_search.rep", false, true, true, null, "plotter", true, null);
 			TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 300,
 					300, "investigate_search.png", null, false, true, false, "tester",
 					true);
@@ -1550,10 +1550,10 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 			// and the other observers
 			DebriefReplayObserver dro = new DebriefReplayObserver("test_reports",
-					"investigate_tracks.rep", false, false, true, null, "plotter", true);
+					"investigate_tracks.rep", false, false, true, null, "plotter", true, null);
 			DebriefReplayObserver dr2 = new DebriefReplayObserver("test_reports",
 					"investigate_helo_decisions.rep", false, true, false, new TargetType(
-							Category.Type.HELO), "decisions", true);
+							Category.Type.HELO), "decisions", true, null);
 			TrackPlotObserver tpo = new TrackPlotObserver("test_reports", 300, 400,
 					"investigate_mult_search.png", null, false, true, false, "tester",
 					true);
