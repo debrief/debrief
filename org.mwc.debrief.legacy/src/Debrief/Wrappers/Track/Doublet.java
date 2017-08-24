@@ -170,7 +170,17 @@ public final class Doublet implements Comparable<Doublet>
         // yes, then lets compare the target fixes. This happens
         // when the sensor cuts are more frequent than the
         // sensor platform positions
-        res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
+        
+        // do we have a target fix?
+        if(_targetFix != null)
+        {
+          res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
+        }
+        else
+        {
+          // nope, we'll have to compare the sensor fix
+          res = _sensor.getDTG().compareTo(o._sensor.getDTG());
+        }
       }
       else
       {
