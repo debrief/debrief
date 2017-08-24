@@ -34,7 +34,7 @@
 				<Location>
 					<shortLocation Lat="60.4" Long="0"></shortLocation>
 				</Location>
-				<Speed Value="9" Units="kts" />
+				<Speed Value="12" Units="kts" />
 			</Status>
 			<Waterfall Name="subject route">
 				<Move Name="leg one" Course="110">
@@ -43,7 +43,7 @@
 					<Vector Value="1.5" Units="nm" /></Move>
 				<Move Name="leg three" Course="80">
 					<Vector Value="4" Units="nm" /></Move>
-				<Move Name="leg four" Course="60">
+				<Move Name="leg four" Course="20">
 					<Vector Value="12" Units="nm" ></Vector></Move>
 			</Waterfall>
 			<RadiatedCharacteristics>
@@ -73,15 +73,15 @@
 				<Speed Value="13" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Move Name="leg one" Course="190">
+				<Move Name="leg one" Course="180">
 					<Vector Value="2" Units="nm" /></Move>
-				<Move Name="leg one" Course="230">
+				<Move Name="leg one" Course="260">
 					<Vector Value="2" Units="nm" /></Move>
-				<Move Name="leg one" Course="190">
+				<Move Name="leg one" Course="180">
 					<Vector Value="2" Units="nm" /></Move>
-				<Move Name="leg one" Course="230">
+				<Move Name="leg one" Course="260">
 					<Vector Value="2" Units="nm" /></Move>
-				<Move Name="leg one" Course="160">
+				<Move Name="leg one" Course="200">
 					<Vector Value="2" Units="nm" /></Move>
 				<Move Name="leg one" Course="210">
 					<Vector Value="2" Units="nm" /></Move>
@@ -97,6 +97,8 @@
 					<Vector Value="2" Units="nm" /></Move>
 				<Move Name="leg one" Course="340">
 					<Vector Value="2" Units="nm" /></Move>
+				<Move Name="leg one" Course="60">
+					<Vector Value="2" Units="nm" /></Move>
 			</Waterfall>
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
@@ -104,7 +106,7 @@
 				<MaxSpeed Value="20" Units="kts" />
 				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="1" Units="kt/s" />
-				<TurningCircle Value="800" Units="m"></TurningCircle>
+				<TurningCircle Value="1200" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
 	</Participants>
