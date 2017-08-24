@@ -1009,9 +1009,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (secondary != null)
         {
           // now find data in the primary track
+          final TimePeriod period =
+              new TimePeriod.BaseTimePeriod(secondary.getStartDTG(), secondary
+                  .getEndDTG());
           final List<SensorContactWrapper> bearings =
               _myHelper.getBearings(_myHelper.getPrimaryTrack(), _onlyVisible
-                  .isChecked(), secondary.getStartDTG(), secondary.getEndDTG());
+                  .isChecked(), period);
           res =
               sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
                   secondary, _slicePrecision);
@@ -2182,9 +2185,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // ok, we've got to create a new TMA segment
 
       // get the host cuts for this time period
+      final TimePeriod period =
+          new TimePeriod.BaseTimePeriod(new HiResDate(leg.getStart()),
+              new HiResDate(leg.getEnd()));
       final List<SensorContactWrapper> cuts =
-          _myHelper.getBearings(primaryTrack, false, new HiResDate(leg
-              .getStart()), new HiResDate(leg.getEnd()));
+          _myHelper.getBearings(primaryTrack, false, period);
       final SensorContactWrapper[] observations =
           cuts.toArray(new SensorContactWrapper[]
           {});
