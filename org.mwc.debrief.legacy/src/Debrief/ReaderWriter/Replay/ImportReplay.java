@@ -118,14 +118,16 @@ public class ImportReplay extends PlainImporterBase
 
     }
 
-    /** find out how the user wants to import the new REP file
+    /**
+     * find out how the user wants to import the new REP file
      * 
      * @param trackName
      * @return
      */
     public ImportSettings getSelectedImportMode(final String trackName);
-    
-    /** find out the sample frequency for adding this data
+
+    /**
+     * find out the sample frequency for adding this data
      * 
      * @param trackName
      * @return
@@ -314,7 +316,7 @@ public class ImportReplay extends PlainImporterBase
   private HiResDate processReplayFix(final ReplayFix rf)
   {
     final HiResDate res = rf.theFix.getTime();
-    
+
     // ok, are we re-sampling the data?
     if (_importSettings != null)
     {
@@ -369,23 +371,26 @@ public class ImportReplay extends PlainImporterBase
       if (!_existingTracksThatMoved.contains(trkWrapper))
       {
         _existingTracksThatMoved.add(trkWrapper);
-        
+
         // ok, this must be the first fix for this new track
-        
+
         // ask the user if he wants it resampled.
-        if (_myParent instanceof ProvidesModeSelector && _importSettings == null)
+        if (_myParent instanceof ProvidesModeSelector
+            && _importSettings == null)
         {
           final ProvidesModeSelector selector =
               (ProvidesModeSelector) _myParent;
           Long freq = selector.getSelectedImportFrequency(theTrack);
-          if(freq == null)
+          if (freq == null)
           {
             // ok, skip the data
-            _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE);
+            _importSettings =
+                new ImportSettings(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE);
           }
           else
           {
-            _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
+            _importSettings =
+                new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
           }
         }
       }
@@ -393,9 +398,22 @@ public class ImportReplay extends PlainImporterBase
     else
     {
       // ok, see if we're importing it as DR or ATG (or ask the audience)
-      String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
-      String freqStr = _myParent.getProperty(RESAMPLE_FREQUENCY);
-      Long importFreq;
+      String importMode = null;
+      String freqStr = null;
+      if (_myParent != null)
+      {
+        importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
+        freqStr = _myParent.getProperty(RESAMPLE_FREQUENCY);
+      }
+      else
+      {
+        // prob in a headless test. 
+        importMode = IMPORT_AS_OTG;
+        freqStr = "0";
+      }
+      
+      
+      final Long importFreq;
       if (freqStr != null && freqStr.length() > 0 && !freqStr.equals("null"))
       {
         importFreq = Long.valueOf(freqStr);
@@ -433,7 +451,7 @@ public class ImportReplay extends PlainImporterBase
       {
         // don't pass a frequency for DR import, since it will be ignored
         final Long theFreq;
-        if(importMode.equals(IMPORT_AS_DR))
+        if (importMode.equals(IMPORT_AS_DR))
         {
           theFreq = null;
         }
@@ -441,7 +459,7 @@ public class ImportReplay extends PlainImporterBase
         {
           theFreq = importFreq;
         }
-        
+
         // create the artificial import settings
         _importSettings = new ImportSettings(importMode, theFreq);
       }
@@ -906,7 +924,7 @@ public class ImportReplay extends PlainImporterBase
 
       // ok, get that layer
       Layer dest = getLayerFor(targetLayer);
-      
+
       // does it exist?
       if (dest == null)
       {
@@ -922,56 +940,59 @@ public class ImportReplay extends PlainImporterBase
     return res;
   }
 
-  /** utility method to extract formatted property values from a symbology line,
-   * such as: 
-   * ;TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
+  /**
+   * utility method to extract formatted property values from a symbology line, such as: ;TEXT:
+   * CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
    * 
    * @param symbology
    * @param property_name
    * @return
    */
-  final private String getThisSymProperty(final String symbology, final String property_name)
+  final private String getThisSymProperty(final String symbology,
+      final String property_name)
   {
     final String regexp = "\\[(?<NAME>.*?)\\=(?<VALUE>.*?)\\]";
     final Matcher m = Pattern.compile(regexp).matcher(symbology);
-    
+
     // did we find any?
-    while(m.find())
+    while (m.find())
     {
       // get the name of this property
       final String property = m.group("NAME");
-      
+
       // does it match?
-      if(property.equals(property_name))
+      if (property.equals(property_name))
       {
         // yes, get the value
         final String value = m.group("VALUE");
-        
+
         // done, return it.
         return value;
       }
     }
     return null;
   }
-  
-  /** examine the sybmology, to see if a target layer is specified. If it isn't just put
-   * it into the annotations layer
+
+  /**
+   * examine the sybmology, to see if a target layer is specified. If it isn't just put it into the
+   * annotations layer
+   * 
    * @param thisOne
    * @return the name of the layer to use
    */
   final private String targetLayerFor(final PlainLineImporter thisOne)
   {
     final String res;
-    
+
     // what are we looking for?
     final String LAYER_PREFIX = "LAYER";
-    
+
     // check the symbology
-    final String sym = thisOne.getSymbology();    
-    
+    final String sym = thisOne.getSymbology();
+
     final String layerName = getThisSymProperty(sym, LAYER_PREFIX);
-    
-    if(layerName != null)
+
+    if (layerName != null)
     {
       res = layerName;
     }
@@ -979,7 +1000,7 @@ public class ImportReplay extends PlainImporterBase
     {
       res = ANNOTATION_LAYER;
     }
-    
+
     // done
     return res;
   }
@@ -1093,7 +1114,7 @@ public class ImportReplay extends PlainImporterBase
 
         // see if any importers need to finalise
         finaliseImporters();
-        
+
         // lastly have a go at formatting these tracks
         for (int k = 0; k < _myFormatters.length; k++)
         {
@@ -1138,8 +1159,9 @@ public class ImportReplay extends PlainImporterBase
     }
   }
 
-  /** some importers may need to finalize, if there is end of import
-   * processing to conduct. Trigger that here
+  /**
+   * some importers may need to finalize, if there is end of import processing to conduct. Trigger
+   * that here
    */
   private void finaliseImporters()
   {
@@ -1147,9 +1169,10 @@ public class ImportReplay extends PlainImporterBase
     {
       for (final ExtensibleLineImporter importer : _extensionImporters)
       {
-        if(importer instanceof PlainLineImporter.ImportRequiresFinalisation)
+        if (importer instanceof PlainLineImporter.ImportRequiresFinalisation)
         {
-          PlainLineImporter.ImportRequiresFinalisation fin = (ImportRequiresFinalisation) importer;
+          PlainLineImporter.ImportRequiresFinalisation fin =
+              (ImportRequiresFinalisation) importer;
           fin.finalise();
         }
       }
@@ -1158,9 +1181,10 @@ public class ImportReplay extends PlainImporterBase
     {
       for (final PlainLineImporter importer : _coreImporters)
       {
-        if(importer instanceof PlainLineImporter.ImportRequiresFinalisation)
+        if (importer instanceof PlainLineImporter.ImportRequiresFinalisation)
         {
-          PlainLineImporter.ImportRequiresFinalisation fin = (ImportRequiresFinalisation) importer;
+          PlainLineImporter.ImportRequiresFinalisation fin =
+              (ImportRequiresFinalisation) importer;
           fin.finalise();
         }
       }
@@ -1170,7 +1194,7 @@ public class ImportReplay extends PlainImporterBase
   private PlainLineImporter getImporterFor(final String rawString)
   {
     PlainLineImporter res = null;
-    
+
     // trim any leading whitespace
     final String theLine = rawString.trim();
 
@@ -1197,7 +1221,7 @@ public class ImportReplay extends PlainImporterBase
 
               // remember it
               res = importer;
-              
+
               // done
               break;
             }
@@ -1208,7 +1232,7 @@ public class ImportReplay extends PlainImporterBase
         if (res == null)
         {
           // nope, try the core ones
-          
+
           // look through types of import handler
           final Enumeration<PlainLineImporter> iter = _coreImporters.elements();
 
@@ -1377,23 +1401,23 @@ public class ImportReplay extends PlainImporterBase
   {
     switch (style)
     {
-    case MWC.GUI.CanvasType.DOTTED:
-      return "A";
+      case MWC.GUI.CanvasType.DOTTED:
+        return "A";
 
-    case MWC.GUI.CanvasType.DOT_DASH:
-      return "B";
+      case MWC.GUI.CanvasType.DOT_DASH:
+        return "B";
 
-    case MWC.GUI.CanvasType.SHORT_DASHES:
-      return "C";
+      case MWC.GUI.CanvasType.SHORT_DASHES:
+        return "C";
 
-    case MWC.GUI.CanvasType.LONG_DASHES:
-      return "D";
+      case MWC.GUI.CanvasType.LONG_DASHES:
+        return "D";
 
-    case MWC.GUI.CanvasType.UNCONNECTED:
-      return "E";
+      case MWC.GUI.CanvasType.UNCONNECTED:
+        return "E";
 
-    default:
-      break;
+      default:
+        break;
     }
     return "@";
   }
@@ -1548,19 +1572,22 @@ public class ImportReplay extends PlainImporterBase
     }
   }
 
-  /** interface for helpers that may be able to provide extra REP file importers
+  /**
+   * interface for helpers that may be able to provide extra REP file importers
    * 
    */
   public static interface RepImportHelper
   {
-    /** provide an importer, if there is a suitable one
+    /**
+     * provide an importer, if there is a suitable one
      * 
-     * @param line line we're trying to import
+     * @param line
+     *          line we're trying to import
      * @return a matching importer, if there is one.
      */
     public ExtensibleLineImporter canImport(final String line);
   }
-  
+
   /**
    * interface which we use to implement class capable of formatting a set of layers once they've
    * been read in
@@ -1653,7 +1680,7 @@ public class ImportReplay extends PlainImporterBase
           final Exception e)
       {
 
-      } 
+      }
 
       @Override
       public void logError(int status, String text, Exception e,
@@ -1694,21 +1721,27 @@ public class ImportReplay extends PlainImporterBase
     {
       doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
     }
-    
+
     public final void testParseSymbology()
     {
-      final String test = ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
-      final String test2 = ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
+      final String test =
+          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
+      final String test2 =
+          ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
       ImportReplay ir = new ImportReplay();
-      
-      
-      assertEquals("String not found", null, ir.getThisSymProperty(test, "LAYDER"));
-      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test, "LAYER"));
-      
-      assertEquals("String not found", null, ir.getThisSymProperty(test2, "LAYDER"));
-      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test2, "LAYER"));
-      assertEquals("String found", "OFF", ir.getThisSymProperty(test2, "TEST_ON"));
-      
+
+      assertEquals("String not found", null, ir.getThisSymProperty(test,
+          "LAYDER"));
+      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test,
+          "LAYER"));
+
+      assertEquals("String not found", null, ir.getThisSymProperty(test2,
+          "LAYDER"));
+      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(
+          test2, "LAYER"));
+      assertEquals("String found", "OFF", ir.getThisSymProperty(test2,
+          "TEST_ON"));
+
     }
 
     private final void doReadRep(String mode, Long freq, int LAYER_COUNT,
@@ -1824,20 +1857,21 @@ public class ImportReplay extends PlainImporterBase
     }
   }
 
-  /** provide an extra set of importers
+  /**
+   * provide an extra set of importers
    * 
    * @param importers
    */
   public static void addExtraImporters(List<ExtensibleLineImporter> importers)
   {
     // do we have a holder?
-    if(_extensionImporters == null)
+    if (_extensionImporters == null)
     {
       _extensionImporters = new ArrayList<ExtensibleLineImporter>();
     }
-    
+
     // now add the new ones
-    for(final ExtensibleLineImporter importer: importers)
+    for (final ExtensibleLineImporter importer : importers)
     {
       _extensionImporters.add(importer);
     }
