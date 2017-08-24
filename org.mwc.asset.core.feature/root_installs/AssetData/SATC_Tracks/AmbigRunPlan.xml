@@ -6,24 +6,9 @@
 		<TimeObserver Name="Domesday Timer" Active="true">
 			<Duration Value="120" Units="minutes" ></Duration>
 		</TimeObserver>
-		<DebriefReplayObserver Name="RedTrack" record_detections="false"
+		<DebriefReplayObserver Name="BothTracks" record_detections="true"
 			record_positions="true" Active="true" record_decisions="false"
-			file_name="Ambig_RedTrack">
-			<SubjectToTrack>
-				<Type Name="RED" />
-			</SubjectToTrack>
-		</DebriefReplayObserver>
-		<DebriefReplayObserver Name="BlueSensor" record_detections="true"
-			record_positions="false" Active="true" record_decisions="false" file_name="Ambig_BlueSensor">
-			<SubjectToTrack>
-				<Type Name="BLUE" />
-			</SubjectToTrack>
-		</DebriefReplayObserver>
-		<DebriefReplayObserver Name="BlueTrack" record_detections="false"
-			record_positions="true" Active="true" record_decisions="false" file_name="Ambig_BlueTrack">
-			<SubjectToTrack>
-				<Type Name="BLUE" />
-			</SubjectToTrack>
+			file_name="Ambig_tracks">
 		</DebriefReplayObserver>
 	</ObserverList>
 </ScenarioController>
