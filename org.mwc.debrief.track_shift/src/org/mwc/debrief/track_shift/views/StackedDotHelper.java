@@ -96,6 +96,14 @@ public final class StackedDotHelper
   private static HiResDate _cachedTime;
   private static TrackWrapper _cachedTrack;
 
+  private static class TargetDoublet
+  {
+
+    public TrackSegment targetParent;
+    public FixWrapper targetFix;
+
+  }
+
   /**
    * sort out data of interest
    * 
@@ -158,84 +166,64 @@ public final class StackedDotHelper
                 }
               }
 
-              FixWrapper targetFix = null;
-              TrackSegment targetParent = null;
+              TargetDoublet doublet = getTargetDoublet(index, theSegments, scw);
 
-              if (theSegments != null && !theSegments.isEmpty())
+              final Doublet thisDub;
+              final FixWrapper hostFix;
+
+              final boolean newWay = false;
+              if (newWay)
               {
-                final Iterator<TrackSegment> iter = theSegments.iterator();
-                while (iter.hasNext())
-                {
-                  final TrackSegment ts = iter.next();
-
-                  final TimePeriod validPeriod =
-                      new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
-                  if (validPeriod.contains(scw.getDTG()))
-                  {
-                    // sorted. here we go
-                    targetParent = ts;
-
-                    // create an object with the right time
-                    index.getFix().setTime(scw.getDTG());
-
-                    // and find any matching items
-                    final SortedSet<Editable> items = ts.tailSet(index);
-                    if (!items.isEmpty())
-                    {
-                      targetFix = (FixWrapper) items.first();
-                    }
-                  }
-                }
+                hostFix =
+                    getNearestPositionOnHostTrack(sensorHost, scw.getDTG());
               }
-
-              if (targetFix != null)
+              else
               {
-                final FixWrapper hostFix;
-                final boolean newWay = false;
-                if (newWay)
+                final Watchable[] matches =
+                    sensorHost.getNearestTo(scw.getDTG());
+                if (matches != null && matches.length == 1)
                 {
-                  hostFix =
-                      getNearestPositionOnTargetTrack(sensorHost, scw.getDTG());
+                  hostFix = (FixWrapper) matches[0];
                 }
                 else
                 {
-                  final Watchable[] matches =
-                      sensorHost.getNearestTo(scw.getDTG());
-                  if (matches != null && matches.length == 1)
-                  {
-                    hostFix = (FixWrapper) matches[0];
-                  }
-                  else
-                  {
-                    hostFix = null;
-                  }
+                  hostFix = null;
                 }
-                if ((hostFix != null))
+              }
+
+              if (doublet.targetFix != null)
+              {
+                thisDub =
+                    new Doublet(scw, doublet.targetFix, doublet.targetParent,
+                        hostFix);
+
+                // if we've no target track add all the points
+                if (targetTrack == null)
                 {
-
-                  final Doublet thisDub =
-                      new Doublet(scw, targetFix, targetParent, hostFix);
-
-                  // if we've no target track add all the points
-                  if (targetTrack == null)
+                  // store our data
+                  res.add(thisDub);
+                }
+                else
+                {
+                  // if we've got a target track we only add points
+                  // for which we
+                  // have
+                  // a target location
+                  if (doublet.targetFix != null)
                   {
                     // store our data
                     res.add(thisDub);
                   }
-                  else
-                  {
-                    // if we've got a target track we only add points
-                    // for which we
-                    // have
-                    // a target location
-                    if (targetFix != null)
-                    {
-                      // store our data
-                      res.add(thisDub);
-                    }
-                  } // if we know the track
-                } // if there are any matching items
+                } // if we know the track
+                // if there are any matching items
+
               } // if we find a match
+              else
+              {
+                // no target data, just use ownship sensor data
+                thisDub = new Doublet(scw, null, null, hostFix);
+                res.add(thisDub);
+              }
             } // if cut is visible
           } // loop through cuts
         } // if sensor is visible
@@ -244,7 +232,41 @@ public final class StackedDotHelper
     return res;
   }
 
-  private static FixWrapper getNearestPositionOnTargetTrack(
+  private static TargetDoublet getTargetDoublet(final FixWrapper index,
+      final Vector<TrackSegment> theSegments, final SensorContactWrapper scw)
+  {
+    final TargetDoublet doublet = new TargetDoublet();
+    if (theSegments != null && !theSegments.isEmpty())
+    {
+      final Iterator<TrackSegment> iter = theSegments.iterator();
+      while (iter.hasNext())
+      {
+        final TrackSegment ts = iter.next();
+
+        final TimePeriod validPeriod =
+            new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
+        if (validPeriod.contains(scw.getDTG()))
+        {
+          // sorted. here we go
+          doublet.targetParent = ts;
+
+          // create an object with the right time
+          index.getFix().setTime(scw.getDTG());
+
+          // and find any matching items
+          final SortedSet<Editable> items = ts.tailSet(index);
+          if (!items.isEmpty())
+          {
+            doublet.targetFix = (FixWrapper) items.first();
+          }
+        }
+      }
+    }
+
+    return doublet;
+  }
+
+  private static FixWrapper getNearestPositionOnHostTrack(
       final TrackWrapper host, final HiResDate dtg)
   {
     final FixWrapper res;
@@ -410,14 +432,10 @@ public final class StackedDotHelper
 
   public List<SensorContactWrapper> getBearings(
       final TrackWrapper primaryTrack, final boolean onlyVis,
-      final HiResDate startDTG, final HiResDate endDTG)
+      final TimePeriod targetPeriod)
   {
     final List<SensorContactWrapper> res =
         new ArrayList<SensorContactWrapper>();
-
-    // sort out the outer period
-    final TimePeriod targetPeriod =
-        new TimePeriod.BaseTimePeriod(startDTG, endDTG);
 
     // loop through our sensor data
     final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
@@ -435,7 +453,7 @@ public final class StackedDotHelper
                 (SensorContactWrapper) cuts.nextElement();
             if (!onlyVis || (onlyVis && scw.getVisible()))
             {
-              if (targetPeriod.contains(scw.getDTG()))
+              if (targetPeriod == null || targetPeriod.contains(scw.getDTG()))
               {
                 res.add(scw);
               }
@@ -1027,101 +1045,105 @@ public final class StackedDotHelper
 
       }
 
-      // sort out the target course/speed
-      final Enumeration<Editable> segments = _secondaryTrack.segments();
-      final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
-      while (segments.hasMoreElements())
+      if (_secondaryTrack != null)
       {
-        final Editable nextE = segments.nextElement();
-        // if there's just one segment - then we need to wrap it
-        final SegmentList segList;
-        if (nextE instanceof SegmentList)
+        // sort out the target course/speed
+        final Enumeration<Editable> segments = _secondaryTrack.segments();
+        final TimePeriod period =
+            new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+        while (segments.hasMoreElements())
         {
-          segList = (SegmentList) nextE;
-        }
-        else
-        {
-          segList = new SegmentList();
-          segList.setWrapper((TrackWrapper) _secondaryTrack);
-          segList.addSegment((TrackSegment) nextE);
-        }
-
-        final Enumeration<Editable> segIter = segList.elements();
-        while (segIter.hasMoreElements())
-        {
-          final TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-          // is this an infill segment
-          final boolean isInfill = segment instanceof DynamicInfillSegment;
-
-          // check it has values, and is in range
-          if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
-              || segment.endDTG().lessThan(startDTG))
+          final Editable nextE = segments.nextElement();
+          // if there's just one segment - then we need to wrap it
+          final SegmentList segList;
+          if (nextE instanceof SegmentList)
           {
-            // ok, we can skip this one
+            segList = (SegmentList) nextE;
           }
           else
           {
-            final Enumeration<Editable> points = segment.elements();
-            Double lastCourse = null;
-            while (points.hasMoreElements())
+            segList = new SegmentList();
+            segList.setWrapper((TrackWrapper) _secondaryTrack);
+            segList.addSegment((TrackSegment) nextE);
+          }
+
+          final Enumeration<Editable> segIter = segList.elements();
+          while (segIter.hasMoreElements())
+          {
+            final TrackSegment segment = (TrackSegment) segIter.nextElement();
+
+            // is this an infill segment
+            final boolean isInfill = segment instanceof DynamicInfillSegment;
+
+            // check it has values, and is in range
+            if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
+                || segment.endDTG().lessThan(startDTG))
             {
-              final FixWrapper fw = (FixWrapper) points.nextElement();
-              if (period.contains(fw.getDateTimeGroup()))
+              // ok, we can skip this one
+            }
+            else
+            {
+              final Enumeration<Editable> points = segment.elements();
+              Double lastCourse = null;
+              while (points.hasMoreElements())
               {
-                // ok, create a point for it
-                final FixedMillisecond thisMilli =
-                    new FixedMillisecond(fw.getDateTimeGroup().getDate()
-                        .getTime());
-
-                double tgtCourse =
-                    MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
-                final double tgtSpeed = fw.getSpeed();
-
-                // see if we need to change the domain of the course to match
-                // the previous value
-                if (lastCourse != null)
+                final FixWrapper fw = (FixWrapper) points.nextElement();
+                if (period.contains(fw.getDateTimeGroup()))
                 {
-                  if (tgtCourse - lastCourse > 190)
+                  // ok, create a point for it
+                  final FixedMillisecond thisMilli =
+                      new FixedMillisecond(fw.getDateTimeGroup().getDate()
+                          .getTime());
+
+                  double tgtCourse =
+                      MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
+                  final double tgtSpeed = fw.getSpeed();
+
+                  // see if we need to change the domain of the course to match
+                  // the previous value
+                  if (lastCourse != null)
                   {
-                    tgtCourse = tgtCourse - 360;
+                    if (tgtCourse - lastCourse > 190)
+                    {
+                      tgtCourse = tgtCourse - 360;
+                    }
+                    else if (tgtCourse - lastCourse < -180)
+                    {
+                      tgtCourse = 360 + tgtCourse;
+                    }
                   }
-                  else if (tgtCourse - lastCourse < -180)
+                  lastCourse = tgtCourse;
+
+                  // trim to +/- domain if we're flipping axes
+                  if (flipAxes && tgtCourse > 180)
                   {
-                    tgtCourse = 360 + tgtCourse;
+                    tgtCourse -= 360;
                   }
-                }
-                lastCourse = tgtCourse;
 
-                // trim to +/- domain if we're flipping axes
-                if (flipAxes && tgtCourse > 180)
-                {
-                  tgtCourse -= 360;
-                }
+                  // we use the raw color for infills, to help find which
+                  // infill we're referring to (esp in random infills)
+                  final Color courseColor;
+                  final Color speedColor;
+                  if (isInfill)
+                  {
+                    courseColor = fw.getColor();
+                    speedColor = fw.getColor();
+                  }
+                  else
+                  {
+                    courseColor = fw.getColor().brighter();
+                    speedColor = fw.getColor().darker();
+                  }
 
-                // we use the raw color for infills, to help find which
-                // infill we're referring to (esp in random infills)
-                final Color courseColor;
-                final Color speedColor;
-                if (isInfill)
-                {
-                  courseColor = fw.getColor();
-                  speedColor = fw.getColor();
+                  final ColouredDataItem crseBearingItem =
+                      new ColouredDataItem(thisMilli, tgtCourse, courseColor,
+                          isInfill, null, true, true);
+                  tgtCourseValues.addOrUpdate(crseBearingItem);
+                  final ColouredDataItem tgtSpeedItem =
+                      new ColouredDataItem(thisMilli, tgtSpeed, speedColor,
+                          isInfill, null, true, true);
+                  tgtSpeedValues.addOrUpdate(tgtSpeedItem);
                 }
-                else
-                {
-                  courseColor = fw.getColor().brighter();
-                  speedColor = fw.getColor().darker();
-                }
-
-                final ColouredDataItem crseBearingItem =
-                    new ColouredDataItem(thisMilli, tgtCourse, courseColor,
-                        isInfill, null, true, true);
-                tgtCourseValues.addOrUpdate(crseBearingItem);
-                final ColouredDataItem tgtSpeedItem =
-                    new ColouredDataItem(thisMilli, tgtSpeed, speedColor,
-                        isInfill, null, true, true);
-                tgtSpeedValues.addOrUpdate(tgtSpeedItem);
               }
             }
           }
@@ -1129,9 +1151,19 @@ public final class StackedDotHelper
       }
 
       // sort out the sensor cuts (all of them, not just those when we have target legs)
+      final TimePeriod sensorPeriod;
+      if (_secondaryTrack != null)
+      {
+        sensorPeriod =
+            new TimePeriod.BaseTimePeriod(_secondaryTrack.getStartDTG(),
+                _secondaryTrack.getEndDTG());
+      }
+      else
+      {
+        sensorPeriod = null;
+      }
       final List<SensorContactWrapper> theBearings =
-          getBearings(_primaryTrack, onlyVis, _secondaryTrack.getStartDTG(),
-              _secondaryTrack.getEndDTG());
+          getBearings(_primaryTrack, onlyVis, sensorPeriod);
       for (final SensorContactWrapper cut : theBearings)
       {
         double theBearing;
@@ -1250,9 +1282,12 @@ public final class StackedDotHelper
         }
       }
 
-      // find the color for maximum value in the error series
-      final Paint errorColor = calculateErrorShadeFor(errorSeries);
-      dotPlot.setBackgroundPaint(errorColor);
+      // find the color for maximum value in the error series, if we have error data
+      if(errorSeries.getSeriesCount() > 0)
+      {
+        final Paint errorColor = calculateErrorShadeFor(errorSeries);
+        dotPlot.setBackgroundPaint(errorColor);
+      }
 
       dotPlot.setDataset(errorSeries);
       linePlot.setDataset(actualSeries);
