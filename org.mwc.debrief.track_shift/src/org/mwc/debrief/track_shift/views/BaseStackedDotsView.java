@@ -93,10 +93,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
-import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -111,11 +109,7 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneChartConfig;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
-import org.mwc.debrief.track_shift.zig_detector.ArtificalLegDetector;
-import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
-import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
-import org.mwc.debrief.track_shift.zig_detector.ownship.PeakTrackingOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
@@ -124,7 +118,6 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -152,7 +145,6 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
-import MWC.TacticalData.Fix;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
@@ -163,133 +155,7 @@ import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
 abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
-  public static class TestSlicing extends junit.framework.TestCase
-  {
-    public void testOSLegDetector()
-    {
-      final TimeSeries osC = new TimeSeries(new FixedMillisecond());
-      long time = 0;
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 22d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertFalse(containsIdenticalValues(osC, 3));
-
-      // inject some more duplicates
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertTrue(containsIdenticalValues(osC, 3));
-
-      osC.clear();
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertFalse("check we're verifying single runs of matches",
-          containsIdenticalValues(osC, 3));
-
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertTrue(containsIdenticalValues(osC, 3));
-    }
-
-    public void testSetLeg()
-    {
-      final TrackWrapper host = new TrackWrapper();
-      host.setName("Host Track");
-
-      // create a sensor
-      final SensorWrapper sensor = new SensorWrapper("Sensor");
-      sensor.setHost(host);
-      host.add(sensor);
-
-      // add some cuts
-      final ArrayList<SensorContactWrapper> contacts =
-          new ArrayList<SensorContactWrapper>();
-      for (int i = 0; i < 30; i++)
-      {
-        final HiResDate thisDTG = new HiResDate(10000 * i);
-        final WorldLocation thisLocation =
-            new WorldLocation(2 + 0.01 * i, 2 + 0.03 * i, 0);
-        final SensorContactWrapper scw =
-            new SensorContactWrapper(host.getName(), thisDTG,
-                new WorldDistance(4, WorldDistance.MINUTES), 25d, thisLocation,
-                Color.RED, "" + i, 0, sensor.getName());
-        sensor.add(scw);
-        contacts.add(scw);
-
-        // also create a host track fix at this DTG
-        final Fix theFix = new Fix(thisDTG, thisLocation, 12d, 3d);
-        final FixWrapper newF = new FixWrapper(theFix);
-        host.add(newF);
-      }
-
-      // produce the target leg
-      final TrackWrapper target = new TrackWrapper();
-      target.setName("Tgt Track");
-
-      // add a TMA leg
-      final Layers theLayers = new Layers();
-      theLayers.addThisLayer(host);
-      theLayers.addThisLayer(target);
-
-      final SensorContactWrapper[] contactArr =
-          contacts.toArray(new SensorContactWrapper[]
-          {});
-      final RelativeTMASegment newLeg =
-          new RelativeTMASegment(contactArr, new WorldVector(1, 1, 0),
-              new WorldSpeed(12, WorldSpeed.Kts), 12d, theLayers, Color.red);
-      target.add(newLeg);
-
-      final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
-      {
-        @Override
-        protected String getType()
-        {
-          return null;
-        }
-
-        @Override
-        protected String getUnits()
-        {
-          return null;
-        }
-
-        @Override
-        protected void updateData(final boolean updateDoublets)
-        {
-        }
-      };
-
-      // try to set a zone on the track
-      Zone trimmedPeriod = new Zone(150000, 220000, Color.RED);
-      view.setLeg(host, target, trimmedPeriod);
-
-      // ok, check the leg has changed
-      assertEquals("leg start changed", 150000, target.getStartDTG().getDate()
-          .getTime());
-      assertEquals("leg start changed", 220000, target.getEndDTG().getDate()
-          .getTime());
-
-      // ok, also see if we can create a new leg
-      trimmedPeriod = new Zone(250000, 320000, Color.RED);
-      view.setLeg(host, target, trimmedPeriod);
-
-    }
-  }
+ 
 
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
@@ -300,56 +166,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
 
-  /**
-   * determine if this time series contains many identical values - this is an indicator for data
-   * coming from a simulator, for which turns can't be determined by our peak tracking algorithm.
-   * 
-   * @param dataset
-   * @return
-   */
-  private static boolean containsIdenticalValues(final TimeSeries dataset,
-      final Integer NumMatches)
-  {
-    final int num = dataset.getItemCount();
-
-    final int numMatches;
-    if (NumMatches != null)
-    {
-      numMatches = NumMatches;
-    }
-    else
-    {
-      final double MATCH_PROPORTION = 0.2;
-      numMatches = (int) (num * MATCH_PROPORTION);
-    }
-
-    double lastCourse = 0d;
-    int matchCount = 0;
-
-    for (int ctr = 0; ctr < num; ctr++)
-    {
-      final TimeSeriesDataItem thisItem = dataset.getDataItem(ctr);
-      final double thisCourse = (Double) thisItem.getValue();
-      if (thisCourse == lastCourse)
-      {
-        // ok, count the duplicates
-        matchCount++;
-
-        if (matchCount >= numMatches)
-        {
-          return true;
-        }
-      }
-      else
-      {
-        matchCount = 0;
-      }
-      lastCourse = thisCourse;
-    }
-
-    return false;
-  }
-
+ 
   /*
    * Undo and redo actions
    */
@@ -961,7 +778,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public ArrayList<Zone> performSlicing()
       {
-        return sliceOwnship(ownshipCourseSeries, blueProv);
+        return StackedDotHelper.sliceOwnship(ownshipCourseSeries, blueProv);
       }
     };
 
@@ -2072,7 +1889,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @param secTrack
    * @param leg
    */
-  private void setLeg(final TrackWrapper primaryTrack,
+  public void setLeg(final TrackWrapper primaryTrack,
       final ISecondaryTrack secTrack, final Zone leg)
   {
     final TimePeriod zonePeriod =
@@ -2154,8 +1971,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
               // tell the leg to share the good news
               // share the good news
-              _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper
-                  .getSecondaryTrack());
+              if(_ourLayersSubject != null)
+              {
+                _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper
+                    .getSecondaryTrack());
+              }
             }
             else if (cSeg instanceof AbsoluteTMASegment)
             {
@@ -2383,64 +2203,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       }
     }
-  }
-
-  protected ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
-      final ZoneChart.ColorProvider colorProvider)
-  {
-    // make a decision on which ownship slicer to use
-    final IOwnshipLegDetector detector;
-    if (containsIdenticalValues(osCourse, null))
-    {
-      detector = new ArtificalLegDetector();
-    }
-    else
-    {
-      detector = new PeakTrackingOwnshipLegDetector();
-    }
-
-    // switch (_sliceMode)
-    // {
-    // case ORIGINAL:
-    // detector = new OwnshipLegDetector();
-    // break;
-    // case AREA_UNDER_CURVE:
-    // detector = new CumulativeLegDetector();
-    // break;
-    // case ARTIFICIAL_LEG:
-    // detector = new ArtificalLegDetector();
-    // break;
-    // case PEAK_FIT:
-    // default:
-    // detector = new PeakTrackingOwnshipLegDetector();
-    // break;
-    // }
-
-    final int num = osCourse.getItemCount();
-    final long[] times = new long[num];
-    final double[] speeds = new double[num];
-    final double[] courses = new double[num];
-
-    for (int ctr = 0; ctr < num; ctr++)
-    {
-      final TimeSeriesDataItem thisItem = osCourse.getDataItem(ctr);
-      final FixedMillisecond thisM = (FixedMillisecond) thisItem.getPeriod();
-      times[ctr] = thisM.getMiddleMillisecond();
-      speeds[ctr] = 0;
-      courses[ctr] = (Double) thisItem.getValue();
-    }
-    final List<LegOfData> legs =
-        detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
-    final ArrayList<Zone> res = new ArrayList<Zone>();
-
-    for (final LegOfData leg : legs)
-    {
-      final Zone newZone =
-          new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
-      res.add(newZone);
-    }
-
-    return res;
   }
 
   /**
