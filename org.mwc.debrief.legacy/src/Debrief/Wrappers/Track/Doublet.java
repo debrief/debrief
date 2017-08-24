@@ -99,10 +99,10 @@ public final class Doublet implements Comparable<Doublet>
 	// ////////////////////////////////////////////////
 	// working variables to help us along.
 	// ////////////////////////////////////////////////
-	private final WorldLocation _workingSensorLocation = new WorldLocation(0.0,
+	private static final WorldLocation _workingSensorLocation = new WorldLocation(0.0,
 			0.0, 0.0);
 
-	private final WorldLocation _workingTargetLocation = new WorldLocation(0.0,
+	private static final WorldLocation _workingTargetLocation = new WorldLocation(0.0,
 			0.0, 0.0);
 
 	// ////////////////////////////////////////////////
