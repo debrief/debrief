@@ -99,10 +99,10 @@ public final class Doublet implements Comparable<Doublet>
 	// ////////////////////////////////////////////////
 	// working variables to help us along.
 	// ////////////////////////////////////////////////
-	private final WorldLocation _workingSensorLocation = new WorldLocation(0.0,
+	private static final WorldLocation _workingSensorLocation = new WorldLocation(0.0,
 			0.0, 0.0);
 
-	private final WorldLocation _workingTargetLocation = new WorldLocation(0.0,
+	private static final WorldLocation _workingTargetLocation = new WorldLocation(0.0,
 			0.0, 0.0);
 
 	// ////////////////////////////////////////////////
@@ -170,7 +170,17 @@ public final class Doublet implements Comparable<Doublet>
         // yes, then lets compare the target fixes. This happens
         // when the sensor cuts are more frequent than the
         // sensor platform positions
-        res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
+        
+        // do we have a target fix?
+        if(_targetFix != null)
+        {
+          res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
+        }
+        else
+        {
+          // nope, we'll have to compare the sensor fix
+          res = _sensor.getDTG().compareTo(o._sensor.getDTG());
+        }
       }
       else
       {
