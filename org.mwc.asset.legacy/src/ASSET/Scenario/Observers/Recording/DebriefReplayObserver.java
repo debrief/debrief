@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class DebriefReplayObserver extends RecordStatusToFileObserverType
 {
@@ -46,6 +47,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 	static private HashMap<String, String> _mySymbolRegister = new HashMap<String, String>();
 
 	private ArrayList<Integer> _recordedDetections = new ArrayList<Integer>();
+
+  private final List<String> _formatHelpers;
 	
 	/***************************************************************
 	 * constructor
@@ -58,15 +61,17 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 	 *          the directory to output the plots to
 	 * @param recordDetections
 	 *          whether to record detections
+	 * @param formatHelpers 
 	 */
 	public DebriefReplayObserver(final String directoryName,
 			final String fileName, final boolean recordDetections,
 			final boolean recordDecisions, final boolean recordPositions,
 			final TargetType subjectToTrack, final String observerName,
-			boolean isActive)
+			boolean isActive, List<String> formatHelpers)
 	{
 		super(directoryName, fileName, recordDetections, recordDecisions,
 				recordPositions, subjectToTrack, observerName, isActive);
+		_formatHelpers = formatHelpers;
 	}
 
 	/**
@@ -83,7 +88,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 			final String observerName, boolean isActive)
 	{
 		this(directoryName, fileName, recordDetections, false, true, null,
-				observerName, isActive);
+				observerName, isActive, null);
 	}
 
 	/**
@@ -317,6 +322,16 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 	{
 		_os.write(";; ASSET Output" + new java.util.Date() + " " + title);
 		_os.write("" + System.getProperty("line.separator"));
+		
+		// any format helpers?
+		if(_formatHelpers != null)
+		{
+		  for(String helper: _formatHelpers)
+		  {
+		    _os.write(helper);
+		    _os.write("" + System.getProperty("line.separator"));
+		  }
+		}
 	}
 
 	/**

@@ -60,11 +60,14 @@ package ASSET.Util.XML.Control.Observers;
  *
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.ScenarioObserver;
+import ASSET.Scenario.Observers.Recording.DebriefFormatHelperHandler;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
-
 
 /**
  * read in a debrief replay observer from file
@@ -74,23 +77,20 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
 
   private final static String type = "DebriefReplayObserver";
 
-
   boolean _recordDetections = false;
   boolean _recordPositions = false;
   boolean _recordDecisions = false;
   TargetType _targetType = null;
-
+  List<String> _formatHelpers;
 
   private static final String RECORD_DETECTIONS = "record_detections";
   private static final String RECORD_DECISIONS = "record_decisions";
   private static final String RECORD_POSITIONS = "record_positions";
   private static final String TARGET_TYPE = "SubjectToTrack";
 
-
   public DebriefReplayObserverHandler(String type)
   {
     super(type);
-
 
     addAttributeHandler(new HandleBooleanAttribute(RECORD_DETECTIONS)
     {
@@ -121,7 +121,18 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
         _targetType = type1;
       }
     });
-
+    addHandler(new DebriefFormatHelperHandler()
+    {
+      @Override
+      public void storeMe(final String text)
+      {
+        if (_formatHelpers == null)
+        {
+          _formatHelpers = new ArrayList<String>();
+        }
+        _formatHelpers.add(text);
+      }
+    });
   }
 
   public DebriefReplayObserverHandler()
@@ -132,8 +143,9 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   public void elementClosed()
   {
     // create ourselves
-    final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _recordDetections,
-                                                              _recordDecisions, _recordPositions, _targetType);
+    final ScenarioObserver debriefObserver =
+        getObserver(_name, _isActive, _recordDetections, _recordDecisions,
+            _recordPositions, _targetType, _formatHelpers);
 
     setObserver(debriefObserver);
 
@@ -148,17 +160,19 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
 
   }
 
-  protected ScenarioObserver getObserver(String name, boolean isActive, boolean recordDetections,
-                                              boolean recordDecisions, boolean recordPositions, TargetType subject)
+  protected ScenarioObserver getObserver(String name, boolean isActive,
+      boolean recordDetections, boolean recordDecisions,
+      boolean recordPositions, TargetType subject, List<String> formatHelpers)
   {
-    return new DebriefReplayObserver(_directory, _fileName, recordDetections, recordDecisions, recordPositions, subject, name, isActive);
+    return new DebriefReplayObserver(_directory, _fileName, recordDetections,
+        recordDecisions, recordPositions, subject, name, isActive,
+        formatHelpers);
   }
-
 
   abstract public void setObserver(ScenarioObserver obs);
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
+  static public void exportThis(final Object toExport,
+      final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     // create ourselves
     final org.w3c.dom.Element thisPart = doc.createElement(type);
@@ -170,18 +184,19 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     CoreFileObserverHandler.exportThis(bb, thisPart);
 
     // output it's attributes
-    thisPart.setAttribute(RECORD_DETECTIONS, writeThis(bb.getRecordDetections()));
+    thisPart.setAttribute(RECORD_DETECTIONS,
+        writeThis(bb.getRecordDetections()));
     thisPart.setAttribute(RECORD_DECISIONS, writeThis(bb.getRecordDecisions()));
     thisPart.setAttribute(RECORD_POSITIONS, writeThis(bb.getRecordPositions()));
     if (bb.getSubjectToTrack() != null)
     {
-      TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(), thisPart, doc);
+      TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(),
+          thisPart, doc);
     }
 
     // output it's attributes
     parent.appendChild(thisPart);
 
   }
-
 
 }
