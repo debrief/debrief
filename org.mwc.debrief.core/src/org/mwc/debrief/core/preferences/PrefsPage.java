@@ -69,6 +69,9 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     addField(new BooleanFieldEditor(PreferenceConstants.ASK_ABOUT_PROJECT,
         "Invite user to create Debrief project if none present",
         getFieldEditorParent()));
+    addField(new BooleanFieldEditor(PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
+        "Show the wizard when importing sensor data from REP",
+        getFieldEditorParent()));
 
     // insert a separator
     Label label =
@@ -116,6 +119,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String CALC_SLANT_RANGE = "CALC_SLANT_RANGE";
     public static final String DONT_SHOW_DRAG_IN_PROPS =
         "DONT_SHOW_DRAG_IN_PROPS";
+    public static final String USE_IMPORT_SENSOR_WIZARD =
+        "USE_IMPORT_SENSOR_WIZARD";
     public static final String ASK_ABOUT_PROJECT = "createProject";
     public static final String INFILL_COLOR_STRATEGY =
         DynamicInfillSegment.INFILL_COLOR_STRATEGY;

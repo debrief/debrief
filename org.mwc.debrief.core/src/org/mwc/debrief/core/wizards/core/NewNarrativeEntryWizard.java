@@ -48,7 +48,7 @@ public class NewNarrativeEntryWizard extends Wizard
 				"This wizard will lead you through creating a new narrative entry.\n"
 						+ "Please provide the name of the subject track",
 				"a one-word title for the track the entry relates to (e.g. NELSON)",
-				imagePath, helpContext, true);
+				imagePath, helpContext, true, null);
 		addPage(namePage);
 
 		dtgPage = new EnterDTGPage(null, new HiResDate(new Date()), PAGE_TITLE,
@@ -59,13 +59,13 @@ public class NewNarrativeEntryWizard extends Wizard
 		typePage = new EnterStringPage(null, "EntryType", PAGE_TITLE,
 				"Now specify what type of entry this is.",
 				"a one-word title for the type of observation (e.g. Command_Comment)",
-				imagePath, helpContext, true);
+				imagePath, helpContext, true, null);
 		addPage(typePage);
 
 		entryPage = new EnterStringPage(null, "Content of the entry", PAGE_TITLE,
 				"Now specify the observation itself",
 				"the observation (e.g. Start of trial Optimara)", imagePath,
-				helpContext, true);
+				helpContext, true, null);
 		addPage(entryPage);
 
 		final String message = "The entry will now be added to the Narratives layer";

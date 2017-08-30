@@ -70,10 +70,10 @@ public class SelectColorPage extends CoreEditableWizardPage
 
 	public SelectColorPage(final ISelection selection, final Color startColor,
 			final String pageTitle, final String pageExplanation, final String fieldExplanation,
-			final String imagePath, final String helpContext)
+			final String imagePath, final String helpContext, String trailingMessage)
 	{
 		super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
-				false);
+				false, trailingMessage);
 		_startColor = startColor;
 		_fieldExplanation = fieldExplanation;
 		setDefaults();

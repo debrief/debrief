@@ -80,7 +80,7 @@ public class NewContactWizard extends Wizard
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
 				"Now format the new sensor cut", "The color for this new sensor cut",
-				imagePath, helpContext);
+				imagePath, helpContext, null);
 		addPage(colorPage);
 
 		final String message = "The sensor cut will now be added to the specified sensor, \n"

@@ -45,13 +45,13 @@ public class NewSensorWizard extends Wizard
 		namePage = new EnterStringPage(null, "NameHere", PAGE_TITLE,
 				"This wizard will lead you through creating a new Sensor.\n"
 						+ "Please provide the name for this sensor",
-				"a one-word title for this block of sensor contacts (e.g. S2046)", imagePath, helpContext, true);
+				"a one-word title for this block of sensor contacts (e.g. S2046)", imagePath, helpContext, true, null);
 		addPage(namePage);
 
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
 				"Now format the sensor", "The default color for this new sensor",
-				imagePath, helpContext);
+				imagePath, helpContext, null);
 		addPage(colorPage);
 
 		final String message = "The sensor will now be added to the specified track, \n"

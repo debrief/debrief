@@ -68,13 +68,14 @@ public class EnterStringPage extends CoreEditableWizardPage
 	 * @param imagePath an image to show
 	 * @param helpContext context-senstivie help
 	 * @param useDefaults whether to re-use the last string value for this page 
+	 * @param trailingMessage 
 	 */
 	public EnterStringPage(final ISelection selection, final String startName,
 			final String pageTitle, final String pageExplanation, final String fieldExplanation,
-			final String imagePath, final String helpContext, final boolean useDefaults)
+			final String imagePath, final String helpContext, final boolean useDefaults, String trailingMessage)
 	{
 		super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
-				false);
+				false, trailingMessage);
 		_startName = startName;
 		_fieldExplanation = fieldExplanation;
 		if (useDefaults)
