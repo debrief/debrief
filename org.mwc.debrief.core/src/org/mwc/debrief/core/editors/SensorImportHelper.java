@@ -87,23 +87,23 @@ public interface SensorImportHelper
           new SelectColorPage(null, sensorColor, "Import Sensor data",
               "Now format the new sensor",
               "The default color for the cuts for this new sensor", imagePath,
-              null);
+              null, null);
       getVis =
           new EnterBooleanPage(null, false, "Import Sensor data",
               "Please specify if this sensor should be displayed once loaded",
-              "yes/no", imagePath, null);
+              "yes/no", imagePath, null, null);
       final WorldDistance defRange = new WorldDistance(5, WorldDistance.KYDS);
       getRange =
           new EnterRangePage(
               null,
               "Import Sensor data",
               "Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
-              "Default range", defRange, imagePath, null);
+              "Default range", defRange, imagePath, null, null);
       applyRainbowInRainbowColors =
           new EnterBooleanPage(null, false,
               "Apply Rainbow Shades in rainbow colors",
               "Should Debrief apply Rainbow Shades to these sensor cuts?",
-              "yes/no", "images/ShadeRainbow.png", null);
+              "yes/no", "images/ShadeRainbow.png", null, null);
 
       // create the wizard to color/name this
       final SimplePageListWizard wizard = new SimplePageListWizard();

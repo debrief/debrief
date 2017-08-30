@@ -105,14 +105,14 @@ public class NewSolutionWizard extends Wizard
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
 				"Now format the new ellipse", "The color for this new ellipse",
-				imagePath, helpContext);
+				imagePath, helpContext, null);
 		addPage(colorPage);
 
 		final WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
 		rangePage = new EnterRangePage(null, PAGE_TITLE,
 				"Now specify the size of ellipse",
 				"initial size (radius) for  ellipse", defaultWidth, imagePath,
-				helpContext);
+				helpContext, null);
 		addPage(rangePage);
 
 		final String message = "The solution will now be added to the specified track, \n"
