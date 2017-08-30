@@ -833,7 +833,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         TrackWrapper selected = (TrackWrapper) val[0];
         sensor.setHost(selected);
       }
-      ;
     }
   }
 
