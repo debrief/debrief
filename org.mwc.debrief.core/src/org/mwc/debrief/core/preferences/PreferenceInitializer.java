@@ -37,6 +37,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
     store.setDefault(PrefsPage.PreferenceConstants.CALC_SLANT_RANGE, false);
     store.setDefault(PrefsPage.PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS,
         true);
+    store.setDefault(PrefsPage.PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
+        true);
     store.setDefault(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT, true);
     store.setDefault(PrefsPage.PreferenceConstants.INFILL_COLOR_STRATEGY,
         DynamicInfillSegment.RANDOM_INFILL);
