@@ -474,59 +474,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
         if (newEditor != null)
         {
-          // get the current value, so we can initialise the editor
-          try
-          {
-            final Object currentVal = thisD.getReadMethod().invoke(myItem);
-            // ok, put the property name in the editor, so we can
-            // easily get it when we're doing validation
-
-            // do we need to convert the value to text?
-            if (newEditor instanceof Text)
-            {
-              final Text txtEditor = (Text) newEditor;
-              String currentStr = currentVal.toString();
-
-              // just check if this is 0.0, in which case
-              // we wish to provid e a little padding
-              if ("0.0".equals(currentStr))
-              {
-                currentStr = "0.0   ";
-              }
-
-              // ok, initialise it
-              txtEditor.setText(currentStr);
-
-              // do we have a modified listener?
-              if (_txtModifiedListener != null)
-                txtEditor.addModifyListener(_txtModifiedListener);
-
-            }
-            else
-            {
-              // see if we can initialise the checkbox - we only do it if it's
-              // boolean
-              if (currentVal instanceof Boolean)
-              {
-                final Button btn = (Button) newEditor;
-                final Boolean bVal = (Boolean) currentVal;
-                btn.setSelection(bVal.booleanValue());
-              }
-              newEditor.setData(currentVal);
-            }
-
-            // store the data type name in the tooltip (for when we do error
-            // handling)
-            newEditor.setToolTipText(thisProp.getDisplayName());
-
-            newEditor.redraw();
-
-          }
-          catch (final Exception e)
-          {
-            CorePlugin.logError(Status.ERROR,
-                "Whilst reading existing value of object:" + myItem, e);
-          }
+          // set the initial value
+          initialiseEditor(myItem, thisD, thisProp.getDisplayName(), newEditor);
 
           // ok, remember the editor, so we can handle enable/disable later on
           _myEditors.add(newEditor);
@@ -550,7 +499,65 @@ abstract public class CoreEditableWizardPage extends WizardPage
         label = new Label(container, SWT.NONE);
         label.setText(thisProp.getDescription());
       }
+    }
+  }
 
+  private void initialiseEditor(final Editable myItem,
+      final PropertyDescriptor thisD, final String propertyName,
+      final Control newEditor)
+  {
+    // get the current value, so we can initialise the editor
+    try
+    {
+      final Object currentVal = thisD.getReadMethod().invoke(myItem);
+      // ok, put the property name in the editor, so we can
+      // easily get it when we're doing validation
+
+      // do we need to convert the value to text?
+      if (newEditor instanceof Text)
+      {
+        final Text txtEditor = (Text) newEditor;
+        String currentStr = currentVal.toString();
+
+        // just check if this is 0.0, in which case
+        // we wish to provid e a little padding
+        if ("0.0".equals(currentStr))
+        {
+          currentStr = "0.0   ";
+        }
+
+        // ok, initialise it
+        txtEditor.setText(currentStr);
+
+        // do we have a modified listener?
+        if (_txtModifiedListener != null)
+          txtEditor.addModifyListener(_txtModifiedListener);
+
+      }
+      else
+      {
+        // see if we can initialise the checkbox - we only do it if it's
+        // boolean
+        if (currentVal instanceof Boolean)
+        {
+          final Button btn = (Button) newEditor;
+          final Boolean bVal = (Boolean) currentVal;
+          btn.setSelection(bVal.booleanValue());
+        }
+        newEditor.setData(currentVal);
+      }
+
+      // store the data type name in the tooltip (for when we do error
+      // handling)
+      newEditor.setToolTipText(propertyName);
+
+      newEditor.redraw();
+
+    }
+    catch (final Exception e)
+    {
+      CorePlugin.logError(Status.ERROR,
+          "Whilst reading existing value of object:" + myItem, e);
     }
   }
 
