@@ -841,39 +841,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // right, just have a quick look and see if the sensor has range data -
     // because
     // if it doesn't we'll let the user set a default
-    final Enumeration<Editable> cuts = thisS.elements();
-    boolean needsRange = false;
-    if (cuts.hasMoreElements())
-    {
-      final Editable firstCut = cuts.nextElement();
-      final SensorContactWrapper scw = (SensorContactWrapper) firstCut;
-      // do we have bearing?
-      if (scw.getHasBearing())
-      {
-        // yes. now are we waiting for a range?
-        if (scw.getRange() == null)
-        {
-          needsRange = true;
-        }
-      }
-    }
+    final boolean needsRange = areWeWaitingForRange(thisS);
 
     // next, just see if this track already contains sensor
     // data with this name
-    boolean alreadyLoaded = false;
-    TrackWrapper trk = thisS.getHost();
-    if (trk != null)
-    {
-      Enumeration<Editable> enumer = trk.getSensors().elements();
-      while (enumer.hasMoreElements())
-      {
-        SensorWrapper oldS = (SensorWrapper) enumer.nextElement();
-        if (oldS.getName().equals(thisS.getName()))
-        {
-          alreadyLoaded = true;
-        }
-      }
-    }
+    final boolean alreadyLoaded = isThisSensorAlreadyPresent(thisS);
 
     // inform the user if this sensor name is already in use
     final String introString;
@@ -890,7 +862,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
 
     SensorImportHelper importHelper =
-        getHelperFor(thisS.getName(), thisS.getColor(), introString, needsRange);
+        getSensorImportHelperFor(thisS.getName(), thisS.getColor(), introString, needsRange);
 
     // did it work?
     if (importHelper.success())
@@ -924,7 +896,47 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
   }
 
-  private SensorImportHelper getHelperFor(String sensorName, Color sensorColor,
+  private boolean areWeWaitingForRange(final SensorWrapper thisS)
+  {
+    boolean needsRange = false;
+    final Enumeration<Editable> cuts = thisS.elements();
+    if (cuts.hasMoreElements())
+    {
+      final Editable firstCut = cuts.nextElement();
+      final SensorContactWrapper scw = (SensorContactWrapper) firstCut;
+      // do we have bearing?
+      if (scw.getHasBearing())
+      {
+        // yes. now are we waiting for a range?
+        if (scw.getRange() == null)
+        {
+          needsRange = true;
+        }
+      }
+    }
+    return needsRange;
+  }
+
+  private boolean isThisSensorAlreadyPresent(final SensorWrapper thisS)
+  {
+    boolean alreadyLoaded = false;
+    final TrackWrapper trk = thisS.getHost();
+    if (trk != null)
+    {
+      final Enumeration<Editable> enumer = trk.getSensors().elements();
+      while (enumer.hasMoreElements())
+      {
+        final SensorWrapper oldS = (SensorWrapper) enumer.nextElement();
+        if (oldS.getName().equals(thisS.getName()))
+        {
+          alreadyLoaded = true;
+        }
+      }
+    }
+    return alreadyLoaded;
+  }
+
+  private SensorImportHelper getSensorImportHelperFor(String sensorName, Color sensorColor,
       String introString, boolean needsRange)
   {
     // ok, check the property
