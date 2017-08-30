@@ -76,28 +76,28 @@
 				<Move Name="leg one" Course="180">
 					<Vector Value="2" Units="nm" /></Move>
 				<Move Name="leg one" Course="260">
-					<Vector Value="2" Units="nm" /></Move>
+					<Vector Value="1.5" Units="nm" /></Move>
 				<Move Name="leg one" Course="180">
 					<Vector Value="2" Units="nm" /></Move>
 				<Move Name="leg one" Course="260">
-					<Vector Value="2" Units="nm" /></Move>
+					<Vector Value="2.5" Units="nm" /></Move>
 				<Move Name="leg one" Course="200">
 					<Vector Value="2" Units="nm" /></Move>
 				<Move Name="leg one" Course="210">
 					<Vector Value="2" Units="nm" /></Move>
 				<Move Name="leg one" Course="160">
-					<Vector Value="2" Units="nm" /></Move>
+					<Vector Value="1.4" Units="nm" /></Move>
 				<Move Name="leg one" Course="210">
-					<Vector Value="2" Units="nm" /></Move>
+					<Vector Value="2.6" Units="nm" /></Move>
 				<Move Name="leg one" Course="160">
 					<Vector Value="2" Units="nm" /></Move>
 				<Move Name="leg one" Course="210">
-					<Vector Value="2" Units="nm" /></Move>
+					<Vector Value="1.2" Units="nm" /></Move>
 				<Move Name="leg one" Course="260">
-					<Vector Value="2" Units="nm" /></Move>
+					<Vector Value="2.8" Units="nm" /></Move>
 				<Move Name="leg one" Course="340">
 					<Vector Value="2" Units="nm" /></Move>
-				<Move Name="leg one" Course="60">
+				<Move Name="leg one" Course="300">
 					<Vector Value="2" Units="nm" /></Move>
 			</Waterfall>
 			<SurfaceMovementCharacteristics Name=""
