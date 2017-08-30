@@ -215,6 +215,7 @@ public final class StackedDotHelper
         @Override
         protected void updateData(final boolean updateDoublets)
         {
+          // no, nothing to do.
         }
       };
 

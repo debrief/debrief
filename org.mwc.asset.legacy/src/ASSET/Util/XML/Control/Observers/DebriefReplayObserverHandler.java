@@ -79,11 +79,11 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
 
   private final static String type = "DebriefReplayObserver";
 
-  boolean _recordDetections = false;
-  boolean _recordPositions = false;
-  boolean _recordDecisions = false;
-  TargetType _targetType = null;
-  List<String> _formatHelpers;
+  private boolean _recordDetections = false;
+  private boolean _recordPositions = false;
+  private boolean _recordDecisions = false;
+  private TargetType _targetType = null;
+  private List<String> _formatHelpers;
 
   private static final String RECORD_DETECTIONS = "record_detections";
   private static final String RECORD_DECISIONS = "record_decisions";
@@ -174,10 +174,10 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   abstract public void setObserver(ScenarioObserver obs);
 
   static public void exportThis(final Object toExport,
-      final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+      final Element parent, final org.w3c.dom.Document doc)
   {
     // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+    final Element thisPart = doc.createElement(type);
 
     // get data item
     final DebriefReplayObserver bb = (DebriefReplayObserver) toExport;

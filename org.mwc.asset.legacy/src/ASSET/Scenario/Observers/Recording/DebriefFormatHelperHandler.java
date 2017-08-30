@@ -31,7 +31,7 @@ abstract public class DebriefFormatHelperHandler extends MWCXMLReader
   public final static String type = "FormatHelper";
   public final static String TEXT = "Text";
 
-  String _text;
+  private String _text;
 
   public DebriefFormatHelperHandler()
   {

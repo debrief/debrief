@@ -95,6 +95,8 @@ public class AmbiguityResolver
   private void processSensor(SensorWrapper sensor)
   {
     // work through this sensor
+    @SuppressWarnings("unused")
+    SensorWrapper tmpSensor = sensor;
   }
 
 
