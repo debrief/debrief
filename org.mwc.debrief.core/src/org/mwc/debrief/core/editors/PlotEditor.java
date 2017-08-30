@@ -17,6 +17,7 @@
  */
 package org.mwc.debrief.core.editors;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
@@ -70,7 +71,6 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -115,11 +115,6 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
 import org.mwc.cmap.core.property_support.RightClickSupport;
-import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
-import org.mwc.cmap.core.wizards.EnterBooleanPage;
-import org.mwc.cmap.core.wizards.EnterRangePage;
-import org.mwc.cmap.core.wizards.EnterStringPage;
-import org.mwc.cmap.core.wizards.SelectColorPage;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
@@ -152,6 +147,7 @@ import org.mwc.debrief.core.operations.ExportTimeDataToClipboard;
 import org.mwc.debrief.core.operations.ExportToFlatFile;
 import org.mwc.debrief.core.operations.ExportToFlatFile2;
 import org.mwc.debrief.core.operations.PlotOperations;
+import org.mwc.debrief.core.preferences.PrefsPage;
 import org.osgi.framework.Bundle;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
@@ -218,7 +214,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
    * we keep the reference to our track-type adapter
    */
   TrackDataProvider _trackDataProvider;
-  
 
   /**
    * The job used to handle large changes in layers
@@ -496,9 +491,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
 
       @Override
-      public void dataExtended(final Layers theData, final Plottable newItem, final HasEditables parent)
+      public void dataExtended(final Layers theData, final Plottable newItem,
+          final HasEditables parent)
       {
-        reconnectSegments(newItem, parent);        
+        reconnectSegments(newItem, parent);
       }
     });
   }
@@ -542,14 +538,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     // lastly, set the title (if we have one)
     this.setPartName(input.getName());
-    
+
     // hmm, does this input have an icon?
     ImageDescriptor icon = input.getImageDescriptor();
     if (icon != null)
     {
       this.setTitleImage(icon.createImage());
     }
-    
+
     // ok, also sort out that refresh job
     createRefreshJob();
   }
@@ -725,7 +721,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               {
                 final ReplayLoader rl = (ReplayLoader) loader;
                 final ImportReplay ir = rl.getReplayLoader();
-                List<TrackWrapper> candidateHosts = null; 
+                List<TrackWrapper> candidateHosts = null;
 
                 final Vector<SensorWrapper> sensors = ir.getPendingSensors();
 
@@ -736,26 +732,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                   while (sIter.hasNext())
                   {
                     SensorWrapper sensor = (SensorWrapper) sIter.next();
-                    if(sensor.getHost() == null)
+                    if (sensor.getHost() == null)
                     {
                       // have we sorted out the hosts?
-                      if(candidateHosts == null)
+                      if (candidateHosts == null)
                       {
                         candidateHosts = determineCandidateHosts();
                       }
-                      
-                      if(candidateHosts.size() == 0)
+
+                      if (candidateHosts.size() == 0)
                       {
-                        CorePlugin.showMessage("Loading sensor data", "Sensor data can only be loaded after tracks");
+                        CorePlugin.showMessage("Loading sensor data",
+                            "Sensor data can only be loaded after tracks");
                         return;
                       }
-                      
+
                       // ok, let the user choose
                       chooseHostFor(sensor, candidateHosts);
                     }
                   }
                 }
-                
+
                 // see if there are any sensors awaiting a color
                 if (sensors.size() == 1)
                 {
@@ -782,48 +779,51 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   private List<TrackWrapper> determineCandidateHosts()
   {
     List<TrackWrapper> res = new ArrayList<TrackWrapper>();
-    
+
     Enumeration<Editable> iter = _myLayers.elements();
     while (iter.hasMoreElements())
     {
       Editable editable = (Editable) iter.nextElement();
-      if(editable instanceof TrackWrapper)
+      if (editable instanceof TrackWrapper)
       {
         res.add((TrackWrapper) editable);
       }
     }
-    
+
     return res;
   }
 
-  private void chooseHostFor(SensorWrapper sensor, List<TrackWrapper> candidateHosts)
+  private void chooseHostFor(SensorWrapper sensor,
+      List<TrackWrapper> candidateHosts)
   {
     // ok, construct the popup
     Object[] tArr = candidateHosts.toArray();
-    
+
     // popup the layers in a question dialog
     final IStructuredContentProvider theVals = new ArrayContentProvider();
     final ILabelProvider theLabels = new LabelProvider();
 
     // collate the dialog
-    final ListDialog list = new ListDialog(Display.getCurrent().getActiveShell());
+    final ListDialog list =
+        new ListDialog(Display.getCurrent().getActiveShell());
     list.setContentProvider(theVals);
     list.setLabelProvider(theLabels);
     list.setInput(tArr);
-    list.setMessage("Please select the track for sensor titled \"" + sensor.getName() + "\"\n(or Cancel to not store it)");
+    list.setMessage("Please select the track for sensor titled \""
+        + sensor.getName() + "\"\n(or Cancel to not store it)");
     list.setTitle("Sensor track not found");
     list.setHelpAvailable(false);
 
     // select the first item, so it's valid to press OK immediately
     list.setInitialSelections(new Object[]
-    { tArr[0] });
+    {tArr[0]});
 
     // open it
     final int selection = list.open();
 
     // did user say yes?
     if (selection != ListDialog.CANCEL)
-    {    
+    {
       // yup, store it's name
       final Object[] val = list.getResult();
 
@@ -832,15 +832,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
         TrackWrapper selected = (TrackWrapper) val[0];
         sensor.setHost(selected);
-      };
+      }
+      ;
     }
   }
 
   private void nameThisSensor(final SensorWrapper thisS)
   {
-    // create the wizard to color/name this
-    final SimplePageListWizard wizard = new SimplePageListWizard();
-
     // right, just have a quick look and see if the sensor has range data -
     // because
     // if it doesn't we'll let the user set a default
@@ -878,71 +876,35 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
     }
 
-    final String imagePath = "images/NameSensor.jpg";
-
     // inform the user if this sensor name is already in use
-    final String nameString;
+    final String introString;
     if (alreadyLoaded)
     {
-      nameString =
+      introString =
           "a one-word title for this block of sensor contacts (e.g. S2046)\n\n"
               + "Note: [" + thisS.getName() + "] is already in use.";
     }
     else
     {
-      nameString =
+      introString =
           "a one-word title for this block of sensor contacts (e.g. S2046)";
     }
 
-    final EnterStringPage getName =
-        new EnterStringPage(null, thisS.getName(), "Import Sensor data",
-            "Please provide the name for this sensor", nameString, imagePath,
-            null, false);
-    final SelectColorPage getColor =
-        new SelectColorPage(null, thisS.getColor(), "Import Sensor data",
-            "Now format the new sensor",
-            "The default color for the cuts for this new sensor", imagePath,
-            null);
-    final EnterBooleanPage getVis =
-        new EnterBooleanPage(null, false, "Import Sensor data",
-            "Please specify if this sensor should be displayed once loaded",
-            "yes/no", imagePath, null);
-    final WorldDistance defRange = new WorldDistance(5, WorldDistance.KYDS);
-    final EnterRangePage getRange =
-        new EnterRangePage(
-            null,
-            "Import Sensor data",
-            "Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
-            "Default range", defRange, imagePath, null);
-    final EnterBooleanPage applyRainbowInRainbowColors =
-        new EnterBooleanPage(null, false,
-            "Apply Rainbow Shades in rainbow colors",
-            "Should Debrief apply Rainbow Shades to these sensor cuts?",
-            "yes/no", "images/ShadeRainbow.png", null);
+    SensorImportHelper importHelper =
+        getHelperFor(thisS.getName(), thisS.getColor(), introString, needsRange);
 
-    wizard.addWizard(getName);
-    wizard.addWizard(getColor);
-    if (needsRange)
-      wizard.addWizard(getRange);
-    wizard.addWizard(getVis);
-    wizard.addWizard(applyRainbowInRainbowColors);
-    final WizardDialog dialog =
-        new WizardDialog(Display.getCurrent().getActiveShell(), wizard);
-    dialog.create();
-    dialog.setBlockOnOpen(true);
-    dialog.open();
     // did it work?
-    if (dialog.getReturnCode() == WizardDialog.OK)
+    if (importHelper.success())
     {
       // ok, use the name
-      thisS.setName(getName.getString());
-      thisS.setColor(getColor.getColor());
-      thisS.setVisible(getVis.getBoolean());
+      thisS.setName(importHelper.getName());
+      thisS.setColor(importHelper.getColor());
+      thisS.setVisible(importHelper.getVisiblity());
 
       // are we doing range?
       if (needsRange)
       {
-        final WorldDistance theRange = getRange.getRange();
+        final WorldDistance theRange = importHelper.getRange();
 
         // did a range get entered?
         if ((theRange != null) && (theRange.getValue() != 0))
@@ -956,84 +918,112 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
         }
       }
-      if (applyRainbowInRainbowColors.getBoolean())
+      if (importHelper.applyRainbow())
       {
-
-        SensorWrapper theSensor = null;
-
-        // are they items we're interested in?
-        HiResDate startDTG = new HiResDate(Long.MAX_VALUE / 1000, 0);
-        HiResDate endDTG = new HiResDate(0);
-        Enumeration<Editable> elements = thisS.elements();
-        ArrayList<Editable> sensors = new ArrayList<Editable>();
-        ArrayList<SensorContactWrapper> list =
-            new ArrayList<SensorContactWrapper>();
-        while (elements.hasMoreElements())
-        {
-          sensors.add(elements.nextElement());
-        }
-        for (Editable thisE : sensors)
-        {
-          if (thisE instanceof SensorWrapper)
-          {
-            // just check that there's only one item selected
-            if (sensors.size() == 1)
-            {
-              theSensor = (SensorWrapper) thisE;
-            }
-          }
-          else if (thisE instanceof SensorContactWrapper)
-          {
-            list.add((SensorContactWrapper) thisE);
-            if (startDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) > 0)
-            {
-              startDTG = ((SensorContactWrapper) thisE).getDTG();
-            }
-            if (endDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) < 0)
-            {
-              endDTG = ((SensorContactWrapper) thisE).getDTG();
-            }
-          }
-        }
-
-        // ok, do we have a single sensor?
-        if (theSensor != null)
-        {
-          startDTG = theSensor.getStartDTG();
-          endDTG = theSensor.getEndDTG();
-          Collection<Editable> editables =
-              theSensor.getItemsBetween(theSensor.getStartDTG(), theSensor
-                  .getEndDTG());
-          for (Editable editable : editables)
-          {
-            if (editable instanceof SensorContactWrapper)
-            {
-              list.add((SensorContactWrapper) editable);
-            }
-          }
-        }
-        final HiResDate start = startDTG;
-        final HiResDate end = endDTG;
-        // create this operation
-        final String title1 = "Shade in rainbow colors";
-        Layer parentLayer = null;
-
-        Layers parentLayers = _myLayers;
-        if (parentLayers != null)
-        {
-          if (parentLayers.size() == 1)
-          {
-            parentLayer = parentLayers.elementAt(0);
-          }
-        }
-
-        final IUndoableOperation theAction =
-            new ShadeCutsOperation(title1, parentLayers, parentLayer, list
-                .toArray(new SensorContactWrapper[0]), start, end,
-                ShadeOperation.RAINBOW_SHADE);
-        CorePlugin.run(theAction);
+        applyRainbowShadingTo(thisS);
       }
     }
+  }
+
+  private SensorImportHelper getHelperFor(String sensorName, Color sensorColor,
+      String introString, boolean needsRange)
+  {
+    // ok, check the property
+    final String showImportWizard =
+        CorePlugin.getToolParent().getProperty(
+            PrefsPage.PreferenceConstants.USE_IMPORT_SENSOR_WIZARD);
+
+    // create the relevant helper
+    final SensorImportHelper helper;
+    if (Boolean.parseBoolean(showImportWizard))
+    {
+      helper =
+          new SensorImportHelper.SensorImportHelperUI(sensorName, sensorColor,
+              introString, needsRange);
+    }
+    else
+    {
+      helper = new SensorImportHelper.SensorImportHelperHeadless(sensorName);
+    }
+
+    return helper;
+  }
+
+  private void applyRainbowShadingTo(final SensorWrapper thisS)
+  {
+    SensorWrapper theSensor = null;
+
+    // are they items we're interested in?
+    HiResDate startDTG = new HiResDate(Long.MAX_VALUE / 1000, 0);
+    HiResDate endDTG = new HiResDate(0);
+    Enumeration<Editable> elements = thisS.elements();
+    ArrayList<Editable> sensors = new ArrayList<Editable>();
+    ArrayList<SensorContactWrapper> list =
+        new ArrayList<SensorContactWrapper>();
+    while (elements.hasMoreElements())
+    {
+      sensors.add(elements.nextElement());
+    }
+    for (Editable thisE : sensors)
+    {
+      if (thisE instanceof SensorWrapper)
+      {
+        // just check that there's only one item selected
+        if (sensors.size() == 1)
+        {
+          theSensor = (SensorWrapper) thisE;
+        }
+      }
+      else if (thisE instanceof SensorContactWrapper)
+      {
+        list.add((SensorContactWrapper) thisE);
+        if (startDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) > 0)
+        {
+          startDTG = ((SensorContactWrapper) thisE).getDTG();
+        }
+        if (endDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) < 0)
+        {
+          endDTG = ((SensorContactWrapper) thisE).getDTG();
+        }
+      }
+    }
+
+    // ok, do we have a single sensor?
+    if (theSensor != null)
+    {
+      startDTG = theSensor.getStartDTG();
+      endDTG = theSensor.getEndDTG();
+      Collection<Editable> editables =
+          theSensor.getItemsBetween(theSensor.getStartDTG(), theSensor
+              .getEndDTG());
+      for (Editable editable : editables)
+      {
+        if (editable instanceof SensorContactWrapper)
+        {
+          list.add((SensorContactWrapper) editable);
+        }
+      }
+    }
+    final HiResDate start = startDTG;
+    final HiResDate end = endDTG;
+    // create this operation
+    final String title1 = "Shade in rainbow colors";
+    Layer parentLayer = null;
+
+    Layers parentLayers = _myLayers;
+    if (parentLayers != null)
+    {
+      if (parentLayers.size() == 1)
+      {
+        parentLayer = parentLayers.elementAt(0);
+      }
+    }
+
+    final IUndoableOperation theAction =
+        new ShadeCutsOperation(title1, parentLayers, parentLayer, list
+            .toArray(new SensorContactWrapper[0]), start, end,
+            ShadeOperation.RAINBOW_SHADE);
+    CorePlugin.run(theAction);
   }
 
   /**
@@ -2034,57 +2024,57 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     firePropertyChange(PROP_DIRTY);
   }
 
-
   /**
    * Create the refresh job for the receiver.
    * 
    */
   private void createRefreshJob()
   {
-    // Creates a workbench job that will update the UI.  But, it can be
+    // Creates a workbench job that will update the UI. But, it can be
     // cancelled and re-scheduled
     // may override.
     _refreshJob = new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
-      public IStatus runInUIThread(IProgressMonitor monitor)
-      {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-          @Override
-          public void run()
+          public IStatus runInUIThread(IProgressMonitor monitor)
           {
-            // inform our parent
-            PlotEditor.super.layersExtended();
+            Display.getDefault().asyncExec(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                // inform our parent
+                PlotEditor.super.layersExtended();
 
-            // we should also recalculate the time period we cover
-            final TimePeriod timePeriod = getPeriodFor(_myLayers);
+                // we should also recalculate the time period we cover
+                final TimePeriod timePeriod = getPeriodFor(_myLayers);
 
-            // and share the good news.
-            _timeManager.setPeriod(this, timePeriod);
+                // and share the good news.
+                _timeManager.setPeriod(this, timePeriod);
 
-            // and tell the track data manager that something's happened. One of
-            // it's
-            // tracks may have been
-            // deleted!
-            _trackDataProvider.fireTracksChanged();            
+                // and tell the track data manager that something's happened. One of
+                // it's
+                // tracks may have been
+                // deleted!
+                _trackDataProvider.fireTracksChanged();
+              }
+            });
+            return Status.OK_STATUS;
           }
-        });
-        return Status.OK_STATUS;
-      }
-    };
-    
+        };
+
     _refreshJob.setSystem(true);
-  } 
-    
-  /** layers have been added/removed
-	 * 
-	 */
+  }
+
+  /**
+   * layers have been added/removed
+   * 
+   */
   @Override
   protected void layersExtended()
   {
     // ok. this method (callback) may get called a lot.
     // we can queue up these updates, since the method doesn't
     // receive the id of specific layers, the processing
-    // applies itself to the current set of layers.  So,
+    // applies itself to the current set of layers. So,
     // deferring processing to skip some updates will still be effective
 
     _refreshJob.cancel();
@@ -2129,7 +2119,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   }
 
-  private void reconnectSegments(final Plottable newItem, final HasEditables parent)
+  private void reconnectSegments(final Plottable newItem,
+      final HasEditables parent)
   {
     // ok, have a look at the pasted track
     if (parent != null && parent instanceof TrackWrapper && newItem == null)
@@ -2171,7 +2162,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           if (editable instanceof DynamicInfillSegment)
           {
             DynamicInfillSegment ds = (DynamicInfillSegment) editable;
-            
+
             ds.clear();
 
             //
@@ -2181,7 +2172,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         }
 
       }
-      
+
     }
   }
 }
