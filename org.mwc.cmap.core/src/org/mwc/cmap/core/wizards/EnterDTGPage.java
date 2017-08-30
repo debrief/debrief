@@ -36,7 +36,7 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 	{
 		super(selection,
 				FullFormatDateTime.toString(startDate.getDate().getTime()), pageTitle,
-				pageExplanation, fieldExplanation, imagePath, helpContext, true);
+				pageExplanation, fieldExplanation, imagePath, helpContext, true, null);
 
 		// tell the editor we're listening for modifications
 		super.addModifiedListener(this);

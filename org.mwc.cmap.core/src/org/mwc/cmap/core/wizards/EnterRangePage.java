@@ -70,7 +70,7 @@ public class EnterRangePage extends CoreEditableWizardPage
 			final String pageDescription, final String rangeTitle, final WorldDistance defaultRange, final String imagePath, final String helpContext)
 	{
 		super(selection, NAME, pageName, pageDescription, imagePath,helpContext,
-				false);
+				false, null);
 		_rangeTitle = rangeTitle;
 		_defaultRange = defaultRange;
 

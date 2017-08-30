@@ -84,7 +84,7 @@ public class RangeBearingPage extends CoreEditableWizardPage
       final String helpContext, final WorldDistance defaultRange, final double brgDegs)
   {
     super(selection, NAME, pageName, pageDescription, imagePath, helpContext,
-        false);
+        false, null);
     _rangeTitle = rangeTitle;
     _bearingTitle = bearingTitle;
     _defaultRange = defaultRange;

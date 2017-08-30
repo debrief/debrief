@@ -73,7 +73,7 @@ public class SelectColorPage extends CoreEditableWizardPage
 			final String imagePath, final String helpContext)
 	{
 		super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
-				false);
+				false, null);
 		_startColor = startColor;
 		_fieldExplanation = fieldExplanation;
 		setDefaults();

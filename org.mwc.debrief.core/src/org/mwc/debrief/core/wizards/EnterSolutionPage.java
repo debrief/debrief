@@ -92,7 +92,7 @@ public class EnterSolutionPage extends CoreEditableWizardPage
       final double defaultCourse)
   {
     super(selection, NAME, pageTitle, pageDescription, imagePath, helpContext,
-        false);
+        false, null);
 
     _myWrapper = new SolutionDataItem();
     _defaultSpeed = defaultSpeed;
