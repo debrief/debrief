@@ -358,6 +358,11 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
   	_freq = freq;
   }
   
+  public void setBearing(Float brg)
+  {
+    _bearing = brg;
+  }
+  
   public void setAmbiguousBearing(Float ambiBrg)
   {
   	_ambigBrg = ambiBrg;
