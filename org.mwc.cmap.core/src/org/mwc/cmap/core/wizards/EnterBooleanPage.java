@@ -61,9 +61,9 @@ public class EnterBooleanPage extends CoreEditableWizardPage
 	private final String _fieldExplanation;
 	private final Boolean _startValue;
   
-  public EnterBooleanPage(final ISelection selection, final Boolean startVal, final String pageTitle, final String pageExplanation, final String fieldExplanation, final String imagePath, final String helpContext) {
+  public EnterBooleanPage(final ISelection selection, final Boolean startVal, final String pageTitle, final String pageExplanation, final String fieldExplanation, final String imagePath, final String helpContext, String trailingMessage) {
 		super(selection, NAME, pageTitle,
-				pageExplanation, imagePath,helpContext, false);
+				pageExplanation, imagePath,helpContext, false, trailingMessage);
 		_startValue = startVal;
 		_fieldExplanation = fieldExplanation;
   }

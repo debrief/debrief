@@ -34,11 +34,11 @@ public class DopplerPlotWizard implements CalculationWizard
 		final EnterStringPage getf0 = new EnterStringPage(null, " " + fFormat.format(calc.getFNought()) + " ",
 				taskTitle, "Please enter a f-Nought (Hz) for [" + primary + "]",
 				"(e.g. 150)",
-				imagePath, null, false);
+				imagePath, null, false, null);
 		final EnterStringPage getSoundSpeed = new EnterStringPage(null, " " +  cFormat.format(Conversions.Kts2Mps(calc.getSpeedOfSound())) + " ",
 				taskTitle, "Please enter the Speed of Sound in Water (m/sec)",
 				"(e.g. 2000)",
-				imagePath, null, false);
+				imagePath, null, false, null);
 		wizard.addWizard(getf0);
 		wizard.addWizard(getSoundSpeed);
 		final WizardDialog dialog = new WizardDialog(Display.getCurrent()

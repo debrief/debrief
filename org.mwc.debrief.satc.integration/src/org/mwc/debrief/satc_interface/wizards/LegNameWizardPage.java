@@ -117,7 +117,7 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 	{
 		super(selection, "namePage", "Set Leg Name",
 				"Please provide a name for this leg",
-				"images/scale_wizard.gif", null, false);
+				"images/scale_wizard.gif", null, false, null);
 	}
 
 	@Override

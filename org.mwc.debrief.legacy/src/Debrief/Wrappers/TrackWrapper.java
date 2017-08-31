@@ -74,6 +74,7 @@ import MWC.GUI.Properties.FractionPropertyEditor;
 import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
+import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
@@ -191,7 +192,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
                     VISIBILITY),
                 displayExpertLongProp("NameLocation", "Name location",
                     "relative location of track label", FORMAT,
-                    MWC.GUI.Properties.LocationPropertyEditor.class),
+                    MWC.GUI.Properties.NullableLocationPropertyEditor.class),
                 displayExpertLongProp("LabelFrequency", "Label frequency",
                     "the label frequency", TEMPORAL,
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
@@ -3524,9 +3525,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (this.getEndTimeLabels() && !isSinglePointTrack())
     {
       oldLoc = getNameLocation();
-      final int theLoc =
-          LabelLocationPropertyEditor.oppositeFor(hostFix.getLabelLocation());
-      setNameLocation(theLoc);
+      
+      // is it auto-locate?
+      if(oldLoc == NullableLocationPropertyEditor.AUTO)
+      {
+        // ok, automatically locate it
+        final int theLoc =
+            LabelLocationPropertyEditor.oppositeFor(hostFix.getLabelLocation());
+        setNameLocation(theLoc);
+      }
     }
 
     // and paint it
@@ -4629,7 +4636,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         }
 
         // is this the one we're looking for?
-        if (thisE == splitPnt)
+        if (thisE.equals(splitPnt))
         {
           // yup, remember it - we want to use the next value
           previous = thisE;
@@ -4642,7 +4649,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPnt);
 
     // get our results ready
-    final TrackSegment ts1, ts2;
+    final TrackSegment ts1;
+    final TrackSegment ts2;
 
     // aaah, just sort out if we are splitting a TMA segment, in which case
     // we
