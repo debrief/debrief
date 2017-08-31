@@ -143,6 +143,11 @@ abstract public class InitialSensor extends CoreSensor
       if (target.getCategory() == null)
         System.out.println("no category for:" + target);
 
+      while(Brg < 0)
+      {
+        Brg += 360;
+      }
+      
       res = new DetectionEvent(time,
                                host.getId(),
                                host.getStatus().getLocation(),
@@ -159,7 +164,34 @@ abstract public class InitialSensor extends CoreSensor
       // hmm, do we produce ambiguous bearings?
       if(isAmbiguous())
       {
-      	res.setAmbiguousBearing((float)(host.getStatus().getCourse() - RelBrg));
+        float ambigBrg = (float) (crse - RelBrg);
+        while(ambigBrg < 0)
+        {
+          ambigBrg += 360;
+        }
+        while(ambigBrg > 360)
+        {
+          ambigBrg -= 360;
+        }
+        
+        // ok, we'll make the port bearing hte first bearing, and the stbd one
+        // the other one. Otherwise the first baering is always true
+        if(RelBrg < crse)
+        {
+          // ok, this is port. leave it as is
+          // the stbd is ambiguous
+          res.setAmbiguousBearing(ambigBrg);
+        }
+        else
+        {
+          // ok, this is stbd, swap them around
+          // put the ambig bearing into port
+          res.setBearing(ambigBrg);
+          // and the real one into stbd
+          res.setAmbiguousBearing(Brg);
+        }
+
+
       }
 
     }
