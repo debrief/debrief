@@ -28,6 +28,8 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
+import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
+import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GenericData.HiResDate;
@@ -42,6 +44,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private Action relativeAxes;
   private Action scaleError;
 
+  private Action doStep1;
+  private Action doStep2;
+  
   public BearingResidualsView()
   {
     super(true, false);
@@ -54,6 +59,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     super.addExtras(toolBarManager);
     toolBarManager.add(showCourse);
+    toolBarManager.add(doStep1);
+    toolBarManager.add(doStep2);
   }
 
   @Override
@@ -239,7 +246,52 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     _autoResize.setToolTipText("Keep plot sized to show all data");
     _autoResize.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/24/fit_to_win.png"));
+    
+    // now the course action
+    doStep1 = new Action("1", IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        processStepOne();
+      }
+    };
 
+    // now the course action
+    doStep2 = new Action("2", IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        processStepTwo();
+      }
+    };
+
+  }
+
+  protected void processStepTwo()
+  {
+    // create the resolver
+    AmbiguityResolver resolver = new AmbiguityResolver();
+    Zone[] zones = ownshipZoneChart.getZones();
+    
+    resolver.resolve(super._myHelper.getPrimaryTrack(), zones, null);
+    
+    // and refresh
+    updateData(true);
+  }
+
+  protected void processStepOne()
+  {
+    // create the resolver
+    AmbiguityResolver resolver = new AmbiguityResolver();
+    Zone[] zones = ownshipZoneChart.getZones();
+    resolver.dropCutsInTurn(super._myHelper.getPrimaryTrack(), zones, null);
+    
+    // and refresh
+    updateData(true);
   }
 
   private void processShowCourse()
