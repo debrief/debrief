@@ -24,7 +24,7 @@ public class NullableLocationPropertyEditor extends LocationPropertyEditor
   {
     super.setAsText(val);
     
-    if(val.equals("Auto"))
+    if("Auto".equals(val))
       _myLocation = new Integer(AUTO);
       
   }
@@ -50,6 +50,7 @@ public class NullableLocationPropertyEditor extends LocationPropertyEditor
       res = "Centre";
       break;
     case(AUTO):
+    default:
       res = "Auto";
       break;
     }

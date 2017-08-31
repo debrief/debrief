@@ -87,7 +87,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   /**
    * class which contains list of textual representations of label locations
    */
-  static final NullableLocationPropertyEditor lp =
+  private static final NullableLocationPropertyEditor lp =
       new NullableLocationPropertyEditor();
 
   public static void exportTrack(final Debrief.Wrappers.TrackWrapper track,

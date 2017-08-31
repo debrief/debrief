@@ -4636,7 +4636,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         }
 
         // is this the one we're looking for?
-        if (thisE == splitPnt)
+        if (thisE.equals(splitPnt))
         {
           // yup, remember it - we want to use the next value
           previous = thisE;
@@ -4649,7 +4649,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPnt);
 
     // get our results ready
-    final TrackSegment ts1, ts2;
+    final TrackSegment ts1;
+    final TrackSegment ts2;
 
     // aaah, just sort out if we are splitting a TMA segment, in which case
     // we
