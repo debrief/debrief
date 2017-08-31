@@ -1132,7 +1132,7 @@ public class ImportReplay extends PlainImporterBase
         }
 
         final long end = System.currentTimeMillis();
-        System.out.print(" |Elapsed:" + (end - start) + " ");
+        System.out.println(" |Elapsed:" + (end - start) + " ");
 
       }
     }
