@@ -113,6 +113,7 @@ import org.junit.runners.Suite;
   org.mwc.cmap.core.property_support.RightClickSupport.testMe.class,
   org.mwc.cmap.core.ui_support.PartMonitor.TestNarrativeViewer.class,
   org.mwc.debrief.core.ContextOperations.tests.TMASegment_Test.class,
+  org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.TestResolveAmbig.class,
   Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
 })
 
