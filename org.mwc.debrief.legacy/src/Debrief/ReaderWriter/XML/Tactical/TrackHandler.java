@@ -47,6 +47,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -86,8 +87,8 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   /**
    * class which contains list of textual representations of label locations
    */
-  static final MWC.GUI.Properties.LocationPropertyEditor lp =
-      new MWC.GUI.Properties.LocationPropertyEditor();
+  private static final NullableLocationPropertyEditor lp =
+      new NullableLocationPropertyEditor();
 
   public static void exportTrack(final Debrief.Wrappers.TrackWrapper track,
       final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
