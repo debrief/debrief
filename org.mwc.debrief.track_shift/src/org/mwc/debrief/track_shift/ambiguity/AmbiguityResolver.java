@@ -400,7 +400,8 @@ public class AmbiguityResolver
       // drop cuts in turn
       final int numCuts = sensor.size();
       assertEquals("right cuts at start", 721, numCuts);
-      List<SensorContactWrapper> toDel = res.findCutsToDropInTurn(track, zones, null);
+      List<SensorContactWrapper> toDel =
+          res.findCutsToDropInTurn(track, zones, null);
       assertEquals("have cuts to delete", 124, toDel.size());
 
       @SuppressWarnings("unused")
@@ -540,33 +541,64 @@ public class AmbiguityResolver
     return res;
   }
 
-  private void ditchBearings(final LegOfCuts leg, final boolean keepFirst)
+  public void ditchBearings(final List<ResolvedLeg> legs)
   {
-    for (final SensorContactWrapper cut : leg)
+    for(final ResolvedLeg leg: legs)
     {
-      // cool, we have a course - we can go for it. remember the bearings
-      final double bearing1 = cut.getBearing();
-      final double bearing2 = cut.getAmbiguousBearing();
-
-      if (keepFirst)
+      for (final SensorContactWrapper cut : leg.leg)
       {
-        cut.setBearing(bearing1);
-        cut.setAmbiguousBearing(bearing2);
-      }
-      else
-      {
-        cut.setBearing(bearing2);
-        cut.setAmbiguousBearing(bearing1);
-      }
+        // cool, we have a course - we can go for it. remember the bearings
+        final double bearing1 = cut.getBearing();
+        final double bearing2 = cut.getAmbiguousBearing();
 
-      // remember we're morally ambiguous
-      cut.setHasAmbiguousBearing(false);
+        if (leg.keepFirst)
+        {
+          cut.setBearing(bearing1);
+          cut.setAmbiguousBearing(bearing2);
+        }
+        else
+        {
+          cut.setBearing(bearing2);
+          cut.setAmbiguousBearing(bearing1);
+        }
 
+        // remember we're morally ambiguous
+        cut.setHasAmbiguousBearing(false);
+      }
     }
   }
+  
+  public void undoDitchBearings(final List<ResolvedLeg> legs)
+  {
+    for(final ResolvedLeg leg: legs)
+    {
+      for (final SensorContactWrapper cut : leg.leg)
+      {
+        // cool, we have a course - we can go for it. remember the bearings
+        final double bearing1 = cut.getBearing();
+        final double bearing2 = cut.getAmbiguousBearing();
 
-  public List<SensorContactWrapper> findCutsToDropInTurn(final TrackWrapper track, final Zone[] zones,
-      final TimePeriod period)
+        if (leg.keepFirst)
+        {
+          cut.setBearing(bearing2);
+          cut.setAmbiguousBearing(bearing1);
+        }
+        else
+        {
+          cut.setBearing(bearing1);
+          cut.setAmbiguousBearing(bearing2);
+        }
+
+        // remember we're morally ambiguous
+        cut.setHasAmbiguousBearing(true);
+      }
+    }
+  }
+  
+    
+
+  public List<SensorContactWrapper> findCutsToDropInTurn(
+      final TrackWrapper track, final Zone[] zones, final TimePeriod period)
   {
     final List<SensorContactWrapper> toDelete =
         new ArrayList<SensorContactWrapper>();
@@ -723,8 +755,10 @@ public class AmbiguityResolver
     }
   }
 
-  private void resolve(final List<LegOfCuts> legs)
+  private List<ResolvedLeg> resolve(final List<LegOfCuts> legs)
   {
+    List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
+
     // ok, loop through the legs
     LegOfCuts lastLeg = null;
     for (final LegOfCuts leg : legs)
@@ -761,7 +795,7 @@ public class AmbiguityResolver
           Collections.sort(items);
           final Perm closest = items.get(0);
 
-          ditchBearings(leg, closest.secondOne);
+          res.add(new ResolvedLeg(leg, closest.secondOne));
         }
         else
         {
@@ -783,21 +817,35 @@ public class AmbiguityResolver
           Collections.sort(items);
           final Perm closest = items.get(0);
 
-          ditchBearings(lastLeg, closest.firstOne);
-          ditchBearings(leg, closest.secondOne);
+          res.add(new ResolvedLeg(lastLeg, closest.firstOne));
+          res.add(new ResolvedLeg(leg, closest.secondOne));
         }
 
       }
 
       lastLeg = leg;
     }
+
+    return res;
   }
 
-  public void resolve(final TrackWrapper primaryTrack, final Zone[] zones,
+  public static class ResolvedLeg
+  {
+    final boolean keepFirst;
+    final LegOfCuts leg;
+
+    public ResolvedLeg(LegOfCuts leg, boolean keepFirst)
+    {
+      this.leg = leg;
+      this.keepFirst = keepFirst;
+    }
+  }
+
+  public List<ResolvedLeg> resolve(final TrackWrapper primaryTrack, final Zone[] zones,
       final Object object)
   {
     final List<LegOfCuts> legs = getLegs(primaryTrack, zones, null);
-    resolve(legs);
+    return resolve(legs);
   }
 
   private double trim(final double val)

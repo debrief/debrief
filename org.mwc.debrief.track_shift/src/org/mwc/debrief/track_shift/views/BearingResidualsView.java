@@ -41,6 +41,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
+import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.ResolvedLeg;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -127,6 +128,57 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       return res;
     }
 
+  }
+
+  private class ResolveCutsOperation extends CMAPOperation
+  {
+  
+    /** the cuts to be deleted
+     * 
+     */
+    final private List<ResolvedLeg> _cutsToResolve;    
+
+    final private AmbiguityResolver _resolver;
+  
+    public ResolveCutsOperation(final List<ResolvedLeg> cutsToResolve, AmbiguityResolver resolver)
+    {
+      super("Resolve ambiguous cuts");
+  
+      _cutsToResolve = cutsToResolve;
+      _resolver = resolver;
+    }
+  
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      _resolver.ditchBearings(_cutsToResolve);
+  
+      // and refresh
+      updateData(true);
+  
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Delete cuts in O/S turn successful", null);
+      return res;
+    }
+  
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      _resolver.undoDitchBearings(_cutsToResolve);
+  
+      // and refresh the UI
+      updateData(true);
+  
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Restore cuts in O/S turn successful", null);
+      return res;
+    }
+  
   }
 
   private static final String SHOW_COURSE = "SHOW_COURSE";
@@ -345,7 +397,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       public void run()
       {
         super.run();
-        processStepTwo();
+        resolveAmbiguousCuts();
       }
     };
 
@@ -398,15 +450,19 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // ok - if we're on auto update, do the update
     updateLinePlotRanges();
   }
-
-  protected void processStepTwo()
+  
+  protected void resolveAmbiguousCuts()
   {
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
     final Zone[] zones = ownshipZoneChart.getZones();
 
-    resolver.resolve(super._myHelper.getPrimaryTrack(), zones, null);
+    List<ResolvedLeg> cutsToResolve = resolver.resolve(super._myHelper.getPrimaryTrack(), zones, null);
 
+    IUndoableOperation resolveCuts = new ResolveCutsOperation(cutsToResolve, resolver);
+    
+    undoRedoProvider.execute(resolveCuts);
+    
     // and refresh
     updateData(true);
   }
