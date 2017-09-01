@@ -805,6 +805,14 @@ public final class StackedDotHelper
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
 
+    // the previous steps occupy some time.
+    // just check we haven't lost the primary track while they were running
+    if (_primaryTrack == null)
+    {
+      return;
+    }
+
+    
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
     final TimeSeries ambigErrorValues =
