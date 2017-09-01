@@ -56,7 +56,7 @@ public class ArtificalLegDetector implements IOwnshipLegDetector
       // handle this step
       final long thisTime = times[i];
       final double thisCourse = newCourses[i];
-
+      
       // do we need a leg start?
       if (thisLegStart == -1)
       {
@@ -102,13 +102,14 @@ public class ArtificalLegDetector implements IOwnshipLegDetector
             if (thisTime - artificialLegStart > minLegLength)
             {
               // ok, generate a leg
-              legs.add(new LegOfData("L" + legs.size() + 1, artificialLegStart,
+              legs.add(new LegOfData("L" + (legs.size() + 1), artificialLegStart,
                   lastTime));
             }
           }
 
           // make sure we clear the artificial straight leg start time
           artificialLegStart = -1;
+          thisLegStart = lastTime;
         }
 
         if (thisDir != lastDir && thisDir != 0)
@@ -172,7 +173,7 @@ public class ArtificalLegDetector implements IOwnshipLegDetector
             if (legLength >= minLegLength)
             {
               // ok, leg ended.
-              legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart,
+              legs.add(new LegOfData("L" + (legs.size() + 1), thisLegStart,
                   legEnd));
             }
 
@@ -202,7 +203,7 @@ public class ArtificalLegDetector implements IOwnshipLegDetector
     // do we have a trailing leg?
     if (artificialLegStart != -1)
     {
-      legs.add(new LegOfData("L" + legs.size() + 1, artificialLegStart,
+      legs.add(new LegOfData("L" + (legs.size() + 1), artificialLegStart,
           lastTime));
     }
     else if (thisTroughCourse == Double.MIN_VALUE
@@ -213,9 +214,9 @@ public class ArtificalLegDetector implements IOwnshipLegDetector
     else
     {
       // we're still in a leg. is it an artificial one?
-      legs.add(new LegOfData("L" + legs.size() + 1, thisLegStart, lastTime));
+      legs.add(new LegOfData("L" + (legs.size() + 1), thisLegStart, lastTime));
     }
-
+    
     return legs;
   }
 
