@@ -46,6 +46,7 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GenericData.HiResDate;
 
@@ -136,25 +137,28 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     /** the cuts to be deleted
      * 
      */
-    final private List<ResolvedLeg> _cutsToResolve;    
-
+    private List<ResolvedLeg> _cutsToResolve;    
     final private AmbiguityResolver _resolver;
+    private TrackWrapper _primary;
+    private Zone[] _zones;
   
-    public ResolveCutsOperation(final List<ResolvedLeg> cutsToResolve, AmbiguityResolver resolver)
+  
+    public ResolveCutsOperation(AmbiguityResolver resolver,
+        TrackWrapper primaryTrack, Zone[] zones)
     {
       super("Resolve ambiguous cuts");
-  
-      _cutsToResolve = cutsToResolve;
       _resolver = resolver;
+      _primary = primaryTrack;
+      _zones = zones;
     }
-  
+
     @Override
     public IStatus
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-      _resolver.ditchBearings(_cutsToResolve);
-  
+      _cutsToResolve = _resolver.resolve(_primary, _zones, null);
+      
       // and refresh
       updateData(true);
   
@@ -457,9 +461,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     final AmbiguityResolver resolver = new AmbiguityResolver();
     final Zone[] zones = ownshipZoneChart.getZones();
 
-    List<ResolvedLeg> cutsToResolve = resolver.resolve(super._myHelper.getPrimaryTrack(), zones, null);
-
-    IUndoableOperation resolveCuts = new ResolveCutsOperation(cutsToResolve, resolver);
+    IUndoableOperation resolveCuts = new ResolveCutsOperation(resolver, super._myHelper.getPrimaryTrack(), zones);
     
     undoRedoProvider.execute(resolveCuts);
     

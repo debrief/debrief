@@ -349,8 +349,11 @@ public class AmbiguityResolver
       legs.add(leg6);
 
       final AmbiguityResolver solver = new AmbiguityResolver();
-      solver.resolve(legs);
-
+      List<ResolvedLeg> resolvedLegs = solver.resolve(legs);    
+      
+      assertNotNull("have list of resolved", resolvedLegs);
+      assertEquals("correct num legs", 6, resolvedLegs.size());
+      
       // ok, check the legs
       assertFalse("not ambig", leg1.get(0).getHasAmbiguousBearing());
       assertFalse("not ambig", leg2.get(0).getHasAmbiguousBearing());
@@ -448,8 +451,9 @@ public class AmbiguityResolver
       legs.add(leg3);
 
       final AmbiguityResolver resolver = new AmbiguityResolver();
-      resolver.resolve(legs);
+      List<ResolvedLeg> resolvedLegs = resolver.resolve(legs);
 
+      assertNotNull("have legs", resolvedLegs);
       assertEquals("correct bearing", 260d, leg1.get(0).getBearing());
       assertEquals("correct bearing", 42d, leg2.get(0).getBearing());
       assertEquals("correct bearing", 350d, leg3.get(0).getBearing());
@@ -545,29 +549,34 @@ public class AmbiguityResolver
   {
     for(final ResolvedLeg leg: legs)
     {
-      for (final SensorContactWrapper cut : leg.leg)
-      {
-        // cool, we have a course - we can go for it. remember the bearings
-        final double bearing1 = cut.getBearing();
-        final double bearing2 = cut.getAmbiguousBearing();
-
-        if (leg.keepFirst)
-        {
-          cut.setBearing(bearing1);
-          cut.setAmbiguousBearing(bearing2);
-        }
-        else
-        {
-          cut.setBearing(bearing2);
-          cut.setAmbiguousBearing(bearing1);
-        }
-
-        // remember we're morally ambiguous
-        cut.setHasAmbiguousBearing(false);
-      }
+      ditchBearingsForThisLeg(leg.leg, leg.keepFirst);
     }
   }
-  
+
+  private void ditchBearingsForThisLeg(LegOfCuts leg, boolean keepFirst)
+  {
+    for (final SensorContactWrapper cut : leg)
+    {
+      // cool, we have a course - we can go for it. remember the bearings
+      final double bearing1 = cut.getBearing();
+      final double bearing2 = cut.getAmbiguousBearing();
+
+      if (keepFirst)
+      {
+        cut.setBearing(bearing1);
+        cut.setAmbiguousBearing(bearing2);
+      }
+      else
+      {
+        cut.setBearing(bearing2);
+        cut.setAmbiguousBearing(bearing1);
+      }
+
+      // remember we're morally ambiguous
+      cut.setHasAmbiguousBearing(false);
+    }
+  }
+
   public void undoDitchBearings(final List<ResolvedLeg> legs)
   {
     for(final ResolvedLeg leg: legs)
@@ -795,6 +804,7 @@ public class AmbiguityResolver
           Collections.sort(items);
           final Perm closest = items.get(0);
 
+          ditchBearingsForThisLeg(leg, closest.secondOne);          
           res.add(new ResolvedLeg(leg, closest.secondOne));
         }
         else
@@ -816,6 +826,9 @@ public class AmbiguityResolver
 
           Collections.sort(items);
           final Perm closest = items.get(0);
+
+          ditchBearingsForThisLeg(lastLeg, closest.firstOne);          
+          ditchBearingsForThisLeg(leg, closest.secondOne);          
 
           res.add(new ResolvedLeg(lastLeg, closest.firstOne));
           res.add(new ResolvedLeg(leg, closest.secondOne));
