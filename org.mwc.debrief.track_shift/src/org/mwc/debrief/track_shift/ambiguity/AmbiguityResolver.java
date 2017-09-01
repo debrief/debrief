@@ -286,11 +286,6 @@ public class AmbiguityResolver
       assertEquals("correct last score", 200d, res.get(0).getY(), 0.001);
       assertEquals("correct last score", 40d, res.get(res.size() - 1).getY(),
           0.001);
-
-      for (final WeightedObservedPoint ob : res)
-      {
-        System.out.println(ob.getY());
-      }
     }
 
     public void testResolve() throws FileNotFoundException
@@ -344,13 +339,13 @@ public class AmbiguityResolver
 
       // make the first cuts very wonky
       final LegOfCuts leg6 = new LegOfCuts();
-      leg6.add(wrapMe(sensor, 360, 41d, 350d));
-      leg6.add(wrapMe(sensor, 370, 43d, 20d));
-      leg6.add(wrapMe(sensor, 380, 45d, 70d));
-      leg6.add(wrapMe(sensor, 390, 47d, 80d));
-      leg6.add(wrapMe(sensor, 400, 49d, 90d));
-      leg6.add(wrapMe(sensor, 410, 51d, 100d));
-      leg6.add(wrapMe(sensor, 420, 53d, 110d));
+      leg6.add(wrapMe(sensor, 440, 141d, 350d));
+      leg6.add(wrapMe(sensor, 450, 143d, 20d));
+      leg6.add(wrapMe(sensor, 460, 145d, 70d));
+      leg6.add(wrapMe(sensor, 470, 147d, 80d));
+      leg6.add(wrapMe(sensor, 480, 149d, 90d));
+      leg6.add(wrapMe(sensor, 490, 151d, 100d));
+      leg6.add(wrapMe(sensor, 500, 153d, 110d));
       legs.add(leg6);
 
       final AmbiguityResolver solver = new AmbiguityResolver();
