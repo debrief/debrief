@@ -234,7 +234,7 @@ public class AmbiguityResolver
       final AmbiguityResolver res = new AmbiguityResolver();
 
       // drop cuts in turn
-      res.dropCutsInTurn(track, zones, null);
+      res.findCutsToDropInTurn(track, zones, null);
 
       // now get the legs
       final List<LegOfCuts> legs = res.getLegs(track, zones, null);
@@ -400,8 +400,8 @@ public class AmbiguityResolver
       // drop cuts in turn
       final int numCuts = sensor.size();
       assertEquals("right cuts at start", 721, numCuts);
-      res.dropCutsInTurn(track, zones, null);
-      assertEquals("fewer cuts", 597, sensor.size());
+      List<SensorContactWrapper> toDel = res.findCutsToDropInTurn(track, zones, null);
+      assertEquals("have cuts to delete", 124, toDel.size());
 
       @SuppressWarnings("unused")
       final List<LegOfCuts> legs = res.getLegs(track, zones, null);
@@ -565,9 +565,11 @@ public class AmbiguityResolver
     }
   }
 
-  public void dropCutsInTurn(final TrackWrapper track, final Zone[] zones,
+  public List<SensorContactWrapper> findCutsToDropInTurn(final TrackWrapper track, final Zone[] zones,
       final TimePeriod period)
   {
+    final List<SensorContactWrapper> toDelete =
+        new ArrayList<SensorContactWrapper>();
     if (zones != null && zones.length > 0)
     {
       // ok, go for it
@@ -576,8 +578,6 @@ public class AmbiguityResolver
       while (numer.hasMoreElements())
       {
         final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
-        final List<SensorContactWrapper> toDelete =
-            new ArrayList<SensorContactWrapper>();
         final Enumeration<Editable> cNumer = sensor.elements();
         while (cNumer.hasMoreElements())
         {
@@ -589,15 +589,9 @@ public class AmbiguityResolver
             toDelete.add(scw);
           }
         }
-
-        // ok, do the delete
-        for (final SensorContactWrapper sc : toDelete)
-        {
-          // ok, drop it.
-          sensor.removeElement(sc);
-        }
       }
     }
+    return toDelete;
   }
 
   public List<LegOfCuts> getLegs(final TrackWrapper track, final Zone[] zones,

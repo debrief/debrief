@@ -14,6 +14,16 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -27,10 +37,13 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GenericData.HiResDate;
 
@@ -225,7 +238,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       public void run()
       {
         super.run();
-        processStepOne();
+        deleteCutsInTurn();
       }
     };
 
@@ -253,16 +266,86 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // and refresh
     updateData(true);
   }
+  
+  private class DeleteCutsOperation extends CMAPOperation
+  {
 
-  protected void processStepOne()
+    final private List<SensorContactWrapper> _cutsToDelete;
+    private HashMap<SensorWrapper, ArrayList<SensorContactWrapper>> _deletedCuts;
+
+    public DeleteCutsOperation(List<SensorContactWrapper> cutsToDelete)
+    {
+      super("Delete cuts in O/S Turn");
+      
+      _cutsToDelete = cutsToDelete;
+    }
+
+    @Override
+    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      _deletedCuts = new 
+          HashMap<SensorWrapper, ArrayList<SensorContactWrapper>>();
+      
+      for(SensorContactWrapper t: _cutsToDelete)
+      {
+        // store the details of this sensor, so we can undo it
+        ArrayList<SensorContactWrapper> list = _deletedCuts.get(t.getSensor());
+        
+        if(list == null)
+        {
+          list = new ArrayList<SensorContactWrapper>();
+          _deletedCuts.put(t.getSensor(), list);
+        }
+        
+        list.add(t);
+        
+        t.getSensor().removeElement(t);
+      }
+      
+      // and refresh
+      updateData(true);
+      
+      IStatus res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+          "Delete cuts in O/S turn successful", null);
+      return res;
+    }
+
+    @Override
+    public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      for(final SensorWrapper sensor: _deletedCuts.keySet())
+      {
+        ArrayList<SensorContactWrapper> cuts = _deletedCuts.get(sensor);
+        for(SensorContactWrapper cut: cuts)
+        {
+          sensor.add(cut);
+        }
+      }
+      
+      // and refresh the UI
+      updateData(true);
+
+      IStatus res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+          "Restore cuts in O/S turn successful", null);
+      return res;
+    }
+    
+  }
+
+  protected void deleteCutsInTurn()
   {
     // create the resolver
     AmbiguityResolver resolver = new AmbiguityResolver();
     Zone[] zones = ownshipZoneChart.getZones();
-    resolver.dropCutsInTurn(super._myHelper.getPrimaryTrack(), zones, null);
     
-    // and refresh
-    updateData(true);
+    List<SensorContactWrapper> cutsToDelete = resolver.findCutsToDropInTurn(super._myHelper.getPrimaryTrack(), zones, null);
+    
+    IUndoableOperation deleteOperation = new DeleteCutsOperation(cutsToDelete);
+    
+    // wrap the operation
+    undoRedoProvider.execute(deleteOperation);
   }
 
   private void processShowCourse()

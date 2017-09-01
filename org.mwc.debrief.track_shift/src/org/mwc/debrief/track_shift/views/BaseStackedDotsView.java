@@ -184,7 +184,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private final IOperationHistory operationHistory =
       new DefaultOperationHistory();
 
-  private final ZoneUndoRedoProvider undoRedoProvider =
+  protected final ZoneUndoRedoProvider undoRedoProvider =
       new ZoneUndoRedoProvider()
       {
         @Override
