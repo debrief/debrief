@@ -772,9 +772,7 @@ public class AmbiguityResolver
     // ok, loop through the legs
     LegOfCuts lastLeg = null;
     for (final LegOfCuts leg : legs)
-    {
-      System.out.println("first cut:" + new Date(leg.get(0).getDTG().getDate().getTime()));
-      
+    {     
       if (lastLeg != null)
       {
         // ok, retrieve slopes
@@ -806,9 +804,14 @@ public class AmbiguityResolver
 
           Collections.sort(items);
           final Perm closest = items.get(0);
-
-          ditchBearingsForThisLeg(leg, closest.secondOne);          
-          res.add(new ResolvedLeg(leg, closest.secondOne));
+          final Perm nextClosest = items.get(1);
+          final double firstTwoDiff = Math.abs(nextClosest.score - closest.score);
+          final double cutOff = 10;
+          if(firstTwoDiff > cutOff)
+          {
+            ditchBearingsForThisLeg(leg, closest.secondOne);          
+            res.add(new ResolvedLeg(leg, closest.secondOne));
+          }
         }
         else
         {
