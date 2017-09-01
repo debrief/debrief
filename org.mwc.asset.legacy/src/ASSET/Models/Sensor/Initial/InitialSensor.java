@@ -172,7 +172,7 @@ abstract public class InitialSensor extends CoreSensor
 
 
   private void handleAmbiguousBearing(
-      final ASSET.Models.Detection.DetectionEvent detection, final double crse, final Float Brg,
+      final DetectionEvent detection, final double crse, final Float Brg,
       final Float RelBrg)
   {
     float ambigBrg = (float) (crse - RelBrg);

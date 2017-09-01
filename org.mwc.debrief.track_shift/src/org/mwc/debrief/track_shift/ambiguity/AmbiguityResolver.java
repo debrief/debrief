@@ -806,17 +806,18 @@ public class AmbiguityResolver
     resolve(legs);
   }
 
-  private double trim(double val)
+  private double trim(final double val)
   {
-    while (val < -350d)
+    double res = val;
+    while (res < -350d)
     {
-      val += 360d;
+      res += 360d;
     }
-    while (val >= 360d)
+    while (res >= 360d)
     {
-      val -= 360d;
+      res -= 360d;
     }
-    return val;
+    return res;
   }
 
   private double valueAt(final long time, final double[] slope)

@@ -44,8 +44,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private Action relativeAxes;
   private Action scaleError;
 
-  private Action doStep1;
-  private Action doStep2;
+  private Action _doStep1;
+  private Action _doStep2;
   
   public BearingResidualsView()
   {
@@ -59,8 +59,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     super.addExtras(toolBarManager);
     toolBarManager.add(showCourse);
-    toolBarManager.add(doStep1);
-    toolBarManager.add(doStep2);
+    toolBarManager.add(_doStep1);
+    toolBarManager.add(_doStep2);
   }
 
   @Override
@@ -180,22 +180,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           {
             super.run();
 
-            final double minVal;
-            final double maxVal;
-            if (relativeAxes.isChecked())
-            {
-              minVal = -180d;
-              maxVal = 180d;
-            }
-            else
-            {
-              minVal = 0d;
-              maxVal = 360d;
-            }
-
-            _overviewCourseRenderer.setRange(minVal, maxVal);
-
-            processShowCourse();
+            processRelativeAxes();
           }
         };
     relativeAxes.setChecked(false);
@@ -225,21 +210,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       public void run()
       {
         super.run();
-        final boolean val = _autoResize.isChecked();
-        if (_showDotPlot.isChecked())
-        {
-          if (val)
-          {
-            _dotPlot.getRangeAxis().setAutoRange(true);
-            _autoResize.setToolTipText("Keep plot sized to show all data");
-          }
-          else
-          {
-            _dotPlot.getRangeAxis().setRange(-5, 5);
-            _dotPlot.getRangeAxis().setAutoRange(false);
-            _autoResize.setToolTipText("Fix bearing range to +/- 5 degs");
-          }
-        }
+        processAutoResize();
       }
     };
     _autoResize.setChecked(true);
@@ -248,7 +219,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         .getImageDescriptor("icons/24/fit_to_win.png"));
     
     // now the course action
-    doStep1 = new Action("1", IAction.AS_PUSH_BUTTON)
+    _doStep1 = new Action("1", IAction.AS_PUSH_BUTTON)
     {
       @Override
       public void run()
@@ -259,7 +230,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     };
 
     // now the course action
-    doStep2 = new Action("2", IAction.AS_PUSH_BUTTON)
+    _doStep2 = new Action("2", IAction.AS_PUSH_BUTTON)
     {
       @Override
       public void run()
@@ -322,5 +293,44 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         _targetCourseSeries, _targetSpeedSeries, ownshipCourseSeries,
         targetBearingSeries, targetCalculatedSeries, _overviewSpeedRenderer,
         _overviewCourseRenderer);
+  }
+
+  private void processRelativeAxes()
+  {
+    final double minVal;
+    final double maxVal;
+    if (relativeAxes.isChecked())
+    {
+      minVal = -180d;
+      maxVal = 180d;
+    }
+    else
+    {
+      minVal = 0d;
+      maxVal = 360d;
+    }
+
+    _overviewCourseRenderer.setRange(minVal, maxVal);
+
+    processShowCourse();
+  }
+
+  private void processAutoResize()
+  {
+    final boolean val = _autoResize.isChecked();
+    if (_showDotPlot.isChecked())
+    {
+      if (val)
+      {
+        _dotPlot.getRangeAxis().setAutoRange(true);
+        _autoResize.setToolTipText("Keep plot sized to show all data");
+      }
+      else
+      {
+        _dotPlot.getRangeAxis().setRange(-5, 5);
+        _dotPlot.getRangeAxis().setAutoRange(false);
+        _autoResize.setToolTipText("Fix bearing range to +/- 5 degs");
+      }
+    }
   }
 }
