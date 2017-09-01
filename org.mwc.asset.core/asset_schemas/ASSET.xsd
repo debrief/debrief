@@ -1849,6 +1849,20 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="FormatHelperType">
+		<xs:annotation>
+			<xs:documentation>Debrief format helper</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: text
+				Editable: text
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="Text" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Content of format helper
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>	
 	<xs:complexType name="MovementCharacteristicsType">
 		<xs:annotation>
 			<xs:documentation>2d movement model</xs:documentation>
@@ -4053,6 +4067,13 @@
 							<xs:documentation>The type of target we want to record a
 								narrative full
 								(or omit to record all)
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="FormatHelper" type="FormatHelperType"
+						minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Debrief format helpers
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>

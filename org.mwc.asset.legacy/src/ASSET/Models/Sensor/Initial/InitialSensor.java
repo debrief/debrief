@@ -108,32 +108,15 @@ abstract public class InitialSensor extends CoreSensor
     if (se > 0)
     //    if(rng < THRESHOLD)
     {
-      Float Brg = null;
-
-      WorldDistance Rng = null;
-      final Float Str = new Float(se);
-      Float tgtCourse = null;
-      Float tgtSpeed = null;
-      Float RelBrg = null;
-
       // collate the data
-      if (this.canProduceBearing())
-      {
-        Brg = new Float(brg);
-        RelBrg = new Float(this.relativeBearing(host.getStatus().getCourse(), brg));
-      }
+      Float Brg = this.canProduceBearing() ? new Float(brg) : null;
+      final Float RelBrg = this.canProduceBearing() ? new Float(this.relativeBearing(host.getStatus().getCourse(), brg)) : null;
 
-      if (canProduceRange())
-        Rng = rng;
-
-      // see if we can produce an estimated ragne
-      WorldDistance estimatedRange = getEstimatedRange();
-
-      if (this.hasTgtSpeed())
-        tgtSpeed = new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts));
-
-      if (this.hasTgtCourse())
-        tgtCourse = new Float(target.getStatus().getCourse());
+      final WorldDistance Rng = canProduceRange() ? rng : null;
+      final Float tgtSpeed = this.hasTgtSpeed() ? new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)) :  null;
+      final Float tgtCourse = this.hasTgtCourse() ? new Float(target.getStatus().getCourse()) : null;
+      final Float Str = new Float(se);
+      final WorldDistance estimatedRange = getEstimatedRange();
 
       //   if(this.canIdentifyTarget())
       //    identifiedTarget = target; // @@ this is in case we want to start
@@ -143,6 +126,11 @@ abstract public class InitialSensor extends CoreSensor
       if (target.getCategory() == null)
         System.out.println("no category for:" + target);
 
+      while(Brg < 0)
+      {
+        Brg += 360;
+      }
+      
       res = new DetectionEvent(time,
                                host.getId(),
                                host.getStatus().getLocation(),
@@ -159,9 +147,8 @@ abstract public class InitialSensor extends CoreSensor
       // hmm, do we produce ambiguous bearings?
       if(isAmbiguous())
       {
-      	res.setAmbiguousBearing((float)(host.getStatus().getCourse() - RelBrg));
+        handleAmbiguousBearing(res, crse, Brg, RelBrg);
       }
-
     }
 
     // ok, just see if there are any pSupport listners
@@ -181,6 +168,39 @@ abstract public class InitialSensor extends CoreSensor
 
     return res;
 
+  }
+
+
+  private void handleAmbiguousBearing(
+      final DetectionEvent detection, final double crse, final Float Brg,
+      final Float RelBrg)
+  {
+    float ambigBrg = (float) (crse - RelBrg);
+    while(ambigBrg < 0)
+    {
+      ambigBrg += 360;
+    }
+    while(ambigBrg > 360)
+    {
+      ambigBrg -= 360;
+    }
+    
+    // ok, we'll make the port bearing hte first bearing, and the stbd one
+    // the other one. Otherwise the first baering is always true
+    if(RelBrg < crse)
+    {
+      // ok, this is port. leave it as is
+      // the stbd is ambiguous
+      detection.setAmbiguousBearing(ambigBrg);
+    }
+    else
+    {
+      // ok, this is stbd, swap them around
+      // put the ambig bearing into port
+      detection.setBearing(ambigBrg);
+      // and the real one into stbd
+      detection.setAmbiguousBearing(Brg);
+    }
   }
 
   /**

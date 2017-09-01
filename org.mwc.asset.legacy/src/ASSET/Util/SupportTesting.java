@@ -153,7 +153,7 @@ public class SupportTesting extends junit.framework.TestCase
 
     if (doREP)
     {
-      _dro = new DebriefReplayObserver(TEST_DIR, name + ".rep", false, false, true, null, "debrief plot", true);
+      _dro = new DebriefReplayObserver(TEST_DIR, name + ".rep", false, false, true, null, "debrief plot", true, null);
       _dro.setup(theScenario);
     }
 

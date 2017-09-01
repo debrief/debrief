@@ -18,6 +18,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.mwc.debrief.track_shift,
+ org.mwc.debrief.track_shift.ambiguity,
  org.mwc.debrief.track_shift.controls,
  org.mwc.debrief.track_shift.magic,
  org.mwc.debrief.track_shift.views,
