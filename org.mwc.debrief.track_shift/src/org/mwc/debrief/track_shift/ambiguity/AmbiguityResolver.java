@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -405,7 +406,7 @@ public class AmbiguityResolver
       assertEquals("right cuts at start", 721, numCuts);
       List<SensorContactWrapper> toDel =
           res.findCutsToDropInTurn(track, zones, null);
-      assertEquals("have cuts to delete", 124, toDel.size());
+      assertEquals("have cuts to delete", 133, toDel.size());
 
       @SuppressWarnings("unused")
       final List<LegOfCuts> legs = res.getLegs(track, zones, null);
@@ -772,6 +773,8 @@ public class AmbiguityResolver
     LegOfCuts lastLeg = null;
     for (final LegOfCuts leg : legs)
     {
+      System.out.println("first cut:" + new Date(leg.get(0).getDTG().getDate().getTime()));
+      
       if (lastLeg != null)
       {
         // ok, retrieve slopes
