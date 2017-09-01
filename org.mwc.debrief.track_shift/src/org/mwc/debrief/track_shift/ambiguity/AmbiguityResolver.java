@@ -36,6 +36,11 @@ public class AmbiguityResolver
   {
 
     /**
+     * we use a weighting factor to reduce the influence of cuts in the first 1/4 of the leg - to
+     * reduce the impact of the cuts while the array is steadying
+     */
+    private static final double EARLY_CUTS_WEIGHTING = 0.001;
+    /**
      * 
      */
     private static final long serialVersionUID = 1L;
@@ -45,8 +50,8 @@ public class AmbiguityResolver
       final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(2);
 
       // how many are in the first 1/4?
-      int firstQuarter = (int) Math.ceil(this.size() / 4d);
-      
+      final int firstQuarter = (int) Math.ceil(this.size() / 4d);
+
       // add my values
       final WeightedObservedPoints obs = new WeightedObservedPoints();
       for (final SensorContactWrapper item : this)
@@ -67,16 +72,15 @@ public class AmbiguityResolver
         else
         {
           theBrg = item.getBearing();
-          // System.out.println(time + ", " + theBrg + ", " + item.getAmbiguousBearing());
         }
 
         if (!Double.isNaN(theBrg))
         {
           // reduce the weighting of the first 1/4 of the cuts
           final double weighting;
-          if(obs.toList().size() <= firstQuarter)
+          if (obs.toList().size() <= firstQuarter)
           {
-            weighting = 0.1;
+            weighting = EARLY_CUTS_WEIGHTING;
           }
           else
           {
@@ -130,51 +134,6 @@ public class AmbiguityResolver
   // ////////////////////////////////////////////////////////////////////////////////////////////////
   static public final class TestResolveAmbig extends junit.framework.TestCase
   {
-    
-    public void testWeighting()
-    {
-      final SensorWrapper sensor = new SensorWrapper("name");
-      final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
-
-      final LegOfCuts leg1 = new LegOfCuts();
-      leg1.add(wrapMe(sensor, 280, 92d, 260d));
-      leg1.add(wrapMe(sensor, 290, 73d, 280d));
-      leg1.add(wrapMe(sensor, 300, 54d, 300d));
-      leg1.add(wrapMe(sensor, 310, 35d, 320d));
-      leg1.add(wrapMe(sensor, 320, 16d, 340d));
-      leg1.add(wrapMe(sensor, 330, 9d, 0d));
-      leg1.add(wrapMe(sensor, 340, 355d, 20d));
-      legs.add(leg1);
-
-      // put the good cut in the wrong domain
-      final LegOfCuts leg2 = new LegOfCuts();
-      leg2.add(wrapMe(sensor, 360, 42d, 260d));
-      leg2.add(wrapMe(sensor, 370, 43d, 240d));
-      leg2.add(wrapMe(sensor, 380, 45d, 220d));
-      leg2.add(wrapMe(sensor, 390, 47d, 200d));
-      leg2.add(wrapMe(sensor, 400, 49d, 180d));
-      leg2.add(wrapMe(sensor, 410, 51d, 160d));
-      leg2.add(wrapMe(sensor, 420, 53d, 140d));
-      legs.add(leg2);
-      
-      // make the first cuts very wonky
-      final LegOfCuts leg3 = new LegOfCuts();
-      leg3.add(wrapMe(sensor, 440, 141d, 350d));
-      leg3.add(wrapMe(sensor, 450, 143d, 20d));
-      leg3.add(wrapMe(sensor, 460, 145d, 70d));
-      leg3.add(wrapMe(sensor, 470, 147d, 80d));
-      leg3.add(wrapMe(sensor, 480, 149d, 90d));
-      leg3.add(wrapMe(sensor, 490, 151d, 100d));
-      leg3.add(wrapMe(sensor, 500, 153d, 110d));
-      legs.add(leg3);
-      
-      AmbiguityResolver resolver = new AmbiguityResolver();
-      resolver.resolve(legs);
-      
-      assertEquals("correct bearing", 260d, leg1.get(0).getBearing());
-      assertEquals("correct bearing", 42d, leg2.get(0).getBearing());
-      assertEquals("correct bearing", 350d, leg3.get(0).getBearing());
-    }
 
     private TrackWrapper getData() throws FileNotFoundException
     {
@@ -276,7 +235,7 @@ public class AmbiguityResolver
 
       // drop cuts in turn
       res.dropCutsInTurn(track, zones, null);
-      
+
       // now get the legs
       final List<LegOfCuts> legs = res.getLegs(track, zones, null);
       assertEquals("right num", zones.length, legs.size());
@@ -372,7 +331,6 @@ public class AmbiguityResolver
       leg4.add(wrapMe(sensor, 340, 355d, 20d));
       legs.add(leg4);
 
-
       // put the good cut in the wrong domain
       final LegOfCuts leg5 = new LegOfCuts();
       leg5.add(wrapMe(sensor, 360, 41d, 260d));
@@ -383,7 +341,7 @@ public class AmbiguityResolver
       leg5.add(wrapMe(sensor, 410, 51d, 160d));
       leg5.add(wrapMe(sensor, 420, 53d, 140d));
       legs.add(leg5);
-      
+
       // make the first cuts very wonky
       final LegOfCuts leg6 = new LegOfCuts();
       leg6.add(wrapMe(sensor, 360, 41d, 350d));
@@ -394,8 +352,6 @@ public class AmbiguityResolver
       leg6.add(wrapMe(sensor, 410, 51d, 100d));
       leg6.add(wrapMe(sensor, 420, 53d, 110d));
       legs.add(leg6);
-
-
 
       final AmbiguityResolver solver = new AmbiguityResolver();
       solver.resolve(legs);
@@ -451,12 +407,56 @@ public class AmbiguityResolver
       assertEquals("right cuts at start", 721, numCuts);
       res.dropCutsInTurn(track, zones, null);
       assertEquals("fewer cuts", 597, sensor.size());
-      
+
       @SuppressWarnings("unused")
-      List<LegOfCuts> legs = res.getLegs(track, zones, null);
-      
+      final List<LegOfCuts> legs = res.getLegs(track, zones, null);
 
       // ok, check the data
+    }
+
+    public void testWeighting()
+    {
+      final SensorWrapper sensor = new SensorWrapper("name");
+      final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
+
+      final LegOfCuts leg1 = new LegOfCuts();
+      leg1.add(wrapMe(sensor, 280, 92d, 260d));
+      leg1.add(wrapMe(sensor, 290, 73d, 280d));
+      leg1.add(wrapMe(sensor, 300, 54d, 300d));
+      leg1.add(wrapMe(sensor, 310, 35d, 320d));
+      leg1.add(wrapMe(sensor, 320, 16d, 340d));
+      leg1.add(wrapMe(sensor, 330, 9d, 0d));
+      leg1.add(wrapMe(sensor, 340, 355d, 20d));
+      legs.add(leg1);
+
+      // put the good cut in the wrong domain
+      final LegOfCuts leg2 = new LegOfCuts();
+      leg2.add(wrapMe(sensor, 360, 42d, 260d));
+      leg2.add(wrapMe(sensor, 370, 43d, 240d));
+      leg2.add(wrapMe(sensor, 380, 45d, 220d));
+      leg2.add(wrapMe(sensor, 390, 47d, 200d));
+      leg2.add(wrapMe(sensor, 400, 49d, 180d));
+      leg2.add(wrapMe(sensor, 410, 51d, 160d));
+      leg2.add(wrapMe(sensor, 420, 53d, 140d));
+      legs.add(leg2);
+
+      // make the first cuts very wonky
+      final LegOfCuts leg3 = new LegOfCuts();
+      leg3.add(wrapMe(sensor, 440, 141d, 350d));
+      leg3.add(wrapMe(sensor, 450, 143d, 20d));
+      leg3.add(wrapMe(sensor, 460, 145d, 70d));
+      leg3.add(wrapMe(sensor, 470, 147d, 80d));
+      leg3.add(wrapMe(sensor, 480, 149d, 90d));
+      leg3.add(wrapMe(sensor, 490, 151d, 100d));
+      leg3.add(wrapMe(sensor, 500, 153d, 110d));
+      legs.add(leg3);
+
+      final AmbiguityResolver resolver = new AmbiguityResolver();
+      resolver.resolve(legs);
+
+      assertEquals("correct bearing", 260d, leg1.get(0).getBearing());
+      assertEquals("correct bearing", 42d, leg2.get(0).getBearing());
+      assertEquals("correct bearing", 350d, leg3.get(0).getBearing());
     }
 
     private SensorContactWrapper wrapMe(final SensorWrapper sensor,
@@ -527,6 +527,20 @@ public class AmbiguityResolver
         thisVal -= 360d;
       }
       res.add(new WeightedObservedPoint(ob.getWeight(), ob.getX(), thisVal));
+    }
+    return res;
+  }
+
+  private double calcDelta(final double one, final double two)
+  {
+    double res = Math.abs(one - two);
+    while (res > 360d)
+    {
+      res -= 360d;
+    }
+    while (res <= -360d)
+    {
+      res += 360d;
     }
     return res;
   }
@@ -667,20 +681,59 @@ public class AmbiguityResolver
     return !found;
   }
 
-  private double calcDelta(double one, double two)
+  @SuppressWarnings("unused")
+  private void outputCurve(final String title, final long midTime,
+      final LegOfCuts leg, final double[] slopeOne, final double[] slopeTwo)
   {
-    double res = Math.abs(one - two);
-    while(res > 360d)
+    System.out.println(title);
+    final long firstTime = leg.get(0).getDTG().getDate().getTime();
+    final boolean firstLeg = firstTime < midTime;
+    final boolean twoLegs = slopeTwo != null;
+
+    if (!firstLeg)
     {
-      res -= 360d;
+      // ok, output the mid-point
+      final double legTwo = twoLegs ? valueAt(midTime, slopeTwo) : Double.NaN;
+
+      System.out.println(midTime + ", " + trim(valueAt(midTime, slopeOne))
+          + ", " + trim(legTwo));
     }
-    while(res <= -360d)
+
+    // now loop through
+    for (final SensorContactWrapper cut : leg)
     {
-      res += 360d;
+      final long thisTime = cut.getDTG().getDate().getTime();
+      double legTwo = twoLegs ? valueAt(thisTime, slopeTwo) : Double.NaN;
+      if (legTwo > 360d)
+      {
+        legTwo -= 360d;
+      }
+
+      System.out.println(thisTime + ", " + trim(valueAt(thisTime, slopeOne))
+          + ", " + trim(legTwo));
     }
-    return res;      
+
+    if (firstLeg)
+    {
+      // ok, output the mid-point
+      final double legTwo = twoLegs ? valueAt(midTime, slopeTwo) : Double.NaN;
+      System.out.println(midTime + ", " + trim(valueAt(midTime, slopeOne))
+          + ", " + trim(legTwo));
+    }
+
   }
-  
+
+  @SuppressWarnings("unused")
+  private void outputLeg(final String title, final LegOfCuts lastLeg)
+  {
+    System.out.println(title);
+    for (final SensorContactWrapper cut : lastLeg)
+    {
+      System.out.println(cut.getDTG().getDate().getTime() + ", "
+          + cut.getBearing() + ", " + cut.getAmbiguousBearing());
+    }
+  }
+
   private void resolve(final List<LegOfCuts> legs)
   {
     // ok, loop through the legs
@@ -689,9 +742,6 @@ public class AmbiguityResolver
     {
       if (lastLeg != null)
       {
-        double firstCut = leg.get(0).getBearing();
-        
-        
         // ok, retrieve slopes
         final double[] lastSlopeOne = lastLeg.getCurve(false);
         final double[] lastSlopeTwo = lastLeg.getCurve(true);
@@ -708,21 +758,12 @@ public class AmbiguityResolver
         final double nextSlopeValOne = trim(valueAt(midTime, thisSlopeOne));
         final double nextSlopeValTwo = trim(valueAt(midTime, thisSlopeTwo));
 
-        if(firstCut == 141d)
-        {
-          // output the cuts
-          outputLeg("== Previous leg", lastLeg);
-          outputCurve("== Previous slope", midTime, lastLeg, lastSlopeOne, null);
-          outputLeg("== this leg", leg);
-          outputCurve("== this slope", midTime, leg, thisSlopeOne, thisSlopeTwo);
-        }        
-        
         // ok, is the first track resolved?
         if (lastSlopeTwo == null)
         {
           // ok, the previous leg has been sorted. just sort this leg
-          double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
-          double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
+          final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
+          final double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
 
           final List<Perm> items = new ArrayList<>();
           items.add(new Perm(oneone, true, true));
@@ -736,7 +777,7 @@ public class AmbiguityResolver
         else
         {
           // ok, we've got to compare both of them
-          final double lastSlopeValTwo = valueAt(midTime, lastSlopeTwo);
+          final double lastSlopeValTwo = trim(valueAt(midTime, lastSlopeTwo));
 
           // find the difference in the legs
           final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
@@ -762,75 +803,29 @@ public class AmbiguityResolver
       lastLeg = leg;
     }
   }
-  
+
+  public void resolve(final TrackWrapper primaryTrack, final Zone[] zones,
+      final Object object)
+  {
+    final List<LegOfCuts> legs = getLegs(primaryTrack, zones, null);
+    resolve(legs);
+  }
+
   private double trim(double val)
   {
-    while(val < -350d)
+    while (val < -350d)
     {
       val += 360d;
     }
-    while(val >= 360d)
+    while (val >= 360d)
     {
       val -= 360d;
     }
     return val;
   }
 
-  private void outputCurve(String title, long midTime, LegOfCuts leg, double[] slopeOne,
-      double[] slopeTwo)
-  {
-    System.out.println(title);
-    long firstTime = leg.get(0).getDTG().getDate().getTime();
-    boolean firstLeg = firstTime < midTime;
-    boolean twoLegs = slopeTwo != null;
-        
-    if(!firstLeg)
-    {
-      // ok, output the mid-point
-      double legTwo = twoLegs ? valueAt(midTime, slopeTwo) : Double.NaN;
-      
-      System.out.println(midTime + ", " + trim(valueAt(midTime, slopeOne)) + ", " + trim(legTwo));
-    }
-    
-    // now loop through
-    for(SensorContactWrapper cut: leg)
-    {
-      final long thisTime = cut.getDTG().getDate().getTime();
-      double legTwo = twoLegs ? valueAt(thisTime, slopeTwo) : Double.NaN;
-      if(legTwo > 360d)
-      {
-        legTwo -= 360d;
-      }
-
-      System.out.println(thisTime + ", " + trim(valueAt(thisTime, slopeOne)) + ", " + trim(legTwo));
-    }
-
-    if(firstLeg)
-    {
-      // ok, output the mid-point
-      final double legTwo = twoLegs ? valueAt(midTime, slopeTwo) : Double.NaN;      
-      System.out.println(midTime + ", " + trim(valueAt(midTime, slopeOne)) + ", " + trim(legTwo));
-    }
-
-  }
-
-  private void outputLeg(String title, LegOfCuts lastLeg)
-  {
-    System.out.println(title);
-    for(final SensorContactWrapper cut: lastLeg)
-    {
-      System.out.println(cut.getDTG().getDate().getTime() + ", " + cut.getBearing() + ", " + cut.getAmbiguousBearing());
-    }
-  }
-
   private double valueAt(final long time, final double[] slope)
   {
     return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
-  }
-
-  public void resolve(TrackWrapper primaryTrack, Zone[] zones, Object object)
-  {
-    List<LegOfCuts> legs = getLegs(primaryTrack, zones, null);
-    resolve(legs);
   }
 }
