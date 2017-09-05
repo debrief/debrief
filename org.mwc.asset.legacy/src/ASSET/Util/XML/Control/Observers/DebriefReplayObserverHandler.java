@@ -159,6 +159,9 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     _recordDecisions = false;
     _recordPositions = true;
     _targetType = null;
+    
+    // and clear the format helpers
+    _formatHelpers.clear();
 
   }
 
