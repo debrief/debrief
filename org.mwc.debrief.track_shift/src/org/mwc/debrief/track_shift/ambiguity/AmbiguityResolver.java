@@ -72,13 +72,15 @@ public class AmbiguityResolver
   static public final class TestResolveAmbig extends junit.framework.TestCase
   {
 
-    private TrackWrapper getData() throws FileNotFoundException
+    private TrackWrapper getData(final String name)
+        throws FileNotFoundException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
       final Layers theLayers = new Layers();
       final String fName =
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/Ambig_tracks.rep";
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/"
+              + name;
       final File inFile = new File(fName);
       assertTrue("input file exists", inFile.exists());
       final FileInputStream is = new FileInputStream(fName);
@@ -229,7 +231,7 @@ public class AmbiguityResolver
     public void testGettingLegs() throws FileNotFoundException
     {
 
-      final TrackWrapper track = getData();
+      final TrackWrapper track = getData("Ambig_tracks.rep");
       assertNotNull("found track", track);
 
       // has sensors
@@ -310,6 +312,33 @@ public class AmbiguityResolver
       assertEquals("correct last score", 200d, res.get(0).getY(), 0.001);
       assertEquals("correct last score", 40d, res.get(res.size() - 1).getY(),
           0.001);
+    }
+
+    public void testDitchUsingAmbiguity() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensor", 1, track.getSensors().size());
+      
+      // make the sensor visible
+      SensorWrapper sensor =  (SensorWrapper) track.getSensors().elements().nextElement();
+      sensor.setVisible(true);
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      // try to get zones using ambiguity delta
+      List<LegOfCuts> legs = solver.sliceIntoLegsUsingAmbiguity(track);
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 6, legs.size());
+      
+      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
+
+      
+      // ditch cuts not in these legs
     }
 
     public void testResolve() throws FileNotFoundException
@@ -397,7 +426,7 @@ public class AmbiguityResolver
 
     public void testSplittingAllTime() throws FileNotFoundException
     {
-      final TrackWrapper track = getData();
+      final TrackWrapper track = getData("Ambig_tracks.rep");
       assertNotNull("found track", track);
 
       // has sensors
@@ -492,7 +521,7 @@ public class AmbiguityResolver
     }
   }
 
-  static List<WeightedObservedPoint> putObsInCorrectDomain(
+  public static List<WeightedObservedPoint> putObsInCorrectDomain(
       final List<WeightedObservedPoint> obs)
   {
     final List<WeightedObservedPoint> res =
@@ -534,7 +563,92 @@ public class AmbiguityResolver
     return res;
   }
 
-  static List<WeightedObservedPoint> putObsInCorrectRange(
+  public List<LegOfCuts> sliceIntoLegsUsingAmbiguity(SensorWrapper sensor)
+  {
+    List<LegOfCuts> res = new ArrayList<LegOfCuts>();
+
+    double RATE_CUT_OFF = 2;
+
+    Enumeration<Editable> enumer = sensor.elements();
+    Double lastDelta = null;
+    HiResDate lastTime = null;
+    LegOfCuts thisLeg = null;
+    while (enumer.hasMoreElements())
+    {
+      final SensorContactWrapper cut =
+          (SensorContactWrapper) enumer.nextElement();
+
+      if (cut.getHasAmbiguousBearing())
+      {
+        // ok, TA data
+        final double delta = cut.getAmbiguousBearing() - cut.getBearing();
+        final HiResDate time = cut.getDTG();
+
+        if (lastDelta != null)
+        {
+          
+          double valueDelta = delta - lastDelta;
+          
+          // ok, work out the change rate
+          long timeMillis =
+              time.getDate().getTime() - lastTime.getDate().getTime();
+          long timeSecs = timeMillis / 1000L;
+
+          double rate = Math.abs(valueDelta / timeSecs);
+//          System.out.println("brg:" + (int)cut.getBearing() + " ambig:" + 
+//          (int)cut.getAmbiguousBearing() + " delta:" + (int)Math.abs(cut.getAmbiguousBearing() - cut.getBearing()) + " rate:" + rate);
+
+          if (rate > RATE_CUT_OFF)
+          {
+            // ok, we're in a turn.
+            if (thisLeg != null)
+            {
+              // close the leg
+              thisLeg = null;
+            }
+          }
+          else
+          {
+            // ok, we're in a leg
+            if (thisLeg == null)
+            {
+              thisLeg = new LegOfCuts();
+              res.add(thisLeg);
+            }
+            thisLeg.add(cut);
+          }
+        }
+
+        lastDelta = delta;
+        lastTime = time;
+      }
+    }
+
+    return res;
+  }
+
+  public List<LegOfCuts> sliceIntoLegsUsingAmbiguity(TrackWrapper track)
+  {
+    List<LegOfCuts> res = new ArrayList<LegOfCuts>();
+    // ok, go for it
+    final BaseLayer sensors = track.getSensors();
+    final Enumeration<Editable> numer = sensors.elements();
+    while (numer.hasMoreElements())
+    {
+      final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
+      if (sensor.getVisible())
+      {
+        List<LegOfCuts> legsForThisSensor = sliceIntoLegsUsingAmbiguity(sensor);
+        if (legsForThisSensor.size() > 0)
+        {
+          res.addAll(legsForThisSensor);
+        }
+      }
+    }
+    return res;
+  }
+
+  public static List<WeightedObservedPoint> putObsInCorrectRange(
       final List<WeightedObservedPoint> obs)
   {
     final List<WeightedObservedPoint> res =

@@ -40,7 +40,7 @@ class LegOfCuts extends ArrayList<SensorContactWrapper>
    * how many cuts to include in the min leg length
    * 
    */
-  static final int LEG_LENGTH = 8;
+  public static  final int LEG_LENGTH = 8;
 
   /**
    * 
@@ -52,7 +52,7 @@ class LegOfCuts extends ArrayList<SensorContactWrapper>
    * @param period
    * @return
    */
-  List<SensorContactWrapper> extractPortion(final WhichPeriod period)
+  public List<SensorContactWrapper> extractPortion(final WhichPeriod period)
   {
     final List<SensorContactWrapper> cutsToUse;
     if (size() > LEG_LENGTH * 2)
