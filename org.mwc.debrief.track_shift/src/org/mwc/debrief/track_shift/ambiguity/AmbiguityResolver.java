@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -32,6 +33,16 @@ import MWC.GenericData.TimePeriod;
 
 public class AmbiguityResolver
 {
+  private static enum WhichPeriod
+  {
+    ALL, EARLY, LATE
+  }
+
+  private static enum WhichBearing
+  {
+    CORE, AMBIGUOUS
+  }
+
   private static class LegOfCuts extends ArrayList<SensorContactWrapper>
   {
 
@@ -39,13 +50,20 @@ public class AmbiguityResolver
      * we use a weighting factor to reduce the influence of cuts in the first 1/4 of the leg - to
      * reduce the impact of the cuts while the array is steadying
      */
-    private static final double EARLY_CUTS_WEIGHTING = 0.001;
+    private static final double EARLY_CUTS_WEIGHTING = 1d;
+    
+    /** how many cuts to include in the min leg length
+     * 
+     */
+    private static final int LEG_LENGTH = 8;
+
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public double[] getCurve(final boolean useAmbiguous)
+    public double[] getCurve(final WhichPeriod period,
+        final WhichBearing whichBearing)
     {
       final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(2);
 
@@ -54,11 +72,18 @@ public class AmbiguityResolver
 
       // add my values
       final WeightedObservedPoints obs = new WeightedObservedPoints();
-      for (final SensorContactWrapper item : this)
+      Double lastBearing = null;
+
+      // if we're a large dataset, just us a few at the end.
+      // our curve fitter struggles with curves s-shaped curves,
+      // it works best with c-shaped curves
+      final List<SensorContactWrapper> cutsToUse = extractPortion(period);
+
+      for (final SensorContactWrapper item : cutsToUse)
       {
         final long time = item.getDTG().getDate().getTime();
-        final double theBrg;
-        if (useAmbiguous)
+        double theBrg;
+        if (whichBearing.equals(WhichBearing.AMBIGUOUS))
         {
           if (item.getHasAmbiguousBearing())
           {
@@ -73,6 +98,25 @@ public class AmbiguityResolver
         {
           theBrg = item.getBearing();
         }
+
+        if (lastBearing != null)
+        {
+          // check if we've passed through zero
+          double delta = theBrg - lastBearing;
+          if (Math.abs(delta) > 180)
+          {
+            if (delta > 0)
+            {
+              theBrg -= 360d;
+            }
+            else
+            {
+              theBrg += 360d;
+            }
+          }
+        }
+
+        lastBearing = theBrg;
 
         if (!Double.isNaN(theBrg))
         {
@@ -91,6 +135,7 @@ public class AmbiguityResolver
       }
 
       final List<WeightedObservedPoint> res = obs.toList();
+
       if (res.size() > 0)
       {
         // process the obs, to put them all in the correct domain
@@ -104,6 +149,33 @@ public class AmbiguityResolver
       {
         return null;
       }
+    }
+
+    private List<SensorContactWrapper> extractPortion(final WhichPeriod period)
+    {
+      final List<SensorContactWrapper> cutsToUse;
+      if (size() > LEG_LENGTH * 2)
+      {
+        switch (period)
+        {
+          case EARLY:
+            cutsToUse = this.subList(0, LEG_LENGTH);
+            break;
+          case LATE:
+            int len = this.size();
+            cutsToUse = this.subList(len - (LEG_LENGTH), len);
+            break;
+          case ALL:
+          default:
+            cutsToUse = this;
+            break;
+        }
+      }
+      else
+      {
+        cutsToUse = this;
+      }
+      return cutsToUse;
     }
   }
 
@@ -188,6 +260,72 @@ public class AmbiguityResolver
       return ts;
     }
 
+    public void testGetCurveSector() throws FileNotFoundException
+    {
+      final LegOfCuts leg4 = new LegOfCuts();
+      final SensorWrapper sensor = new SensorWrapper("name");
+      leg4.add(wrapMe(sensor, 80, 92d, 260d));
+      leg4.add(wrapMe(sensor, 90, 82d, 280d));
+      leg4.add(wrapMe(sensor, 100, 72d, 300d));
+      leg4.add(wrapMe(sensor, 110, 62d, 320d));
+      leg4.add(wrapMe(sensor, 120, 52d, 340d));
+      
+      // start off with it too short
+      List<SensorContactWrapper> leg = leg4.extractPortion(WhichPeriod.EARLY);
+      assertNotNull("leg retrieved", leg);
+      assertEquals("correct length", 5, leg.size());
+      
+      // ok, add more data, so that we need to trim the data
+      leg4.add(wrapMe(sensor, 130, 42d, 0d));
+      leg4.add(wrapMe(sensor, 140, 32d, 20d));
+      leg4.add(wrapMe(sensor, 150, 22d, 40d));
+      leg4.add(wrapMe(sensor, 160, 12d, 60d));
+      leg4.add(wrapMe(sensor, 170, 2d, 80d));
+      leg4.add(wrapMe(sensor, 180, 12d, 60d));
+      leg4.add(wrapMe(sensor, 190, 22d, 40d));
+      leg4.add(wrapMe(sensor, 200, 32d, 20d));
+      leg4.add(wrapMe(sensor, 210, 42d, 0d));
+      leg4.add(wrapMe(sensor, 220, 52d, 340d));
+      leg4.add(wrapMe(sensor, 230, 62d, 320d));
+      leg4.add(wrapMe(sensor, 240, 72d, 300d));
+
+      // check we retrieve the expected data
+      leg = leg4.extractPortion(WhichPeriod.ALL);
+      assertNotNull("leg retrieved", leg);
+      assertEquals("correct length", 17, leg.size());
+      assertEquals("correct start", 80, leg.get(0).getDTG().getDate().getTime());
+      assertEquals("correct end", 240, leg.get(leg.size()-1).getDTG().getDate().getTime());
+
+      leg = leg4.extractPortion(WhichPeriod.EARLY);
+      assertNotNull("leg retrieved", leg);
+      assertEquals("correct length", 8, LegOfCuts.LEG_LENGTH);
+      assertEquals("correct start", 80, leg.get(0).getDTG().getDate().getTime());
+      assertEquals("correct end", 150, leg.get(leg.size()-1).getDTG().getDate().getTime());
+
+      leg = leg4.extractPortion(WhichPeriod.LATE);
+      assertNotNull("leg retrieved", leg);
+      assertEquals("correct length", 8, LegOfCuts.LEG_LENGTH);
+      assertEquals("correct start", 170, leg.get(0).getDTG().getDate().getTime());
+      assertEquals("correct end", 240, leg.get(leg.size()-1).getDTG().getDate().getTime());
+
+      // try the calculated values
+      double[] curve = leg4.getCurve(WhichPeriod.ALL, WhichBearing.CORE);
+      assertEquals("correct value (since we can't fit good curve)", 102.40, valueAt(80, curve), 0.01);
+      assertEquals("correct value (since we can't fit good curve)", 74.17, valueAt(240, curve), 0.01);
+
+      curve = leg4.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
+      assertEquals("correct value", 92, valueAt(80, curve), 0.01);
+
+      curve = leg4.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
+      assertEquals("correct value", 260, valueAt(80, curve), 0.01);
+
+      curve = leg4.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
+      assertEquals("correct value", 72, valueAt(240, curve), 0.01);
+
+      curve = leg4.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
+      assertEquals("correct value", -60, valueAt(240, curve), 0.01);
+    }
+
     public void testGetCurve() throws FileNotFoundException
     {
       final LegOfCuts leg4 = new LegOfCuts();
@@ -200,7 +338,7 @@ public class AmbiguityResolver
       leg4.add(wrapMe(sensor, 130, 42d, 360d));
       leg4.add(wrapMe(sensor, 140, 32d, 380d));
 
-      final double[] curve = leg4.getCurve(true);
+      final double[] curve = leg4.getCurve(WhichPeriod.ALL, WhichBearing.AMBIGUOUS);
       assertNotNull("produced curve", curve);
       assertEquals("curve correct length", 3, curve.length);
       assertEquals("correct offset", 100d, curve[0], 0.001);
@@ -208,10 +346,23 @@ public class AmbiguityResolver
       leg4.set(5, wrapMe(sensor, 130, 42d, 0d));
       leg4.set(6, wrapMe(sensor, 140, 32d, 20d));
 
-      final double[] curve2 = leg4.getCurve(true);
-      assertNotNull("produced curve", curve2);
-      assertEquals("curve correct length", 3, curve2.length);
-      assertEquals("correct offset", 100d, curve2[0], 0.001);
+      final double[] curve2Ambig = leg4.getCurve(WhichPeriod.ALL, WhichBearing.AMBIGUOUS);
+      final double[] curve2 = leg4.getCurve(WhichPeriod.ALL, WhichBearing.CORE);
+      assertNotNull("produced curve", curve2Ambig);
+      assertEquals("curve correct length", 3, curve2Ambig.length);
+      assertEquals("correct offset", 100d, curve2Ambig[0], 0.001);
+
+      double beforeValue = valueAt(60, curve2Ambig);
+      assertEquals("correct next value", beforeValue, 220d, 0.001);
+
+      double afterValue = valueAt(150, curve2Ambig);
+      assertEquals("correct next value", afterValue, 400d, 0.001);
+
+      beforeValue = valueAt(60, curve2);
+      assertEquals("correct next value", beforeValue, 112d, 0.001);
+
+      afterValue = valueAt(150, curve2);
+      assertEquals("correct next value", afterValue, 22d, 0.001);
     }
 
     public void testGettingLegs() throws FileNotFoundException
@@ -619,8 +770,8 @@ public class AmbiguityResolver
     return toDelete;
   }
 
-  private List<LegOfCuts> sliceIntoLegs(final TrackWrapper track, final Zone[] zones,
-      final TimePeriod period)
+  private List<LegOfCuts> sliceIntoLegs(final TrackWrapper track,
+      final Zone[] zones, final TimePeriod period)
   {
     final List<LegOfCuts> res = new ArrayList<LegOfCuts>();
     if (zones != null && zones.length > 0)
@@ -758,16 +909,43 @@ public class AmbiguityResolver
     {
       if (lastLeg != null)
       {
-        // ok, retrieve slopes
-        final double[] lastSlopeOne = lastLeg.getCurve(false);
-        final double[] lastSlopeTwo = lastLeg.getCurve(true);
-
-        // and generate the slope for this leg
-        final double[] thisSlopeOne = leg.getCurve(false);
-        final double[] thisSlopeTwo = leg.getCurve(true);
-
         // find the time 1/2 way between the legs
         final long midTime = midTimeFor(lastLeg, leg);
+
+        System.out.println("this mid time:" + new Date(midTime));
+        String dateStr = new Date(midTime).toString();
+        if (dateStr.contains("15:04"))
+        {
+          System.out.println("here");
+        }
+
+        // ok, retrieve slopes
+        final double[] lastSlopeOne = lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
+        final double[] lastSlopeTwo = lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
+
+        // and generate the slope for this leg
+        final double[] thisSlopeOne = leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
+        final double[] thisSlopeTwo = leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
+
+        // hmm, see if this has already been resolved
+        if (thisSlopeTwo == null)
+        {
+          System.err.println("Leg after " + dateStr + " is already resolved");
+          continue;
+        }
+
+        if (dateStr.contains("15:04"))
+        {
+          System.out.println(valueAt(midTime, thisSlopeOne));
+          System.out.println(valueAt(leg.get(0).getDTG().getDate().getTime(),
+              thisSlopeOne));
+          System.out.println(valueAt(leg.get(0).getDTG().getDate().getTime(),
+              thisSlopeTwo));
+          System.out.println(valueAt(leg.get(1).getDTG().getDate().getTime(),
+              thisSlopeOne));
+          System.out.println(valueAt(leg.get(1).getDTG().getDate().getTime(),
+              thisSlopeTwo));
+        }
 
         // get the slope scores we know we need
         final double lastSlopeValOne = trim(valueAt(midTime, lastSlopeOne));
@@ -843,10 +1021,10 @@ public class AmbiguityResolver
     return resolve(legs);
   }
 
-  private double trim(final double val)
+  private static double trim(final double val)
   {
     double res = val;
-    while (res < -350d)
+    while (res < -360d)
     {
       res += 360d;
     }
@@ -884,7 +1062,7 @@ public class AmbiguityResolver
     }
   }
 
-  private double valueAt(final long time, final double[] slope)
+  private static double valueAt(final long time, final double[] slope)
   {
     return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
   }
