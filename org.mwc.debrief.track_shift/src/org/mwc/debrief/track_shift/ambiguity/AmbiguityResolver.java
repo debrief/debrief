@@ -39,7 +39,7 @@ public class AmbiguityResolver
      * we use a weighting factor to reduce the influence of cuts in the first 1/4 of the leg - to
      * reduce the impact of the cuts while the array is steadying
      */
-    private static final double EARLY_CUTS_WEIGHTING = 1d;
+    private static final double EARLY_CUTS_WEIGHTING = 0.01d;
 
     /**
      * how many cuts to include in the min leg length
