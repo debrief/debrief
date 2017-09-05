@@ -157,7 +157,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-      _cutsToResolve = _resolver.resolve(_primary, _zones, null);
+      _cutsToResolve = _resolver.resolve(_primary, _zones);
       
       // and refresh
       updateData(true);

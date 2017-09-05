@@ -9,11 +9,11 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
-import org.apache.commons.math3.fitting.WeightedObservedPoints;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
+import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichBearing;
+import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichPeriod;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.views.StackedDotHelper;
@@ -32,156 +32,6 @@ import MWC.GenericData.TimePeriod;
 
 public class AmbiguityResolver
 {
-  private static class LegOfCuts extends ArrayList<SensorContactWrapper>
-  {
-
-    /**
-     * we use a weighting factor to reduce the influence of cuts in the first 1/4 of the leg - to
-     * reduce the impact of the cuts while the array is steadying
-     */
-    private static final double EARLY_CUTS_WEIGHTING = 0.001d;
-
-    /**
-     * how many cuts to include in the min leg length
-     * 
-     */
-    private static final int LEG_LENGTH = 8;
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    private List<SensorContactWrapper> extractPortion(final WhichPeriod period)
-    {
-      final List<SensorContactWrapper> cutsToUse;
-      if (size() > LEG_LENGTH * 2)
-      {
-        switch (period)
-        {
-          case EARLY:
-            cutsToUse = this.subList(0, LEG_LENGTH);
-            break;
-          case LATE:
-            final int len = this.size();
-            cutsToUse = this.subList(len - (LEG_LENGTH), len);
-            break;
-          case ALL:
-          default:
-            cutsToUse = this;
-            break;
-        }
-      }
-      else
-      {
-        cutsToUse = this;
-      }
-      return cutsToUse;
-    }
-
-    public double[] getCurve(final WhichPeriod period,
-        final WhichBearing whichBearing)
-    {
-      final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(2);
-
-      // how many are in the first 1/4?
-      final int firstQuarter = (int) Math.ceil(this.size() / 4d);
-
-      // add my values
-      final WeightedObservedPoints obs = new WeightedObservedPoints();
-      Double lastBearing = null;
-
-      // if we're a large dataset, just us a few at the end.
-      // our curve fitter struggles with curves s-shaped curves,
-      // it works best with c-shaped curves
-      final List<SensorContactWrapper> cutsToUse = extractPortion(period);
-
-      for (final SensorContactWrapper item : cutsToUse)
-      {
-        final long time = item.getDTG().getDate().getTime();
-        double theBrg;
-        if (whichBearing.equals(WhichBearing.AMBIGUOUS))
-        {
-          if (item.getHasAmbiguousBearing())
-          {
-            theBrg = item.getAmbiguousBearing();
-          }
-          else
-          {
-            theBrg = Double.NaN;
-          }
-        }
-        else
-        {
-          theBrg = item.getBearing();
-        }
-
-        if (lastBearing != null)
-        {
-          // check if we've passed through zero
-          final double delta = theBrg - lastBearing;
-          if (Math.abs(delta) > 180)
-          {
-            if (delta > 0)
-            {
-              theBrg -= 360d;
-            }
-            else
-            {
-              theBrg += 360d;
-            }
-          }
-        }
-
-        lastBearing = theBrg;
-
-        if (!Double.isNaN(theBrg))
-        {
-          // reduce the weighting of the first 1/4 of the cuts,
-          // if we're looking at all or the early cuts.
-          // This is to handle the occurrence where
-          // the array still isn't stable
-          final double weighting;
-          if (period.equals(WhichPeriod.LATE))
-          {
-            // ok, we're doing a late leg. we don't
-            // need to dumb down the first cuts
-            weighting = 1d;
-          }
-          else
-          {
-            if (obs.toList().size() <= firstQuarter)
-            {
-              weighting = EARLY_CUTS_WEIGHTING;
-            }
-            else
-            {
-              weighting = 1d;
-            }
-          }
-
-          obs.add(weighting, time, theBrg);
-        }
-      }
-
-      final List<WeightedObservedPoint> res = obs.toList();
-
-      if (res.size() > 0)
-      {
-        // process the obs, to put them all in the correct domain
-        final List<WeightedObservedPoint> rangedObs =
-            putObsInCorrectRange(obs.toList());
-        final List<WeightedObservedPoint> tidyObs =
-            putObsInCorrectDomain(rangedObs);
-        return fitter.fit(tidyObs);
-      }
-      else
-      {
-        return null;
-      }
-    }
-  }
-
   private static class Perm implements Comparable<Perm>
   {
     private final double score;
@@ -411,7 +261,7 @@ public class AmbiguityResolver
       res.findCutsToDropInTurn(track, zones, null);
 
       // now get the legs
-      final List<LegOfCuts> legs = res.sliceIntoLegs(track, zones, null);
+      final List<LegOfCuts> legs = res.sliceIntoLegs(track, zones);
       assertEquals("right num", zones.length, legs.size());
 
       // now resolve ambiguity
@@ -582,7 +432,7 @@ public class AmbiguityResolver
       assertEquals("have cuts to delete", 133, toDel.size());
 
       @SuppressWarnings("unused")
-      final List<LegOfCuts> legs = res.sliceIntoLegs(track, zones, null);
+      final List<LegOfCuts> legs = res.sliceIntoLegs(track, zones);
 
       // ok, check the data
     }
@@ -642,25 +492,7 @@ public class AmbiguityResolver
     }
   }
 
-  /**
-   * determine if we're using the main baaring, or the ambig bearing
-   * 
-   */
-  private static enum WhichBearing
-  {
-    CORE, AMBIGUOUS
-  }
-
-  /**
-   * determine which portion of the leg we're extracting data for
-   * 
-   */
-  private static enum WhichPeriod
-  {
-    ALL, EARLY, LATE
-  }
-
-  private static List<WeightedObservedPoint> putObsInCorrectDomain(
+  static List<WeightedObservedPoint> putObsInCorrectDomain(
       final List<WeightedObservedPoint> obs)
   {
     final List<WeightedObservedPoint> res =
@@ -702,7 +534,7 @@ public class AmbiguityResolver
     return res;
   }
 
-  private static List<WeightedObservedPoint> putObsInCorrectRange(
+  static List<WeightedObservedPoint> putObsInCorrectRange(
       final List<WeightedObservedPoint> obs)
   {
     final List<WeightedObservedPoint> res =
@@ -996,14 +828,14 @@ public class AmbiguityResolver
   }
 
   public List<ResolvedLeg> resolve(final TrackWrapper primaryTrack,
-      final Zone[] zones, final Object object)
+      final Zone[] zones)
   {
-    final List<LegOfCuts> legs = sliceIntoLegs(primaryTrack, zones, null);
+    final List<LegOfCuts> legs = sliceIntoLegs(primaryTrack, zones);
     return resolve(legs);
   }
 
   private List<LegOfCuts> sliceIntoLegs(final TrackWrapper track,
-      final Zone[] zones, final TimePeriod period)
+      final Zone[] zones)
   {
     final List<LegOfCuts> res = new ArrayList<LegOfCuts>();
     if (zones != null && zones.length > 0)
