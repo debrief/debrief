@@ -42,6 +42,7 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.ResolvedLeg;
+import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -195,6 +196,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   private Action _doStep2;
 
+  private Action _doStep3;
+
   // protected Action _5degResize;
 
   public BearingResidualsView()
@@ -209,6 +212,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     toolBarManager.add(showCourse);
     toolBarManager.add(_doStep1);
     toolBarManager.add(_doStep2);
+    toolBarManager.add(_doStep3);
   }
 
   @Override
@@ -384,7 +388,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         .getImageDescriptor("icons/24/fit_to_win.png"));
 
     // now the course action
-    _doStep1 = new Action("1", IAction.AS_PUSH_BUTTON)
+    _doStep1 = new Action("A1", IAction.AS_PUSH_BUTTON)
     {
       @Override
       public void run()
@@ -395,7 +399,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     };
 
     // now the course action
-    _doStep2 = new Action("2", IAction.AS_PUSH_BUTTON)
+    _doStep2 = new Action("A2", IAction.AS_PUSH_BUTTON)
     {
       @Override
       public void run()
@@ -404,6 +408,33 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         resolveAmbiguousCuts();
       }
     };
+
+    // now the course action
+    _doStep3 = new Action("B", IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        newResolveAmbiguity();
+      }
+    };
+  }
+
+  protected void newResolveAmbiguity()
+  {
+    final AmbiguityResolver resolver = new AmbiguityResolver();
+
+    TrackWrapper primaryTrack = super._myHelper.getPrimaryTrack();
+    List<LegOfCuts> zones = resolver.sliceIntoLegsUsingAmbiguity(primaryTrack);
+    resolver.resolve(zones);
+    
+//    IUndoableOperation resolveCuts = new ResolveCutsOperation(resolver, primaryTrack, zones);
+//    
+//    undoRedoProvider.execute(resolveCuts);
+    
+    // and refresh
+    updateData(true);
 
   }
 
