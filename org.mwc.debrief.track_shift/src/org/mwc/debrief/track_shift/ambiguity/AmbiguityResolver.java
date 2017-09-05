@@ -137,16 +137,29 @@ public class AmbiguityResolver
 
         if (!Double.isNaN(theBrg))
         {
-          // reduce the weighting of the first 1/4 of the cuts
+          // reduce the weighting of the first 1/4 of the cuts,
+          // if we're looking at all or the early cuts.
+          // This is to handle the occurrence where
+          // the array still isn't stable
           final double weighting;
-          if (obs.toList().size() <= firstQuarter)
+          if (period.equals(WhichPeriod.LATE))
           {
-            weighting = EARLY_CUTS_WEIGHTING;
+            // ok, we're doing a late leg. we don't
+            // need to dumb down the first cuts
+            weighting = 1d;
           }
           else
           {
-            weighting = 1d;
+            if (obs.toList().size() <= firstQuarter)
+            {
+              weighting = EARLY_CUTS_WEIGHTING;
+            }
+            else
+            {
+              weighting = 1d;
+            }
           }
+
           obs.add(weighting, time, theBrg);
         }
       }
@@ -629,7 +642,8 @@ public class AmbiguityResolver
     }
   }
 
-  /** determine if we're using the main baaring, or the ambig bearing
+  /**
+   * determine if we're using the main baaring, or the ambig bearing
    * 
    */
   private static enum WhichBearing
@@ -637,7 +651,8 @@ public class AmbiguityResolver
     CORE, AMBIGUOUS
   }
 
-  /** determine which portion of the leg we're extracting data for
+  /**
+   * determine which portion of the leg we're extracting data for
    * 
    */
   private static enum WhichPeriod
