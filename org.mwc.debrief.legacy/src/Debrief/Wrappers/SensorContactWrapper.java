@@ -578,11 +578,11 @@ public final class SensorContactWrapper extends
    */
   private WorldDistance _range;
 
-  /**
-   * Bearing to target (in Radians)
-   */
   private boolean _hasBearing = false;
 
+  /**
+   * Bearing to target (in degs)
+   */
   private double _bearing;
 
   /**
@@ -626,12 +626,13 @@ public final class SensorContactWrapper extends
       MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE;
   private String _sensorName;
 
-  /**
-   * the (optional) ambiguous bearing
-   * 
-   */
   private boolean _hasAmbiguous = false;
 
+  
+  /**
+   * the (optional) ambiguous bearing (degs)
+   * 
+   */
   private double _bearingAmbig;
 
   /**
@@ -664,7 +665,7 @@ public final class SensorContactWrapper extends
   }
 
   public SensorContactWrapper(final String theTrack, final HiResDate theDtg,
-      final WorldDistance range, final Double brg, final Double brg2,
+      final WorldDistance range, final Double brgDegs, final Double ambigBearingDegs,
       final Double freq, final WorldLocation origin, final Color theColor,
       final String labelStr, final int theStyle, final String sensorName)
   {
@@ -674,10 +675,10 @@ public final class SensorContactWrapper extends
     _DTG = theDtg;
     _range = range;
 
-    if (brg != null)
+    if (brgDegs != null)
     {
       _hasBearing = true;
-      _bearing = MWC.Algorithms.Conversions.Degs2Rads(brg);
+      _bearing = brgDegs;
     }
     else
     {
@@ -686,10 +687,10 @@ public final class SensorContactWrapper extends
     }
 
     // do we have ambiguous bearing data?
-    if (brg2 != null)
+    if (ambigBearingDegs != null)
     {
       _hasAmbiguous = true;
-      _bearingAmbig = MWC.Algorithms.Conversions.Degs2Rads(brg2.doubleValue());
+      _bearingAmbig = ambigBearingDegs.doubleValue();
     }
     else
     {
@@ -835,7 +836,7 @@ public final class SensorContactWrapper extends
    */
   public final double getAmbiguousBearing()
   {
-    return MWC.Algorithms.Conversions.Rads2Degs(_bearingAmbig);
+    return _bearingAmbig;
   }
 
   /**
@@ -865,7 +866,7 @@ public final class SensorContactWrapper extends
 
       // also do the far end
       res =
-          _calculatedOrigin.add(new WorldVector(_bearingAmbig, rangeToUse, 0d));
+          _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(_bearingAmbig), rangeToUse, 0d));
     }
 
     return res;
@@ -876,7 +877,7 @@ public final class SensorContactWrapper extends
    */
   public final double getBearing()
   {
-    return MWC.Algorithms.Conversions.Rads2Degs(_bearing);
+    return _bearing;
   }
 
   // ///////////////////////////////////////////
@@ -1041,7 +1042,7 @@ public final class SensorContactWrapper extends
       }
 
       // also do the far end
-      res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
+      res = _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(_bearing), rangeToUse, 0d));
     }
 
     return res;
@@ -1513,9 +1514,9 @@ public final class SensorContactWrapper extends
     setColor(null);
   }
 
-  public final void setAmbiguousBearing(final double val)
+  public final void setAmbiguousBearing(final double valDegs)
   {
-    _bearingAmbig = MWC.Algorithms.Conversions.Degs2Rads(val);
+    _bearingAmbig = valDegs;
   }
 
   /**
@@ -1523,7 +1524,7 @@ public final class SensorContactWrapper extends
    */
   public final void setBearing(final double degs)
   {
-    _bearing = MWC.Algorithms.Conversions.Degs2Rads(degs);
+    _bearing = degs;
     _hasBearing = true;
   }
 
