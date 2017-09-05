@@ -9,7 +9,7 @@ import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import Debrief.Wrappers.SensorContactWrapper;
 
-class LegOfCuts extends ArrayList<SensorContactWrapper>
+public class LegOfCuts extends ArrayList<SensorContactWrapper>
 {
 
   /**
