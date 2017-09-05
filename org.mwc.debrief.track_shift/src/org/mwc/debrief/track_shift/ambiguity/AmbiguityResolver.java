@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -912,13 +911,6 @@ public class AmbiguityResolver
         // find the time 1/2 way between the legs
         final long midTime = midTimeFor(lastLeg, leg);
 
-        System.out.println("this mid time:" + new Date(midTime));
-        String dateStr = new Date(midTime).toString();
-        if (dateStr.contains("15:04"))
-        {
-          System.out.println("here");
-        }
-
         // ok, retrieve slopes
         final double[] lastSlopeOne = lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
         final double[] lastSlopeTwo = lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
@@ -930,21 +922,7 @@ public class AmbiguityResolver
         // hmm, see if this has already been resolved
         if (thisSlopeTwo == null)
         {
-          System.err.println("Leg after " + dateStr + " is already resolved");
           continue;
-        }
-
-        if (dateStr.contains("15:04"))
-        {
-          System.out.println(valueAt(midTime, thisSlopeOne));
-          System.out.println(valueAt(leg.get(0).getDTG().getDate().getTime(),
-              thisSlopeOne));
-          System.out.println(valueAt(leg.get(0).getDTG().getDate().getTime(),
-              thisSlopeTwo));
-          System.out.println(valueAt(leg.get(1).getDTG().getDate().getTime(),
-              thisSlopeOne));
-          System.out.println(valueAt(leg.get(1).getDTG().getDate().getTime(),
-              thisSlopeTwo));
         }
 
         // get the slope scores we know we need
