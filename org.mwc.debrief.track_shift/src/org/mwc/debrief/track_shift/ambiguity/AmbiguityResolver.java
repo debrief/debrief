@@ -139,6 +139,57 @@ public class AmbiguityResolver
       }
       return ts;
     }
+    
+    public void testOnlyDitchVisible() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensor", 1, track.getSensors().size());
+
+      // make the sensor visible
+      final SensorWrapper sensor =
+          (SensorWrapper) track.getSensors().elements().nextElement();
+      sensor.setVisible(true);
+      
+      // set some cuts to hidden
+      int ctr = 0;
+      Enumeration<Editable> numer = sensor.elements();
+      while(numer.hasMoreElements())
+      {
+        SensorContactWrapper scw = (SensorContactWrapper) numer.nextElement();
+        if(ctr > 20 && ctr < 50)
+        {
+          scw.setVisible(false);
+        }
+        
+        ctr++;
+      }
+      
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track, 0.2);
+      final List<LegOfCuts> legs = res.legs;
+      final LegOfCuts zigs = res.zigCuts;
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 9, legs.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 15, zigs.size());
+      
+      // ok, ditch those cuts
+      solver.deleteTheseCuts(zigs);
+      assertEquals("fewer cuts", 106, sensor.size());
+
+      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
+      assertNotNull(resolvedLegs);
+      assertEquals("right num legs", 9, legs.size());
+    }
 
     public void testDitchUsingAmbiguity() throws FileNotFoundException
     {
@@ -1021,21 +1072,27 @@ public class AmbiguityResolver
     HiResDate lastTime = null;
     LegOfCuts thisLeg = null;
     LegOfCuts thisZig = null;
+    SensorContactWrapper firstCut = null;
     while (enumer.hasMoreElements())
     {
       final SensorContactWrapper cut =
           (SensorContactWrapper) enumer.nextElement();
 
-      if (cut.getHasAmbiguousBearing())
+      if (cut.getVisible() && cut.getHasAmbiguousBearing())
       {
         // ok, TA data
         final double delta = cut.getAmbiguousBearing() - cut.getBearing();
 
         final HiResDate time = cut.getDTG();
-
-        if (lastDelta != null)
+        
+        // is this the first cut?
+        if (lastDelta == null)
         {
-
+          // store it. we'll add it to whatever type of data we build
+          firstCut = cut;
+        }
+        else
+        {
           double valueDelta = delta - lastDelta;
 
           // if we're not already in a turn, then any
@@ -1076,6 +1133,15 @@ public class AmbiguityResolver
             {
               thisZig = new LegOfCuts();
             }
+
+            // if we have a pending first cut,
+            // we should store it
+            if(firstCut != null)
+            {
+              thisZig.add(firstCut);
+              firstCut = null;
+            }
+            
             thisZig.add(cut);
           }
           else
@@ -1086,6 +1152,15 @@ public class AmbiguityResolver
               thisLeg = new LegOfCuts();
               legs.add(thisLeg);
             }
+            
+            // if we have a pending first cut,
+            // we should store it
+            if(firstCut != null)
+            {
+              thisLeg.add(firstCut);
+              firstCut = null;
+            }
+            
             thisLeg.add(cut);
 
             // ok, we're in a turn.
