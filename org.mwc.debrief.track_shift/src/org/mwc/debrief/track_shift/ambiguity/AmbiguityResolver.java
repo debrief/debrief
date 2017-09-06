@@ -322,34 +322,37 @@ public class AmbiguityResolver
 
       // has sensors
       assertEquals("has sensor", 1, track.getSensors().size());
-      
+
       // make the sensor visible
-      SensorWrapper sensor =  (SensorWrapper) track.getSensors().elements().nextElement();
+      SensorWrapper sensor =
+          (SensorWrapper) track.getSensors().elements().nextElement();
       sensor.setVisible(true);
 
       // ok, get resolving
       final AmbiguityResolver solver = new AmbiguityResolver();
 
       // try to get zones using ambiguity delta
-      @SuppressWarnings("unused")
       List<LegOfCuts> legs = solver.sliceIntoLegsUsingAmbiguity(track);
 
-//      assertNotNull("found zones", legs);
-//      assertEquals("found correct number of zones", 13, legs.size());
-//      
-//      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
-//      assertNotNull(resolvedLegs);
-//      assertEquals("right num legs", 6, legs.size());
-//
-//      assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0).getBearing(), 1d);
-//      assertEquals("correct leg", 316d, resolvedLegs.get(1).leg.get(0).getBearing(), 1d);
-//      assertEquals("correct leg", 319d, resolvedLegs.get(2).leg.get(0).getBearing(), 1d);
-//      assertEquals("correct leg", 251d, resolvedLegs.get(3).leg.get(0).getBearing(), 1d);
-//      assertEquals("correct leg", 251d, resolvedLegs.get(4).leg.get(0).getBearing(), 1d);
-//      assertEquals("correct leg", 251d, resolvedLegs.get(5).leg.get(0).getBearing(), 1d);
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 13, legs.size());
 
-      
-      // ditch cuts not in these legs
+      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
+      assertNotNull(resolvedLegs);
+      assertEquals("right num legs", 13, legs.size());
+
+      assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 251d, resolvedLegs.get(2).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 254d, resolvedLegs.get(3).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 258d, resolvedLegs.get(4).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 269d, resolvedLegs.get(5).leg.get(0)
+          .getBearing(), 1d);
     }
 
     public void testResolve() throws FileNotFoundException
@@ -578,7 +581,7 @@ public class AmbiguityResolver
   {
     List<LegOfCuts> res = new ArrayList<LegOfCuts>();
 
-    double RATE_CUT_OFF = 2;
+    double RATE_CUT_OFF = 0.2;
 
     Enumeration<Editable> enumer = sensor.elements();
     Double lastDelta = null;
@@ -593,21 +596,42 @@ public class AmbiguityResolver
       {
         // ok, TA data
         final double delta = cut.getAmbiguousBearing() - cut.getBearing();
+
         final HiResDate time = cut.getDTG();
+
+        if (time.getDate().toString().contains("15:24:00"))
+        {
+          System.out.println("here");
+        }
 
         if (lastDelta != null)
         {
-          
+
           double valueDelta = delta - lastDelta;
-          
+
+          // if we're not already in a turn, then any
+          // monster delta will prob be related to domain
+          if (thisLeg != null)
+          {
+            if (valueDelta < -180)
+            {
+              valueDelta += 360d;
+            }
+            else if (valueDelta > 180)
+            {
+              valueDelta -= 180d;
+            }
+          }
+
           // ok, work out the change rate
           long timeMillis =
               time.getDate().getTime() - lastTime.getDate().getTime();
           long timeSecs = timeMillis / 1000L;
 
           double rate = Math.abs(valueDelta / timeSecs);
-//          System.out.println("brg:" + (int)cut.getBearing() + " ambig:" + 
-//          (int)cut.getAmbiguousBearing() + " delta:" + (int)Math.abs(cut.getAmbiguousBearing() - cut.getBearing()) + " rate:" + rate);
+          // System.out.println("brg:" + (int)cut.getBearing() + " ambig:" +
+          // (int)cut.getAmbiguousBearing() + " delta:" + (int)Math.abs(cut.getAmbiguousBearing() -
+          // cut.getBearing()) + " rate:" + rate);
 
           if (rate > RATE_CUT_OFF)
           {
