@@ -24,4 +24,13 @@
             class="org.mwc.debrief.track_shift.operations.ResolveAmbiguity">
       </helper>
    </extension>
+   <extension
+          point="org.eclipse.ui.preferencePages">
+       <page
+             category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+             class="org.mwc.debrief.track_shift.ambiguity.preferences.AmbiguityPrefs"
+             id="org.mwc.debrief.track_shift.ambiguity.preferences.AmbiguityPrefs"
+             name="Resolve Bearing Ambiguity">
+       </page>
+    </extension>
 </plugin>

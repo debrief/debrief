@@ -14,8 +14,10 @@ import java.util.Map;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichBearing;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichPeriod;
+import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.views.StackedDotHelper;
@@ -630,9 +632,9 @@ public class AmbiguityResolver
   {
     List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     LegOfCuts zigs = new LegOfCuts();
-
-    double RATE_CUT_OFF = 0.2;
-
+    
+    final double RATE_CUT_OFF = TrackShiftActivator.getDefault().getPreferenceStore().getDouble(PreferenceConstants.CUT_OFF);
+    
     Enumeration<Editable> enumer = sensor.elements();
     Double lastDelta = null;
     HiResDate lastTime = null;
