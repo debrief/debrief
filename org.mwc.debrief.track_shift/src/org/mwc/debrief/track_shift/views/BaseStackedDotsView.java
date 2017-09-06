@@ -1311,7 +1311,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_autoResize);
     toolBarManager.add(_onlyVisible);
     toolBarManager.add(_showCrossHairs);
-    toolBarManager.add(_selectOnClick);
     toolBarManager.add(_showLinePlot);
     toolBarManager.add(_showDotPlot);
     toolBarManager.add(_showTargetOverview);
@@ -1635,7 +1634,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       CorePlugin.logError(statusCode, string, object);
 
       // also ditch the data in the plots - to blank them out
-      clearPlots();
+      // No, don't. We re-use clearPlots() to clear some calculated
+      // data in BearingResidualsView
+      // clearPlots();
     }
   }
 

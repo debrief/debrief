@@ -12,5 +12,9 @@
 			<FormatHelper Text=";FORMAT_FIX: hour_min_arrow ARROW NULL NULL TRUE 900000" /><FormatHelper
 				Text=";FORMAT_FIX: 30_min_label LABEL NULL NULL TRUE 1800000" />
 		</DebriefReplayObserver>
+		<DebriefReplayObserver Name="Cuts" record_detections="true"
+			record_positions="false" Active="true" record_decisions="false"
+			file_name="Ambig_cuts2">
+		</DebriefReplayObserver>
 	</ObserverList>
 </ScenarioController>
