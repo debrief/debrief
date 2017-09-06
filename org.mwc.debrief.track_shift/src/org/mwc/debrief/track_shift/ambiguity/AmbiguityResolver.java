@@ -7,7 +7,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.jfree.data.time.FixedMillisecond;
@@ -332,11 +334,28 @@ public class AmbiguityResolver
       final AmbiguityResolver solver = new AmbiguityResolver();
 
       // try to get zones using ambiguity delta
-      List<LegOfCuts> legs = solver.sliceIntoLegsUsingAmbiguity(track);
+      LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track);
+      List<LegOfCuts> legs = res.legs;
+      LegOfCuts zigs = res.zigCuts;
 
       assertNotNull("found zones", legs);
       assertEquals("found correct number of zones", 13, legs.size());
 
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 21, zigs.size());
+
+      // ok, ditch those cuts
+      final int fullSensorLen = sensor.size();
+      Map<SensorWrapper, LegOfCuts> deleted = solver.deleteTheseCuts(zigs);
+      assertEquals("fewer cuts", 100, sensor.size());
+      
+      // ok, and undo them
+      solver.restoreCuts(deleted);
+      assertEquals("fewer cuts", fullSensorLen, sensor.size());
+      
+      // and do it again, so we've got fewer cuts
+      deleted = solver.deleteTheseCuts(zigs);
+      
       final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
       assertNotNull(resolvedLegs);
       assertEquals("right num legs", 13, legs.size());
@@ -353,6 +372,12 @@ public class AmbiguityResolver
           .getBearing(), 1d);
       assertEquals("correct leg", 269d, resolvedLegs.get(5).leg.get(0)
           .getBearing(), 1d);
+      
+      // ok, and cancel the leg resolving
+      solver.undoResolveBearings(resolvedLegs);
+      
+      // and re-check they're ambiguous
+      assertEquals("is unresloved", true, resolvedLegs.get(0).leg.get(0).getHasAmbiguousBearing());
     }
 
     public void testResolve() throws FileNotFoundException
@@ -577,9 +602,34 @@ public class AmbiguityResolver
     return res;
   }
 
-  public List<LegOfCuts> sliceIntoLegsUsingAmbiguity(SensorWrapper sensor)
+  public static class LegsAndZigs
   {
-    List<LegOfCuts> res = new ArrayList<LegOfCuts>();
+    private final List<LegOfCuts> legs;
+    private final LegOfCuts zigCuts;
+
+    public LegsAndZigs(final List<LegOfCuts> legs, final LegOfCuts zigCuts)
+    {
+      this.legs = legs;
+      this.zigCuts = zigCuts;
+    }
+
+    public List<LegOfCuts> getLegs()
+    {
+      return legs;
+    }
+
+    public LegOfCuts getZigs()
+    {
+      return zigCuts;
+    }
+    
+    
+  }
+  
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(SensorWrapper sensor)
+  {
+    List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
+    LegOfCuts zigs = new LegOfCuts();
 
     double RATE_CUT_OFF = 0.2;
 
@@ -587,6 +637,7 @@ public class AmbiguityResolver
     Double lastDelta = null;
     HiResDate lastTime = null;
     LegOfCuts thisLeg = null;
+    LegOfCuts thisZig = null;
     while (enumer.hasMoreElements())
     {
       final SensorContactWrapper cut =
@@ -598,11 +649,6 @@ public class AmbiguityResolver
         final double delta = cut.getAmbiguousBearing() - cut.getBearing();
 
         final HiResDate time = cut.getDTG();
-
-        if (time.getDate().toString().contains("15:24:00"))
-        {
-          System.out.println("here");
-        }
 
         if (lastDelta != null)
         {
@@ -641,6 +687,13 @@ public class AmbiguityResolver
               // close the leg
               thisLeg = null;
             }
+            
+            // ok, we're in a leg
+            if (thisZig == null)
+            {
+              thisZig = new LegOfCuts();
+            }
+            thisZig.add(cut);
           }
           else
           {
@@ -648,23 +701,34 @@ public class AmbiguityResolver
             if (thisLeg == null)
             {
               thisLeg = new LegOfCuts();
-              res.add(thisLeg);
+              legs.add(thisLeg);
             }
             thisLeg.add(cut);
+            
+            // ok, we're in a turn.
+            if (thisZig != null)
+            {
+              zigs.addAll(thisZig);
+              
+              // close the leg
+              thisZig = null;
+            }
           }
         }
-
         lastDelta = delta;
         lastTime = time;
       }
     }
 
-    return res;
+    return new LegsAndZigs(legs, zigs);
   }
 
-  public List<LegOfCuts> sliceIntoLegsUsingAmbiguity(TrackWrapper track)
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track)
   {
-    List<LegOfCuts> res = new ArrayList<LegOfCuts>();
+    final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
+    final LegOfCuts zigCuts = new LegOfCuts();
+    final LegsAndZigs res = new LegsAndZigs(legs, zigCuts);
+    
     // ok, go for it
     final BaseLayer sensors = track.getSensors();
     final Enumeration<Editable> numer = sensors.elements();
@@ -673,10 +737,14 @@ public class AmbiguityResolver
       final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
       if (sensor.getVisible())
       {
-        List<LegOfCuts> legsForThisSensor = sliceIntoLegsUsingAmbiguity(sensor);
-        if (legsForThisSensor.size() > 0)
+        LegsAndZigs thisL = sliceIntoLegsUsingAmbiguity(sensor);        
+        if (thisL.legs.size() > 0)
         {
-          res.addAll(legsForThisSensor);
+          res.legs.addAll(thisL.legs);
+        }
+        if(thisL.zigCuts.size() > 0)
+        {
+          res.zigCuts.addAll(thisL.zigCuts);
         }
       }
     }
@@ -770,11 +838,11 @@ public class AmbiguityResolver
     }
   }
 
-  public List<SensorContactWrapper> findCutsToDropInTurn(
+  public LegOfCuts findCutsToDropInTurn(
       final TrackWrapper track, final Zone[] zones, final TimePeriod period)
   {
-    final List<SensorContactWrapper> toDelete =
-        new ArrayList<SensorContactWrapper>();
+    final LegOfCuts toDelete =
+        new LegOfCuts();
     if (zones != null && zones.length > 0)
     {
       // ok, go for it
@@ -1033,7 +1101,7 @@ public class AmbiguityResolver
     return res;
   }
 
-  public void undoDitchBearings(final List<ResolvedLeg> legs)
+  public void undoResolveBearings(final List<ResolvedLeg> legs)
   {
     for (final ResolvedLeg leg : legs)
     {
@@ -1059,4 +1127,52 @@ public class AmbiguityResolver
       }
     }
   }
+
+  public void undoResolve(final List<LegOfCuts> legs)
+  {
+    // ok, clear all their ambiguity
+    for(final LegOfCuts leg: legs)
+    {
+      for(final SensorContactWrapper cut: leg)
+      {
+        cut.setHasAmbiguousBearing(true);
+      }
+    }
+  }
+  
+  public Map<SensorWrapper, LegOfCuts> deleteTheseCuts(List<SensorContactWrapper> cutsToDelete)
+  {
+    Map<SensorWrapper, LegOfCuts> deletedCuts =
+        new HashMap<SensorWrapper, LegOfCuts>();
+
+    for (final SensorContactWrapper t : cutsToDelete)
+    {
+      // store the details of this sensor, so we can undo it
+      LegOfCuts list = deletedCuts.get(t.getSensor());
+
+      if (list == null)
+      {
+        list = new LegOfCuts();
+        deletedCuts.put(t.getSensor(), list);
+      }
+
+      list.add(t);
+
+      t.getSensor().removeElement(t);
+    }
+    return deletedCuts;
+  }
+
+  public void restoreCuts(Map<SensorWrapper, LegOfCuts> deletedCuts)
+  {
+    for (final SensorWrapper sensor : deletedCuts.keySet())
+    {
+      final ArrayList<SensorContactWrapper> cuts = deletedCuts.get(sensor);
+      for (final SensorContactWrapper cut : cuts)
+      {
+        sensor.add(cut);
+      }
+    }
+  }
+  
 }

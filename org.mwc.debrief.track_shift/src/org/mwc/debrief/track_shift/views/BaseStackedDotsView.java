@@ -1635,7 +1635,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       CorePlugin.logError(statusCode, string, object);
 
       // also ditch the data in the plots - to blank them out
-      clearPlots();
+      // No, don't. We re-use clearPlots() to clear some calculated
+      // data in BearingResidualsView
+      // clearPlots();
     }
   }
 

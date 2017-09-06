@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.track_shift.views;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
+import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.ResolvedLeg;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -58,22 +58,28 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private class DeleteCutsOperation extends CMAPOperation
   {
 
-    /** the cuts to be deleted
+    /**
+     * the cuts to be deleted
      * 
      */
     final private List<SensorContactWrapper> _cutsToDelete;
-    
-    /** cuts that have been deleted (with the sensor that they were removed from)
+
+    /**
+     * cuts that have been deleted (with the sensor that they were removed from)
      * 
      */
-    final private Map<SensorWrapper, ArrayList<SensorContactWrapper>> _deletedCuts;
+    private Map<SensorWrapper, LegOfCuts> _deletedCuts;
 
-    public DeleteCutsOperation(final List<SensorContactWrapper> cutsToDelete)
+    final private AmbiguityResolver _resolver;
+
+    public DeleteCutsOperation(AmbiguityResolver resolver,
+        final List<SensorContactWrapper> cutsToDelete)
     {
       super("Delete cuts in O/S Turn");
 
       _cutsToDelete = cutsToDelete;
-      _deletedCuts = new HashMap<SensorWrapper, ArrayList<SensorContactWrapper>>(); 
+      _deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
+      _resolver = resolver;
     }
 
     @Override
@@ -81,23 +87,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-      _deletedCuts.clear();
-
-      for (final SensorContactWrapper t : _cutsToDelete)
+      if (_deletedCuts != null)
       {
-        // store the details of this sensor, so we can undo it
-        ArrayList<SensorContactWrapper> list = _deletedCuts.get(t.getSensor());
-
-        if (list == null)
-        {
-          list = new ArrayList<SensorContactWrapper>();
-          _deletedCuts.put(t.getSensor(), list);
-        }
-
-        list.add(t);
-
-        t.getSensor().removeElement(t);
+        _deletedCuts.clear();
+        _deletedCuts = null;
       }
+
+      _deletedCuts = _resolver.deleteTheseCuts(_cutsToDelete);
 
       // and refresh
       updateData(true);
@@ -112,14 +108,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
-      for (final SensorWrapper sensor : _deletedCuts.keySet())
-      {
-        final ArrayList<SensorContactWrapper> cuts = _deletedCuts.get(sensor);
-        for (final SensorContactWrapper cut : cuts)
-        {
-          sensor.add(cut);
-        }
-      }
+      _resolver.restoreCuts(_deletedCuts);
+
+      _deletedCuts.clear();
+      _deletedCuts = null;
 
       // and refresh the UI
       updateData(true);
@@ -134,16 +126,16 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   private class ResolveCutsOperation extends CMAPOperation
   {
-  
-    /** the cuts to be deleted
+
+    /**
+     * the cuts to be deleted
      * 
      */
-    private List<ResolvedLeg> _cutsToResolve;    
+    private List<ResolvedLeg> _cutsToResolve;
     final private AmbiguityResolver _resolver;
     private TrackWrapper _primary;
     private Zone[] _zones;
-  
-  
+
     public ResolveCutsOperation(AmbiguityResolver resolver,
         TrackWrapper primaryTrack, Zone[] zones)
     {
@@ -159,31 +151,91 @@ public class BearingResidualsView extends BaseStackedDotsView implements
             throws ExecutionException
     {
       _cutsToResolve = _resolver.resolve(_primary, _zones);
-      
+
       // and refresh
       updateData(true);
-  
+
       final IStatus res =
           new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
               "Delete cuts in O/S turn successful", null);
       return res;
     }
-  
+
     @Override
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
-      _resolver.undoDitchBearings(_cutsToResolve);
-  
+      _resolver.undoResolveBearings(_cutsToResolve);
+
+      _cutsToResolve.clear();
+      _cutsToResolve = null;
+
       // and refresh the UI
       updateData(true);
-  
+
       final IStatus res =
           new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
               "Restore cuts in O/S turn successful", null);
       return res;
     }
-  
+
+  }
+
+  private class ResolveCutsOperationAmbig extends CMAPOperation
+  {
+
+    /**
+     * the cuts to be deleted
+     * 
+     */
+    final private AmbiguityResolver _resolver;
+    final private List<LegOfCuts> _legs;
+    private List<ResolvedLeg> _resolved;
+
+    public ResolveCutsOperationAmbig(AmbiguityResolver resolver,
+        List<LegOfCuts> legs)
+    {
+      super("Resolve ambiguous cuts");
+      _resolver = resolver;
+      _legs = legs;
+    }
+
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      _resolved = _resolver.resolve(_legs);
+
+      // and refresh
+      updateData(true);
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Resolve legs successful", null);
+      return res;
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      _resolver.undoResolveBearings(_resolved);
+      ;
+
+      // and clear the resolved list
+      _resolved.clear();
+      _resolved = null;
+
+      // and refresh the UI
+      updateData(true);
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Un-resolve legs successful", null);
+      return res;
+    }
+
   }
 
   private static final String SHOW_COURSE = "SHOW_COURSE";
@@ -192,11 +244,14 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private Action relativeAxes;
 
   private Action scaleError;
-  private Action _doStep1;
+  private Action _doStepADelete;
 
-  private Action _doStep2;
+  private Action _doStepAResolve;
 
-  private Action _doStep3;
+  private Action _doStepBDelete;
+
+  private Action _doStepBResolve;
+  private LegsAndZigs _ambiguousResolverLegsAndCuts;
 
   // protected Action _5degResize;
 
@@ -210,9 +265,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     super.addExtras(toolBarManager);
     toolBarManager.add(showCourse);
-    toolBarManager.add(_doStep1);
-    toolBarManager.add(_doStep2);
-    toolBarManager.add(_doStep3);
+    toolBarManager.add(_doStepADelete);
+    toolBarManager.add(_doStepAResolve);
+    toolBarManager.add(_doStepBDelete);
+    toolBarManager.add(_doStepBResolve);
   }
 
   @Override
@@ -221,7 +277,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     return scaleError.isChecked();
   }
 
-  protected void deleteCutsInTurn()
+  protected void deleteCutsInTurnA()
   {
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
@@ -232,7 +288,23 @@ public class BearingResidualsView extends BaseStackedDotsView implements
             null);
 
     final IUndoableOperation deleteOperation =
-        new DeleteCutsOperation(cutsToDelete);
+        new DeleteCutsOperation(resolver, cutsToDelete);
+
+    // wrap the operation
+    undoRedoProvider.execute(deleteOperation);
+  }
+
+  protected void deleteCutsInTurnB()
+  {
+    // create the resolver
+    final AmbiguityResolver resolver = new AmbiguityResolver();
+
+    _ambiguousResolverLegsAndCuts =
+        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack());
+
+    final IUndoableOperation deleteOperation =
+        new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
+            .getZigs());
 
     // wrap the operation
     undoRedoProvider.execute(deleteOperation);
@@ -388,18 +460,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         .getImageDescriptor("icons/24/fit_to_win.png"));
 
     // now the course action
-    _doStep1 = new Action("A1", IAction.AS_PUSH_BUTTON)
+    _doStepADelete = new Action("A1", IAction.AS_PUSH_BUTTON)
     {
       @Override
       public void run()
       {
         super.run();
-        deleteCutsInTurn();
+        deleteCutsInTurnA();
       }
     };
 
     // now the course action
-    _doStep2 = new Action("A2", IAction.AS_PUSH_BUTTON)
+    _doStepAResolve = new Action("A2", IAction.AS_PUSH_BUTTON)
     {
       @Override
       public void run()
@@ -410,29 +482,44 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     };
 
     // now the course action
-    _doStep3 = new Action("B", IAction.AS_PUSH_BUTTON)
+    _doStepBDelete = new Action("B1", IAction.AS_PUSH_BUTTON)
     {
       @Override
       public void run()
       {
         super.run();
-        newResolveAmbiguity();
+        deleteCutsInTurnB();
+      }
+    };
+    // now the course action
+    _doStepBResolve = new Action("B2", IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        resolveAmbiguousCutsB();
       }
     };
   }
 
-  protected void newResolveAmbiguity()
+  protected void resolveAmbiguousCutsB()
   {
-    final AmbiguityResolver resolver = new AmbiguityResolver();
 
-    TrackWrapper primaryTrack = super._myHelper.getPrimaryTrack();
-    List<LegOfCuts> zones = resolver.sliceIntoLegsUsingAmbiguity(primaryTrack);
-    resolver.resolve(zones);
-    
-//    IUndoableOperation resolveCuts = new ResolveCutsOperation(resolver, primaryTrack, zones);
-//    
-//    undoRedoProvider.execute(resolveCuts);
-    
+    if (_ambiguousResolverLegsAndCuts != null)
+    {
+      AmbiguityResolver resolver = new AmbiguityResolver();
+      IUndoableOperation resolveCuts =
+          new ResolveCutsOperationAmbig(resolver, _ambiguousResolverLegsAndCuts
+              .getLegs());
+      undoRedoProvider.execute(resolveCuts);
+    }
+    else
+    {
+      CorePlugin.showMessage("Resolve Ambiguity",
+          "Please delete cuts in turn first");
+    }
+
     // and refresh
     updateData(true);
 
@@ -485,17 +572,33 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // ok - if we're on auto update, do the update
     updateLinePlotRanges();
   }
-  
+
+  @Override
+  void clearPlots()
+  {
+    super.clearPlots();
+
+    // also, forget the stored set of ambiguous data
+    if (_ambiguousResolverLegsAndCuts != null)
+    {
+      _ambiguousResolverLegsAndCuts.getLegs().clear();
+      _ambiguousResolverLegsAndCuts.getZigs().clear();
+      _ambiguousResolverLegsAndCuts = null;
+    }
+  }
+
   protected void resolveAmbiguousCuts()
   {
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
     final Zone[] zones = ownshipZoneChart.getZones();
 
-    IUndoableOperation resolveCuts = new ResolveCutsOperation(resolver, super._myHelper.getPrimaryTrack(), zones);
-    
+    IUndoableOperation resolveCuts =
+        new ResolveCutsOperation(resolver, super._myHelper.getPrimaryTrack(),
+            zones);
+
     undoRedoProvider.execute(resolveCuts);
-    
+
     // and refresh
     updateData(true);
   }
