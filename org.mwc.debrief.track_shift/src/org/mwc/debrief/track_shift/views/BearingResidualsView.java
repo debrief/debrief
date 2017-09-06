@@ -72,7 +72,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     final private AmbiguityResolver _resolver;
 
-    public DeleteCutsOperation(AmbiguityResolver resolver,
+    public DeleteCutsOperation(final AmbiguityResolver resolver,
         final List<SensorContactWrapper> cutsToDelete)
     {
       super("Delete cuts in O/S Turn");
@@ -133,11 +133,11 @@ public class BearingResidualsView extends BaseStackedDotsView implements
      */
     private List<ResolvedLeg> _cutsToResolve;
     final private AmbiguityResolver _resolver;
-    private TrackWrapper _primary;
-    private Zone[] _zones;
+    private final TrackWrapper _primary;
+    private final Zone[] _zones;
 
-    public ResolveCutsOperation(AmbiguityResolver resolver,
-        TrackWrapper primaryTrack, Zone[] zones)
+    public ResolveCutsOperation(final AmbiguityResolver resolver,
+        final TrackWrapper primaryTrack, final Zone[] zones)
     {
       super("Resolve ambiguous cuts");
       _resolver = resolver;
@@ -192,8 +192,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     final private List<LegOfCuts> _legs;
     private List<ResolvedLeg> _resolved;
 
-    public ResolveCutsOperationAmbig(AmbiguityResolver resolver,
-        List<LegOfCuts> legs)
+    public ResolveCutsOperationAmbig(final AmbiguityResolver resolver,
+        final List<LegOfCuts> legs)
     {
       super("Resolve ambiguous cuts");
       _resolver = resolver;
@@ -275,6 +275,20 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   public boolean applyStyling()
   {
     return scaleError.isChecked();
+  }
+
+  @Override
+  void clearPlots()
+  {
+    super.clearPlots();
+
+    // also, forget the stored set of ambiguous data
+    if (_ambiguousResolverLegsAndCuts != null)
+    {
+      _ambiguousResolverLegsAndCuts.getLegs().clear();
+      _ambiguousResolverLegsAndCuts.getZigs().clear();
+      _ambiguousResolverLegsAndCuts = null;
+    }
   }
 
   protected void deleteCutsInTurnA()
@@ -469,7 +483,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         deleteCutsInTurnA();
       }
     };
-    _doStepADelete.setToolTipText("Delete cuts in turn (using legs from O/S course)");
+    _doStepADelete
+        .setToolTipText("Delete cuts in turn (using legs from O/S course)");
 
     // now the course action
     _doStepAResolve = new Action("A2", IAction.AS_PUSH_BUTTON)
@@ -481,7 +496,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         resolveAmbiguousCuts();
       }
     };
-    _doStepAResolve.setToolTipText("Resolve ambiguity (using legs from O/S course)");
+    _doStepAResolve
+        .setToolTipText("Resolve ambiguity (using legs from O/S course)");
 
     // now the course action
     _doStepBDelete = new Action("B1", IAction.AS_PUSH_BUTTON)
@@ -493,8 +509,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         deleteCutsInTurnB();
       }
     };
-    _doStepBDelete.setToolTipText("Delete cuts in turn (using legs from TA ambiguity)");
-    
+    _doStepBDelete
+        .setToolTipText("Delete cuts in turn (using legs from TA ambiguity)");
+
     // now the course action
     _doStepBResolve = new Action("B2", IAction.AS_PUSH_BUTTON)
     {
@@ -505,29 +522,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         resolveAmbiguousCutsB();
       }
     };
-    _doStepBResolve.setToolTipText("Resolve ambiguity (using legs from TA ambiguity)");
-  }
-
-  protected void resolveAmbiguousCutsB()
-  {
-
-    if (_ambiguousResolverLegsAndCuts != null)
-    {
-      AmbiguityResolver resolver = new AmbiguityResolver();
-      IUndoableOperation resolveCuts =
-          new ResolveCutsOperationAmbig(resolver, _ambiguousResolverLegsAndCuts
-              .getLegs());
-      undoRedoProvider.execute(resolveCuts);
-    }
-    else
-    {
-      CorePlugin.showMessage("Resolve Ambiguity",
-          "Please delete cuts in turn first");
-    }
-
-    // and refresh
-    updateData(true);
-
+    _doStepBResolve
+        .setToolTipText("Resolve ambiguity (using legs from TA ambiguity)");
   }
 
   private void processAutoResize()
@@ -578,27 +574,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     updateLinePlotRanges();
   }
 
-  @Override
-  void clearPlots()
-  {
-    super.clearPlots();
-
-    // also, forget the stored set of ambiguous data
-    if (_ambiguousResolverLegsAndCuts != null)
-    {
-      _ambiguousResolverLegsAndCuts.getLegs().clear();
-      _ambiguousResolverLegsAndCuts.getZigs().clear();
-      _ambiguousResolverLegsAndCuts = null;
-    }
-  }
-
   protected void resolveAmbiguousCuts()
   {
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
     final Zone[] zones = ownshipZoneChart.getZones();
 
-    IUndoableOperation resolveCuts =
+    final IUndoableOperation resolveCuts =
         new ResolveCutsOperation(resolver, super._myHelper.getPrimaryTrack(),
             zones);
 
@@ -606,6 +588,28 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     // and refresh
     updateData(true);
+  }
+
+  protected void resolveAmbiguousCutsB()
+  {
+
+    if (_ambiguousResolverLegsAndCuts != null)
+    {
+      final AmbiguityResolver resolver = new AmbiguityResolver();
+      final IUndoableOperation resolveCuts =
+          new ResolveCutsOperationAmbig(resolver, _ambiguousResolverLegsAndCuts
+              .getLegs());
+      undoRedoProvider.execute(resolveCuts);
+    }
+    else
+    {
+      CorePlugin.showMessage("Resolve Ambiguity",
+          "Please delete cuts in turn first");
+    }
+
+    // and refresh
+    updateData(true);
+
   }
 
   @Override

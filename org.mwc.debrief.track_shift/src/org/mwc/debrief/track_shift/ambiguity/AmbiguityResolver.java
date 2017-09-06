@@ -36,6 +36,29 @@ import MWC.GenericData.TimePeriod;
 
 public class AmbiguityResolver
 {
+  public static class LegsAndZigs
+  {
+    private final List<LegOfCuts> legs;
+    private final LegOfCuts zigCuts;
+
+    public LegsAndZigs(final List<LegOfCuts> legs, final LegOfCuts zigCuts)
+    {
+      this.legs = legs;
+      this.zigCuts = zigCuts;
+    }
+
+    public List<LegOfCuts> getLegs()
+    {
+      return legs;
+    }
+
+    public LegOfCuts getZigs()
+    {
+      return zigCuts;
+    }
+
+  }
+
   private static class Perm implements Comparable<Perm>
   {
     private final double score;
@@ -117,6 +140,70 @@ public class AmbiguityResolver
         ts.add(crseBearing);
       }
       return ts;
+    }
+
+    public void testDitchUsingAmbiguity() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensor", 1, track.getSensors().size());
+
+      // make the sensor visible
+      final SensorWrapper sensor =
+          (SensorWrapper) track.getSensors().elements().nextElement();
+      sensor.setVisible(true);
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track);
+      final List<LegOfCuts> legs = res.legs;
+      final LegOfCuts zigs = res.zigCuts;
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 13, legs.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 21, zigs.size());
+
+      // ok, ditch those cuts
+      final int fullSensorLen = sensor.size();
+      Map<SensorWrapper, LegOfCuts> deleted = solver.deleteTheseCuts(zigs);
+      assertEquals("fewer cuts", 100, sensor.size());
+
+      // ok, and undo them
+      solver.restoreCuts(deleted);
+      assertEquals("fewer cuts", fullSensorLen, sensor.size());
+
+      // and do it again, so we've got fewer cuts
+      deleted = solver.deleteTheseCuts(zigs);
+
+      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
+      assertNotNull(resolvedLegs);
+      assertEquals("right num legs", 13, legs.size());
+
+      assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 251d, resolvedLegs.get(2).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 254d, resolvedLegs.get(3).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 258d, resolvedLegs.get(4).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 269d, resolvedLegs.get(5).leg.get(0)
+          .getBearing(), 1d);
+
+      // ok, and cancel the leg resolving
+      solver.undoResolveBearings(resolvedLegs);
+
+      // and re-check they're ambiguous
+      assertEquals("is unresloved", true, resolvedLegs.get(0).leg.get(0)
+          .getHasAmbiguousBearing());
     }
 
     public void testGetCurve() throws FileNotFoundException
@@ -317,69 +404,6 @@ public class AmbiguityResolver
       assertEquals("correct last score", 200d, res.get(0).getY(), 0.001);
       assertEquals("correct last score", 40d, res.get(res.size() - 1).getY(),
           0.001);
-    }
-
-    public void testDitchUsingAmbiguity() throws FileNotFoundException
-    {
-      final TrackWrapper track = getData("Ambig_tracks2.rep");
-      assertNotNull("found track", track);
-
-      // has sensors
-      assertEquals("has sensor", 1, track.getSensors().size());
-
-      // make the sensor visible
-      SensorWrapper sensor =
-          (SensorWrapper) track.getSensors().elements().nextElement();
-      sensor.setVisible(true);
-
-      // ok, get resolving
-      final AmbiguityResolver solver = new AmbiguityResolver();
-
-      // try to get zones using ambiguity delta
-      LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track);
-      List<LegOfCuts> legs = res.legs;
-      LegOfCuts zigs = res.zigCuts;
-
-      assertNotNull("found zones", legs);
-      assertEquals("found correct number of zones", 13, legs.size());
-
-      assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 21, zigs.size());
-
-      // ok, ditch those cuts
-      final int fullSensorLen = sensor.size();
-      Map<SensorWrapper, LegOfCuts> deleted = solver.deleteTheseCuts(zigs);
-      assertEquals("fewer cuts", 100, sensor.size());
-      
-      // ok, and undo them
-      solver.restoreCuts(deleted);
-      assertEquals("fewer cuts", fullSensorLen, sensor.size());
-      
-      // and do it again, so we've got fewer cuts
-      deleted = solver.deleteTheseCuts(zigs);
-      
-      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
-      assertNotNull(resolvedLegs);
-      assertEquals("right num legs", 13, legs.size());
-
-      assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 251d, resolvedLegs.get(2).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 254d, resolvedLegs.get(3).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 258d, resolvedLegs.get(4).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 269d, resolvedLegs.get(5).leg.get(0)
-          .getBearing(), 1d);
-      
-      // ok, and cancel the leg resolving
-      solver.undoResolveBearings(resolvedLegs);
-      
-      // and re-check they're ambiguous
-      assertEquals("is unresloved", true, resolvedLegs.get(0).leg.get(0).getHasAmbiguousBearing());
     }
 
     public void testResolve() throws FileNotFoundException
@@ -604,155 +628,6 @@ public class AmbiguityResolver
     return res;
   }
 
-  public static class LegsAndZigs
-  {
-    private final List<LegOfCuts> legs;
-    private final LegOfCuts zigCuts;
-
-    public LegsAndZigs(final List<LegOfCuts> legs, final LegOfCuts zigCuts)
-    {
-      this.legs = legs;
-      this.zigCuts = zigCuts;
-    }
-
-    public List<LegOfCuts> getLegs()
-    {
-      return legs;
-    }
-
-    public LegOfCuts getZigs()
-    {
-      return zigCuts;
-    }
-    
-    
-  }
-  
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(SensorWrapper sensor)
-  {
-    List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
-    LegOfCuts zigs = new LegOfCuts();
-    
-    final double RATE_CUT_OFF = TrackShiftActivator.getDefault().getPreferenceStore().getDouble(PreferenceConstants.CUT_OFF);
-    
-    Enumeration<Editable> enumer = sensor.elements();
-    Double lastDelta = null;
-    HiResDate lastTime = null;
-    LegOfCuts thisLeg = null;
-    LegOfCuts thisZig = null;
-    while (enumer.hasMoreElements())
-    {
-      final SensorContactWrapper cut =
-          (SensorContactWrapper) enumer.nextElement();
-
-      if (cut.getHasAmbiguousBearing())
-      {
-        // ok, TA data
-        final double delta = cut.getAmbiguousBearing() - cut.getBearing();
-
-        final HiResDate time = cut.getDTG();
-
-        if (lastDelta != null)
-        {
-
-          double valueDelta = delta - lastDelta;
-
-          // if we're not already in a turn, then any
-          // monster delta will prob be related to domain
-          if (thisLeg != null)
-          {
-            if (valueDelta < -180)
-            {
-              valueDelta += 360d;
-            }
-            else if (valueDelta > 180)
-            {
-              valueDelta -= 180d;
-            }
-          }
-
-          // ok, work out the change rate
-          long timeMillis =
-              time.getDate().getTime() - lastTime.getDate().getTime();
-          long timeSecs = timeMillis / 1000L;
-
-          double rate = Math.abs(valueDelta / timeSecs);
-          // System.out.println("brg:" + (int)cut.getBearing() + " ambig:" +
-          // (int)cut.getAmbiguousBearing() + " delta:" + (int)Math.abs(cut.getAmbiguousBearing() -
-          // cut.getBearing()) + " rate:" + rate);
-
-          if (rate > RATE_CUT_OFF)
-          {
-            // ok, we're in a turn.
-            if (thisLeg != null)
-            {
-              // close the leg
-              thisLeg = null;
-            }
-            
-            // ok, we're in a leg
-            if (thisZig == null)
-            {
-              thisZig = new LegOfCuts();
-            }
-            thisZig.add(cut);
-          }
-          else
-          {
-            // ok, we're in a leg
-            if (thisLeg == null)
-            {
-              thisLeg = new LegOfCuts();
-              legs.add(thisLeg);
-            }
-            thisLeg.add(cut);
-            
-            // ok, we're in a turn.
-            if (thisZig != null)
-            {
-              zigs.addAll(thisZig);
-              
-              // close the leg
-              thisZig = null;
-            }
-          }
-        }
-        lastDelta = delta;
-        lastTime = time;
-      }
-    }
-
-    return new LegsAndZigs(legs, zigs);
-  }
-
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track)
-  {
-    final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
-    final LegOfCuts zigCuts = new LegOfCuts();
-    final LegsAndZigs res = new LegsAndZigs(legs, zigCuts);
-    
-    // ok, go for it
-    final BaseLayer sensors = track.getSensors();
-    final Enumeration<Editable> numer = sensors.elements();
-    while (numer.hasMoreElements())
-    {
-      final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
-      if (sensor.getVisible())
-      {
-        LegsAndZigs thisL = sliceIntoLegsUsingAmbiguity(sensor);        
-        if (thisL.legs.size() > 0)
-        {
-          res.legs.addAll(thisL.legs);
-        }
-        if(thisL.zigCuts.size() > 0)
-        {
-          res.zigCuts.addAll(thisL.zigCuts);
-        }
-      }
-    }
-    return res;
-  }
-
   public static List<WeightedObservedPoint> putObsInCorrectRange(
       final List<WeightedObservedPoint> obs)
   {
@@ -807,6 +682,30 @@ public class AmbiguityResolver
     return res;
   }
 
+  public Map<SensorWrapper, LegOfCuts> deleteTheseCuts(
+      final List<SensorContactWrapper> cutsToDelete)
+  {
+    final Map<SensorWrapper, LegOfCuts> deletedCuts =
+        new HashMap<SensorWrapper, LegOfCuts>();
+
+    for (final SensorContactWrapper t : cutsToDelete)
+    {
+      // store the details of this sensor, so we can undo it
+      LegOfCuts list = deletedCuts.get(t.getSensor());
+
+      if (list == null)
+      {
+        list = new LegOfCuts();
+        deletedCuts.put(t.getSensor(), list);
+      }
+
+      list.add(t);
+
+      t.getSensor().removeElement(t);
+    }
+    return deletedCuts;
+  }
+
   public void ditchBearings(final List<ResolvedLeg> legs)
   {
     for (final ResolvedLeg leg : legs)
@@ -840,11 +739,10 @@ public class AmbiguityResolver
     }
   }
 
-  public LegOfCuts findCutsToDropInTurn(
-      final TrackWrapper track, final Zone[] zones, final TimePeriod period)
+  public LegOfCuts findCutsToDropInTurn(final TrackWrapper track,
+      final Zone[] zones, final TimePeriod period)
   {
-    final LegOfCuts toDelete =
-        new LegOfCuts();
+    final LegOfCuts toDelete = new LegOfCuts();
     if (zones != null && zones.length > 0)
     {
       // ok, go for it
@@ -1053,6 +951,18 @@ public class AmbiguityResolver
     return resolve(legs);
   }
 
+  public void restoreCuts(final Map<SensorWrapper, LegOfCuts> deletedCuts)
+  {
+    for (final SensorWrapper sensor : deletedCuts.keySet())
+    {
+      final ArrayList<SensorContactWrapper> cuts = deletedCuts.get(sensor);
+      for (final SensorContactWrapper cut : cuts)
+      {
+        sensor.add(cut);
+      }
+    }
+  }
+
   private List<LegOfCuts> sliceIntoLegs(final TrackWrapper track,
       final Zone[] zones)
   {
@@ -1103,6 +1013,145 @@ public class AmbiguityResolver
     return res;
   }
 
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor)
+  {
+    final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
+    final LegOfCuts zigs = new LegOfCuts();
+
+    final double RATE_CUT_OFF =
+        TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+            PreferenceConstants.CUT_OFF);
+
+    final Enumeration<Editable> enumer = sensor.elements();
+    Double lastDelta = null;
+    HiResDate lastTime = null;
+    LegOfCuts thisLeg = null;
+    LegOfCuts thisZig = null;
+    while (enumer.hasMoreElements())
+    {
+      final SensorContactWrapper cut =
+          (SensorContactWrapper) enumer.nextElement();
+
+      if (cut.getHasAmbiguousBearing())
+      {
+        // ok, TA data
+        final double delta = cut.getAmbiguousBearing() - cut.getBearing();
+
+        final HiResDate time = cut.getDTG();
+
+        if (lastDelta != null)
+        {
+
+          double valueDelta = delta - lastDelta;
+
+          // if we're not already in a turn, then any
+          // monster delta will prob be related to domain
+          if (thisLeg != null)
+          {
+            if (valueDelta < -180)
+            {
+              valueDelta += 360d;
+            }
+            else if (valueDelta > 180)
+            {
+              valueDelta -= 180d;
+            }
+          }
+
+          // ok, work out the change rate
+          final long timeMillis =
+              time.getDate().getTime() - lastTime.getDate().getTime();
+          final long timeSecs = timeMillis / 1000L;
+
+          final double rate = Math.abs(valueDelta / timeSecs);
+          // System.out.println("brg:" + (int)cut.getBearing() + " ambig:" +
+          // (int)cut.getAmbiguousBearing() + " delta:" + (int)Math.abs(cut.getAmbiguousBearing() -
+          // cut.getBearing()) + " rate:" + rate);
+
+          if (rate > RATE_CUT_OFF)
+          {
+            // ok, we're in a turn.
+            if (thisLeg != null)
+            {
+              // close the leg
+              thisLeg = null;
+            }
+
+            // ok, we're in a leg
+            if (thisZig == null)
+            {
+              thisZig = new LegOfCuts();
+            }
+            thisZig.add(cut);
+          }
+          else
+          {
+            // ok, we're in a leg
+            if (thisLeg == null)
+            {
+              thisLeg = new LegOfCuts();
+              legs.add(thisLeg);
+            }
+            thisLeg.add(cut);
+
+            // ok, we're in a turn.
+            if (thisZig != null)
+            {
+              zigs.addAll(thisZig);
+
+              // close the leg
+              thisZig = null;
+            }
+          }
+        }
+        lastDelta = delta;
+        lastTime = time;
+      }
+    }
+
+    return new LegsAndZigs(legs, zigs);
+  }
+
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track)
+  {
+    final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
+    final LegOfCuts zigCuts = new LegOfCuts();
+    final LegsAndZigs res = new LegsAndZigs(legs, zigCuts);
+
+    // ok, go for it
+    final BaseLayer sensors = track.getSensors();
+    final Enumeration<Editable> numer = sensors.elements();
+    while (numer.hasMoreElements())
+    {
+      final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
+      if (sensor.getVisible())
+      {
+        final LegsAndZigs thisL = sliceIntoLegsUsingAmbiguity(sensor);
+        if (thisL.legs.size() > 0)
+        {
+          res.legs.addAll(thisL.legs);
+        }
+        if (thisL.zigCuts.size() > 0)
+        {
+          res.zigCuts.addAll(thisL.zigCuts);
+        }
+      }
+    }
+    return res;
+  }
+
+  public void undoResolve(final List<LegOfCuts> legs)
+  {
+    // ok, clear all their ambiguity
+    for (final LegOfCuts leg : legs)
+    {
+      for (final SensorContactWrapper cut : leg)
+      {
+        cut.setHasAmbiguousBearing(true);
+      }
+    }
+  }
+
   public void undoResolveBearings(final List<ResolvedLeg> legs)
   {
     for (final ResolvedLeg leg : legs)
@@ -1130,51 +1179,4 @@ public class AmbiguityResolver
     }
   }
 
-  public void undoResolve(final List<LegOfCuts> legs)
-  {
-    // ok, clear all their ambiguity
-    for(final LegOfCuts leg: legs)
-    {
-      for(final SensorContactWrapper cut: leg)
-      {
-        cut.setHasAmbiguousBearing(true);
-      }
-    }
-  }
-  
-  public Map<SensorWrapper, LegOfCuts> deleteTheseCuts(List<SensorContactWrapper> cutsToDelete)
-  {
-    Map<SensorWrapper, LegOfCuts> deletedCuts =
-        new HashMap<SensorWrapper, LegOfCuts>();
-
-    for (final SensorContactWrapper t : cutsToDelete)
-    {
-      // store the details of this sensor, so we can undo it
-      LegOfCuts list = deletedCuts.get(t.getSensor());
-
-      if (list == null)
-      {
-        list = new LegOfCuts();
-        deletedCuts.put(t.getSensor(), list);
-      }
-
-      list.add(t);
-
-      t.getSensor().removeElement(t);
-    }
-    return deletedCuts;
-  }
-
-  public void restoreCuts(Map<SensorWrapper, LegOfCuts> deletedCuts)
-  {
-    for (final SensorWrapper sensor : deletedCuts.keySet())
-    {
-      final ArrayList<SensorContactWrapper> cuts = deletedCuts.get(sensor);
-      for (final SensorContactWrapper cut : cuts)
-      {
-        sensor.add(cut);
-      }
-    }
-  }
-  
 }
