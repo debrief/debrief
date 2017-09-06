@@ -469,6 +469,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         deleteCutsInTurnA();
       }
     };
+    _doStepADelete.setToolTipText("Delete cuts in turn (using legs from O/S course)");
 
     // now the course action
     _doStepAResolve = new Action("A2", IAction.AS_PUSH_BUTTON)
@@ -480,6 +481,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         resolveAmbiguousCuts();
       }
     };
+    _doStepAResolve.setToolTipText("Resolve ambiguity (using legs from O/S course)");
 
     // now the course action
     _doStepBDelete = new Action("B1", IAction.AS_PUSH_BUTTON)
@@ -491,6 +493,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         deleteCutsInTurnB();
       }
     };
+    _doStepBDelete.setToolTipText("Delete cuts in turn (using legs from TA ambiguity)");
+    
     // now the course action
     _doStepBResolve = new Action("B2", IAction.AS_PUSH_BUTTON)
     {
@@ -501,6 +505,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         resolveAmbiguousCutsB();
       }
     };
+    _doStepBResolve.setToolTipText("Resolve ambiguity (using legs from TA ambiguity)");
   }
 
   protected void resolveAmbiguousCutsB()
