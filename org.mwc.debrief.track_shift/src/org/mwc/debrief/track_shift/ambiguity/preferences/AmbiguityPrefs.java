@@ -49,6 +49,7 @@ public class AmbiguityPrefs extends PreferencePage implements
    */
   public void init(IWorkbench workbench)
   {
+    // empty body.
   }
 
   @Override

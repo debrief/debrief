@@ -159,7 +159,7 @@ public class AmbiguityResolver
       final AmbiguityResolver solver = new AmbiguityResolver();
 
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track);
+      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track, 0.2);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -1013,14 +1013,10 @@ public class AmbiguityResolver
     return res;
   }
 
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor)
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor, final double RATE_CUT_OFF)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
-
-    final double RATE_CUT_OFF =
-        TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-            PreferenceConstants.CUT_OFF);
 
     final Enumeration<Editable> enumer = sensor.elements();
     Double lastDelta = null;
@@ -1112,7 +1108,7 @@ public class AmbiguityResolver
     return new LegsAndZigs(legs, zigs);
   }
 
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track)
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track, final double rateCutOff)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1126,7 +1122,7 @@ public class AmbiguityResolver
       final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
       if (sensor.getVisible())
       {
-        final LegsAndZigs thisL = sliceIntoLegsUsingAmbiguity(sensor);
+        final LegsAndZigs thisL = sliceIntoLegsUsingAmbiguity(sensor, rateCutOff);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
@@ -1178,5 +1174,4 @@ public class AmbiguityResolver
       }
     }
   }
-
 }

@@ -42,6 +42,7 @@ import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.ResolvedLeg;
+import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
@@ -221,7 +222,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         throws ExecutionException
     {
       _resolver.undoResolveBearings(_resolved);
-      ;
 
       // and clear the resolved list
       _resolved.clear();
@@ -278,7 +278,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   }
 
   @Override
-  void clearPlots()
+  protected void clearPlots()
   {
     super.clearPlots();
 
@@ -313,8 +313,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
 
+
+    final double RATE_CUT_OFF =
+        TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+            PreferenceConstants.CUT_OFF);
+    
     _ambiguousResolverLegsAndCuts =
-        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack());
+        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(), RATE_CUT_OFF);
 
     final IUndoableOperation deleteOperation =
         new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
