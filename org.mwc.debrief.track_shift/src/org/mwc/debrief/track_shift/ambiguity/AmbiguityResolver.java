@@ -167,15 +167,15 @@ public class AmbiguityResolver
       final LegOfCuts zigs = res.zigCuts;
 
       assertNotNull("found zones", legs);
-      assertEquals("found correct number of zones", 13, legs.size());
+      assertEquals("found correct number of zones", 12, legs.size());
 
       assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 21, zigs.size());
+      assertEquals("found correct number of zig cuts", 23, zigs.size());
 
       // ok, ditch those cuts
       final int fullSensorLen = sensor.size();
       Map<SensorWrapper, LegOfCuts> deleted = solver.deleteTheseCuts(zigs);
-      assertEquals("fewer cuts", 100, sensor.size());
+      assertEquals("fewer cuts", 98, sensor.size());
 
       // ok, and undo them
       solver.restoreCuts(deleted);
@@ -186,7 +186,7 @@ public class AmbiguityResolver
 
       final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
       assertNotNull(resolvedLegs);
-      assertEquals("right num legs", 13, legs.size());
+      assertEquals("right num legs", 12, legs.size());
 
       assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0)
           .getBearing(), 1d);
@@ -403,18 +403,18 @@ public class AmbiguityResolver
       final LegOfCuts zigs = res.zigCuts;
 
       assertNotNull("found zones", legs);
-      assertEquals("found correct number of zones", 9, legs.size());
+      assertEquals("found correct number of zones", 8, legs.size());
 
       assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 15, zigs.size());
+      assertEquals("found correct number of zig cuts", 17, zigs.size());
 
       // ok, ditch those cuts
       solver.deleteTheseCuts(zigs);
-      assertEquals("fewer cuts", 106, sensor.size());
+      assertEquals("fewer cuts", 104, sensor.size());
 
       final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
       assertNotNull(resolvedLegs);
-      assertEquals("right num legs", 9, legs.size());
+      assertEquals("right num legs", 8, legs.size());
     }
 
     public void testProcessCuts() throws FileNotFoundException
@@ -664,7 +664,7 @@ public class AmbiguityResolver
 
       assertNotNull("produced slices", sliced);
       assertEquals("correct legs", 3, sliced.legs.size());
-      assertEquals("correct turning cuts", 2, sliced.zigCuts.size());
+      assertEquals("correct turning cuts", 8, sliced.zigCuts.size());
     }
 
     public void testWeighting()
