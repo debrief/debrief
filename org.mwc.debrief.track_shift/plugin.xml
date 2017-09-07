@@ -33,4 +33,10 @@
              name="Resolve Bearing Ambiguity">
        </page>
     </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.mwc.debrief.track_shift.ambiguity.preferences.AmbiguityPrefsInitializer">
+      </initializer>
+   </extension>
 </plugin>

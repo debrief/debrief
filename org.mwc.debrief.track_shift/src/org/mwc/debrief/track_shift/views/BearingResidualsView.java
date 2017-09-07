@@ -17,6 +17,11 @@ package org.mwc.debrief.track_shift.views;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -265,10 +270,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     super.addExtras(toolBarManager);
     toolBarManager.add(showCourse);
-    toolBarManager.add(_doStepADelete);
-    toolBarManager.add(_doStepAResolve);
-    toolBarManager.add(_doStepBDelete);
-    toolBarManager.add(_doStepBResolve);
+
+    final boolean showControls =
+        TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(
+            PreferenceConstants.DISPLAY);
+
+    if (showControls)
+    {
+      toolBarManager.add(_doStepADelete);
+      toolBarManager.add(_doStepAResolve);
+      toolBarManager.add(_doStepBDelete);
+      toolBarManager.add(_doStepBResolve);
+    }
   }
 
   @Override
@@ -313,13 +326,39 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
 
-
     final double RATE_CUT_OFF =
         TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
             PreferenceConstants.CUT_OFF);
-    
+
+    final boolean doLogging =
+        TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(
+            PreferenceConstants.DIAGNOSTICS);
+    final Logger logger;
+    if (doLogging)
+    {
+      logger = Logger.getLogger("Residuals.Logger", null);
+      logger.setLevel(Level.INFO);
+      Handler handler = new ConsoleHandler()
+      {
+        @Override
+        public void publish(LogRecord record)
+        {
+          // and to the system log
+          TrackShiftActivator.getDefault().getLog().log(
+              new Status(Status.INFO, TrackShiftActivator.PLUGIN_ID, record
+                  .getMessage()));
+        }
+      };
+      logger.addHandler(handler);
+    }
+    else
+    {
+      logger = null;
+    }
+
     _ambiguousResolverLegsAndCuts =
-        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(), RATE_CUT_OFF);
+        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(),
+            RATE_CUT_OFF, logger);
 
     final IUndoableOperation deleteOperation =
         new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
