@@ -265,10 +265,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     super.addExtras(toolBarManager);
     toolBarManager.add(showCourse);
-    toolBarManager.add(_doStepADelete);
-    toolBarManager.add(_doStepAResolve);
-    toolBarManager.add(_doStepBDelete);
-    toolBarManager.add(_doStepBResolve);
+
+    final boolean showControls =
+        TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(
+            PreferenceConstants.DISPLAY);
+
+    if (showControls)
+    {
+      toolBarManager.add(_doStepADelete);
+      toolBarManager.add(_doStepAResolve);
+      toolBarManager.add(_doStepBDelete);
+      toolBarManager.add(_doStepBResolve);
+    }
   }
 
   @Override
@@ -313,13 +321,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
 
-
     final double RATE_CUT_OFF =
         TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
             PreferenceConstants.CUT_OFF);
-    
+
     _ambiguousResolverLegsAndCuts =
-        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(), RATE_CUT_OFF);
+        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(),
+            RATE_CUT_OFF);
 
     final IUndoableOperation deleteOperation =
         new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
