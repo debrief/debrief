@@ -47,8 +47,8 @@ import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.ResolvedLeg;
-import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
+import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -338,14 +338,15 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     {
       logger = Logger.getLogger("Residuals.Logger", null);
       logger.setLevel(Level.INFO);
-      Handler handler = new ConsoleHandler()
+      logger.setUseParentHandlers(false);
+      final Handler handler = new ConsoleHandler()
       {
         @Override
-        public void publish(LogRecord record)
+        public void publish(final LogRecord record)
         {
           // and to the system log
           TrackShiftActivator.getDefault().getLog().log(
-              new Status(Status.INFO, TrackShiftActivator.PLUGIN_ID, record
+              new Status(IStatus.INFO, TrackShiftActivator.PLUGIN_ID, record
                   .getMessage()));
         }
       };
