@@ -338,6 +338,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     {
       logger = Logger.getLogger("Residuals.Logger", null);
       logger.setLevel(Level.INFO);
+      logger.setUseParentHandlers(false);
       Handler handler = new ConsoleHandler()
       {
         @Override
