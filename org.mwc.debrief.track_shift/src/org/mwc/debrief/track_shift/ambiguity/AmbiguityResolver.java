@@ -537,7 +537,56 @@ public class AmbiguityResolver
       assertEquals("correct bearing", 350d, leg6.get(0).getBearing());
 
     }
+    
+    /** check that we allow a couple of apparently steady cuts during a turn
+     * 
+     * @throws FileNotFoundException
+     */
+    public void testSteadyInTurn() throws FileNotFoundException
+    {
+      final SensorWrapper sensor = new SensorWrapper("name");
+      sensor.add(wrapMe(sensor, 100, 180d, 270d));
+      sensor.add(wrapMe(sensor, 110, 170d, 280d));
+      sensor.add(wrapMe(sensor, 120, 160d, 290d));
+      sensor.add(wrapMe(sensor, 130, 150d, 300d));
+      sensor.add(wrapMe(sensor, 140, 140d, 310d));
+      sensor.add(wrapMe(sensor, 150, 140d, 310d));
+      sensor.add(wrapMe(sensor, 160, 182d, 220d));
+      sensor.add(wrapMe(sensor, 170, 183d, 221d));
+      sensor.add(wrapMe(sensor, 180, 184d, 222d));
+      sensor.add(wrapMe(sensor, 190, 185d, 223d));
+      sensor.add(wrapMe(sensor, 200, 186d, 224d));
+      sensor.add(wrapMe(sensor, 210, 186d, 224d));
+      sensor.add(wrapMe(sensor, 220, 92d, 200d));
+      sensor.add(wrapMe(sensor, 230, 83d, 210d));
+      sensor.add(wrapMe(sensor, 240, 74d, 220d));
+      sensor.add(wrapMe(sensor, 250, 65d, 230d));
+      sensor.add(wrapMe(sensor, 260, 56d, 240d));
+      sensor.add(wrapMe(sensor, 260, 56d, 240d));
+      sensor.add(wrapMe(sensor, 280, 92d, 260d));
+      sensor.add(wrapMe(sensor, 290, 73d, 280d));
+      sensor.add(wrapMe(sensor, 300, 54d, 300d));
+      sensor.add(wrapMe(sensor, 310, 35d, 320d));
+      sensor.add(wrapMe(sensor, 320, 16d, 340d));
+      sensor.add(wrapMe(sensor, 330, 9d, 0d));
+      sensor.add(wrapMe(sensor, 340, 355d, 20d));
+      
+      sensor.setVisible(true);
 
+      TrackWrapper host = new TrackWrapper();
+      host.setName("Host");
+      host.add(sensor);
+      
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      LegsAndZigs sliced = solver.sliceIntoLegsUsingAmbiguity(host, 0.2);
+      
+      assertNotNull("produced slices", sliced);
+      assertEquals("correct legs", 2, sliced.legs.size());
+      assertEquals("correct turning cuts", 2, sliced.zigCuts.size());
+    }
+    
+    
     public void testSplittingAllTime() throws FileNotFoundException
     {
       final TrackWrapper track = getData("Ambig_tracks.rep");
