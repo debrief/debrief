@@ -358,7 +358,7 @@ public final class StackedDotHelper
                 // if there are any matching items
 
               } // if we find a match
-              else if(targetTrack == null)
+              else if(targetTrack == null && hostFix != null)
               {
                 // no target data, just use ownship sensor data
                 thisDub = new Doublet(scw, null, null, hostFix);
