@@ -10,6 +10,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.jfree.data.time.FixedMillisecond;
@@ -172,7 +174,7 @@ public class AmbiguityResolver
       final AmbiguityResolver solver = new AmbiguityResolver();
 
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track, 0.2);
+      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -208,7 +210,7 @@ public class AmbiguityResolver
       final AmbiguityResolver solver = new AmbiguityResolver();
 
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track, 0.2);
+      final LegsAndZigs res = solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -1061,8 +1063,16 @@ public class AmbiguityResolver
     }
     return res;
   }
+  
+  private static void doLog(Logger logger, String msg)
+  {
+    if(logger != null)
+    {
+      logger.log(Level.INFO, msg);
+    }
+  }
 
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor, final double RATE_CUT_OFF)
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor, final double RATE_CUT_OFF, final Logger logger)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
@@ -1118,6 +1128,9 @@ public class AmbiguityResolver
           // System.out.println("brg:" + (int)cut.getBearing() + " ambig:" +
           // (int)cut.getAmbiguousBearing() + " delta:" + (int)Math.abs(cut.getAmbiguousBearing() -
           // cut.getBearing()) + " rate:" + rate);
+          
+          final String stats = time.getDate().toString() + " brg:" + (int)cut.getBearing() + " ambig:" + (int)cut.getAmbiguousBearing() + " rate:" + rate;
+          doLog(logger, stats);
 
           if (rate > RATE_CUT_OFF)
           {
@@ -1126,12 +1139,15 @@ public class AmbiguityResolver
             {
               // close the leg
               thisLeg = null;
+              
+              doLog(logger,  " End leg.");
             }
 
             // ok, we're in a leg
             if (thisZig == null)
             {
               thisZig = new LegOfCuts();
+              doLog(logger,  " New zig.");
             }
 
             // if we have a pending first cut,
@@ -1145,12 +1161,24 @@ public class AmbiguityResolver
             thisZig.add(cut);
           }
           else
-          {
+          {           
+            // ok, we were in a turn.  End it
+            if (thisZig != null)
+            {
+              zigs.addAll(thisZig);
+              
+              doLog(logger,  " Zig ended.");
+
+              // close the leg
+              thisZig = null;
+            }
+            
             // ok, we're in a leg
             if (thisLeg == null)
             {
               thisLeg = new LegOfCuts();
               legs.add(thisLeg);
+              doLog(logger,  " New Leg.");
             }
             
             // if we have a pending first cut,
@@ -1162,26 +1190,27 @@ public class AmbiguityResolver
             }
             
             thisLeg.add(cut);
-
-            // ok, we're in a turn.
-            if (thisZig != null)
-            {
-              zigs.addAll(thisZig);
-
-              // close the leg
-              thisZig = null;
-            }
           }
         }
         lastDelta = delta;
         lastTime = time;
       }
+      
+    }
+    // ok, do some last minute tidying
+    if(thisZig != null)
+    {
+      doLog(logger,  "Finishing zig.");
+
+      // store the zig cuts
+      zigs.addAll(thisZig);
+      thisZig = null;
     }
 
     return new LegsAndZigs(legs, zigs);
   }
 
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track, final double rateCutOff)
+  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track, final double rateCutOff, Logger logger)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1195,7 +1224,7 @@ public class AmbiguityResolver
       final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
       if (sensor.getVisible())
       {
-        final LegsAndZigs thisL = sliceIntoLegsUsingAmbiguity(sensor, rateCutOff);
+        final LegsAndZigs thisL = sliceIntoLegsUsingAmbiguity(sensor, rateCutOff, logger);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
