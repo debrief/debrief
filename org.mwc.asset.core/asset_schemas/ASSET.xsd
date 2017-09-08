@@ -4099,6 +4099,13 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="SubjectSensor" type="xs:string"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>Which specific sensor to listen to
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

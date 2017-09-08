@@ -84,11 +84,13 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   private boolean _recordDecisions = false;
   private TargetType _targetType = null;
   private List<String> _formatHelpers;
+  private String _subjectSensor = null;
 
   private static final String RECORD_DETECTIONS = "record_detections";
   private static final String RECORD_DECISIONS = "record_decisions";
   private static final String RECORD_POSITIONS = "record_positions";
   private static final String TARGET_TYPE = "SubjectToTrack";
+  private static final String SUBJECT_SENSOR = "SubjectSensor";
 
   public DebriefReplayObserverHandler(String type)
   {
@@ -99,6 +101,13 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
       public void setValue(String name, final boolean val)
       {
         _recordDetections = val;
+      }
+    });
+    addAttributeHandler(new HandleAttribute(SUBJECT_SENSOR)
+    {
+      public void setValue(String name, final String val)
+      {
+        _subjectSensor = val;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS)
@@ -145,9 +154,14 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   public void elementClosed()
   {
     // create ourselves
-    final ScenarioObserver debriefObserver =
+    final DebriefReplayObserver debriefObserver =
         getObserver(_name, _isActive, _recordDetections, _recordDecisions,
             _recordPositions, _targetType, _formatHelpers);
+    
+    if(_subjectSensor != null)
+    {
+      debriefObserver.setSubjectSensor(_subjectSensor);
+    }
 
     setObserver(debriefObserver);
 
@@ -159,13 +173,14 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     _recordDecisions = false;
     _recordPositions = true;
     _targetType = null;
+    _subjectSensor = null;
     
     // and clear the format helpers
     _formatHelpers.clear();
 
   }
 
-  protected ScenarioObserver getObserver(String name, boolean isActive,
+  protected DebriefReplayObserver getObserver(String name, boolean isActive,
       boolean recordDetections, boolean recordDecisions,
       boolean recordPositions, TargetType subject, List<String> formatHelpers)
   {
