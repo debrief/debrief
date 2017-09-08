@@ -992,8 +992,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     _theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
     // set an initial location for the label
-    _theLabel.setRelativeLocation(new Integer(
-        MWC.GUI.Properties.LocationPropertyEditor.RIGHT));
+    setNameLocation(NullableLocationPropertyEditor.AUTO);
 
     // initialise the symbol to use for plotting this track in snail mode
     _theSnailShape =
