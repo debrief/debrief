@@ -3521,7 +3521,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // hmm, if we're plotting date labels at the ends,
     // shift the track name so that it's opposite
     Integer oldLoc = null;
-    if (this.getEndTimeLabels() && !isSinglePointTrack())
+    if (this.getEndTimeLabels())
     {
       oldLoc = getNameLocation();
       
