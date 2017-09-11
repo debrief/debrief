@@ -2,6 +2,7 @@ package org.mwc.debrief.track_shift.controls;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -49,12 +50,15 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.track_shift.views.ResidualXYItemRenderer;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.JFreeChart.AttractiveDataItem;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 
 public class ZoneChart extends Composite
 {
@@ -832,30 +836,10 @@ public class ZoneChart extends Composite
   }
 
   public static ZoneChart create(final ZoneChartConfig config,
-      final ZoneUndoRedoProvider undoRedoProvider, final Composite parent,
-      final Zone[] zones, final long[] timeValues, final long[] angleValues,
-      final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
-      Runnable theDeleteEvent)
-  {
-    // build the jfreechart Plot
-    final TimeSeries xySeries = new TimeSeries("");
-
-    for (int i = 0; i < timeValues.length; i++)
-    {
-      xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
-    }
-
-    final TimeSeries otherSeries = null;
-
-    return create(config, undoRedoProvider, parent, zones, xySeries,
-        otherSeries, blueProv, zoneSlicer, theDeleteEvent);
-  }
-
-  public static ZoneChart create(final ZoneChartConfig config,
       final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
-      final TimeSeries otherSeries, final ColorProvider blueProv,
-      final ZoneSlicer zoneSlicer, Runnable deleteOperation)
+      final TimeSeries[] otherSeriesArr, final ColorProvider blueProv,
+      final ZoneSlicer zoneSlicer, final Runnable deleteOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -886,9 +870,12 @@ public class ZoneChart extends Composite
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
 
-    if (otherSeries != null)
+    if (otherSeriesArr != null)
     {
-      dataset.addSeries(otherSeries);
+      for (TimeSeries series : otherSeriesArr)
+      {
+        dataset.addSeries(series);
+      }
     }
 
     final JFreeChart xylineChart =
@@ -914,10 +901,49 @@ public class ZoneChart extends Composite
     renderer.setSeriesShapesVisible(0, true);
     renderer.setSeriesStroke(0, new BasicStroke(1));
 
-    if (otherSeries != null)
+    if (otherSeriesArr != null)
     {
-      renderer.setSeriesStroke(1, new BasicStroke(2));
-      renderer.setSeriesPaint(1, Color.GRAY);
+      int ctr = 0;
+      for (final TimeSeries series : otherSeriesArr)
+      {
+        plot.setRenderer(++ctr, new XYLineAndShapeRenderer(true, true){
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public Paint getItemPaint(int row, int column)
+          {
+            TimeSeriesDataItem item = series.getDataItem(column);
+            final Paint res;
+            if(item instanceof ColouredDataItem)
+            {
+              ColouredDataItem color = (ColouredDataItem) item;
+              res = color.getColor();
+            }
+            else
+              res = super.getItemPaint(row, column);
+            return Color.green;
+            
+//            return res;
+          }
+          
+        });
+        renderer.setSeriesStroke(++ctr, new BasicStroke(2));
+        renderer.setSeriesPaint(ctr, Color.GRAY);
+        
+        // if it's not too long, switch on symbols
+        if(series.getItemCount() < 1000)
+        {
+          renderer.setSeriesShapesVisible(ctr, true);
+        }
+        else
+        {
+          renderer.setSeriesShapesVisible(ctr, false);
+        }
+      }
     }
 
     // ok, wrap it in the zone chart

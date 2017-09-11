@@ -657,6 +657,28 @@ public class MaintainContributionsView extends ViewPart
     ZoneChartConfig zoneConfig =
         new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
             DebriefColors.BLUE);
+    long[] timeArr = new long[]
+    {new Date("2016/10/10 10:00:00").getTime(),
+      new Date("2016/10/10 10:21:00").getTime(),
+      new Date("2016/10/10 11:47:00").getTime(),
+      new Date("2016/10/10 11:55:00").getTime(),
+      new Date("2016/10/10 12:23:00").getTime(),
+      new Date("2016/10/10 12:44:00").getTime(),
+      new Date("2016/10/10 13:27:00").getTime(),
+      new Date("2016/10/10 14:10:00").getTime()};
+    long[] courseArr = new long[]
+    {115, 118, 119, 121, 118, 100, 98, 97};
+    
+    // for the new API signature we need to put the data into JFReeChart TimeSeries
+    // objects;
+    final TimeSeries courseData = new TimeSeries("");
+    for (int i = 0; i < timeArr.length; i++)
+    {
+      courseData.add(new FixedMillisecond(timeArr[i]), courseArr[i]);
+    }
+    final TimeSeries[] otherSeries = null;
+    
+    
     final ZoneChart zoneChart =
         ZoneChart.create(zoneConfig, null, graphTabs, new ZoneChart.Zone[]
         {
@@ -665,16 +687,7 @@ public class MaintainContributionsView extends ViewPart
                     .getZoneColor()),
             new ZoneChart.Zone(new Date("2016/10/10 12:44:00").getTime(),
                 new Date("2016/10/10 14:10:00").getTime(), blueProvider
-                    .getZoneColor())}, new long[]
-        {new Date("2016/10/10 10:00:00").getTime(),
-            new Date("2016/10/10 10:21:00").getTime(),
-            new Date("2016/10/10 11:47:00").getTime(),
-            new Date("2016/10/10 11:55:00").getTime(),
-            new Date("2016/10/10 12:23:00").getTime(),
-            new Date("2016/10/10 12:44:00").getTime(),
-            new Date("2016/10/10 13:27:00").getTime(),
-            new Date("2016/10/10 14:10:00").getTime()}, new long[]
-        {115, 118, 119, 121, 118, 100, 98, 97}, blueProvider, null, null);
+                    .getZoneColor())}, courseData, otherSeries, blueProvider, null, null);
 
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter()
     {

@@ -112,8 +112,8 @@ import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
-import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
+import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -141,7 +141,6 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -462,6 +461,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
+  final protected TimeSeries measuredValues = new TimeSeries("Measured");
+  final protected TimeSeries ambigValues = new TimeSeries("Measured (Ambiguous)");
+
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
   private Action _precisionTwo;
@@ -615,6 +617,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         ownshipZoneChart.clearZones();
       }
+      
+      measuredValues.clear();
+      ambigValues.clear();
     }
 
     // and the secondary
@@ -979,9 +984,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
 
+    
+    
+    // if we have any ambiguous cuts, produce a array
+    // containing core bearing then ambig bearing
+    TimeSeries[] ambigCuts = getAmbiguousCutData();
+    
     ownshipZoneChart =
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
-            ownshipCourseSeries, null, blueProv, ownshipLegSlicer,
+            ownshipCourseSeries, ambigCuts, blueProv, ownshipLegSlicer,
             deleteCutsInTurn);
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
@@ -1042,9 +1053,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ZoneChartConfig tZoneConfig =
         new ZoneChart.ZoneChartConfig("Target Legs", "Bearing",
             DebriefColors.RED);
+    final TimeSeries[] otherSeries = new TimeSeries[]{targetCalculatedSeries};
     targetZoneChart =
         ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
-            targetBearingSeries, targetCalculatedSeries, randomProv,
+            targetBearingSeries, otherSeries, randomProv,
             targetLegSlicer, null);
 
     targetZoneChart.addZoneListener(targetListener);
@@ -1057,6 +1069,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // sort out zone chart visibility
     setZoneChartsVisible(_showZones.isChecked());
+  }
+
+  private TimeSeries[] getAmbiguousCutData()
+  {
+    return new TimeSeries[]{measuredValues, ambigValues};
   }
 
   /**

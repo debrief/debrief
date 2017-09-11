@@ -239,8 +239,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     final Zone[] zones = ownshipZoneChart.getZones();
 
     final List<SensorContactWrapper> cutsToDelete =
-        resolver
-            .findCutsNotInLeg(super._myHelper.getPrimaryTrack(), zones, null);
+        resolver.findCutsNotInLeg(super._myHelper.getPrimaryTrack(), zones,
+            null);
 
     final IUndoableOperation deleteOperation =
         new DeleteCutsOperation(resolver, cutsToDelete);
@@ -601,8 +601,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     _myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverviewPlot,
         _myTrackDataProvider, _onlyVisible.isChecked(), showCourse.isChecked(),
         relativeAxes.isChecked(), _holder, this, updateDoublets,
-        _targetCourseSeries, _targetSpeedSeries, ownshipCourseSeries,
-        targetBearingSeries, targetCalculatedSeries, _overviewSpeedRenderer,
-        _overviewCourseRenderer);
+        _targetCourseSeries, _targetSpeedSeries, measuredValues, ambigValues,
+        ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+        _overviewSpeedRenderer, _overviewCourseRenderer);
   }
 }

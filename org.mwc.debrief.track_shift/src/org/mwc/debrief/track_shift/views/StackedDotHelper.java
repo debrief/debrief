@@ -762,6 +762,8 @@ public final class StackedDotHelper
       final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
+      final TimeSeries measuredValues,
+      final TimeSeries ambigValues,
       final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
@@ -817,8 +819,6 @@ public final class StackedDotHelper
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
-    final TimeSeries measuredValues = new TimeSeries("Measured");
-    final TimeSeries ambigValues = new TimeSeries("Measured (Ambiguous)");
     final TimeSeries calculatedValues = new TimeSeries("Calculated");
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
@@ -1714,5 +1714,4 @@ public final class StackedDotHelper
 
     return res;
   }
-
 }
