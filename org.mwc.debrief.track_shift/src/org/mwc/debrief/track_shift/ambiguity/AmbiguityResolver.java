@@ -354,7 +354,7 @@ public class AmbiguityResolver
       final AmbiguityResolver res = new AmbiguityResolver();
 
       // drop cuts in turn
-      res.findCutsToDropInTurn(track, zones, null);
+      res.findCutsNotInLeg(track, zones, null);
 
       // now get the legs
       final List<LegOfCuts> legs = res.sliceIntoLegs(track, zones);
@@ -577,7 +577,7 @@ public class AmbiguityResolver
       final int numCuts = sensor.size();
       assertEquals("right cuts at start", 721, numCuts);
       final List<SensorContactWrapper> toDel =
-          res.findCutsToDropInTurn(track, zones, null);
+          res.findCutsNotInLeg(track, zones, null);
       assertEquals("have cuts to delete", 133, toDel.size());
 
       @SuppressWarnings("unused")
@@ -883,7 +883,7 @@ public class AmbiguityResolver
     }
   }
 
-  public LegOfCuts findCutsToDropInTurn(final TrackWrapper track,
+  public LegOfCuts findCutsNotInLeg(final TrackWrapper track,
       final Zone[] zones, final TimePeriod period)
   {
     final LegOfCuts toDelete = new LegOfCuts();

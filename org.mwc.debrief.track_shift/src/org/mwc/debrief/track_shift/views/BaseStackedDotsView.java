@@ -27,12 +27,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
@@ -42,8 +45,11 @@ import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -98,11 +104,16 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
+import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
+import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
+import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
+import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -118,6 +129,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -129,6 +141,7 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -155,7 +168,86 @@ import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
 abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
- 
+
+  protected class DeleteCutsOperation extends CMAPOperation
+  {
+
+    /**
+     * the cuts to be deleted
+     * 
+     */
+    final private List<SensorContactWrapper> _cutsToDelete;
+
+    /**
+     * cuts that have been deleted (with the sensor that they were removed from)
+     * 
+     */
+    private Map<SensorWrapper, LegOfCuts> _deletedCuts;
+
+    final private AmbiguityResolver _resolver;
+
+    public DeleteCutsOperation(final AmbiguityResolver resolver,
+        final List<SensorContactWrapper> cutsToDelete)
+    {
+      super("Delete cuts in O/S Turn");
+
+      _cutsToDelete = cutsToDelete;
+      _deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
+      _resolver = resolver;
+    }
+
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      if (_deletedCuts != null)
+      {
+        _deletedCuts.clear();
+        _deletedCuts = null;
+      }
+
+      _deletedCuts = _resolver.deleteTheseCuts(_cutsToDelete);
+
+      // fire modified event
+      if (!_deletedCuts.isEmpty())
+      {
+        // get the host
+        SensorWrapper first = _deletedCuts.keySet().iterator().next();
+        first.firePropertyChange(SupportsPropertyListeners.EXTENDED, null,
+            System.currentTimeMillis());
+      }
+
+      // and refresh
+      updateData(true);
+      
+      // and the ownship zone chart
+      
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Delete cuts in O/S turn successful", null);
+      return res;
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      _resolver.restoreCuts(_deletedCuts);
+
+      _deletedCuts.clear();
+      _deletedCuts = null;
+
+      // and refresh the UI
+      updateData(true);
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Restore cuts in O/S turn successful", null);
+      return res;
+    }
+
+  }
 
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
@@ -166,7 +258,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
 
- 
   /*
    * Undo and redo actions
    */
@@ -778,16 +869,84 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public ArrayList<Zone> performSlicing()
       {
-        return StackedDotHelper.sliceOwnship(ownshipCourseSeries, blueProv);
+        // hmm, see if we have ambiguous data
+        final TrackWrapper primary = _myHelper.getPrimaryTrack();
+        boolean hasAmbiguous = false;
+        Enumeration<Editable> sEnum = primary.getSensors().elements();
+        while (sEnum.hasMoreElements() && !hasAmbiguous)
+        {
+          SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
+          if (sensor.size() > 0)
+          {
+            Enumeration<Editable> elements = sensor.elements();
+            while (elements.hasMoreElements() && !hasAmbiguous)
+            {
+              SensorContactWrapper contact =
+                  (SensorContactWrapper) elements.nextElement();
+              hasAmbiguous = contact.getHasAmbiguousBearing();
+            }
+          }
+        }
+
+        final ArrayList<Zone> zones;
+        if (hasAmbiguous)
+        {
+          // ok, we'll use our fancy slicer that relies on ambiguity
+          final double RATE_CUT_OFF =
+              TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+                  PreferenceConstants.CUT_OFF);
+          AmbiguityResolver resolver = new AmbiguityResolver();
+          Logger logger = null;
+          LegsAndZigs legs =
+              resolver.sliceIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
+                  RATE_CUT_OFF, logger);
+          zones = new ArrayList<Zone>();
+          for (LegOfCuts leg : legs.getLegs())
+          {
+            Zone thisZone =
+                new Zone(leg.get(0).getDTG().getDate().getTime(), leg.get(
+                    leg.size() - 1).getDTG().getDate().getTime(), Color.RED);
+            zones.add(thisZone);
+          }
+        }
+        else
+        {
+          zones = StackedDotHelper.sliceOwnship(ownshipCourseSeries, blueProv);
+        }
+
+        return zones;
       }
     };
 
     final ZoneChartConfig oZoneConfig =
         new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
             DebriefColors.BLUE);
+
+    Runnable deleteCutsInTurn = new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        // create the resolver
+        final AmbiguityResolver resolver = new AmbiguityResolver();
+        final Zone[] zones = ownshipZoneChart.getZones();
+
+        final List<SensorContactWrapper> cutsToDelete =
+            resolver.findCutsNotInLeg(_myHelper.getPrimaryTrack(), zones, null);
+
+        final IUndoableOperation deleteOperation =
+            new DeleteCutsOperation(resolver, cutsToDelete);
+
+        // wrap the operation
+        undoRedoProvider.execute(deleteOperation);
+      }
+    };
+
     ownshipZoneChart =
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
-            ownshipCourseSeries, null, blueProv, ownshipLegSlicer);
+            ownshipCourseSeries, null, blueProv, ownshipLegSlicer,
+            deleteCutsInTurn);
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -850,7 +1009,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     targetZoneChart =
         ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
             targetBearingSeries, targetCalculatedSeries, randomProv,
-            targetLegSlicer);
+            targetLegSlicer, null);
 
     targetZoneChart.addZoneListener(targetListener);
 
@@ -1972,7 +2131,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
               // tell the leg to share the good news
               // share the good news
-              if(_ourLayersSubject != null)
+              if (_ourLayersSubject != null)
               {
                 _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper
                     .getSecondaryTrack());

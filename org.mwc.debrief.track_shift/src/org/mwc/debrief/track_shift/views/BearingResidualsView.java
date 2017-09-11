@@ -14,9 +14,7 @@
  */
 package org.mwc.debrief.track_shift.views;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -52,7 +50,6 @@ import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 
 import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GenericData.HiResDate;
@@ -60,75 +57,6 @@ import MWC.GenericData.HiResDate;
 public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
 {
-
-  private class DeleteCutsOperation extends CMAPOperation
-  {
-
-    /**
-     * the cuts to be deleted
-     * 
-     */
-    final private List<SensorContactWrapper> _cutsToDelete;
-
-    /**
-     * cuts that have been deleted (with the sensor that they were removed from)
-     * 
-     */
-    private Map<SensorWrapper, LegOfCuts> _deletedCuts;
-
-    final private AmbiguityResolver _resolver;
-
-    public DeleteCutsOperation(final AmbiguityResolver resolver,
-        final List<SensorContactWrapper> cutsToDelete)
-    {
-      super("Delete cuts in O/S Turn");
-
-      _cutsToDelete = cutsToDelete;
-      _deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
-      _resolver = resolver;
-    }
-
-    @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      if (_deletedCuts != null)
-      {
-        _deletedCuts.clear();
-        _deletedCuts = null;
-      }
-
-      _deletedCuts = _resolver.deleteTheseCuts(_cutsToDelete);
-
-      // and refresh
-      updateData(true);
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Delete cuts in O/S turn successful", null);
-      return res;
-    }
-
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      _resolver.restoreCuts(_deletedCuts);
-
-      _deletedCuts.clear();
-      _deletedCuts = null;
-
-      // and refresh the UI
-      updateData(true);
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Restore cuts in O/S turn successful", null);
-      return res;
-    }
-
-  }
 
   private class ResolveCutsOperation extends CMAPOperation
   {
@@ -311,8 +239,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     final Zone[] zones = ownshipZoneChart.getZones();
 
     final List<SensorContactWrapper> cutsToDelete =
-        resolver.findCutsToDropInTurn(super._myHelper.getPrimaryTrack(), zones,
-            null);
+        resolver
+            .findCutsNotInLeg(super._myHelper.getPrimaryTrack(), zones, null);
 
     final IUndoableOperation deleteOperation =
         new DeleteCutsOperation(resolver, cutsToDelete);

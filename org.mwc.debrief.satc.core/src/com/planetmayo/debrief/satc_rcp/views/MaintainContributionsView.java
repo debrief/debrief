@@ -674,7 +674,7 @@ public class MaintainContributionsView extends ViewPart
             new Date("2016/10/10 12:44:00").getTime(),
             new Date("2016/10/10 13:27:00").getTime(),
             new Date("2016/10/10 14:10:00").getTime()}, new long[]
-        {115, 118, 119, 121, 118, 100, 98, 97}, blueProvider, null);
+        {115, 118, 119, 121, 118, 100, 98, 97}, blueProvider, null, null);
 
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter()
     {

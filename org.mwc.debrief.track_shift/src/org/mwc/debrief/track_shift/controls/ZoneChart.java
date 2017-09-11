@@ -59,12 +59,11 @@ import MWC.GUI.Layers;
 public class ZoneChart extends Composite
 {
 
-  
-  /** put some zone config items into a class,
-   * so we have to pass fewer params to
-   * create() function
+  /**
+   * put some zone config items into a class, so we have to pass fewer params to create() function
+   * 
    * @author Ian
-   *
+   * 
    */
   public static class ZoneChartConfig
   {
@@ -72,14 +71,15 @@ public class ZoneChart extends Composite
     private String _yTitle;
     private Color _lineColor;
 
-    public ZoneChartConfig(final String chartTitle, final String yTitle, final Color lineColor)
+    public ZoneChartConfig(final String chartTitle, final String yTitle,
+        final Color lineColor)
     {
       _chartTitle = chartTitle;
       _yTitle = yTitle;
       _lineColor = lineColor;
     }
   }
-  
+
   /**
    * helper class to provide color for zones
    * 
@@ -831,11 +831,11 @@ public class ZoneChart extends Composite
     List<Zone> performSlicing();
   }
 
-  public static ZoneChart create(final ZoneChartConfig config, final ZoneUndoRedoProvider undoRedoProvider,
-      final Composite parent,
+  public static ZoneChart create(final ZoneChartConfig config,
+      final ZoneUndoRedoProvider undoRedoProvider, final Composite parent,
       final Zone[] zones, final long[] timeValues, final long[] angleValues,
-      final ColorProvider blueProv, 
-      final ZoneSlicer zoneSlicer)
+      final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
+      Runnable theDeleteEvent)
   {
     // build the jfreechart Plot
     final TimeSeries xySeries = new TimeSeries("");
@@ -847,16 +847,15 @@ public class ZoneChart extends Composite
 
     final TimeSeries otherSeries = null;
 
-    return create(config , undoRedoProvider, parent, zones,
-        xySeries, otherSeries, blueProv, zoneSlicer);
+    return create(config, undoRedoProvider, parent, zones, xySeries,
+        otherSeries, blueProv, zoneSlicer, theDeleteEvent);
   }
 
-
-  public static ZoneChart create(final ZoneChartConfig config, final ZoneUndoRedoProvider undoRedoProviderIn,
-      final Composite parent,
+  public static ZoneChart create(final ZoneChartConfig config,
+      final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
       final TimeSeries otherSeries, final ColorProvider blueProv,
-      final ZoneSlicer zoneSlicer)
+      final ZoneSlicer zoneSlicer, Runnable deleteOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -924,7 +923,7 @@ public class ZoneChart extends Composite
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
         new ZoneChart(parent, xylineChart, undoRedoProvider, zones, blueProv,
-            zoneSlicer, xySeries);
+            zoneSlicer, xySeries, deleteOperation);
 
     // done
     return zoneChart;
@@ -1002,15 +1001,17 @@ public class ZoneChart extends Composite
   private final TimeSeries xySeries;
 
   private final ZoneUndoRedoProvider undoRedoProvider;
+  private final Runnable deleteEvent;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
-      final TimeSeries xySeries)
+      final TimeSeries xySeries, Runnable deleteEvent)
   {
     super(parent, SWT.NONE);
     this.undoRedoProvider = undoRedoProvider;
     this.chart = xylineChart;
+    this.deleteEvent = deleteEvent;
     buildUI(xylineChart);
 
     /**
@@ -1054,7 +1055,7 @@ public class ZoneChart extends Composite
     final GridData data =
         new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
             | GridData.GRAB_VERTICAL);
-    data.verticalSpan = 5;
+    data.verticalSpan = deleteEvent == null ? 5 : 6;
     chartComposite.setLayoutData(data);
     createToolbar();
   }
@@ -1156,6 +1157,22 @@ public class ZoneChart extends Composite
           }
         }
       });
+
+      if (deleteEvent != null)
+      {
+        System.out.println("createing delete button");
+        final Button delete = new Button(this, SWT.PUSH);
+        delete.setText("Delete");
+        delete.setToolTipText("Delete cuts not in a leg");
+        delete.addSelectionListener(new SelectionAdapter()
+        {
+          @Override
+          public void widgetSelected(SelectionEvent e)
+          {
+            deleteEvent.run();
+          }
+        });
+      }
     }
   }
 
@@ -1314,26 +1331,24 @@ public class ZoneChart extends Composite
         .getLastMillisecond();
   }
 
-
-  /** called from the UI button
+  /**
+   * called from the UI button
    * 
    */
   private void performSlicing()
   {
-    final ReversibleOperation reversOp =
-        new ReversibleOperation("Slice legs");
+    final ReversibleOperation reversOp = new ReversibleOperation("Slice legs");
 
     // do we have any data?
     if (xySeries.getItemCount() == 0)
     {
       // ok, populate the data
       final IEditorPart curEditor =
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-              .getActivePage().getActiveEditor();
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+              .getActiveEditor();
       if (curEditor instanceof IAdaptable)
       {
-        final Layers layers =
-            (Layers) curEditor.getAdapter(Layers.class);
+        final Layers layers = (Layers) curEditor.getAdapter(Layers.class);
         if (layers != null)
         {
           @SuppressWarnings("unchecked")
@@ -1354,8 +1369,7 @@ public class ZoneChart extends Composite
               final Enumeration<Editable> posits = thisT.getPositionIterator();
               while (posits.hasMoreElements())
               {
-                final FixWrapper thisF =
-                    (FixWrapper) posits.nextElement();
+                final FixWrapper thisF = (FixWrapper) posits.nextElement();
                 final TimeSeriesDataItem newItem =
                     new TimeSeriesDataItem(new FixedMillisecond(thisF
                         .getDateTimeGroup().getDate().getTime()), thisF
@@ -1431,8 +1445,7 @@ public class ZoneChart extends Composite
         {
           // remove this marker
           final IntervalMarker thisM = zoneMarkers.get(thisZone);
-          thePlot.removeDomainMarker(thisM,
-              org.jfree.ui.Layer.FOREGROUND);
+          thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
         }
 
         // ok, now ditch the old zone lists
@@ -1454,21 +1467,22 @@ public class ZoneChart extends Composite
       }
 
       @Override
-      public IStatus redo(final IProgressMonitor monitor,
-          final IAdaptable info) throws ExecutionException
+      public IStatus
+          redo(final IProgressMonitor monitor, final IAdaptable info)
+              throws ExecutionException
       {
         return execute(monitor, info);
       }
 
       @Override
-      public IStatus undo(final IProgressMonitor monitor,
-          final IAdaptable info) throws ExecutionException
+      public IStatus
+          undo(final IProgressMonitor monitor, final IAdaptable info)
+              throws ExecutionException
       {
         // and ditch the intervals
         for (final IntervalMarker marker : zoneMarkers.values())
         {
-          thePlot.removeDomainMarker(marker,
-              org.jfree.ui.Layer.FOREGROUND);
+          thePlot.removeDomainMarker(marker, org.jfree.ui.Layer.FOREGROUND);
         }
         zones.clear();
         zoneMarkers.clear();
