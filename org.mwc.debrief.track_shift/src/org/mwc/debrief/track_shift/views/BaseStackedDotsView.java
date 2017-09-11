@@ -209,24 +209,43 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       _deletedCuts = _resolver.deleteTheseCuts(_cutsToDelete);
 
-      // fire modified event
-      if (!_deletedCuts.isEmpty())
-      {
-        // get the host
-        SensorWrapper first = _deletedCuts.keySet().iterator().next();
-        first.firePropertyChange(SupportsPropertyListeners.EXTENDED, null,
-            System.currentTimeMillis());
-      }
+      // share the good news
+      fireModified();
 
       // and refresh
       updateData(true);
-      
+
       // and the ownship zone chart
-      
+
       final IStatus res =
           new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
               "Delete cuts in O/S turn successful", null);
       return res;
+    }
+
+    private void fireModified()
+    {
+      final SensorWrapper sensor;
+      if (_deletedCuts != null && !_deletedCuts.isEmpty())
+      {
+        sensor = _deletedCuts.keySet().iterator().next();
+      }
+      else if (_cutsToDelete != null && !_cutsToDelete.isEmpty())
+      {
+        sensor = _cutsToDelete.get(0).getSensor();
+      }
+      else
+      {
+        sensor = null;
+      }
+
+      // fire modified event
+      if (sensor != null)
+      {
+        // get the host
+        sensor.firePropertyChange(SupportsPropertyListeners.EXTENDED, null,
+            System.currentTimeMillis());
+      }
     }
 
     @Override
@@ -237,6 +256,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       _deletedCuts.clear();
       _deletedCuts = null;
+
+      // share the good news
+      fireModified();
 
       // and refresh the UI
       updateData(true);

@@ -1160,7 +1160,6 @@ public class ZoneChart extends Composite
 
       if (deleteEvent != null)
       {
-        System.out.println("createing delete button");
         final Button delete = new Button(this, SWT.PUSH);
         delete.setText("Delete");
         delete.setToolTipText("Delete cuts not in a leg");
