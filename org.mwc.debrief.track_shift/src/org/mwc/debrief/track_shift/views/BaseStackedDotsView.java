@@ -225,6 +225,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     private void fireModified()
     {
+
       final SensorWrapper sensor;
       if (_deletedCuts != null && !_deletedCuts.isEmpty())
       {
@@ -242,9 +243,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // fire modified event
       if (sensor != null)
       {
-        // get the host
-        sensor.firePropertyChange(SupportsPropertyListeners.EXTENDED, null,
+        // remember the zones
+        Zone[] zones = ownshipZoneChart.getZones();
+
+        // fire the update. Note: doing this will remove
+        // the displayed zones, since the chart will think
+        // the track has changed.
+        sensor.getHost().firePropertyChange(PlainWrapper.EXTENDED, null,
             System.currentTimeMillis());
+
+        List<Zone> zoneList = new ArrayList<Zone>();
+        for (Zone z : zones)
+        {
+          zoneList.add(z);
+        }
+        ownshipZoneChart.setZones(zoneList);
       }
     }
 
@@ -508,9 +521,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             (_myHelper.getPrimaryTrack() != null)
                 && (_myHelper.getPrimaryTrack().equals(primary));
         final boolean secSame =
-            (_myHelper.getSecondaryTrack() != null) && secondaries != null
+            ((_myHelper.getSecondaryTrack() != null) && secondaries != null
                 && secondaries.length == 1
-                && (_myHelper.getSecondaryTrack().equals(secondaries[0]));
+                && (_myHelper.getSecondaryTrack().equals(secondaries[0])) || _myHelper
+                .getSecondaryTrack() == null);
 
         // ok, have things changed?
         _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
