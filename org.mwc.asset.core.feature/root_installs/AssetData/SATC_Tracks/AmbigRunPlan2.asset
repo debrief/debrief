@@ -64,7 +64,10 @@
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
 				<BroadbandSensor Aperture="180" Ambiguous="true"
-					CanProduceRange="false" />
+					CanProduceRange="false" Name="TA" />
+				<BroadbandSensor Aperture="180" Ambiguous="false"
+					CanProduceRange="false" Name="HM">
+				</BroadbandSensor>
 			</SensorFit>
 			<Status Course="190" Fuel="100">
 				<Location>
