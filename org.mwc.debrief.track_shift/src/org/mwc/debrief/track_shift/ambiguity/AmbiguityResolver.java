@@ -163,7 +163,7 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null, null);
+          solver.sliceIntoLegsUsingAmbiguity(track, 0.7, 0.2, null, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -399,7 +399,7 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null, null);
+          solver.sliceIntoLegsUsingAmbiguity(track, 0.7, 0.2, null, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -649,7 +649,7 @@ public class AmbiguityResolver
       });
 
       final LegsAndZigs sliced =
-          solver.sliceIntoLegsUsingAmbiguity(host, 2.2, logger, null);
+          solver.sliceIntoLegsUsingAmbiguity(host, 2.2, 0.2, logger, null);
 
       // for(LegOfCuts leg: sliced.legs)
       // {
@@ -1159,7 +1159,7 @@ public class AmbiguityResolver
   }
 
   public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor,
-      final double RATE_CUT_OFF, final Logger logger, final TimeSeries scores)
+      final double minZig, double maxSteady, final Logger logger, final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
@@ -1239,15 +1239,14 @@ public class AmbiguityResolver
           // {
           // System.out.println("here");
           // }
-
-          if (rate > RATE_CUT_OFF)
+          
+          if (rate > minZig)
           {
             // ok, we were on a straight leg
             if (thisLeg != null)
             {
               // close the leg
               thisLeg = null;
-
               doLog(logger, timeStr + " End leg.");
             }
 
@@ -1381,7 +1380,7 @@ public class AmbiguityResolver
   }
 
   public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track,
-      final double rateCutOff, final Logger logger, final TimeSeries scores)
+      final double minZig, double maxSteady, final Logger logger, final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1396,7 +1395,7 @@ public class AmbiguityResolver
       if (sensor.getVisible())
       {
         final LegsAndZigs thisL =
-            sliceIntoLegsUsingAmbiguity(sensor, rateCutOff, logger, scores);
+            sliceIntoLegsUsingAmbiguity(sensor, minZig, maxSteady, logger, scores);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
