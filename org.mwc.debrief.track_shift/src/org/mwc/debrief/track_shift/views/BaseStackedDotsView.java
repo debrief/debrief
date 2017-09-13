@@ -35,7 +35,6 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
@@ -111,9 +110,7 @@ import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
-import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
-import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -906,84 +903,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the courses into a TimeSeries
-    final ZoneSlicer ownshipLegSlicer = new ZoneSlicer()
-    {
-      @Override
-      public ArrayList<Zone> performSlicing()
-      {
-        // hmm, see if we have ambiguous data
-        final TrackWrapper primary = _myHelper.getPrimaryTrack();
-        boolean hasAmbiguous = false;
-        Enumeration<Editable> sEnum = primary.getSensors().elements();
-        while (sEnum.hasMoreElements() && !hasAmbiguous)
-        {
-          SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
-          if (sensor.size() > 0)
-          {
-            Enumeration<Editable> elements = sensor.elements();
-            while (elements.hasMoreElements() && !hasAmbiguous)
-            {
-              SensorContactWrapper contact =
-                  (SensorContactWrapper) elements.nextElement();
-              hasAmbiguous = contact.getHasAmbiguousBearing();
-            }
-          }
-        }
-
-        final ArrayList<Zone> zones;
-        if (hasAmbiguous)
-        {
-          // ok, we'll use our fancy slicer that relies on ambiguity
-          final double RATE_CUT_OFF =
-              TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                  PreferenceConstants.CUT_OFF);
-          AmbiguityResolver resolver = new AmbiguityResolver();
-          Logger logger = null;
-          LegsAndZigs legs =
-              resolver.sliceIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
-                  RATE_CUT_OFF, logger, ambigScores);
-          zones = new ArrayList<Zone>();
-          for (LegOfCuts leg : legs.getLegs())
-          {
-            Zone thisZone =
-                new Zone(leg.get(0).getDTG().getDate().getTime(), leg.get(
-                    leg.size() - 1).getDTG().getDate().getTime(), Color.RED);
-            zones.add(thisZone);
-          }
-        }
-        else
-        {
-          zones = StackedDotHelper.sliceOwnship(ownshipCourseSeries, blueProv);
-        }
-
-        return zones;
-      }
-    };
+    final ZoneSlicer ownshipLegSlicer = getOwnshipZoneSlicer(blueProv);
 
     final ZoneChartConfig oZoneConfig =
         new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
             DebriefColors.BLUE);
 
-    Runnable deleteCutsInTurn = new Runnable()
-    {
-
-      @Override
-      public void run()
-      {
-        // create the resolver
-        final AmbiguityResolver resolver = new AmbiguityResolver();
-        final Zone[] zones = ownshipZoneChart.getZones();
-
-        final List<SensorContactWrapper> cutsToDelete =
-            resolver.findCutsNotInLeg(_myHelper.getPrimaryTrack(), zones, null);
-
-        final IUndoableOperation deleteOperation =
-            new DeleteCutsOperation(resolver, cutsToDelete);
-
-        // wrap the operation
-        undoRedoProvider.execute(deleteOperation);
-      }
-    };
+    Runnable deleteCutsInTurn = getDeleteCutsOperation();
 
     
     
@@ -1073,11 +999,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
+  /** produce an operation that will delete selected cuts
+   * 
+   * @return
+   */
+  protected Runnable getDeleteCutsOperation()
+  {
+    return null;
+  }
+
   private TimeSeries[] getAmbiguousCutData()
   {
     return new TimeSeries[]{measuredValues, ambigValues};
   }
 
+  private ZoneChart.ZoneListener getOwnshipListener()
+  {
+    return new ZoneChart.ZoneAdapter();
+  }
+  
   /**
    * method to create a working plot (to contain our data)
    * 
@@ -1570,10 +1510,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private ZoneChart.ZoneListener getOwnshipListener()
-  {
-    return new ZoneChart.ZoneAdapter();
-  }
+  abstract protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv);
+ 
 
   public ISharedImages getSharedImages()
   {

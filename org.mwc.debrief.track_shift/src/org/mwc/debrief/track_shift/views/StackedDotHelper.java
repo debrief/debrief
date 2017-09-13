@@ -36,7 +36,9 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.zig_detector.ArtificalLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
@@ -216,6 +218,12 @@ public final class StackedDotHelper
         protected void updateData(final boolean updateDoublets)
         {
           // no, nothing to do.
+        }
+
+        @Override
+        protected ZoneSlicer getOwnshipZoneSlicer(ColorProvider blueProv)
+        {
+          return null;
         }
       };
 

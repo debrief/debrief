@@ -15,6 +15,8 @@
 package org.mwc.debrief.track_shift.views;
 
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
@@ -43,4 +45,11 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 		final DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot.getRenderer();
 		lineRend.setSeriesShapesVisible(3, false);
 	}
+
+  @Override
+  protected ZoneSlicer getOwnshipZoneSlicer(ColorProvider blueProv)
+  {
+    // don't bother, it's for bearing data
+    return null;
+  }
 }
