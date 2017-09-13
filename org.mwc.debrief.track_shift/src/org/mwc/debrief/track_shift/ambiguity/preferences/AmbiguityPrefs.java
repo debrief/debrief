@@ -51,44 +51,14 @@ public class AmbiguityPrefs extends FieldEditorPreferencePage implements
    */
   public void createFieldEditors()
   {
-    addField(new StringFieldEditor(PreferenceConstants.CUT_OFF,
-        "Cut-off value for determining ownship zig, such as 0.2 (degs/sec)", getFieldEditorParent()));
+    addField(new StringFieldEditor(PreferenceConstants.MIN_ZIG,
+        "Minimum ambiguity rate delta to treat as manoeuvering, such as 0.6 (degs/sec)", getFieldEditorParent()));
+    addField(new StringFieldEditor(PreferenceConstants.MAX_STEADY,
+        "Maximum ambiguity rate delta to treat as steady, such as 0.2 (degs/sec)", getFieldEditorParent()));
     addField(new BooleanFieldEditor(PreferenceConstants.DIAGNOSTICS,
         "Output slicing diagnostics to Error Log", getFieldEditorParent()));
     addField(new BooleanFieldEditor(PreferenceConstants.DISPLAY,
         "Display controls for TA data slicing", getFieldEditorParent()));
   }
 
-//  @Override
-//  protected void performDefaults()
-//  {
-//    cutOffText.setText(""); //$NON-NLS-1$
-//    storePreferences();
-//    super.performDefaults();
-//  }
-
-  @Override
-  public boolean performOk()
-  {
-  //  storePreferences();
-    return super.performOk();
-  }
-
-//  private void storePreferences()
-//  {
-//    IPreferenceStore store =
-//        TrackShiftActivator.getDefault().getPreferenceStore();
-//    String value = cutOffText.getText();
-//    if (value != null)
-//    {
-//      try{
-//      double val = Double.parseDouble(value);
-//      store.setValue(PreferenceConstants.CUT_OFF, val);
-//      }
-//      catch(NumberFormatException ne)
-//      {
-//        CorePlugin.logError(Status.ERROR, "Failed to parse new cut-off value", ne);
-//      }
-//    }
-//  }
 }
