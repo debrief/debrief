@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -47,11 +49,15 @@ import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.ResolvedLeg;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
 import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 
 public class BearingResidualsView extends BaseStackedDotsView implements
@@ -254,9 +260,12 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
 
-    final double RATE_CUT_OFF =
+    final double minZig =
         TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-            PreferenceConstants.CUT_OFF);
+            PreferenceConstants.MIN_ZIG);
+    final double maxSteady =
+        TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+            PreferenceConstants.MAX_STEADY);
 
     final boolean doLogging =
         TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(
@@ -287,7 +296,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     _ambiguousResolverLegsAndCuts =
         resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(),
-            RATE_CUT_OFF, logger, null);
+            minZig, maxSteady, logger, null);
 
     final IUndoableOperation deleteOperation =
         new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
@@ -604,5 +613,81 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         _targetCourseSeries, _targetSpeedSeries, measuredValues, ambigValues,
         ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
         _overviewSpeedRenderer, _overviewCourseRenderer);
+  }
+
+  @Override
+  protected Runnable getDeleteCutsOperation()
+  {
+    return new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        deleteCutsInTurnB();
+      }
+    };
+  }
+
+  @Override
+  protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
+  {
+    return new ZoneSlicer()
+    {
+      @Override
+      public ArrayList<Zone> performSlicing()
+      {
+        // hmm, see if we have ambiguous data
+        final TrackWrapper primary = _myHelper.getPrimaryTrack();
+        boolean hasAmbiguous = false;
+        Enumeration<Editable> sEnum = primary.getSensors().elements();
+        while (sEnum.hasMoreElements() && !hasAmbiguous)
+        {
+          SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
+          if (sensor.size() > 0)
+          {
+            Enumeration<Editable> elements = sensor.elements();
+            while (elements.hasMoreElements() && !hasAmbiguous)
+            {
+              SensorContactWrapper contact =
+                  (SensorContactWrapper) elements.nextElement();
+              hasAmbiguous = contact.getHasAmbiguousBearing();
+            }
+          }
+        }
+
+        final ArrayList<Zone> zones;
+        if (hasAmbiguous)
+        {
+          // ok, we'll use our fancy slicer that relies on ambiguity
+          final double MIN_ZIG =
+              TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+                  PreferenceConstants.MIN_ZIG);
+          final double MAX_STEADY =
+              TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+                  PreferenceConstants.MAX_STEADY);
+          AmbiguityResolver resolver = new AmbiguityResolver();
+          Logger logger = null;
+          _ambiguousResolverLegsAndCuts =
+              resolver.sliceIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
+                  MIN_ZIG, MAX_STEADY, logger, ambigScores);
+          zones = new ArrayList<Zone>();
+          for (LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
+          {
+            Zone thisZone =
+                new Zone(leg.get(0).getDTG().getDate().getTime(), leg.get(
+                    leg.size() - 1).getDTG().getDate().getTime(), blueProv.getZoneColor());
+            zones.add(thisZone);
+          }
+        }
+        else
+        {
+          zones = StackedDotHelper.sliceOwnship(ownshipCourseSeries, blueProv);
+        }
+
+        return zones;
+      }
+    };
+
   }
 }
