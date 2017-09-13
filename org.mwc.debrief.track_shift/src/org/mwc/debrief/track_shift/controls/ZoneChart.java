@@ -931,7 +931,9 @@ public class ZoneChart extends Composite
     renderer.setSeriesPaint(0, config._lineColor);
     renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
-    renderer.setSeriesStroke(0, new BasicStroke(1));
+    renderer.setSeriesStroke(0, new BasicStroke(2));
+    renderer.setSeriesStroke(1, new BasicStroke(2));
+    renderer.setSeriesStroke(2, new BasicStroke(2));
     plot.setRenderer(0, renderer);
     
     // do we have data for another dataset
@@ -948,6 +950,7 @@ public class ZoneChart extends Composite
       plot.setRangeAxis(1, y2);
       XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer(true, true);
       renderer2.setSeriesPaint(0, Color.BLACK);
+      renderer2.setSeriesStroke(0, new BasicStroke(2));
       plot.setRenderer(1, renderer2);
       plot.mapDatasetToRangeAxis(0, 0);
       plot.mapDatasetToRangeAxis(1, 1);
