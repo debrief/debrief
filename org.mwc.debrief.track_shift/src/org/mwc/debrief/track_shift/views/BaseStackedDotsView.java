@@ -463,6 +463,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       "Calculated Bearing");
   final protected TimeSeries measuredValues = new TimeSeries("Measured");
   final protected TimeSeries ambigValues = new TimeSeries("Measured (Ambiguous)");
+  final protected TimeSeries ambigScores = new TimeSeries("Ambiguity Delta Rate (deg/sec)");
 
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
@@ -940,7 +941,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           Logger logger = null;
           LegsAndZigs legs =
               resolver.sliceIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
-                  RATE_CUT_OFF, logger);
+                  RATE_CUT_OFF, logger, ambigScores);
           zones = new ArrayList<Zone>();
           for (LegOfCuts leg : legs.getLegs())
           {
@@ -989,11 +990,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // if we have any ambiguous cuts, produce a array
     // containing core bearing then ambig bearing
     TimeSeries[] ambigCuts = getAmbiguousCutData();
+    TimeSeries[] scoreSeries = new TimeSeries[]{ambigScores};
     
     ownshipZoneChart =
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
-            ownshipCourseSeries, ambigCuts, blueProv, ownshipLegSlicer,
-            deleteCutsInTurn);
+            ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
+            ownshipLegSlicer, deleteCutsInTurn);
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -1056,8 +1058,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final TimeSeries[] otherSeries = new TimeSeries[]{targetCalculatedSeries};
     targetZoneChart =
         ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
-            targetBearingSeries, otherSeries, randomProv,
-            targetLegSlicer, null);
+            targetBearingSeries, otherSeries, null,
+            randomProv, targetLegSlicer, null);
 
     targetZoneChart.addZoneListener(targetListener);
 

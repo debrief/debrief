@@ -39,6 +39,7 @@ import org.eclipse.ui.PlatformUI;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -50,14 +51,12 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.track_shift.views.ResidualXYItemRenderer;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.JFreeChart.AttractiveDataItem;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 
 public class ZoneChart extends Composite
@@ -838,8 +837,8 @@ public class ZoneChart extends Composite
   public static ZoneChart create(final ZoneChartConfig config,
       final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
-      final TimeSeries[] otherSeriesArr, final ColorProvider blueProv,
-      final ZoneSlicer zoneSlicer, final Runnable deleteOperation)
+      final TimeSeries[] otherSeriesArr, TimeSeries[] otherAxisSeries,
+      final ColorProvider blueProv, final ZoneSlicer zoneSlicer, final Runnable deleteOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -891,59 +890,67 @@ public class ZoneChart extends Composite
     plot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
     plot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
-
+    
     // and sort out the color for the line
-    final XYLineAndShapeRenderer renderer =
-        (XYLineAndShapeRenderer) plot.getRenderer();
+    final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true){
+
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public Paint getItemPaint(int row, int column)
+      {
+        final Paint res;
+        if(row == 0)
+        {
+          res = super.getItemPaint(row, column);
+        }
+        else
+        {
+          TimeSeries series = otherSeriesArr[row-1];
+          TimeSeriesDataItem item = series.getDataItem(column);
+          if(item instanceof ColouredDataItem)
+          {
+            ColouredDataItem color = (ColouredDataItem) item;
+            res = color.getColor();
+          }
+          else
+          {
+            res = super.getItemPaint(row, column);
+          }
+        }
+        
+        return res;
+      }
+      
+      
+    };
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, config._lineColor);
     renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
     renderer.setSeriesStroke(0, new BasicStroke(1));
-
-    if (otherSeriesArr != null)
+    plot.setRenderer(0, renderer);
+    
+    // do we have data for another dataset
+    if(otherAxisSeries != null)
     {
-      int ctr = 0;
-      for (final TimeSeries series : otherSeriesArr)
+      // ok, put it into another dataset
+      TimeSeriesCollection ds2 = new TimeSeriesCollection();
+      for(TimeSeries series: otherAxisSeries)
       {
-        plot.setRenderer(++ctr, new XYLineAndShapeRenderer(true, true){
-
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          public Paint getItemPaint(int row, int column)
-          {
-            TimeSeriesDataItem item = series.getDataItem(column);
-            final Paint res;
-            if(item instanceof ColouredDataItem)
-            {
-              ColouredDataItem color = (ColouredDataItem) item;
-              res = color.getColor();
-            }
-            else
-              res = super.getItemPaint(row, column);
-            return Color.green;
-            
-//            return res;
-          }
-          
-        });
-        renderer.setSeriesStroke(++ctr, new BasicStroke(2));
-        renderer.setSeriesPaint(ctr, Color.GRAY);
-        
-        // if it's not too long, switch on symbols
-        if(series.getItemCount() < 1000)
-        {
-          renderer.setSeriesShapesVisible(ctr, true);
-        }
-        else
-        {
-          renderer.setSeriesShapesVisible(ctr, false);
-        }
+        ds2.addSeries(series);
       }
+      NumberAxis y2 = new NumberAxis("\u00b0/sec");
+      plot.setDataset(1, ds2);
+      plot.setRangeAxis(1, y2);
+      XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer(true, true);
+      renderer2.setSeriesPaint(0, Color.BLACK);
+      plot.setRenderer(1, renderer2);
+      plot.mapDatasetToRangeAxis(0, 0);
+      plot.mapDatasetToRangeAxis(1, 1);
     }
 
     // ok, wrap it in the zone chart
@@ -1062,7 +1069,7 @@ public class ZoneChart extends Composite
   {
     final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
     mrk.setPaint(zone.getColor());
-    mrk.setAlpha(0.5f);
+    mrk.setAlpha(0.2f);
     plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
   }

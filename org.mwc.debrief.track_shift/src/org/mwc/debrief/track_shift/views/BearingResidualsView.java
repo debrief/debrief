@@ -287,7 +287,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     _ambiguousResolverLegsAndCuts =
         resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(),
-            RATE_CUT_OFF, logger);
+            RATE_CUT_OFF, logger, null);
 
     final IUndoableOperation deleteOperation =
         new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts

@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichBearing;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichPeriod;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
@@ -162,7 +163,7 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null);
+          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -398,7 +399,7 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null);
+          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -648,7 +649,7 @@ public class AmbiguityResolver
       });
 
       final LegsAndZigs sliced =
-          solver.sliceIntoLegsUsingAmbiguity(host, 2.2, logger);
+          solver.sliceIntoLegsUsingAmbiguity(host, 2.2, logger, null);
 
       // for(LegOfCuts leg: sliced.legs)
       // {
@@ -1158,10 +1159,15 @@ public class AmbiguityResolver
   }
 
   public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor,
-      final double RATE_CUT_OFF, final Logger logger)
+      final double RATE_CUT_OFF, final Logger logger, final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
+    
+    if(scores != null)
+    {
+      scores.clear();
+    }
 
     final Enumeration<Editable> enumer = sensor.elements();
     Double lastDelta = null;
@@ -1214,6 +1220,13 @@ public class AmbiguityResolver
           final long timeDeltaSecs = timeDeltaMillis / 1000L;
 
           final double rate = Math.abs(valueDelta / timeDeltaSecs);
+          
+          if(scores != null)
+          {
+            FixedMillisecond sec = new FixedMillisecond(time.getDate().getTime());
+            TimeSeriesDataItem item = new TimeSeriesDataItem(sec, rate);
+            scores.add(item);
+          }
 
           final String timeStr = time.getDate().toString();
           final String stats =
@@ -1368,7 +1381,7 @@ public class AmbiguityResolver
   }
 
   public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track,
-      final double rateCutOff, final Logger logger)
+      final double rateCutOff, final Logger logger, final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1383,7 +1396,7 @@ public class AmbiguityResolver
       if (sensor.getVisible())
       {
         final LegsAndZigs thisL =
-            sliceIntoLegsUsingAmbiguity(sensor, rateCutOff, logger);
+            sliceIntoLegsUsingAmbiguity(sensor, rateCutOff, logger, scores);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
