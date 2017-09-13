@@ -163,7 +163,7 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.7, 0.2, null, null);
+          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, 0.2, null, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -399,7 +399,7 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.7, 0.2, null, null);
+          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, 0.2, null, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
