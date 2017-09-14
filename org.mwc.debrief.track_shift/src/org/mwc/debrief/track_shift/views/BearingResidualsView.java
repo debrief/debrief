@@ -259,18 +259,33 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
+    
+    if (_ambiguousResolverLegsAndCuts != null)
+    {
+      // NOTE: switch this to deleting cuts not in the user-specified zones,
+      // since the user may have edited the zones
+      final IUndoableOperation deleteOperation =
+          new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
+              .getZigs());
 
-    final double minZig =
-        TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-            PreferenceConstants.MIN_ZIG);
-    final double maxSteady =
-        TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-            PreferenceConstants.MAX_STEADY);
+      // wrap the operation
+      undoRedoProvider.execute(deleteOperation);
+    }
+    else
+    {
+      CorePlugin.showMessage("Resolve Ambiguity",
+          "Please delete cuts in turn first");
+    }
 
+    
+  }
+
+  private Logger getLogger()
+  {
+    final Logger logger;
     final boolean doLogging =
         TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(
             PreferenceConstants.DIAGNOSTICS);
-    final Logger logger;
     if (doLogging)
     {
       logger = Logger.getLogger("Residuals.Logger", null);
@@ -293,17 +308,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     {
       logger = null;
     }
-
-    _ambiguousResolverLegsAndCuts =
-        resolver.sliceIntoLegsUsingAmbiguity(super._myHelper.getPrimaryTrack(),
-            minZig, maxSteady, logger, null);
-
-    final IUndoableOperation deleteOperation =
-        new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
-            .getZigs());
-
-    // wrap the operation
-    undoRedoProvider.execute(deleteOperation);
+    return logger;
   }
 
   @Override
@@ -667,7 +672,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
               TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
                   PreferenceConstants.MAX_STEADY);
           AmbiguityResolver resolver = new AmbiguityResolver();
-          Logger logger = null;
+          Logger logger = getLogger();
           _ambiguousResolverLegsAndCuts =
               resolver.sliceIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
                   MIN_ZIG, MAX_STEADY, logger, ambigScores);
