@@ -14,6 +14,9 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -24,6 +27,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
+import junit.framework.TestCase;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -51,15 +56,18 @@ import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.LegsAndZigs;
 import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.ResolvedLeg;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
 import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
+import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -68,7 +76,99 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
 {
 
-  private class DeleteCutsOperation extends CMAPOperation
+  public static class TestResiduals extends TestCase
+  {
+    private TrackWrapper getData(final String name)
+        throws FileNotFoundException
+    {
+      // get our sample data-file
+      final ImportReplay importer = new ImportReplay();
+      final Layers theLayers = new Layers();
+      final String fName =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/"
+              + name;
+      final File inFile = new File(fName);
+      assertTrue("input file exists", inFile.exists());
+      final FileInputStream is = new FileInputStream(fName);
+      importer.importThis(fName, is, theLayers);
+
+      // sort out the sensors
+      importer.storePendingSensors();
+      assertEquals("has some layers", 3, theLayers.size());
+
+      // get the sensor track
+      final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
+      return track;
+    }
+
+    public void testDitchUsingAmbiguity() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensor", 1, track.getSensors().size());
+
+      // make the sensor visible
+      final SensorWrapper sensor =
+          (SensorWrapper) track.getSensors().elements().nextElement();
+      sensor.setVisible(true);
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res =
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, null, null);
+      final List<LegOfCuts> legs = res.getLegs();
+      final LegOfCuts zigs = res.getZigs();
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 12, legs.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 23, zigs.size());
+
+      // ok, ditch those cuts
+      final int fullSensorLen = sensor.size();
+      Map<SensorWrapper, LegOfCuts> deleted =
+          DeleteCutsOperation.deleteTheseCuts(zigs);
+      assertEquals("fewer cuts", 98, sensor.size());
+
+      // ok, and undo them
+      BearingResidualsView.restoreCuts(deleted);
+      assertEquals("fewer cuts", fullSensorLen, sensor.size());
+
+      // and do it again, so we've got fewer cuts
+      deleted = DeleteCutsOperation.deleteTheseCuts(zigs);
+
+      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
+      assertNotNull(resolvedLegs);
+      assertEquals("right num legs", 12, legs.size());
+
+      assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 251d, resolvedLegs.get(2).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 254d, resolvedLegs.get(3).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 258d, resolvedLegs.get(4).leg.get(0)
+          .getBearing(), 1d);
+      assertEquals("correct leg", 269d, resolvedLegs.get(5).leg.get(0)
+          .getBearing(), 1d);
+
+      // ok, and cancel the leg resolving
+      BearingResidualsView.undoResolveBearings(resolvedLegs);
+
+      // and re-check they're ambiguous
+      assertEquals("is unresloved", true, resolvedLegs.get(0).leg.get(0)
+          .getHasAmbiguousBearing());
+    }
+  }
+
+  private static class DeleteCutsOperation extends CMAPOperation
   {
 
     /**
@@ -83,12 +183,43 @@ public class BearingResidualsView extends BaseStackedDotsView implements
      */
     private Map<SensorWrapper, LegOfCuts> _deletedCuts;
 
-    public DeleteCutsOperation(final List<SensorContactWrapper> cutsToDelete)
+    private final Runnable _fireUpdateData;
+
+    private final ZoneChart zoneChart;
+
+    public DeleteCutsOperation(final List<SensorContactWrapper> cutsToDelete,
+        final Runnable updateData, final ZoneChart zoneChart)
     {
       super("Delete cuts in O/S Turn");
 
       _cutsToDelete = cutsToDelete;
       _deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
+      _fireUpdateData = updateData;
+      this.zoneChart = zoneChart;
+    }
+
+    private static Map<SensorWrapper, LegOfCuts> deleteTheseCuts(
+        final List<SensorContactWrapper> cutsToDelete)
+    {
+      final Map<SensorWrapper, LegOfCuts> deletedCuts =
+          new HashMap<SensorWrapper, LegOfCuts>();
+
+      for (final SensorContactWrapper t : cutsToDelete)
+      {
+        // store the details of this sensor, so we can undo it
+        LegOfCuts list = deletedCuts.get(t.getSensor());
+
+        if (list == null)
+        {
+          list = new LegOfCuts();
+          deletedCuts.put(t.getSensor(), list);
+        }
+
+        list.add(t);
+
+        t.getSensor().removeElement(t);
+      }
+      return deletedCuts;
     }
 
     @Override
@@ -102,19 +233,40 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         _deletedCuts = null;
       }
 
-      _deletedCuts = BearingResidualsView.deleteTheseCuts(_cutsToDelete);
+      _deletedCuts = deleteTheseCuts(_cutsToDelete);
 
       // share the good news
       fireModified();
 
       // and refresh
-      updateData(true);
+      _fireUpdateData.run();
 
       // and the ownship zone chart
 
       final IStatus res =
           new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
               "Delete cuts in O/S turn successful", null);
+      return res;
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      BearingResidualsView.restoreCuts(_deletedCuts);
+
+      _deletedCuts.clear();
+      _deletedCuts = null;
+
+      // share the good news
+      fireModified();
+
+      // and refresh
+      _fireUpdateData.run();
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Restore cuts in O/S turn successful", null);
       return res;
     }
 
@@ -139,7 +291,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       if (sensor != null)
       {
         // remember the zones
-        final Zone[] zones = ownshipZoneChart.getZones();
+        final Zone[] zones = zoneChart.getZones();
 
         // fire the update. Note: doing this will remove
         // the displayed zones, since the chart will think
@@ -152,31 +304,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         {
           zoneList.add(z);
         }
-        ownshipZoneChart.setZones(zoneList);
+        zoneChart.setZones(zoneList);
       }
     }
-
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      BearingResidualsView.restoreCuts(_deletedCuts);
-
-      _deletedCuts.clear();
-      _deletedCuts = null;
-
-      // share the good news
-      fireModified();
-
-      // and refresh the UI
-      updateData(true);
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Restore cuts in O/S turn successful", null);
-      return res;
-    }
-
   }
 
   private class ResolveCutsOperationAmbig extends CMAPOperation
@@ -239,32 +369,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   private static final String SCALE_ERROR = "SCALE_ERROR";
 
-  public static Map<SensorWrapper, LegOfCuts> deleteTheseCuts(
-      final List<SensorContactWrapper> cutsToDelete)
-  {
-    final Map<SensorWrapper, LegOfCuts> deletedCuts =
-        new HashMap<SensorWrapper, LegOfCuts>();
-
-    for (final SensorContactWrapper t : cutsToDelete)
-    {
-      // store the details of this sensor, so we can undo it
-      LegOfCuts list = deletedCuts.get(t.getSensor());
-
-      if (list == null)
-      {
-        list = new LegOfCuts();
-        deletedCuts.put(t.getSensor(), list);
-      }
-
-      list.add(t);
-
-      t.getSensor().removeElement(t);
-    }
-    return deletedCuts;
-  }
-
-  public static void
-      restoreCuts(final Map<SensorWrapper, LegOfCuts> deletedCuts)
+  private static void restoreCuts(
+      final Map<SensorWrapper, LegOfCuts> deletedCuts)
   {
     for (final SensorWrapper sensor : deletedCuts.keySet())
     {
@@ -276,7 +382,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
   }
 
-  public static void undoResolveBearings(final List<ResolvedLeg> legs)
+  private static void undoResolveBearings(final List<ResolvedLeg> legs)
   {
     for (final ResolvedLeg leg : legs)
     {
@@ -378,9 +484,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       final LegOfCuts cutsToDelete =
           findCutsNotInZones(ownshipZones, outerPeriod);
 
+      Runnable updateData = new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          updateData(true);
+        }
+      };
       // delete this list of cuts
       final IUndoableOperation deleteOperation =
-          new DeleteCutsOperation(cutsToDelete);
+          new DeleteCutsOperation(cutsToDelete, updateData, ownshipZoneChart);
 
       // wrap the operation
       undoRedoProvider.execute(deleteOperation);
@@ -542,8 +657,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           final AmbiguityResolver resolver = new AmbiguityResolver();
           final Logger logger = getLogger();
           _ambiguousResolverLegsAndCuts =
-              resolver.sliceIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
-                  MIN_ZIG, MAX_STEADY, logger, ambigScores);
+              resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
+                  .getPrimaryTrack(), MIN_ZIG, MAX_STEADY, logger, ambigScores);
           zones = new ArrayList<Zone>();
           for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
           {

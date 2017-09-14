@@ -15,7 +15,7 @@ import Debrief.Wrappers.SensorContactWrapper;
 public class LegOfCuts extends ArrayList<SensorContactWrapper>
 {
 
-  public static class TestMe extends TestCase
+  public static class TestLegs extends TestCase
   {
 
     public void testProcessCuts() throws FileNotFoundException
