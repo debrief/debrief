@@ -726,7 +726,8 @@ public class ZoneChart extends Composite
 
   final public static class Zone implements Comparable<Zone>
   {
-    private long start, end;
+    private long start;
+    private long end;
     private final Color color;
 
     public Zone(final long start, final long end, final Color color)
@@ -838,7 +839,8 @@ public class ZoneChart extends Composite
       final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
       final TimeSeries[] otherSeriesArr, TimeSeries[] otherAxisSeries,
-      final ColorProvider blueProv, final ZoneSlicer zoneSlicer, final Runnable deleteOperation)
+      final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
+      final Runnable deleteOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -890,43 +892,44 @@ public class ZoneChart extends Composite
     plot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
     plot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
-    
-    // and sort out the color for the line
-    final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true){
 
-      /**
+    // and sort out the color for the line
+    final XYLineAndShapeRenderer renderer =
+        new XYLineAndShapeRenderer(true, true)
+        {
+
+          /**
        * 
        */
-      private static final long serialVersionUID = 1L;
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public Paint getItemPaint(int row, int column)
-      {
-        final Paint res;
-        if(row == 0)
-        {
-          res = super.getItemPaint(row, column);
-        }
-        else
-        {
-          TimeSeries series = otherSeriesArr[row-1];
-          TimeSeriesDataItem item = series.getDataItem(column);
-          if(item instanceof ColouredDataItem)
+          @Override
+          public Paint getItemPaint(int row, int column)
           {
-            ColouredDataItem color = (ColouredDataItem) item;
-            res = color.getColor();
+            final Paint res;
+            if (row == 0)
+            {
+              res = super.getItemPaint(row, column);
+            }
+            else
+            {
+              TimeSeries series = otherSeriesArr[row - 1];
+              TimeSeriesDataItem item = series.getDataItem(column);
+              if (item instanceof ColouredDataItem)
+              {
+                ColouredDataItem color = (ColouredDataItem) item;
+                res = color.getColor();
+              }
+              else
+              {
+                res = super.getItemPaint(row, column);
+              }
+            }
+
+            return res;
           }
-          else
-          {
-            res = super.getItemPaint(row, column);
-          }
-        }
-        
-        return res;
-      }
-      
-      
-    };
+
+        };
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, config._lineColor);
     renderer.setSeriesShape(0, square);
@@ -935,13 +938,13 @@ public class ZoneChart extends Composite
     renderer.setSeriesStroke(1, new BasicStroke(2));
     renderer.setSeriesStroke(2, new BasicStroke(2));
     plot.setRenderer(0, renderer);
-    
+
     // do we have data for another dataset
-    if(otherAxisSeries != null)
+    if (otherAxisSeries != null)
     {
       // ok, put it into another dataset
       TimeSeriesCollection ds2 = new TimeSeriesCollection();
-      for(TimeSeries series: otherAxisSeries)
+      for (TimeSeries series : otherAxisSeries)
       {
         ds2.addSeries(series);
       }
@@ -1106,109 +1109,105 @@ public class ZoneChart extends Composite
     thePlot.clearDomainMarkers();
   }
 
+  private static Button createButton(Composite parent, final int mode,
+      Image image, String text)
+  {
+    final Button btn = new Button(parent, mode);
+    btn.setImage(image);
+    btn.setToolTipText(text);
+    btn.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+    return btn;
+  }
+
+  private static void setSelected(final Button edit, final Button zoom,
+      final Button merge, final Button selected)
+  {
+    edit.setSelection(edit.equals(selected));
+    zoom.setSelection(zoom.equals(selected));
+    merge.setSelection(merge.equals(selected));
+  }
+
   protected void createToolbar()
   {
-    {// mode buttons
-      final Button edit = new Button(this, SWT.TOGGLE);
-      edit.setImage(editImg24);
-      edit.setToolTipText("Edit zones");
-      edit.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      edit.setSelection(true);
+    final Button edit = createButton(this, SWT.TOGGLE, editImg24, "Edit zones");
+    final Button zoom = createButton(this, SWT.TOGGLE, zoomInImg24, "Zoom");
+    final Button merge = createButton(this, SWT.TOGGLE, mergeImg24, "Merge");
+    final Button fitToWin =
+        createButton(this, SWT.PUSH, fitToWin24, "Show all data");
+    final Button calculate =
+        createButton(this, SWT.PUSH, calculator24, "Slice legs");
 
-      final Button zoom = new Button(this, SWT.TOGGLE);
-      zoom.setImage(zoomInImg24);
-      zoom.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      zoom.setToolTipText("Zoom");
+    // start off in edit mode
+    edit.setSelection(true);
 
-      final Button merge = new Button(this, SWT.TOGGLE);
-      merge.setImage(mergeImg24);
-      merge.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      merge.setToolTipText("Merge");
-
-      final Button fitToWin = new Button(this, SWT.PUSH);
-      fitToWin.setImage(fitToWin24);
-      fitToWin.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      fitToWin.setToolTipText("Show all data");
-
-      final Button calculate = new Button(this, SWT.PUSH);
-      calculate.setImage(calculator24);
-      calculate.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      calculate.setToolTipText("Slice legs");
-
-      edit.addSelectionListener(new SelectionAdapter()
+    edit.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
       {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
-        {
-          edit.setSelection(true);
-          zoom.setSelection(false);
-          merge.setSelection(false);
-          setMode(ZoneChart.EditMode.EDIT);
-        }
-      });
-      zoom.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
-        {
-          edit.setSelection(false);
-          merge.setSelection(false);
-          zoom.setSelection(true);
-          setMode(ZoneChart.EditMode.ZOOM);
-        }
-      });
-      merge.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
-        {
-          edit.setSelection(false);
-          merge.setSelection(true);
-          zoom.setSelection(false);
-          setMode(ZoneChart.EditMode.MERGE);
-        }
-      });
-
-      fitToWin.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
-        {
-          chartComposite.fitToData();
-        }
-      });
-      calculate.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
-        {
-          if (zoneSlicer == null)
-          {
-            CorePlugin.showMessage("Manage legs", "Slicing happens here");
-          }
-          else
-          {
-            // ok, do the slicing
-            performSlicing();
-          }
-        }
-      });
-
-      if (deleteEvent != null)
-      {
-        final Button delete = new Button(this, SWT.PUSH);
-        delete.setText("Delete");
-        delete.setToolTipText("Delete cuts not in a leg");
-        delete.addSelectionListener(new SelectionAdapter()
-        {
-          @Override
-          public void widgetSelected(SelectionEvent e)
-          {
-            deleteEvent.run();
-          }
-        });
+        setSelected(edit, zoom, merge, edit);
+        setMode(ZoneChart.EditMode.EDIT);
       }
+    });
+    zoom.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        setSelected(edit, zoom, merge, zoom);
+        setMode(ZoneChart.EditMode.ZOOM);
+      }
+    });
+    merge.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        setSelected(edit, zoom, merge, merge);
+        setMode(ZoneChart.EditMode.MERGE);
+      }
+    });
+
+    fitToWin.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        chartComposite.fitToData();
+      }
+    });
+    calculate.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        if (zoneSlicer == null)
+        {
+          CorePlugin.showMessage("Manage legs", "Slicing happens here");
+        }
+        else
+        {
+          // ok, do the slicing
+          performSlicing();
+        }
+      }
+    });
+
+    if (deleteEvent != null)
+    {
+      final Button delete = new Button(this, SWT.PUSH);
+      delete.setText("Delete");
+      delete.setToolTipText("Delete cuts not in a leg");
+      delete.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          deleteEvent.run();
+        }
+      });
     }
+
   }
 
   @Override

@@ -414,15 +414,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   private Action scaleError;
 
-  private Action _doStepADelete;
-
-  private Action _doStepAResolve;
-  private Action _doStepBDelete;
-
-  // protected Action _5degResize;
-
-  private Action _doStepBResolve;
-
   private LegsAndZigs _ambiguousResolverLegsAndCuts;
 
   public BearingResidualsView()
@@ -435,18 +426,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     super.addExtras(toolBarManager);
     toolBarManager.add(showCourse);
-
-    final boolean showControls =
-        TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(
-            PreferenceConstants.DISPLAY);
-
-    if (showControls)
-    {
-      toolBarManager.add(_doStepADelete);
-      toolBarManager.add(_doStepAResolve);
-      toolBarManager.add(_doStepBDelete);
-      toolBarManager.add(_doStepBResolve);
-    }
   }
 
   @Override
@@ -541,29 +520,27 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         {
           final SensorContactWrapper cut =
               (SensorContactWrapper) cuts.nextElement();
-          if (cut.getVisible())
+          if (cut.getVisible() && outerPeriod.contains(cut.getDTG()))
           {
-            // is it in our time period
-            if (outerPeriod.contains(cut.getDTG()))
+            final long thisT = cut.getDTG().getDate().getTime();
+
+            // ok, see if it;s in one of the zones
+            boolean inZone = false;
+            for (final Zone zone : zones)
             {
-              final long thisT = cut.getDTG().getDate().getTime();
-
-              // ok, see if it;s in one of the zones
-              boolean inZone = false;
-              for (final Zone zone : zones)
+              // does this time occur within this zone?
+              if (zone.getStart() <= thisT && zone.getEnd() >= thisT)
               {
-                if (zone.getStart() <= thisT && zone.getEnd() >= thisT)
-                {
-                  inZone = true;
-                }
+                inZone = true;
+                break;
               }
+            }
 
-              // was it in a zone?
-              if (!inZone)
-              {
-                // ok, have to delete it
-                res.add(cut);
-              }
+            // was it in a zone?
+            if (!inZone)
+            {
+              // ok, have to delete it
+              res.add(cut);
             }
           }
         }
