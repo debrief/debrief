@@ -335,8 +335,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
   final protected TimeSeries measuredValues = new TimeSeries("Measured");
-  final protected TimeSeries ambigValues = new TimeSeries("Measured (Ambiguous)");
-  final protected TimeSeries ambigScores = new TimeSeries("Ambiguity Delta Rate (deg/sec)");
+  final protected TimeSeries ambigValues = new TimeSeries(
+      "Measured (Ambiguous)");
+  final protected TimeSeries ambigScores = new TimeSeries(
+      "Ambiguity Delta Rate (deg/sec)");
 
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
@@ -491,7 +493,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         ownshipZoneChart.clearZones();
       }
-      
+
       measuredValues.clear();
       ambigValues.clear();
     }
@@ -785,15 +787,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
             DebriefColors.BLUE);
 
-    Runnable deleteCutsInTurn = getDeleteCutsOperation();
+    final Runnable deleteCutsInTurn = getDeleteCutsOperation();
 
-    
-    
     // if we have any ambiguous cuts, produce a array
     // containing core bearing then ambig bearing
-    TimeSeries[] ambigCuts = getAmbiguousCutData();
-    TimeSeries[] scoreSeries = new TimeSeries[]{ambigScores};
-    
+    final TimeSeries[] ambigCuts = getAmbiguousCutData();
+    final TimeSeries[] scoreSeries = new TimeSeries[]
+    {ambigScores};
+
     ownshipZoneChart =
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
             ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
@@ -857,11 +858,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ZoneChartConfig tZoneConfig =
         new ZoneChart.ZoneChartConfig("Target Legs", "Bearing",
             DebriefColors.RED);
-    final TimeSeries[] otherSeries = new TimeSeries[]{targetCalculatedSeries};
+    final TimeSeries[] otherSeries = new TimeSeries[]
+    {targetCalculatedSeries};
     targetZoneChart =
         ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
-            targetBearingSeries, otherSeries, null,
-            randomProv, targetLegSlicer, null);
+            targetBearingSeries, otherSeries, null, randomProv,
+            targetLegSlicer, null);
 
     targetZoneChart.addZoneListener(targetListener);
 
@@ -875,25 +877,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
-  /** produce an operation that will delete selected cuts
-   * 
-   * @return
-   */
-  protected Runnable getDeleteCutsOperation()
-  {
-    return null;
-  }
-
-  private TimeSeries[] getAmbiguousCutData()
-  {
-    return new TimeSeries[]{measuredValues, ambigValues};
-  }
-
-  private ZoneChart.ZoneListener getOwnshipListener()
-  {
-    return new ZoneChart.ZoneAdapter();
-  }
-  
   /**
    * method to create a working plot (to contain our data)
    * 
@@ -1360,6 +1343,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
+  private TimeSeries[] getAmbiguousCutData()
+  {
+    return new TimeSeries[]
+    {measuredValues, ambigValues};
+  }
+
   private void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
       final long wholeStart, final long wholeEnd,
       final List<Long> thisLegTimes, final List<Double> thisLegBearings)
@@ -1386,8 +1375,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  abstract protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv);
- 
+  /**
+   * produce an operation that will delete selected cuts
+   * 
+   * @return
+   */
+  protected Runnable getDeleteCutsOperation()
+  {
+    return null;
+  }
+
+  private ZoneChart.ZoneListener getOwnshipListener()
+  {
+    return new ZoneChart.ZoneAdapter();
+  }
+
+  abstract protected ZoneSlicer getOwnshipZoneSlicer(
+      final ColorProvider blueProv);
 
   public ISharedImages getSharedImages()
   {

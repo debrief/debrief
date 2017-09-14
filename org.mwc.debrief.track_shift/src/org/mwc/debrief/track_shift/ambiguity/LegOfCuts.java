@@ -14,7 +14,7 @@ import Debrief.Wrappers.SensorContactWrapper;
 
 public class LegOfCuts extends ArrayList<SensorContactWrapper>
 {
-  
+
   public static class TestMe extends TestCase
   {
 
@@ -29,8 +29,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
       obs.add(new WeightedObservedPoint(1, 130, 0d));
       obs.add(new WeightedObservedPoint(1, 140, 20d));
 
-      List<WeightedObservedPoint> res =
-          LegOfCuts.putObsInCorrectDomain(obs);
+      List<WeightedObservedPoint> res = LegOfCuts.putObsInCorrectDomain(obs);
       assertEquals("correct last score", 380d, res.get(res.size() - 1).getY(),
           0.001);
 
@@ -92,45 +91,12 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
    * how many cuts to include in the min leg length
    * 
    */
-  public static  final int LEG_LENGTH = 8;
+  public static final int LEG_LENGTH = 8;
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
-
-  /** extract the requested portion of the data
-   * 
-   * @param period
-   * @return
-   */
-  public List<SensorContactWrapper> extractPortion(final WhichPeriod period)
-  {
-    final List<SensorContactWrapper> cutsToUse;
-    if (size() > LEG_LENGTH * 2)
-    {
-      switch (period)
-      {
-        case EARLY:
-          cutsToUse = this.subList(0, LEG_LENGTH);
-          break;
-        case LATE:
-          final int len = this.size();
-          cutsToUse = this.subList(len - (LEG_LENGTH), len);
-          break;
-        case ALL:
-        default:
-          cutsToUse = this;
-          break;
-      }
-    }
-    else
-    {
-      cutsToUse = this;
-    }
-    return cutsToUse;
-  }
-
 
   public static List<WeightedObservedPoint> putObsInCorrectDomain(
       final List<WeightedObservedPoint> obs)
@@ -195,11 +161,46 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
     return res;
   }
 
-  
-  /** fit a polynomial curve to the sensor cuts in this leg
+  /**
+   * extract the requested portion of the data
    * 
-   * @param period what portion of data to use
-   * @param whichBearing whether we want the raw or ambiguous bearing
+   * @param period
+   * @return
+   */
+  public List<SensorContactWrapper> extractPortion(final WhichPeriod period)
+  {
+    final List<SensorContactWrapper> cutsToUse;
+    if (size() > LEG_LENGTH * 2)
+    {
+      switch (period)
+      {
+        case EARLY:
+          cutsToUse = this.subList(0, LEG_LENGTH);
+          break;
+        case LATE:
+          final int len = this.size();
+          cutsToUse = this.subList(len - (LEG_LENGTH), len);
+          break;
+        case ALL:
+        default:
+          cutsToUse = this;
+          break;
+      }
+    }
+    else
+    {
+      cutsToUse = this;
+    }
+    return cutsToUse;
+  }
+
+  /**
+   * fit a polynomial curve to the sensor cuts in this leg
+   * 
+   * @param period
+   *          what portion of data to use
+   * @param whichBearing
+   *          whether we want the raw or ambiguous bearing
    * @return
    */
   public double[] getCurve(final WhichPeriod period,
@@ -263,7 +264,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
         // the array still isn't stable
         final double weighting;
         weighting = getWeightingFor(period, obs);
-        
+
         // and store the observation
         obs.add(weighting, time, theBrg);
       }
