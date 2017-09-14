@@ -27,10 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -44,11 +42,8 @@ import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -103,14 +98,11 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
-import org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver;
-import org.mwc.debrief.track_shift.ambiguity.LegOfCuts;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -126,7 +118,6 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -164,121 +155,6 @@ import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
 abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
-
-  protected class DeleteCutsOperation extends CMAPOperation
-  {
-
-    /**
-     * the cuts to be deleted
-     * 
-     */
-    final private List<SensorContactWrapper> _cutsToDelete;
-
-    /**
-     * cuts that have been deleted (with the sensor that they were removed from)
-     * 
-     */
-    private Map<SensorWrapper, LegOfCuts> _deletedCuts;
-
-    final private AmbiguityResolver _resolver;
-
-    public DeleteCutsOperation(final AmbiguityResolver resolver,
-        final List<SensorContactWrapper> cutsToDelete)
-    {
-      super("Delete cuts in O/S Turn");
-
-      _cutsToDelete = cutsToDelete;
-      _deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
-      _resolver = resolver;
-    }
-
-    @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      if (_deletedCuts != null)
-      {
-        _deletedCuts.clear();
-        _deletedCuts = null;
-      }
-
-      _deletedCuts = _resolver.deleteTheseCuts(_cutsToDelete);
-
-      // share the good news
-      fireModified();
-
-      // and refresh
-      updateData(true);
-
-      // and the ownship zone chart
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Delete cuts in O/S turn successful", null);
-      return res;
-    }
-
-    private void fireModified()
-    {
-
-      final SensorWrapper sensor;
-      if (_deletedCuts != null && !_deletedCuts.isEmpty())
-      {
-        sensor = _deletedCuts.keySet().iterator().next();
-      }
-      else if (_cutsToDelete != null && !_cutsToDelete.isEmpty())
-      {
-        sensor = _cutsToDelete.get(0).getSensor();
-      }
-      else
-      {
-        sensor = null;
-      }
-
-      // fire modified event
-      if (sensor != null)
-      {
-        // remember the zones
-        Zone[] zones = ownshipZoneChart.getZones();
-
-        // fire the update. Note: doing this will remove
-        // the displayed zones, since the chart will think
-        // the track has changed.
-        sensor.getHost().firePropertyChange(PlainWrapper.EXTENDED, null,
-            System.currentTimeMillis());
-
-        List<Zone> zoneList = new ArrayList<Zone>();
-        for (Zone z : zones)
-        {
-          zoneList.add(z);
-        }
-        ownshipZoneChart.setZones(zoneList);
-      }
-    }
-
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      _resolver.restoreCuts(_deletedCuts);
-
-      _deletedCuts.clear();
-      _deletedCuts = null;
-
-      // share the good news
-      fireModified();
-
-      // and refresh the UI
-      updateData(true);
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Restore cuts in O/S turn successful", null);
-      return res;
-    }
-
-  }
 
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
