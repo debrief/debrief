@@ -59,6 +59,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 
 public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
@@ -260,13 +261,23 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     // create the resolver
     final AmbiguityResolver resolver = new AmbiguityResolver();
     
-    if (_ambiguousResolverLegsAndCuts != null)
+    Zone[] ownshipZones = ownshipZoneChart.getZones();
+    
+    if (ownshipZones != null && ownshipZones.length > 0)
     {
-      // NOTE: switch this to deleting cuts not in the user-specified zones,
+      // ok, produce the list of cuts to cull
+      final long startTime = ownshipZones[0].getStart();
+      final long endTime = ownshipZones[ownshipZones.length - 1].getEnd();
+      TimePeriod outerPeriod =
+          new TimePeriod.BaseTimePeriod(new HiResDate(startTime),
+              new HiResDate(endTime));
+      LegOfCuts cutsToDelete = findCutsNotInZones(ownshipZones, outerPeriod);
+
+      
+      //NOTE: switch this to deleting cuts not in the user-specified zones,
       // since the user may have edited the zones
       final IUndoableOperation deleteOperation =
-          new DeleteCutsOperation(resolver, _ambiguousResolverLegsAndCuts
-              .getZigs());
+          new DeleteCutsOperation(resolver, cutsToDelete);
 
       // wrap the operation
       undoRedoProvider.execute(deleteOperation);
@@ -278,6 +289,51 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
 
     
+  }
+
+  private LegOfCuts findCutsNotInZones(final Zone[] zones,
+      final TimePeriod outerPeriod)
+  {
+    final LegOfCuts res = new LegOfCuts();
+    final Enumeration<Editable> sensors = _myHelper.getPrimaryTrack().getSensors().elements();
+    while (sensors.hasMoreElements())
+    {
+      final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+      if(sensor.getVisible())
+      {
+        final Enumeration<Editable> cuts = sensor.elements();
+        while (cuts.hasMoreElements())
+        {
+          final SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
+          if(cut.getVisible())
+          {
+            // is it in our time period
+            if(outerPeriod.contains(cut.getDTG()))
+            {
+              final long thisT = cut.getDTG().getDate().getTime();
+              
+              // ok, see if it;s in one of the zones
+              boolean inZone = false;
+              for(final Zone zone: zones)
+              {
+                if(zone.getStart() <= thisT && zone.getEnd() >= thisT)
+                {
+                  inZone = true;
+                }
+              }
+              
+              // was it in a zone?
+              if(!inZone)
+              {
+                // ok, have to delete it
+                res.add(cut);
+              }
+            }
+          }
+        }
+      }
+    }
+    return res;
   }
 
   private Logger getLogger()
