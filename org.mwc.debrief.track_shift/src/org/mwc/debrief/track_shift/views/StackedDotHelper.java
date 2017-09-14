@@ -294,6 +294,7 @@ public final class StackedDotHelper
           {
             final SensorContactWrapper scw =
                 (SensorContactWrapper) cuts.nextElement();
+                        
             if (!onlyVis || (onlyVis && scw.getVisible()))
             {
               // is this cut suitable for what we're looking for?
@@ -339,7 +340,7 @@ public final class StackedDotHelper
                 }
               }
 
-              if (doublet.targetFix != null)
+              if (doublet.targetFix != null && hostFix != null)
               {
                 thisDub =
                     new Doublet(scw, doublet.targetFix, doublet.targetParent,
