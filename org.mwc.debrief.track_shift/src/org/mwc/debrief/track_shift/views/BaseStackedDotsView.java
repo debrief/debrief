@@ -788,6 +788,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             DebriefColors.BLUE);
 
     final Runnable deleteCutsInTurn = getDeleteCutsOperation();
+    final Runnable resolveAmbiguity = getResolveAmbiguityOperation();
 
     // if we have any ambiguous cuts, produce a array
     // containing core bearing then ambig bearing
@@ -798,7 +799,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ownshipZoneChart =
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
             ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
-            ownshipLegSlicer, deleteCutsInTurn);
+            ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -863,7 +864,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     targetZoneChart =
         ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
             targetBearingSeries, otherSeries, null, randomProv,
-            targetLegSlicer, null);
+            targetLegSlicer, null, null);
 
     targetZoneChart.addZoneListener(targetListener);
 
@@ -875,6 +876,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // sort out zone chart visibility
     setZoneChartsVisible(_showZones.isChecked());
+  }
+
+  /** provide an operation that gets run when the user wants to resolve
+   * ambiguity
+   * 
+   * @return
+   */
+  protected Runnable getResolveAmbiguityOperation()
+  {
+    return null;
   }
 
   /**

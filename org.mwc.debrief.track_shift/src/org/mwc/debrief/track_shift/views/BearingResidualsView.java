@@ -550,6 +550,20 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   }
 
   @Override
+  protected Runnable getResolveAmbiguityOperation()
+  {
+    return new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        resolveAmbiguousCutsB();
+      }
+    };
+  }
+  
+  @Override
   protected Runnable getDeleteCutsOperation()
   {
     return new Runnable()

@@ -687,7 +687,7 @@ public class MaintainContributionsView extends ViewPart
                     .getZoneColor()),
             new ZoneChart.Zone(new Date("2016/10/10 12:44:00").getTime(),
                 new Date("2016/10/10 14:10:00").getTime(), blueProvider
-                    .getZoneColor())}, courseData, otherSeries, null, blueProvider, null, null);
+                    .getZoneColor())}, courseData, otherSeries, null, blueProvider, null, null, null);
 
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter()
     {

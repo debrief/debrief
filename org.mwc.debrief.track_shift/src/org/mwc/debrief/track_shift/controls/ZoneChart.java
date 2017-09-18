@@ -840,7 +840,7 @@ public class ZoneChart extends Composite
       final Zone[] zones, final TimeSeries xySeries,
       final TimeSeries[] otherSeriesArr, TimeSeries[] otherAxisSeries,
       final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
-      final Runnable deleteOperation)
+      final Runnable deleteOperation, final Runnable resolveAmbiguityOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -962,7 +962,7 @@ public class ZoneChart extends Composite
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
         new ZoneChart(parent, xylineChart, undoRedoProvider, zones, blueProv,
-            zoneSlicer, xySeries, deleteOperation);
+            zoneSlicer, xySeries, deleteOperation, resolveAmbiguityOperation);
 
     // done
     return zoneChart;
@@ -1041,16 +1041,18 @@ public class ZoneChart extends Composite
 
   private final ZoneUndoRedoProvider undoRedoProvider;
   private final Runnable deleteEvent;
+  private final Runnable resolveAmbiguityEvent;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
-      final TimeSeries xySeries, Runnable deleteEvent)
+      final TimeSeries xySeries, Runnable deleteEvent, Runnable resolveAmbiguityOperation)
   {
     super(parent, SWT.NONE);
     this.undoRedoProvider = undoRedoProvider;
     this.chart = xylineChart;
     this.deleteEvent = deleteEvent;
+    this.resolveAmbiguityEvent = resolveAmbiguityOperation;
     buildUI(xylineChart);
 
     /**
@@ -1094,7 +1096,19 @@ public class ZoneChart extends Composite
     final GridData data =
         new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
             | GridData.GRAB_VERTICAL);
-    data.verticalSpan = deleteEvent == null ? 5 : 6;
+    
+    int rowCount = 5;
+    if(deleteEvent != null)
+    {
+      rowCount++;
+    }
+    if(resolveAmbiguityEvent != null)
+    {
+      rowCount++;
+    }
+
+    data.verticalSpan = rowCount;
+
     chartComposite.setLayoutData(data);
     createToolbar();
   }
@@ -1204,6 +1218,20 @@ public class ZoneChart extends Composite
         public void widgetSelected(SelectionEvent e)
         {
           deleteEvent.run();
+        }
+      });
+    }
+    if (resolveAmbiguityEvent != null)
+    {
+      final Button delete = new Button(this, SWT.PUSH);
+      delete.setText("Resolve");
+      delete.setToolTipText("Resolve Ambiguity");
+      delete.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          resolveAmbiguityEvent.run();
         }
       });
     }
