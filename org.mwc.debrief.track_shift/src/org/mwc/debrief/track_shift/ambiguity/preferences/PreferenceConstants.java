@@ -5,10 +5,7 @@ package org.mwc.debrief.track_shift.ambiguity.preferences;
  */
 public class PreferenceConstants
 {
-  /** value at which we decide turn is happening (degs/sec)
-   * 
-   */
-  public static final String CUT_OFF = "CutOff";
+  public static final String MIN_ZIG = "CutOff";
   
   /** whether to output slicing diagnostics
    * 
@@ -19,4 +16,9 @@ public class PreferenceConstants
    * 
    */
   public static final String DISPLAY = "ShowControls";
+
+  /** value at which we decide platform is steady (degs/sec)
+   * 
+   */
+  public static final String MAX_STEADY = "Max_Steady";
 }

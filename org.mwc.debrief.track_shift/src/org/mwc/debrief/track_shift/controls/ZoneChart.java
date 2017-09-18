@@ -2,6 +2,7 @@ package org.mwc.debrief.track_shift.controls;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.eclipse.ui.PlatformUI;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -55,16 +57,16 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 
 public class ZoneChart extends Composite
 {
 
-  
-  /** put some zone config items into a class,
-   * so we have to pass fewer params to
-   * create() function
+  /**
+   * put some zone config items into a class, so we have to pass fewer params to create() function
+   * 
    * @author Ian
-   *
+   * 
    */
   public static class ZoneChartConfig
   {
@@ -72,14 +74,15 @@ public class ZoneChart extends Composite
     private String _yTitle;
     private Color _lineColor;
 
-    public ZoneChartConfig(final String chartTitle, final String yTitle, final Color lineColor)
+    public ZoneChartConfig(final String chartTitle, final String yTitle,
+        final Color lineColor)
     {
       _chartTitle = chartTitle;
       _yTitle = yTitle;
       _lineColor = lineColor;
     }
   }
-  
+
   /**
    * helper class to provide color for zones
    * 
@@ -723,7 +726,8 @@ public class ZoneChart extends Composite
 
   final public static class Zone implements Comparable<Zone>
   {
-    private long start, end;
+    private long start;
+    private long end;
     private final Color color;
 
     public Zone(final long start, final long end, final Color color)
@@ -831,32 +835,12 @@ public class ZoneChart extends Composite
     List<Zone> performSlicing();
   }
 
-  public static ZoneChart create(final ZoneChartConfig config, final ZoneUndoRedoProvider undoRedoProvider,
-      final Composite parent,
-      final Zone[] zones, final long[] timeValues, final long[] angleValues,
-      final ColorProvider blueProv, 
-      final ZoneSlicer zoneSlicer)
-  {
-    // build the jfreechart Plot
-    final TimeSeries xySeries = new TimeSeries("");
-
-    for (int i = 0; i < timeValues.length; i++)
-    {
-      xySeries.add(new FixedMillisecond(timeValues[i]), angleValues[i]);
-    }
-
-    final TimeSeries otherSeries = null;
-
-    return create(config , undoRedoProvider, parent, zones,
-        xySeries, otherSeries, blueProv, zoneSlicer);
-  }
-
-
-  public static ZoneChart create(final ZoneChartConfig config, final ZoneUndoRedoProvider undoRedoProviderIn,
-      final Composite parent,
+  public static ZoneChart create(final ZoneChartConfig config,
+      final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
-      final TimeSeries otherSeries, final ColorProvider blueProv,
-      final ZoneSlicer zoneSlicer)
+      final TimeSeries[] otherSeriesArr, TimeSeries[] otherAxisSeries,
+      final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
+      final Runnable deleteOperation, final Runnable resolveAmbiguityOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -887,9 +871,12 @@ public class ZoneChart extends Composite
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
 
-    if (otherSeries != null)
+    if (otherSeriesArr != null)
     {
-      dataset.addSeries(otherSeries);
+      for (TimeSeries series : otherSeriesArr)
+      {
+        dataset.addSeries(series);
+      }
     }
 
     final JFreeChart xylineChart =
@@ -908,23 +895,74 @@ public class ZoneChart extends Composite
 
     // and sort out the color for the line
     final XYLineAndShapeRenderer renderer =
-        (XYLineAndShapeRenderer) plot.getRenderer();
+        new XYLineAndShapeRenderer(true, true)
+        {
+
+          /**
+       * 
+       */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public Paint getItemPaint(int row, int column)
+          {
+            final Paint res;
+            if (row == 0)
+            {
+              res = super.getItemPaint(row, column);
+            }
+            else
+            {
+              TimeSeries series = otherSeriesArr[row - 1];
+              TimeSeriesDataItem item = series.getDataItem(column);
+              if (item instanceof ColouredDataItem)
+              {
+                ColouredDataItem color = (ColouredDataItem) item;
+                res = color.getColor();
+              }
+              else
+              {
+                res = super.getItemPaint(row, column);
+              }
+            }
+
+            return res;
+          }
+
+        };
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, config._lineColor);
     renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
-    renderer.setSeriesStroke(0, new BasicStroke(1));
+    renderer.setSeriesStroke(0, new BasicStroke(2));
+    renderer.setSeriesStroke(1, new BasicStroke(2));
+    renderer.setSeriesStroke(2, new BasicStroke(2));
+    plot.setRenderer(0, renderer);
 
-    if (otherSeries != null)
+    // do we have data for another dataset
+    if (otherAxisSeries != null)
     {
-      renderer.setSeriesStroke(1, new BasicStroke(2));
-      renderer.setSeriesPaint(1, Color.GRAY);
+      // ok, put it into another dataset
+      TimeSeriesCollection ds2 = new TimeSeriesCollection();
+      for (TimeSeries series : otherAxisSeries)
+      {
+        ds2.addSeries(series);
+      }
+      NumberAxis y2 = new NumberAxis("\u00b0/sec");
+      plot.setDataset(1, ds2);
+      plot.setRangeAxis(1, y2);
+      XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer(true, true);
+      renderer2.setSeriesPaint(0, Color.BLACK);
+      renderer2.setSeriesStroke(0, new BasicStroke(2));
+      plot.setRenderer(1, renderer2);
+      plot.mapDatasetToRangeAxis(0, 0);
+      plot.mapDatasetToRangeAxis(1, 1);
     }
 
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart =
         new ZoneChart(parent, xylineChart, undoRedoProvider, zones, blueProv,
-            zoneSlicer, xySeries);
+            zoneSlicer, xySeries, deleteOperation, resolveAmbiguityOperation);
 
     // done
     return zoneChart;
@@ -1002,15 +1040,19 @@ public class ZoneChart extends Composite
   private final TimeSeries xySeries;
 
   private final ZoneUndoRedoProvider undoRedoProvider;
+  private final Runnable deleteEvent;
+  private final Runnable resolveAmbiguityEvent;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
-      final TimeSeries xySeries)
+      final TimeSeries xySeries, Runnable deleteEvent, Runnable resolveAmbiguityOperation)
   {
     super(parent, SWT.NONE);
     this.undoRedoProvider = undoRedoProvider;
     this.chart = xylineChart;
+    this.deleteEvent = deleteEvent;
+    this.resolveAmbiguityEvent = resolveAmbiguityOperation;
     buildUI(xylineChart);
 
     /**
@@ -1035,7 +1077,7 @@ public class ZoneChart extends Composite
   {
     final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
     mrk.setPaint(zone.getColor());
-    mrk.setAlpha(0.5f);
+    mrk.setAlpha(0.2f);
     plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
     zoneMarkers.put(zone, mrk);
   }
@@ -1054,7 +1096,19 @@ public class ZoneChart extends Composite
     final GridData data =
         new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
             | GridData.GRAB_VERTICAL);
-    data.verticalSpan = 5;
+    
+    int rowCount = 5;
+    if(deleteEvent != null)
+    {
+      rowCount++;
+    }
+    if(resolveAmbiguityEvent != null)
+    {
+      rowCount++;
+    }
+
+    data.verticalSpan = rowCount;
+
     chartComposite.setLayoutData(data);
     createToolbar();
   }
@@ -1069,94 +1123,119 @@ public class ZoneChart extends Composite
     thePlot.clearDomainMarkers();
   }
 
+  private static Button createButton(Composite parent, final int mode,
+      Image image, String text)
+  {
+    final Button btn = new Button(parent, mode);
+    btn.setImage(image);
+    btn.setToolTipText(text);
+    btn.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+    return btn;
+  }
+
+  private static void setSelected(final Button edit, final Button zoom,
+      final Button merge, final Button selected)
+  {
+    edit.setSelection(edit.equals(selected));
+    zoom.setSelection(zoom.equals(selected));
+    merge.setSelection(merge.equals(selected));
+  }
+
   protected void createToolbar()
   {
-    {// mode buttons
-      final Button edit = new Button(this, SWT.TOGGLE);
-      edit.setImage(editImg24);
-      edit.setToolTipText("Edit zones");
-      edit.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      edit.setSelection(true);
+    final Button edit = createButton(this, SWT.TOGGLE, editImg24, "Edit zones");
+    final Button zoom = createButton(this, SWT.TOGGLE, zoomInImg24, "Zoom");
+    final Button merge = createButton(this, SWT.TOGGLE, mergeImg24, "Merge");
+    final Button fitToWin =
+        createButton(this, SWT.PUSH, fitToWin24, "Show all data");
+    final Button calculate =
+        createButton(this, SWT.PUSH, calculator24, "Slice legs");
 
-      final Button zoom = new Button(this, SWT.TOGGLE);
-      zoom.setImage(zoomInImg24);
-      zoom.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      zoom.setToolTipText("Zoom");
+    // start off in edit mode
+    edit.setSelection(true);
 
-      final Button merge = new Button(this, SWT.TOGGLE);
-      merge.setImage(mergeImg24);
-      merge.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      merge.setToolTipText("Merge");
-
-      final Button fitToWin = new Button(this, SWT.PUSH);
-      fitToWin.setImage(fitToWin24);
-      fitToWin.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      fitToWin.setToolTipText("Show all data");
-
-      final Button calculate = new Button(this, SWT.PUSH);
-      calculate.setImage(calculator24);
-      calculate.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-      calculate.setToolTipText("Slice legs");
-
-      edit.addSelectionListener(new SelectionAdapter()
+    edit.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
       {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
+        setSelected(edit, zoom, merge, edit);
+        setMode(ZoneChart.EditMode.EDIT);
+      }
+    });
+    zoom.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        setSelected(edit, zoom, merge, zoom);
+        setMode(ZoneChart.EditMode.ZOOM);
+      }
+    });
+    merge.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        setSelected(edit, zoom, merge, merge);
+        setMode(ZoneChart.EditMode.MERGE);
+      }
+    });
+
+    fitToWin.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        chartComposite.fitToData();
+      }
+    });
+    calculate.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        if (zoneSlicer == null)
         {
-          edit.setSelection(true);
-          zoom.setSelection(false);
-          merge.setSelection(false);
-          setMode(ZoneChart.EditMode.EDIT);
+          CorePlugin.showMessage("Manage legs", "Slicing happens here");
         }
-      });
-      zoom.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
+        else
         {
-          edit.setSelection(false);
-          merge.setSelection(false);
-          zoom.setSelection(true);
-          setMode(ZoneChart.EditMode.ZOOM);
+          // ok, do the slicing
+          performSlicing();
         }
-      });
-      merge.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
-        {
-          edit.setSelection(false);
-          merge.setSelection(true);
-          zoom.setSelection(false);
-          setMode(ZoneChart.EditMode.MERGE);
-        }
-      });
+      }
+    });
 
-      fitToWin.addSelectionListener(new SelectionAdapter()
+    if (deleteEvent != null)
+    {
+      final Button delete = new Button(this, SWT.PUSH);
+      delete.setText("Delete");
+      delete.setToolTipText("Delete cuts not in a leg");
+      delete.addSelectionListener(new SelectionAdapter()
       {
         @Override
-        public void widgetSelected(final SelectionEvent e)
+        public void widgetSelected(SelectionEvent e)
         {
-          chartComposite.fitToData();
-        }
-      });
-      calculate.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(final SelectionEvent e)
-        {
-          if (zoneSlicer == null)
-          {
-            CorePlugin.showMessage("Manage legs", "Slicing happens here");
-          }
-          else
-          {
-            // ok, do the slicing
-            performSlicing();
-          }
+          deleteEvent.run();
         }
       });
     }
+    if (resolveAmbiguityEvent != null)
+    {
+      final Button delete = new Button(this, SWT.PUSH);
+      delete.setText("Resolve");
+      delete.setToolTipText("Resolve Ambiguity");
+      delete.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          resolveAmbiguityEvent.run();
+        }
+      });
+    }
+
   }
 
   @Override
@@ -1314,26 +1393,24 @@ public class ZoneChart extends Composite
         .getLastMillisecond();
   }
 
-
-  /** called from the UI button
+  /**
+   * called from the UI button
    * 
    */
   private void performSlicing()
   {
-    final ReversibleOperation reversOp =
-        new ReversibleOperation("Slice legs");
+    final ReversibleOperation reversOp = new ReversibleOperation("Slice legs");
 
     // do we have any data?
     if (xySeries.getItemCount() == 0)
     {
       // ok, populate the data
       final IEditorPart curEditor =
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-              .getActivePage().getActiveEditor();
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+              .getActiveEditor();
       if (curEditor instanceof IAdaptable)
       {
-        final Layers layers =
-            (Layers) curEditor.getAdapter(Layers.class);
+        final Layers layers = (Layers) curEditor.getAdapter(Layers.class);
         if (layers != null)
         {
           @SuppressWarnings("unchecked")
@@ -1354,8 +1431,7 @@ public class ZoneChart extends Composite
               final Enumeration<Editable> posits = thisT.getPositionIterator();
               while (posits.hasMoreElements())
               {
-                final FixWrapper thisF =
-                    (FixWrapper) posits.nextElement();
+                final FixWrapper thisF = (FixWrapper) posits.nextElement();
                 final TimeSeriesDataItem newItem =
                     new TimeSeriesDataItem(new FixedMillisecond(thisF
                         .getDateTimeGroup().getDate().getTime()), thisF
@@ -1431,8 +1507,7 @@ public class ZoneChart extends Composite
         {
           // remove this marker
           final IntervalMarker thisM = zoneMarkers.get(thisZone);
-          thePlot.removeDomainMarker(thisM,
-              org.jfree.ui.Layer.FOREGROUND);
+          thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
         }
 
         // ok, now ditch the old zone lists
@@ -1454,21 +1529,22 @@ public class ZoneChart extends Composite
       }
 
       @Override
-      public IStatus redo(final IProgressMonitor monitor,
-          final IAdaptable info) throws ExecutionException
+      public IStatus
+          redo(final IProgressMonitor monitor, final IAdaptable info)
+              throws ExecutionException
       {
         return execute(monitor, info);
       }
 
       @Override
-      public IStatus undo(final IProgressMonitor monitor,
-          final IAdaptable info) throws ExecutionException
+      public IStatus
+          undo(final IProgressMonitor monitor, final IAdaptable info)
+              throws ExecutionException
       {
         // and ditch the intervals
         for (final IntervalMarker marker : zoneMarkers.values())
         {
-          thePlot.removeDomainMarker(marker,
-              org.jfree.ui.Layer.FOREGROUND);
+          thePlot.removeDomainMarker(marker, org.jfree.ui.Layer.FOREGROUND);
         }
         zones.clear();
         zoneMarkers.clear();

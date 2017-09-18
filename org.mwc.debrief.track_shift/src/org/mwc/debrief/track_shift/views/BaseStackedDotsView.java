@@ -155,7 +155,6 @@ import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
 abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
- 
 
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
@@ -166,7 +165,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
 
- 
   /*
    * Undo and redo actions
    */
@@ -336,6 +334,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
+  final protected TimeSeries measuredValues = new TimeSeries("Measured");
+  final protected TimeSeries ambigValues = new TimeSeries(
+      "Measured (Ambiguous)");
+  final protected TimeSeries ambigScores = new TimeSeries(
+      "Ambiguity Delta Rate (deg/sec)");
+
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
   private Action _precisionTwo;
@@ -395,9 +399,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             (_myHelper.getPrimaryTrack() != null)
                 && (_myHelper.getPrimaryTrack().equals(primary));
         final boolean secSame =
-            (_myHelper.getSecondaryTrack() != null) && secondaries != null
+            ((_myHelper.getSecondaryTrack() != null) && secondaries != null
                 && secondaries.length == 1
-                && (_myHelper.getSecondaryTrack().equals(secondaries[0]));
+                && (_myHelper.getSecondaryTrack().equals(secondaries[0])) || _myHelper
+                .getSecondaryTrack() == null);
 
         // ok, have things changed?
         _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
@@ -488,6 +493,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         ownshipZoneChart.clearZones();
       }
+
+      measuredValues.clear();
+      ambigValues.clear();
     }
 
     // and the secondary
@@ -773,21 +781,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the courses into a TimeSeries
-    final ZoneSlicer ownshipLegSlicer = new ZoneSlicer()
-    {
-      @Override
-      public ArrayList<Zone> performSlicing()
-      {
-        return StackedDotHelper.sliceOwnship(ownshipCourseSeries, blueProv);
-      }
-    };
+    final ZoneSlicer ownshipLegSlicer = getOwnshipZoneSlicer(blueProv);
 
     final ZoneChartConfig oZoneConfig =
         new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
             DebriefColors.BLUE);
+
+    final Runnable deleteCutsInTurn = getDeleteCutsOperation();
+    final Runnable resolveAmbiguity = getResolveAmbiguityOperation();
+
+    // if we have any ambiguous cuts, produce a array
+    // containing core bearing then ambig bearing
+    final TimeSeries[] ambigCuts = getAmbiguousCutData();
+    final TimeSeries[] scoreSeries = new TimeSeries[]
+    {ambigScores};
+
     ownshipZoneChart =
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
-            ownshipCourseSeries, null, blueProv, ownshipLegSlicer);
+            ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
+            ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -847,10 +859,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ZoneChartConfig tZoneConfig =
         new ZoneChart.ZoneChartConfig("Target Legs", "Bearing",
             DebriefColors.RED);
+    final TimeSeries[] otherSeries = new TimeSeries[]
+    {targetCalculatedSeries};
     targetZoneChart =
         ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
-            targetBearingSeries, targetCalculatedSeries, randomProv,
-            targetLegSlicer);
+            targetBearingSeries, otherSeries, null, randomProv,
+            targetLegSlicer, null, null);
 
     targetZoneChart.addZoneListener(targetListener);
 
@@ -862,6 +876,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // sort out zone chart visibility
     setZoneChartsVisible(_showZones.isChecked());
+  }
+
+  /** provide an operation that gets run when the user wants to resolve
+   * ambiguity
+   * 
+   * @return
+   */
+  protected Runnable getResolveAmbiguityOperation()
+  {
+    return null;
   }
 
   /**
@@ -1330,6 +1354,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
+  private TimeSeries[] getAmbiguousCutData()
+  {
+    return new TimeSeries[]
+    {measuredValues, ambigValues};
+  }
+
   private void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
       final long wholeStart, final long wholeEnd,
       final List<Long> thisLegTimes, final List<Double> thisLegBearings)
@@ -1356,10 +1386,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
+  /**
+   * produce an operation that will delete selected cuts
+   * 
+   * @return
+   */
+  protected Runnable getDeleteCutsOperation()
+  {
+    return null;
+  }
+
   private ZoneChart.ZoneListener getOwnshipListener()
   {
     return new ZoneChart.ZoneAdapter();
   }
+
+  abstract protected ZoneSlicer getOwnshipZoneSlicer(
+      final ColorProvider blueProv);
 
   public ISharedImages getSharedImages()
   {
@@ -1972,7 +2015,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
               // tell the leg to share the good news
               // share the good news
-              if(_ourLayersSubject != null)
+              if (_ourLayersSubject != null)
               {
                 _ourLayersSubject.fireExtended(seg, (HasEditables) _myHelper
                     .getSecondaryTrack());

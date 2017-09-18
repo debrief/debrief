@@ -7,34 +7,26 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichBearing;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichPeriod;
-import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
-import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
-import org.mwc.debrief.track_shift.views.StackedDotHelper;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
-import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
 
 public class AmbiguityResolver
 {
@@ -85,8 +77,8 @@ public class AmbiguityResolver
 
   public static class ResolvedLeg
   {
-    final boolean keepFirst;
-    final LegOfCuts leg;
+    public final boolean keepFirst;
+    public final LegOfCuts leg;
 
     public ResolvedLeg(final LegOfCuts leg, final boolean keepFirst)
     {
@@ -122,91 +114,6 @@ public class AmbiguityResolver
       // get the sensor track
       final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
       return track;
-    }
-
-    private TimeSeries getOSCourse(final TrackWrapper track)
-    {
-      final TimeSeries ts = new TimeSeries("OS Course");
-      final Enumeration<Editable> pts = track.getPositionIterator();
-      while (pts.hasMoreElements())
-      {
-        final FixWrapper fw = (FixWrapper) pts.nextElement();
-        final double course = fw.getCourseDegs();
-
-        final FixedMillisecond thisMilli =
-            new FixedMillisecond(fw.getDateTimeGroup().getDate().getTime());
-        final ColouredDataItem crseBearing =
-            new ColouredDataItem(thisMilli, course, fw.getColor(), true, null,
-                true, true);
-
-        ts.add(crseBearing);
-      }
-      return ts;
-    }
-
-    public void testDitchUsingAmbiguity() throws FileNotFoundException
-    {
-      final TrackWrapper track = getData("Ambig_tracks2.rep");
-      assertNotNull("found track", track);
-
-      // has sensors
-      assertEquals("has sensor", 1, track.getSensors().size());
-
-      // make the sensor visible
-      final SensorWrapper sensor =
-          (SensorWrapper) track.getSensors().elements().nextElement();
-      sensor.setVisible(true);
-
-      // ok, get resolving
-      final AmbiguityResolver solver = new AmbiguityResolver();
-
-      // try to get zones using ambiguity delta
-      final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null);
-      final List<LegOfCuts> legs = res.legs;
-      final LegOfCuts zigs = res.zigCuts;
-
-      assertNotNull("found zones", legs);
-      assertEquals("found correct number of zones", 12, legs.size());
-
-      assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 23, zigs.size());
-
-      // ok, ditch those cuts
-      final int fullSensorLen = sensor.size();
-      Map<SensorWrapper, LegOfCuts> deleted = solver.deleteTheseCuts(zigs);
-      assertEquals("fewer cuts", 98, sensor.size());
-
-      // ok, and undo them
-      solver.restoreCuts(deleted);
-      assertEquals("fewer cuts", fullSensorLen, sensor.size());
-
-      // and do it again, so we've got fewer cuts
-      deleted = solver.deleteTheseCuts(zigs);
-
-      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
-      assertNotNull(resolvedLegs);
-      assertEquals("right num legs", 12, legs.size());
-
-      assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 251d, resolvedLegs.get(2).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 254d, resolvedLegs.get(3).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 258d, resolvedLegs.get(4).leg.get(0)
-          .getBearing(), 1d);
-      assertEquals("correct leg", 269d, resolvedLegs.get(5).leg.get(0)
-          .getBearing(), 1d);
-
-      // ok, and cancel the leg resolving
-      solver.undoResolveBearings(resolvedLegs);
-
-      // and re-check they're ambiguous
-      assertEquals("is unresloved", true, resolvedLegs.get(0).leg.get(0)
-          .getHasAmbiguousBearing());
     }
 
     public void testGetCurve() throws FileNotFoundException
@@ -322,49 +229,6 @@ public class AmbiguityResolver
       assertEquals("correct value", -60, valueAt(240, curve), 0.01);
     }
 
-    public void testGettingLegs() throws FileNotFoundException
-    {
-
-      final TrackWrapper track = getData("Ambig_tracks.rep");
-      assertNotNull("found track", track);
-
-      // has sensors
-      assertEquals("has sensor", 1, track.getSensors().size());
-
-      final SensorWrapper sensor =
-          (SensorWrapper) track.getSensors().elements().nextElement();
-      sensor.setVisible(true);
-
-      final ColorProvider provider = new ColorProvider()
-      {
-        @Override
-        public Color getZoneColor()
-        {
-          return Color.blue;
-        }
-      };
-      final TimeSeries osCourse = getOSCourse(track);
-      // try to slice the O/S zones
-      final ArrayList<Zone> zonesList =
-          StackedDotHelper.sliceOwnship(osCourse, provider);
-      final Zone[] zones = zonesList.toArray(new Zone[]
-      {});
-
-      // ok, get resolving
-      final AmbiguityResolver res = new AmbiguityResolver();
-
-      // drop cuts in turn
-      res.findCutsToDropInTurn(track, zones, null);
-
-      // now get the legs
-      final List<LegOfCuts> legs = res.sliceIntoLegs(track, zones);
-      assertEquals("right num", zones.length, legs.size());
-      assertEquals("right num (after working it out by hand)", 13, legs.size());
-
-      // now resolve ambiguity
-      res.resolve(legs);
-    }
-
     public void testOnlyDitchVisible() throws FileNotFoundException
     {
       final TrackWrapper track = getData("Ambig_tracks2.rep");
@@ -398,7 +262,7 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceIntoLegsUsingAmbiguity(track, 0.2, null);
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, null, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -407,58 +271,6 @@ public class AmbiguityResolver
 
       assertNotNull("found zigs", zigs);
       assertEquals("found correct number of zig cuts", 17, zigs.size());
-
-      // ok, ditch those cuts
-      solver.deleteTheseCuts(zigs);
-      assertEquals("fewer cuts", 104, sensor.size());
-
-      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
-      assertNotNull(resolvedLegs);
-      assertEquals("right num legs", 8, legs.size());
-    }
-
-    public void testProcessCuts() throws FileNotFoundException
-    {
-      List<WeightedObservedPoint> obs = new ArrayList<WeightedObservedPoint>();
-      obs.add(new WeightedObservedPoint(1, 80d, 260d));
-      obs.add(new WeightedObservedPoint(1, 90, 280d));
-      obs.add(new WeightedObservedPoint(1, 100, 300d));
-      obs.add(new WeightedObservedPoint(1, 110, 320d));
-      obs.add(new WeightedObservedPoint(1, 120, 340d));
-      obs.add(new WeightedObservedPoint(1, 130, 0d));
-      obs.add(new WeightedObservedPoint(1, 140, 20d));
-
-      List<WeightedObservedPoint> res =
-          AmbiguityResolver.putObsInCorrectDomain(obs);
-      assertEquals("correct last score", 380d, res.get(res.size() - 1).getY(),
-          0.001);
-
-      obs = new ArrayList<WeightedObservedPoint>();
-      obs.add(new WeightedObservedPoint(1, 80, 160d));
-      obs.add(new WeightedObservedPoint(1, 90, 140d));
-      obs.add(new WeightedObservedPoint(1, 100, 120d));
-      obs.add(new WeightedObservedPoint(1, 110, 80d));
-      obs.add(new WeightedObservedPoint(1, 120, 30d));
-      obs.add(new WeightedObservedPoint(1, 130, 340d));
-      obs.add(new WeightedObservedPoint(1, 140, 320d));
-
-      res = AmbiguityResolver.putObsInCorrectDomain(obs);
-      assertEquals("correct last score", -40d, res.get(res.size() - 1).getY(),
-          0.001);
-
-      obs = new ArrayList<WeightedObservedPoint>();
-      obs.add(new WeightedObservedPoint(1, 80, -160d));
-      obs.add(new WeightedObservedPoint(1, 90, -140d));
-      obs.add(new WeightedObservedPoint(1, 100, -120d));
-      obs.add(new WeightedObservedPoint(1, 110, -80d));
-      obs.add(new WeightedObservedPoint(1, 120, -30d));
-      obs.add(new WeightedObservedPoint(1, 130, 20d));
-      obs.add(new WeightedObservedPoint(1, 140, 40d));
-
-      res = AmbiguityResolver.putObsInCorrectRange(obs);
-      assertEquals("correct last score", 200d, res.get(0).getY(), 0.001);
-      assertEquals("correct last score", 40d, res.get(res.size() - 1).getY(),
-          0.001);
     }
 
     public void testResolve() throws FileNotFoundException
@@ -544,48 +356,6 @@ public class AmbiguityResolver
 
     }
 
-    public void testSplittingAllTime() throws FileNotFoundException
-    {
-      final TrackWrapper track = getData("Ambig_tracks.rep");
-      assertNotNull("found track", track);
-
-      // has sensors
-      assertEquals("has sensor", 1, track.getSensors().size());
-
-      final SensorWrapper sensor =
-          (SensorWrapper) track.getSensors().elements().nextElement();
-
-      final ColorProvider provider = new ColorProvider()
-      {
-        @Override
-        public Color getZoneColor()
-        {
-          return Color.blue;
-        }
-      };
-      final TimeSeries osCourse = getOSCourse(track);
-      // try to slice the O/S zones
-      final ArrayList<Zone> zonesList =
-          StackedDotHelper.sliceOwnship(osCourse, provider);
-      final Zone[] zones = zonesList.toArray(new Zone[]
-      {});
-
-      // ok, get resolving
-      final AmbiguityResolver res = new AmbiguityResolver();
-
-      // drop cuts in turn
-      final int numCuts = sensor.size();
-      assertEquals("right cuts at start", 721, numCuts);
-      final List<SensorContactWrapper> toDel =
-          res.findCutsToDropInTurn(track, zones, null);
-      assertEquals("have cuts to delete", 133, toDel.size());
-
-      @SuppressWarnings("unused")
-      final List<LegOfCuts> legs = res.sliceIntoLegs(track, zones);
-
-      // ok, check the data
-    }
-
     /**
      * check that we allow a couple of apparently steady cuts during a turn
      * 
@@ -648,7 +418,7 @@ public class AmbiguityResolver
       });
 
       final LegsAndZigs sliced =
-          solver.sliceIntoLegsUsingAmbiguity(host, 2.2, logger);
+          solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, logger, null);
 
       // for(LegOfCuts leg: sliced.legs)
       // {
@@ -730,69 +500,6 @@ public class AmbiguityResolver
     }
   }
 
-  public static List<WeightedObservedPoint> putObsInCorrectDomain(
-      final List<WeightedObservedPoint> obs)
-  {
-    final List<WeightedObservedPoint> res =
-        new ArrayList<WeightedObservedPoint>();
-
-    double lastVal = Double.MIN_VALUE;
-    for (final WeightedObservedPoint ob : obs)
-    {
-      double thisVal = ob.getY();
-      if (lastVal != Double.MIN_VALUE)
-      {
-        double valToUse;
-        // ok, have we jumped up?
-        if (thisVal - lastVal > 200)
-        {
-          // ok, reduce it
-          valToUse = thisVal - 360d;
-        }
-        else if (thisVal - lastVal < -200)
-        {
-          // ok, increase it
-          valToUse = thisVal + 360d;
-        }
-        else
-        {
-          valToUse = thisVal;
-        }
-        res.add(new WeightedObservedPoint(ob.getWeight(), ob.getX(), valToUse));
-
-        thisVal = valToUse;
-      }
-      else
-      {
-        res.add(ob);
-      }
-
-      lastVal = thisVal;
-    }
-    return res;
-  }
-
-  public static List<WeightedObservedPoint> putObsInCorrectRange(
-      final List<WeightedObservedPoint> obs)
-  {
-    final List<WeightedObservedPoint> res =
-        new ArrayList<WeightedObservedPoint>();
-    for (final WeightedObservedPoint ob : obs)
-    {
-      double thisVal = ob.getY();
-      while (thisVal < 0)
-      {
-        thisVal += 360d;
-      }
-      while (thisVal >= 360)
-      {
-        thisVal -= 360d;
-      }
-      res.add(new WeightedObservedPoint(ob.getWeight(), ob.getX(), thisVal));
-    }
-    return res;
-  }
-
   private static double trim(final double val)
   {
     double res = val;
@@ -826,38 +533,6 @@ public class AmbiguityResolver
     return res;
   }
 
-  public Map<SensorWrapper, LegOfCuts> deleteTheseCuts(
-      final List<SensorContactWrapper> cutsToDelete)
-  {
-    final Map<SensorWrapper, LegOfCuts> deletedCuts =
-        new HashMap<SensorWrapper, LegOfCuts>();
-
-    for (final SensorContactWrapper t : cutsToDelete)
-    {
-      // store the details of this sensor, so we can undo it
-      LegOfCuts list = deletedCuts.get(t.getSensor());
-
-      if (list == null)
-      {
-        list = new LegOfCuts();
-        deletedCuts.put(t.getSensor(), list);
-      }
-
-      list.add(t);
-
-      t.getSensor().removeElement(t);
-    }
-    return deletedCuts;
-  }
-
-  public void ditchBearings(final List<ResolvedLeg> legs)
-  {
-    for (final ResolvedLeg leg : legs)
-    {
-      ditchBearingsForThisLeg(leg.leg, leg.keepFirst);
-    }
-  }
-
   private void ditchBearingsForThisLeg(final LegOfCuts leg,
       final boolean keepFirst)
   {
@@ -883,34 +558,6 @@ public class AmbiguityResolver
     }
   }
 
-  public LegOfCuts findCutsToDropInTurn(final TrackWrapper track,
-      final Zone[] zones, final TimePeriod period)
-  {
-    final LegOfCuts toDelete = new LegOfCuts();
-    if (zones != null && zones.length > 0)
-    {
-      // ok, go for it
-      final BaseLayer sensors = track.getSensors();
-      final Enumeration<Editable> numer = sensors.elements();
-      while (numer.hasMoreElements())
-      {
-        final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
-        final Enumeration<Editable> cNumer = sensor.elements();
-        while (cNumer.hasMoreElements())
-        {
-          final SensorContactWrapper scw =
-              (SensorContactWrapper) cNumer.nextElement();
-          final HiResDate dtg = scw.getDTG();
-          if (outOfZones(zones, dtg))
-          {
-            toDelete.add(scw);
-          }
-        }
-      }
-    }
-    return toDelete;
-  }
-
   private long midTimeFor(final LegOfCuts lastLeg, final LegOfCuts leg)
   {
     final long startTime =
@@ -919,22 +566,6 @@ public class AmbiguityResolver
 
     // and the mid-way value
     return startTime + (endTime - startTime) / 2;
-  }
-
-  private boolean outOfZones(final Zone[] zones, final HiResDate dtg)
-  {
-    final long thisLong = dtg.getDate().getTime();
-    boolean found = false;
-    for (final Zone zone : zones)
-    {
-      if (zone.getStart() <= thisLong && zone.getEnd() >= thisLong)
-      {
-        // ok, valid.
-        found = true;
-        break;
-      }
-    }
-    return !found;
   }
 
   @SuppressWarnings("unused")
@@ -1088,80 +719,17 @@ public class AmbiguityResolver
     return res;
   }
 
-  public List<ResolvedLeg> resolve(final TrackWrapper primaryTrack,
-      final Zone[] zones)
-  {
-    final List<LegOfCuts> legs = sliceIntoLegs(primaryTrack, zones);
-    return resolve(legs);
-  }
-
-  public void restoreCuts(final Map<SensorWrapper, LegOfCuts> deletedCuts)
-  {
-    for (final SensorWrapper sensor : deletedCuts.keySet())
-    {
-      final ArrayList<SensorContactWrapper> cuts = deletedCuts.get(sensor);
-      for (final SensorContactWrapper cut : cuts)
-      {
-        sensor.add(cut);
-      }
-    }
-  }
-
-  private List<LegOfCuts> sliceIntoLegs(final TrackWrapper track,
-      final Zone[] zones)
-  {
-    final List<LegOfCuts> res = new ArrayList<LegOfCuts>();
-    if (zones != null && zones.length > 0)
-    {
-      // ok, go for it
-      final BaseLayer sensors = track.getSensors();
-      final Enumeration<Editable> numer = sensors.elements();
-      while (numer.hasMoreElements())
-      {
-        final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
-        if (sensor.getVisible())
-        {
-          for (final Zone zone : zones)
-          {
-            LegOfCuts thisC = null;
-            final Enumeration<Editable> cNumer = sensor.elements();
-            while (cNumer.hasMoreElements())
-            {
-              final SensorContactWrapper scw =
-                  (SensorContactWrapper) cNumer.nextElement();
-              final long dtg = scw.getDTG().getDate().getTime();
-              if (zone.getStart() <= dtg && zone.getEnd() >= dtg)
-              {
-                // ok, this cut is in this zone
-                if (thisC == null)
-                {
-                  thisC = new LegOfCuts();
-                }
-                thisC.add(scw);
-              }
-              else if (zone.getEnd() < dtg)
-              {
-                // ok, we've passed the end of this zone
-                continue;
-              }
-            }
-
-            if (thisC != null)
-            {
-              res.add(thisC);
-            }
-          }
-        }
-      }
-    }
-    return res;
-  }
-
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final SensorWrapper sensor,
-      final double RATE_CUT_OFF, final Logger logger)
+  private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
+      final SensorWrapper sensor, final double minZig, final double maxSteady,
+      final Logger logger, final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
+
+    if (scores != null)
+    {
+      scores.clear();
+    }
 
     final Enumeration<Editable> enumer = sensor.elements();
     Double lastDelta = null;
@@ -1215,6 +783,14 @@ public class AmbiguityResolver
 
           final double rate = Math.abs(valueDelta / timeDeltaSecs);
 
+          if (scores != null)
+          {
+            final FixedMillisecond sec =
+                new FixedMillisecond(time.getDate().getTime());
+            final TimeSeriesDataItem item = new TimeSeriesDataItem(sec, rate);
+            scores.add(item);
+          }
+
           final String timeStr = time.getDate().toString();
           final String stats =
               timeStr + " brg:" + (int) cut.getBearing() + " ambig:"
@@ -1227,14 +803,13 @@ public class AmbiguityResolver
           // System.out.println("here");
           // }
 
-          if (rate > RATE_CUT_OFF)
+          if (rate > minZig)
           {
             // ok, we were on a straight leg
             if (thisLeg != null)
             {
               // close the leg
               thisLeg = null;
-
               doLog(logger, timeStr + " End leg.");
             }
 
@@ -1367,8 +942,9 @@ public class AmbiguityResolver
     return new LegsAndZigs(legs, zigs);
   }
 
-  public LegsAndZigs sliceIntoLegsUsingAmbiguity(final TrackWrapper track,
-      final double rateCutOff, final Logger logger)
+  public LegsAndZigs sliceTrackIntoLegsUsingAmbiguity(final TrackWrapper track,
+      final double minZig, final double maxSteady, final Logger logger,
+      final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1383,7 +959,8 @@ public class AmbiguityResolver
       if (sensor.getVisible())
       {
         final LegsAndZigs thisL =
-            sliceIntoLegsUsingAmbiguity(sensor, rateCutOff, logger);
+            sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, maxSteady,
+                logger, scores);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
@@ -1397,42 +974,4 @@ public class AmbiguityResolver
     return res;
   }
 
-  public void undoResolve(final List<LegOfCuts> legs)
-  {
-    // ok, clear all their ambiguity
-    for (final LegOfCuts leg : legs)
-    {
-      for (final SensorContactWrapper cut : leg)
-      {
-        cut.setHasAmbiguousBearing(true);
-      }
-    }
-  }
-
-  public void undoResolveBearings(final List<ResolvedLeg> legs)
-  {
-    for (final ResolvedLeg leg : legs)
-    {
-      for (final SensorContactWrapper cut : leg.leg)
-      {
-        // cool, we have a course - we can go for it. remember the bearings
-        final double bearing1 = cut.getBearing();
-        final double bearing2 = cut.getAmbiguousBearing();
-
-        if (leg.keepFirst)
-        {
-          cut.setBearing(bearing2);
-          cut.setAmbiguousBearing(bearing1);
-        }
-        else
-        {
-          cut.setBearing(bearing1);
-          cut.setAmbiguousBearing(bearing2);
-        }
-
-        // remember we're morally ambiguous
-        cut.setHasAmbiguousBearing(true);
-      }
-    }
-  }
 }

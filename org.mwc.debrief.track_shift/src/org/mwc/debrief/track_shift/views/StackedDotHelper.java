@@ -36,7 +36,9 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.zig_detector.ArtificalLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
@@ -217,6 +219,12 @@ public final class StackedDotHelper
         {
           // no, nothing to do.
         }
+
+        @Override
+        protected ZoneSlicer getOwnshipZoneSlicer(ColorProvider blueProv)
+        {
+          return null;
+        }
       };
 
       // try to set a zone on the track
@@ -286,6 +294,7 @@ public final class StackedDotHelper
           {
             final SensorContactWrapper scw =
                 (SensorContactWrapper) cuts.nextElement();
+                        
             if (!onlyVis || (onlyVis && scw.getVisible()))
             {
               // is this cut suitable for what we're looking for?
@@ -331,7 +340,7 @@ public final class StackedDotHelper
                 }
               }
 
-              if (doublet.targetFix != null)
+              if (doublet.targetFix != null && hostFix != null)
               {
                 thisDub =
                     new Doublet(scw, doublet.targetFix, doublet.targetParent,
@@ -762,6 +771,8 @@ public final class StackedDotHelper
       final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
+      final TimeSeries measuredValues,
+      final TimeSeries ambigValues,
       final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
@@ -817,8 +828,6 @@ public final class StackedDotHelper
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
-    final TimeSeries measuredValues = new TimeSeries("Measured");
-    final TimeSeries ambigValues = new TimeSeries("Measured (Ambiguous)");
     final TimeSeries calculatedValues = new TimeSeries("Calculated");
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
@@ -1714,5 +1723,4 @@ public final class StackedDotHelper
 
     return res;
   }
-
 }

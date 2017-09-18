@@ -15,8 +15,10 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -49,6 +51,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
@@ -85,6 +88,46 @@ public class GenerateTMASegmentFromCuts implements
     public final void testIWork()
     {
 
+    }
+    
+    public void testTrimmingTrack()
+    {
+      TrackWrapper host = new TrackWrapper();
+      host.setName("host");
+      
+      SensorWrapper sensor = new SensorWrapper("sensor");
+      host.add(sensor);
+      
+      host.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(0,0,0),10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(2000), new WorldLocation(0,0,0),10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(3000), new WorldLocation(0,0,0),10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(4000), new WorldLocation(0,0,0),10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(5000), new WorldLocation(0,0,0),10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(6000), new WorldLocation(0,0,0),10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(7000), new WorldLocation(0,0,0),10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(8000), new WorldLocation(0,0,0),10, 20)));
+
+      sensor.add(new SensorContactWrapper("host", new HiResDate(800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(1800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(2800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(5800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(7800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(8800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(9800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+
+      Enumeration<Editable> cuts = sensor.elements();
+      SensorContactWrapper[] cutArr = new SensorContactWrapper[sensor.size()];
+      int ctr =0;
+      while (cuts.hasMoreElements())
+      {
+        SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
+        cutArr[ctr++] = cut;
+      }
+      
+      assertEquals("expected number of cuts", 7, cutArr.length);
+      
+      SensorContactWrapper[] trimmed = TMAfromCuts.trimToHost(cutArr);
+      assertEquals("expected number of cuts", 4, trimmed.length);     
     }
 
     @SuppressWarnings("deprecation")
@@ -256,11 +299,38 @@ public class GenerateTMASegmentFromCuts implements
         final double courseDegs, final WorldSpeed speed)
     {
       super("Create TMA solution from sensor cuts");
-      _items = items;
+      _items = trimToHost(items);
       _layers = theLayers;
       _courseDegs = courseDegs;
       _speed = speed;
       _offset = offset;
+    }
+    
+    protected static SensorContactWrapper[] trimToHost(SensorContactWrapper[] cuts)
+    {
+      final SensorContactWrapper[] res;
+      if(cuts.length > 0)
+      {
+        // get the host
+        final TrackWrapper host = cuts[0].getSensor().getHost();
+        final TimePeriod hostPeriod = new TimePeriod.BaseTimePeriod(host.getStartDTG(), host.getEndDTG());
+        
+        final List<SensorContactWrapper> matches = new ArrayList<SensorContactWrapper>();
+        for(final SensorContactWrapper cut: cuts)
+        {
+          if(hostPeriod.contains(cut.getDTG()))
+          {
+            matches.add(cut);
+          }
+        }
+        res = matches.toArray(new SensorContactWrapper[]{});
+      }
+      else
+      {
+        res = null;
+      }
+      
+      return res;
     }
 
     @Override
