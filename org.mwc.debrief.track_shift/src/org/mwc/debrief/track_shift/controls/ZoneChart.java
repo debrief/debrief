@@ -261,6 +261,23 @@ public class ZoneChart extends Composite
           }
           break;
         }
+        case SPLIT:
+        {
+          // ok, find out if we're over a zone
+          for (final Zone zone : zones)
+          {
+            // find the drag area zones
+            if (findPixelX(this, zone.start) <= dragStartX
+                && findPixelX(this, zone.end) >= dragStartX)
+            {
+              dragZone = zone;
+              dragZoneStartBefore = zone.start;
+              dragZoneEndBefore = zone.end;
+              break;
+            }
+          }
+          break;
+        }
         default:
           throw new IllegalArgumentException("Mouse drag mode not supported");
       }
@@ -334,6 +351,28 @@ public class ZoneChart extends Composite
           }
           case ZOOM:
             break;
+          case SPLIT:
+          {
+            dragZone = null;
+            for (final Zone zone : zones)
+            {
+              // find the drag area zones
+              if (findPixelX(this, zone.start) <= currentX
+                  && findPixelX(this, zone.end) >= currentX)
+              {
+                dragZone = zone;
+              }
+            }
+            if (dragZone != null)
+            {
+              this.setCursor(splitCursor);
+            }
+            else
+            {
+              this.setCursor(null);
+            }
+            break;
+          }
         }
       }
 
@@ -520,7 +559,6 @@ public class ZoneChart extends Composite
                         fireZoneResized(affect);
                         return Status.OK_STATUS;
                       }
-
                     };
                 undoRedoProvider.execute(resizeOp);
               }
@@ -595,6 +633,132 @@ public class ZoneChart extends Composite
                 };
             undoRedoProvider.execute(mergeOp);
           }
+          break;
+        }
+        case SPLIT:
+        {
+          System.out.println("splitting zone: " + dragZone.toString());
+          final long val1 =
+              toNearDomainValue(findDomainX(this, dragStartX), false);
+          final long val2 = toNearDomainValue(val1, true);
+          System.out.println("splitting at time:" + new Date(val2));
+
+     //     final Zone beforeZone = dragZone;
+
+          // determine the time window, centred on the click time
+//          List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+
+          
+          // store the period for the shortened first zone
+
+          // generate the new zone
+          
+
+          final AbstractOperation mergeOp =
+              new AbstractOperation("Split Zone in two")
+              {
+                @Override
+                public IStatus execute(final IProgressMonitor monitor,
+                    final IAdaptable info) throws ExecutionException
+                {
+
+                  return Status.OK_STATUS;
+                }
+
+                @Override
+                public IStatus redo(final IProgressMonitor monitor,
+                    final IAdaptable info) throws ExecutionException
+                {
+//                  final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+//                  affect.start = startAfter;
+//                  affect.end = endAfter;
+//                  intervalMarker.setStartValue(affect.start);
+//                  intervalMarker.setEndValue(affect.end);
+//                  fireZoneResized(affect);
+                  return Status.OK_STATUS;
+                }
+
+                @Override
+                public IStatus undo(final IProgressMonitor monitor,
+                    final IAdaptable info) throws ExecutionException
+                {
+//                  final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+//                  affect.start = startBefore;
+//                  affect.end = endBefore;
+//                  intervalMarker.setStartValue(affect.start);
+//                  intervalMarker.setEndValue(affect.end);
+//                  fireZoneResized(affect);
+                  return Status.OK_STATUS;
+                }
+
+              };
+          undoRedoProvider.execute(mergeOp);
+
+          // if (merge_1 != null && merge_2 != null && merge_1 != merge_2)
+          // {
+          // final Zone resize =
+          // merge_1.start < merge_2.start ? merge_1 : merge_2;
+          // final Zone delete =
+          // merge_1.start < merge_2.start ? merge_2 : merge_1;
+          // final IntervalMarker deleteIntervalMarker = zoneMarkers.get(delete);
+          // final IntervalMarker resizeIntervalMarker = zoneMarkers.get(resize);
+          // final XYPlot plot = (XYPlot) chart.getPlot();
+          // final long endBefore = resize.end;
+          // final AbstractOperation mergeOp =
+          // new AbstractOperation("Merge Zone")
+          // {
+          // @Override
+          // public IStatus execute(final IProgressMonitor monitor,
+          // final IAdaptable info) throws ExecutionException
+          // {
+          // plot.removeDomainMarker(deleteIntervalMarker);
+          // resize.end = delete.end;
+          // zoneMarkers.remove(delete);
+          // zones.remove(delete);
+          // fireZoneRemoved(delete);
+          // assert resizeIntervalMarker != null;
+          // resizeIntervalMarker.setStartValue(resize.start);
+          // resizeIntervalMarker.setEndValue(resize.end);
+          // fireZoneResized(resize);
+          // merge_1 = null;
+          // merge_2 = null;
+          // return Status.OK_STATUS;
+          // }
+          //
+          // @Override
+          // public IStatus redo(final IProgressMonitor monitor,
+          // final IAdaptable info) throws ExecutionException
+          // {
+          // plot.removeDomainMarker(deleteIntervalMarker);
+          // resize.end = delete.end;
+          // zoneMarkers.remove(delete);
+          // zones.remove(delete);
+          // fireZoneRemoved(delete);
+          // assert resizeIntervalMarker != null;
+          // resizeIntervalMarker.setStartValue(resize.start);
+          // resizeIntervalMarker.setEndValue(resize.end);
+          // fireZoneResized(resize);
+          // return Status.OK_STATUS;
+          // }
+          //
+          // @Override
+          // public IStatus undo(final IProgressMonitor monitor,
+          // final IAdaptable info) throws ExecutionException
+          // {
+          // plot.addDomainMarker(deleteIntervalMarker);
+          // zoneMarkers.put(delete, deleteIntervalMarker);
+          // zones.add(delete);
+          // fireZoneAdded(delete);
+          // resize.end = endBefore;
+          // assert resizeIntervalMarker != null;
+          // resizeIntervalMarker.setStartValue(resize.start);
+          // resizeIntervalMarker.setEndValue(resize.end);
+          // fireZoneResized(resize);
+          // return Status.OK_STATUS;
+          // }
+          // };
+          // undoRedoProvider.execute(mergeOp);
+          // }
           break;
         }
       }
@@ -683,7 +847,7 @@ public class ZoneChart extends Composite
 
   public enum EditMode
   {
-    EDIT, ZOOM, MERGE
+    EDIT, ZOOM, MERGE, SPLIT
   }
 
   private static class SortedArrayList extends ArrayList<Zone>
@@ -985,6 +1149,8 @@ public class ZoneChart extends Composite
       "/icons/16/hand_fist.png").createImage();
   private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/merge_1.png").createImage();
+  private final Image cut_1Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/cut.png").createImage();
 
   private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/merge_2.png").createImage();
@@ -995,6 +1161,8 @@ public class ZoneChart extends Composite
       "/icons/24/zoomin.png").createImage();
   private final Image mergeImg24 = CorePlugin.getImageDescriptor(
       "/icons/24/merge.png").createImage();
+  private final Image splitImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/split.png").createImage();
   private final Image fitToWin24 = CorePlugin.getImageDescriptor(
       "/icons/24/fit_to_win.png").createImage();
   private final Image calculator24 = CorePlugin.getImageDescriptor(
@@ -1015,6 +1183,8 @@ public class ZoneChart extends Composite
       handFistImg16.getImageData(), 0, 0);
   private final Cursor resizeCursor = new Cursor(Display.getDefault(),
       SWT.CURSOR_SIZEWE);
+  private final Cursor splitCursor = new Cursor(Display.getDefault(),
+      cut_1Img16.getImageData(), 0, 0);
   private final JFreeChart chart;
   private CustomChartComposite chartComposite;
   private Zone dragZone;
@@ -1046,7 +1216,8 @@ public class ZoneChart extends Composite
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
-      final TimeSeries xySeries, Runnable deleteEvent, Runnable resolveAmbiguityOperation)
+      final TimeSeries xySeries, Runnable deleteEvent,
+      Runnable resolveAmbiguityOperation)
   {
     super(parent, SWT.NONE);
     this.undoRedoProvider = undoRedoProvider;
@@ -1096,13 +1267,13 @@ public class ZoneChart extends Composite
     final GridData data =
         new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
             | GridData.GRAB_VERTICAL);
-    
-    int rowCount = 5;
-    if(deleteEvent != null)
+
+    int rowCount = 6;
+    if (deleteEvent != null)
     {
       rowCount++;
     }
-    if(resolveAmbiguityEvent != null)
+    if (resolveAmbiguityEvent != null)
     {
       rowCount++;
     }
@@ -1134,11 +1305,12 @@ public class ZoneChart extends Composite
   }
 
   private static void setSelected(final Button edit, final Button zoom,
-      final Button merge, final Button selected)
+      final Button merge, final Button split, final Button selected)
   {
     edit.setSelection(edit.equals(selected));
     zoom.setSelection(zoom.equals(selected));
     merge.setSelection(merge.equals(selected));
+    split.setSelection(split.equals(selected));
   }
 
   protected void createToolbar()
@@ -1146,6 +1318,7 @@ public class ZoneChart extends Composite
     final Button edit = createButton(this, SWT.TOGGLE, editImg24, "Edit zones");
     final Button zoom = createButton(this, SWT.TOGGLE, zoomInImg24, "Zoom");
     final Button merge = createButton(this, SWT.TOGGLE, mergeImg24, "Merge");
+    final Button split = createButton(this, SWT.TOGGLE, splitImg24, "Split");
     final Button fitToWin =
         createButton(this, SWT.PUSH, fitToWin24, "Show all data");
     final Button calculate =
@@ -1159,7 +1332,7 @@ public class ZoneChart extends Composite
       @Override
       public void widgetSelected(final SelectionEvent e)
       {
-        setSelected(edit, zoom, merge, edit);
+        setSelected(edit, zoom, merge, split, edit);
         setMode(ZoneChart.EditMode.EDIT);
       }
     });
@@ -1168,7 +1341,7 @@ public class ZoneChart extends Composite
       @Override
       public void widgetSelected(final SelectionEvent e)
       {
-        setSelected(edit, zoom, merge, zoom);
+        setSelected(edit, zoom, merge, split, zoom);
         setMode(ZoneChart.EditMode.ZOOM);
       }
     });
@@ -1177,8 +1350,17 @@ public class ZoneChart extends Composite
       @Override
       public void widgetSelected(final SelectionEvent e)
       {
-        setSelected(edit, zoom, merge, merge);
+        setSelected(edit, zoom, merge, split, merge);
         setMode(ZoneChart.EditMode.MERGE);
+      }
+    });
+    split.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        setSelected(edit, zoom, merge, split, split);
+        setMode(ZoneChart.EditMode.SPLIT);
       }
     });
 
