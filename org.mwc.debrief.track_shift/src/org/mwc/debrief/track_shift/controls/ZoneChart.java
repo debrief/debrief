@@ -637,128 +637,76 @@ public class ZoneChart extends Composite
         }
         case SPLIT:
         {
-          System.out.println("splitting zone: " + dragZone.toString());
-          final long val1 =
-              toNearDomainValue(findDomainX(this, dragStartX), false);
-          final long val2 = toNearDomainValue(val1, true);
-          System.out.println("splitting at time:" + new Date(val2));
+          final long domainX = findDomainX(this, dragStartX);
+          final long timeOfNearestCut = toNearDomainValue(domainX, false);
+          System.out.println("splitting zone: " + dragZone + " at time:"
+              + new Date(timeOfNearestCut));
 
-     //     final Zone beforeZone = dragZone;
+          final Zone beforeZone = dragZone;
 
           // determine the time window, centred on the click time
-//          List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+          List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
 
-          
-          // store the period for the shortened first zone
+          final Zone periodToCut = periodToCutFor(cutsInZone, timeOfNearestCut);
 
-          // generate the new zone
-          
+          // did we generate a zone?
+          if (periodToCut != null)
+          {
+            // store the period for the shortened first zone
+            final long firstZoneStart = beforeZone.getStart();
+            final long firstZoneEnd = periodToCut.getStart();
+            final long secondZoneEnd = beforeZone.getEnd();
+            final long secondZoneStart = periodToCut.getEnd();
+            final IntervalMarker intervalMarker = zoneMarkers.get(beforeZone);
 
-          final AbstractOperation mergeOp =
-              new AbstractOperation("Split Zone in two")
-              {
-                @Override
-                public IStatus execute(final IProgressMonitor monitor,
-                    final IAdaptable info) throws ExecutionException
+            // generate the new zone
+
+            final AbstractOperation mergeOp =
+                new AbstractOperation("Split Zone in two")
                 {
+                  @Override
+                  public IStatus execute(final IProgressMonitor monitor,
+                      final IAdaptable info) throws ExecutionException
+                  {
+                    beforeZone.end = firstZoneEnd;
+                    fireZoneResized(beforeZone);
+                    Zone newZone = new Zone(secondZoneStart, secondZoneEnd, periodToCut.getColor());
 
-                  return Status.OK_STATUS;
-                }
+//                    working on this z
+                    
+                    return Status.OK_STATUS;
+                  }
 
-                @Override
-                public IStatus redo(final IProgressMonitor monitor,
-                    final IAdaptable info) throws ExecutionException
-                {
-//                  final IntervalMarker intervalMarker = zoneMarkers.get(affect);
-//                  affect.start = startAfter;
-//                  affect.end = endAfter;
-//                  intervalMarker.setStartValue(affect.start);
-//                  intervalMarker.setEndValue(affect.end);
-//                  fireZoneResized(affect);
-                  return Status.OK_STATUS;
-                }
+                  @Override
+                  public IStatus redo(final IProgressMonitor monitor,
+                      final IAdaptable info) throws ExecutionException
+                  {
+                    // final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+                    // affect.start = startAfter;
+                    // affect.end = endAfter;
+                    // intervalMarker.setStartValue(affect.start);
+                    // intervalMarker.setEndValue(affect.end);
+                    // fireZoneResized(affect);
+                    return Status.OK_STATUS;
+                  }
 
-                @Override
-                public IStatus undo(final IProgressMonitor monitor,
-                    final IAdaptable info) throws ExecutionException
-                {
-//                  final IntervalMarker intervalMarker = zoneMarkers.get(affect);
-//                  affect.start = startBefore;
-//                  affect.end = endBefore;
-//                  intervalMarker.setStartValue(affect.start);
-//                  intervalMarker.setEndValue(affect.end);
-//                  fireZoneResized(affect);
-                  return Status.OK_STATUS;
-                }
+                  @Override
+                  public IStatus undo(final IProgressMonitor monitor,
+                      final IAdaptable info) throws ExecutionException
+                  {
+                    // final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+                    // affect.start = startBefore;
+                    // affect.end = endBefore;
+                    // intervalMarker.setStartValue(affect.start);
+                    // intervalMarker.setEndValue(affect.end);
+                    // fireZoneResized(affect);
+                    return Status.OK_STATUS;
+                  }
 
-              };
-          undoRedoProvider.execute(mergeOp);
+                };
+            undoRedoProvider.execute(mergeOp);
+          }
 
-          // if (merge_1 != null && merge_2 != null && merge_1 != merge_2)
-          // {
-          // final Zone resize =
-          // merge_1.start < merge_2.start ? merge_1 : merge_2;
-          // final Zone delete =
-          // merge_1.start < merge_2.start ? merge_2 : merge_1;
-          // final IntervalMarker deleteIntervalMarker = zoneMarkers.get(delete);
-          // final IntervalMarker resizeIntervalMarker = zoneMarkers.get(resize);
-          // final XYPlot plot = (XYPlot) chart.getPlot();
-          // final long endBefore = resize.end;
-          // final AbstractOperation mergeOp =
-          // new AbstractOperation("Merge Zone")
-          // {
-          // @Override
-          // public IStatus execute(final IProgressMonitor monitor,
-          // final IAdaptable info) throws ExecutionException
-          // {
-          // plot.removeDomainMarker(deleteIntervalMarker);
-          // resize.end = delete.end;
-          // zoneMarkers.remove(delete);
-          // zones.remove(delete);
-          // fireZoneRemoved(delete);
-          // assert resizeIntervalMarker != null;
-          // resizeIntervalMarker.setStartValue(resize.start);
-          // resizeIntervalMarker.setEndValue(resize.end);
-          // fireZoneResized(resize);
-          // merge_1 = null;
-          // merge_2 = null;
-          // return Status.OK_STATUS;
-          // }
-          //
-          // @Override
-          // public IStatus redo(final IProgressMonitor monitor,
-          // final IAdaptable info) throws ExecutionException
-          // {
-          // plot.removeDomainMarker(deleteIntervalMarker);
-          // resize.end = delete.end;
-          // zoneMarkers.remove(delete);
-          // zones.remove(delete);
-          // fireZoneRemoved(delete);
-          // assert resizeIntervalMarker != null;
-          // resizeIntervalMarker.setStartValue(resize.start);
-          // resizeIntervalMarker.setEndValue(resize.end);
-          // fireZoneResized(resize);
-          // return Status.OK_STATUS;
-          // }
-          //
-          // @Override
-          // public IStatus undo(final IProgressMonitor monitor,
-          // final IAdaptable info) throws ExecutionException
-          // {
-          // plot.addDomainMarker(deleteIntervalMarker);
-          // zoneMarkers.put(delete, deleteIntervalMarker);
-          // zones.add(delete);
-          // fireZoneAdded(delete);
-          // resize.end = endBefore;
-          // assert resizeIntervalMarker != null;
-          // resizeIntervalMarker.setStartValue(resize.start);
-          // resizeIntervalMarker.setEndValue(resize.end);
-          // fireZoneResized(resize);
-          // return Status.OK_STATUS;
-          // }
-          // };
-          // undoRedoProvider.execute(mergeOp);
-          // }
           break;
         }
       }
@@ -1130,6 +1078,103 @@ public class ZoneChart extends Composite
 
     // done
     return zoneChart;
+  }
+
+  public Zone periodToCutFor(List<TimeSeriesDataItem> cutsInZone,
+      long timeOfNearestCut)
+  {
+    Zone res = null;
+    
+    // ok, check we have enough cuts
+    final int numCuts = cutsInZone.size();
+    
+    if(numCuts >= 5)
+    {
+      // ok, we've got enough to leave some either side of the removed cut
+      // find out the index of the one nearest to the cut
+      int indexOfCut = 0;
+      for(TimeSeriesDataItem cut: cutsInZone)
+      {
+        if(cut.getPeriod().getMiddleMillisecond() == timeOfNearestCut)
+        {
+          break;
+        }
+        else
+        {
+          indexOfCut++;
+        }
+      }
+      
+      // ok, check that's not the first two or the last two
+      if(indexOfCut > 2 && indexOfCut < numCuts - 2)
+      {
+        // ok, we can work with it. How many are in the center?
+        final int centralRegion = numCuts - 4;
+        
+        final int sizeToReveal;
+        if(centralRegion > 30)
+        {
+          sizeToReveal = centralRegion / 10;
+        }
+        else if(centralRegion > 10)
+        {
+          sizeToReveal = 5;
+        }
+        else if(centralRegion > 5)
+        {
+          sizeToReveal = 2;
+        }
+        else
+        {
+          sizeToReveal = 1;
+        }
+        
+        final int halfReveal = (int) Math.floor(sizeToReveal / 2);
+        
+        // ok, generate the zone with the first and last times
+        int ctr = 0;
+        Long startDTG = null;
+        Long endDTG = null;
+        for(TimeSeriesDataItem cut: cutsInZone)
+        {
+          final int thisIndex = ctr++;
+          final long thisDTG = cut.getPeriod().getMiddleMillisecond();
+          if(thisIndex == indexOfCut - halfReveal || (startDTG == null && thisIndex > indexOfCut - halfReveal))
+          {
+            // ok, this is the start
+            startDTG = thisDTG;
+          }
+          if(thisIndex == indexOfCut + halfReveal || endDTG == null && thisIndex > indexOfCut + halfReveal)
+          {
+            // ok, this is at the end of the data
+            endDTG = thisDTG;
+            break;
+          }
+        }
+        
+        if(startDTG != null && endDTG != null)
+        {
+          res = new Zone(startDTG, endDTG, Color.RED);
+        }
+      }     
+    }    
+    return res;
+  }
+
+  public List<TimeSeriesDataItem> cutsFor(Zone outerZone)
+  {
+    @SuppressWarnings("unchecked")
+    List<TimeSeriesDataItem> items = xySeries.getItems();
+    List<TimeSeriesDataItem> res = new ArrayList<TimeSeriesDataItem>();
+    for (TimeSeriesDataItem item : items)
+    {
+      long dtg = item.getPeriod().getMiddleMillisecond();
+      if (outerZone.getStart() <= dtg && outerZone.getEnd() >= dtg)
+      {
+        res.add(item);
+      }
+    }
+    return res;
   }
 
   private final List<Zone> zones;
