@@ -435,328 +435,376 @@ public class ZoneChart extends Composite
     @Override
     public void mouseUp(final MouseEvent event)
     {
-      switch (mode)
+      // put the handling into a try block,
+      // since we want to be sure to clear the
+      // vars on completion
+      try
       {
-        case ZOOM:
-        {
-          // we fire super.mouseUp at the end of the method, we don't
-          // need to do it here
-          break;
-        }
-        case EDIT:
-        {
 
-          if (adding != null)
+        switch (mode)
+        {
+          case ZOOM:
           {
-            final XYPlot plot = (XYPlot) chart.getPlot();
-            final Zone affect = adding;
-            final IntervalMarker intervalMarker = zoneMarkers.get(affect);
-            final AbstractOperation addOp = new AbstractOperation("Add Zone")
-            {
-              @Override
-              public IStatus execute(final IProgressMonitor monitor,
-                  final IAdaptable info) throws ExecutionException
-              {
-                zones.add(affect);
-                fireZoneAdded(affect);
-                return Status.OK_STATUS;
-              }
-
-              @Override
-              public IStatus redo(final IProgressMonitor monitor,
-                  final IAdaptable info) throws ExecutionException
-              {
-                plot.addDomainMarker(intervalMarker);
-                zoneMarkers.put(affect, intervalMarker);
-                zones.add(affect);
-                fireZoneAdded(affect);
-                return Status.OK_STATUS;
-              }
-
-              @Override
-              public IStatus undo(final IProgressMonitor monitor,
-                  final IAdaptable info) throws ExecutionException
-              {
-                plot.removeDomainMarker(intervalMarker);
-                zoneMarkers.remove(affect);
-                zones.remove(affect);
-                fireZoneRemoved(affect);
-                return Status.OK_STATUS;
-              }
-            };
-            undoRedoProvider.execute(addOp);
+            // we fire super.mouseUp at the end of the method, we don't
+            // need to do it here
+            break;
           }
-          else
+          case EDIT:
           {
-            final XYPlot plot = (XYPlot) chart.getPlot();
-            if (dragZone != null)
+            if (adding != null)
             {
-              if (!onDrag && isDelete(dragZone, event.x))
+              final XYPlot plot = (XYPlot) chart.getPlot();
+              final Zone affect = adding;
+              final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+              final AbstractOperation addOp =
+                  getAddOperation(plot, affect, intervalMarker);
+              undoRedoProvider.execute(addOp);
+            }
+            else
+            {
+              final XYPlot plot = (XYPlot) chart.getPlot();
+              if (dragZone != null)
               {
-                final IntervalMarker intervalMarker = zoneMarkers.get(dragZone);
-                final Zone affect = dragZone;
-                final AbstractOperation deleteOp =
-                    new AbstractOperation("Delete Zone")
-                    {
-                      @Override
-                      public IStatus execute(final IProgressMonitor monitor,
-                          final IAdaptable info) throws ExecutionException
-                      {
-                        return redo(monitor, info);
-                      }
-
-                      @Override
-                      public IStatus redo(final IProgressMonitor monitor,
-                          final IAdaptable info) throws ExecutionException
-                      {
-                        plot.removeDomainMarker(intervalMarker);
-                        zoneMarkers.remove(affect);
-                        zones.remove(affect);
-                        fireZoneRemoved(affect);
-                        return Status.OK_STATUS;
-                      }
-
-                      @Override
-                      public IStatus undo(final IProgressMonitor monitor,
-                          final IAdaptable info) throws ExecutionException
-                      {
-                        plot.addDomainMarker(intervalMarker);
-                        zoneMarkers.put(affect, intervalMarker);
-                        zones.add(affect);
-                        fireZoneAdded(affect);
-                        return Status.OK_STATUS;
-                      }
-                    };
-                undoRedoProvider.execute(deleteOp);
-              }
-              else if (resizeStart || resizeEnd)
-              {
-                final Zone affect = dragZone;
-                final long startBefore = dragZoneStartBefore;
-                final long endBefore = dragZoneEndBefore;
-                final long startAfter = dragZone.start;
-                final long endAfter = dragZone.end;
-                final AbstractOperation resizeOp =
-                    new AbstractOperation("Resize Zone")
-                    {
-                      @Override
-                      public IStatus execute(final IProgressMonitor monitor,
-                          final IAdaptable info) throws ExecutionException
-                      {
-                        fireZoneResized(affect);
-                        return Status.OK_STATUS;
-                      }
-
-                      @Override
-                      public IStatus redo(final IProgressMonitor monitor,
-                          final IAdaptable info) throws ExecutionException
-                      {
-                        final IntervalMarker intervalMarker =
-                            zoneMarkers.get(affect);
-                        affect.start = startAfter;
-                        affect.end = endAfter;
-                        intervalMarker.setStartValue(affect.start);
-                        intervalMarker.setEndValue(affect.end);
-                        fireZoneResized(affect);
-                        return Status.OK_STATUS;
-                      }
-
-                      @Override
-                      public IStatus undo(final IProgressMonitor monitor,
-                          final IAdaptable info) throws ExecutionException
-                      {
-                        final IntervalMarker intervalMarker =
-                            zoneMarkers.get(affect);
-                        affect.start = startBefore;
-                        affect.end = endBefore;
-                        intervalMarker.setStartValue(affect.start);
-                        intervalMarker.setEndValue(affect.end);
-                        fireZoneResized(affect);
-                        return Status.OK_STATUS;
-                      }
-                    };
-                undoRedoProvider.execute(resizeOp);
+                if (!onDrag && isDelete(dragZone, event.x))
+                {
+                  final IntervalMarker intervalMarker =
+                      zoneMarkers.get(dragZone);
+                  final Zone affect = dragZone;
+                  final AbstractOperation deleteOp =
+                      getDeleteOperation(plot, intervalMarker, affect);
+                  undoRedoProvider.execute(deleteOp);
+                }
+                else if (resizeStart || resizeEnd)
+                {
+                  final Zone affect = dragZone;
+                  final long startBefore = dragZoneStartBefore;
+                  final long endBefore = dragZoneEndBefore;
+                  final long startAfter = dragZone.start;
+                  final long endAfter = dragZone.end;
+                  final AbstractOperation resizeOp =
+                      getResizeOperation(affect, startBefore, endBefore,
+                          startAfter, endAfter);
+                  undoRedoProvider.execute(resizeOp);
+                }
               }
             }
+            break;
           }
-          break;
-        }
-        case MERGE:
-        {
-          if (merge_1 != null && merge_2 != null && merge_1 != merge_2)
+          case MERGE:
           {
-            final Zone resize =
-                merge_1.start < merge_2.start ? merge_1 : merge_2;
-            final Zone delete =
-                merge_1.start < merge_2.start ? merge_2 : merge_1;
-            final IntervalMarker deleteIntervalMarker = zoneMarkers.get(delete);
-            final IntervalMarker resizeIntervalMarker = zoneMarkers.get(resize);
-            final XYPlot plot = (XYPlot) chart.getPlot();
-            final long endBefore = resize.end;
-            final AbstractOperation mergeOp =
-                new AbstractOperation("Merge Zone")
-                {
-                  @Override
-                  public IStatus execute(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-                    plot.removeDomainMarker(deleteIntervalMarker);
-                    resize.end = delete.end;
-                    zoneMarkers.remove(delete);
-                    zones.remove(delete);
-                    fireZoneRemoved(delete);
-                    assert resizeIntervalMarker != null;
-                    resizeIntervalMarker.setStartValue(resize.start);
-                    resizeIntervalMarker.setEndValue(resize.end);
-                    fireZoneResized(resize);
-                    merge_1 = null;
-                    merge_2 = null;
-                    return Status.OK_STATUS;
-                  }
-
-                  @Override
-                  public IStatus redo(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-                    plot.removeDomainMarker(deleteIntervalMarker);
-                    resize.end = delete.end;
-                    zoneMarkers.remove(delete);
-                    zones.remove(delete);
-                    fireZoneRemoved(delete);
-                    assert resizeIntervalMarker != null;
-                    resizeIntervalMarker.setStartValue(resize.start);
-                    resizeIntervalMarker.setEndValue(resize.end);
-                    fireZoneResized(resize);
-                    return Status.OK_STATUS;
-                  }
-
-                  @Override
-                  public IStatus undo(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-                    plot.addDomainMarker(deleteIntervalMarker);
-                    zoneMarkers.put(delete, deleteIntervalMarker);
-                    zones.add(delete);
-                    fireZoneAdded(delete);
-                    resize.end = endBefore;
-                    assert resizeIntervalMarker != null;
-                    resizeIntervalMarker.setStartValue(resize.start);
-                    resizeIntervalMarker.setEndValue(resize.end);
-                    fireZoneResized(resize);
-                    return Status.OK_STATUS;
-                  }
-                };
-            undoRedoProvider.execute(mergeOp);
+            if (merge_1 != null && merge_2 != null && merge_1 != merge_2)
+            {
+              final Zone resize =
+                  merge_1.start < merge_2.start ? merge_1 : merge_2;
+              final Zone delete =
+                  merge_1.start < merge_2.start ? merge_2 : merge_1;
+              final IntervalMarker deleteIntervalMarker =
+                  zoneMarkers.get(delete);
+              final IntervalMarker resizeIntervalMarker =
+                  zoneMarkers.get(resize);
+              final XYPlot plot = (XYPlot) chart.getPlot();
+              final long endBefore = resize.end;
+              final AbstractOperation mergeOp =
+                  getMergeOperation(resize, delete, deleteIntervalMarker,
+                      resizeIntervalMarker, plot, endBefore);
+              undoRedoProvider.execute(mergeOp);
+            }
+            break;
           }
-          break;
-        }
-        case SPLIT:
-        {
-          final long domainX = findDomainX(this, dragStartX);
-          final long timeOfNearestCut = toNearDomainValue(domainX, false);
-          final Zone beforeZone = dragZone;
-
-          // determine the time window, centred on the click time
-          List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
-          final Zone periodToCut = periodToCutFor(cutsInZone, timeOfNearestCut);
-
-          // did we generate a zone?
-          if (periodToCut != null)
+          case SPLIT:
           {
-            // get the plot
-            final XYPlot plot = (XYPlot) chart.getPlot();
+            final long domainX = findDomainX(this, dragStartX);
+            final long timeOfNearestCut = toNearDomainValue(domainX, false);
+            final Zone beforeZone = dragZone;
 
-            // store the period for the shortened first zone
-            final long firstZoneEnd = periodToCut.getStart();
-            final long secondZoneStart = periodToCut.getEnd();
-            final long secondZoneEnd = beforeZone.getEnd();
-            final IntervalMarker beforeMarker = zoneMarkers.get(beforeZone);
-            final Color zoneColor = colorProvider.getZoneColor();
-            final Zone newZone =
-                new Zone(secondZoneStart, secondZoneEnd, zoneColor);
+            // determine the time window, centred on the click time
+            List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+            final Zone periodToCut =
+                periodToCutFor(cutsInZone, timeOfNearestCut);
 
-            // generate the new zone
-            final AbstractOperation mergeOp =
-                new AbstractOperation("Split Zone in two")
-                {
-                  @Override
-                  public IStatus execute(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-                    // resize the first zone
-                    beforeZone.end = firstZoneEnd;
-                    fireZoneResized(beforeZone);
-                    beforeMarker.setEndValue(firstZoneEnd);
+            // did we generate a zone?
+            if (periodToCut != null)
+            {
+              // get the plot
+              final XYPlot plot = (XYPlot) chart.getPlot();
 
-                    // now create the second zone
-                    zones.add(newZone);
-                    fireZoneAdded(newZone);
+              // store the period for the shortened first zone
+              final long firstZoneEnd = periodToCut.getStart();
+              final long secondZoneStart = periodToCut.getEnd();
+              final long secondZoneEnd = beforeZone.getEnd();
+              final IntervalMarker beforeMarker = zoneMarkers.get(beforeZone);
+              final Color zoneColor = colorProvider.getZoneColor();
+              final Zone newZone =
+                  new Zone(secondZoneStart, secondZoneEnd, zoneColor);
 
-                    // and the marker
-                    addZoneMarker(plot, newZone);
+              // generate the new zone
+              final AbstractOperation mergeOp =
+                  getSplitOperation(beforeZone, plot, firstZoneEnd,
+                      secondZoneEnd, beforeMarker, newZone);
+              undoRedoProvider.execute(mergeOp);
+            }
 
-                    return Status.OK_STATUS;
-                  }
-
-                  @Override
-                  public IStatus redo(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-                    // enlargen the first zone again
-                    beforeZone.end = firstZoneEnd;
-                    fireZoneResized(beforeZone);
-                    beforeMarker.setEndValue(firstZoneEnd);
-
-                    // put the second zone back
-                    zones.add(newZone);
-                    fireZoneAdded(newZone);
-
-                    // and the marker
-                    addZoneMarker(plot, newZone);
-
-                    return Status.OK_STATUS;
-                  }
-
-                  @Override
-                  public IStatus undo(final IProgressMonitor monitor,
-                      final IAdaptable info) throws ExecutionException
-                  {
-                    // remove the second interval marker
-                    IntervalMarker afterInt = zoneMarkers.get(newZone);
-                    plot.removeDomainMarker(afterInt);
-                    zoneMarkers.remove(newZone);
-
-                    // and the second zone
-                    zones.remove(newZone);
-                    fireZoneRemoved(newZone);
-
-                    // restore the limits of the first zone
-                    beforeZone.end = secondZoneEnd;
-                    fireZoneResized(beforeZone);
-
-                    // and the marker
-                    beforeMarker.setEndValue(secondZoneEnd);
-
-                    return Status.OK_STATUS;
-                  }
-
-                };
-            undoRedoProvider.execute(mergeOp);
+            break;
           }
-
-          break;
         }
       }
+      finally
+      {
+        dragStartX = -1;
+        dragZone = null;
+        dragZoneEndBefore = -1;
+        dragZoneStartBefore = -1;
+        onDrag = false;
+        adding = null;
+        resizeStart = false;
+        resizeEnd = false;
+        super.mouseUp(event);
+      }
+    }
 
-      dragStartX = -1;
-      dragZone = null;
-      dragZoneEndBefore = -1;
-      dragZoneStartBefore = -1;
-      onDrag = false;
-      adding = null;
-      resizeStart = false;
-      resizeEnd = false;
-      super.mouseUp(event);
+    private AbstractOperation getAddOperation(final XYPlot plot,
+        final Zone affect, final IntervalMarker intervalMarker)
+    {
+      return new AbstractOperation("Add Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          zones.add(affect);
+          fireZoneAdded(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.addDomainMarker(intervalMarker);
+          zoneMarkers.put(affect, intervalMarker);
+          zones.add(affect);
+          fireZoneAdded(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(intervalMarker);
+          zoneMarkers.remove(affect);
+          zones.remove(affect);
+          fireZoneRemoved(affect);
+          return Status.OK_STATUS;
+        }
+      };
+    }
+
+    private AbstractOperation getDeleteOperation(final XYPlot plot,
+        final IntervalMarker intervalMarker, final Zone affect)
+    {
+      return new AbstractOperation("Delete Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(intervalMarker);
+          zoneMarkers.remove(affect);
+          zones.remove(affect);
+          fireZoneRemoved(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.addDomainMarker(intervalMarker);
+          zoneMarkers.put(affect, intervalMarker);
+          zones.add(affect);
+          fireZoneAdded(affect);
+          return Status.OK_STATUS;
+        }
+      };
+    }
+
+    private AbstractOperation getResizeOperation(final Zone affect,
+        final long startBefore, final long endBefore, final long startAfter,
+        final long endAfter)
+    {
+      return new AbstractOperation("Resize Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          fireZoneResized(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+          affect.start = startAfter;
+          affect.end = endAfter;
+          intervalMarker.setStartValue(affect.start);
+          intervalMarker.setEndValue(affect.end);
+          fireZoneResized(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+          affect.start = startBefore;
+          affect.end = endBefore;
+          intervalMarker.setStartValue(affect.start);
+          intervalMarker.setEndValue(affect.end);
+          fireZoneResized(affect);
+          return Status.OK_STATUS;
+        }
+      };
+    }
+
+    private AbstractOperation getSplitOperation(final Zone beforeZone,
+        final XYPlot plot, final long firstZoneEnd, final long secondZoneEnd,
+        final IntervalMarker beforeMarker, final Zone newZone)
+    {
+      return new AbstractOperation("Split Zone in two")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          // resize the first zone
+          beforeZone.end = firstZoneEnd;
+          fireZoneResized(beforeZone);
+          beforeMarker.setEndValue(firstZoneEnd);
+
+          // now create the second zone
+          zones.add(newZone);
+          fireZoneAdded(newZone);
+
+          // and the marker
+          addZoneMarker(plot, newZone);
+
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          // enlargen the first zone again
+          beforeZone.end = firstZoneEnd;
+          fireZoneResized(beforeZone);
+          beforeMarker.setEndValue(firstZoneEnd);
+
+          // put the second zone back
+          zones.add(newZone);
+          fireZoneAdded(newZone);
+
+          // and the marker
+          addZoneMarker(plot, newZone);
+
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          // remove the second interval marker
+          IntervalMarker afterInt = zoneMarkers.get(newZone);
+          plot.removeDomainMarker(afterInt);
+          zoneMarkers.remove(newZone);
+
+          // and the second zone
+          zones.remove(newZone);
+          fireZoneRemoved(newZone);
+
+          // restore the limits of the first zone
+          beforeZone.end = secondZoneEnd;
+          fireZoneResized(beforeZone);
+
+          // and the marker
+          beforeMarker.setEndValue(secondZoneEnd);
+
+          return Status.OK_STATUS;
+        }
+
+      };
+    }
+
+    private AbstractOperation getMergeOperation(final Zone resize,
+        final Zone delete, final IntervalMarker deleteIntervalMarker,
+        final IntervalMarker resizeIntervalMarker, final XYPlot plot,
+        final long endBefore)
+    {
+      return new AbstractOperation("Merge Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(deleteIntervalMarker);
+          resize.end = delete.end;
+          zoneMarkers.remove(delete);
+          zones.remove(delete);
+          fireZoneRemoved(delete);
+          assert resizeIntervalMarker != null;
+          resizeIntervalMarker.setStartValue(resize.start);
+          resizeIntervalMarker.setEndValue(resize.end);
+          fireZoneResized(resize);
+          merge_1 = null;
+          merge_2 = null;
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(deleteIntervalMarker);
+          resize.end = delete.end;
+          zoneMarkers.remove(delete);
+          zones.remove(delete);
+          fireZoneRemoved(delete);
+          assert resizeIntervalMarker != null;
+          resizeIntervalMarker.setStartValue(resize.start);
+          resizeIntervalMarker.setEndValue(resize.end);
+          fireZoneResized(resize);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.addDomainMarker(deleteIntervalMarker);
+          zoneMarkers.put(delete, deleteIntervalMarker);
+          zones.add(delete);
+          fireZoneAdded(delete);
+          resize.end = endBefore;
+          assert resizeIntervalMarker != null;
+          resizeIntervalMarker.setStartValue(resize.start);
+          resizeIntervalMarker.setEndValue(resize.end);
+          fireZoneResized(resize);
+          return Status.OK_STATUS;
+        }
+      };
     }
 
     private boolean resize(final Zone zone, final double startx)
@@ -1143,54 +1191,45 @@ public class ZoneChart extends Composite
       }
 
       // ok, check that's not the first two or the last two
-      if (indexOfCut > 2 && indexOfCut < numCuts - 2)
+      if (indexOfCut >= 2 && indexOfCut < numCuts - 2)
       {
-        // ok, we can work with it. How many are in the center?
-        final int centralRegion = numCuts - 4;
+        // ok, we can work with it. What's the time coverage of the central portion?
+        final long endOfRegion =
+            cutsInZone.get(numCuts - 2).getPeriod().getMiddleMillisecond();
+        final long startOfRegion =
+            cutsInZone.get(1).getPeriod().getMiddleMillisecond();
 
-        final int sizeToReveal;
-        if (centralRegion > 30)
-        {
-          sizeToReveal = centralRegion / 10;
-        }
-        else if (centralRegion > 10)
-        {
-          sizeToReveal = 5;
-        }
-        else
-        {
-          sizeToReveal = 2;
-        }
+        long period = endOfRegion - startOfRegion;
 
-        final int halfReveal = (int) Math.floor(sizeToReveal / 2);
+        // check we have at least 2 minutes in centre
+        final long halfInterval = 1 * 60 * 1000;
+        final long interval = 2 * halfInterval;
 
-        // ok, generate the zone with the first and last times
-        int ctr = 0;
-        Long startDTG = null;
-        Long endDTG = null;
-        for (TimeSeriesDataItem cut : cutsInZone)
+        if (period > interval)
         {
-          final int thisIndex = ctr++;
-          final long thisDTG = cut.getPeriod().getMiddleMillisecond();
-          if (thisIndex == indexOfCut - halfReveal
-              || (startDTG == null && thisIndex > indexOfCut - halfReveal))
+          long endOfBefore = -1;
+          long startOfAfter = -1;
+
+          for (int i = 2; i < numCuts - 2; i++)
           {
-            // ok, this is the start
-            startDTG = thisDTG;
+            long thisTime =
+                cutsInZone.get(i).getPeriod().getMiddleMillisecond();
+            if (thisTime <= timeOfNearestCut - halfInterval)
+            {
+              endOfBefore = thisTime;
+            }
+            else if (thisTime >= timeOfNearestCut + halfInterval)
+            {
+              startOfAfter = thisTime;
+              break;
+            }
           }
-          if (thisIndex == indexOfCut + halfReveal || endDTG == null
-              && thisIndex > indexOfCut + halfReveal)
-          {
-            // ok, this is at the end of the data
-            endDTG = thisDTG;
-            break;
-          }
-        }
 
-        if (startDTG != null && endDTG != null)
-        {
-          final Color zoneColor = colorProvider.getZoneColor();
-          res = new Zone(startDTG, endDTG, zoneColor);
+          if (endOfBefore != -1 && startOfAfter != -1)
+          {
+            final Color zoneColor = colorProvider.getZoneColor();
+            res = new Zone(endOfBefore, startOfAfter, zoneColor);
+          }
         }
       }
     }
