@@ -257,7 +257,7 @@ public class ZoneChart extends Composite
             adding =
                 new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2,
                     zoneColor);
-            addZone(plot, adding);
+            addZoneMarker(plot, adding);
           }
           break;
         }
@@ -365,7 +365,22 @@ public class ZoneChart extends Composite
             }
             if (dragZone != null)
             {
-              this.setCursor(splitCursor);
+              final long domainX = findDomainX(this, currentX);
+              final long timeOfNearestCut = toNearDomainValue(domainX, false);
+              final Zone beforeZone = dragZone;
+
+              // determine the time window, centred on the click time
+              List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+              final Zone periodToCut =
+                  periodToCutFor(cutsInZone, timeOfNearestCut);
+              if (periodToCut != null)
+              {
+                this.setCursor(splitCursor);
+              }
+              else
+              {
+                this.setCursor(null);
+              }
             }
             else
             {
@@ -639,28 +654,28 @@ public class ZoneChart extends Composite
         {
           final long domainX = findDomainX(this, dragStartX);
           final long timeOfNearestCut = toNearDomainValue(domainX, false);
-          System.out.println("splitting zone: " + dragZone + " at time:"
-              + new Date(timeOfNearestCut));
-
           final Zone beforeZone = dragZone;
 
           // determine the time window, centred on the click time
           List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
-
           final Zone periodToCut = periodToCutFor(cutsInZone, timeOfNearestCut);
 
           // did we generate a zone?
           if (periodToCut != null)
           {
+            // get the plot
+            final XYPlot plot = (XYPlot) chart.getPlot();
+
             // store the period for the shortened first zone
-            final long firstZoneStart = beforeZone.getStart();
             final long firstZoneEnd = periodToCut.getStart();
-            final long secondZoneEnd = beforeZone.getEnd();
             final long secondZoneStart = periodToCut.getEnd();
-            final IntervalMarker intervalMarker = zoneMarkers.get(beforeZone);
+            final long secondZoneEnd = beforeZone.getEnd();
+            final IntervalMarker beforeMarker = zoneMarkers.get(beforeZone);
+            final Color zoneColor = colorProvider.getZoneColor();
+            final Zone newZone =
+                new Zone(secondZoneStart, secondZoneEnd, zoneColor);
 
             // generate the new zone
-
             final AbstractOperation mergeOp =
                 new AbstractOperation("Split Zone in two")
                 {
@@ -668,12 +683,18 @@ public class ZoneChart extends Composite
                   public IStatus execute(final IProgressMonitor monitor,
                       final IAdaptable info) throws ExecutionException
                   {
+                    // resize the first zone
                     beforeZone.end = firstZoneEnd;
                     fireZoneResized(beforeZone);
-                    Zone newZone = new Zone(secondZoneStart, secondZoneEnd, periodToCut.getColor());
+                    beforeMarker.setEndValue(firstZoneEnd);
 
-//                    working on this z
-                    
+                    // now create the second zone
+                    zones.add(newZone);
+                    fireZoneAdded(newZone);
+
+                    // and the marker
+                    addZoneMarker(plot, newZone);
+
                     return Status.OK_STATUS;
                   }
 
@@ -681,12 +702,18 @@ public class ZoneChart extends Composite
                   public IStatus redo(final IProgressMonitor monitor,
                       final IAdaptable info) throws ExecutionException
                   {
-                    // final IntervalMarker intervalMarker = zoneMarkers.get(affect);
-                    // affect.start = startAfter;
-                    // affect.end = endAfter;
-                    // intervalMarker.setStartValue(affect.start);
-                    // intervalMarker.setEndValue(affect.end);
-                    // fireZoneResized(affect);
+                    // enlargen the first zone again
+                    beforeZone.end = firstZoneEnd;
+                    fireZoneResized(beforeZone);
+                    beforeMarker.setEndValue(firstZoneEnd);
+
+                    // put the second zone back
+                    zones.add(newZone);
+                    fireZoneAdded(newZone);
+
+                    // and the marker
+                    addZoneMarker(plot, newZone);
+
                     return Status.OK_STATUS;
                   }
 
@@ -694,12 +721,22 @@ public class ZoneChart extends Composite
                   public IStatus undo(final IProgressMonitor monitor,
                       final IAdaptable info) throws ExecutionException
                   {
-                    // final IntervalMarker intervalMarker = zoneMarkers.get(affect);
-                    // affect.start = startBefore;
-                    // affect.end = endBefore;
-                    // intervalMarker.setStartValue(affect.start);
-                    // intervalMarker.setEndValue(affect.end);
-                    // fireZoneResized(affect);
+                    // remove the second interval marker
+                    IntervalMarker afterInt = zoneMarkers.get(newZone);
+                    plot.removeDomainMarker(afterInt);
+                    zoneMarkers.remove(newZone);
+
+                    // and the second zone
+                    zones.remove(newZone);
+                    fireZoneRemoved(newZone);
+
+                    // restore the limits of the first zone
+                    beforeZone.end = secondZoneEnd;
+                    fireZoneResized(beforeZone);
+
+                    // and the marker
+                    beforeMarker.setEndValue(secondZoneEnd);
+
                     return Status.OK_STATUS;
                   }
 
@@ -1084,18 +1121,18 @@ public class ZoneChart extends Composite
       long timeOfNearestCut)
   {
     Zone res = null;
-    
+
     // ok, check we have enough cuts
     final int numCuts = cutsInZone.size();
-    
-    if(numCuts >= 5)
+
+    if (numCuts >= 5)
     {
       // ok, we've got enough to leave some either side of the removed cut
       // find out the index of the one nearest to the cut
       int indexOfCut = 0;
-      for(TimeSeriesDataItem cut: cutsInZone)
+      for (TimeSeriesDataItem cut : cutsInZone)
       {
-        if(cut.getPeriod().getMiddleMillisecond() == timeOfNearestCut)
+        if (cut.getPeriod().getMiddleMillisecond() == timeOfNearestCut)
         {
           break;
         }
@@ -1104,60 +1141,59 @@ public class ZoneChart extends Composite
           indexOfCut++;
         }
       }
-      
+
       // ok, check that's not the first two or the last two
-      if(indexOfCut > 2 && indexOfCut < numCuts - 2)
+      if (indexOfCut > 2 && indexOfCut < numCuts - 2)
       {
         // ok, we can work with it. How many are in the center?
         final int centralRegion = numCuts - 4;
-        
+
         final int sizeToReveal;
-        if(centralRegion > 30)
+        if (centralRegion > 30)
         {
           sizeToReveal = centralRegion / 10;
         }
-        else if(centralRegion > 10)
+        else if (centralRegion > 10)
         {
           sizeToReveal = 5;
         }
-        else if(centralRegion > 5)
+        else
         {
           sizeToReveal = 2;
         }
-        else
-        {
-          sizeToReveal = 1;
-        }
-        
+
         final int halfReveal = (int) Math.floor(sizeToReveal / 2);
-        
+
         // ok, generate the zone with the first and last times
         int ctr = 0;
         Long startDTG = null;
         Long endDTG = null;
-        for(TimeSeriesDataItem cut: cutsInZone)
+        for (TimeSeriesDataItem cut : cutsInZone)
         {
           final int thisIndex = ctr++;
           final long thisDTG = cut.getPeriod().getMiddleMillisecond();
-          if(thisIndex == indexOfCut - halfReveal || (startDTG == null && thisIndex > indexOfCut - halfReveal))
+          if (thisIndex == indexOfCut - halfReveal
+              || (startDTG == null && thisIndex > indexOfCut - halfReveal))
           {
             // ok, this is the start
             startDTG = thisDTG;
           }
-          if(thisIndex == indexOfCut + halfReveal || endDTG == null && thisIndex > indexOfCut + halfReveal)
+          if (thisIndex == indexOfCut + halfReveal || endDTG == null
+              && thisIndex > indexOfCut + halfReveal)
           {
             // ok, this is at the end of the data
             endDTG = thisDTG;
             break;
           }
         }
-        
-        if(startDTG != null && endDTG != null)
+
+        if (startDTG != null && endDTG != null)
         {
-          res = new Zone(startDTG, endDTG, Color.RED);
+          final Color zoneColor = colorProvider.getZoneColor();
+          res = new Zone(startDTG, endDTG, zoneColor);
         }
-      }     
-    }    
+      }
+    }
     return res;
   }
 
@@ -1285,11 +1321,11 @@ public class ZoneChart extends Composite
     final XYPlot plot = (XYPlot) xylineChart.getPlot();
     for (final Zone zone : zones)
     {
-      addZone(plot, zone);
+      addZoneMarker(plot, zone);
     }
   }
 
-  private void addZone(final XYPlot plot, final Zone zone)
+  private void addZoneMarker(final XYPlot plot, final Zone zone)
   {
     final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
     mrk.setPaint(zone.getColor());
@@ -1592,7 +1628,7 @@ public class ZoneChart extends Composite
       }
       if (!found)
       {
-        addZone(plot, zone);
+        addZoneMarker(plot, zone);
         zones.add(zone);
       }
     }
@@ -1749,7 +1785,7 @@ public class ZoneChart extends Composite
           // and create the new intervals
           for (final Zone thisZone : newZones)
           {
-            addZone(thePlot, thisZone);
+            addZoneMarker(thePlot, thisZone);
           }
         }
         return Status.OK_STATUS;
