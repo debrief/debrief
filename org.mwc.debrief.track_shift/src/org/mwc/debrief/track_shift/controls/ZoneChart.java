@@ -63,27 +63,6 @@ public class ZoneChart extends Composite
 {
 
   /**
-   * put some zone config items into a class, so we have to pass fewer params to create() function
-   * 
-   * @author Ian
-   * 
-   */
-  public static class ZoneChartConfig
-  {
-    private String _chartTitle;
-    private String _yTitle;
-    private Color _lineColor;
-
-    public ZoneChartConfig(final String chartTitle, final String yTitle,
-        final Color lineColor)
-    {
-      _chartTitle = chartTitle;
-      _yTitle = yTitle;
-      _lineColor = lineColor;
-    }
-  }
-
-  /**
    * helper class to provide color for zones
    * 
    * @author Ian
@@ -134,6 +113,44 @@ public class ZoneChart extends Composite
       undoRedoProvider.execute(addOp);
     }
 
+    private AbstractOperation getAddOperation(final XYPlot plot,
+        final Zone affect, final IntervalMarker intervalMarker)
+    {
+      return new AbstractOperation("Add Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          zones.add(affect);
+          fireZoneAdded(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.addDomainMarker(intervalMarker);
+          zoneMarkers.put(affect, intervalMarker);
+          zones.add(affect);
+          fireZoneAdded(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(intervalMarker);
+          zoneMarkers.remove(affect);
+          zones.remove(affect);
+          fireZoneRemoved(affect);
+          return Status.OK_STATUS;
+        }
+      };
+    }
+
     private Rectangle2D getCurrentCoverage()
     {
       // get the the xy plot
@@ -152,6 +169,213 @@ public class ZoneChart extends Composite
 
       // done
       return res;
+    }
+
+    private AbstractOperation getDeleteOperation(final XYPlot plot,
+        final IntervalMarker intervalMarker, final Zone affect)
+    {
+      return new AbstractOperation("Delete Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(intervalMarker);
+          zoneMarkers.remove(affect);
+          zones.remove(affect);
+          fireZoneRemoved(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.addDomainMarker(intervalMarker);
+          zoneMarkers.put(affect, intervalMarker);
+          zones.add(affect);
+          fireZoneAdded(affect);
+          return Status.OK_STATUS;
+        }
+      };
+    }
+
+    private AbstractOperation getMergeOperation(final Zone resize,
+        final Zone delete, final IntervalMarker deleteIntervalMarker,
+        final IntervalMarker resizeIntervalMarker, final XYPlot plot,
+        final long endBefore)
+    {
+      return new AbstractOperation("Merge Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(deleteIntervalMarker);
+          resize.end = delete.end;
+          zoneMarkers.remove(delete);
+          zones.remove(delete);
+          fireZoneRemoved(delete);
+          assert resizeIntervalMarker != null;
+          resizeIntervalMarker.setStartValue(resize.start);
+          resizeIntervalMarker.setEndValue(resize.end);
+          fireZoneResized(resize);
+          merge_1 = null;
+          merge_2 = null;
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.removeDomainMarker(deleteIntervalMarker);
+          resize.end = delete.end;
+          zoneMarkers.remove(delete);
+          zones.remove(delete);
+          fireZoneRemoved(delete);
+          assert resizeIntervalMarker != null;
+          resizeIntervalMarker.setStartValue(resize.start);
+          resizeIntervalMarker.setEndValue(resize.end);
+          fireZoneResized(resize);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          plot.addDomainMarker(deleteIntervalMarker);
+          zoneMarkers.put(delete, deleteIntervalMarker);
+          zones.add(delete);
+          fireZoneAdded(delete);
+          resize.end = endBefore;
+          assert resizeIntervalMarker != null;
+          resizeIntervalMarker.setStartValue(resize.start);
+          resizeIntervalMarker.setEndValue(resize.end);
+          fireZoneResized(resize);
+          return Status.OK_STATUS;
+        }
+      };
+    }
+
+    private AbstractOperation getResizeOperation(final Zone affect,
+        final long startBefore, final long endBefore, final long startAfter,
+        final long endAfter)
+    {
+      return new AbstractOperation("Resize Zone")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          fireZoneResized(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+          affect.start = startAfter;
+          affect.end = endAfter;
+          intervalMarker.setStartValue(affect.start);
+          intervalMarker.setEndValue(affect.end);
+          fireZoneResized(affect);
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          final IntervalMarker intervalMarker = zoneMarkers.get(affect);
+          affect.start = startBefore;
+          affect.end = endBefore;
+          intervalMarker.setStartValue(affect.start);
+          intervalMarker.setEndValue(affect.end);
+          fireZoneResized(affect);
+          return Status.OK_STATUS;
+        }
+      };
+    }
+
+    private AbstractOperation getSplitOperation(final Zone beforeZone,
+        final XYPlot plot, final long firstZoneEnd, final long secondZoneEnd,
+        final IntervalMarker beforeMarker, final Zone newZone)
+    {
+      return new AbstractOperation("Split Zone in two")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          // resize the first zone
+          beforeZone.end = firstZoneEnd;
+          fireZoneResized(beforeZone);
+          beforeMarker.setEndValue(firstZoneEnd);
+
+          // now create the second zone
+          zones.add(newZone);
+          fireZoneAdded(newZone);
+
+          // and the marker
+          addZoneMarker(plot, newZone);
+
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          // enlargen the first zone again
+          beforeZone.end = firstZoneEnd;
+          fireZoneResized(beforeZone);
+          beforeMarker.setEndValue(firstZoneEnd);
+
+          // put the second zone back
+          zones.add(newZone);
+          fireZoneAdded(newZone);
+
+          // and the marker
+          addZoneMarker(plot, newZone);
+
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          // remove the second interval marker
+          final IntervalMarker afterInt = zoneMarkers.get(newZone);
+          plot.removeDomainMarker(afterInt);
+          zoneMarkers.remove(newZone);
+
+          // and the second zone
+          zones.remove(newZone);
+          fireZoneRemoved(newZone);
+
+          // restore the limits of the first zone
+          beforeZone.end = secondZoneEnd;
+          fireZoneResized(beforeZone);
+
+          // and the marker
+          beforeMarker.setEndValue(secondZoneEnd);
+
+          return Status.OK_STATUS;
+        }
+
+      };
     }
 
     private boolean isDelete(final Zone zone, final double x)
@@ -370,7 +594,7 @@ public class ZoneChart extends Composite
               final Zone beforeZone = dragZone;
 
               // determine the time window, centred on the click time
-              List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+              final List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
               final Zone periodToCut =
                   periodToCutFor(cutsInZone, timeOfNearestCut);
               if (periodToCut != null)
@@ -518,7 +742,7 @@ public class ZoneChart extends Composite
             final Zone beforeZone = dragZone;
 
             // determine the time window, centred on the click time
-            List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+            final List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
             final Zone periodToCut =
                 periodToCutFor(cutsInZone, timeOfNearestCut);
 
@@ -560,251 +784,6 @@ public class ZoneChart extends Composite
         resizeEnd = false;
         super.mouseUp(event);
       }
-    }
-
-    private AbstractOperation getAddOperation(final XYPlot plot,
-        final Zone affect, final IntervalMarker intervalMarker)
-    {
-      return new AbstractOperation("Add Zone")
-      {
-        @Override
-        public IStatus execute(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          zones.add(affect);
-          fireZoneAdded(affect);
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus redo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          plot.addDomainMarker(intervalMarker);
-          zoneMarkers.put(affect, intervalMarker);
-          zones.add(affect);
-          fireZoneAdded(affect);
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus undo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          plot.removeDomainMarker(intervalMarker);
-          zoneMarkers.remove(affect);
-          zones.remove(affect);
-          fireZoneRemoved(affect);
-          return Status.OK_STATUS;
-        }
-      };
-    }
-
-    private AbstractOperation getDeleteOperation(final XYPlot plot,
-        final IntervalMarker intervalMarker, final Zone affect)
-    {
-      return new AbstractOperation("Delete Zone")
-      {
-        @Override
-        public IStatus execute(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          return redo(monitor, info);
-        }
-
-        @Override
-        public IStatus redo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          plot.removeDomainMarker(intervalMarker);
-          zoneMarkers.remove(affect);
-          zones.remove(affect);
-          fireZoneRemoved(affect);
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus undo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          plot.addDomainMarker(intervalMarker);
-          zoneMarkers.put(affect, intervalMarker);
-          zones.add(affect);
-          fireZoneAdded(affect);
-          return Status.OK_STATUS;
-        }
-      };
-    }
-
-    private AbstractOperation getResizeOperation(final Zone affect,
-        final long startBefore, final long endBefore, final long startAfter,
-        final long endAfter)
-    {
-      return new AbstractOperation("Resize Zone")
-      {
-        @Override
-        public IStatus execute(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          fireZoneResized(affect);
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus redo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          final IntervalMarker intervalMarker = zoneMarkers.get(affect);
-          affect.start = startAfter;
-          affect.end = endAfter;
-          intervalMarker.setStartValue(affect.start);
-          intervalMarker.setEndValue(affect.end);
-          fireZoneResized(affect);
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus undo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          final IntervalMarker intervalMarker = zoneMarkers.get(affect);
-          affect.start = startBefore;
-          affect.end = endBefore;
-          intervalMarker.setStartValue(affect.start);
-          intervalMarker.setEndValue(affect.end);
-          fireZoneResized(affect);
-          return Status.OK_STATUS;
-        }
-      };
-    }
-
-    private AbstractOperation getSplitOperation(final Zone beforeZone,
-        final XYPlot plot, final long firstZoneEnd, final long secondZoneEnd,
-        final IntervalMarker beforeMarker, final Zone newZone)
-    {
-      return new AbstractOperation("Split Zone in two")
-      {
-        @Override
-        public IStatus execute(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          // resize the first zone
-          beforeZone.end = firstZoneEnd;
-          fireZoneResized(beforeZone);
-          beforeMarker.setEndValue(firstZoneEnd);
-
-          // now create the second zone
-          zones.add(newZone);
-          fireZoneAdded(newZone);
-
-          // and the marker
-          addZoneMarker(plot, newZone);
-
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus redo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          // enlargen the first zone again
-          beforeZone.end = firstZoneEnd;
-          fireZoneResized(beforeZone);
-          beforeMarker.setEndValue(firstZoneEnd);
-
-          // put the second zone back
-          zones.add(newZone);
-          fireZoneAdded(newZone);
-
-          // and the marker
-          addZoneMarker(plot, newZone);
-
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus undo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          // remove the second interval marker
-          IntervalMarker afterInt = zoneMarkers.get(newZone);
-          plot.removeDomainMarker(afterInt);
-          zoneMarkers.remove(newZone);
-
-          // and the second zone
-          zones.remove(newZone);
-          fireZoneRemoved(newZone);
-
-          // restore the limits of the first zone
-          beforeZone.end = secondZoneEnd;
-          fireZoneResized(beforeZone);
-
-          // and the marker
-          beforeMarker.setEndValue(secondZoneEnd);
-
-          return Status.OK_STATUS;
-        }
-
-      };
-    }
-
-    private AbstractOperation getMergeOperation(final Zone resize,
-        final Zone delete, final IntervalMarker deleteIntervalMarker,
-        final IntervalMarker resizeIntervalMarker, final XYPlot plot,
-        final long endBefore)
-    {
-      return new AbstractOperation("Merge Zone")
-      {
-        @Override
-        public IStatus execute(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          plot.removeDomainMarker(deleteIntervalMarker);
-          resize.end = delete.end;
-          zoneMarkers.remove(delete);
-          zones.remove(delete);
-          fireZoneRemoved(delete);
-          assert resizeIntervalMarker != null;
-          resizeIntervalMarker.setStartValue(resize.start);
-          resizeIntervalMarker.setEndValue(resize.end);
-          fireZoneResized(resize);
-          merge_1 = null;
-          merge_2 = null;
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus redo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          plot.removeDomainMarker(deleteIntervalMarker);
-          resize.end = delete.end;
-          zoneMarkers.remove(delete);
-          zones.remove(delete);
-          fireZoneRemoved(delete);
-          assert resizeIntervalMarker != null;
-          resizeIntervalMarker.setStartValue(resize.start);
-          resizeIntervalMarker.setEndValue(resize.end);
-          fireZoneResized(resize);
-          return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus undo(final IProgressMonitor monitor,
-            final IAdaptable info) throws ExecutionException
-        {
-          plot.addDomainMarker(deleteIntervalMarker);
-          zoneMarkers.put(delete, deleteIntervalMarker);
-          zones.add(delete);
-          fireZoneAdded(delete);
-          resize.end = endBefore;
-          assert resizeIntervalMarker != null;
-          resizeIntervalMarker.setStartValue(resize.start);
-          resizeIntervalMarker.setEndValue(resize.end);
-          fireZoneResized(resize);
-          return Status.OK_STATUS;
-        }
-      };
     }
 
     private boolean resize(final Zone zone, final double startx)
@@ -1005,6 +984,27 @@ public class ZoneChart extends Composite
     }
   }
 
+  /**
+   * put some zone config items into a class, so we have to pass fewer params to create() function
+   * 
+   * @author Ian
+   * 
+   */
+  public static class ZoneChartConfig
+  {
+    private final String _chartTitle;
+    private final String _yTitle;
+    private final Color _lineColor;
+
+    public ZoneChartConfig(final String chartTitle, final String yTitle,
+        final Color lineColor)
+    {
+      _chartTitle = chartTitle;
+      _yTitle = yTitle;
+      _lineColor = lineColor;
+    }
+  }
+
   public static interface ZoneListener
   {
     void added(Zone zone);
@@ -1035,7 +1035,7 @@ public class ZoneChart extends Composite
   public static ZoneChart create(final ZoneChartConfig config,
       final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
-      final TimeSeries[] otherSeriesArr, TimeSeries[] otherAxisSeries,
+      final TimeSeries[] otherSeriesArr, final TimeSeries[] otherAxisSeries,
       final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
       final Runnable deleteOperation, final Runnable resolveAmbiguityOperation)
   {
@@ -1070,7 +1070,7 @@ public class ZoneChart extends Composite
 
     if (otherSeriesArr != null)
     {
-      for (TimeSeries series : otherSeriesArr)
+      for (final TimeSeries series : otherSeriesArr)
       {
         dataset.addSeries(series);
       }
@@ -1101,7 +1101,7 @@ public class ZoneChart extends Composite
           private static final long serialVersionUID = 1L;
 
           @Override
-          public Paint getItemPaint(int row, int column)
+          public Paint getItemPaint(final int row, final int column)
           {
             final Paint res;
             if (row == 0)
@@ -1110,11 +1110,11 @@ public class ZoneChart extends Composite
             }
             else
             {
-              TimeSeries series = otherSeriesArr[row - 1];
-              TimeSeriesDataItem item = series.getDataItem(column);
+              final TimeSeries series = otherSeriesArr[row - 1];
+              final TimeSeriesDataItem item = series.getDataItem(column);
               if (item instanceof ColouredDataItem)
               {
-                ColouredDataItem color = (ColouredDataItem) item;
+                final ColouredDataItem color = (ColouredDataItem) item;
                 res = color.getColor();
               }
               else
@@ -1140,15 +1140,16 @@ public class ZoneChart extends Composite
     if (otherAxisSeries != null)
     {
       // ok, put it into another dataset
-      TimeSeriesCollection ds2 = new TimeSeriesCollection();
-      for (TimeSeries series : otherAxisSeries)
+      final TimeSeriesCollection ds2 = new TimeSeriesCollection();
+      for (final TimeSeries series : otherAxisSeries)
       {
         ds2.addSeries(series);
       }
-      NumberAxis y2 = new NumberAxis("\u00b0/sec");
+      final NumberAxis y2 = new NumberAxis("\u00b0/sec");
       plot.setDataset(1, ds2);
       plot.setRangeAxis(1, y2);
-      XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer(true, true);
+      final XYLineAndShapeRenderer renderer2 =
+          new XYLineAndShapeRenderer(true, true);
       renderer2.setSeriesPaint(0, Color.BLACK);
       renderer2.setSeriesStroke(0, new BasicStroke(2));
       plot.setRenderer(1, renderer2);
@@ -1163,245 +1164,6 @@ public class ZoneChart extends Composite
 
     // done
     return zoneChart;
-  }
-
-  public Zone periodToCutFor(List<TimeSeriesDataItem> cutsInZone,
-      long timeOfNearestCut)
-  {
-    Zone res = null;
-
-    // ok, check we have enough cuts
-    final int numCuts = cutsInZone.size();
-
-    if (numCuts >= 5)
-    {
-      // ok, we've got enough to leave some either side of the removed cut
-      // find out the index of the one nearest to the cut
-      int indexOfCut = 0;
-      for (TimeSeriesDataItem cut : cutsInZone)
-      {
-        if (cut.getPeriod().getMiddleMillisecond() == timeOfNearestCut)
-        {
-          break;
-        }
-        else
-        {
-          indexOfCut++;
-        }
-      }
-
-      // ok, check that's not the first two or the last two
-      if (indexOfCut >= 2 && indexOfCut < numCuts - 2)
-      {
-        // ok, we can work with it. What's the time coverage of the central portion?
-        final long endOfRegion =
-            cutsInZone.get(numCuts - 2).getPeriod().getMiddleMillisecond();
-        final long startOfRegion =
-            cutsInZone.get(1).getPeriod().getMiddleMillisecond();
-
-        long period = endOfRegion - startOfRegion;
-
-        // check we have at least 2 minutes in centre
-        final long halfInterval = 1 * 60 * 1000;
-        final long interval = 2 * halfInterval;
-
-        if (period > interval)
-        {
-          long endOfBefore = -1;
-          long startOfAfter = -1;
-
-          for (int i = 2; i < numCuts - 2; i++)
-          {
-            long thisTime =
-                cutsInZone.get(i).getPeriod().getMiddleMillisecond();
-            if (thisTime <= timeOfNearestCut - halfInterval)
-            {
-              endOfBefore = thisTime;
-            }
-            else if (thisTime >= timeOfNearestCut + halfInterval)
-            {
-              startOfAfter = thisTime;
-              break;
-            }
-          }
-
-          if (endOfBefore != -1 && startOfAfter != -1)
-          {
-            final Color zoneColor = colorProvider.getZoneColor();
-            res = new Zone(endOfBefore, startOfAfter, zoneColor);
-          }
-        }
-      }
-    }
-    return res;
-  }
-
-  public List<TimeSeriesDataItem> cutsFor(Zone outerZone)
-  {
-    @SuppressWarnings("unchecked")
-    List<TimeSeriesDataItem> items = xySeries.getItems();
-    List<TimeSeriesDataItem> res = new ArrayList<TimeSeriesDataItem>();
-    for (TimeSeriesDataItem item : items)
-    {
-      long dtg = item.getPeriod().getMiddleMillisecond();
-      if (outerZone.getStart() <= dtg && outerZone.getEnd() >= dtg)
-      {
-        res.add(item);
-      }
-    }
-    return res;
-  }
-
-  private final List<Zone> zones;
-  private final Map<Zone, IntervalMarker> zoneMarkers =
-      new HashMap<ZoneChart.Zone, IntervalMarker>();
-  private EditMode mode = EditMode.EDIT;
-  private volatile List<ZoneListener> listeners =
-      new ArrayList<ZoneChart.ZoneListener>(1);
-  private final Image handImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/hand.png").createImage();
-
-  private final Image addImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/add.png").createImage();
-  private final Image removeImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/remove.png").createImage();
-  private final Image handFistImg16 = CorePlugin.getImageDescriptor(
-      "/icons/16/hand_fist.png").createImage();
-  private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
-      "/icons/16/merge_1.png").createImage();
-  private final Image cut_1Img16 = CorePlugin.getImageDescriptor(
-      "/icons/16/cut.png").createImage();
-
-  private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
-      "/icons/16/merge_2.png").createImage();
-  /** 24px images for the buttons */
-  private final Image editImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/edit.png").createImage();
-  private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/zoomin.png").createImage();
-  private final Image mergeImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/merge.png").createImage();
-  private final Image splitImg24 = CorePlugin.getImageDescriptor(
-      "/icons/24/split.png").createImage();
-  private final Image fitToWin24 = CorePlugin.getImageDescriptor(
-      "/icons/24/fit_to_win.png").createImage();
-  private final Image calculator24 = CorePlugin.getImageDescriptor(
-      "/icons/24/calculator.png").createImage();
-  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
-      .getImageData(), 0, 0);
-  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
-      .getImageData(), 0, 0);
-  private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
-      merge_1Img16.getImageData(), 0, 0);
-  private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
-      merge_2Img16.getImageData(), 0, 0);
-  // DnD---
-  private final Cursor removeCursor = new Cursor(Display.getDefault(),
-      removeImg16.getImageData(), 0, 0);
-
-  private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
-      handFistImg16.getImageData(), 0, 0);
-  private final Cursor resizeCursor = new Cursor(Display.getDefault(),
-      SWT.CURSOR_SIZEWE);
-  private final Cursor splitCursor = new Cursor(Display.getDefault(),
-      cut_1Img16.getImageData(), 0, 0);
-  private final JFreeChart chart;
-  private CustomChartComposite chartComposite;
-  private Zone dragZone;
-  long dragZoneStartBefore = -1;
-  long dragZoneEndBefore = -1;
-  private double dragStartX = -1;
-  private boolean onDrag = false;
-
-  private boolean resizeStart = false;
-
-  private boolean resizeEnd = false;
-
-  private Zone adding = null;
-
-  private Zone merge_1 = null;
-
-  private Zone merge_2 = null;
-
-  private final ColorProvider colorProvider;
-
-  private final ZoneSlicer zoneSlicer;
-
-  private final TimeSeries xySeries;
-
-  private final ZoneUndoRedoProvider undoRedoProvider;
-  private final Runnable deleteEvent;
-  private final Runnable resolveAmbiguityEvent;
-
-  private ZoneChart(final Composite parent, final JFreeChart xylineChart,
-      final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
-      final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
-      final TimeSeries xySeries, Runnable deleteEvent,
-      Runnable resolveAmbiguityOperation)
-  {
-    super(parent, SWT.NONE);
-    this.undoRedoProvider = undoRedoProvider;
-    this.chart = xylineChart;
-    this.deleteEvent = deleteEvent;
-    this.resolveAmbiguityEvent = resolveAmbiguityOperation;
-    buildUI(xylineChart);
-
-    /**
-     * provide sorted instanceof array list, so we know we can easily get the first/last items
-     */
-    this.zones = new SortedArrayList();
-    this.zones.addAll(Arrays.asList(zones));
-    this.zoneMarkers.clear();
-    xylineChart.setAntiAlias(false);
-    this.colorProvider = colorProvider;
-    this.zoneSlicer = zoneSlicer;
-    this.xySeries = xySeries;
-
-    final XYPlot plot = (XYPlot) xylineChart.getPlot();
-    for (final Zone zone : zones)
-    {
-      addZoneMarker(plot, zone);
-    }
-  }
-
-  private void addZoneMarker(final XYPlot plot, final Zone zone)
-  {
-    final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
-    mrk.setPaint(zone.getColor());
-    mrk.setAlpha(0.2f);
-    plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
-    zoneMarkers.put(zone, mrk);
-  }
-
-  public void addZoneListener(final ZoneListener listener)
-  {
-    listeners.add(listener);
-  }
-
-  private void buildUI(final JFreeChart xylineChart)
-  {
-    setLayout((new GridLayout(3, false)));
-    chartComposite = new CustomChartComposite(this, xylineChart);
-    chartComposite.setDomainZoomable(true);
-    chartComposite.setRangeZoomable(true);
-    final GridData data =
-        new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
-            | GridData.GRAB_VERTICAL);
-
-    data.verticalSpan = 4;
-
-    chartComposite.setLayoutData(data);
-    createToolbar(this);
-  }
-
-  public void clearZones()
-  {
-    zoneMarkers.clear();
-    zones.clear();
-
-    // and from the plot
-    final XYPlot thePlot = (XYPlot) chart.getPlot();
-    thePlot.clearDomainMarkers();
   }
 
   private static Button createButton(final Composite parent, final int mode,
@@ -1439,7 +1201,165 @@ public class ZoneChart extends Composite
     split.setSelection(split.equals(selected));
   }
 
-  protected void createToolbar(Composite col1)
+  private final List<Zone> zones;
+  private final Map<Zone, IntervalMarker> zoneMarkers =
+      new HashMap<ZoneChart.Zone, IntervalMarker>();
+  private EditMode mode = EditMode.EDIT;
+  private volatile List<ZoneListener> zoneListeners =
+      new ArrayList<ZoneChart.ZoneListener>(1);
+  
+  
+  
+  private final Image handImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand.png").createImage();
+  private final Image addImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/add.png").createImage();
+  private final Image removeImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/remove.png").createImage();
+  private final Image handFistImg16 = CorePlugin.getImageDescriptor(
+      "/icons/16/hand_fist.png").createImage();
+  private final Image merge_1Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_1.png").createImage();
+  private final Image merge_2Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/merge_2.png").createImage();
+  private final Image cut_1Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/cut.png").createImage();
+
+  /** 24px images for the buttons */
+  private final Image editImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/edit.png").createImage();
+  private final Image zoomInImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/zoomin.png").createImage();
+  private final Image mergeImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/merge.png").createImage();
+  private final Image splitImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/split.png").createImage();
+  private final Image fitToWin24 = CorePlugin.getImageDescriptor(
+      "/icons/24/fit_to_win.png").createImage();
+  private final Image calculator24 = CorePlugin.getImageDescriptor(
+      "/icons/24/calculator.png").createImage();
+  private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
+      .getImageData(), 0, 0);
+  private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
+      .getImageData(), 0, 0);
+  private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
+      merge_1Img16.getImageData(), 0, 0);
+  private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
+      merge_2Img16.getImageData(), 0, 0);
+  
+  /** drag/drop cursors
+   * 
+   */
+  private final Cursor removeCursor = new Cursor(Display.getDefault(),
+      removeImg16.getImageData(), 0, 0);
+  private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
+      handFistImg16.getImageData(), 0, 0);
+  private final Cursor resizeCursor = new Cursor(Display.getDefault(),
+      SWT.CURSOR_SIZEWE);
+  private final Cursor splitCursor = new Cursor(Display.getDefault(),
+      cut_1Img16.getImageData(), 0, 0);
+  
+  
+  private final JFreeChart chart;
+  private CustomChartComposite chartComposite;
+  private Zone dragZone;
+  long dragZoneStartBefore = -1;
+  long dragZoneEndBefore = -1;
+  private double dragStartX = -1;
+  private boolean onDrag = false;
+
+  private boolean resizeStart = false;
+
+  private boolean resizeEnd = false;
+
+  private Zone adding = null;
+
+  private Zone merge_1 = null;
+
+  private Zone merge_2 = null;
+
+  private final ColorProvider colorProvider;
+
+  private final ZoneSlicer zoneSlicer;
+
+  private final TimeSeries xySeries;
+
+  private final ZoneUndoRedoProvider undoRedoProvider;
+  private final Runnable deleteEvent;
+  private final Runnable resolveAmbiguityEvent;
+
+  private ZoneChart(final Composite parent, final JFreeChart xylineChart,
+      final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
+      final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
+      final TimeSeries xySeries, final Runnable deleteEvent,
+      final Runnable resolveAmbiguityOperation)
+  {
+    super(parent, SWT.NONE);
+    this.undoRedoProvider = undoRedoProvider;
+    this.chart = xylineChart;
+    this.deleteEvent = deleteEvent;
+    this.resolveAmbiguityEvent = resolveAmbiguityOperation;
+    buildUI(xylineChart);
+
+    /**
+     * provide sorted instanceof array list, so we know we can easily get the first/last items
+     */
+    this.zones = new SortedArrayList();
+    this.zones.addAll(Arrays.asList(zones));
+    this.zoneMarkers.clear();
+    xylineChart.setAntiAlias(false);
+    this.colorProvider = colorProvider;
+    this.zoneSlicer = zoneSlicer;
+    this.xySeries = xySeries;
+
+    final XYPlot plot = (XYPlot) xylineChart.getPlot();
+    for (final Zone zone : zones)
+    {
+      addZoneMarker(plot, zone);
+    }
+  }
+
+  public void addZoneListener(final ZoneListener listener)
+  {
+    zoneListeners.add(listener);
+  }
+
+  private void addZoneMarker(final XYPlot plot, final Zone zone)
+  {
+    final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
+    mrk.setPaint(zone.getColor());
+    mrk.setAlpha(0.2f);
+    plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
+    zoneMarkers.put(zone, mrk);
+  }
+
+  private void buildUI(final JFreeChart xylineChart)
+  {
+    setLayout((new GridLayout(3, false)));
+    chartComposite = new CustomChartComposite(this, xylineChart);
+    chartComposite.setDomainZoomable(true);
+    chartComposite.setRangeZoomable(true);
+    final GridData data =
+        new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
+            | GridData.GRAB_VERTICAL);
+
+    data.verticalSpan = 4;
+
+    chartComposite.setLayoutData(data);
+    createToolbar(this);
+  }
+
+  public void clearZones()
+  {
+    zoneMarkers.clear();
+    zones.clear();
+
+    // and from the plot
+    final XYPlot thePlot = (XYPlot) chart.getPlot();
+    thePlot.clearDomainMarkers();
+  }
+
+  protected void createToolbar(final Composite col1)
   {
     final Button edit =
         createButton(this, SWT.TOGGLE, editImg24, "Edit", "Edit zones", null);
@@ -1530,7 +1450,7 @@ public class ZoneChart extends Composite
               "Delete cuts not in a leg", new SelectionAdapter()
               {
                 @Override
-                public void widgetSelected(SelectionEvent e)
+                public void widgetSelected(final SelectionEvent e)
                 {
                   deleteEvent.run();
                 }
@@ -1545,13 +1465,29 @@ public class ZoneChart extends Composite
               "Resolve Ambiguity", new SelectionAdapter()
               {
                 @Override
-                public void widgetSelected(SelectionEvent e)
+                public void widgetSelected(final SelectionEvent e)
                 {
                   resolveAmbiguityEvent.run();
                 }
               });
     }
 
+  }
+
+  public List<TimeSeriesDataItem> cutsFor(final Zone outerZone)
+  {
+    @SuppressWarnings("unchecked")
+    final List<TimeSeriesDataItem> items = xySeries.getItems();
+    final List<TimeSeriesDataItem> res = new ArrayList<TimeSeriesDataItem>();
+    for (final TimeSeriesDataItem item : items)
+    {
+      final long dtg = item.getPeriod().getMiddleMillisecond();
+      if (outerZone.getStart() <= dtg && outerZone.getEnd() >= dtg)
+      {
+        res.add(item);
+      }
+    }
+    return res;
   }
 
   @Override
@@ -1570,6 +1506,8 @@ public class ZoneChart extends Composite
     removeCursor.dispose();
     merge_1Img16.dispose();
     merge_2Img16.dispose();
+    cut_1Img16.dispose();
+    splitCursor.dispose();
 
     // and the 24px images
     editImg24.dispose();
@@ -1577,6 +1515,7 @@ public class ZoneChart extends Composite
     calculator24.dispose();
     zoomInImg24.dispose();
     mergeImg24.dispose();
+    splitImg24.dispose();
     super.dispose();
   }
 
@@ -1645,68 +1584,12 @@ public class ZoneChart extends Composite
 
   public List<ZoneListener> getZoneListeners()
   {
-    return new ArrayList<ZoneListener>(listeners);
+    return new ArrayList<ZoneListener>(zoneListeners);
   }
 
   public Zone[] getZones()
   {
     return zones.toArray(new Zone[zones.size()]);
-  }
-
-  public void removeZoneListener(final ZoneListener listener)
-  {
-    listeners.remove(listener);
-  }
-
-  public void setMode(final EditMode mode)
-  {
-    this.mode = mode;
-  }
-
-  final public void setZones(final List<Zone> newZones)
-  {
-    final XYPlot plot = (XYPlot) chart.getPlot();
-    for (final Zone zone : newZones)
-    {
-      // do we already have this zone?
-      boolean found = false;
-      for (final Zone oz : zones)
-      {
-        if (oz.matches(zone))
-        {
-          // yes, we don't need to recreate it
-          found = true;
-          break;
-        }
-      }
-      if (!found)
-      {
-        addZoneMarker(plot, zone);
-        zones.add(zone);
-      }
-    }
-
-    // and sort them
-  }
-
-  private long
-      toNearDomainValue(final long x, final boolean ignoreZeroDistence)
-  {
-    long distance = Long.MAX_VALUE;
-    int idx = -1;
-    for (int c = 0; c < xySeries.getItemCount(); c++)
-    {
-      final RegularTimePeriod timePeriod = xySeries.getTimePeriod(c);
-
-      final long cdistance = Math.abs(timePeriod.getLastMillisecond() - x);
-      if ((!ignoreZeroDistence || cdistance != 0) && cdistance < distance)
-      {
-        idx = c;
-        distance = cdistance;
-      }
-    }
-    return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
-        .getLastMillisecond();
   }
 
   /**
@@ -1877,5 +1760,132 @@ public class ZoneChart extends Composite
       }
     });
     undoRedoProvider.execute(reversOp);
+  }
+
+  public Zone periodToCutFor(final List<TimeSeriesDataItem> cutsInZone,
+      final long timeOfNearestCut)
+  {
+    Zone res = null;
+
+    // ok, check we have enough cuts
+    final int numCuts = cutsInZone.size();
+
+    if (numCuts >= 5)
+    {
+      // ok, we've got enough to leave some either side of the removed cut
+      // find out the index of the one nearest to the cut
+      int indexOfCut = 0;
+      for (final TimeSeriesDataItem cut : cutsInZone)
+      {
+        if (cut.getPeriod().getMiddleMillisecond() == timeOfNearestCut)
+        {
+          break;
+        }
+        else
+        {
+          indexOfCut++;
+        }
+      }
+
+      // ok, check that's not the first two or the last two
+      if (indexOfCut >= 2 && indexOfCut < numCuts - 2)
+      {
+        // ok, we can work with it. What's the time coverage of the central portion?
+        final long endOfRegion =
+            cutsInZone.get(numCuts - 2).getPeriod().getMiddleMillisecond();
+        final long startOfRegion =
+            cutsInZone.get(1).getPeriod().getMiddleMillisecond();
+
+        final long period = endOfRegion - startOfRegion;
+
+        // check we have at least 2 minutes in centre
+        final long halfInterval = 1 * 60 * 1000;
+        final long interval = 2 * halfInterval;
+
+        if (period > interval)
+        {
+          long endOfBefore = -1;
+          long startOfAfter = -1;
+
+          for (int i = 2; i < numCuts - 2; i++)
+          {
+            final long thisTime =
+                cutsInZone.get(i).getPeriod().getMiddleMillisecond();
+            if (thisTime <= timeOfNearestCut - halfInterval)
+            {
+              endOfBefore = thisTime;
+            }
+            else if (thisTime >= timeOfNearestCut + halfInterval)
+            {
+              startOfAfter = thisTime;
+              break;
+            }
+          }
+
+          if (endOfBefore != -1 && startOfAfter != -1)
+          {
+            final Color zoneColor = colorProvider.getZoneColor();
+            res = new Zone(endOfBefore, startOfAfter, zoneColor);
+          }
+        }
+      }
+    }
+    return res;
+  }
+
+  public void removeZoneListener(final ZoneListener listener)
+  {
+    zoneListeners.remove(listener);
+  }
+
+  public void setMode(final EditMode mode)
+  {
+    this.mode = mode;
+  }
+
+  final public void setZones(final List<Zone> newZones)
+  {
+    final XYPlot plot = (XYPlot) chart.getPlot();
+    for (final Zone zone : newZones)
+    {
+      // do we already have this zone?
+      boolean found = false;
+      for (final Zone oz : zones)
+      {
+        if (oz.matches(zone))
+        {
+          // yes, we don't need to recreate it
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+      {
+        addZoneMarker(plot, zone);
+        zones.add(zone);
+      }
+    }
+
+    // and sort them
+  }
+
+  private long
+      toNearDomainValue(final long x, final boolean ignoreZeroDistence)
+  {
+    long distance = Long.MAX_VALUE;
+    int idx = -1;
+    for (int c = 0; c < xySeries.getItemCount(); c++)
+    {
+      final RegularTimePeriod timePeriod = xySeries.getTimePeriod(c);
+
+      final long cdistance = Math.abs(timePeriod.getLastMillisecond() - x);
+      if ((!ignoreZeroDistence || cdistance != 0) && cdistance < distance)
+      {
+        idx = c;
+        distance = cdistance;
+      }
+    }
+    return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
+        .getLastMillisecond();
   }
 }
