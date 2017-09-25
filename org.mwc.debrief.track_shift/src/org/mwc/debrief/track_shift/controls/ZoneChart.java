@@ -1220,6 +1220,8 @@ public class ZoneChart extends Composite
       "/icons/16/merge_2.png").createImage();
   private final Image cut_1Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/cut.png").createImage();
+  private final Image split_Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/auto_split-bw-16.png").createImage();
 
   /** 24px images for the buttons */
   private final Image editImg24 = CorePlugin.getImageDescriptor(
@@ -1232,8 +1234,14 @@ public class ZoneChart extends Composite
       "/icons/24/split.png").createImage();
   private final Image fitToWin24 = CorePlugin.getImageDescriptor(
       "/icons/24/fit_to_win.png").createImage();
-  private final Image calculator24 = CorePlugin.getImageDescriptor(
-      "/icons/24/calculator.png").createImage();
+  private final Image autoSlice24 = CorePlugin.getImageDescriptor(
+      "/icons/24/auto_slice.png").createImage();
+  private final Image autoResolve24 = CorePlugin.getImageDescriptor(
+      "/icons/24/auto_resolve.png").createImage();
+  private final Image autoDelete24 = CorePlugin.getImageDescriptor(
+      "/icons/24/auto_delete.png").createImage();
+  
+  
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
   private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
@@ -1254,7 +1262,7 @@ public class ZoneChart extends Composite
   private final Cursor resizeCursor = new Cursor(Display.getDefault(),
       SWT.CURSOR_SIZEWE);
   private final Cursor splitCursor = new Cursor(Display.getDefault(),
-      cut_1Img16.getImageData(), 0, 0);
+      split_Img16.getImageData(), 0, 0);
 
   private final JFreeChart chart;
   private CustomChartComposite chartComposite;
@@ -1427,7 +1435,7 @@ public class ZoneChart extends Composite
             });
     @SuppressWarnings("unused")
     final Button calculate =
-        createButton(col1, SWT.PUSH, calculator24, "Slice",
+        createButton(col1, SWT.PUSH, autoSlice24, "Slice",
             "Automatically slice zones", new Runnable()
             {
               @Override
@@ -1449,7 +1457,7 @@ public class ZoneChart extends Composite
     {
       @SuppressWarnings("unused")
       final Button delete =
-          createButton(col1, SWT.PUSH, calculator24, "Delete",
+          createButton(col1, SWT.PUSH, autoDelete24, "Delete",
               "Delete cuts not in a leg", deleteEvent);
 
     }
@@ -1457,7 +1465,7 @@ public class ZoneChart extends Composite
     {
       @SuppressWarnings("unused")
       final Button resolve =
-          createButton(col1, SWT.PUSH, calculator24, "Resolve",
+          createButton(col1, SWT.PUSH, autoResolve24, "Resolve",
               "Resolve Ambiguity", resolveAmbiguityEvent);
     }
 
@@ -1496,15 +1504,20 @@ public class ZoneChart extends Composite
     merge_1Img16.dispose();
     merge_2Img16.dispose();
     cut_1Img16.dispose();
+    split_Img16.dispose();
     splitCursor.dispose();
+    
 
     // and the 24px images
     editImg24.dispose();
     fitToWin24.dispose();
-    calculator24.dispose();
     zoomInImg24.dispose();
     mergeImg24.dispose();
     splitImg24.dispose();
+    autoSlice24.dispose();
+    autoResolve24.dispose();
+    autoDelete24.dispose();
+    
     super.dispose();
   }
 
