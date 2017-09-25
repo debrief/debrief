@@ -1405,19 +1405,20 @@ public class ZoneChart extends Composite
   }
 
   private static Button createButton(final Composite parent, final int mode,
-      final Image image, final String text, final String description, final SelectionAdapter event)
+      final Image image, final String text, final String description,
+      final SelectionAdapter event)
   {
     final Button btn = new Button(parent, mode);
     btn.setAlignment(SWT.LEFT);
     btn.setText(text);
     btn.setToolTipText(description);
-    
-    if(event != null)
+
+    if (event != null)
     {
       btn.addSelectionListener(event);
     }
-    
-    // 
+
+    //
     final GridData layout = new GridData(GridData.FILL_VERTICAL);
     layout.widthHint = 100;
     btn.setLayoutData(layout);
@@ -1440,11 +1441,16 @@ public class ZoneChart extends Composite
 
   protected void createToolbar(Composite col1)
   {
-    final Button edit = createButton(this, SWT.TOGGLE, editImg24, "Edit", "Edit zones", null);
-    final Button zoom = createButton(this, SWT.TOGGLE, zoomInImg24, "Zoom", "Zoom in on plot", null);
-    final Button merge = createButton(this, SWT.TOGGLE, mergeImg24, "Merge", "Merge zones", null);
-    final Button split = createButton(this, SWT.TOGGLE, splitImg24, "Split", "Split zones", null);
-    
+    final Button edit =
+        createButton(this, SWT.TOGGLE, editImg24, "Edit", "Edit zones", null);
+    final Button zoom =
+        createButton(this, SWT.TOGGLE, zoomInImg24, "Zoom", "Zoom in on plot",
+            null);
+    final Button merge =
+        createButton(this, SWT.TOGGLE, mergeImg24, "Merge", "Merge zones", null);
+    final Button split =
+        createButton(this, SWT.TOGGLE, splitImg24, "Split", "Split zones", null);
+
     // start off in edit mode
     edit.setSelection(true);
 
@@ -1484,60 +1490,66 @@ public class ZoneChart extends Composite
         setMode(ZoneChart.EditMode.SPLIT);
       }
     });
-    
+
     @SuppressWarnings("unused")
     final Button fitToWin =
-        createButton(this, SWT.PUSH, fitToWin24, "Reveal", "Reveal all zones", new SelectionAdapter()
-        {
-          @Override
-          public void widgetSelected(final SelectionEvent e)
-          {
-            chartComposite.fitToData();
-          }
-        });
+        createButton(this, SWT.PUSH, fitToWin24, "Reveal", "Reveal all zones",
+            new SelectionAdapter()
+            {
+              @Override
+              public void widgetSelected(final SelectionEvent e)
+              {
+                chartComposite.fitToData();
+              }
+            });
     @SuppressWarnings("unused")
     final Button calculate =
-        createButton(this, SWT.PUSH, calculator24, "Auto-Slice", "Automatically slice zones", new SelectionAdapter()
-        {
-          @Override
-          public void widgetSelected(final SelectionEvent e)
-          {
-            if (zoneSlicer == null)
+        createButton(this, SWT.PUSH, calculator24, "Slice",
+            "Automatically slice zones", new SelectionAdapter()
             {
-              CorePlugin.showMessage("Manage legs", "Slicing happens here");
-            }
-            else
-            {
-              // ok, do the slicing
-              performSlicing();
-            }
-          }
-        });
+              @Override
+              public void widgetSelected(final SelectionEvent e)
+              {
+                if (zoneSlicer == null)
+                {
+                  CorePlugin.showMessage("Manage legs", "Slicing happens here");
+                }
+                else
+                {
+                  // ok, do the slicing
+                  performSlicing();
+                }
+              }
+            });
 
     if (deleteEvent != null)
     {
       @SuppressWarnings("unused")
-      final Button delete = createButton(this, SWT.PUSH, null, "Delete", "Delete cuts not in a leg", new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-          deleteEvent.run();
-        }
-      });
+      final Button delete =
+          createButton(this, SWT.PUSH, calculator24, "Delete",
+              "Delete cuts not in a leg", new SelectionAdapter()
+              {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                  deleteEvent.run();
+                }
+              });
 
     }
     if (resolveAmbiguityEvent != null)
     {
       @SuppressWarnings("unused")
-      final Button resolve = createButton(this, SWT.PUSH, null, "Resolve", "Resolve Ambiguity", new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-          resolveAmbiguityEvent.run();
-        }
-      });
+      final Button resolve =
+          createButton(this, SWT.PUSH, calculator24, "Resolve",
+              "Resolve Ambiguity", new SelectionAdapter()
+              {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                  resolveAmbiguityEvent.run();
+                }
+              });
     }
 
   }
