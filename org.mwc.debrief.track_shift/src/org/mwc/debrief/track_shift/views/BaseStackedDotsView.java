@@ -765,8 +765,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     contributeToActionBars();
 
     // we will also listen out for zone changes
-    @SuppressWarnings("unused")
-    final ZoneChart.ZoneListener ownshipListener = getOwnshipListener();
     final ZoneChart.ZoneListener targetListener = getTargetListener();
 
     final Zone[] osZones = new ZoneChart.Zone[]
@@ -1394,11 +1392,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Runnable getDeleteCutsOperation()
   {
     return null;
-  }
-
-  private ZoneChart.ZoneListener getOwnshipListener()
-  {
-    return new ZoneChart.ZoneAdapter();
   }
 
   abstract protected ZoneSlicer getOwnshipZoneSlicer(
