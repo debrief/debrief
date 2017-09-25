@@ -1168,7 +1168,7 @@ public class ZoneChart extends Composite
 
   private static Button createButton(final Composite parent, final int mode,
       final Image image, final String text, final String description,
-      final SelectionAdapter event)
+      final Runnable event)
   {
     final Button btn = new Button(parent, mode);
     btn.setAlignment(SWT.LEFT);
@@ -1177,7 +1177,14 @@ public class ZoneChart extends Composite
 
     if (event != null)
     {
-      btn.addSelectionListener(event);
+      btn.addSelectionListener(new SelectionAdapter()
+      {
+        @Override
+        public void widgetSelected(final SelectionEvent e)
+        {
+          event.run();
+        }
+      });
     }
 
     //
@@ -1192,16 +1199,13 @@ public class ZoneChart extends Composite
     return btn;
   }
 
-
   private final List<Zone> zones;
   private final Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
   private EditMode mode = EditMode.EDIT;
   private volatile List<ZoneListener> zoneListeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
-  
-  
-  
+
   private final Image handImg16 = CorePlugin.getImageDescriptor(
       "/icons/16/hand.png").createImage();
   private final Image addImg16 = CorePlugin.getImageDescriptor(
@@ -1238,8 +1242,9 @@ public class ZoneChart extends Composite
       merge_1Img16.getImageData(), 0, 0);
   private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
       merge_2Img16.getImageData(), 0, 0);
-  
-  /** drag/drop cursors
+
+  /**
+   * drag/drop cursors
    * 
    */
   private final Cursor removeCursor = new Cursor(Display.getDefault(),
@@ -1250,8 +1255,7 @@ public class ZoneChart extends Composite
       SWT.CURSOR_SIZEWE);
   private final Cursor splitCursor = new Cursor(Display.getDefault(),
       cut_1Img16.getImageData(), 0, 0);
-  
-  
+
   private final JFreeChart chart;
   private CustomChartComposite chartComposite;
   private Zone dragZone;
@@ -1350,11 +1354,12 @@ public class ZoneChart extends Composite
     final XYPlot thePlot = (XYPlot) chart.getPlot();
     thePlot.clearDomainMarkers();
   }
-  
-  /** capture data necessary for set of radio buttons
+
+  /**
+   * capture data necessary for set of radio buttons
    * 
    * @author Ian
-   *
+   * 
    */
   private class RadioEvent extends SelectionAdapter
   {
@@ -1362,18 +1367,19 @@ public class ZoneChart extends Composite
     final private List<Button> list;
     final private Button myButton;
     final private EditMode myZone;
-    
-    private RadioEvent(final List<Button> btnList, final Button selected, final EditMode editMode)
+
+    private RadioEvent(final List<Button> btnList, final Button selected,
+        final EditMode editMode)
     {
       list = btnList;
       myButton = selected;
       myZone = editMode;
     }
-    
+
     @Override
     public void widgetSelected(SelectionEvent e)
     {
-      for(Button btn: list)
+      for (Button btn : list)
       {
         btn.setSelection(btn.equals(myButton));
       }
@@ -1393,13 +1399,13 @@ public class ZoneChart extends Composite
         createButton(col1, SWT.TOGGLE, mergeImg24, "Merge", "Merge zones", null);
     final Button split =
         createButton(col1, SWT.TOGGLE, splitImg24, "Split", "Split zones", null);
-    
+
     List<Button> buttons = new ArrayList<Button>();
     buttons.add(edit);
     buttons.add(zoom);
     buttons.add(merge);
     buttons.add(split);
-
+    
     // start off in edit mode
     edit.setSelection(true);
 
@@ -1407,14 +1413,14 @@ public class ZoneChart extends Composite
     zoom.addSelectionListener(new RadioEvent(buttons, zoom, EditMode.ZOOM));
     merge.addSelectionListener(new RadioEvent(buttons, merge, EditMode.MERGE));
     split.addSelectionListener(new RadioEvent(buttons, split, EditMode.SPLIT));
-    
+
     @SuppressWarnings("unused")
     final Button fitToWin =
         createButton(col1, SWT.PUSH, fitToWin24, "Reveal", "Reveal all zones",
-            new SelectionAdapter()
+            new Runnable()
             {
               @Override
-              public void widgetSelected(final SelectionEvent e)
+              public void run()
               {
                 chartComposite.fitToData();
               }
@@ -1422,10 +1428,10 @@ public class ZoneChart extends Composite
     @SuppressWarnings("unused")
     final Button calculate =
         createButton(col1, SWT.PUSH, calculator24, "Slice",
-            "Automatically slice zones", new SelectionAdapter()
+            "Automatically slice zones", new Runnable()
             {
               @Override
-              public void widgetSelected(final SelectionEvent e)
+              public void run()
               {
                 if (zoneSlicer == null)
                 {
@@ -1444,14 +1450,7 @@ public class ZoneChart extends Composite
       @SuppressWarnings("unused")
       final Button delete =
           createButton(col1, SWT.PUSH, calculator24, "Delete",
-              "Delete cuts not in a leg", new SelectionAdapter()
-              {
-                @Override
-                public void widgetSelected(final SelectionEvent e)
-                {
-                  deleteEvent.run();
-                }
-              });
+              "Delete cuts not in a leg", deleteEvent);
 
     }
     if (resolveAmbiguityEvent != null)
@@ -1459,14 +1458,7 @@ public class ZoneChart extends Composite
       @SuppressWarnings("unused")
       final Button resolve =
           createButton(col1, SWT.PUSH, calculator24, "Resolve",
-              "Resolve Ambiguity", new SelectionAdapter()
-              {
-                @Override
-                public void widgetSelected(final SelectionEvent e)
-                {
-                  resolveAmbiguityEvent.run();
-                }
-              });
+              "Resolve Ambiguity", resolveAmbiguityEvent);
     }
 
   }
