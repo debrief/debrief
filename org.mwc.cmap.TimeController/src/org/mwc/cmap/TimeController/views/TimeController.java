@@ -2251,6 +2251,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         .getImageDescriptor(ICON_FILTER_TO_PERIOD));
     _filterToSelectionAction
         .setToolTipText("Filter plot data to selected time period");
+    _filterToSelectionAction.setChecked(true);
     menuManager.add(_filterToSelectionAction);
     toolManager.add(_filterToSelectionAction);
 
