@@ -733,6 +733,7 @@ public class AmbiguityResolver
 
     final Enumeration<Editable> enumer = sensor.elements();
     Double lastDelta = null;
+    Double lastBearing = null;
     HiResDate lastTime = null;
     LegOfCuts thisLeg = null;
     LegOfCuts thisZig = null;
@@ -781,13 +782,25 @@ public class AmbiguityResolver
               time.getDate().getTime() - lastTime.getDate().getTime();
           final long timeDeltaSecs = timeDeltaMillis / 1000L;
 
-          final double rate = Math.abs(valueDelta / timeDeltaSecs);
+          final double gapRate = Math.abs(valueDelta / timeDeltaSecs);
+
+          // and the delta bearing rate
+          double brgDelta = Math.abs(cut.getBearing() - lastBearing);
+          if (brgDelta > 180)
+          {
+            brgDelta = 360 - brgDelta;
+          }
+          double brgRate = brgDelta / timeDeltaSecs;
+
+          // ok, combine the two rates
+          final double combinedRate = gapRate + brgRate;
 
           if (scores != null)
           {
             final FixedMillisecond sec =
                 new FixedMillisecond(time.getDate().getTime());
-            final TimeSeriesDataItem item = new TimeSeriesDataItem(sec, rate);
+            final TimeSeriesDataItem item =
+                new TimeSeriesDataItem(sec, combinedRate);
             scores.add(item);
           }
 
@@ -795,7 +808,10 @@ public class AmbiguityResolver
           final String stats =
               timeStr + " brg:" + (int) cut.getBearing() + " ambig:"
                   + (int) cut.getAmbiguousBearing() + " step (secs)"
-                  + (int) timeDeltaSecs + " rate:" + rate;
+                  + (int) timeDeltaSecs + " gap delta rate:" + gapRate
+                  + " lastBrg:" + lastBearing.intValue() + " brg:"
+                  + ((int) cut.getBearing()) + " brg delta:" + brgRate
+                  + " combined:" + combinedRate;
           doLog(logger, stats);
 
           // if(time.getDate().getTime() == 260000)
@@ -803,7 +819,7 @@ public class AmbiguityResolver
           // System.out.println("here");
           // }
 
-          if (rate > minZig)
+          if (combinedRate > minZig)
           {
             // ok, we were on a straight leg
             if (thisLeg != null)
@@ -911,6 +927,7 @@ public class AmbiguityResolver
         }
         lastDelta = delta;
         lastTime = time;
+        lastBearing = cut.getBearing();
       }
 
     }
