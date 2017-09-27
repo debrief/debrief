@@ -452,7 +452,7 @@ public class AmbiguityResolver
 
       assertNotNull("produced slices", sliced);
       assertEquals("correct legs", 3, sliced.legs.size());
-      assertEquals("correct turning cuts", 8, sliced.zigCuts.size());
+      assertEquals("correct turning cuts", 19, sliced.zigCuts.size());
     }
 
     public void testWeighting()
