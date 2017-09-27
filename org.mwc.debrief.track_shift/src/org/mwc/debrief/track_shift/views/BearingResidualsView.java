@@ -327,6 +327,11 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       _resolver = resolver;
       _legs = legs;
     }
+    
+    private void fireModified()
+    {
+      _ourLayersSubject.fireModified(_myHelper.getPrimaryTrack());
+    }
 
     @Override
     public IStatus
@@ -338,6 +343,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       // and refresh
       updateData(true);
 
+      fireModified();
+      
       final IStatus res =
           new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
               "Resolve legs successful", null);
@@ -356,6 +363,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
       // and refresh the UI
       updateData(true);
+      
+      fireModified();
 
       final IStatus res =
           new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
