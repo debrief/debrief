@@ -1800,6 +1800,9 @@ public class TrackWrapper_Test extends TestCase
     final SensorWrapper sw = new SensorWrapper("some sensor");
     sw.setHost(tw);
 
+    // attach the sensor to the host
+    tw.add(sw);
+    
     final SensorContactWrapper[] items = new SensorContactWrapper[7];
 
     items[0] = createSensorItem(tw, sw, 110000);
