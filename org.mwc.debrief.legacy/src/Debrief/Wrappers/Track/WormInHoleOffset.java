@@ -23,6 +23,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
@@ -297,7 +298,18 @@ public class WormInHoleOffset
 			return res;
 
 		// get the position at the time, we need it to sort out the speed
-		final FixWrapper currFix = (FixWrapper) track.getNearestTo(dtg)[0];
+		Watchable[] matches = track.getNearestTo(dtg);
+		
+		// did we find any fixes?
+		// NOTE: we've already done the lessThan/greaterThan operation.  But,
+		// getNearestTo only returns visible fixes.  So, all the fixes
+		// may actually be hidden.
+		if(matches == null || matches.length == 0)
+		{
+		  return res;
+		}
+		
+		final FixWrapper currFix = (FixWrapper)matches[0];  
 
 		// start off by bracketing the time. work back along the track legs until we
 		// find the two positions either side
