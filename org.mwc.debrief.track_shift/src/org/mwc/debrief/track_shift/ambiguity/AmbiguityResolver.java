@@ -118,22 +118,22 @@ public class AmbiguityResolver
 
     public void testTrim()
     {
-        assertEquals("trim as normal", 5d, trim(365, null));
-        assertEquals("trim as normal", -5d, trim(-365, null));
-        assertEquals("trim as normal", 65d, trim(65, null));
-        assertEquals("trim as normal", -65d, trim(-65, null));
-        assertEquals("trim as normal", -10d, trim(-370, null));
-        
-        // ok, give it a target value, and check we're in the correct domain
-        assertEquals("trim as normal", 365d, trim(365, 340d));
-        assertEquals("trim as normal", -300d, trim(-300, -340d));
+      assertEquals("trim as normal", 5d, trim(365, null));
+      assertEquals("trim as normal", -5d, trim(-365, null));
+      assertEquals("trim as normal", 65d, trim(65, null));
+      assertEquals("trim as normal", -65d, trim(-65, null));
+      assertEquals("trim as normal", -10d, trim(-370, null));
 
-        // ooh, what if we're looking for a high value,
-        // but only receive a low value
-        assertEquals("trim as normal", 365d, trim(5, 340d));
-        assertEquals("trim as normal", -370d, trim(-10, -340d));
+      // ok, give it a target value, and check we're in the correct domain
+      assertEquals("trim as normal", 365d, trim(365, 340d));
+      assertEquals("trim as normal", -300d, trim(-300, -340d));
+
+      // ooh, what if we're looking for a high value,
+      // but only receive a low value
+      assertEquals("trim as normal", 365d, trim(5, 340d));
+      assertEquals("trim as normal", -370d, trim(-10, -340d));
     }
-    
+
     public void testGetCurve() throws FileNotFoundException
     {
       final LegOfCuts leg4 = new LegOfCuts();
@@ -531,36 +531,26 @@ public class AmbiguityResolver
   private static double trim(final double val, final Double target)
   {
     double res = val;
-    if (target == null || target > -270)
-    {
-      while (res < -360d)
-      {
-        res += 360d;
-      }
-    }
-    if (target == null || target < 270)
-    {
-      while (res >= 360d)
-      {
-        res -= 360d;
-      }
-    }
     
+    // ok, get trimming
+    if ((target == null || target > -270) && (res < -360d))
+    {
+      res += 360d;
+    }
+    if ((target == null || target < 270) && (res >= 360d))
+    {
+      res -= 360d;
+    }
+
     // ok, special cases. We're looking for a value near 360, but we've only got
     // the value near 050
-    if (target != null && target > 270)
+    if ((target != null && target > 270) && (res <= 270d))
     {
-      while (res <= 270d)
-      {
-        res += 360d;
-      }
+      res += 360d;
     }
-    if (target != null && target < -270)
+    if ((target != null && target < -270) && (res >= -270d))
     {
-      while (res >= -270d)
-      {
-        res -= 360d;
-      }
+      res -= 360d;
     }
     return res;
   }
@@ -704,7 +694,7 @@ public class AmbiguityResolver
           continue;
         }
 
-        // get the slope scores we know we need.  Note: when we generate the
+        // get the slope scores we know we need. Note: when we generate the
         // value for the second leg, we use our knowledge of the end of
         // the first leg to ensure we keep the resulting value in
         // roughly the correct domain
