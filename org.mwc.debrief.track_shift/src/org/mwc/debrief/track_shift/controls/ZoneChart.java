@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.jfree.chart.ChartFactory;
@@ -430,6 +431,10 @@ public class ZoneChart extends Composite
         {
           break;
         }
+        case SWITCH:
+        {
+          break;
+        }
         case MERGE:
         {
           this.setCursor(null);
@@ -537,6 +542,21 @@ public class ZoneChart extends Composite
               {
                 setCursor(merge_1 == null || merge_1 == zone ? merge_1Cursor
                     : merge_2Cursor);
+                break;
+              }
+            }
+            break;
+          }
+          case SWITCH:
+          {
+            this.setCursor(null);
+            for (final Zone zone : zones)
+            {
+              // find the drag area zones
+              if (findPixelX(this, zone.start) <= currentX
+                  && findPixelX(this, zone.end) >= currentX)
+              {
+                setCursor(switchCursor);
                 break;
               }
             }
@@ -667,6 +687,24 @@ public class ZoneChart extends Composite
 
         switch (mode)
         {
+          case SWITCH:
+          {
+            final double currentX = event.x;// findDomainX(this, event.x);
+
+            for (final Zone zone : zones)
+            {
+              // find the drag area zones
+              if (findPixelX(this, zone.start) <= currentX
+                  && findPixelX(this, zone.end) >= currentX)
+              {
+                // ok, reverse the cuts in this zone
+                final AbstractOperation switchOp =
+                    new SwitchCutsOperation(zone);
+                undoRedoProvider.execute(switchOp);
+                break;
+              }
+            }
+          }
           case ZOOM:
           {
             // we fire super.mouseUp at the end of the method, we don't
@@ -786,6 +824,44 @@ public class ZoneChart extends Composite
       }
     }
 
+    private class SwitchCutsOperation extends AbstractOperation
+    {
+
+      private Zone _zone;
+
+      public SwitchCutsOperation(Zone zone)
+      {
+        super("Switch cuts for this zone");
+        _zone = zone;
+      }
+
+      @Override
+      public IStatus execute(final IProgressMonitor monitor,
+          final IAdaptable info) throws ExecutionException
+      {
+        return redo(monitor, info);
+      }
+
+      @Override
+      public IStatus
+          redo(final IProgressMonitor monitor, final IAdaptable info)
+              throws ExecutionException
+      {
+        // ok, loop through the cuts in this zone.
+        zoneSlicer.switchAmbiguousCuts(_zone);
+        return Status.OK_STATUS;
+      }
+
+      @Override
+      public IStatus
+          undo(final IProgressMonitor monitor, final IAdaptable info)
+              throws ExecutionException
+      {
+        zoneSlicer.switchAmbiguousCuts(_zone);
+        return Status.OK_STATUS;
+      }
+    }
+
     private boolean resize(final Zone zone, final double startx)
     {
       if (resizeStart)
@@ -859,7 +935,7 @@ public class ZoneChart extends Composite
 
   public enum EditMode
   {
-    EDIT, ZOOM, MERGE, SPLIT
+    EDIT, ZOOM, MERGE, SPLIT, SWITCH
   }
 
   private static class SortedArrayList extends ArrayList<Zone>
@@ -934,6 +1010,11 @@ public class ZoneChart extends Composite
     public long getStart()
     {
       return start;
+    }
+
+    public boolean contains(final long other)
+    {
+      return other >= start && other <= end;
     }
 
     /**
@@ -1030,6 +1111,12 @@ public class ZoneChart extends Composite
      * @return list of zones
      */
     List<Zone> performSlicing();
+
+    /**
+     * switch over any TA bearings in this zone
+     * 
+     */
+    void switchAmbiguousCuts(Zone zone);
   }
 
   public static ZoneChart create(final ZoneChartConfig config,
@@ -1222,6 +1309,8 @@ public class ZoneChart extends Composite
       "/icons/16/cut.png").createImage();
   private final Image split_Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/auto_split-bw-16.png").createImage();
+  private final Image switch_Img16 = CorePlugin.getImageDescriptor(
+      "/icons/16/arrows.png").createImage();
 
   /** 24px images for the buttons */
   private final Image editImg24 = CorePlugin.getImageDescriptor(
@@ -1232,6 +1321,8 @@ public class ZoneChart extends Composite
       "/icons/24/merge.png").createImage();
   private final Image splitImg24 = CorePlugin.getImageDescriptor(
       "/icons/24/split.png").createImage();
+  private final Image switchImg24 = CorePlugin.getImageDescriptor(
+      "/icons/24/x_section.png").createImage();
   private final Image fitToWin24 = CorePlugin.getImageDescriptor(
       "/icons/24/fit_to_win.png").createImage();
   private final Image autoSlice24 = CorePlugin.getImageDescriptor(
@@ -1240,8 +1331,7 @@ public class ZoneChart extends Composite
       "/icons/24/auto_resolve.png").createImage();
   private final Image autoDelete24 = CorePlugin.getImageDescriptor(
       "/icons/24/auto_delete.png").createImage();
-  
-  
+
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
   private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
@@ -1250,6 +1340,8 @@ public class ZoneChart extends Composite
       merge_1Img16.getImageData(), 0, 0);
   private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
       merge_2Img16.getImageData(), 0, 0);
+  private final Cursor switchCursor = new Cursor(Display.getDefault(),
+      switch_Img16.getImageData(), 0, 0);
 
   /**
    * drag/drop cursors
@@ -1347,7 +1439,7 @@ public class ZoneChart extends Composite
         new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
             | GridData.GRAB_VERTICAL);
 
-    data.verticalSpan = 4;
+    data.verticalSpan = 5;
 
     chartComposite.setLayoutData(data);
     createToolbar(this);
@@ -1407,13 +1499,17 @@ public class ZoneChart extends Composite
         createButton(col1, SWT.TOGGLE, mergeImg24, "Merge", "Merge zones", null);
     final Button split =
         createButton(col1, SWT.TOGGLE, splitImg24, "Split", "Split zones", null);
+    final Button switcher =
+        createButton(col1, SWT.TOGGLE, switchImg24, "Switch",
+            "Switch leg to other TA bearing", null);
 
     List<Button> buttons = new ArrayList<Button>();
     buttons.add(edit);
     buttons.add(zoom);
     buttons.add(merge);
     buttons.add(split);
-    
+    buttons.add(switcher);
+
     // start off in edit mode
     edit.setSelection(true);
 
@@ -1421,6 +1517,12 @@ public class ZoneChart extends Composite
     zoom.addSelectionListener(new RadioEvent(buttons, zoom, EditMode.ZOOM));
     merge.addSelectionListener(new RadioEvent(buttons, merge, EditMode.MERGE));
     split.addSelectionListener(new RadioEvent(buttons, split, EditMode.SPLIT));
+    switcher.addSelectionListener(new RadioEvent(buttons, switcher,
+        EditMode.SWITCH));
+
+    // introduce a placeholder, to separate the mode toggles from the command ones
+    @SuppressWarnings("unused")
+    final Label placeHolder = new Label(col1, SWT.NONE);
 
     @SuppressWarnings("unused")
     final Button fitToWin =
@@ -1495,8 +1597,10 @@ public class ZoneChart extends Composite
     handCursor.dispose();
     handCursorDrag.dispose();
     resizeCursor.dispose();
+    switchCursor.dispose();
     handImg16.dispose();
     handFistImg16.dispose();
+    switch_Img16.dispose();
     addCursor.dispose();
     addImg16.dispose();
     removeImg16.dispose();
@@ -1506,7 +1610,6 @@ public class ZoneChart extends Composite
     cut_1Img16.dispose();
     split_Img16.dispose();
     splitCursor.dispose();
-    
 
     // and the 24px images
     editImg24.dispose();
@@ -1514,10 +1617,11 @@ public class ZoneChart extends Composite
     zoomInImg24.dispose();
     mergeImg24.dispose();
     splitImg24.dispose();
+    switchImg24.dispose();
     autoSlice24.dispose();
     autoResolve24.dispose();
     autoDelete24.dispose();
-    
+
     super.dispose();
   }
 
