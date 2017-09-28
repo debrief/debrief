@@ -109,29 +109,13 @@ public class AmbiguityResolver
 
       // sort out the sensors
       importer.storePendingSensors();
-      assertEquals("has some layers", 3, theLayers.size());
 
       // get the sensor track
       final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
+
+      assertNotNull("found sensor track", track);
+
       return track;
-    }
-
-    public void testTrim()
-    {
-      assertEquals("trim as normal", 5d, trim(365, null));
-      assertEquals("trim as normal", -5d, trim(-365, null));
-      assertEquals("trim as normal", 65d, trim(65, null));
-      assertEquals("trim as normal", -65d, trim(-65, null));
-      assertEquals("trim as normal", -10d, trim(-370, null));
-
-      // ok, give it a target value, and check we're in the correct domain
-      assertEquals("trim as normal", 365d, trim(365, 340d));
-      assertEquals("trim as normal", -300d, trim(-300, -340d));
-
-      // ooh, what if we're looking for a high value,
-      // but only receive a low value
-      assertEquals("trim as normal", 365d, trim(5, 340d));
-      assertEquals("trim as normal", -370d, trim(-10, -340d));
     }
 
     public void testGetCurve() throws FileNotFoundException
@@ -247,6 +231,43 @@ public class AmbiguityResolver
       assertEquals("correct value", -60, valueAt(240, curve), 0.01);
     }
 
+    public void testHandleWiggle() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks_hover_north.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensors", 2, track.getSensors().size());
+
+      final Enumeration<Editable> sensorList = track.getSensors().elements();
+      @SuppressWarnings("unused")
+      final SensorWrapper hmSensor = (SensorWrapper) sensorList.nextElement();
+      // make the sensor visible
+
+      final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
+      sensor.setVisible(true);
+
+      // check we have the correct sensor
+      assertEquals("correct name", "TA", sensor.getName());
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      final Logger logger = Logger.getLogger("Logger");
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res =
+          solver
+              .sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, logger, null);
+      final List<LegOfCuts> legs = res.legs;
+      final LegOfCuts zigs = res.zigCuts;
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 3, legs.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 10, zigs.size());
+    }
+
     public void testOnlyDitchVisible() throws FileNotFoundException
     {
       final TrackWrapper track = getData("Ambig_tracks2.rep");
@@ -288,7 +309,7 @@ public class AmbiguityResolver
       assertEquals("found correct number of zones", 8, legs.size());
 
       assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 17, zigs.size());
+      assertEquals("found correct number of zig cuts", 16, zigs.size());
     }
 
     public void testResolve() throws FileNotFoundException
@@ -455,6 +476,24 @@ public class AmbiguityResolver
       assertEquals("correct turning cuts", 19, sliced.zigCuts.size());
     }
 
+    public void testTrim()
+    {
+      assertEquals("trim as normal", 5d, trim(365, null));
+      assertEquals("trim as normal", -5d, trim(-365, null));
+      assertEquals("trim as normal", 65d, trim(65, null));
+      assertEquals("trim as normal", -65d, trim(-65, null));
+      assertEquals("trim as normal", -10d, trim(-370, null));
+
+      // ok, give it a target value, and check we're in the correct domain
+      assertEquals("trim as normal", 365d, trim(365, 340d));
+      assertEquals("trim as normal", -300d, trim(-300, -340d));
+
+      // ooh, what if we're looking for a high value,
+      // but only receive a low value
+      assertEquals("trim as normal", 365d, trim(5, 340d));
+      assertEquals("trim as normal", -370d, trim(-10, -340d));
+    }
+
     public void testWeighting()
     {
       final SensorWrapper sensor = new SensorWrapper("name");
@@ -518,6 +557,11 @@ public class AmbiguityResolver
     }
   }
 
+  private static boolean nearNorth(final double bearing)
+  {
+    return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
+  }
+
   /**
    * trim the supplied value to the 0..360 domain
    * 
@@ -531,7 +575,7 @@ public class AmbiguityResolver
   private static double trim(final double val, final Double target)
   {
     double res = val;
-    
+
     // ok, get trimming
     if ((target == null || target > -270) && (res < -360d))
     {
@@ -798,7 +842,7 @@ public class AmbiguityResolver
       if (cut.getVisible() && cut.getHasAmbiguousBearing())
       {
         // ok, TA data
-        final double delta = cut.getAmbiguousBearing() - cut.getBearing();
+        double delta = cut.getAmbiguousBearing() - cut.getBearing();
 
         final HiResDate time = cut.getDTG();
 
@@ -810,6 +854,26 @@ public class AmbiguityResolver
         }
         else
         {
+          // just check that we're not getting some jitter about zero
+          if (nearNorth(cut.getAmbiguousBearing())
+              || nearNorth(cut.getBearing()))
+          {
+            // ok, we may be near North, so we may be jittering
+            // around zero. See if the has been a huge delta jump
+            if (delta - lastDelta > 180)
+            {
+              // ok, we're now in 360 domain. Subtract 360 to
+              // put us back in the old domain
+              delta -= 360;
+            }
+            else if (delta - lastDelta < -180)
+            {
+              // we've moved to 0 domain. Add 360 to get back in
+              // the 360 domain
+              delta += 360;
+            }
+          }
+
           double valueDelta = delta - lastDelta;
 
           // if we're not already in a turn, then any
@@ -839,7 +903,7 @@ public class AmbiguityResolver
           {
             brgDelta = 360 - brgDelta;
           }
-          double brgRate = brgDelta / timeDeltaSecs;
+          final double brgRate = brgDelta / timeDeltaSecs;
 
           // ok, combine the two rates
           final double combinedRate = gapRate + brgRate;
@@ -870,7 +934,7 @@ public class AmbiguityResolver
 
           if (combinedRate > minZig)
           {
-            // ok, we were on a straight leg
+            // ok, were we on a straight leg?
             if (thisLeg != null)
             {
               // close the leg
@@ -878,14 +942,15 @@ public class AmbiguityResolver
               doLog(logger, timeStr + " End leg.");
             }
 
-            // ok, we're in a leg
+            // ok, were we're in a zig?
             if (thisZig == null)
             {
+              // not in a zig. Put us in a zig
               thisZig = new LegOfCuts();
               doLog(logger, timeStr + " New zig.");
             }
 
-            // do we have any pending cuts
+            // do we have any pending cuts?
             if (!possLeg.isEmpty())
             {
               doLog(logger, timeStr

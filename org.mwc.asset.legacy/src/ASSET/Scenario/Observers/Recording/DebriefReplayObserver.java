@@ -338,7 +338,19 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    */
   protected String getMySuffix()
   {
-    return "rep";
+    // hey, if we're just recording sensor data, we should be a 
+    // DSF file.
+    final String suffix;
+    if(getRecordDetections() && !getRecordDecisions() && !getRecordPositions())
+    {
+      suffix = "dsf";
+    }
+    else
+    {
+      suffix = "rep";
+    }
+    
+    return suffix;
   }
 
   /**
