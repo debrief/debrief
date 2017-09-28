@@ -109,10 +109,12 @@ public class AmbiguityResolver
 
       // sort out the sensors
       importer.storePendingSensors();
-      assertEquals("has some layers", 3, theLayers.size());
 
       // get the sensor track
       final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
+      
+      assertNotNull("found sensor track", track);
+
       return track;
     }
 
@@ -289,6 +291,44 @@ public class AmbiguityResolver
 
       assertNotNull("found zigs", zigs);
       assertEquals("found correct number of zig cuts", 17, zigs.size());
+    }
+    
+    public void testHandleWiggle() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks_hover_north.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensors", 2, track.getSensors().size());
+
+      final Enumeration<Editable> sensorList = track.getSensors().elements();
+      @SuppressWarnings("unused")
+      final SensorWrapper hmSensor =
+          (SensorWrapper) sensorList.nextElement();
+      // make the sensor visible
+      
+      final SensorWrapper sensor =
+          (SensorWrapper) sensorList.nextElement();
+      sensor.setVisible(true);
+      
+      // check we have the correct sensor
+      assertEquals("correct name", "TA", sensor.getName());
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      Logger logger = Logger.getLogger("Logger");
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res =
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, logger, null);
+      final List<LegOfCuts> legs = res.legs;
+      final LegOfCuts zigs = res.zigCuts;
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 3, legs.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 10, zigs.size());
     }
 
     public void testResolve() throws FileNotFoundException
@@ -767,6 +807,11 @@ public class AmbiguityResolver
     }
     return res;
   }
+  
+  private static boolean nearNorth(double bearing)
+  {
+    return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
+  }
 
   private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
       final SensorWrapper sensor, final double minZig, final double maxSteady,
@@ -798,7 +843,7 @@ public class AmbiguityResolver
       if (cut.getVisible() && cut.getHasAmbiguousBearing())
       {
         // ok, TA data
-        final double delta = cut.getAmbiguousBearing() - cut.getBearing();
+        double delta = cut.getAmbiguousBearing() - cut.getBearing();
 
         final HiResDate time = cut.getDTG();
 
@@ -810,6 +855,25 @@ public class AmbiguityResolver
         }
         else
         {
+          // just check that we're not getting some jitter about zero
+          if(nearNorth(cut.getAmbiguousBearing()) || nearNorth(cut.getBearing()))
+          {
+            // ok, we may be near North, so we may be jittering
+            // around zero. See if the has been a huge delta jump
+            if(delta - lastDelta > 180)
+            {
+              // ok, we're now in 360 domain.  Subtract 360 to
+              // put us back in the old domain
+              delta -= 360;
+            }
+            else if(delta - lastDelta < -180)
+            {
+              // we've moved to 0 domain. Add 360 to get back in
+              // the 360 domain
+              delta += 360;
+            }
+          }
+          
           double valueDelta = delta - lastDelta;
 
           // if we're not already in a turn, then any
