@@ -290,7 +290,7 @@ public class AmbiguityResolver
       assertEquals("found correct number of zones", 8, legs.size());
 
       assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 17, zigs.size());
+      assertEquals("found correct number of zig cuts", 16, zigs.size());
     }
     
     public void testHandleWiggle() throws FileNotFoundException
