@@ -934,7 +934,7 @@ public class AmbiguityResolver
 
           if (combinedRate > minZig)
           {
-            // ok, we were on a straight leg
+            // ok, were we on a straight leg?
             if (thisLeg != null)
             {
               // close the leg
@@ -942,14 +942,15 @@ public class AmbiguityResolver
               doLog(logger, timeStr + " End leg.");
             }
 
-            // ok, we're in a leg
+            // ok, were we're in a zig?
             if (thisZig == null)
             {
+              // not in a zig. Put us in a zig
               thisZig = new LegOfCuts();
               doLog(logger, timeStr + " New zig.");
             }
 
-            // do we have any pending cuts
+            // do we have any pending cuts?
             if (!possLeg.isEmpty())
             {
               doLog(logger, timeStr
