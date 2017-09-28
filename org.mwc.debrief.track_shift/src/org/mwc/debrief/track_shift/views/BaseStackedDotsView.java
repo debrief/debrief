@@ -819,7 +819,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the bearings into a TimeSeries
-
     final ZoneSlicer targetLegSlicer = new ZoneSlicer()
     {
       @Override
@@ -852,6 +851,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           res = null;
         }
         return res;
+      }
+
+      @Override
+      public void switchAmbiguousCuts(Zone zone)
+      {
+        // don't worry. we shouldn't be doing this for this zone
+        System.err.println("Should not be trying to switch cuts on a target track");
       }
     };
 

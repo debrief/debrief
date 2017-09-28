@@ -76,6 +76,377 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
 {
 
+  private class BearingZoneSlicer implements ZoneSlicer
+  {
+    private final ColorProvider _blueProv;
+
+    Map<Zone, ZoneModes> zoneTracker = new HashMap<Zone, ZoneModes>();
+
+    public BearingZoneSlicer(final ColorProvider blueProv)
+    {
+      _blueProv = blueProv;
+    }
+
+    private void handleThisContact(final Zone zone,
+        final SensorContactWrapper contact, final ZoneModes zoneMode)
+    {
+      if (zone.contains(contact.getDTG().getDate().getTime()))
+      {
+        if (contact.getHasAmbiguousBearing())
+        {
+          // ok, switch to the primary one
+          contact.setHasAmbiguousBearing(false);
+        }
+        else
+        {
+          // ok, let's switch it over
+          final double brg = contact.getBearing();
+          final double aBrg = contact.getAmbiguousBearing();
+          contact.setBearing(aBrg);
+          contact.setAmbiguousBearing(brg);
+
+          // have a look at the zone mode
+          if (zoneMode != null && zoneMode == ZoneModes.CLEAR)
+          {
+            contact.setHasAmbiguousBearing(true);
+          }
+        }
+      }
+    }
+
+    @Override
+    public ArrayList<Zone> performSlicing()
+    {
+      // hmm, see if we have ambiguous data
+      final TrackWrapper primary = _myHelper.getPrimaryTrack();
+      boolean hasAmbiguous = false;
+      final Enumeration<Editable> sEnum = primary.getSensors().elements();
+      while (sEnum.hasMoreElements() && !hasAmbiguous)
+      {
+        final SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
+        if (sensor.size() > 0)
+        {
+          final Enumeration<Editable> elements = sensor.elements();
+          while (elements.hasMoreElements() && !hasAmbiguous)
+          {
+            final SensorContactWrapper contact =
+                (SensorContactWrapper) elements.nextElement();
+            hasAmbiguous = contact.getHasAmbiguousBearing();
+          }
+        }
+      }
+
+      final ArrayList<Zone> zones;
+      if (hasAmbiguous)
+      {
+        // ok, we'll use our fancy slicer that relies on ambiguity
+        final double MIN_ZIG =
+            TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+                PreferenceConstants.MIN_ZIG);
+        final double MAX_STEADY =
+            TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+                PreferenceConstants.MAX_STEADY);
+        final AmbiguityResolver resolver = new AmbiguityResolver();
+        final Logger logger = getLogger();
+        _ambiguousResolverLegsAndCuts =
+            resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
+                .getPrimaryTrack(), MIN_ZIG, MAX_STEADY, logger, ambigScores);
+        zones = new ArrayList<Zone>();
+        for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
+        {
+          final Zone thisZone =
+              new Zone(leg.get(0).getDTG().getDate().getTime(), leg.get(
+                  leg.size() - 1).getDTG().getDate().getTime(), _blueProv
+                  .getZoneColor());
+          zones.add(thisZone);
+        }
+      }
+      else
+      {
+        zones = StackedDotHelper.sliceOwnship(ownshipCourseSeries, _blueProv);
+      }
+
+      return zones;
+    }
+
+    @Override
+    public void switchAmbiguousCuts(final Zone zone)
+    {
+      // ok, switch the cuts in this zone
+      boolean hasAmbiguous = false;
+      final TrackWrapper primary = _myHelper.getPrimaryTrack();
+      final Enumeration<Editable> sEnum = primary.getSensors().elements();
+      while (sEnum.hasMoreElements() && !hasAmbiguous)
+      {
+        final SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
+
+        ZoneModes zoneMode = null;
+
+        if (sensor.getVisible() && sensor.size() > 0)
+        {
+          final Enumeration<Editable> elements = sensor.elements();
+          while (elements.hasMoreElements())
+          {
+            final SensorContactWrapper contact =
+                (SensorContactWrapper) elements.nextElement();
+
+            // ok, are both bearings present?
+            hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
+
+            // ok, check if we know what to do next for this zone
+            if (zoneMode == null)
+            {
+              zoneMode = zoneTracker.get(zone);
+            }
+
+            if (hasAmbiguous)
+            {
+              handleThisContact(zone, contact, zoneMode);
+            }
+          }
+
+          // ok, advance the zone mode
+          final ZoneModes newMode;
+          if (zoneMode == null)
+          {
+            newMode = ZoneModes.PRIMARY;
+          }
+          else
+          {
+            switch (zoneMode)
+            {
+              case PRIMARY:
+                newMode = ZoneModes.SECONDARY;
+                break;
+              case SECONDARY:
+                newMode = ZoneModes.CLEAR;
+                break;
+              case CLEAR:
+                newMode = ZoneModes.PRIMARY;
+                break;
+              default:
+                newMode = ZoneModes.PRIMARY;
+            }
+          }
+          zoneTracker.put(zone, newMode);
+          System.out.println("new mode is:" + newMode);
+
+          // tell the plot to update
+          _ourLayersSubject.fireModified(sensor.getHost());
+
+          // and note that the cuts have changed
+          updateData(true);
+        }
+      }
+    }
+  }
+
+  private static class DeleteCutsOperation extends CMAPOperation
+  {
+
+    private static Map<SensorWrapper, LegOfCuts> deleteTheseCuts(
+        final List<SensorContactWrapper> cutsToDelete)
+    {
+      final Map<SensorWrapper, LegOfCuts> deletedCuts =
+          new HashMap<SensorWrapper, LegOfCuts>();
+
+      for (final SensorContactWrapper t : cutsToDelete)
+      {
+        // store the details of this sensor, so we can undo it
+        LegOfCuts list = deletedCuts.get(t.getSensor());
+
+        if (list == null)
+        {
+          list = new LegOfCuts();
+          deletedCuts.put(t.getSensor(), list);
+        }
+
+        list.add(t);
+
+        t.getSensor().removeElement(t);
+      }
+      return deletedCuts;
+    }
+
+    /**
+     * the cuts to be deleted
+     * 
+     */
+    final private List<SensorContactWrapper> _cutsToDelete;
+
+    /**
+     * cuts that have been deleted (with the sensor that they were removed from)
+     * 
+     */
+    private Map<SensorWrapper, LegOfCuts> _deletedCuts;
+
+    private final Runnable _fireUpdateData;
+
+    private final ZoneChart zoneChart;
+
+    public DeleteCutsOperation(final List<SensorContactWrapper> cutsToDelete,
+        final Runnable updateData, final ZoneChart zoneChart)
+    {
+      super("Delete cuts in O/S Turn");
+
+      _cutsToDelete = cutsToDelete;
+      _deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
+      _fireUpdateData = updateData;
+      this.zoneChart = zoneChart;
+    }
+
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      if (_deletedCuts != null)
+      {
+        _deletedCuts.clear();
+        _deletedCuts = null;
+      }
+
+      _deletedCuts = deleteTheseCuts(_cutsToDelete);
+
+      // share the good news
+      fireModified();
+
+      // and refresh
+      _fireUpdateData.run();
+
+      // and the ownship zone chart
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Delete cuts in O/S turn successful", null);
+      return res;
+    }
+
+    private void fireModified()
+    {
+
+      final SensorWrapper sensor;
+      if (_deletedCuts != null && !_deletedCuts.isEmpty())
+      {
+        sensor = _deletedCuts.keySet().iterator().next();
+      }
+      else if (_cutsToDelete != null && !_cutsToDelete.isEmpty())
+      {
+        sensor = _cutsToDelete.get(0).getSensor();
+      }
+      else
+      {
+        sensor = null;
+      }
+
+      // fire modified event
+      if (sensor != null)
+      {
+        // remember the zones
+        final Zone[] zones = zoneChart.getZones();
+
+        // fire the update. Note: doing this will remove
+        // the displayed zones, since the chart will think
+        // the track has changed.
+        sensor.getHost().firePropertyChange(SupportsPropertyListeners.EXTENDED,
+            null, System.currentTimeMillis());
+
+        final List<Zone> zoneList = new ArrayList<Zone>();
+        for (final Zone z : zones)
+        {
+          zoneList.add(z);
+        }
+        zoneChart.setZones(zoneList);
+      }
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      BearingResidualsView.restoreCuts(_deletedCuts);
+
+      _deletedCuts.clear();
+      _deletedCuts = null;
+
+      // share the good news
+      fireModified();
+
+      // and refresh
+      _fireUpdateData.run();
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Restore cuts in O/S turn successful", null);
+      return res;
+    }
+  }
+
+  private class ResolveCutsOperationAmbig extends CMAPOperation
+  {
+
+    /**
+     * the cuts to be deleted
+     * 
+     */
+    final private AmbiguityResolver _resolver;
+    final private List<LegOfCuts> _legs;
+    private List<ResolvedLeg> _resolved;
+
+    public ResolveCutsOperationAmbig(final AmbiguityResolver resolver,
+        final List<LegOfCuts> legs)
+    {
+      super("Resolve ambiguous cuts");
+      _resolver = resolver;
+      _legs = legs;
+    }
+
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      _resolved = _resolver.resolve(_legs);
+
+      // and refresh
+      updateData(true);
+
+      fireModified();
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Resolve legs successful", null);
+      return res;
+    }
+
+    private void fireModified()
+    {
+      _ourLayersSubject.fireModified(_myHelper.getPrimaryTrack());
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      undoResolveBearings(_resolved);
+
+      // and clear the resolved list
+      _resolved.clear();
+      _resolved = null;
+
+      // and refresh the UI
+      updateData(true);
+
+      fireModified();
+
+      final IStatus res =
+          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+              "Un-resolve legs successful", null);
+      return res;
+    }
+
+  }
+
   public static class TestResiduals extends TestCase
   {
     private TrackWrapper getData(final String name)
@@ -168,210 +539,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
   }
 
-  private static class DeleteCutsOperation extends CMAPOperation
+  private static enum ZoneModes
   {
-
-    /**
-     * the cuts to be deleted
-     * 
-     */
-    final private List<SensorContactWrapper> _cutsToDelete;
-
-    /**
-     * cuts that have been deleted (with the sensor that they were removed from)
-     * 
-     */
-    private Map<SensorWrapper, LegOfCuts> _deletedCuts;
-
-    private final Runnable _fireUpdateData;
-
-    private final ZoneChart zoneChart;
-
-    public DeleteCutsOperation(final List<SensorContactWrapper> cutsToDelete,
-        final Runnable updateData, final ZoneChart zoneChart)
-    {
-      super("Delete cuts in O/S Turn");
-
-      _cutsToDelete = cutsToDelete;
-      _deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
-      _fireUpdateData = updateData;
-      this.zoneChart = zoneChart;
-    }
-
-    private static Map<SensorWrapper, LegOfCuts> deleteTheseCuts(
-        final List<SensorContactWrapper> cutsToDelete)
-    {
-      final Map<SensorWrapper, LegOfCuts> deletedCuts =
-          new HashMap<SensorWrapper, LegOfCuts>();
-
-      for (final SensorContactWrapper t : cutsToDelete)
-      {
-        // store the details of this sensor, so we can undo it
-        LegOfCuts list = deletedCuts.get(t.getSensor());
-
-        if (list == null)
-        {
-          list = new LegOfCuts();
-          deletedCuts.put(t.getSensor(), list);
-        }
-
-        list.add(t);
-
-        t.getSensor().removeElement(t);
-      }
-      return deletedCuts;
-    }
-
-    @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      if (_deletedCuts != null)
-      {
-        _deletedCuts.clear();
-        _deletedCuts = null;
-      }
-
-      _deletedCuts = deleteTheseCuts(_cutsToDelete);
-
-      // share the good news
-      fireModified();
-
-      // and refresh
-      _fireUpdateData.run();
-
-      // and the ownship zone chart
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Delete cuts in O/S turn successful", null);
-      return res;
-    }
-
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      BearingResidualsView.restoreCuts(_deletedCuts);
-
-      _deletedCuts.clear();
-      _deletedCuts = null;
-
-      // share the good news
-      fireModified();
-
-      // and refresh
-      _fireUpdateData.run();
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Restore cuts in O/S turn successful", null);
-      return res;
-    }
-
-    private void fireModified()
-    {
-
-      final SensorWrapper sensor;
-      if (_deletedCuts != null && !_deletedCuts.isEmpty())
-      {
-        sensor = _deletedCuts.keySet().iterator().next();
-      }
-      else if (_cutsToDelete != null && !_cutsToDelete.isEmpty())
-      {
-        sensor = _cutsToDelete.get(0).getSensor();
-      }
-      else
-      {
-        sensor = null;
-      }
-
-      // fire modified event
-      if (sensor != null)
-      {
-        // remember the zones
-        final Zone[] zones = zoneChart.getZones();
-
-        // fire the update. Note: doing this will remove
-        // the displayed zones, since the chart will think
-        // the track has changed.
-        sensor.getHost().firePropertyChange(SupportsPropertyListeners.EXTENDED,
-            null, System.currentTimeMillis());
-
-        final List<Zone> zoneList = new ArrayList<Zone>();
-        for (final Zone z : zones)
-        {
-          zoneList.add(z);
-        }
-        zoneChart.setZones(zoneList);
-      }
-    }
-  }
-
-  private class ResolveCutsOperationAmbig extends CMAPOperation
-  {
-
-    /**
-     * the cuts to be deleted
-     * 
-     */
-    final private AmbiguityResolver _resolver;
-    final private List<LegOfCuts> _legs;
-    private List<ResolvedLeg> _resolved;
-
-    public ResolveCutsOperationAmbig(final AmbiguityResolver resolver,
-        final List<LegOfCuts> legs)
-    {
-      super("Resolve ambiguous cuts");
-      _resolver = resolver;
-      _legs = legs;
-    }
-    
-    private void fireModified()
-    {
-      _ourLayersSubject.fireModified(_myHelper.getPrimaryTrack());
-    }
-
-    @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      _resolved = _resolver.resolve(_legs);
-
-      // and refresh
-      updateData(true);
-
-      fireModified();
-      
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Resolve legs successful", null);
-      return res;
-    }
-
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      undoResolveBearings(_resolved);
-
-      // and clear the resolved list
-      _resolved.clear();
-      _resolved = null;
-
-      // and refresh the UI
-      updateData(true);
-      
-      fireModified();
-
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Un-resolve legs successful", null);
-      return res;
-    }
-
+    PRIMARY, SECONDARY, CLEAR;
   }
 
   private static final String SHOW_COURSE = "SHOW_COURSE";
@@ -419,6 +589,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   }
 
   private Action showCourse;
+
   private Action relativeAxes;
 
   private Action scaleError;
@@ -472,7 +643,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       final LegOfCuts cutsToDelete =
           findCutsNotInZones(ownshipZones, outerPeriod);
 
-      Runnable updateData = new Runnable()
+      final Runnable updateData = new Runnable()
       {
 
         @Override
@@ -491,7 +662,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     else
     {
       CorePlugin.showMessage("Resolve Ambiguity",
-          "Please delete cuts in turn first");
+          "Please slice data first");
     }
 
   }
@@ -559,20 +730,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   }
 
   @Override
-  protected Runnable getResolveAmbiguityOperation()
-  {
-    return new Runnable()
-    {
-
-      @Override
-      public void run()
-      {
-        resolveAmbiguousCutsB();
-      }
-    };
-  }
-  
-  @Override
   protected Runnable getDeleteCutsOperation()
   {
     return new Runnable()
@@ -620,64 +777,21 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   @Override
   protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
   {
-    return new ZoneSlicer()
+    return new BearingZoneSlicer(blueProv);
+  }
+
+  @Override
+  protected Runnable getResolveAmbiguityOperation()
+  {
+    return new Runnable()
     {
+
       @Override
-      public ArrayList<Zone> performSlicing()
+      public void run()
       {
-        // hmm, see if we have ambiguous data
-        final TrackWrapper primary = _myHelper.getPrimaryTrack();
-        boolean hasAmbiguous = false;
-        final Enumeration<Editable> sEnum = primary.getSensors().elements();
-        while (sEnum.hasMoreElements() && !hasAmbiguous)
-        {
-          final SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
-          if (sensor.size() > 0)
-          {
-            final Enumeration<Editable> elements = sensor.elements();
-            while (elements.hasMoreElements() && !hasAmbiguous)
-            {
-              final SensorContactWrapper contact =
-                  (SensorContactWrapper) elements.nextElement();
-              hasAmbiguous = contact.getHasAmbiguousBearing();
-            }
-          }
-        }
-
-        final ArrayList<Zone> zones;
-        if (hasAmbiguous)
-        {
-          // ok, we'll use our fancy slicer that relies on ambiguity
-          final double MIN_ZIG =
-              TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                  PreferenceConstants.MIN_ZIG);
-          final double MAX_STEADY =
-              TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                  PreferenceConstants.MAX_STEADY);
-          final AmbiguityResolver resolver = new AmbiguityResolver();
-          final Logger logger = getLogger();
-          _ambiguousResolverLegsAndCuts =
-              resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
-                  .getPrimaryTrack(), MIN_ZIG, MAX_STEADY, logger, ambigScores);
-          zones = new ArrayList<Zone>();
-          for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
-          {
-            final Zone thisZone =
-                new Zone(leg.get(0).getDTG().getDate().getTime(), leg.get(
-                    leg.size() - 1).getDTG().getDate().getTime(), blueProv
-                    .getZoneColor());
-            zones.add(thisZone);
-          }
-        }
-        else
-        {
-          zones = StackedDotHelper.sliceOwnship(ownshipCourseSeries, blueProv);
-        }
-
-        return zones;
+        resolveAmbiguousCutsB();
       }
     };
-
   }
 
   @Override
