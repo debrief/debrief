@@ -662,7 +662,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     else
     {
       CorePlugin.showMessage("Resolve Ambiguity",
-          "Please delete cuts in turn first");
+          "Please slice data first");
     }
 
   }
