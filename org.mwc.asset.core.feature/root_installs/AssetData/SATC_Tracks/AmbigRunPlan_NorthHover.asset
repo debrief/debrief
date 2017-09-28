@@ -69,15 +69,15 @@
 					CanProduceRange="false" Name="HM">
 				</BroadbandSensor>
 			</SensorFit>
-			<Status Course="190" Fuel="100">
+			<Status Course="90" Fuel="90">
 				<Location>
-					<shortLocation Lat="60.5" Long="0.6"></shortLocation>
+					<shortLocation Lat="60.0" Long="-0.01"></shortLocation>
 				</Location>
-				<Speed Value="8" Units="kts" />
+				<Speed Value="5.8" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Move Name="leg one" Course="180">
-					<Vector Value="2" Units="nm" /></Move>
+				<Move Name="leg one" Course="90">
+					<Vector Value="6" Units="nm" /></Move>
 				<Move Name="leg one" Course="260">
 					<Vector Value="1.5" Units="nm" /></Move>
 				<Move Name="leg one" Course="180">

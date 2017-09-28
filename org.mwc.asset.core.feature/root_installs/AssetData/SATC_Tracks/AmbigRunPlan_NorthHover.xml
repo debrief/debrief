@@ -8,17 +8,17 @@
 		</TimeObserver>
 		<DebriefReplayObserver Name="BothTracks" record_detections="false"
 			record_positions="true" Active="true" record_decisions="false"
-			file_name="Ambig_tracks2">
-			<FormatHelper Text=";FORMAT_FIX: hour_min_arrow ARROW NULL NULL TRUE 900000" /><FormatHelper
+			file_name="Ambig_tracks_jitter_north">
+			<FormatHelper Text=";FORMAT_FIX: hour_min_arrow ARROW NULL NULL TRUE 900000" ></FormatHelper><FormatHelper
 				Text=";FORMAT_FIX: 30_min_label LABEL NULL NULL TRUE 1800000" />
 		</DebriefReplayObserver>
 		<DebriefReplayObserver Name="Cuts" record_detections="true"
 			record_positions="false" Active="true" record_decisions="false"
-			file_name="Ambig_cuts_TA" SubjectSensor="TA">
+			file_name="Ambig_tracks_jitter_north_TA" SubjectSensor="TA">
 		</DebriefReplayObserver>
 		<DebriefReplayObserver Name="Cuts" record_detections="true"
 			record_positions="false" Active="true" record_decisions="false"
-			file_name="Ambig_cuts_HM" SubjectSensor="HM">
+			file_name="Ambig_tracks_jitter_north_HM" SubjectSensor="HM">
 		</DebriefReplayObserver>
 	</ObserverList>
 </ScenarioController>
