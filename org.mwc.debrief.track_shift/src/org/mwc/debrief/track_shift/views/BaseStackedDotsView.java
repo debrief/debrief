@@ -496,6 +496,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       measuredValues.clear();
       ambigValues.clear();
+      ambigScores.clear();
     }
 
     // and the secondary
