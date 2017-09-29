@@ -459,7 +459,7 @@ public class AmbiguityResolver
       });
 
       final LegsAndZigs sliced =
-          solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 240, logger,
+          solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, logger,
               null);
 
       // for(LegOfCuts leg: sliced.legs)
