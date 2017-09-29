@@ -27,6 +27,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 
 public class AmbiguityResolver
 {
@@ -812,9 +813,28 @@ public class AmbiguityResolver
     return res;
   }
 
-  private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
-      final SensorWrapper sensor, final double minZig, final double maxSteady,
-      final Logger logger, final TimeSeries scores)
+  /**
+   * During a turn the difference between the bearing and ambiguous bearing go crazy. Exploit this
+   * behaviour to find periods when the array is staedy.
+   * 
+   * @param sensor
+   *          the sensor to process
+   * @param minZig
+   *          above this value we treat it as a zig
+   * @param maxSteady
+   *          below this value we treat it as a leg
+   * @param logger
+   *          where to log the results
+   * @param scores
+   *          a time-series of scores, to be plotted in the zone chart
+   * @param trackPeriod
+   *          the extent of the parent track, since we don't want to plot outside this
+   * @return A collection of legs and zigs.
+   */
+  private LegsAndZigs
+      sliceSensorIntoLegsUsingAmbiguity(final SensorWrapper sensor,
+          final double minZig, final double maxSteady, final Logger logger,
+          final TimeSeries scores, final TimePeriod trackPeriod)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
@@ -839,7 +859,8 @@ public class AmbiguityResolver
       final SensorContactWrapper cut =
           (SensorContactWrapper) enumer.nextElement();
 
-      if (cut.getVisible() && cut.getHasAmbiguousBearing())
+      if (cut.getVisible() && cut.getHasAmbiguousBearing()
+          && trackPeriod.contains(cut.getDTG()))
       {
         // ok, TA data
         double delta = cut.getAmbiguousBearing() - cut.getBearing();
@@ -1081,6 +1102,10 @@ public class AmbiguityResolver
     final LegOfCuts zigCuts = new LegOfCuts();
     final LegsAndZigs res = new LegsAndZigs(legs, zigCuts);
 
+    // find the lenght of the track
+    final TimePeriod period =
+        new TimePeriod.BaseTimePeriod(track.getStartDTG(), track.getEndDTG());
+
     // ok, go for it
     final BaseLayer sensors = track.getSensors();
     final Enumeration<Editable> numer = sensors.elements();
@@ -1091,7 +1116,7 @@ public class AmbiguityResolver
       {
         final LegsAndZigs thisL =
             sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, maxSteady,
-                logger, scores);
+                logger, scores, period);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
