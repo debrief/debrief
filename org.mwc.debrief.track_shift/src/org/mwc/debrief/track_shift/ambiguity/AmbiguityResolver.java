@@ -837,7 +837,7 @@ public class AmbiguityResolver
    */
   private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
       final SensorWrapper sensor, final double minZig, final double maxSteady,
-      double minLegLength, final Logger logger, final TimeSeries scores,
+      final double minLegLength, final Logger logger, final TimeSeries scores,
       final TimePeriod trackPeriod)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
@@ -951,11 +951,6 @@ public class AmbiguityResolver
                   + " combined:" + combinedRate;
           doLog(logger, stats);
 
-          // if(time.getDate().getTime() == 260000)
-          // {
-          // System.out.println("here");
-          // }
-
           if (combinedRate > minZig)
           {
             // ok, were we on a straight leg?
@@ -1008,8 +1003,9 @@ public class AmbiguityResolver
               // but, we want to allow a number of low-rate-change
               // entries, just in cases there's a coincidental
               // couple of steady cuts during the turn.
-              double possLegSoFar = possLeg.getPeriodSecs();
-              if (possLegSoFar < minLegLength)
+              final long thisTime = cut.getDTG().getDate().getTime();
+              
+              if (stillCacheing(possLeg, thisTime, (long) minLegLength))
               {
                 doLog(logger, timeStr + " Poss straight leg. Cache it.");
 
@@ -1132,6 +1128,35 @@ public class AmbiguityResolver
         }
       }
     }
+    return res;
+  }
+
+  /**
+   * we've received another steady cut. Do we have enough cuts to treat it as a leg?
+   * 
+   * @param possLeg
+   *          the cuts we've cached so far
+   * @param thisTime
+   *          the time of the new cut
+   * @param minLength
+   *          the min period required to treat it as a leg
+   * @return yes/no
+   */
+  private boolean stillCacheing(final LegOfCuts possLeg, final long thisTime,
+      final long minLength)
+  {
+    final boolean res;
+    if (possLeg.isEmpty())
+    {
+      res = true;
+    }
+    else
+    {
+      final long legStart = possLeg.get(0).getDTG().getDate().getTime();
+      final long elapsed = (thisTime - legStart) / 1000L;
+      res = elapsed < minLength;
+    }
+
     return res;
   }
 
