@@ -59,6 +59,8 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.JFreeChart.ColouredDataItem;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 
 public class ZoneChart extends Composite
 {
@@ -1993,5 +1995,19 @@ public class ZoneChart extends Composite
     }
     return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
         .getLastMillisecond();
+  }
+
+  /** get the time period covered by this zone chart
+   * 
+   * @return
+   */
+  public TimePeriod getPeriod()
+  {
+    XYPlot plot = (XYPlot) chart.getPlot();
+    double lower = plot.getDomainAxis().getLowerBound();
+    double upper = plot.getDomainAxis().getUpperBound();
+    TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate((long) lower), new HiResDate((long) upper));
+        
+    return res;
   }
 }
