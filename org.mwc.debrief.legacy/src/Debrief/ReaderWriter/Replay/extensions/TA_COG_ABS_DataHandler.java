@@ -28,9 +28,6 @@ public class TA_COG_ABS_DataHandler extends Core_TA_Handler
     final HiResDate theDate;
     final String platform_name;
     final String sensor_name;
-    final double dLat;
-    final double dLong;
-    final double depth;
 
     // skip the comment identifier
     st.nextToken();
@@ -49,18 +46,27 @@ public class TA_COG_ABS_DataHandler extends Core_TA_Handler
     sensor_name = AbstractPlainLineImporter.checkForQuotedName(st).trim();
 
     // extract the measuremetns
-    dLat = Double.valueOf(st.nextToken());
-    dLong = Double.valueOf(st.nextToken());
-    depth = Double.valueOf(st.nextToken());
+    final String dLatStr = st.nextToken();
+    final String dLongStr = st.nextToken();
+    final String dDepthStr = st.nextToken();
+    
+    if(isNull(dLatStr) || isNull(dLongStr) || isNull(dDepthStr))
+    {
+      // ok, skip this one. We haven't got the data
+    }
+    else
+    {
+      final double dLat = Double.valueOf(dLatStr);
+      final double dLong = Double.valueOf(dLongStr);
+      final double depth = Double.valueOf(dDepthStr);
 
-    // ok, try to store the measurement
-    storeMeasurement2D(platform_name, sensor_name, CENTRE_OF_GRAVITY,
-        "LatLong", "\u00b0", theDate, "Lat", "Long", dLat, dLong);
-    storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Depth",
-        "m", theDate, depth);
+      // ok, try to store the measurement
+      storeMeasurement2D(platform_name, sensor_name, CENTRE_OF_GRAVITY,
+          "LatLong", "\u00b0", theDate, "Lat", "Long", dLat, dLong);
+      storeMeasurement(platform_name, sensor_name, CENTRE_OF_GRAVITY, "Depth",
+          "m", theDate, depth);
+    }
 
     return null;
-
-  }
-
+  } 
 }

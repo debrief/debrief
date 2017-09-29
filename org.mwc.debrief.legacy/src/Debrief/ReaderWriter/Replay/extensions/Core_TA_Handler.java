@@ -28,6 +28,12 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter,
 
   private Layers _layers;
   private final String _myType;
+  
+
+  protected static boolean isNull(final String value)
+  {
+    return (value.toUpperCase().equals("NULL"));
+  }
 
   protected static final String CENTRE_OF_GRAVITY = "Centre of Gravity";
 
