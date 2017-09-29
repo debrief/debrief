@@ -628,7 +628,6 @@ public final class SensorContactWrapper extends
 
   private boolean _hasAmbiguous = false;
 
-  
   /**
    * the (optional) ambiguous bearing (degs)
    * 
@@ -665,9 +664,10 @@ public final class SensorContactWrapper extends
   }
 
   public SensorContactWrapper(final String theTrack, final HiResDate theDtg,
-      final WorldDistance range, final Double brgDegs, final Double ambigBearingDegs,
-      final Double freq, final WorldLocation origin, final Color theColor,
-      final String labelStr, final int theStyle, final String sensorName)
+      final WorldDistance range, final Double brgDegs,
+      final Double ambigBearingDegs, final Double freq,
+      final WorldLocation origin, final Color theColor, final String labelStr,
+      final int theStyle, final String sensorName)
   {
     this();
 
@@ -844,32 +844,7 @@ public final class SensorContactWrapper extends
    */
   private final WorldLocation getAmbiguousFarEnd(final WorldArea outerEnvelope)
   {
-    WorldLocation res = null;
-
-    if (_calculatedOrigin != null)
-    {
-      double rangeToUse = 0;
-
-      // do we have the range?
-      if (_range == null)
-      {
-        final WorldArea totalArea = new WorldArea(outerEnvelope);
-        totalArea.extend(_calculatedOrigin);
-
-        // just use the maximum dimension of the plot
-        rangeToUse = 2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
-      }
-      else
-      {
-        rangeToUse = _range.getValueIn(WorldDistance.DEGS);
-      }
-
-      // also do the far end
-      res =
-          _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(_bearingAmbig), rangeToUse, 0d));
-    }
-
-    return res;
+    return (getEnd(outerEnvelope, _bearingAmbig));
   }
 
   /**
@@ -1002,13 +977,10 @@ public final class SensorContactWrapper extends
     return _DTG;
   }
 
-  /**
-   * return the coordinates of the end of hte line
-   * 
-   * @param dest
-   */
-  final public WorldLocation getFarEnd(final WorldArea outerEnvelope)
+  final private WorldLocation getEnd(final WorldArea outerEnvelope,
+      final double bearing)
   {
+
     WorldLocation res = null;
 
     // do we have a calculated origin?
@@ -1042,10 +1014,29 @@ public final class SensorContactWrapper extends
       }
 
       // also do the far end
-      res = _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(_bearing), rangeToUse, 0d));
+      res =
+          _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions
+              .Degs2Rads(bearing), rangeToUse, 0d));
+
+      // just do an idiot check, to ensure it's possible to calculate us
+      if (res.getLat() > 89d)
+      {
+        res.setLat(89d);
+      }
+
     }
 
     return res;
+  }
+
+  /**
+   * return the coordinates of the end of hte line
+   * 
+   * @param dest
+   */
+  final public WorldLocation getFarEnd(final WorldArea outerEnvelope)
+  {
+    return getEnd(outerEnvelope, _bearing);
   }
 
   public final double getFrequency()
@@ -1398,6 +1389,7 @@ public final class SensorContactWrapper extends
 
         final WorldLocation theOtherFarEnd =
             getAmbiguousFarEnd(dest.getProjection().getDataArea());
+
         final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
         // draw the line
         dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
