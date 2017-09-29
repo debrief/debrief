@@ -257,8 +257,8 @@ public class AmbiguityResolver
       final Logger logger = Logger.getLogger("Logger");
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver
-              .sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, logger, null);
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
+              null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -302,7 +302,8 @@ public class AmbiguityResolver
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, null, null);
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
+              null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -458,7 +459,8 @@ public class AmbiguityResolver
       });
 
       final LegsAndZigs sliced =
-          solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, logger, null);
+          solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 240, logger,
+              null);
 
       // for(LegOfCuts leg: sliced.legs)
       // {
@@ -823,6 +825,8 @@ public class AmbiguityResolver
    *          above this value we treat it as a zig
    * @param maxSteady
    *          below this value we treat it as a leg
+   * @param minLegLength
+   *          we need at least this period of cuts to interpret steady bearings as O/S leg
    * @param logger
    *          where to log the results
    * @param scores
@@ -831,10 +835,10 @@ public class AmbiguityResolver
    *          the extent of the parent track, since we don't want to plot outside this
    * @return A collection of legs and zigs.
    */
-  private LegsAndZigs
-      sliceSensorIntoLegsUsingAmbiguity(final SensorWrapper sensor,
-          final double minZig, final double maxSteady, final Logger logger,
-          final TimeSeries scores, final TimePeriod trackPeriod)
+  private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
+      final SensorWrapper sensor, final double minZig, final double maxSteady,
+      double minLegLength, final Logger logger, final TimeSeries scores,
+      final TimePeriod trackPeriod)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
@@ -852,7 +856,6 @@ public class AmbiguityResolver
     LegOfCuts thisZig = null;
     SensorContactWrapper firstCut = null;
     final LegOfCuts possLeg = new LegOfCuts();
-    final int possLegAllowance = 2;
 
     while (enumer.hasMoreElements())
     {
@@ -1005,7 +1008,8 @@ public class AmbiguityResolver
               // but, we want to allow a number of low-rate-change
               // entries, just in cases there's a coincidental
               // couple of steady cuts during the turn.
-              if (possLeg.size() < possLegAllowance)
+              double possLegSoFar = possLeg.getPeriodSecs();
+              if (possLegSoFar < minLegLength)
               {
                 doLog(logger, timeStr + " Poss straight leg. Cache it.");
 
@@ -1016,7 +1020,8 @@ public class AmbiguityResolver
               }
               else
               {
-                // ok, we were in a turn. End it
+                // ok, we were in a turn, now we know we're on a straight leg.
+                // finish the zig
                 zigs.addAll(thisZig);
 
                 doLog(logger, timeStr + " Zig ended.");
@@ -1095,8 +1100,8 @@ public class AmbiguityResolver
   }
 
   public LegsAndZigs sliceTrackIntoLegsUsingAmbiguity(final TrackWrapper track,
-      final double minZig, final double maxSteady, final Logger logger,
-      final TimeSeries scores)
+      final double minZig, final double maxSteady, final double minLegLength,
+      final Logger logger, final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1116,7 +1121,7 @@ public class AmbiguityResolver
       {
         final LegsAndZigs thisL =
             sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, maxSteady,
-                logger, scores, period);
+                minLegLength, logger, scores, period);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
