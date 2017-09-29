@@ -517,7 +517,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       assertNotNull(resolvedLegs);
       assertEquals("right num legs", 12, legs.size());
 
-      assertEquals("correct leg", 251d, resolvedLegs.get(0).leg.get(0)
+      assertEquals("correct leg", 252.85d, resolvedLegs.get(0).leg.get(0)
           .getBearing(), 1d);
       assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0)
           .getBearing(), 1d);
