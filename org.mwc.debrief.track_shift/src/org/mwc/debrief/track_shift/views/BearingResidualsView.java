@@ -634,12 +634,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     if (ownshipZones != null && ownshipZones.length > 0)
     {
+      // find the time period of hte chart
+      final TimePeriod outerPeriod = ownshipZoneChart.getPeriod();
+      
       // ok, produce the list of cuts to cull
-      final long startTime = ownshipZones[0].getStart();
-      final long endTime = ownshipZones[ownshipZones.length - 1].getEnd();
-      final TimePeriod outerPeriod =
-          new TimePeriod.BaseTimePeriod(new HiResDate(startTime),
-              new HiResDate(endTime));
       final LegOfCuts cutsToDelete =
           findCutsNotInZones(ownshipZones, outerPeriod);
 
