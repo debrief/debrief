@@ -23,6 +23,7 @@ public class AmbiguityPrefsInitializer extends AbstractPreferenceInitializer
     store.setDefault(PreferenceConstants.MAX_STEADY, 0.2d);
     store.setDefault(PreferenceConstants.DIAGNOSTICS, false);
     store.setDefault(PreferenceConstants.DISPLAY, false);
+    store.setDefault(PreferenceConstants.MIN_LEG_LENGTH, 240d);
 	}
 
 }

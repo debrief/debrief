@@ -21,4 +21,10 @@ public class PreferenceConstants
    * 
    */
   public static final String MAX_STEADY = "Max_Steady";
+  
+  /** minimum length of period of cuts to treat them as steady
+   * 
+   */
+  public static final String MIN_LEG_LENGTH = "MinLegLength";
+  
 }
