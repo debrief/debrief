@@ -660,60 +660,6 @@ public class AmbiguityResolver
     return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
   }
 
-  @SuppressWarnings("unused")
-  private static void outputCurve(final String title, final long midTime,
-      final LegOfCuts leg, final double[] slopeOne, final double[] slopeTwo)
-  {
-    System.out.println(title);
-    final long firstTime = leg.get(0).getDTG().getDate().getTime();
-    final boolean firstLeg = firstTime < midTime;
-    final boolean twoLegs = slopeTwo != null;
-
-    if (!firstLeg)
-    {
-      // ok, output the mid-point
-      final double legTwo = twoLegs ? valueAt(midTime, slopeTwo) : Double.NaN;
-
-      System.out.println(midTime + ", "
-          + trim(valueAt(midTime, slopeOne), null) + ", " + trim(legTwo, null));
-    }
-
-    // now loop through
-    for (final SensorContactWrapper cut : leg)
-    {
-      final long thisTime = cut.getDTG().getDate().getTime();
-      double legTwo = twoLegs ? valueAt(thisTime, slopeTwo) : Double.NaN;
-      if (legTwo > 360d)
-      {
-        legTwo -= 360d;
-      }
-
-      System.out
-          .println(thisTime + ", " + trim(valueAt(thisTime, slopeOne), null)
-              + ", " + trim(legTwo, null));
-    }
-
-    if (firstLeg)
-    {
-      // ok, output the mid-point
-      final double legTwo = twoLegs ? valueAt(midTime, slopeTwo) : Double.NaN;
-      System.out.println(midTime + ", "
-          + trim(valueAt(midTime, slopeOne), null) + ", " + trim(legTwo, null));
-    }
-
-  }
-
-  @SuppressWarnings("unused")
-  private static void outputLeg(final String title, final LegOfCuts lastLeg)
-  {
-    System.out.println(title);
-    for (final SensorContactWrapper cut : lastLeg)
-    {
-      System.out.println(cut.getDTG().getDate().getTime() + ", "
-          + cut.getBearing() + ", " + cut.getAmbiguousBearing());
-    }
-  }
-
   private static double totalScoreFor(final ArrayList<PermScore> list)
   {
     double total = 0;
@@ -1239,26 +1185,24 @@ public class AmbiguityResolver
   }
 
   private void walkScores(final List<LegPermutation> legs, final int curLeg,
-      final List<PermScore> scoreSoFar, final PermScore newScore,
-      final List<ArrayList<PermScore>> scores)
+      final List<PermScore> thisPermSoFar, final PermScore lastScore,
+      final List<ArrayList<PermScore>> finishedPerms)
   {
     // take a deep copy of the clones, since we want independent copies
     final ArrayList<PermScore> newScores = new ArrayList<PermScore>();
-    if (scoreSoFar  != null && !scoreSoFar.isEmpty())
+    if (thisPermSoFar != null && !thisPermSoFar.isEmpty())
     {
-      newScores.addAll(scoreSoFar);
+      newScores.addAll(thisPermSoFar);
     }
 
-    // System.out.println(curLeg);
-
     // and add a new score, if there is one
-    if (newScore != null)
+    if (lastScore != null)
     {
-      newScores.add(newScore);
+      newScores.add(lastScore);
     }
 
     // have we reached the end?
-    if (curLeg <= legs.size() - 1)
+    if (curLeg < legs.size())
     {
       // ok, we can add some scores
       final LegPermutation lastPerm = legs.get(curLeg - 1);
@@ -1268,7 +1212,7 @@ public class AmbiguityResolver
       final int thisCount = curLeg + 1;
 
       // ok, what was the last leg?
-      final WhichBearing lastBearing = newScore == null ? null : newScore.thisB;
+      final WhichBearing lastBearing = lastScore == null ? null : lastScore.thisB;
 
       // ok, sort out the four permutations
 
@@ -1276,10 +1220,10 @@ public class AmbiguityResolver
       if (lastBearing == null || lastBearing == WhichBearing.CORE)
       {
         walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-            thisPerm, WhichBearing.CORE, WhichBearing.CORE), scores);
+            thisPerm, WhichBearing.CORE, WhichBearing.CORE), finishedPerms);
         walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
             thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS),
-            scores);
+            finishedPerms);
       }
 
       // if we had a previous leg, was if resolved as AMBIGUOUS?
@@ -1287,16 +1231,16 @@ public class AmbiguityResolver
       {
         walkScores(legs, thisCount, newScores,
             new PermScore(lastPerm, thisPerm, WhichBearing.AMBIGUOUS,
-                WhichBearing.AMBIGUOUS), scores);
+                WhichBearing.AMBIGUOUS), finishedPerms);
         walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
             thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE),
-            scores);
+            finishedPerms);
       }
     }
     else
     {
       // ok, we've reached the end. Store the score.
-      scores.add(newScores);
+      finishedPerms.add(newScores);
     }
   }
 
