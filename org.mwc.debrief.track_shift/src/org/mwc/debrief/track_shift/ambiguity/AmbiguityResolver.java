@@ -45,9 +45,9 @@ public class AmbiguityResolver
     public double coreAfter;
     public double ambigAfter;
 
-    public LegPermutation(LegOfCuts leg, double[] coreSlopeEarly,
-        double[] ambigSlopeEarly, double[] coreSlopeLate,
-        double[] ambigSlopeLate)
+    public LegPermutation(final LegOfCuts leg, final double[] coreSlopeEarly,
+        final double[] ambigSlopeEarly, final double[] coreSlopeLate,
+        final double[] ambigSlopeLate)
     {
       this.leg = leg;
       this.coreSlopeEarly = coreSlopeEarly;
@@ -610,71 +610,6 @@ public class AmbiguityResolver
     }
   }
 
-  private static void doLog(final Logger logger, final String msg)
-  {
-    if (logger != null)
-    {
-      logger.log(Level.INFO, msg);
-    }
-  }
-
-  private static boolean nearNorth(final double bearing)
-  {
-    return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
-  }
-
-  private static double totalScoreFor(final ArrayList<PermScore> list)
-  {
-    double total = 0;
-    for (final PermScore item : list)
-    {
-      total += item.thisScore;
-    }
-    return total;
-  }
-
-  /**
-   * trim the supplied value to the 0..360 domain
-   * 
-   * @param val
-   *          value to trim
-   * @param target
-   *          value we're comparing against - so we keep the subject value fairly clsoe to this one
-   * 
-   * @return
-   */
-  private static double trim(final double val, final Double target)
-  {
-    double res = val;
-
-    // ok, get trimming
-    if ((target == null || target > -270) && (res < -360d))
-    {
-      res += 360d;
-    }
-    if ((target == null || target < 270) && (res >= 360d))
-    {
-      res -= 360d;
-    }
-
-    // ok, special cases. We're looking for a value near 360, but we've only got
-    // the value near 050
-    if ((target != null && target > 270) && (res <= 270d))
-    {
-      res += 360d;
-    }
-    if ((target != null && target < -270) && (res >= -270d))
-    {
-      res -= 360d;
-    }
-    return res;
-  }
-
-  private static double valueAt(final long time, final double[] slope)
-  {
-    return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
-  }
-
   private static void ditchBearingsForThisLeg(final LegOfCuts leg,
       final WhichBearing bearing)
   {
@@ -702,6 +637,14 @@ public class AmbiguityResolver
     }
   }
 
+  private static void doLog(final Logger logger, final String msg)
+  {
+    if (logger != null)
+    {
+      logger.log(Level.INFO, msg);
+    }
+  }
+
   private static long midTimeFor(final LegOfCuts lastLeg, final LegOfCuts leg)
   {
     final long startTime =
@@ -710,6 +653,11 @@ public class AmbiguityResolver
 
     // and the mid-way value
     return startTime + (endTime - startTime) / 2;
+  }
+
+  private static boolean nearNorth(final double bearing)
+  {
+    return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
   }
 
   @SuppressWarnings("unused")
@@ -766,6 +714,58 @@ public class AmbiguityResolver
     }
   }
 
+  private static double totalScoreFor(final ArrayList<PermScore> list)
+  {
+    double total = 0;
+    for (final PermScore item : list)
+    {
+      total += item.thisScore;
+    }
+    return total;
+  }
+
+  /**
+   * trim the supplied value to the 0..360 domain
+   * 
+   * @param val
+   *          value to trim
+   * @param target
+   *          value we're comparing against - so we keep the subject value fairly clsoe to this one
+   * 
+   * @return
+   */
+  private static double trim(final double val, final Double target)
+  {
+    double res = val;
+
+    // ok, get trimming
+    if ((target == null || target > -270) && (res < -360d))
+    {
+      res += 360d;
+    }
+    if ((target == null || target < 270) && (res >= 360d))
+    {
+      res -= 360d;
+    }
+
+    // ok, special cases. We're looking for a value near 360, but we've only got
+    // the value near 050
+    if ((target != null && target > 270) && (res <= 270d))
+    {
+      res += 360d;
+    }
+    if ((target != null && target < -270) && (res >= -270d))
+    {
+      res -= 360d;
+    }
+    return res;
+  }
+
+  private static double valueAt(final long time, final double[] slope)
+  {
+    return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
+  }
+
   public List<ResolvedLeg> resolve(final List<LegOfCuts> legs)
   {
     final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
@@ -779,13 +779,13 @@ public class AmbiguityResolver
     {
 
       // generate the curves
-      double[] coreSlopeEarly =
+      final double[] coreSlopeEarly =
           leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
-      double[] ambigSlopeEarly =
+      final double[] ambigSlopeEarly =
           leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
-      double[] coreSlopeLate =
+      final double[] coreSlopeLate =
           leg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
-      double[] ambigSlopeLate =
+      final double[] ambigSlopeLate =
           leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
 
       // now put them into a permutation
@@ -1354,7 +1354,7 @@ public class AmbiguityResolver
       final WhichBearing lastBearing = newScore == null ? null : newScore.thisB;
 
       // ok, sort out the four permutations
-      
+
       // if we had a previous leg, was if resolved as CORE?
       if (lastBearing == null || lastBearing == WhichBearing.CORE)
       {
@@ -1364,7 +1364,7 @@ public class AmbiguityResolver
             thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS, thisCount),
             scores);
       }
-      
+
       // if we had a previous leg, was if resolved as AMBIGUOUS?
       if (lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
       {
