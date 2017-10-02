@@ -171,6 +171,7 @@ import javax.swing.JLabel;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.LocationPropertyEditor;
+import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
@@ -588,7 +589,7 @@ public class TextLabel extends PlainShape implements Editable
 	 */
 	public Point getOffset(final int wid, final int lineHeight, final int blockHeight)
 	{
-		Point res = null;
+		final Point res;
 
 		// System.out.println("for text:" + getString() + " width is:" + wid +
 		// " line ht is:" + lineHeight + " block ht is:" + blockHeight +
@@ -597,34 +598,37 @@ public class TextLabel extends PlainShape implements Editable
 		final int verticalBalance = lineHeight - 5;
 		final int horizBalance = 2;
 
-		// where are we to be positioned
-		switch (_theRelativeLocation)
-		{
-		case LocationPropertyEditor.LEFT:
-			res = new Point(-(wid + horizBalance) - 2, -(blockHeight / 2) + 1);
-			// res = new Point(-(wid + horizBalance), verticalBalance);
-			res.translate(-_theFixedOffset.width / 2, verticalBalance);
-			break;
-		case LocationPropertyEditor.RIGHT:
-			// res = new Point(wid/2 + horizBalance, -(blockHeight / 2));
-			res = new Point(horizBalance + 4, -(blockHeight / 2) + 2);
-			res.translate(_theFixedOffset.width / 2, verticalBalance);
-			break;
-		case LocationPropertyEditor.TOP:
-			res = new Point(-wid / 2 - horizBalance / 2, -(blockHeight - lineHeight));
-			res.translate(0, -_theFixedOffset.height - verticalBalance);
-			break;
-		case LocationPropertyEditor.BOTTOM:
-			res = new Point(-wid / 2 - horizBalance / 2, 2 * lineHeight);
-			res.translate(0, _theFixedOffset.height - verticalBalance - 4);
-			break;
-		case LocationPropertyEditor.CENTRE:
-			res = new Point(-wid / 2, -(blockHeight / 2));
-			// res = new Point(-wid / 2, -(blockHeight / 2) - lineHeight);
-			// res = new Point(0, -(blockHeight / 2) - lineHeight);
-			res.translate(0, _theFixedOffset.height + verticalBalance);
-			break;
-		}
+    // where are we to be positioned
+    switch (_theRelativeLocation)
+    {
+      case LocationPropertyEditor.LEFT:
+        res = new Point(-(wid + horizBalance) - 2, -(blockHeight / 2) + 1);
+        // res = new Point(-(wid + horizBalance), verticalBalance);
+        res.translate(-_theFixedOffset.width / 2, verticalBalance);
+        break;
+      case LocationPropertyEditor.RIGHT:
+        // res = new Point(wid/2 + horizBalance, -(blockHeight / 2));
+        res = new Point(horizBalance + 4, -(blockHeight / 2) + 2);
+        res.translate(_theFixedOffset.width / 2, verticalBalance);
+        break;
+      case LocationPropertyEditor.TOP:
+        res =
+            new Point(-wid / 2 - horizBalance / 2, -(blockHeight - lineHeight));
+        res.translate(0, -_theFixedOffset.height - verticalBalance);
+        break;
+      case LocationPropertyEditor.BOTTOM:
+        res = new Point(-wid / 2 - horizBalance / 2, 2 * lineHeight);
+        res.translate(0, _theFixedOffset.height - verticalBalance - 4);
+        break;
+      case LocationPropertyEditor.CENTRE:
+      case NullableLocationPropertyEditor.AUTO:
+      default:
+        res = new Point(-wid / 2, -(blockHeight / 2));
+        // res = new Point(-wid / 2, -(blockHeight / 2) - lineHeight);
+        // res = new Point(0, -(blockHeight / 2) - lineHeight);
+        res.translate(0, _theFixedOffset.height + verticalBalance);
+        break;
+   }
 
 		// System.out.println("res is:" + res);
 
