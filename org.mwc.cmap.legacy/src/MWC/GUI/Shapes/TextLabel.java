@@ -603,11 +603,9 @@ public class TextLabel extends PlainShape implements Editable
     {
       case LocationPropertyEditor.LEFT:
         res = new Point(-(wid + horizBalance) - 2, -(blockHeight / 2) + 1);
-        // res = new Point(-(wid + horizBalance), verticalBalance);
         res.translate(-_theFixedOffset.width / 2, verticalBalance);
         break;
       case LocationPropertyEditor.RIGHT:
-        // res = new Point(wid/2 + horizBalance, -(blockHeight / 2));
         res = new Point(horizBalance + 4, -(blockHeight / 2) + 2);
         res.translate(_theFixedOffset.width / 2, verticalBalance);
         break;
@@ -624,13 +622,11 @@ public class TextLabel extends PlainShape implements Editable
       case NullableLocationPropertyEditor.AUTO:
       default:
         res = new Point(-wid / 2, -(blockHeight / 2));
-        // res = new Point(-wid / 2, -(blockHeight / 2) - lineHeight);
-        // res = new Point(0, -(blockHeight / 2) - lineHeight);
         res.translate(0, _theFixedOffset.height + verticalBalance);
         break;
-   }
+    }
 
-		// System.out.println("res is:" + res);
+    // System.out.println("res is:" + res);
 
 		return res;
 	}
