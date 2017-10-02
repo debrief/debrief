@@ -1501,16 +1501,12 @@ public class ZoneChart extends Composite
         createButton(col1, SWT.TOGGLE, mergeImg24, "Merge", "Merge zones", null);
     final Button split =
         createButton(col1, SWT.TOGGLE, splitImg24, "Split", "Split zones", null);
-    final Button switcher =
-        createButton(col1, SWT.TOGGLE, switchImg24, "Switch",
-            "Switch leg to other TA bearing", null);
 
     List<Button> buttons = new ArrayList<Button>();
     buttons.add(edit);
     buttons.add(zoom);
     buttons.add(merge);
     buttons.add(split);
-    buttons.add(switcher);
 
     // start off in edit mode
     edit.setSelection(true);
@@ -1519,12 +1515,21 @@ public class ZoneChart extends Composite
     zoom.addSelectionListener(new RadioEvent(buttons, zoom, EditMode.ZOOM));
     merge.addSelectionListener(new RadioEvent(buttons, merge, EditMode.MERGE));
     split.addSelectionListener(new RadioEvent(buttons, split, EditMode.SPLIT));
-    switcher.addSelectionListener(new RadioEvent(buttons, switcher,
-        EditMode.SWITCH));
 
-    // introduce a placeholder, to separate the mode toggles from the command ones
-    @SuppressWarnings("unused")
-    final Label placeHolder = new Label(col1, SWT.NONE);
+    // only add switcher mode if we have an ambiguity resolver
+    if (resolveAmbiguityEvent != null)
+    {
+      final Button switcher =
+          createButton(col1, SWT.TOGGLE, switchImg24, "Switch",
+              "Switch leg to other TA bearing", null);
+      buttons.add(switcher);
+      switcher.addSelectionListener(new RadioEvent(buttons, switcher,
+          EditMode.SWITCH));
+
+      // introduce a placeholder, to separate the mode toggles from the command ones
+      @SuppressWarnings("unused")
+      final Label placeHolder = new Label(col1, SWT.NONE);
+    }
 
     @SuppressWarnings("unused")
     final Button fitToWin =
@@ -1997,7 +2002,8 @@ public class ZoneChart extends Composite
         .getLastMillisecond();
   }
 
-  /** get the time period covered by this zone chart
+  /**
+   * get the time period covered by this zone chart
    * 
    * @return
    */
@@ -2006,8 +2012,10 @@ public class ZoneChart extends Composite
     XYPlot plot = (XYPlot) chart.getPlot();
     double lower = plot.getDomainAxis().getLowerBound();
     double upper = plot.getDomainAxis().getUpperBound();
-    TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate((long) lower), new HiResDate((long) upper));
-        
+    TimePeriod res =
+        new TimePeriod.BaseTimePeriod(new HiResDate((long) lower),
+            new HiResDate((long) upper));
+
     return res;
   }
 }

@@ -60,6 +60,7 @@ import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
+import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -576,15 +577,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final double bearing1 = cut.getBearing();
         final double bearing2 = cut.getAmbiguousBearing();
 
-        if (leg.keepFirst)
+        switch (leg.bearing)
         {
-          cut.setBearing(bearing2);
-          cut.setAmbiguousBearing(bearing1);
-        }
-        else
-        {
-          cut.setBearing(bearing1);
-          cut.setAmbiguousBearing(bearing2);
+          case CORE:
+            cut.setBearing(bearing2);
+            cut.setAmbiguousBearing(bearing1);
+            break;
+          case AMBIGUOUS:
+            cut.setBearing(bearing1);
+            cut.setAmbiguousBearing(bearing2);
+            break;
+          default:
+            break;
         }
 
         // remember we're morally ambiguous
@@ -633,7 +637,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
   }
 
-  protected void deleteCutsInTurnB()
+  protected static void deleteCutsInTurnB(TrackWrapper primaryTrack,
+      Runnable updateData, ZoneChart ownshipZoneChart,
+      ZoneUndoRedoProvider undoRedoProvider)
   {
     final Zone[] ownshipZones = ownshipZoneChart.getZones();
 
@@ -644,17 +650,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
       // ok, produce the list of cuts to cull
       final LegOfCuts cutsToDelete =
-          findCutsNotInZones(ownshipZones, outerPeriod);
+          findCutsNotInZones(ownshipZones, outerPeriod, primaryTrack);
 
-      final Runnable updateData = new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          updateData(true);
-        }
-      };
       // delete this list of cuts
       final IUndoableOperation deleteOperation =
           new DeleteCutsOperation(cutsToDelete, updateData, ownshipZoneChart);
@@ -666,7 +663,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     {
       CorePlugin.showMessage("Resolve Ambiguity", "Please slice data first");
     }
-
   }
 
   @Override
@@ -686,12 +682,11 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   }
 
-  private LegOfCuts findCutsNotInZones(final Zone[] zones,
-      final TimePeriod outerPeriod)
+  private static LegOfCuts findCutsNotInZones(final Zone[] zones,
+      final TimePeriod outerPeriod, TrackWrapper primaryTrack)
   {
     final LegOfCuts res = new LegOfCuts();
-    final Enumeration<Editable> sensors =
-        _myHelper.getPrimaryTrack().getSensors().elements();
+    final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
     while (sensors.hasMoreElements())
     {
       final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
@@ -740,7 +735,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       @Override
       public void run()
       {
-        deleteCutsInTurnB();
+        final Runnable updateData = new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            updateData(true);
+          }
+        };
+
+        deleteCutsInTurnB(_myHelper.getPrimaryTrack(), updateData,
+            ownshipZoneChart, undoRedoProvider);
       }
     };
   }
@@ -996,7 +1002,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     // and refresh
     updateData(true);
-
   }
 
   @Override
