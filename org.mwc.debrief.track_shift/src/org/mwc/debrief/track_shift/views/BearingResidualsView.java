@@ -146,11 +146,15 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final double MAX_STEADY =
             TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
                 PreferenceConstants.MAX_STEADY);
+        final double MIN_LEG_LENGTH =
+            TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+                PreferenceConstants.MIN_LEG_LENGTH);
         final AmbiguityResolver resolver = new AmbiguityResolver();
         final Logger logger = getLogger();
         _ambiguousResolverLegsAndCuts =
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
-                .getPrimaryTrack(), MIN_ZIG, MAX_STEADY, logger, ambigScores);
+                .getPrimaryTrack(), MIN_ZIG, MAX_STEADY, MIN_LEG_LENGTH,
+                logger, ambigScores);
         zones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
         {
@@ -490,7 +494,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
-          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, null, null);
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
+              null);
       final List<LegOfCuts> legs = res.getLegs();
       final LegOfCuts zigs = res.getZigs();
 
@@ -636,7 +641,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     {
       // find the time period of hte chart
       final TimePeriod outerPeriod = ownshipZoneChart.getPeriod();
-      
+
       // ok, produce the list of cuts to cull
       final LegOfCuts cutsToDelete =
           findCutsNotInZones(ownshipZones, outerPeriod);
@@ -659,8 +664,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
     else
     {
-      CorePlugin.showMessage("Resolve Ambiguity",
-          "Please slice data first");
+      CorePlugin.showMessage("Resolve Ambiguity", "Please slice data first");
     }
 
   }

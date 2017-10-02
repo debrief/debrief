@@ -313,4 +313,20 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
     }
     return weighting;
   }
+
+  public double getPeriodSecs()
+  {
+    final double res;
+    if(!isEmpty())
+    {
+      double first = get(0).getDTG().getDate().getTime();
+      double last = get(size()-1).getDTG().getDate().getTime();
+      res = (last - first) / 1000;
+    }
+    else
+    {
+      res = 0d;
+    }
+    return res;
+  }
 }

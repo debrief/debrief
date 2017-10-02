@@ -55,6 +55,8 @@ public class AmbiguityPrefs extends FieldEditorPreferencePage implements
         "Minimum ambiguity rate delta to treat as manoeuvering, such as 0.6 (degs/sec)", getFieldEditorParent()));
     addField(new StringFieldEditor(PreferenceConstants.MAX_STEADY,
         "Maximum ambiguity rate delta to treat as steady, such as 0.2 (degs/sec)", getFieldEditorParent()));
+    addField(new StringFieldEditor(PreferenceConstants.MIN_LEG_LENGTH,
+        "Minimum period of steady cuts to count as a leg (secs)", getFieldEditorParent()));
     addField(new BooleanFieldEditor(PreferenceConstants.DIAGNOSTICS,
         "Output slicing diagnostics to Error Log", getFieldEditorParent()));
     addField(new BooleanFieldEditor(PreferenceConstants.DISPLAY,
