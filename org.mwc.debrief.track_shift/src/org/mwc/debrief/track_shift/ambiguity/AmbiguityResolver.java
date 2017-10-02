@@ -712,100 +712,7 @@ public class AmbiguityResolver
     return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
   }
 
-  public List<ResolvedLeg> resolve(final List<LegOfCuts> legs)
-  {
-    final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
-
-    final List<LegPermutation> listOfPermutations = new ArrayList<LegPermutation>();
-
-    // ok, loop through the legs
-    LegOfCuts lastLeg = null;
-    LegPermutation lastPerm = null;
-    for (final LegOfCuts leg : legs)
-    {
-
-      // generate the curves
-      final double[] coreSlopeEarly =
-          leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
-      final double[] ambigSlopeEarly =
-          leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
-      final double[] coreSlopeLate =
-          leg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
-      final double[] ambigSlopeLate =
-          leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
-
-      // now put them into a permutation
-      final LegPermutation thisPerm =
-          new LegPermutation(leg, coreSlopeEarly, ambigSlopeEarly,
-              coreSlopeLate, ambigSlopeLate);
-
-      // have we already processed a leg?
-      if (lastLeg != null)
-      {
-        final long midTime = midTimeFor(lastLeg, leg);
-
-        // sort out the after scores for the last leg
-        lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
-        lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
-
-        // and the early scores for this leg
-        thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
-        thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
-      }
-
-      // store the leg permutation
-      listOfPermutations.add(thisPerm);
-
-      lastLeg = leg;
-      lastPerm = thisPerm;
-    }
-
-    // ok, now work through the permutations
-    final List<ArrayList<PermScore>> overallScores =
-        new ArrayList<ArrayList<PermScore>>();
-    
-    // ok, produce a list of permutations, with scores
-    walkScores(listOfPermutations, 1, null, null, overallScores);
-
-    // we now need to sort them into ascending order
-    final Comparator<ArrayList<PermScore>> sorter =
-        getPermComparator();
-    overallScores.sort(sorter);
-
-    // get the best performing one
-    final ArrayList<PermScore> winner = overallScores.get(0);
-
-    // ok, set the legs to the correct permutation
-    boolean firstZig = true;
-    for (final PermScore zig : winner)
-    {
-      if (firstZig)
-      {
-        // SPECIAL CASE:
-        // for the first zig we handle the previous leg
-        
-        // ditch the side we don't want
-        ditchBearingsForThisLeg(zig.lastLeg, zig.lastB);
-        
-        // remember the leg
-        res.add(new ResolvedLeg(zig.lastLeg, zig.lastB));
-        
-        firstZig = false;
-      }
-      
-      // for all legs we handle the following leg
-
-      // ditch the side we don't want
-      ditchBearingsForThisLeg(zig.thisLeg, zig.thisB);
-      
-      // remember the leg
-      res.add(new ResolvedLeg(zig.thisLeg, zig.thisB));
-    }
-
-    return res;
-  }
-
-  private Comparator<ArrayList<PermScore>> getPermComparator()
+  private static Comparator<ArrayList<PermScore>> getPermComparator()
   {
     return new Comparator<ArrayList<PermScore>>()
     {
@@ -837,6 +744,103 @@ public class AmbiguityResolver
       }
 
     };
+  }
+
+  public List<ResolvedLeg> resolve(final List<LegOfCuts> legs)
+  {
+    final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
+
+    final List<LegPermutation> listOfPermutations =
+        new ArrayList<LegPermutation>();
+
+    // ok, loop through the legs
+    LegOfCuts lastLeg = null;
+    LegPermutation lastPerm = null;
+    for (final LegOfCuts leg : legs)
+    {
+
+      // generate the curves
+      final double[] coreSlopeEarly =
+          leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
+      final double[] ambigSlopeEarly =
+          leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
+      final double[] coreSlopeLate =
+          leg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
+      final double[] ambigSlopeLate =
+          leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
+
+      // special handling. if this has already been resolved, we can skip it
+      if (ambigSlopeEarly != null && ambigSlopeLate != null)
+      {
+        // now put them into a permutation
+        final LegPermutation thisPerm =
+            new LegPermutation(leg, coreSlopeEarly, ambigSlopeEarly,
+                coreSlopeLate, ambigSlopeLate);
+
+        // have we already processed a leg?
+        if (lastLeg != null)
+        {
+          final long midTime = midTimeFor(lastLeg, leg);
+
+          // sort out the after scores for the last leg
+          lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
+          lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
+
+          // and the early scores for this leg
+          thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
+          thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
+        }
+
+        // store the leg permutation
+        listOfPermutations.add(thisPerm);
+        lastPerm = thisPerm;
+      }
+
+      lastLeg = leg;
+    }
+
+    // ok, now work through the permutations
+    final List<ArrayList<PermScore>> overallScores =
+        new ArrayList<ArrayList<PermScore>>();
+
+    // ok, produce a list of permutations, with scores
+    walkScores(listOfPermutations, 1, null, null, overallScores);
+
+    // we now need to sort them into ascending order
+    final Comparator<ArrayList<PermScore>> sorter = getPermComparator();
+    overallScores.sort(sorter);
+
+    // get the best performing one
+    final ArrayList<PermScore> winner = overallScores.get(0);
+
+    // ok, set the legs to the correct permutation
+    boolean firstZig = true;
+    for (final PermScore zig : winner)
+    {
+      if (firstZig)
+      {
+        // SPECIAL CASE:
+        // for the first zig we handle the previous leg
+
+        // ditch the side we don't want
+        ditchBearingsForThisLeg(zig.lastLeg, zig.lastB);
+
+        // remember the leg
+        res.add(new ResolvedLeg(zig.lastLeg, zig.lastB));
+
+        firstZig = false;
+      }
+
+      // for all legs we handle the following leg
+
+      // ditch the side we don't want
+      ditchBearingsForThisLeg(zig.thisLeg, zig.thisB);
+
+      // remember the leg
+      res.add(new ResolvedLeg(zig.thisLeg, zig.thisB));
+    }
+
+    return res;
   }
 
   /**
@@ -1166,7 +1170,7 @@ public class AmbiguityResolver
    *          the min period required to treat it as a leg
    * @return yes/no
    */
-  private boolean stillCacheing(final LegOfCuts possLeg, final long thisTime,
+  private static boolean stillCacheing(final LegOfCuts possLeg, final long thisTime,
       final long minLength)
   {
     final boolean res;
@@ -1184,7 +1188,7 @@ public class AmbiguityResolver
     return res;
   }
 
-  private void walkScores(final List<LegPermutation> legs, final int curLeg,
+  private static void walkScores(final List<LegPermutation> legs, final int curLeg,
       final List<PermScore> thisPermSoFar, final PermScore lastScore,
       final List<ArrayList<PermScore>> finishedPerms)
   {
@@ -1212,7 +1216,8 @@ public class AmbiguityResolver
       final int thisCount = curLeg + 1;
 
       // ok, what was the last leg?
-      final WhichBearing lastBearing = lastScore == null ? null : lastScore.thisB;
+      final WhichBearing lastBearing =
+          lastScore == null ? null : lastScore.thisB;
 
       // ok, sort out the four permutations
 
@@ -1222,19 +1227,17 @@ public class AmbiguityResolver
         walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
             thisPerm, WhichBearing.CORE, WhichBearing.CORE), finishedPerms);
         walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-            thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS),
-            finishedPerms);
+            thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS), finishedPerms);
       }
 
       // if we had a previous leg, was if resolved as AMBIGUOUS?
       if (lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
       {
-        walkScores(legs, thisCount, newScores,
-            new PermScore(lastPerm, thisPerm, WhichBearing.AMBIGUOUS,
-                WhichBearing.AMBIGUOUS), finishedPerms);
         walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-            thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE),
+            thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS),
             finishedPerms);
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+            thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE), finishedPerms);
       }
     }
     else
