@@ -133,15 +133,13 @@ public class MergeTracks implements RightClickContextItemGenerator
       final String title =
           "Merge track segments - into new track: " + safeTargetTrackName;
 
-      final TrackWrapper newTrack = new TrackWrapper();
-      newTrack.setName(safeTargetTrackName);
       // create this operation
       final Action doMerge = new Action(title)
       {
         public void run()
         {
           final IUndoableOperation theAction =
-              new MergeTracksOperation(title, newTrack, theLayers,
+              new MergeTracksOperation(title, null, safeTargetTrackName, theLayers,
                   parentLayers, subjects);
 
           CorePlugin.run(theAction);
@@ -227,14 +225,16 @@ public class MergeTracks implements RightClickContextItemGenerator
     protected final Layers _layers;
     protected final Layer[] _parents;
     protected final Editable[] _subjects;
-    protected final Editable _target;
+    protected Editable _target;
+    private final String _trackName;
 
     public MergeTracksOperation(final String title, final Editable target,
-        final Layers theLayers, final Layer[] parentLayers,
+        final String trackName, final Layers theLayers, final Layer[] parentLayers,
         final Editable[] subjects)
     {
       super(title);
       _target = target;
+      _trackName = trackName;
       _layers = theLayers;
       _parents = parentLayers;
       _subjects = subjects;
@@ -244,7 +244,14 @@ public class MergeTracks implements RightClickContextItemGenerator
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-
+      if(_target == null)
+      {
+        TrackWrapper target = new TrackWrapper();
+        target.setName(_trackName);
+        
+        _target = target;
+      }
+      
       final int res =
           TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects);
 
@@ -296,7 +303,7 @@ public class MergeTracks implements RightClickContextItemGenerator
         final Editable target, final Layers theLayers,
         final Layer[] parentLayers, final Editable[] subjects)
     {
-      super(title, target, theLayers, parentLayers, subjects);
+      super(title, target, null, theLayers, parentLayers, subjects);
     }
 
     public IStatus
