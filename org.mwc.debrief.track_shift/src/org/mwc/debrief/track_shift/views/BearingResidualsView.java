@@ -385,7 +385,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       return res;
     }
   }
-
+  
   private class ResolveCutsOperationAmbig extends CMAPOperation
   {
 
@@ -576,15 +576,17 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final double bearing1 = cut.getBearing();
         final double bearing2 = cut.getAmbiguousBearing();
 
-        if (leg.keepFirst)
+        switch (leg.bearing)
         {
-          cut.setBearing(bearing2);
-          cut.setAmbiguousBearing(bearing1);
-        }
-        else
-        {
-          cut.setBearing(bearing1);
-          cut.setAmbiguousBearing(bearing2);
+          case CORE:
+            cut.setBearing(bearing2);
+            cut.setAmbiguousBearing(bearing1);
+            break;
+          case AMBIGUOUS:
+            cut.setBearing(bearing1);
+            cut.setAmbiguousBearing(bearing2);
+          default:
+            break;
         }
 
         // remember we're morally ambiguous
