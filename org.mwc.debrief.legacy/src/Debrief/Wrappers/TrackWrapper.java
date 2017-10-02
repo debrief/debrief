@@ -3420,37 +3420,37 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
       else
       {
+        final WorldLocation theLoc = thisE.getTrackStart();
+
+        // hey, don't abuse the track label - create a fresh one each time
+        final TextLabel label = new TextLabel(theLoc, thisE.getName());
 
         // is the first track a DR track?
         if (thisE.getPlotRelative())
         {
-          _theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
+          label.setFont(label.getFont().deriveFont(Font.ITALIC));
         }
         else if (_theLabel.getFont().isItalic())
         {
-          _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+          label.setFont(label.getFont().deriveFont(Font.PLAIN));
         }
 
-        final WorldLocation theLoc = thisE.getTrackStart();
-        final String oldTxt = _theLabel.getString();
-        _theLabel.setString(thisE.getName());
         // just see if this is a planning segment, with its own colors
+        final Color color;
         if (thisE instanceof PlanningSegment)
         {
           final PlanningSegment ps = (PlanningSegment) thisE;
-          _theLabel.setColor(ps.getColor());
+          color = ps.getColor();
         }
         else
         {
-          _theLabel.setColor(getColor());
+          color = getColor();
         }
-        _theLabel.setLocation(theLoc);
-        _theLabel.paint(dest);
-        _theLabel.setString(oldTxt);
+        label.setColor(color);
+        label.setLocation(theLoc);
+        label.paint(dest);
       }
-
     }
-
   }
 
   // ////////////////////////////////////////////////////
