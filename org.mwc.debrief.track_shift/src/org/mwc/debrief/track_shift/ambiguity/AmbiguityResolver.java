@@ -734,30 +734,34 @@ public class AmbiguityResolver
       final double[] ambigSlopeLate =
           leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
 
-      // now put them into a permutation
-      final LegPermutation thisPerm =
-          new LegPermutation(leg, coreSlopeEarly, ambigSlopeEarly,
-              coreSlopeLate, ambigSlopeLate);
-
-      // have we already processed a leg?
-      if (lastLeg != null)
+      // special handling. if this has already been resolved, we can skip it
+      if(ambigSlopeEarly != null && ambigSlopeLate != null)
       {
-        final long midTime = midTimeFor(lastLeg, leg);
+        // now put them into a permutation
+        final LegPermutation thisPerm =
+            new LegPermutation(leg, coreSlopeEarly, ambigSlopeEarly,
+                coreSlopeLate, ambigSlopeLate);
 
-        // sort out the after scores for the last leg
-        lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
-        lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
+        // have we already processed a leg?
+        if (lastLeg != null)
+        {
+          final long midTime = midTimeFor(lastLeg, leg);
 
-        // and the early scores for this leg
-        thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
-        thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
+          // sort out the after scores for the last leg
+          lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
+          lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
+
+          // and the early scores for this leg
+          thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
+          thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
+        }
+
+        // store the leg permutation
+        listOfPermutations.add(thisPerm);
+        lastPerm = thisPerm;
       }
 
-      // store the leg permutation
-      listOfPermutations.add(thisPerm);
-
       lastLeg = leg;
-      lastPerm = thisPerm;
     }
 
     // ok, now work through the permutations
