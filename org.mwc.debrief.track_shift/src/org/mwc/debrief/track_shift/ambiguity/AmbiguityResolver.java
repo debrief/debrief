@@ -5,9 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -32,6 +31,19 @@ import MWC.GenericData.TimePeriod;
 
 public class AmbiguityResolver
 {
+  private static class LegPermutation
+  {
+    private double[] coreSlopeEarly;
+    private double[] ambigSlopeEarly;
+    private double[] coreSlopeLate;
+    private double[] ambigSlopeLate;
+    private LegOfCuts leg;
+    public double coreBefore;
+    public double ambigBefore;
+    public double coreAfter;
+    public double ambigAfter;
+  }
+
   public static class LegsAndZigs
   {
     private final List<LegOfCuts> legs;
@@ -55,37 +67,80 @@ public class AmbiguityResolver
 
   }
 
-  private static class Perm implements Comparable<Perm>
+  private static class PermScore
   {
-    private final double score;
-    private final boolean firstOne;
-    private final boolean secondOne;
 
-    public Perm(final double score, final boolean firstOne,
-        final boolean secondOne)
+    final private WhichBearing lastB;
+    final private WhichBearing thisB;
+    final private double thisScore;
+    private final LegOfCuts lastLeg;
+    private final LegOfCuts thisLeg;
+
+    public PermScore(final LegPermutation lastPerm,
+        final LegPermutation thisPerm, final WhichBearing lastB,
+        final WhichBearing thisB, final int thisCount)
     {
-      this.score = score;
-      this.firstOne = firstOne;
-      this.secondOne = secondOne;
+      this.lastLeg = lastPerm.leg;
+      this.thisLeg = thisPerm.leg;
+      this.lastB = lastB;
+      this.thisB = thisB;
+
+      // retrieve the bearings
+      final double beforeBearing;
+      switch (lastB)
+      {
+        case CORE:
+          beforeBearing = lastPerm.coreAfter;
+          break;
+        case AMBIGUOUS:
+        default:
+          beforeBearing = lastPerm.ambigAfter;
+          break;
+      }
+
+      final double afterBearing;
+      switch (thisB)
+      {
+        case CORE:
+          afterBearing = thisPerm.coreBefore;
+          break;
+        case AMBIGUOUS:
+        default:
+          afterBearing = thisPerm.ambigBefore;
+          break;
+      }
+
+      // ok, sort out the minimum angle between the two
+      double score = afterBearing - beforeBearing;
+      if (score > 180)
+      {
+        score -= 360;
+      }
+      else if (score < -180)
+      {
+        score += 360;
+      }
+
+      thisScore = Math.abs(score);
     }
 
     @Override
-    public int compareTo(final Perm o)
+    public String toString()
     {
-      final Double dScore = score;
-      return dScore.compareTo(o.score);
+      return "( " + lastB + "-" + thisB + " :" + (int) thisScore + ")";
     }
+
   }
 
   public static class ResolvedLeg
   {
-    public final boolean keepFirst;
+    public final WhichBearing bearing;
     public final LegOfCuts leg;
 
-    public ResolvedLeg(final LegOfCuts leg, final boolean keepFirst)
+    public ResolvedLeg(final LegOfCuts leg, final WhichBearing bearing)
     {
       this.leg = leg;
-      this.keepFirst = keepFirst;
+      this.bearing = bearing;
     }
   }
 
@@ -385,16 +440,16 @@ public class AmbiguityResolver
       assertFalse("not ambig", leg1.get(0).getHasAmbiguousBearing());
       assertFalse("not ambig", leg2.get(0).getHasAmbiguousBearing());
       assertFalse("not ambig", leg3.get(0).getHasAmbiguousBearing());
-      assertFalse("not ambig", leg4.get(0).getHasAmbiguousBearing());
-      assertFalse("not ambig", leg5.get(0).getHasAmbiguousBearing());
-      assertFalse("not ambig", leg6.get(0).getHasAmbiguousBearing());
-
-      assertEquals("correct bearing", 180d, leg1.get(0).getBearing());
-      assertEquals("correct bearing", 182d, leg2.get(0).getBearing());
-      assertEquals("correct bearing", 200d, leg3.get(0).getBearing());
-      assertEquals("correct bearing", 260d, leg4.get(0).getBearing());
-      assertEquals("correct bearing", 41d, leg5.get(0).getBearing());
-      assertEquals("correct bearing", 350d, leg6.get(0).getBearing());
+      // assertFalse("not ambig", leg4.get(0).getHasAmbiguousBearing());
+      // assertFalse("not ambig", leg5.get(0).getHasAmbiguousBearing());
+      // assertFalse("not ambig", leg6.get(0).getHasAmbiguousBearing());
+      //
+      // assertEquals("correct bearing", 180d, leg1.get(0).getBearing());
+      // assertEquals("correct bearing", 182d, leg2.get(0).getBearing());
+      // assertEquals("correct bearing", 200d, leg3.get(0).getBearing());
+      // assertEquals("correct bearing", 260d, leg4.get(0).getBearing());
+      // assertEquals("correct bearing", 41d, leg5.get(0).getBearing());
+      // assertEquals("correct bearing", 350d, leg6.get(0).getBearing());
 
     }
 
@@ -566,6 +621,16 @@ public class AmbiguityResolver
     return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
   }
 
+  private static double scoreFor(final ArrayList<PermScore> list)
+  {
+    double total = 0;
+    for (final PermScore item : list)
+    {
+      total += item.thisScore;
+    }
+    return total;
+  }
+
   /**
    * trim the supplied value to the 0..360 domain
    * 
@@ -608,24 +673,8 @@ public class AmbiguityResolver
     return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
   }
 
-  private List<ArrayList<PermScore>> scores = new ArrayList<ArrayList<PermScore>>();
-
-  private double calcDelta(final double one, final double two)
-  {
-    double res = Math.abs(one - two);
-    while (res > 360d)
-    {
-      res -= 360d;
-    }
-    while (res <= -360d)
-    {
-      res += 360d;
-    }
-    return res;
-  }
-
   private void ditchBearingsForThisLeg(final LegOfCuts leg,
-      final boolean keepFirst)
+      final WhichBearing bearing)
   {
     for (final SensorContactWrapper cut : leg)
     {
@@ -633,15 +682,17 @@ public class AmbiguityResolver
       final double bearing1 = cut.getBearing();
       final double bearing2 = cut.getAmbiguousBearing();
 
-      if (keepFirst)
+      switch (bearing)
       {
-        cut.setBearing(bearing1);
-        cut.setAmbiguousBearing(bearing2);
-      }
-      else
-      {
-        cut.setBearing(bearing2);
-        cut.setAmbiguousBearing(bearing1);
+        case CORE:
+          cut.setBearing(bearing1);
+          cut.setAmbiguousBearing(bearing2);
+          break;
+        case AMBIGUOUS:
+        default:
+          cut.setBearing(bearing2);
+          cut.setAmbiguousBearing(bearing1);
+          break;
       }
 
       // remember we're morally ambiguous
@@ -713,108 +764,212 @@ public class AmbiguityResolver
     }
   }
 
-  public List<ResolvedLeg> resolveOld(final List<LegOfCuts> legs)
+  private void postScores(final List<ArrayList<PermScore>> scores,
+      final ArrayList<PermScore> newScores)
+  {
+    scores.add(newScores);
+  }
+
+  public List<ResolvedLeg> resolve(final List<LegOfCuts> legs)
   {
     final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
 
+    final List<LegPermutation> pList = new ArrayList<LegPermutation>();
+
     // ok, loop through the legs
     LegOfCuts lastLeg = null;
+    LegPermutation lastPerm = null;
     for (final LegOfCuts leg : legs)
     {
+      final LegPermutation thisPerm = new LegPermutation();
+      thisPerm.coreSlopeEarly =
+          leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
+      thisPerm.ambigSlopeEarly =
+          leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
+      thisPerm.coreSlopeLate =
+          leg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
+      thisPerm.ambigSlopeLate =
+          leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
+
       if (lastLeg != null)
       {
-        // find the time 1/2 way between the legs
         final long midTime = midTimeFor(lastLeg, leg);
 
-        // ok, retrieve slopes
-        final double[] lastSlopeOne =
-            lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
-        final double[] lastSlopeTwo =
-            lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
+        // sort out the after scores for the last leg
+        lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
+        lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
 
-        // and generate the slope for this leg
-        final double[] thisSlopeOne =
-            leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
-        final double[] thisSlopeTwo =
-            leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
-
-        // hmm, see if this has already been resolved
-        if (thisSlopeTwo == null)
-        {
-          continue;
-        }
-
-        // get the slope scores we know we need. Note: when we generate the
-        // value for the second leg, we use our knowledge of the end of
-        // the first leg to ensure we keep the resulting value in
-        // roughly the correct domain
-        final double lastSlopeValOne =
-            trim(valueAt(midTime, lastSlopeOne), null);
-        final double nextSlopeValOne =
-            trim(valueAt(midTime, thisSlopeOne), lastSlopeValOne);
-        final double nextSlopeValTwo =
-            trim(valueAt(midTime, thisSlopeTwo), lastSlopeValOne);
-
-        // ok, is the first track resolved?
-        if (lastSlopeTwo == null)
-        {
-          // ok, the previous leg has been sorted. just sort this leg
-          final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
-          final double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
-
-          final List<Perm> items = new ArrayList<>();
-          items.add(new Perm(oneone, true, true));
-          items.add(new Perm(onetwo, true, false));
-
-          Collections.sort(items);
-
-          // check that the two solutions aren't too similar. If they are,
-          // then it would be better to move onto the next leg.
-          final Perm closest = items.get(0);
-          final Perm nextClosest = items.get(1);
-          final double firstTwoDiff =
-              Math.abs(nextClosest.score - closest.score);
-          final double cutOff = 10d;
-          if (firstTwoDiff > cutOff)
-          {
-            ditchBearingsForThisLeg(leg, closest.secondOne);
-            res.add(new ResolvedLeg(leg, closest.secondOne));
-          }
-        }
-        else
-        {
-          // ok, we've got to compare both of them
-          final double lastSlopeValTwo =
-              trim(valueAt(midTime, lastSlopeTwo), null);
-
-          // find the difference in the legs
-          final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
-          final double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
-          final double twoone = calcDelta(lastSlopeValTwo, nextSlopeValOne);
-          final double twotwo = calcDelta(lastSlopeValTwo, nextSlopeValTwo);
-
-          // store the permutations
-          final List<Perm> items = new ArrayList<>();
-          items.add(new Perm(oneone, true, true));
-          items.add(new Perm(onetwo, true, false));
-          items.add(new Perm(twoone, false, true));
-          items.add(new Perm(twotwo, false, false));
-
-          // sort the permutations, so we can easily get the best
-          Collections.sort(items);
-          final Perm closest = items.get(0);
-
-          // ditch the unnecessary bearing
-          ditchBearingsForThisLeg(lastLeg, closest.firstOne);
-          ditchBearingsForThisLeg(leg, closest.secondOne);
-
-          // remember what we've done.
-          res.add(new ResolvedLeg(lastLeg, closest.firstOne));
-          res.add(new ResolvedLeg(leg, closest.secondOne));
-        }
+        // and the early scores for this leg
+        thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
+        thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
       }
+
+      thisPerm.leg = leg;
+      pList.add(thisPerm);
+
       lastLeg = leg;
+      lastPerm = thisPerm;
     }
+
+    // ok, now work through the permutations
+    final List<PermScore> scores = new ArrayList<PermScore>();
+
+    final List<ArrayList<PermScore>> overallScores =
+        new ArrayList<ArrayList<PermScore>>();
+    walkScores(pList, 1, scores, null, overallScores);
+
+    final Comparator<ArrayList<PermScore>> sorter =
+        new Comparator<ArrayList<PermScore>>()
+        {
+
+          @Override
+          public int compare(final ArrayList<PermScore> d1,
+              final ArrayList<PermScore> d2)
+          {
+            final int res;
+
+            final double d1Total = scoreFor(d1);
+            final double d2Total = scoreFor(d2);
+
+            if (d1Total < d2Total)
+            {
+              res = -1;
+            }
+            else if (d1Total > d2Total)
+            {
+              res = 1;
+            }
+            else
+            {
+              res = 0;
+            }
+
+            return res;
+
+          }
+
+        };
+    overallScores.sort(sorter);
+
+    // and now output it
+    // for (ArrayList<PermScore> score : overallScores)
+    // {
+    // for (PermScore item : score)
+    // {
+    // System.out.print(item.toString() + " ");
+    // }
+    // System.out.println("   " + scoreFor(score));
+    // }
+
+    final ArrayList<PermScore> winner = overallScores.get(0);
+
+    // ok, set the legs to the correct permutation
+    boolean firstZig = true;
+    for (final PermScore zig : winner)
+    {
+      if (firstZig)
+      {
+        // ok, for this one - we do update the before leg
+        firstZig = false;
+        ditchBearingsForThisLeg(zig.lastLeg, zig.lastB);
+        res.add(new ResolvedLeg(zig.lastLeg, zig.lastB));
+      }
+
+      // now update the second leg
+      ditchBearingsForThisLeg(zig.thisLeg, zig.thisB);
+      res.add(new ResolvedLeg(zig.thisLeg, zig.thisB));
+    }
+
+    // if (lastLeg != null)
+    // {
+    // // find the time 1/2 way between the legs
+    // final long midTime = midTimeFor(lastLeg, leg);
+    //
+    // // ok, retrieve slopes
+    // final double[] lastSlopeOne =
+    // lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
+    // final double[] lastSlopeTwo =
+    // lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
+    //
+    //
+    // // hmm, see if this has already been resolved
+    // if (thisSlopeTwo == null)
+    // {
+    // continue;
+    // }
+    //
+    // // get the slope scores we know we need. Note: when we generate the
+    // // value for the second leg, we use our knowledge of the end of
+    // // the first leg to ensure we keep the resulting value in
+    // // roughly the correct domain
+    // final double lastSlopeValOne =
+    // trim(valueAt(midTime, lastSlopeOne), null);
+    // final double nextSlopeValOne =
+    // trim(valueAt(midTime, thisSlopeOne), lastSlopeValOne);
+    // final double nextSlopeValTwo =
+    // trim(valueAt(midTime, thisSlopeTwo), lastSlopeValOne);
+    //
+    // // ok, is the first track resolved?
+    // if (lastSlopeTwo == null)
+    // {
+    // // ok, the previous leg has been sorted. just sort this leg
+    // final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
+    // final double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
+    //
+    // final List<Perm> items = new ArrayList<>();
+    // items.add(new Perm(oneone, true, true));
+    // items.add(new Perm(onetwo, true, false));
+    //
+    // Collections.sort(items);
+    //
+    // // check that the two solutions aren't too similar. If they are,
+    // // then it would be better to move onto the next leg.
+    // final Perm closest = items.get(0);
+    // final Perm nextClosest = items.get(1);
+    // final double firstTwoDiff =
+    // Math.abs(nextClosest.score - closest.score);
+    // final double cutOff = 10d;
+    // if (firstTwoDiff > cutOff)
+    // {
+    // ditchBearingsForThisLeg(leg, closest.secondOne);
+    // res.add(new ResolvedLeg(leg, closest.secondOne));
+    // }
+    // }
+    // else
+    // {
+    // // ok, we've got to compare both of them
+    // final double lastSlopeValTwo =
+    // trim(valueAt(midTime, lastSlopeTwo), null);
+    //
+    // // find the difference in the legs
+    // final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
+    // final double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
+    // final double twoone = calcDelta(lastSlopeValTwo, nextSlopeValOne);
+    // final double twotwo = calcDelta(lastSlopeValTwo, nextSlopeValTwo);
+    //
+    // // store the permutations
+    // final List<Perm> items = new ArrayList<>();
+    // items.add(new Perm(oneone, true, true));
+    // items.add(new Perm(onetwo, true, false));
+    // items.add(new Perm(twoone, false, true));
+    // items.add(new Perm(twotwo, false, false));
+    //
+    // // sort the permutations, so we can easily get the best
+    // Collections.sort(items);
+    // final Perm closest = items.get(0);
+    //
+    // // ditch the unnecessary bearing
+    // ditchBearingsForThisLeg(lastLeg, closest.firstOne);
+    // ditchBearingsForThisLeg(leg, closest.secondOne);
+    //
+    // // remember what we've done.
+    // res.add(new ResolvedLeg(lastLeg, closest.firstOne));
+    // res.add(new ResolvedLeg(leg, closest.secondOne));
+    // }
+    // }
+    // lastLeg = leg;
+    // }
+
     return res;
   }
 
@@ -1163,48 +1318,18 @@ public class AmbiguityResolver
     return res;
   }
 
-  private static class LegPermutation
-  {
-    private double[] coreSlopeEarly;
-    private double[] ambigSlopeEarly;
-    private double[] coreSlopeLate;
-    private double[] ambigSlopeLate;
-    private LegOfCuts leg;
-    public double coreBefore;
-    public double ambigBefore;
-    public double coreAfter;
-    public double ambigAfter;
-  }
-
-  private static class PermScore
-  {
-
-    private WhichBearing lastB;
-    private WhichBearing thisB;
-    public PermScore(LegPermutation lastPerm, LegPermutation thisPerm,
-        WhichBearing lastB, WhichBearing thisB, int thisCount)
-    {
-      this.lastB = lastB;
-      this.thisB = thisB;
-      zigNum = thisCount;
-    }
-
-    int zigNum;
-    LegOfCuts.WhichBearing whichOne;
-    double thisScore;
-  }
-
   private Object walkScores(final List<LegPermutation> legs, final int curLeg,
-      final List<PermScore> scoreSoFar, final PermScore newScore)
+      final List<PermScore> scoreSoFar, final PermScore newScore,
+      final List<ArrayList<PermScore>> scores)
   {
     // take a deep copy of the clones, since we want independent copies
     final ArrayList<PermScore> newScores = new ArrayList<PermScore>();
-    if(!scoreSoFar.isEmpty())
+    if (!scoreSoFar.isEmpty())
     {
       newScores.addAll(scoreSoFar);
     }
 
-    System.out.println(curLeg);
+    // System.out.println(curLeg);
 
     // and add a new score, if there is one
     if (newScore != null)
@@ -1213,183 +1338,45 @@ public class AmbiguityResolver
     }
 
     // have we reached the end?
-    if (curLeg < legs.size() - 1)
+    if (curLeg <= legs.size() - 1)
     {
+      // ok, we can add some scores
+      final LegPermutation lastPerm = legs.get(curLeg - 1);
+      final LegPermutation thisPerm = legs.get(curLeg);
 
-      // do we have a last perm?
-      if (curLeg > 0)
+      // ok, increment the counter
+      final int thisCount = curLeg + 1;
+
+      // ok, what was the last leg?
+      final WhichBearing lastBearing = newScore == null ? null : newScore.thisB;
+
+      // ok, sort out the four permutations
+      if (lastBearing == null || lastBearing == WhichBearing.CORE)
       {
-        // ok, we can add some scores
-        LegPermutation lastPerm = legs.get(curLeg - 1);
-        LegPermutation thisPerm = legs.get(curLeg);
-
-        // ok, increment the counter
-        final int thisCount = curLeg + 1;
-
-        // ok, sort out the four permutations
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm, WhichBearing.CORE, WhichBearing.CORE, thisCount));
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS, thisCount));
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS, thisCount));
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE, thisCount));
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+            thisPerm, WhichBearing.CORE, WhichBearing.CORE, thisCount), scores);
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+            thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS, thisCount),
+            scores);
+      }
+      if (lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
+      {
+        walkScores(legs, thisCount, newScores,
+            new PermScore(lastPerm, thisPerm, WhichBearing.AMBIGUOUS,
+                WhichBearing.AMBIGUOUS, thisCount), scores);
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+            thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE, thisCount),
+            scores);
       }
     }
     else
     {
       // ok, we've reached the end. Store the score.
-      postScores(newScores);
+      postScores(scores, newScores);
     }
 
     // ok,
     return null;
-  }
-
-  
-  
-  private void postScores(ArrayList<PermScore> newScores)
-  {
-    // TODO Auto-generated method stub
-    scores.add(newScores);
-    
-    System.out.println(scores.size());
-  }
-
-  public List<ResolvedLeg> resolve(final List<LegOfCuts> legs)
-  {
-    final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
-
-    List<LegPermutation> pList = new ArrayList<LegPermutation>();
-
-    // ok, loop through the legs
-    LegOfCuts lastLeg = null;
-    LegPermutation lastPerm = null;
-    for (final LegOfCuts leg : legs)
-    {
-      LegPermutation thisPerm = new LegPermutation();
-      thisPerm.coreSlopeEarly =
-          leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
-      thisPerm.ambigSlopeEarly =
-          leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
-      thisPerm.coreSlopeLate =
-          leg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
-      thisPerm.ambigSlopeLate =
-          leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
-
-      if (lastLeg != null)
-      {
-        final long midTime = midTimeFor(lastLeg, leg);
-
-        // sort out the after scores for the last leg
-        lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
-        lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
-
-        // and the early scores for this leg
-        thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
-        thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
-      }
-
-      thisPerm.leg = leg;
-      pList.add(thisPerm);
-
-      lastLeg = leg;
-      lastPerm = thisPerm;
-    }
-
-    // ok, now work through the permutations
-    List<PermScore> scores = new ArrayList<PermScore>();
-
-    walkScores(pList, 1, scores, null);
-
-    // if (lastLeg != null)
-    // {
-    // // find the time 1/2 way between the legs
-    // final long midTime = midTimeFor(lastLeg, leg);
-    //
-    // // ok, retrieve slopes
-    // final double[] lastSlopeOne =
-    // lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
-    // final double[] lastSlopeTwo =
-    // lastLeg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
-    //
-    //
-    // // hmm, see if this has already been resolved
-    // if (thisSlopeTwo == null)
-    // {
-    // continue;
-    // }
-    //
-    // // get the slope scores we know we need. Note: when we generate the
-    // // value for the second leg, we use our knowledge of the end of
-    // // the first leg to ensure we keep the resulting value in
-    // // roughly the correct domain
-    // final double lastSlopeValOne =
-    // trim(valueAt(midTime, lastSlopeOne), null);
-    // final double nextSlopeValOne =
-    // trim(valueAt(midTime, thisSlopeOne), lastSlopeValOne);
-    // final double nextSlopeValTwo =
-    // trim(valueAt(midTime, thisSlopeTwo), lastSlopeValOne);
-    //
-    // // ok, is the first track resolved?
-    // if (lastSlopeTwo == null)
-    // {
-    // // ok, the previous leg has been sorted. just sort this leg
-    // final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
-    // final double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
-    //
-    // final List<Perm> items = new ArrayList<>();
-    // items.add(new Perm(oneone, true, true));
-    // items.add(new Perm(onetwo, true, false));
-    //
-    // Collections.sort(items);
-    //
-    // // check that the two solutions aren't too similar. If they are,
-    // // then it would be better to move onto the next leg.
-    // final Perm closest = items.get(0);
-    // final Perm nextClosest = items.get(1);
-    // final double firstTwoDiff =
-    // Math.abs(nextClosest.score - closest.score);
-    // final double cutOff = 10d;
-    // if (firstTwoDiff > cutOff)
-    // {
-    // ditchBearingsForThisLeg(leg, closest.secondOne);
-    // res.add(new ResolvedLeg(leg, closest.secondOne));
-    // }
-    // }
-    // else
-    // {
-    // // ok, we've got to compare both of them
-    // final double lastSlopeValTwo =
-    // trim(valueAt(midTime, lastSlopeTwo), null);
-    //
-    // // find the difference in the legs
-    // final double oneone = calcDelta(lastSlopeValOne, nextSlopeValOne);
-    // final double onetwo = calcDelta(lastSlopeValOne, nextSlopeValTwo);
-    // final double twoone = calcDelta(lastSlopeValTwo, nextSlopeValOne);
-    // final double twotwo = calcDelta(lastSlopeValTwo, nextSlopeValTwo);
-    //
-    // // store the permutations
-    // final List<Perm> items = new ArrayList<>();
-    // items.add(new Perm(oneone, true, true));
-    // items.add(new Perm(onetwo, true, false));
-    // items.add(new Perm(twoone, false, true));
-    // items.add(new Perm(twotwo, false, false));
-    //
-    // // sort the permutations, so we can easily get the best
-    // Collections.sort(items);
-    // final Perm closest = items.get(0);
-    //
-    // // ditch the unnecessary bearing
-    // ditchBearingsForThisLeg(lastLeg, closest.firstOne);
-    // ditchBearingsForThisLeg(leg, closest.secondOne);
-    //
-    // // remember what we've done.
-    // res.add(new ResolvedLeg(lastLeg, closest.firstOne));
-    // res.add(new ResolvedLeg(leg, closest.secondOne));
-    // }
-    // }
-    // lastLeg = leg;
-    // }
-
-    return res;
   }
 
 }
