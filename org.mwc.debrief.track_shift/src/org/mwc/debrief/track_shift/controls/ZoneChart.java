@@ -41,6 +41,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -75,9 +76,51 @@ public class ZoneChart extends Composite
   {
     Color getZoneColor();
   }
+  
+  private static class SwitchCutsOperation extends AbstractOperation
+  {
+
+    private final Zone _zone;
+    private final ZoneSlicer _zoneSlicer;
+
+    public SwitchCutsOperation(final Zone zone, final ZoneSlicer zoneSlicer)
+    {
+      super("Switch cuts for this zone");
+      _zone = zone;
+      _zoneSlicer = zoneSlicer;
+    }
+
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+      return redo(monitor, info);
+    }
+
+    @Override
+    public IStatus
+        redo(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      // ok, loop through the cuts in this zone.
+      _zoneSlicer.switchAmbiguousCuts(_zone);
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public IStatus
+        undo(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      _zoneSlicer.switchAmbiguousCuts(_zone);
+      return Status.OK_STATUS;
+    }
+  }
+
 
   protected class CustomChartComposite extends ChartComposite
   {
+
     private CustomChartComposite(final Composite parent, final JFreeChart chart)
     {
       super(parent, SWT.NONE, chart, 400, 600, 300, 100, 1800, 1800, true,
@@ -331,7 +374,7 @@ public class ZoneChart extends Composite
           fireZoneAdded(newZone);
 
           // and the marker
-          addZoneMarker(plot, newZone);
+          addZoneMarker(plot, newZone, zoneMarkers);
 
           return Status.OK_STATUS;
         }
@@ -350,7 +393,7 @@ public class ZoneChart extends Composite
           fireZoneAdded(newZone);
 
           // and the marker
-          addZoneMarker(plot, newZone);
+          addZoneMarker(plot, newZone, zoneMarkers);
 
           return Status.OK_STATUS;
         }
@@ -482,13 +525,13 @@ public class ZoneChart extends Composite
           {
             final XYPlot plot = (XYPlot) chart.getPlot();
             final long val1 =
-                toNearDomainValue(findDomainX(this, dragStartX), false);
-            final long val2 = toNearDomainValue(val1, true);
+                toNearDomainValue(findDomainX(this, dragStartX), false, xySeries);
+            final long val2 = toNearDomainValue(val1, true, xySeries);
             final Color zoneColor = colorProvider.getZoneColor();
             adding =
                 new Zone(val1 > val2 ? val2 : val1, val1 > val2 ? val1 : val2,
                     zoneColor);
-            addZoneMarker(plot, adding);
+            addZoneMarker(plot, adding, zoneMarkers);
           }
           break;
         }
@@ -612,13 +655,13 @@ public class ZoneChart extends Composite
             if (dragZone != null)
             {
               final long domainX = findDomainX(this, currentX);
-              final long timeOfNearestCut = toNearDomainValue(domainX, false);
+              final long timeOfNearestCut = toNearDomainValue(domainX, false, xySeries);
               final Zone beforeZone = dragZone;
 
               // determine the time window, centred on the click time
-              final List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+              final List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone, xySeries);
               final Zone periodToCut =
-                  periodToCutFor(cutsInZone, timeOfNearestCut);
+                  periodToCutFor(cutsInZone, timeOfNearestCut, colorProvider);
               if (periodToCut != null)
               {
                 this.setCursor(splitCursor);
@@ -701,7 +744,7 @@ public class ZoneChart extends Composite
               {
                 // ok, reverse the cuts in this zone
                 final AbstractOperation switchOp =
-                    new SwitchCutsOperation(zone);
+                    new SwitchCutsOperation(zone, zoneSlicer);
                 undoRedoProvider.execute(switchOp);
                 break;
               }
@@ -778,13 +821,13 @@ public class ZoneChart extends Composite
           case SPLIT:
           {
             final long domainX = findDomainX(this, dragStartX);
-            final long timeOfNearestCut = toNearDomainValue(domainX, false);
+            final long timeOfNearestCut = toNearDomainValue(domainX, false, xySeries);
             final Zone beforeZone = dragZone;
 
             // determine the time window, centred on the click time
-            final List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone);
+            final List<TimeSeriesDataItem> cutsInZone = cutsFor(beforeZone, xySeries);
             final Zone periodToCut =
-                periodToCutFor(cutsInZone, timeOfNearestCut);
+                periodToCutFor(cutsInZone, timeOfNearestCut, colorProvider);
 
             // did we generate a zone?
             if (periodToCut != null)
@@ -826,51 +869,13 @@ public class ZoneChart extends Composite
       }
     }
 
-    private class SwitchCutsOperation extends AbstractOperation
-    {
-
-      private Zone _zone;
-
-      public SwitchCutsOperation(Zone zone)
-      {
-        super("Switch cuts for this zone");
-        _zone = zone;
-      }
-
-      @Override
-      public IStatus execute(final IProgressMonitor monitor,
-          final IAdaptable info) throws ExecutionException
-      {
-        return redo(monitor, info);
-      }
-
-      @Override
-      public IStatus
-          redo(final IProgressMonitor monitor, final IAdaptable info)
-              throws ExecutionException
-      {
-        // ok, loop through the cuts in this zone.
-        zoneSlicer.switchAmbiguousCuts(_zone);
-        return Status.OK_STATUS;
-      }
-
-      @Override
-      public IStatus
-          undo(final IProgressMonitor monitor, final IAdaptable info)
-              throws ExecutionException
-      {
-        zoneSlicer.switchAmbiguousCuts(_zone);
-        return Status.OK_STATUS;
-      }
-    }
-
     private boolean resize(final Zone zone, final double startx)
     {
       if (resizeStart)
       {
         // use start
         final long nearDomainValue =
-            toNearDomainValue((findDomainX(this, startx)), false);
+            toNearDomainValue((findDomainX(this, startx)), false, xySeries);
         if (nearDomainValue != Long.MIN_VALUE && nearDomainValue < zone.end)
         {
           zone.start = nearDomainValue;
@@ -880,7 +885,7 @@ public class ZoneChart extends Composite
       else
       {
         final long nearDomainValue =
-            toNearDomainValue((findDomainX(this, startx)), false);
+            toNearDomainValue((findDomainX(this, startx)), false, xySeries);
         if (nearDomainValue != Long.MIN_VALUE && nearDomainValue > zone.start)
         {
           zone.end = nearDomainValue;
@@ -938,6 +943,39 @@ public class ZoneChart extends Composite
   public enum EditMode
   {
     EDIT, ZOOM, MERGE, SPLIT, SWITCH
+  }
+
+  /**
+   * capture data necessary for set of radio buttons
+   * 
+   * @author Ian
+   * 
+   */
+  private class RadioEvent extends SelectionAdapter
+  {
+
+    final private List<Button> list;
+    final private Button myButton;
+    final private EditMode myZone;
+
+    private RadioEvent(final List<Button> btnList, final Button selected,
+        final EditMode editMode)
+    {
+      list = btnList;
+      myButton = selected;
+      myZone = editMode;
+    }
+
+    @Override
+    public void widgetSelected(final SelectionEvent e)
+    {
+      for (final Button btn : list)
+      {
+        btn.setSelection(btn.equals(myButton));
+      }
+
+      setMode(myZone);
+    }
   }
 
   private static class SortedArrayList extends ArrayList<Zone>
@@ -999,6 +1037,11 @@ public class ZoneChart extends Composite
       return myStart.compareTo(hisStart);
     }
 
+    public boolean contains(final long other)
+    {
+      return other >= start && other <= end;
+    }
+
     public Color getColor()
     {
       return color;
@@ -1012,11 +1055,6 @@ public class ZoneChart extends Composite
     public long getStart()
     {
       return start;
-    }
-
-    public boolean contains(final long other)
-    {
-      return other >= start && other <= end;
     }
 
     /**
@@ -1288,13 +1326,46 @@ public class ZoneChart extends Composite
     return btn;
   }
 
+  /** pan the viewport left & right
+   * 
+   * @param chart the chart we're operating on
+   * @param backwards whether we're going backwards
+   */
+  protected static void panViewport(final JFreeChart chart,
+      final boolean backwards)
+  {
+    // ok, find the current time coverage
+    final XYPlot plot = chart.getXYPlot();
+    final Range outerRange = plot.getDataRange(plot.getDomainAxis());
+    final ValueAxis timeAxis = plot.getDomainAxis();
+
+    final long currentStart = (long) timeAxis.getLowerBound();
+    final long currentEnd = (long) timeAxis.getUpperBound();
+
+    final long period = currentEnd - currentStart;
+    final long newStart;
+    if (backwards)
+    {
+      newStart =
+          Math.max((long) outerRange.getLowerBound(), currentStart - period);
+    }
+    else
+    {
+      final long endT = (long) outerRange.getUpperBound();
+      newStart = Math.min(endT - period, currentEnd + period);
+    }
+
+    timeAxis.setLowerBound(newStart);
+    timeAxis.setUpperBound(newStart + period);
+  }
+
   private final List<Zone> zones;
   private final Map<Zone, IntervalMarker> zoneMarkers =
       new HashMap<ZoneChart.Zone, IntervalMarker>();
+
   private EditMode mode = EditMode.EDIT;
   private volatile List<ZoneListener> zoneListeners =
       new ArrayList<ZoneChart.ZoneListener>(1);
-
   private final Image handImg16 = CorePlugin.getImageDescriptor(
       "/icons/16/hand.png").createImage();
   private final Image addImg16 = CorePlugin.getImageDescriptor(
@@ -1309,11 +1380,11 @@ public class ZoneChart extends Composite
       "/icons/16/merge_2.png").createImage();
   private final Image cut_1Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/cut.png").createImage();
+
   private final Image split_Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/auto_split-bw-16.png").createImage();
   private final Image switch_Img16 = CorePlugin.getImageDescriptor(
       "/icons/16/arrows.png").createImage();
-
   /** 24px images for the buttons */
   private final Image editImg24 = CorePlugin.getImageDescriptor(
       "/icons/24/edit.png").createImage();
@@ -1334,17 +1405,21 @@ public class ZoneChart extends Composite
   private final Image autoDelete24 = CorePlugin.getImageDescriptor(
       "/icons/24/auto_delete.png").createImage();
 
+  private final Image panLeft24 = CorePlugin.getImageDescriptor(
+      "/icons/24/media_rewind.png").createImage();
+  private final Image panRight24 = CorePlugin.getImageDescriptor(
+      "/icons/24/media_fast_forward.png").createImage();
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
   private final Cursor addCursor = new Cursor(Display.getDefault(), addImg16
       .getImageData(), 0, 0);
   private final Cursor merge_1Cursor = new Cursor(Display.getDefault(),
       merge_1Img16.getImageData(), 0, 0);
+
   private final Cursor merge_2Cursor = new Cursor(Display.getDefault(),
       merge_2Img16.getImageData(), 0, 0);
   private final Cursor switchCursor = new Cursor(Display.getDefault(),
       switch_Img16.getImageData(), 0, 0);
-
   /**
    * drag/drop cursors
    * 
@@ -1353,17 +1428,19 @@ public class ZoneChart extends Composite
       removeImg16.getImageData(), 0, 0);
   private final Cursor handCursorDrag = new Cursor(Display.getDefault(),
       handFistImg16.getImageData(), 0, 0);
+
   private final Cursor resizeCursor = new Cursor(Display.getDefault(),
       SWT.CURSOR_SIZEWE);
   private final Cursor splitCursor = new Cursor(Display.getDefault(),
       split_Img16.getImageData(), 0, 0);
-
   private final JFreeChart chart;
   private CustomChartComposite chartComposite;
   private Zone dragZone;
   long dragZoneStartBefore = -1;
   long dragZoneEndBefore = -1;
+
   private double dragStartX = -1;
+
   private boolean onDrag = false;
 
   private boolean resizeStart = false;
@@ -1379,11 +1456,11 @@ public class ZoneChart extends Composite
   private final ColorProvider colorProvider;
 
   private final ZoneSlicer zoneSlicer;
-
   private final TimeSeries xySeries;
-
   private final ZoneUndoRedoProvider undoRedoProvider;
+
   private final Runnable deleteEvent;
+
   private final Runnable resolveAmbiguityEvent;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
@@ -1413,7 +1490,7 @@ public class ZoneChart extends Composite
     final XYPlot plot = (XYPlot) xylineChart.getPlot();
     for (final Zone zone : zones)
     {
-      addZoneMarker(plot, zone);
+      addZoneMarker(plot, zone, zoneMarkers);
     }
   }
 
@@ -1422,7 +1499,7 @@ public class ZoneChart extends Composite
     zoneListeners.add(listener);
   }
 
-  private void addZoneMarker(final XYPlot plot, final Zone zone)
+  private static void addZoneMarker(final XYPlot plot, final Zone zone, Map<Zone, IntervalMarker> zoneMarkers)
   {
     final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
     mrk.setPaint(zone.getColor());
@@ -1441,7 +1518,7 @@ public class ZoneChart extends Composite
         new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
             | GridData.GRAB_VERTICAL);
 
-    data.verticalSpan = 5;
+    data.verticalSpan = 6;
 
     chartComposite.setLayoutData(data);
     createToolbar(this);
@@ -1457,39 +1534,6 @@ public class ZoneChart extends Composite
     thePlot.clearDomainMarkers();
   }
 
-  /**
-   * capture data necessary for set of radio buttons
-   * 
-   * @author Ian
-   * 
-   */
-  private class RadioEvent extends SelectionAdapter
-  {
-
-    final private List<Button> list;
-    final private Button myButton;
-    final private EditMode myZone;
-
-    private RadioEvent(final List<Button> btnList, final Button selected,
-        final EditMode editMode)
-    {
-      list = btnList;
-      myButton = selected;
-      myZone = editMode;
-    }
-
-    @Override
-    public void widgetSelected(SelectionEvent e)
-    {
-      for (Button btn : list)
-      {
-        btn.setSelection(btn.equals(myButton));
-      }
-
-      setMode(myZone);
-    }
-  }
-
   protected void createToolbar(final Composite col1)
   {
     final Button edit =
@@ -1502,7 +1546,7 @@ public class ZoneChart extends Composite
     final Button split =
         createButton(col1, SWT.TOGGLE, splitImg24, "Split", "Split zones", null);
 
-    List<Button> buttons = new ArrayList<Button>();
+    final List<Button> buttons = new ArrayList<Button>();
     buttons.add(edit);
     buttons.add(zoom);
     buttons.add(merge);
@@ -1578,9 +1622,33 @@ public class ZoneChart extends Composite
               "Resolve Ambiguity", resolveAmbiguityEvent);
     }
 
+    // ok, now the left/right buttons
+    @SuppressWarnings("unused")
+    final Button panLeft =
+        createButton(col1, SWT.PUSH, panLeft24, "Pan Left", "Reveal all zones",
+            new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                panViewport(chart, true);
+              }
+            });
+    @SuppressWarnings("unused")
+    final Button panRight =
+        createButton(col1, SWT.PUSH, panRight24, "Pan Right",
+            "Reveal all zones", new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                panViewport(chart, false);
+              }
+            });
+
   }
 
-  public List<TimeSeriesDataItem> cutsFor(final Zone outerZone)
+  private static List<TimeSeriesDataItem> cutsFor(final Zone outerZone, TimeSeries xySeries)
   {
     @SuppressWarnings("unchecked")
     final List<TimeSeriesDataItem> items = xySeries.getItems();
@@ -1628,11 +1696,13 @@ public class ZoneChart extends Composite
     autoSlice24.dispose();
     autoResolve24.dispose();
     autoDelete24.dispose();
+    panLeft24.dispose();
+    panRight24.dispose();
 
     super.dispose();
   }
 
-  private long findDomainX(final ChartComposite composite, final double x)
+  private static long findDomainX(final ChartComposite composite, final double x)
   {
     final Rectangle dataArea = composite.getScreenDataArea();
     final Rectangle2D d2 =
@@ -1645,7 +1715,7 @@ public class ZoneChart extends Composite
     return (long) Math.ceil(chartX);
   }
 
-  private long findPixelX(final ChartComposite composite, final double x)
+  private static long findPixelX(final ChartComposite composite, final double x)
   {
     final Rectangle dataArea = composite.getScreenDataArea();
     final Rectangle2D d2 =
@@ -1690,12 +1760,24 @@ public class ZoneChart extends Composite
     }
   }
 
-  public EditMode getMode()
+  /**
+   * get the time period covered by this zone chart
+   * 
+   * @return
+   */
+  public TimePeriod getPeriod()
   {
-    return mode;
+    final XYPlot plot = (XYPlot) chart.getPlot();
+    final double lower = plot.getDomainAxis().getLowerBound();
+    final double upper = plot.getDomainAxis().getUpperBound();
+    final TimePeriod res =
+        new TimePeriod.BaseTimePeriod(new HiResDate((long) lower),
+            new HiResDate((long) upper));
+
+    return res;
   }
 
-  public List<ZoneListener> getZoneListeners()
+  private List<ZoneListener> getZoneListeners()
   {
     return new ArrayList<ZoneListener>(zoneListeners);
   }
@@ -1834,7 +1916,7 @@ public class ZoneChart extends Composite
           // and create the new intervals
           for (final Zone thisZone : newZones)
           {
-            addZoneMarker(thePlot, thisZone);
+            addZoneMarker(thePlot, thisZone, zoneMarkers);
           }
         }
         return Status.OK_STATUS;
@@ -1875,8 +1957,8 @@ public class ZoneChart extends Composite
     undoRedoProvider.execute(reversOp);
   }
 
-  public Zone periodToCutFor(final List<TimeSeriesDataItem> cutsInZone,
-      final long timeOfNearestCut)
+  private static Zone periodToCutFor(final List<TimeSeriesDataItem> cutsInZone,
+      final long timeOfNearestCut, ColorProvider colorProvider)
   {
     Zone res = null;
 
@@ -1951,7 +2033,7 @@ public class ZoneChart extends Composite
     zoneListeners.remove(listener);
   }
 
-  public void setMode(final EditMode mode)
+  private void setMode(final EditMode mode)
   {
     this.mode = mode;
   }
@@ -1974,16 +2056,14 @@ public class ZoneChart extends Composite
       }
       if (!found)
       {
-        addZoneMarker(plot, zone);
+        addZoneMarker(plot, zone, zoneMarkers);
         zones.add(zone);
       }
     }
-
-    // and sort them
   }
 
-  private long
-      toNearDomainValue(final long x, final boolean ignoreZeroDistence)
+  private static long
+      toNearDomainValue(final long x, final boolean ignoreZeroDistence, TimeSeries xySeries)
   {
     long distance = Long.MAX_VALUE;
     int idx = -1;
@@ -2000,22 +2080,5 @@ public class ZoneChart extends Composite
     }
     return idx == -1 ? Long.MIN_VALUE : xySeries.getTimePeriod(idx)
         .getLastMillisecond();
-  }
-
-  /**
-   * get the time period covered by this zone chart
-   * 
-   * @return
-   */
-  public TimePeriod getPeriod()
-  {
-    XYPlot plot = (XYPlot) chart.getPlot();
-    double lower = plot.getDomainAxis().getLowerBound();
-    double upper = plot.getDomainAxis().getUpperBound();
-    TimePeriod res =
-        new TimePeriod.BaseTimePeriod(new HiResDate((long) lower),
-            new HiResDate((long) upper));
-
-    return res;
   }
 }
