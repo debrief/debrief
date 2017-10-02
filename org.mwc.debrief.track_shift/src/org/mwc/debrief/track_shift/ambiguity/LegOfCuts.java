@@ -98,7 +98,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
    */
   private static final long serialVersionUID = 1L;
 
-  public static List<WeightedObservedPoint> putObsInCorrectDomain(
+  private static List<WeightedObservedPoint> putObsInCorrectDomain(
       final List<WeightedObservedPoint> obs)
   {
     final List<WeightedObservedPoint> res =
@@ -140,7 +140,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
     return res;
   }
 
-  public static List<WeightedObservedPoint> putObsInCorrectRange(
+  private static List<WeightedObservedPoint> putObsInCorrectRange(
       final List<WeightedObservedPoint> obs)
   {
     final List<WeightedObservedPoint> res =
@@ -263,7 +263,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
         // This is to handle the occurrence where
         // the array still isn't stable
         final double weighting;
-        weighting = getWeightingFor(period, obs);
+        weighting = getWeightingFor(period, obs, this.size());
 
         // and store the observation
         obs.add(weighting, time, theBrg);
@@ -287,11 +287,11 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
     }
   }
 
-  private double getWeightingFor(final WhichPeriod period,
-      final WeightedObservedPoints obs)
+  private static double getWeightingFor(final WhichPeriod period,
+      final WeightedObservedPoints obs, int size)
   {
     // how many are in the first 1/4?
-    final int firstQuarter = (int) Math.ceil(this.size() / 4d);
+    final int firstQuarter = (int) Math.ceil(size / 4d);
 
     final double weighting;
     if (period.equals(WhichPeriod.LATE))
