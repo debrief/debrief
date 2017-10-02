@@ -3424,6 +3424,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // hey, don't abuse the track label - create a fresh one each time
         final TextLabel label = new TextLabel(theLoc, thisE.getName());
+        
+        // copy the font from the parent
+        label.setFont(_theLabel.getFont());
 
         // is the first track a DR track?
         if (thisE.getPlotRelative())
