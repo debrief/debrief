@@ -476,25 +476,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
       return track;
     }
-    
-    /** note: we're testing this zone chart functionality in here,
-     * so we can introduce it into the automated test suite.
-     */
-    public void testPanCalculation()
-    {
-      TimePeriod period = ZoneChart.calculatePanData(false, 1000, 2000, 1100, 1300);
-      assertEquals("corrent new times", 1300, period.getStartDTG().getDate().getTime());
-      assertEquals("corrent new times", 1500, period.getEndDTG().getDate().getTime());
-      period = ZoneChart.calculatePanData(false, 1000, 2000, 1700, 1900);
-      assertEquals("corrent new times", 1800, period.getStartDTG().getDate().getTime());
-      assertEquals("corrent new times", 2000, period.getEndDTG().getDate().getTime());
-      period = ZoneChart.calculatePanData(true, 1000, 2000, 1700, 1900);
-      assertEquals("corrent new times", 1500, period.getStartDTG().getDate().getTime());
-      assertEquals("corrent new times", 1700, period.getEndDTG().getDate().getTime());
-      period = ZoneChart.calculatePanData(true, 1000, 2000, 1100, 1300);
-      assertEquals("corrent new times", 1000, period.getStartDTG().getDate().getTime());
-      assertEquals("corrent new times", 1200, period.getEndDTG().getDate().getTime());
-    }
 
     public void testDitchUsingAmbiguity() throws FileNotFoundException
     {
@@ -562,6 +543,35 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       assertEquals("is unresloved", true, resolvedLegs.get(0).leg.get(0)
           .getHasAmbiguousBearing());
     }
+
+    /**
+     * note: we're testing this zone chart functionality in here, so we can introduce it into the
+     * automated test suite.
+     */
+    public void testPanCalculation()
+    {
+      TimePeriod period =
+          ZoneChart.calculatePanData(false, 1000, 2000, 1100, 1300);
+      assertEquals("corrent new times", 1300, period.getStartDTG().getDate()
+          .getTime());
+      assertEquals("corrent new times", 1500, period.getEndDTG().getDate()
+          .getTime());
+      period = ZoneChart.calculatePanData(false, 1000, 2000, 1700, 1900);
+      assertEquals("corrent new times", 1800, period.getStartDTG().getDate()
+          .getTime());
+      assertEquals("corrent new times", 2000, period.getEndDTG().getDate()
+          .getTime());
+      period = ZoneChart.calculatePanData(true, 1000, 2000, 1700, 1900);
+      assertEquals("corrent new times", 1500, period.getStartDTG().getDate()
+          .getTime());
+      assertEquals("corrent new times", 1700, period.getEndDTG().getDate()
+          .getTime());
+      period = ZoneChart.calculatePanData(true, 1000, 2000, 1100, 1300);
+      assertEquals("corrent new times", 1000, period.getStartDTG().getDate()
+          .getTime());
+      assertEquals("corrent new times", 1200, period.getEndDTG().getDate()
+          .getTime());
+    }
   }
 
   private static enum ZoneModes
@@ -572,6 +582,78 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private static final String SHOW_COURSE = "SHOW_COURSE";
 
   private static final String SCALE_ERROR = "SCALE_ERROR";
+
+  protected static void deleteCutsInTurnB(final TrackWrapper primaryTrack,
+      final Runnable updateData, final ZoneChart ownshipZoneChart,
+      final ZoneUndoRedoProvider undoRedoProvider)
+  {
+    final Zone[] ownshipZones = ownshipZoneChart.getZones();
+
+    if (ownshipZones != null && ownshipZones.length > 0)
+    {
+      // find the time period of hte chart
+      final TimePeriod outerPeriod = ownshipZoneChart.getPeriod();
+
+      // ok, produce the list of cuts to cull
+      final LegOfCuts cutsToDelete =
+          findCutsNotInZones(ownshipZones, outerPeriod, primaryTrack);
+
+      // delete this list of cuts
+      final IUndoableOperation deleteOperation =
+          new DeleteCutsOperation(cutsToDelete, updateData, ownshipZoneChart);
+
+      // wrap the operation
+      undoRedoProvider.execute(deleteOperation);
+    }
+    else
+    {
+      CorePlugin.showMessage("Resolve Ambiguity", "Please slice data first");
+    }
+  }
+
+  private static LegOfCuts findCutsNotInZones(final Zone[] zones,
+      final TimePeriod outerPeriod, final TrackWrapper primaryTrack)
+  {
+    final LegOfCuts res = new LegOfCuts();
+    final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
+    while (sensors.hasMoreElements())
+    {
+      final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+      if (sensor.getVisible())
+      {
+        final Enumeration<Editable> cuts = sensor.elements();
+        while (cuts.hasMoreElements())
+        {
+          final SensorContactWrapper cut =
+              (SensorContactWrapper) cuts.nextElement();
+          if (cut.getVisible() && outerPeriod.contains(cut.getDTG()))
+          {
+            final long thisT = cut.getDTG().getDate().getTime();
+
+            // ok, see if it;s in one of the zones
+            boolean inZone = false;
+            for (final Zone zone : zones)
+            {
+              // does this time occur within this zone?
+              if (zone.getStart() <= thisT && zone.getEnd() >= thisT)
+              {
+                inZone = true;
+                break;
+              }
+            }
+
+            // was it in a zone?
+            if (!inZone)
+            {
+              // ok, have to delete it
+              res.add(cut);
+            }
+          }
+        }
+      }
+    }
+    return res;
+  }
 
   private static void restoreCuts(
       final Map<SensorWrapper, LegOfCuts> deletedCuts)
@@ -656,34 +738,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
   }
 
-  protected static void deleteCutsInTurnB(TrackWrapper primaryTrack,
-      Runnable updateData, ZoneChart ownshipZoneChart,
-      ZoneUndoRedoProvider undoRedoProvider)
-  {
-    final Zone[] ownshipZones = ownshipZoneChart.getZones();
-
-    if (ownshipZones != null && ownshipZones.length > 0)
-    {
-      // find the time period of hte chart
-      final TimePeriod outerPeriod = ownshipZoneChart.getPeriod();
-
-      // ok, produce the list of cuts to cull
-      final LegOfCuts cutsToDelete =
-          findCutsNotInZones(ownshipZones, outerPeriod, primaryTrack);
-
-      // delete this list of cuts
-      final IUndoableOperation deleteOperation =
-          new DeleteCutsOperation(cutsToDelete, updateData, ownshipZoneChart);
-
-      // wrap the operation
-      undoRedoProvider.execute(deleteOperation);
-    }
-    else
-    {
-      CorePlugin.showMessage("Resolve Ambiguity", "Please slice data first");
-    }
-  }
-
   @Override
   protected void fillLocalPullDown(final IMenuManager manager)
   {
@@ -699,50 +753,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     manager.add(scaleError);
     super.fillLocalToolBar(manager);
 
-  }
-
-  private static LegOfCuts findCutsNotInZones(final Zone[] zones,
-      final TimePeriod outerPeriod, TrackWrapper primaryTrack)
-  {
-    final LegOfCuts res = new LegOfCuts();
-    final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
-    while (sensors.hasMoreElements())
-    {
-      final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
-      if (sensor.getVisible())
-      {
-        final Enumeration<Editable> cuts = sensor.elements();
-        while (cuts.hasMoreElements())
-        {
-          final SensorContactWrapper cut =
-              (SensorContactWrapper) cuts.nextElement();
-          if (cut.getVisible() && outerPeriod.contains(cut.getDTG()))
-          {
-            final long thisT = cut.getDTG().getDate().getTime();
-
-            // ok, see if it;s in one of the zones
-            boolean inZone = false;
-            for (final Zone zone : zones)
-            {
-              // does this time occur within this zone?
-              if (zone.getStart() <= thisT && zone.getEnd() >= thisT)
-              {
-                inZone = true;
-                break;
-              }
-            }
-
-            // was it in a zone?
-            if (!inZone)
-            {
-              // ok, have to delete it
-              res.add(cut);
-            }
-          }
-        }
-      }
-    }
-    return res;
   }
 
   @Override
