@@ -114,7 +114,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final class trackInfo extends Editable.EditorType implements
       Editable.DynamicDescriptors
   {
-
+ 
     /**
      * constructor for this editor, takes the actual track as a parameter
      * 
@@ -4969,6 +4969,30 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     return visible;
+  }
+
+  public void clearPositions()
+  {
+    boolean modified = false;
+    
+    final Enumeration<Editable> segments = _thePositions.elements();
+    while (segments.hasMoreElements())
+    {
+      final TrackSegment seg = (TrackSegment) segments.nextElement();
+      seg.removeAllElements();
+
+      // remember that we've made a change
+      modified = true;
+
+      // we've also got to clear the cache
+      flushPeriodCache();
+      flushPositionCache();
+    }
+
+    if (modified)
+    {
+      setRelativePending();
+    }
   }
 
 }

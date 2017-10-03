@@ -167,8 +167,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			if(_newFixes != null)
 			{
 				// cool, it worked. clear them all out
-				// TODO:  re-instate this function if we use this class
-		//		_track.clearPositions();
+			  _track.clearPositions();
 				
 				// right, now add the fixes
 				for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
