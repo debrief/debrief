@@ -1392,7 +1392,7 @@ public class ZoneChart extends Composite
    * @param backwards
    *          whether we're going backwards
    */
-  protected static void panViewport(final JFreeChart chart,
+  private static void panViewport(final JFreeChart chart,
       final boolean backwards)
   {
     // ok, find the current time coverage
@@ -1403,21 +1403,36 @@ public class ZoneChart extends Composite
     final long currentStart = (long) timeAxis.getLowerBound();
     final long currentEnd = (long) timeAxis.getUpperBound();
 
+    final long outerLower = (long) outerRange.getLowerBound();
+    final long outerUpper = (long) outerRange.getUpperBound();
+
+    // get the new coverage
+    final TimePeriod newPeriod =
+        calculatePanData(backwards, outerLower, outerUpper, currentStart, currentEnd);
+    
+    // and update the values
+    timeAxis.setLowerBound(newPeriod.getStartDTG().getDate().getTime());
+    timeAxis.setUpperBound(newPeriod.getEndDTG().getDate().getTime());
+  }
+
+  public static TimePeriod calculatePanData(boolean backwards, long outerLower,
+      long outerUpper, long currentStart, long currentEnd)
+  {
     final long period = currentEnd - currentStart;
     final long newStart;
     if (backwards)
     {
-      newStart =
-          Math.max((long) outerRange.getLowerBound(), currentStart - period);
+      newStart = Math.max((long) outerLower, currentStart - period);
     }
     else
     {
-      final long endT = (long) outerRange.getUpperBound();
+      final long endT = (long) outerUpper;
       newStart = Math.min(endT - period, currentEnd);
     }
 
-    timeAxis.setLowerBound(newStart);
-    timeAxis.setUpperBound(newStart + period);
+    return new TimePeriod.BaseTimePeriod(new HiResDate(newStart),
+        new HiResDate(newStart + period));
+
   }
 
   private static Zone periodToCutFor(final List<TimeSeriesDataItem> cutsInZone,

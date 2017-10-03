@@ -476,6 +476,25 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
       return track;
     }
+    
+    /** note: we're testing this zone chart functionality in here,
+     * so we can introduce it into the automated test suite.
+     */
+    public void testPanCalculation()
+    {
+      TimePeriod period = ZoneChart.calculatePanData(false, 1000, 2000, 1100, 1300);
+      assertEquals("corrent new times", 1300, period.getStartDTG().getDate().getTime());
+      assertEquals("corrent new times", 1500, period.getEndDTG().getDate().getTime());
+      period = ZoneChart.calculatePanData(false, 1000, 2000, 1700, 1900);
+      assertEquals("corrent new times", 1800, period.getStartDTG().getDate().getTime());
+      assertEquals("corrent new times", 2000, period.getEndDTG().getDate().getTime());
+      period = ZoneChart.calculatePanData(true, 1000, 2000, 1700, 1900);
+      assertEquals("corrent new times", 1500, period.getStartDTG().getDate().getTime());
+      assertEquals("corrent new times", 1700, period.getEndDTG().getDate().getTime());
+      period = ZoneChart.calculatePanData(true, 1000, 2000, 1100, 1300);
+      assertEquals("corrent new times", 1000, period.getStartDTG().getDate().getTime());
+      assertEquals("corrent new times", 1200, period.getEndDTG().getDate().getTime());
+    }
 
     public void testDitchUsingAmbiguity() throws FileNotFoundException
     {
