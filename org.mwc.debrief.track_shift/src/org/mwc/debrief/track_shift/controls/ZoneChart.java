@@ -1172,6 +1172,27 @@ public class ZoneChart extends Composite
     zoneMarkers.put(zone, mrk);
   }
 
+  public static TimePeriod calculatePanData(final boolean backwards,
+      final long outerLower, final long outerUpper, final long currentStart,
+      final long currentEnd)
+  {
+    final long period = currentEnd - currentStart;
+    final long newStart;
+    if (backwards)
+    {
+      newStart = Math.max(outerLower, currentStart - period);
+    }
+    else
+    {
+      final long endT = outerUpper;
+      newStart = Math.min(endT - period, currentEnd);
+    }
+
+    return new TimePeriod.BaseTimePeriod(new HiResDate(newStart),
+        new HiResDate(newStart + period));
+
+  }
+
   public static ZoneChart create(final ZoneChartConfig config,
       final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
@@ -1392,7 +1413,7 @@ public class ZoneChart extends Composite
    * @param backwards
    *          whether we're going backwards
    */
-  protected static void panViewport(final JFreeChart chart,
+  private static void panViewport(final JFreeChart chart,
       final boolean backwards)
   {
     // ok, find the current time coverage
@@ -1403,21 +1424,17 @@ public class ZoneChart extends Composite
     final long currentStart = (long) timeAxis.getLowerBound();
     final long currentEnd = (long) timeAxis.getUpperBound();
 
-    final long period = currentEnd - currentStart;
-    final long newStart;
-    if (backwards)
-    {
-      newStart =
-          Math.max((long) outerRange.getLowerBound(), currentStart - period);
-    }
-    else
-    {
-      final long endT = (long) outerRange.getUpperBound();
-      newStart = Math.min(endT - period, currentEnd + period);
-    }
+    final long outerLower = (long) outerRange.getLowerBound();
+    final long outerUpper = (long) outerRange.getUpperBound();
 
-    timeAxis.setLowerBound(newStart);
-    timeAxis.setUpperBound(newStart + period);
+    // get the new coverage
+    final TimePeriod newPeriod =
+        calculatePanData(backwards, outerLower, outerUpper, currentStart,
+            currentEnd);
+
+    // and update the values
+    timeAxis.setLowerBound(newPeriod.getStartDTG().getDate().getTime());
+    timeAxis.setUpperBound(newPeriod.getEndDTG().getDate().getTime());
   }
 
   private static Zone periodToCutFor(final List<TimeSeriesDataItem> cutsInZone,
