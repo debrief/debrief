@@ -211,7 +211,7 @@ public class DopplerShiftExporter
 								}
 							}
 
-							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG(), false);
 							if ((matches != null) && (matches.length > 0))
 							{
 

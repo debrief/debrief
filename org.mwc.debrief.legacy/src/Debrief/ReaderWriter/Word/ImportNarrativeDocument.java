@@ -809,6 +809,78 @@ public class ImportNarrativeDocument
       assertEquals("got fixes", 3, tw.numFixes());
 
     }
+    
+    public void testAddFCSToHiddenTrack() throws FileNotFoundException, InterruptedException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+      
+      // ok, now filter it to a time period
+      TrackWrapper track = (TrackWrapper) tLayers.elementAt(0);
+      
+      // filter the list to a period of data after the narrative cuts
+      track.filterListTo(new HiResDate(818749200000L), new HiResDate(818766600000L));
+      
+      // now load the FCS data
+
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportNarrativeDocument importer =
+          new ImportNarrativeDocument(tLayers);
+      final ArrayList<String> strings = importer.importFromWord(testFile, is);
+      importer.processThese(strings);
+
+      // hmmm, how many tracks
+      assertEquals("got new tracks", 8, tLayers.size());
+
+      final NarrativeWrapper narrLayer =
+          (NarrativeWrapper) tLayers.elementAt(1);
+      // correct final count
+      assertEquals("Got num lines", 371, narrLayer.size());
+
+      // hey, let's have a look them
+      TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
+      assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
+
+      // hey, let's have a look them
+      tw = (TrackWrapper) tLayers.elementAt(6);
+      assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
+      assertEquals("got fixes", 5, tw.numFixes());
+      
+      // we need to introduce a 500ms delay, so we don't use 
+      // the cahced visible period
+      Thread.sleep(550);
+
+      final TimePeriod bounds = tw.getVisiblePeriod();
+      // in our sample data we have several FCSs at the same time,
+      // so we have to increment the DTG (seconds) on successive points.
+      // so,the dataset should end at 08:11:01 - since the last point
+      // had a second added.
+      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081400",
+          bounds.toString());
+
+      // hey, let's have a look tthem
+      tw = (TrackWrapper) tLayers.elementAt(7);
+      assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
+
+    }
 
     public void testAdvancedParseBulkFCS() throws ParseException
     {
@@ -1311,7 +1383,7 @@ public class ImportNarrativeDocument
     if (host != null)
     {
       // find the fix nearest this time
-      final Watchable[] nearest = host.getNearestTo(thisN.dtg);
+      final Watchable[] nearest = host.getNearestTo(thisN.dtg, false);
       if (nearest != null && nearest.length > 0)
       {
         final Watchable fix = nearest[0];
@@ -1365,7 +1437,7 @@ public class ImportNarrativeDocument
         newFw.setLabelShowing(true);
 
         // ok, we may have multiple fixes at the same time
-        final Watchable[] hisNearest = hisTrack.getNearestTo(thisN.dtg);
+        final Watchable[] hisNearest = hisTrack.getNearestTo(thisN.dtg, false);
         if (hisNearest != null && hisNearest.length > 0)
         {
           // ok, have a look at it.

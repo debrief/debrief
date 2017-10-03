@@ -115,7 +115,7 @@ public class TowedArrayLocationObserver extends RecordStatusToFileObserverType
     }
 
     // find the last position in the track
-    Watchable[] lastItems = track.getNearestTo(track.getEndDTG());
+    Watchable[] lastItems = track.getNearestTo(track.getEndDTG(), false);
     WorldLocation lastLoc = null;
     double lastDepth = _defaultDepth;
     if (lastItems != null)

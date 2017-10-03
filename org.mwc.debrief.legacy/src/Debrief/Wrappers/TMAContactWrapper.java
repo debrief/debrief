@@ -344,8 +344,10 @@ public final class TMAContactWrapper extends
 	 * return the coordinates for the centre of the ellipse
 	 */
 	public final WorldLocation getCentre(
-			final MWC.GenericData.WatchableList parent)
+			final MWC.GenericData.WatchableList parentWatchable)
 	{
+	  TrackWrapper parent = (TrackWrapper) parentWatchable;
+	  
 		// declare the reuslts object, and add our offset to it
 		WorldLocation origin = null;
 
@@ -358,7 +360,7 @@ public final class TMAContactWrapper extends
 		{
 			// right, we'll have to retrieve the centre
 			// get the origin
-			final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG);
+			final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG, false);
 			MWC.GenericData.Watchable wa = null;
 			if (list.length > 0)
 				wa = list[0];
@@ -384,16 +386,17 @@ public final class TMAContactWrapper extends
 	 * return the coordinates of the sensor end of the bearing line
 	 */
 	public final WorldLocation getSensorEnd(
-			final MWC.GenericData.WatchableList parent)
+			final MWC.GenericData.WatchableList parentWatchable)
 	{
 		WorldLocation res = null;
+    TrackWrapper parent = (TrackWrapper) parentWatchable;
 
 		// check we have the parent
 		if (parent != null)
 		{
 			// right, we'll have to retrieve the centre
 			// get the origin
-			final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG);
+			final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG, false);
 			if (list.length > 0)
 			{
 				res = list[0].getLocation();

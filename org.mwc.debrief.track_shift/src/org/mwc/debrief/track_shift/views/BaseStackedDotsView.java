@@ -2097,7 +2097,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           // work out the offset from the host at this time
           final Watchable[] matches =
-              primaryTrack.getNearestTo(new HiResDate(leg.getStart()));
+              primaryTrack.getNearestTo(new HiResDate(leg.getStart()), false);
 
           if (matches != null && matches.length > 0)
           {

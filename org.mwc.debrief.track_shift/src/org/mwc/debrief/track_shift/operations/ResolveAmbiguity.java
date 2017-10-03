@@ -284,7 +284,7 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
           {
             // ok, we need to find the ownship course
             final Watchable[] nearest =
-                contact.getSensor().getHost().getNearestTo(contact.getDTG());
+                contact.getSensor().getHost().getNearestTo(contact.getDTG(), false);
             if (nearest != null && nearest.length > 0)
             {
               final FixWrapper fix = (FixWrapper) nearest[0];
