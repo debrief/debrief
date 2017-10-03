@@ -328,7 +328,7 @@ public class FlatFileExporter
 			final HiResDate thisDTG)
 	{
 		FixWrapper priFix = null;
-		final Watchable[] priMatches = primaryTrack.getNearestTo(thisDTG);
+		final Watchable[] priMatches = primaryTrack.getNearestTo(thisDTG, false);
 		if (priMatches.length > 0)
 		{
 			priFix = (FixWrapper) priMatches[0];

@@ -104,7 +104,7 @@ public class GenerateTMASegmentFromInfillSegment implements
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			Watchable[] matches = _solution.getNearestTo(_period.getStartDTG());
+			Watchable[] matches = _solution.getNearestTo(_period.getStartDTG(), false);
 			if (matches.length != 1)
 			{
 				CorePlugin.logError(Status.ERROR,

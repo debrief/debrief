@@ -1243,7 +1243,7 @@ public final class SensorContactWrapper extends
     {
       // get the origin
       final MWC.GenericData.Watchable[] list =
-          _mySensor._myHost.getNearestTo(_DTG);
+          _mySensor._myHost.getNearestTo(_DTG, false);
       MWC.GenericData.Watchable wa = null;
       if (list.length > 0)
       {

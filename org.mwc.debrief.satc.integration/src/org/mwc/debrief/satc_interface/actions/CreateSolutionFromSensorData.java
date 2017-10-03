@@ -986,7 +986,7 @@ public class CreateSolutionFromSensorData implements
 					}
 
 					// we need to get the host status at this time
-					Watchable[] statList = host.getNearestTo(scw.getTime());
+					Watchable[] statList = host.getNearestTo(scw.getTime(), false);
 
 					// do we know ownship state at this time?
 					if (statList.length > 0)

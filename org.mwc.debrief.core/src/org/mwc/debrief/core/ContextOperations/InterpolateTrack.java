@@ -149,7 +149,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 				if (_newFixes == null)
 					_newFixes = new Vector<FixWrapper>(0, 1);
 
-				final Watchable[] matches = _track.getNearestTo(new HiResDate(0, thisTime));
+				final Watchable[] matches = _track.getNearestTo(new HiResDate(0, thisTime), false);
 				if (matches.length > 0)
 				{
 					final FixWrapper interpFix = (FixWrapper) matches[0];
