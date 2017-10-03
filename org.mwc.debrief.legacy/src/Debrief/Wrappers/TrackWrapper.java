@@ -2367,6 +2367,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final Watchable[] getNearestTo(final HiResDate srchDTG)
   {
+    return getNearestTo(srchDTG, true);
+  }
+
+  /**
+   * find the fix nearest to this time (or the first fix for an invalid time)
+   * 
+   * @param DTG
+   *          the time of interest
+   * @param onlyVisible 
+   *          only consider visible fixes
+   * @return the nearest fix
+   */
+  public final Watchable[] getNearestTo(final HiResDate srchDTG,
+      final boolean onlyVisible)
+  {
     /**
      * we need to end up with a watchable, not a fix, so we need to work our way through the fixes
      */
@@ -2424,9 +2439,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           {
             final FixWrapper fw = (FixWrapper) pIter.nextElement();
 
-            if (fw.getVisible())
+            if (fw.getDTG().greaterThanOrEqualTo(srchDTG))
             {
-              if (fw.getDTG().greaterThanOrEqualTo(srchDTG))
+              if (!onlyVisible || fw.getVisible())
               {
                 res = fw;
                 break;
@@ -3424,7 +3439,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // hey, don't abuse the track label - create a fresh one each time
         final TextLabel label = new TextLabel(theLoc, thisE.getName());
-        
+
         // copy the font from the parent
         label.setFont(_theLabel.getFont());
 
@@ -3527,9 +3542,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (this.getEndTimeLabels())
     {
       oldLoc = getNameLocation();
-      
+
       // is it auto-locate?
-      if(oldLoc == NullableLocationPropertyEditor.AUTO)
+      if (oldLoc == NullableLocationPropertyEditor.AUTO)
       {
         // ok, automatically locate it
         final int theLoc =
@@ -4275,7 +4290,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     Editable firstLeg = getSegments().elements().nextElement();
     if (firstLeg instanceof CoreTMASegment)
     {
-   //   setRelativePending();
+      // setRelativePending();
       sortOutRelativePositions();
     }
   }
