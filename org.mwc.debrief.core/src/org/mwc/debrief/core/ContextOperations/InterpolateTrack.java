@@ -14,21 +14,34 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
-import Debrief.Wrappers.*;
-import MWC.GUI.*;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.TimeStepPropertyEditor;
-import MWC.GenericData.*;
-import MWC.TacticalData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
@@ -36,228 +49,243 @@ import MWC.TacticalData.*;
 public class InterpolateTrack implements RightClickContextItemGenerator
 {
 
-	/**
-	 * @param parent
-	 * @param theLayers
-	 * @param parentLayers
-	 * @param subjects
-	 */
-	public void generate(final IMenuManager parent, final Layers theLayers,
-			final Layer[] parentLayers, final Editable[] subjects)
-	{
-		boolean goForIt = false;
+  private static class InterpolateTrackOperation extends CMAPOperation
+  {
 
-		// we're only going to work with one item
-		if (subjects.length == 1)
-		{
-			// is it a track?
-			final Editable thisE = subjects[0];
-			if (thisE instanceof TrackWrapper)
-			{
-				goForIt = true;
-			}
-		}
+    /**
+     * the parent to update on completion
+     */
+    private final Layers _layers;
 
-		// ok, is it worth going for?
-		if (goForIt)
-		{
-			final String title = "Resample position data";
+    /**
+     * list of new fixes we're creating
+     */
+    private Vector<FixWrapper> _newFixes;
 
-			// right,stick in a separator
-			parent.add(new Separator());
+    /**
+     * the track we're interpolating
+     */
+    private final TrackWrapper _track;
 
-			// and the new drop-down list of interpolation frequencies
-			final MenuManager newMenu = new MenuManager(title);
-			parent.add(newMenu);
+    /**
+     * the step to interpolate against
+     */
+    private final long _thisIntervalMicros;
 
-			// ok, loop through the time steps, creating an
-			// action for each one
-			final TimeStepPropertyEditor pe = new TimeStepPropertyEditor();
-			final String[] tags = pe.getTags();
-			for (int i = 0; i < tags.length; i++)
-			{
-				final String thisLabel = tags[i];
-				pe.setAsText(thisLabel);
-				final Long thisIntLong = (Long) pe.getValue();
-				final long thisIntervalMillis = thisIntLong.longValue();
+    public InterpolateTrackOperation(final String title, final Layers layers,
+        final TrackWrapper track, final String thisLabel,
+        final long thisIntervalMicros)
+    {
+      super("At " + thisLabel + " interval");
+      _layers = layers;
+      _track = track;
+      _thisIntervalMicros = thisIntervalMicros;
+    }
 
-				// yes, create the action
-				final Action convertToTrack = new Action("At " + thisLabel + " interval")
-				{
-					public void run()
-					{
-						// ok, go for it.
-						// sort it out as an operation
-						final IUndoableOperation convertToTrack1 = new InterpolateTrackOperation(title,
-								theLayers, (TrackWrapper) subjects[0], thisLabel, thisIntervalMillis);
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      final long startTime = _track.getStartDTG().getMicros();
+      final long endTime = _track.getEndDTG().getMicros();
 
-						// ok, stick it on the buffer
-						CorePlugin.run(convertToTrack1);
-					}
-				};
+      // switch on track interpolation
+      _track.setInterpolatePoints(true);
 
-				newMenu.add(convertToTrack);
-			}
-		}
+      for (long thisTime = (startTime + _thisIntervalMicros); thisTime < endTime; thisTime +=
+          _thisIntervalMicros)
+      {
+        // ok, generate the point at this interval
+        if (_newFixes == null)
+        {
+          _newFixes = new Vector<FixWrapper>(0, 1);
+        }
 
-	}
+        final Watchable[] matches =
+            _track.getNearestTo(new HiResDate(0, thisTime), false);
+        if (matches.length > 0)
+        {
+          final FixWrapper interpFix = (FixWrapper) matches[0];
 
-	private static class InterpolateTrackOperation extends CMAPOperation
-	{
+          // make it an normal FixWrapper, not an interpolated one
+          final FixWrapper newFix = new FixWrapper(interpFix.getFix());
 
-		/**
-		 * the parent to update on completion
-		 */
-		private final Layers _layers;
+          // tidy the interpolated fix name
+          newFix.resetName();
 
-		/**
-		 * list of new fixes we're creating
-		 */
-		private Vector<FixWrapper> _newFixes;
+          _newFixes.add(newFix);
+        }
+      }
 
-		/**
-		 * the track we're interpolating
-		 */
-		private final TrackWrapper _track;
+      if (_newFixes != null)
+      {
+        // cool, it worked. clear them all out
+        _track.clearPositions();
 
-		/**
-		 * the step to interpolate against
-		 */
-		private final long _thisIntervalMicros;
+        // right, now add the fixes
+        for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter
+            .hasNext();)
+        {
+          final FixWrapper fix = iter.next();
+          _track.add(fix);
+        }
+      }
 
-		public InterpolateTrackOperation(final String title, final Layers layers, final TrackWrapper track,
-				final String thisLabel, final long thisIntervalMicros)
-		{
-			super("At " + thisLabel + " interval");
-			_layers = layers;
-			_track = track;
-			_thisIntervalMicros = thisIntervalMicros;
-		}
+      // ok, switch off interpolation
+      _track.setInterpolatePoints(false);
 
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			final long startTime = _track.getStartDTG().getMicros();
-			final long endTime = _track.getEndDTG().getMicros();
+      // sorted, do the update
+      _layers.fireExtended(null, _track);
 
-			// switch on track interpolation
-			_track.setInterpolatePoints(true);
+      return Status.OK_STATUS;
+    }
 
-			for (long thisTime = (startTime + _thisIntervalMicros); thisTime < endTime; thisTime += _thisIntervalMicros)
-			{
-				// ok, generate the point at this interval
-				if (_newFixes == null)
-					_newFixes = new Vector<FixWrapper>(0, 1);
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      // forget about the new tracks
+      for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter
+          .hasNext();)
+      {
+        final FixWrapper trk = iter.next();
+        _track.removeElement(trk);
+      }
 
-				final Watchable[] matches = _track.getNearestTo(new HiResDate(0, thisTime), false);
-				if (matches.length > 0)
-				{
-					final FixWrapper interpFix = (FixWrapper) matches[0];
+      // and clear the new tracks item
+      _newFixes.removeAllElements();
+      _newFixes = null;
 
-					// make it an normal FixWrapper, not an interpolated one
-					final FixWrapper newFix = new FixWrapper(interpFix.getFix());
-					
-					// tidy the interpolated fix name
-					newFix.resetName();
+      _layers.fireModified(_track);
 
-					_newFixes.add(newFix);
-				}
-			}
+      return Status.OK_STATUS;
+    }
+  }
 
-			if(_newFixes != null)
-			{
-				// cool, it worked. clear them all out
-			  _track.clearPositions();
-				
-				// right, now add the fixes
-				for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
-				{
-					final FixWrapper fix = (FixWrapper) iter.next();
-					_track.add(fix);
-				}
-			}
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-			// ok, switch off interpolation
-			_track.setInterpolatePoints(false);
+    public testMe(final String val)
+    {
+      super(val);
+    }
 
-			// sorted, do the update
-			_layers.fireExtended(null, _track);
+    public final void testInterpolate()
+    {
+      final Layers theLayers = new Layers();
+      final TrackWrapper track = new TrackWrapper();
+      track.setName("Trk");
+      theLayers.addThisLayer(track);
 
-			return Status.OK_STATUS;
-		}
+      for (int i = 0; i < 3; i++)
+      {
+        final WorldLocation thisLoc =
+            new WorldLocation(0, i, 0, 'N', 0, 0, 0, 'W', 0);
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.set(2005, 6, 6, 12, i * 5, 0);
+        final Fix newFix = new Fix(new HiResDate(cal.getTime()), thisLoc, 0, 0);
 
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			// forget about the new tracks
-			for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
-			{
-				final FixWrapper trk = (FixWrapper) iter.next();
-				_track.removeElement(trk);
-			}
+        final FixWrapper sw = new FixWrapper(newFix);
+        track.add(sw);
+      }
 
-			// and clear the new tracks item
-			_newFixes.removeAllElements();
-			_newFixes = null;
+      // ok, now do the interpolation
+      final InterpolateTrackOperation ct =
+          new InterpolateTrackOperation("convert it", theLayers, track,
+              "1 min", 60 * 1000 * 1000);
 
-			_layers.fireModified(_track);
+      // check we're starting with the right number of items
+      assertEquals("starting with right number", 3, track.numFixes());
 
-			return Status.OK_STATUS;
-		}
-	}
+      try
+      {
+        ct.execute(null, null);
+      }
+      catch (final ExecutionException e)
+      {
+        fail("Exception thrown");
+      }
 
+      // check we've got the right number of fixes
+      assertEquals("right num of fixes generated", track.numFixes(), 11);
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+    }
+  }
 
-		public testMe(final String val)
-		{
-			super(val);
-		}
+  /**
+   * @param parent
+   * @param theLayers
+   * @param parentLayers
+   * @param subjects
+   */
+  @Override
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    boolean goForIt = false;
 
-		public final void testInterpolate()
-		{
-			final Layers theLayers = new Layers();
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("Trk");
-			theLayers.addThisLayer(track);
-			
-			for(int i=0;i<3;i++)
-			{
-				final WorldLocation thisLoc = new WorldLocation(0,i,0,'N',0,0,0,'W', 0);
-				final Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(0);
-				cal.set(2005, 6, 6, 12, i * 5,0);			
-				final Fix newFix = new Fix(new HiResDate(cal.getTime()), thisLoc, 0, 0);
-			
-				final FixWrapper sw = new FixWrapper(newFix);
-				track.add(sw);
-			}
-			
-			// ok, now do the interpolation
-			final InterpolateTrackOperation ct = new InterpolateTrackOperation("convert it", theLayers, track,
-					"1 min", 60 * 1000 * 1000);
-			
-			// check we're starting with the right number of items
-			assertEquals("starting with right number", 3, track.numFixes());
-			
-			
-			try
-			{
-				ct.execute(null, null);
-			}
-			catch (final ExecutionException e)
-			{
-				fail("Exception thrown");
-			}
-			
-			 // check we've got the right number of fixes
-			assertEquals("right num of fixes generated", track.numFixes(), 11);
+    // we're only going to work with one item
+    if (subjects.length == 1)
+    {
+      // is it a track?
+      final Editable thisE = subjects[0];
+      if (thisE instanceof TrackWrapper)
+      {
+        goForIt = true;
+      }
+    }
 
-		}
-	}	
+    // ok, is it worth going for?
+    if (goForIt)
+    {
+      final String title = "Resample position data";
+
+      // right,stick in a separator
+      parent.add(new Separator());
+
+      // and the new drop-down list of interpolation frequencies
+      final MenuManager newMenu = new MenuManager(title);
+      parent.add(newMenu);
+
+      // ok, loop through the time steps, creating an
+      // action for each one
+      final TimeStepPropertyEditor pe = new TimeStepPropertyEditor();
+      final String[] tags = pe.getTags();
+      for (int i = 0; i < tags.length; i++)
+      {
+        final String thisLabel = tags[i];
+        pe.setAsText(thisLabel);
+        final Long thisIntLong = (Long) pe.getValue();
+        final long thisIntervalMillis = thisIntLong.longValue();
+
+        // yes, create the action
+        final Action convertToTrack =
+            new Action("At " + thisLabel + " interval")
+            {
+              @Override
+              public void run()
+              {
+                // ok, go for it.
+                // sort it out as an operation
+                final IUndoableOperation convertToTrack1 =
+                    new InterpolateTrackOperation(title, theLayers,
+                        (TrackWrapper) subjects[0], thisLabel,
+                        thisIntervalMillis);
+
+                // ok, stick it on the buffer
+                CorePlugin.run(convertToTrack1);
+              }
+            };
+
+        newMenu.add(convertToTrack);
+      }
+    }
+
+  }
 }
