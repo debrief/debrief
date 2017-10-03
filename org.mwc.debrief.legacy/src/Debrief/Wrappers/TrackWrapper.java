@@ -2375,7 +2375,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * 
    * @param DTG
    *          the time of interest
-   * @param onlyVisible 
+   * @param onlyVisible
    *          only consider visible fixes
    * @return the nearest fix
    */
@@ -2439,9 +2439,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           {
             final FixWrapper fw = (FixWrapper) pIter.nextElement();
 
-            if (fw.getDTG().greaterThanOrEqualTo(srchDTG))
+            if (!onlyVisible || fw.getVisible())
             {
-              if (!onlyVisible || fw.getVisible())
+              if (fw.getDTG().greaterThanOrEqualTo(srchDTG))
               {
                 res = fw;
                 break;
