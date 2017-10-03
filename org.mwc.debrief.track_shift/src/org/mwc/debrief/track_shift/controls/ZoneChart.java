@@ -1413,7 +1413,7 @@ public class ZoneChart extends Composite
     else
     {
       final long endT = (long) outerRange.getUpperBound();
-      newStart = Math.min(endT - period, currentEnd + period);
+      newStart = Math.min(endT - period, currentEnd);
     }
 
     timeAxis.setLowerBound(newStart);
