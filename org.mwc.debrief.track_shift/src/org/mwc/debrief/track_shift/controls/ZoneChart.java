@@ -1884,18 +1884,19 @@ public class ZoneChart extends Composite
   }
 
   /**
-   * get the time period covered by this zone chart
+   * get the time period covered by the data in this zone chart
    * 
    * @return
    */
   public TimePeriod getPeriod()
   {
     final XYPlot plot = (XYPlot) chart.getPlot();
-    final double lower = plot.getDomainAxis().getLowerBound();
-    final double upper = plot.getDomainAxis().getUpperBound();
+    final Range outerRange = plot.getDataRange(plot.getDomainAxis());
+    final long lower = (long) outerRange.getLowerBound();
+    final long upper = (long) outerRange.getUpperBound();
     final TimePeriod res =
-        new TimePeriod.BaseTimePeriod(new HiResDate((long) lower),
-            new HiResDate((long) upper));
+        new TimePeriod.BaseTimePeriod(new HiResDate(lower),
+            new HiResDate(upper));
 
     return res;
   }
