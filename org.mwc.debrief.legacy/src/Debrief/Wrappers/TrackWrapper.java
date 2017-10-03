@@ -1301,6 +1301,30 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
   }
 
+  public void clearPositions()
+  {
+    boolean modified = false;
+
+    final Enumeration<Editable> segments = _thePositions.elements();
+    while (segments.hasMoreElements())
+    {
+      final TrackSegment seg = (TrackSegment) segments.nextElement();
+      seg.removeAllElements();
+
+      // remember that we've made a change
+      modified = true;
+
+      // we've also got to clear the cache
+      flushPeriodCache();
+      flushPositionCache();
+    }
+
+    if (modified)
+    {
+      setRelativePending();
+    }
+  }
+
   /**
    * instruct this object to clear itself out, ready for ditching
    */
@@ -1619,6 +1643,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     this.exportThis();
   }
 
+  // //////////////////////////////////////
+  // editing parameters
+  // //////////////////////////////////////
+
   /**
    * filter the list to the specified time period, then inform any listeners (such as the time
    * stepper)
@@ -1687,10 +1715,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           newPeriod);
     }
   }
-
-  // //////////////////////////////////////
-  // editing parameters
-  // //////////////////////////////////////
 
   @Override
   public void findNearestHotSpotIn(final Point cursorPos,
@@ -1784,6 +1808,29 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
+  private void fixLabelColor()
+  {
+    if (_theLabel.getColor() == null)
+    {
+      // check we have a colour
+      Color labelColor = getColor();
+
+      // did we ourselves have a colour?
+      if (labelColor == null)
+      {
+        // nope - do we have any legs?
+        final Enumeration<Editable> numer = this.getPositionIterator();
+        if (numer.hasMoreElements())
+        {
+          // ok, use the colour of the first point
+          final FixWrapper pos = (FixWrapper) numer.nextElement();
+          labelColor = pos.getColor();
+        }
+      }
+      _theLabel.setColor(labelColor);
+    }
+  }
+
   /**
    * one of our fixes has moved. better tell any bits that rely on the locations of our bits
    * 
@@ -1861,7 +1908,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // special case - for single point tracks
     if (isSinglePointTrack())
     {
-      TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
+      final TrackSegment seg =
+          (TrackSegment) _thePositions.elements().nextElement();
       return (FixWrapper) seg.first();
     }
 
@@ -2395,8 +2443,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
     else if (isSinglePointTrack())
     {
-      TrackSegment seg = (TrackSegment) _thePositions.elements().nextElement();
-      FixWrapper fix = (FixWrapper) seg.first();
+      final TrackSegment seg =
+          (TrackSegment) _thePositions.elements().nextElement();
+      final FixWrapper fix = (FixWrapper) seg.first();
       return new Watchable[]
       {fix};
     }
@@ -2846,23 +2895,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   /**
-   * accessor to determine if this is a relative track
-   * 
-   * @return
-   */
-  public boolean isTMATrack()
-  {
-    boolean res = false;
-    if (_thePositions != null && !_thePositions.isEmpty()
-        && _thePositions.first() instanceof CoreTMASegment)
-    {
-      res = true;
-    }
-
-    return res;
-  }
-
-  /**
    * whether this is single point track. Single point tracks get special processing.
    * 
    * @return
@@ -2872,13 +2904,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     final boolean res;
     if (_thePositions.size() == 1)
     {
-      TrackSegment first =
+      final TrackSegment first =
           (TrackSegment) _thePositions.elements().nextElement();
 
       // we want to avoid getting the size() of the list.
       // So, do fancy trick to check the first element is non-null,
       // and the second is null
-      Enumeration<Editable> elems = first.elements();
+      final Enumeration<Editable> elems = first.elements();
       if (elems != null && elems.hasMoreElements()
           && elems.nextElement() != null && !elems.hasMoreElements())
       {
@@ -2892,6 +2924,23 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     else
     {
       res = false;
+    }
+
+    return res;
+  }
+
+  /**
+   * accessor to determine if this is a relative track
+   * 
+   * @return
+   */
+  public boolean isTMATrack()
+  {
+    boolean res = false;
+    if (_thePositions != null && !_thePositions.isEmpty()
+        && _thePositions.first() instanceof CoreTMASegment)
+    {
+      res = true;
     }
 
     return res;
@@ -3352,6 +3401,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return endPoints;
   }
 
+  // ////////////////////////////////////////////////////
+  // LAYER support methods
+  // /////////////////////////////////////////////////////
+
   /**
    * paint this fix, overriding the label if necessary (since the user may wish to have 6-figure
    * DTGs at the start & end of the track
@@ -3471,10 +3524,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
   }
 
-  // ////////////////////////////////////////////////////
-  // LAYER support methods
-  // /////////////////////////////////////////////////////
-
   /**
    * paint any polyline that we've built up
    * 
@@ -3560,29 +3609,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     if (oldLoc != null)
     {
       _theLabel.setRelativeLocation(oldLoc);
-    }
-  }
-
-  private void fixLabelColor()
-  {
-    if (_theLabel.getColor() == null)
-    {
-      // check we have a colour
-      Color labelColor = getColor();
-
-      // did we ourselves have a colour?
-      if (labelColor == null)
-      {
-        // nope - do we have any legs?
-        final Enumeration<Editable> numer = this.getPositionIterator();
-        if (numer.hasMoreElements())
-        {
-          // ok, use the colour of the first point
-          final FixWrapper pos = (FixWrapper) numer.nextElement();
-          labelColor = pos.getColor();
-        }
-      }
-      _theLabel.setColor(labelColor);
     }
   }
 
@@ -3686,6 +3712,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
     return nearest;
   }
+
+  // ////////////////////////////////////////////////////
+  // track-shifting operation
+  // /////////////////////////////////////////////////////
+
+  // /////////////////////////////////////////////////
+  // support for dragging the track around
+  // ////////////////////////////////////////////////
 
   /**
    * remove the requested item from the track
@@ -3858,14 +3892,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
   }
-
-  // ////////////////////////////////////////////////////
-  // track-shifting operation
-  // /////////////////////////////////////////////////////
-
-  // /////////////////////////////////////////////////
-  // support for dragging the track around
-  // ////////////////////////////////////////////////
 
   /**
    * pass through the track, resetting the labels back to their original DTG
@@ -4069,12 +4095,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           }
 
           long nextMarker = start_time / 1000L;
-          long freqMillis = freq / 1000L;
-          Enumeration<Editable> iter = this.getPositionIterator();
+          final long freqMillis = freq / 1000L;
+          final Enumeration<Editable> iter = this.getPositionIterator();
           while (iter.hasMoreElements())
           {
-            FixWrapper nextF = (FixWrapper) iter.nextElement();
-            long hisDate = nextF.getDTG().getDate().getTime();
+            final FixWrapper nextF = (FixWrapper) iter.nextElement();
+            final long hisDate = nextF.getDTG().getDate().getTime();
             if (hisDate >= nextMarker)
             {
               setter.execute(nextF, true);
@@ -4287,7 +4313,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     // remember we may need to regenerate positions, if we're a TMA solution
-    Editable firstLeg = getSegments().elements().nextElement();
+    final Editable firstLeg = getSegments().elements().nextElement();
     if (firstLeg instanceof CoreTMASegment)
     {
       // setRelativePending();
