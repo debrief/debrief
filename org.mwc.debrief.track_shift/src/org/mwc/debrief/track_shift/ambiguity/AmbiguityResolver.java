@@ -967,7 +967,7 @@ public class AmbiguityResolver
                 new FixedMillisecond(time.getDate().getTime());
             final TimeSeriesDataItem item =
                 new TimeSeriesDataItem(sec, combinedRate);
-            scores.add(item);
+            scores.addOrUpdate(item);
           }
 
           final String timeStr = time.getDate().toString();
