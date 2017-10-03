@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
@@ -808,7 +809,7 @@ public class AmbiguityResolver
 
     // we now need to sort them into ascending order
     final Comparator<ArrayList<PermScore>> sorter = getPermComparator();
-    overallScores.sort(sorter);
+    Collections.sort(overallScores, sorter);
 
     // get the best performing one
     final ArrayList<PermScore> winner = overallScores.get(0);
