@@ -847,18 +847,18 @@ public class AmbiguityResolver
   private static double shortAngle(double brg1, double brg2)
   {
     double res = brg1 - brg2;
-    if(res > 180)
+    if (res > 180)
     {
       res -= 360;
     }
-    if(res < -180)
+    if (res < -180)
     {
       res += 360;
     }
-    
+
     return res;
   }
-  
+
   /**
    * During a turn the difference between the bearing and ambiguous bearing go crazy. Exploit this
    * behaviour to find periods when the array is staedy.
@@ -966,36 +966,29 @@ public class AmbiguityResolver
           final double gapRate = Math.abs(valueDelta / timeDeltaSecs);
 
           // and the delta bearing rate
-          
-          double brgDelta = shortAngle(cut.getBearing(),  lastCut.getBearing());
-          double ambigBrgDelta = shortAngle(cut.getAmbiguousBearing(),  lastCut.getAmbiguousBearing());
+
+          double brgDelta = shortAngle(cut.getBearing(), lastCut.getBearing());
+          double ambigBrgDelta =
+              shortAngle(cut.getAmbiguousBearing(), lastCut
+                  .getAmbiguousBearing());
           final double sysDelta = ambigBrgDelta - brgDelta;
-          if(sysDelta > 180)
+          if (sysDelta > 180)
           {
             ambigBrgDelta = -ambigBrgDelta;
           }
-          
-          final double brgRate = brgDelta / timeDeltaSecs;
-          
-          final double TRIP_WIRE;
-          if(Math.signum(brgDelta) == Math.signum(ambigBrgDelta) && brgRate > 0.2)
-          {
-            TRIP_WIRE = 5;
-          }
-          else
-          {
-            TRIP_WIRE = 0;
-          }
 
-          // ok, combine the two rates
-          final double combinedRate = gapRate + TRIP_WIRE;
+          final double brgRate = brgDelta / timeDeltaSecs;
+
+          final boolean TRIP_ZIG =
+              Math.signum(brgDelta) == Math.signum(ambigBrgDelta)
+                  && brgRate > 0.2;
 
           if (scores != null)
           {
             final FixedMillisecond sec =
                 new FixedMillisecond(time.getDate().getTime());
             final TimeSeriesDataItem item =
-                new TimeSeriesDataItem(sec, combinedRate);
+                new TimeSeriesDataItem(sec, gapRate);
             scores.addOrUpdate(item);
           }
 
@@ -1004,12 +997,12 @@ public class AmbiguityResolver
               timeStr + " brg:" + (int) cut.getBearing() + " ambig:"
                   + (int) cut.getAmbiguousBearing() + " step (secs)"
                   + (int) timeDeltaSecs + " gap delta rate:" + gapRate
-                  + " lastBrg:" + (int)lastCut.getBearing() + " brg:"
+                  + " lastBrg:" + (int) lastCut.getBearing() + " brg:"
                   + ((int) cut.getBearing()) + " brg delta:" + brgRate
-                  + " combined:" + combinedRate;
+                  + " gap rate:" + gapRate + " OS zig trip:" + TRIP_ZIG;
           doLog(logger, stats);
 
-          if (combinedRate > minZig)
+          if (TRIP_ZIG || gapRate > minZig)
           {
             // ok, were we on a straight leg?
             if (thisLeg != null)
@@ -1200,8 +1193,8 @@ public class AmbiguityResolver
    *          the min period required to treat it as a leg
    * @return yes/no
    */
-  private static boolean stillCacheing(final LegOfCuts possLeg, final long thisTime,
-      final long minLength)
+  private static boolean stillCacheing(final LegOfCuts possLeg,
+      final long thisTime, final long minLength)
   {
     final boolean res;
     if (possLeg.isEmpty())
@@ -1218,9 +1211,10 @@ public class AmbiguityResolver
     return res;
   }
 
-  private static void walkScores(final List<LegPermutation> legs, final int curLeg,
-      final List<PermScore> thisPermSoFar, final PermScore lastScore,
-      final List<ArrayList<PermScore>> finishedPerms)
+  private static void
+      walkScores(final List<LegPermutation> legs, final int curLeg,
+          final List<PermScore> thisPermSoFar, final PermScore lastScore,
+          final List<ArrayList<PermScore>> finishedPerms)
   {
     // take a deep copy of the clones, since we want independent copies
     final ArrayList<PermScore> newScores = new ArrayList<PermScore>();
