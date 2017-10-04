@@ -504,13 +504,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       assertEquals("found correct number of zones", 12, legs.size());
 
       assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 23, zigs.size());
+      assertEquals("found correct number of zig cuts", 22, zigs.size());
 
       // ok, ditch those cuts
       final int fullSensorLen = sensor.size();
       Map<SensorWrapper, LegOfCuts> deleted =
           DeleteCutsOperation.deleteTheseCuts(zigs);
-      assertEquals("fewer cuts", 98, sensor.size());
+      assertEquals("fewer cuts", 99, sensor.size());
 
       // ok, and undo them
       BearingResidualsView.restoreCuts(deleted);
