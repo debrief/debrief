@@ -1015,22 +1015,32 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   protected void resolveAmbiguousCutsB()
   {
 
-    if (_ambiguousResolverLegsAndCuts != null)
+    Zone[] zones = ownshipZoneChart.getZones();
+    if(zones == null || zones.length == 0)
     {
-      final AmbiguityResolver resolver = new AmbiguityResolver();
-      final IUndoableOperation resolveCuts =
-          new ResolveCutsOperationAmbig(resolver, _ambiguousResolverLegsAndCuts
-              .getLegs());
-      undoRedoProvider.execute(resolveCuts);
+      CorePlugin.showMessage("Resolve ambiguity", "Please slice ownship legs before resolving ambiguity");
     }
     else
     {
-      CorePlugin.showMessage("Resolve Ambiguity",
-          "Please delete cuts in turn first");
+      List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
+      for(Zone zone: zones)
+      {
+        TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()), new HiResDate(zone.getEnd()));
+        List<SensorContactWrapper> cuts = _myHelper.getBearings(_myHelper.getPrimaryTrack(), true, period);
+        LegOfCuts leg = new LegOfCuts();
+        leg.addAll(cuts);
+        
+        legs.add(leg);
+      }
+      
+      final AmbiguityResolver resolver = new AmbiguityResolver();
+      final IUndoableOperation resolveCuts =
+          new ResolveCutsOperationAmbig(resolver, legs);
+      undoRedoProvider.execute(resolveCuts);
+      
+      // and refresh
+      updateData(true);
     }
-
-    // and refresh
-    updateData(true);
   }
 
   @Override
