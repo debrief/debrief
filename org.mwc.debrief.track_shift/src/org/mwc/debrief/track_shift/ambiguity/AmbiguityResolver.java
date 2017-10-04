@@ -844,6 +844,21 @@ public class AmbiguityResolver
     return res;
   }
 
+  private static double shortAngle(double brg1, double brg2)
+  {
+    double res = brg1 - brg2;
+    if(res > 180)
+    {
+      res -= 360;
+    }
+    if(res < -180)
+    {
+      res += 360;
+    }
+    
+    return res;
+  }
+  
   /**
    * During a turn the difference between the bearing and ambiguous bearing go crazy. Exploit this
    * behaviour to find periods when the array is staedy.
@@ -879,7 +894,7 @@ public class AmbiguityResolver
 
     final Enumeration<Editable> enumer = sensor.elements();
     Double lastDelta = null;
-    Double lastBearing = null;
+    SensorContactWrapper lastCut = null;
     HiResDate lastTime = null;
     LegOfCuts thisLeg = null;
     LegOfCuts thisZig = null;
@@ -951,15 +966,29 @@ public class AmbiguityResolver
           final double gapRate = Math.abs(valueDelta / timeDeltaSecs);
 
           // and the delta bearing rate
-          double brgDelta = Math.abs(cut.getBearing() - lastBearing);
-          if (brgDelta > 180)
+          
+          double brgDelta = shortAngle(cut.getBearing(),  lastCut.getBearing());
+          double ambigBrgDelta = shortAngle(cut.getAmbiguousBearing(),  lastCut.getAmbiguousBearing());
+          final double sysDelta = ambigBrgDelta - brgDelta;
+          if(sysDelta > 180)
           {
-            brgDelta = 360 - brgDelta;
+            ambigBrgDelta = -ambigBrgDelta;
           }
+          
           final double brgRate = brgDelta / timeDeltaSecs;
+          
+          final double TRIP_WIRE;
+          if(Math.signum(brgDelta) == Math.signum(ambigBrgDelta) && brgRate > 0.2)
+          {
+            TRIP_WIRE = 5;
+          }
+          else
+          {
+            TRIP_WIRE = 0;
+          }
 
           // ok, combine the two rates
-          final double combinedRate = gapRate + brgRate;
+          final double combinedRate = gapRate + TRIP_WIRE;
 
           if (scores != null)
           {
@@ -975,7 +1004,7 @@ public class AmbiguityResolver
               timeStr + " brg:" + (int) cut.getBearing() + " ambig:"
                   + (int) cut.getAmbiguousBearing() + " step (secs)"
                   + (int) timeDeltaSecs + " gap delta rate:" + gapRate
-                  + " lastBrg:" + lastBearing.intValue() + " brg:"
+                  + " lastBrg:" + (int)lastCut.getBearing() + " brg:"
                   + ((int) cut.getBearing()) + " brg delta:" + brgRate
                   + " combined:" + combinedRate;
           doLog(logger, stats);
@@ -1092,7 +1121,7 @@ public class AmbiguityResolver
         }
         lastDelta = delta;
         lastTime = time;
-        lastBearing = cut.getBearing();
+        lastCut = cut;
       }
 
     }
