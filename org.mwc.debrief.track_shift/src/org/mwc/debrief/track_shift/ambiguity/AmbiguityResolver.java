@@ -534,8 +534,8 @@ public class AmbiguityResolver
               null);
 
       assertNotNull("produced slices", sliced);
-      assertEquals("correct legs", 3, sliced.legs.size());
-      assertEquals("correct turning cuts", 19, sliced.zigCuts.size());
+      assertEquals("correct legs", 4, sliced.legs.size());
+      assertEquals("correct turning cuts", 13, sliced.zigCuts.size());
     }
 
     public void testTrim()
