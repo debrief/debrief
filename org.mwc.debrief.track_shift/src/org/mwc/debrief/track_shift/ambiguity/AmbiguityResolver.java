@@ -867,7 +867,7 @@ public class AmbiguityResolver
    *          the sensor to process
    * @param minZig
    *          above this value we treat it as a zig
-   * @param maxSteady
+   * @param minBoth
    *          below this value we treat it as a leg
    * @param minLegLength
    *          we need at least this period of cuts to interpret steady bearings as O/S leg
@@ -880,7 +880,7 @@ public class AmbiguityResolver
    * @return A collection of legs and zigs.
    */
   private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
-      final SensorWrapper sensor, final double minZig, final double maxSteady,
+      final SensorWrapper sensor, final double minZig, final double minBoth,
       final double minLegLength, final Logger logger, final TimeSeries scores,
       final TimePeriod trackPeriod)
   {
@@ -981,7 +981,7 @@ public class AmbiguityResolver
 
           final boolean TRIP_ZIG =
               Math.signum(brgDelta) == Math.signum(ambigBrgDelta)
-                  && brgRate > 0.2;
+                  && Math.abs(brgRate) > minBoth;
 
           if (scores != null)
           {
@@ -1147,7 +1147,7 @@ public class AmbiguityResolver
   }
 
   public LegsAndZigs sliceTrackIntoLegsUsingAmbiguity(final TrackWrapper track,
-      final double minZig, final double maxSteady, final double minLegLength,
+      final double minZig, final double minBoth, final double minLegLength,
       final Logger logger, final TimeSeries scores)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
@@ -1167,7 +1167,7 @@ public class AmbiguityResolver
       if (sensor.getVisible())
       {
         final LegsAndZigs thisL =
-            sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, maxSteady,
+            sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, minBoth,
                 minLegLength, logger, scores, period);
         if (thisL.legs.size() > 0)
         {

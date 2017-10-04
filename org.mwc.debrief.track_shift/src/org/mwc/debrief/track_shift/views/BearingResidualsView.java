@@ -144,9 +144,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final double MIN_ZIG =
             TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
                 PreferenceConstants.MIN_ZIG);
-        final double MAX_STEADY =
+        final double MIN_BOTH =
             TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                PreferenceConstants.MAX_STEADY);
+                PreferenceConstants.MIN_TURN_RATE);
         final double MIN_LEG_LENGTH =
             TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
                 PreferenceConstants.MIN_LEG_LENGTH);
@@ -154,7 +154,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final Logger logger = getLogger();
         _ambiguousResolverLegsAndCuts =
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
-                .getPrimaryTrack(), MIN_ZIG, MAX_STEADY, MIN_LEG_LENGTH,
+                .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH,
                 logger, ambigScores);
         zones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
