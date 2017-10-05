@@ -792,8 +792,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // if we have any ambiguous cuts, produce a array
     // containing core bearing then ambig bearing
     final TimeSeries[] ambigCuts = getAmbiguousCutData();
-    final TimeSeries[] scoreSeries = new TimeSeries[]
-    {ambigScores};
+
+    // let's stop outputting the score series for O/S cutting.
+    // We're past that now
+    // final TimeSeries[] scoreSeries = new TimeSeries[]
+    // {ambigScores};
+    final TimeSeries[] scoreSeries = null;
 
     ownshipZoneChart =
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
@@ -857,7 +861,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void switchAmbiguousCuts(Zone zone)
       {
         // don't worry. we shouldn't be doing this for this zone
-        System.err.println("Should not be trying to switch cuts on a target track");
+        System.err
+            .println("Should not be trying to switch cuts on a target track");
       }
     };
 
@@ -883,8 +888,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
-  /** provide an operation that gets run when the user wants to resolve
-   * ambiguity
+  /**
+   * provide an operation that gets run when the user wants to resolve ambiguity
    * 
    * @return
    */
