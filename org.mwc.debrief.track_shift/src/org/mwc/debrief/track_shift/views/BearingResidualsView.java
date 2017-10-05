@@ -144,9 +144,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final double MIN_ZIG =
             TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
                 PreferenceConstants.MIN_ZIG);
-        final double MAX_STEADY =
+        final double MIN_BOTH =
             TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                PreferenceConstants.MAX_STEADY);
+                PreferenceConstants.MIN_TURN_RATE);
         final double MIN_LEG_LENGTH =
             TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
                 PreferenceConstants.MIN_LEG_LENGTH);
@@ -154,8 +154,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final Logger logger = getLogger();
         _ambiguousResolverLegsAndCuts =
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
-                .getPrimaryTrack(), MIN_ZIG, MAX_STEADY, MIN_LEG_LENGTH,
-                logger, ambigScores);
+                .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger,
+                ambigScores);
         zones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
         {
@@ -504,13 +504,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       assertEquals("found correct number of zones", 12, legs.size());
 
       assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 23, zigs.size());
+      assertEquals("found correct number of zig cuts", 22, zigs.size());
 
       // ok, ditch those cuts
       final int fullSensorLen = sensor.size();
       Map<SensorWrapper, LegOfCuts> deleted =
           DeleteCutsOperation.deleteTheseCuts(zigs);
-      assertEquals("fewer cuts", 98, sensor.size());
+      assertEquals("fewer cuts", 99, sensor.size());
 
       // ok, and undo them
       BearingResidualsView.restoreCuts(deleted);
@@ -1015,29 +1015,33 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   protected void resolveAmbiguousCutsB()
   {
 
-    Zone[] zones = ownshipZoneChart.getZones();
-    if(zones == null || zones.length == 0)
+    final Zone[] zones = ownshipZoneChart.getZones();
+    if (zones == null || zones.length == 0)
     {
-      CorePlugin.showMessage("Resolve ambiguity", "Please slice ownship legs before resolving ambiguity");
+      CorePlugin.showMessage("Resolve ambiguity",
+          "Please slice ownship legs before resolving ambiguity");
     }
     else
     {
-      List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
-      for(Zone zone: zones)
+      final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
+      for (final Zone zone : zones)
       {
-        TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()), new HiResDate(zone.getEnd()));
-        List<SensorContactWrapper> cuts = _myHelper.getBearings(_myHelper.getPrimaryTrack(), true, period);
-        LegOfCuts leg = new LegOfCuts();
+        final TimePeriod period =
+            new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()),
+                new HiResDate(zone.getEnd()));
+        final List<SensorContactWrapper> cuts =
+            _myHelper.getBearings(_myHelper.getPrimaryTrack(), true, period);
+        final LegOfCuts leg = new LegOfCuts();
         leg.addAll(cuts);
-        
+
         legs.add(leg);
       }
-      
+
       final AmbiguityResolver resolver = new AmbiguityResolver();
       final IUndoableOperation resolveCuts =
           new ResolveCutsOperationAmbig(resolver, legs);
       undoRedoProvider.execute(resolveCuts);
-      
+
       // and refresh
       updateData(true);
     }

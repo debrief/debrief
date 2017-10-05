@@ -17,10 +17,11 @@ public class PreferenceConstants
    */
   public static final String DISPLAY = "ShowControls";
 
-  /** value at which we decide platform is steady (degs/sec)
+  /** minimum rate at which both bearings travel in SAME DIRECTION
+   * (workaround for problem in up-stream processing system)
    * 
    */
-  public static final String MAX_STEADY = "Max_Steady";
+  public static final String MIN_TURN_RATE = "MinTurnRate";
   
   /** minimum length of period of cuts to treat them as steady
    * 

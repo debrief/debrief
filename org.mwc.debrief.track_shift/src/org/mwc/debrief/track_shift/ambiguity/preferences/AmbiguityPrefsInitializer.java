@@ -20,7 +20,7 @@ public class AmbiguityPrefsInitializer extends AbstractPreferenceInitializer
 	{
 		IPreferenceStore store = TrackShiftActivator.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.MIN_ZIG, 0.5d);
-    store.setDefault(PreferenceConstants.MAX_STEADY, 0.2d);
+    store.setDefault(PreferenceConstants.MIN_TURN_RATE, 0.2d);
     store.setDefault(PreferenceConstants.DIAGNOSTICS, false);
     store.setDefault(PreferenceConstants.DISPLAY, false);
     store.setDefault(PreferenceConstants.MIN_LEG_LENGTH, 240d);
