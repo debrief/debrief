@@ -290,6 +290,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     private final List<Enumeration<Editable>> lists = new ArrayList<>();
     private int currentList = 0;
     private Enumeration<Editable> currentIter;
+    private Editable current;
 
     public WrappedIterators()
     {
@@ -339,7 +340,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         currentIter = lists.get(currentList);
       }
 
-      return currentIter.nextElement();
+      current = currentIter.nextElement();
+
+      return current;
+    }
+
+    public Editable currentElement()
+    {
+      return current;
     }
 
   }
@@ -2418,6 +2426,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return getNearestTo(srchDTG, true);
   }
 
+  private WrappedIterators _lastPosIterator;
+
   /**
    * find the fix nearest to this time (or the first fix for an invalid time)
    * 
@@ -2480,24 +2490,60 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if ((srchDTG.greaterThan(theFirst.getTime()))
             && (srchDTG.lessThanOrEqualTo(theLast.getTime())))
         {
+
+          // do we already have a position iterator?
+          final Enumeration<Editable> pIter;
+          if (_lastPosIterator != null)
+          {
+            FixWrapper lastPos = (FixWrapper) _lastPosIterator.currentElement();
+            if (lastPos.getDTG().equals(srchDTG))
+            {
+              res = lastPos;
+              pIter = null;
+            }
+            else if (lastPos.getDTG().lessThanOrEqualTo(srchDTG))
+            {
+              pIter = _lastPosIterator;
+            }
+            else
+            {
+              pIter = getPositionIterator();
+            }
+          }
+          else
+          {
+            pIter = getPositionIterator();
+          }
+
           // yes it's inside our data range, find the first fix
           // after the indicated point
-          final Enumeration<Editable> pIter = getPositionIterator();
           FixWrapper previous = null;
-          while (pIter.hasMoreElements())
+          if (res == null)
           {
-            final FixWrapper fw = (FixWrapper) pIter.nextElement();
-
-            if (!onlyVisible || fw.getVisible())
+            while (pIter.hasMoreElements())
             {
-              if (fw.getDTG().greaterThanOrEqualTo(srchDTG))
+              final FixWrapper fw = (FixWrapper) pIter.nextElement();
+
+              if (!onlyVisible || fw.getVisible())
               {
-                res = fw;
-                break;
+                if (fw.getDTG().greaterThanOrEqualTo(srchDTG))
+                {
+                  res = fw;
+                  break;
+                }
+                // and remember the previous one
+                previous = fw;
               }
-              // and remember the previous one
-              previous = fw;
             }
+          }
+          
+          if(pIter != null && pIter.hasMoreElements())
+          {
+            _lastPosIterator = (WrappedIterators) pIter;
+          }
+          else
+          {
+            _lastPosIterator = null;
           }
 
           // right, that's the first points on or before the indicated
