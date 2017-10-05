@@ -417,10 +417,23 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       updateData(true);
 
       fireModified();
+      
+      final IStatus res;
+      if(_resolved != null)
+      {
+        
+        res =
+            new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+                "Resolve legs successful", null);
+      }
+      else
+      {
+        res =
+            new Status(IStatus.ERROR, TrackShiftActivator.PLUGIN_ID,
+                "Tried to slice too many legs", null);
+        
+      }
 
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Resolve legs successful", null);
       return res;
     }
 

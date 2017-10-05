@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -17,6 +19,7 @@ import java.util.logging.Logger;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichBearing;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichPeriod;
 
@@ -159,11 +162,131 @@ public class AmbiguityResolver
     }
   }
 
+  /** helper class that cache's the total score for the list.  
+   * 
+   * @author Ian
+   *
+   */
+  private static class ScoreList extends ArrayList<PermScore>
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private Double _score = null;
+
+    
+    
+    @Override
+    public boolean add(PermScore e)
+    {
+      if(_score != null)
+      {
+        throw new IllegalArgumentException("Cannot add more items once score is generated");
+      }
+      return super.add(e);
+    }
+
+
+
+    @Override
+    public void add(int index, PermScore element)
+    {
+      if(_score != null)
+      {
+        throw new IllegalArgumentException("Cannot add more items once score is generated");
+      }
+      super.add(index, element);
+    }
+
+
+
+    @Override
+    public boolean addAll(Collection<? extends PermScore> c)
+    {
+      if(_score != null)
+      {
+        throw new IllegalArgumentException("Cannot add more items once score is generated");
+      }
+      return super.addAll(c);
+    }
+
+
+
+    @Override
+    public boolean addAll(int index, Collection<? extends PermScore> c)
+    {
+      if(_score != null)
+      {
+        throw new IllegalArgumentException("Cannot add more items once score is generated");
+      }
+      return super.addAll(index, c);
+    }
+
+
+
+    /** this method should only be called when no more items are to be added
+     * 
+     * @return
+     */
+    private double getScore()
+    {
+      if (_score == null)
+      {
+        double total = 0;
+        for (final PermScore item : this)
+        {
+          total += item.thisScore;
+        }
+        _score = total;
+      }
+
+      return _score;
+    }
+  }
+
   // ////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
   // ////////////////////////////////////////////////////////////////////////////////////////////////
   static public final class TestResolveAmbig extends junit.framework.TestCase
   {
+
+    /**
+     * algorithm to quickly generate large quantities of lists of boolean permutations. Taken from
+     * here: https://stackoverflow.com/a/27994579/92441
+     * 
+     * @param n
+     *          number of boolean perms
+     * @return iterator delivers series of boolean arrays, each providing different permutation on
+     *         the possibles
+     */
+    public static Iterator<Boolean[]> bool(final int n)
+    {
+      return new Iterator<Boolean[]>()
+      {
+        final long max = (long) Math.pow(2, n);
+        long next = 0L;
+
+        @Override
+        public boolean hasNext()
+        {
+          return next < max;
+        }
+
+        @Override
+        public Boolean[] next()
+        {
+          final Boolean[] b = new Boolean[n];
+          for (int i = 0; i < n; i++)
+          {
+            b[i] = (next & (1 << i)) != 0;
+          }
+          next++;          
+          return b;
+        }
+
+      };
+    }
 
     private TrackWrapper getData(final String name)
         throws FileNotFoundException
@@ -188,6 +311,93 @@ public class AmbiguityResolver
       assertNotNull("found sensor track", track);
 
       return track;
+    }
+
+    private void getPerms(final List<ArrayList<WhichBearing>> results, final int ctr,
+        final List<WhichBearing> thisList, final WhichBearing newPerm)
+    {
+      final ArrayList<WhichBearing> newList = new ArrayList<WhichBearing>();
+
+      if (thisList != null)
+      {
+        newList.addAll(thisList);
+      }
+
+      if (newPerm != null)
+      {
+        newList.add(newPerm);
+      }
+
+      if (ctr > 0)
+      {
+        // ok, add the two new perms
+        final int thisCtr = ctr - 1;
+        getPerms(results, thisCtr, newList, WhichBearing.CORE);
+        getPerms(results, thisCtr, newList, WhichBearing.AMBIGUOUS);
+      }
+      else
+      {
+        // ok, finished. store the results
+        results.add(newList);
+      }
+    }
+
+    public void testGenPerms()
+    {
+      final List<ArrayList<WhichBearing>> results =
+          new ArrayList<ArrayList<WhichBearing>>();
+      final int ctr = 6;
+      final List<WhichBearing> thisList = null;
+      final WhichBearing newPerm = null;
+
+      getPerms(results, ctr, thisList, newPerm);
+      System.out.println(results.size());
+      assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
+
+      results.clear();
+
+      final ArrayList<WhichBearing> starter = new ArrayList<WhichBearing>();
+      starter.add(WhichBearing.CORE);
+      starter.add(WhichBearing.AMBIGUOUS);
+
+      results.add(starter);
+
+      // try another way
+      for (int i = 0; i < ctr; i++)
+      {
+        final ArrayList<ArrayList<WhichBearing>> newList =
+            new ArrayList<ArrayList<WhichBearing>>();
+        for (final ArrayList<WhichBearing> list : results)
+        {
+          final ArrayList<WhichBearing> permA = new ArrayList<WhichBearing>();
+          permA.addAll(list);
+          final ArrayList<WhichBearing> permB = new ArrayList<WhichBearing>();
+          permB.addAll(list);
+          permA.add(WhichBearing.CORE);
+          permB.add(WhichBearing.AMBIGUOUS);
+
+          newList.add(permA);
+          newList.add(permB);
+        }
+
+        results.clear();
+        results.addAll(newList);
+      }
+
+      System.out.println(results.size());
+      assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
+
+      final Iterator<Boolean[]> iter = bool(ctr);
+      int numGenerated = 0;
+      while (iter.hasNext())
+      {
+        @SuppressWarnings("unused")
+        final Boolean[] perm = iter.next();
+        numGenerated++;
+      }
+
+      assertEquals("enough perms", (int) Math.pow(2, ctr), numGenerated);
+
     }
 
     public void testGetCurve() throws FileNotFoundException
@@ -646,19 +856,18 @@ public class AmbiguityResolver
     }
   }
 
-  private static Comparator<ArrayList<PermScore>> getPermComparator()
+  private static Comparator<ScoreList> getPermComparator()
   {
-    return new Comparator<ArrayList<PermScore>>()
+    return new Comparator<ScoreList>()
     {
 
       @Override
-      public int compare(final ArrayList<PermScore> d1,
-          final ArrayList<PermScore> d2)
+      public int compare(final ScoreList d1, final ScoreList d2)
       {
         final int res;
 
-        final double d1Total = totalScoreFor(d1);
-        final double d2Total = totalScoreFor(d2);
+        final double d1Total = d1.getScore();
+        final double d2Total = d2.getScore();
 
         if (d1Total < d2Total)
         {
@@ -739,16 +948,6 @@ public class AmbiguityResolver
     return res;
   }
 
-  private static double totalScoreFor(final ArrayList<PermScore> list)
-  {
-    double total = 0;
-    for (final PermScore item : list)
-    {
-      total += item.thisScore;
-    }
-    return total;
-  }
-
   /**
    * trim the supplied value to the 0..360 domain
    * 
@@ -791,13 +990,12 @@ public class AmbiguityResolver
     return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
   }
 
-  private static void
-      walkScores(final List<LegPermutation> legs, final int curLeg,
-          final List<PermScore> thisPermSoFar, final PermScore lastScore,
-          final List<ArrayList<PermScore>> finishedPerms)
+  private static void walkScores(final List<LegPermutation> legs,
+      final int curLeg, final ScoreList thisPermSoFar,
+      final PermScore lastScore, final List<ScoreList> finishedPerms)
   {
     // take a deep copy of the clones, since we want independent copies
-    final ArrayList<PermScore> newScores = new ArrayList<PermScore>();
+    final ScoreList newScores = new ScoreList();
     if (thisPermSoFar != null && !thisPermSoFar.isEmpty())
     {
       newScores.addAll(thisPermSoFar);
@@ -855,6 +1053,66 @@ public class AmbiguityResolver
   {
     final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
 
+    // get all the permutations for this set of legs
+    final List<LegPermutation> listOfPermutations = getPermutations(legs);
+
+    // ok, now work through the permutations
+    final List<ScoreList> overallScores = new ArrayList<ScoreList>();
+
+    // the recursive algorithm we use has a limit of 20 legs,
+    // else we will run out of heap space.
+    // so, limit it to 20
+    if (listOfPermutations.size() > 20)
+    {
+      CorePlugin
+          .showMessage(
+              "Resolve Ambiguity",
+              "Sorry, there is a limit of 20 legs. Please Filter to Time Period to reduce the number of legs being resolved");
+      return null;
+    }
+
+    // ok, produce a list of permutations, with scores
+    walkScores(listOfPermutations, 1, null, null, overallScores);
+
+    // we now need to sort them into ascending order
+    final Comparator<ScoreList> sorter = getPermComparator();
+    Collections.sort(overallScores, sorter);
+
+    // get the best performing one
+    final ArrayList<PermScore> winner = overallScores.get(0);
+
+    // ok, set the legs to the correct permutation
+    boolean firstZig = true;
+    for (final PermScore zig : winner)
+    {
+      if (firstZig)
+      {
+        // SPECIAL CASE:
+        // for the first zig we handle the previous leg
+
+        // ditch the side we don't want
+        ditchBearingsForThisLeg(zig.lastLeg, zig.lastB);
+
+        // remember the leg
+        res.add(new ResolvedLeg(zig.lastLeg, zig.lastB));
+
+        firstZig = false;
+      }
+
+      // for all legs we handle the following leg
+
+      // ditch the side we don't want
+      ditchBearingsForThisLeg(zig.thisLeg, zig.thisB);
+
+      // remember the leg
+      res.add(new ResolvedLeg(zig.thisLeg, zig.thisB));
+    }
+
+    return res;
+  }
+
+  private List<LegPermutation> getPermutations(final List<LegOfCuts> legs)
+  {
     final List<LegPermutation> listOfPermutations =
         new ArrayList<LegPermutation>();
 
@@ -903,49 +1161,7 @@ public class AmbiguityResolver
 
       lastLeg = leg;
     }
-
-    // ok, now work through the permutations
-    final List<ArrayList<PermScore>> overallScores =
-        new ArrayList<ArrayList<PermScore>>();
-
-    // ok, produce a list of permutations, with scores
-    walkScores(listOfPermutations, 1, null, null, overallScores);
-
-    // we now need to sort them into ascending order
-    final Comparator<ArrayList<PermScore>> sorter = getPermComparator();
-    Collections.sort(overallScores, sorter);
-
-    // get the best performing one
-    final ArrayList<PermScore> winner = overallScores.get(0);
-
-    // ok, set the legs to the correct permutation
-    boolean firstZig = true;
-    for (final PermScore zig : winner)
-    {
-      if (firstZig)
-      {
-        // SPECIAL CASE:
-        // for the first zig we handle the previous leg
-
-        // ditch the side we don't want
-        ditchBearingsForThisLeg(zig.lastLeg, zig.lastB);
-
-        // remember the leg
-        res.add(new ResolvedLeg(zig.lastLeg, zig.lastB));
-
-        firstZig = false;
-      }
-
-      // for all legs we handle the following leg
-
-      // ditch the side we don't want
-      ditchBearingsForThisLeg(zig.thisLeg, zig.thisB);
-
-      // remember the leg
-      res.add(new ResolvedLeg(zig.thisLeg, zig.thisB));
-    }
-
-    return res;
+    return listOfPermutations;
   }
 
   /**
