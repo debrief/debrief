@@ -279,10 +279,9 @@ public class AmbiguityResolver
           final Boolean[] b = new Boolean[n];
           for (int i = 0; i < n; i++)
           {
-            b[i] = ((next & (1 << i)) != 0);
+            b[i] = (next & (1 << i)) != 0;
           }
-          next++;
-          ;
+          next++;          
           return b;
         }
 
@@ -314,7 +313,7 @@ public class AmbiguityResolver
       return track;
     }
 
-    private void getPerms(final List<ArrayList<WhichBearing>> results, int ctr,
+    private void getPerms(final List<ArrayList<WhichBearing>> results, final int ctr,
         final List<WhichBearing> thisList, final WhichBearing newPerm)
     {
       final ArrayList<WhichBearing> newList = new ArrayList<WhichBearing>();
@@ -332,9 +331,9 @@ public class AmbiguityResolver
       if (ctr > 0)
       {
         // ok, add the two new perms
-        ctr--;
-        getPerms(results, ctr, newList, WhichBearing.CORE);
-        getPerms(results, ctr, newList, WhichBearing.AMBIGUOUS);
+        final int thisCtr = ctr - 1;
+        getPerms(results, thisCtr, newList, WhichBearing.CORE);
+        getPerms(results, thisCtr, newList, WhichBearing.AMBIGUOUS);
       }
       else
       {
@@ -1054,54 +1053,8 @@ public class AmbiguityResolver
   {
     final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
 
-    final List<LegPermutation> listOfPermutations =
-        new ArrayList<LegPermutation>();
-
-    // ok, loop through the legs
-    LegOfCuts lastLeg = null;
-    LegPermutation lastPerm = null;
-    for (final LegOfCuts leg : legs)
-    {
-
-      // generate the curves
-      final double[] coreSlopeEarly =
-          leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
-      final double[] ambigSlopeEarly =
-          leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
-      final double[] coreSlopeLate =
-          leg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
-      final double[] ambigSlopeLate =
-          leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
-
-      // special handling. if this has already been resolved, we can skip it
-      if (ambigSlopeEarly != null && ambigSlopeLate != null)
-      {
-        // now put them into a permutation
-        final LegPermutation thisPerm =
-            new LegPermutation(leg, coreSlopeEarly, ambigSlopeEarly,
-                coreSlopeLate, ambigSlopeLate);
-
-        // have we already processed a leg?
-        if (lastLeg != null)
-        {
-          final long midTime = midTimeFor(lastLeg, leg);
-
-          // sort out the after scores for the last leg
-          lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
-          lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
-
-          // and the early scores for this leg
-          thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
-          thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
-        }
-
-        // store the leg permutation
-        listOfPermutations.add(thisPerm);
-        lastPerm = thisPerm;
-      }
-
-      lastLeg = leg;
-    }
+    // get all the permutations for this set of legs
+    final List<LegPermutation> listOfPermutations = getPermutations(legs);
 
     // ok, now work through the permutations
     final List<ScoreList> overallScores = new ArrayList<ScoreList>();
@@ -1156,6 +1109,59 @@ public class AmbiguityResolver
     }
 
     return res;
+  }
+
+  private List<LegPermutation> getPermutations(final List<LegOfCuts> legs)
+  {
+    final List<LegPermutation> listOfPermutations =
+        new ArrayList<LegPermutation>();
+
+    // ok, loop through the legs
+    LegOfCuts lastLeg = null;
+    LegPermutation lastPerm = null;
+    for (final LegOfCuts leg : legs)
+    {
+
+      // generate the curves
+      final double[] coreSlopeEarly =
+          leg.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
+      final double[] ambigSlopeEarly =
+          leg.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
+      final double[] coreSlopeLate =
+          leg.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
+      final double[] ambigSlopeLate =
+          leg.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
+
+      // special handling. if this has already been resolved, we can skip it
+      if (ambigSlopeEarly != null && ambigSlopeLate != null)
+      {
+        // now put them into a permutation
+        final LegPermutation thisPerm =
+            new LegPermutation(leg, coreSlopeEarly, ambigSlopeEarly,
+                coreSlopeLate, ambigSlopeLate);
+
+        // have we already processed a leg?
+        if (lastLeg != null)
+        {
+          final long midTime = midTimeFor(lastLeg, leg);
+
+          // sort out the after scores for the last leg
+          lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
+          lastPerm.ambigAfter = valueAt(midTime, lastPerm.ambigSlopeLate);
+
+          // and the early scores for this leg
+          thisPerm.coreBefore = valueAt(midTime, thisPerm.coreSlopeEarly);
+          thisPerm.ambigBefore = valueAt(midTime, thisPerm.ambigSlopeEarly);
+        }
+
+        // store the leg permutation
+        listOfPermutations.add(thisPerm);
+        lastPerm = thisPerm;
+      }
+
+      lastLeg = leg;
+    }
+    return listOfPermutations;
   }
 
   /**
