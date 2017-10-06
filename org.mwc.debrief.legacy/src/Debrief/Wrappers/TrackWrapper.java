@@ -2654,17 +2654,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public Enumeration<Editable> getPositionIterator()
   {
-    // loop through segments
-    // final Enumeration<Editable> segs = _thePositions.elements();
-    // List<TrackSegment> list = new ArrayList<TrackSegment>();
-    // while (segs.hasMoreElements())
-    // {
-    // // get this segment
-    // final TrackSegment seg = (TrackSegment) segs.nextElement();
-    // list.add(seg);
-    // }
-
-    return new WrappedIterators(_thePositions);
+    return  new WrappedIterators(_thePositions);
   }
 
   /**
@@ -3138,7 +3128,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // and do the paint
         sw.paint(dest);
-
       } // through the sensors
     } // whether the sensor layer is visible
 
