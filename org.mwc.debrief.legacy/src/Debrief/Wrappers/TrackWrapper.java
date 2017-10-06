@@ -284,13 +284,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * @author Ian
    * 
    */
-  private static class WrappedIterators implements Enumeration<Editable>
+  public static class WrappedIterators implements Enumeration<Editable>
   {
 
     private final List<Enumeration<Editable>> lists = new ArrayList<>();
     private int currentList = 0;
     private Enumeration<Editable> currentIter;
     private Editable current;
+    private Editable previous;
 
     public WrappedIterators()
     {
@@ -340,6 +341,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         currentIter = lists.get(currentList);
       }
 
+      // cache the previous value
+      previous = current;
+      
+      // cache the current value
       current = currentIter.nextElement();
 
       return current;
@@ -348,6 +353,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     public Editable currentElement()
     {
       return current;
+    }
+    
+    public Editable previousElement()
+    {
+      return previous;
     }
 
   }
@@ -923,9 +933,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   // member functions
   // //////////////////////////////////////
 
-  transient private HiResDate lastDTG;
-
-  transient private FixWrapper lastFix;
+  transient private FixWrapper _lastFix;
 
   /**
    * working parameters
@@ -1421,7 +1429,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     // and our utility objects
-    lastFix = null;
+    _lastFix = null;
 
     // and our editor
     _myEditor = null;
@@ -2426,8 +2434,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return getNearestTo(srchDTG, true);
   }
 
+  /** cache the position iterator we last used. 
+   * this prevents us from having to restart at the beginning
+   * when getNearestTo() is being called repetitively
+   */
   private WrappedIterators _lastPosIterator;
 
+  public WrappedIterators getCachedIterator()
+  {
+    return _lastPosIterator;
+  }
+  
   /**
    * find the fix nearest to this time (or the first fix for an invalid time)
    * 
@@ -2469,10 +2486,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       return new MWC.GenericData.Watchable[]
       {fix};
     }
-    else if ((srchDTG.equals(lastDTG)) && (lastFix != null))
+    else if (_lastFix != null && _lastFix.getDTG().equals(srchDTG))
     {
-      // see if this is the DTG we have just requestsed
-      res = lastFix;
+      // see if this is the DTG we have just requested
+      res = _lastFix;
     }
     else
     {
@@ -2490,19 +2507,28 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         if ((srchDTG.greaterThan(theFirst.getTime()))
             && (srchDTG.lessThanOrEqualTo(theLast.getTime())))
         {
+          FixWrapper previous = null;
 
           // do we already have a position iterator?
           final Enumeration<Editable> pIter;
           if (_lastPosIterator != null)
           {
             FixWrapper lastPos = (FixWrapper) _lastPosIterator.currentElement();
+            FixWrapper prevPos = (FixWrapper) _lastPosIterator.previousElement();
             if (lastPos.getDTG().equals(srchDTG))
             {
               res = lastPos;
               pIter = null;
             }
-            else if (lastPos.getDTG().lessThanOrEqualTo(srchDTG))
+            else if (lastPos.getDTG().lessThan(srchDTG))
             {
+              pIter = _lastPosIterator;
+              previous = lastPos;
+            }
+            else if(prevPos != null && lastPos.getDTG().greaterThan(srchDTG) && prevPos.getDTG().lessThan(srchDTG))
+            {
+              res = lastPos;
+              previous = prevPos;
               pIter = _lastPosIterator;
             }
             else
@@ -2517,7 +2543,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
           // yes it's inside our data range, find the first fix
           // after the indicated point
-          FixWrapper previous = null;
           if (res == null)
           {
             while (pIter.hasMoreElements())
@@ -2583,8 +2608,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
 
       // and remember this fix
-      lastFix = res;
-      lastDTG = srchDTG;
+      _lastFix = res;
     }
 
     if (res != null)
@@ -4163,6 +4187,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final void setInterpolatePoints(final boolean val)
   {
     _interpolatePoints = val;
+    
+    // note: when we switch interpolation on or off, it can change
+    // the fix that is to be returned from getNearestTo().
+    // So, we should clear the lastDTG cached value
+    _lastFix = null;
   }
 
   /**
@@ -4547,6 +4576,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     boolean moved = false;
     boolean updateFired = false;
+    FixWrapper lastFix = null;
 
     final Enumeration<Editable> segments = _thePositions.elements();
     while (segments.hasMoreElements())
