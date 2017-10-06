@@ -40,6 +40,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -411,17 +413,25 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-      _resolved = _resolver.resolve(_legs);
+      final Runnable toResolve = new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          _resolved = _resolver.resolve(_legs);
+        }
+      };
+      BusyIndicator.showWhile(Display.getCurrent(), toResolve);
 
       // and refresh
       updateData(true);
 
       fireModified();
-      
+
       final IStatus res;
-      if(_resolved != null)
+      if (_resolved != null)
       {
-        
+
         res =
             new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
                 "Resolve legs successful", null);
@@ -431,7 +441,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         res =
             new Status(IStatus.ERROR, TrackShiftActivator.PLUGIN_ID,
                 "Tried to slice too many legs", null);
-        
+
       }
 
       return res;
@@ -773,22 +783,29 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   {
     return new Runnable()
     {
-
       @Override
       public void run()
       {
-        final Runnable updateData = new Runnable()
+        final Runnable wrappedDelete = new Runnable()
         {
 
           @Override
           public void run()
           {
-            updateData(true);
+            final Runnable updateData = new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                updateData(true);
+              }
+            };
+
+            deleteCutsInTurnB(_myHelper.getPrimaryTrack(), updateData,
+                ownshipZoneChart, undoRedoProvider);
           }
         };
-
-        deleteCutsInTurnB(_myHelper.getPrimaryTrack(), updateData,
-            ownshipZoneChart, undoRedoProvider);
+        BusyIndicator.showWhile(Display.getCurrent(), wrappedDelete);
       }
     };
   }

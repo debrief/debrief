@@ -858,7 +858,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       @Override
-      public void switchAmbiguousCuts(Zone zone)
+      public void switchAmbiguousCuts(final Zone zone)
       {
         // don't worry. we shouldn't be doing this for this zone
         System.err
@@ -886,16 +886,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // sort out zone chart visibility
     setZoneChartsVisible(_showZones.isChecked());
-  }
-
-  /**
-   * provide an operation that gets run when the user wants to resolve ambiguity
-   * 
-   * @return
-   */
-  protected Runnable getResolveAmbiguityOperation()
-  {
-    return null;
   }
 
   /**
@@ -1408,6 +1398,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   abstract protected ZoneSlicer getOwnshipZoneSlicer(
       final ColorProvider blueProv);
+
+  /**
+   * provide an operation that gets run when the user wants to resolve ambiguity
+   * 
+   * @return
+   */
+  protected Runnable getResolveAmbiguityOperation()
+  {
+    return null;
+  }
 
   public ISharedImages getSharedImages()
   {
