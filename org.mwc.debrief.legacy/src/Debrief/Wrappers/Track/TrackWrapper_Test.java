@@ -33,6 +33,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.TrackWrapper.WrappedIterators;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
@@ -76,10 +77,90 @@ public class TrackWrapper_Test extends TestCase
   private static FixWrapper getFix(long dtg, double course, double speed)
   {
     Fix theFix =
-        new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, speed);
+        new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, MWC.Algorithms.Conversions.Kts2Yps(speed));
     FixWrapper res = new FixWrapper(theFix);
 
     return res;
+  }
+  
+  public void testCacheIterators()
+  {
+    TrackWrapper track = new TrackWrapper();
+    track.setName("track");
+    
+    track.addFix(getFix(1000, 10, 10));
+    track.addFix(getFix(2000, 10, 20));
+    track.addFix(getFix(3000, 10, 30));
+    track.addFix(getFix(4000, 10, 40));
+    track.addFix(getFix(5000, 10, 50));
+    track.addFix(getFix(6000, 10, 60));
+    track.addFix(getFix(7000, 10, 70));
+
+    assertNull("iterator not cached yet", track.getCachedIterator());
+    
+    Watchable[] resArr = track.getNearestTo(new HiResDate(500));
+    assertEquals("Should not get anything", 0, resArr.length);
+    assertNull("iterator still not cached yet", track.getCachedIterator());
+
+    Watchable res = track.getNearestTo(new HiResDate(1000))[0];
+    assertNotNull(res);
+    assertNull("iterator still not cached yet", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 10d, 0.001);
+
+    
+    res = track.getNearestTo(new HiResDate(1200))[0];
+    assertNotNull(res);
+    assertNotNull("iterator should be there", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 20d, 0.001);
+
+    
+    res = track.getNearestTo(new HiResDate(2100))[0];
+    assertNotNull(res);
+    assertNotNull("iterator should be there", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 30d, 0.001);
+
+    final WrappedIterators theIter = track.getCachedIterator();
+
+    res = track.getNearestTo(new HiResDate(6100))[0];
+    assertNotNull(res);
+    assertNull("iterator gone", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 70d, 0.001);
+    
+  //  ALSO CHECK WHEN WE ONLY MOVE FORWARD VERY SLIGHTLY
+
+    resArr = track.getNearestTo(new HiResDate(8100));
+    assertEquals("Empty array", 0, resArr.length);
+    assertNull("iterator gone", track.getCachedIterator());
+
+    res = track.getNearestTo(new HiResDate(2100))[0];
+    assertNotNull(res);
+    assertNotNull("iterator should be there", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 30d, 0.001);
+
+    assertTrue("should be new iterator", theIter != track.getCachedIterator());
+    
+    // switch on interpolation, and check speeds
+    track.setInterpolatePoints(true);
+    res = track.getNearestTo(new HiResDate(2200))[0];
+    assertNotNull(res);
+    assertNotNull("iterator should be there", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 22d, 0.001);
+    
+    res = track.getNearestTo(new HiResDate(5600))[0];
+    assertNotNull(res);
+    assertNotNull("iterator should be there", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 56d, 0.001);
+    
+    res = track.getNearestTo(new HiResDate(6600))[0];
+    assertNotNull(res);
+    assertNull("iterator cleared, since we have no more elements", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 66d, 0.001);
+
+    res = track.getNearestTo(new HiResDate(1600))[0];
+    assertNotNull(res);
+    assertNotNull("iterator should be there", track.getCachedIterator());
+    assertEquals(res.getSpeed(), 16d, 0.001);
+
   }
 
   public void testSetLabelFrequency()

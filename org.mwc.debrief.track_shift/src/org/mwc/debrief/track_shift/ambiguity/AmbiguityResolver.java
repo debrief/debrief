@@ -162,10 +162,11 @@ public class AmbiguityResolver
     }
   }
 
-  /** helper class that cache's the total score for the list.  
+  /**
+   * helper class that cache's the total score for the list.
    * 
    * @author Ian
-   *
+   * 
    */
   private static class ScoreList extends ArrayList<PermScore>
   {
@@ -173,76 +174,75 @@ public class AmbiguityResolver
      * 
      */
     private static final long serialVersionUID = 1L;
-    private Double _score = null;
+    private double _score = 0;
+    private boolean closed = false;
 
-    
-    
-    @Override
-    public boolean add(PermScore e)
+    public void finalise()
     {
-      if(_score != null)
+      double total = 0;
+      for (final PermScore item : this)
       {
-        throw new IllegalArgumentException("Cannot add more items once score is generated");
+        total += item.thisScore;
       }
-      return super.add(e);
+      _score = total;
+
+      closed = true;
     }
 
-
-
-    @Override
-    public void add(int index, PermScore element)
-    {
-      if(_score != null)
-      {
-        throw new IllegalArgumentException("Cannot add more items once score is generated");
-      }
-      super.add(index, element);
-    }
-
-
-
-    @Override
-    public boolean addAll(Collection<? extends PermScore> c)
-    {
-      if(_score != null)
-      {
-        throw new IllegalArgumentException("Cannot add more items once score is generated");
-      }
-      return super.addAll(c);
-    }
-
-
-
-    @Override
-    public boolean addAll(int index, Collection<? extends PermScore> c)
-    {
-      if(_score != null)
-      {
-        throw new IllegalArgumentException("Cannot add more items once score is generated");
-      }
-      return super.addAll(index, c);
-    }
-
-
-
-    /** this method should only be called when no more items are to be added
+    /**
+     * this method should only be called when no more items are to be added
      * 
      * @return
      */
     private double getScore()
     {
-      if (_score == null)
-      {
-        double total = 0;
-        for (final PermScore item : this)
-        {
-          total += item.thisScore;
-        }
-        _score = total;
-      }
-
       return _score;
     }
+
+    @Override
+    public boolean add(PermScore e)
+    {
+      if (closed)
+      {
+        throw new IllegalArgumentException(
+            "Cannot add more items once score is generated");
+      }
+      return super.add(e);
+    }
+
+    @Override
+    public void add(int index, PermScore element)
+    {
+      if (closed)
+      {
+        throw new IllegalArgumentException(
+            "Cannot add more items once score is generated");
+      }
+      super.add(index, element);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends PermScore> c)
+    {
+      if (closed)
+      {
+        throw new IllegalArgumentException(
+            "Cannot add more items once score is generated");
+      }
+      return super.addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends PermScore> c)
+    {
+      if (closed)
+      {
+        throw new IllegalArgumentException(
+            "Cannot add more items once score is generated");
+      }
+      return super.addAll(index, c);
+    }
+
   }
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,7 +281,7 @@ public class AmbiguityResolver
           {
             b[i] = (next & (1 << i)) != 0;
           }
-          next++;          
+          next++;
           return b;
         }
 
@@ -313,8 +313,9 @@ public class AmbiguityResolver
       return track;
     }
 
-    private void getPerms(final List<ArrayList<WhichBearing>> results, final int ctr,
-        final List<WhichBearing> thisList, final WhichBearing newPerm)
+    private void getPerms(final List<ArrayList<WhichBearing>> results,
+        final int ctr, final List<WhichBearing> thisList,
+        final WhichBearing newPerm)
     {
       final ArrayList<WhichBearing> newList = new ArrayList<WhichBearing>();
 
@@ -848,11 +849,14 @@ public class AmbiguityResolver
     }
   }
 
-  private static void doLog(final Logger logger, final String msg)
+  private static void doLog(final Logger logger, final String msg,
+      final HiResDate time)
   {
     if (logger != null)
     {
-      logger.log(Level.INFO, msg);
+      final String timeStr = time != null ? time.getDate().toString() : "";
+
+      logger.log(Level.INFO, timeStr + " " + msg);
     }
   }
 
@@ -1044,6 +1048,9 @@ public class AmbiguityResolver
     }
     else
     {
+      // no more to be added, let the list sort out it's total
+      newScores.finalise();
+
       // ok, we've reached the end. Store the score.
       finishedPerms.add(newScores);
     }
@@ -1298,15 +1305,17 @@ public class AmbiguityResolver
             scores.addOrUpdate(item);
           }
 
-          final String timeStr = time.getDate().toString();
-          final String stats =
-              timeStr + " brg:" + (int) cut.getBearing() + " ambig:"
-                  + (int) cut.getAmbiguousBearing() + " step (secs)"
-                  + (int) timeDeltaSecs + " gap delta rate:" + gapRate
-                  + " lastBrg:" + (int) lastCut.getBearing() + " brg:"
-                  + ((int) cut.getBearing()) + " brg delta:" + brgRate
-                  + " gap rate:" + gapRate + " OS zig trip:" + TRIP_ZIG;
-          doLog(logger, stats);
+          if (logger != null)
+          {
+            final String stats =
+                " brg:" + (int) cut.getBearing() + " ambig:"
+                    + (int) cut.getAmbiguousBearing() + " step (secs)"
+                    + (int) timeDeltaSecs + " gap delta rate:" + gapRate
+                    + " lastBrg:" + (int) lastCut.getBearing() + " brg:"
+                    + ((int) cut.getBearing()) + " brg delta:" + brgRate
+                    + " gap rate:" + gapRate + " OS zig trip:" + TRIP_ZIG;
+            doLog(logger, stats, time);
+          }
 
           if (TRIP_ZIG || gapRate > minZig)
           {
@@ -1315,7 +1324,7 @@ public class AmbiguityResolver
             {
               // close the leg
               thisLeg = null;
-              doLog(logger, timeStr + " End leg.");
+              doLog(logger, " End leg.", time);
             }
 
             // ok, were we're in a zig?
@@ -1323,14 +1332,15 @@ public class AmbiguityResolver
             {
               // not in a zig. Put us in a zig
               thisZig = new LegOfCuts();
-              doLog(logger, timeStr + " New zig.");
+              doLog(logger, " New zig.", time);
             }
 
             // do we have any pending cuts?
             if (!possLeg.isEmpty())
             {
-              doLog(logger, timeStr
-                  + " Did have poss straight cuts. Drop them, we're in a turn");
+              doLog(logger,
+                  " Did have poss straight cuts. Drop them, we're in a turn",
+                  time);
 
               // ok, we have a couple of cuts that look like they're straight.
               // well, they're not. they're actually in a turn
@@ -1364,7 +1374,7 @@ public class AmbiguityResolver
 
               if (stillCacheing(possLeg, thisTime, (long) minLegLength))
               {
-                doLog(logger, timeStr + " Poss straight leg. Cache it.");
+                doLog(logger, " Poss straight leg. Cache it.", time);
 
                 // ok, we'll add this to the list
                 possLeg.add(cut);
@@ -1377,7 +1387,7 @@ public class AmbiguityResolver
                 // finish the zig
                 zigs.addAll(thisZig);
 
-                doLog(logger, timeStr + " Zig ended.");
+                doLog(logger, " Zig ended.", time);
 
                 // close the leg
                 thisZig = null;
@@ -1389,7 +1399,7 @@ public class AmbiguityResolver
               // ok, we're in a leg
               if (thisLeg == null)
               {
-                doLog(logger, timeStr + " New Leg.");
+                doLog(logger, " New Leg.", time);
 
                 thisLeg = new LegOfCuts();
 
@@ -1398,7 +1408,7 @@ public class AmbiguityResolver
                 // cuts to the leg
                 if (!possLeg.isEmpty())
                 {
-                  doLog(logger, timeStr + " Have poss straight leg cuts.");
+                  doLog(logger, " Have poss straight leg cuts.", time);
                   thisLeg.addAll(possLeg);
                   possLeg.clear();
                 }
@@ -1430,7 +1440,7 @@ public class AmbiguityResolver
     // are we still in a zig?
     if (thisZig != null)
     {
-      doLog(logger, "Finishing zig.");
+      doLog(logger, "Finishing zig.", null);
 
       // store the zig cuts
       zigs.addAll(thisZig);
@@ -1440,7 +1450,7 @@ public class AmbiguityResolver
     // do we have any possible straight leg cuts
     if (!possLeg.isEmpty())
     {
-      doLog(logger, "Append trailing straight cuts.");
+      doLog(logger, "Append trailing straight cuts.", null);
       thisLeg = new LegOfCuts();
 
       thisLeg.addAll(possLeg);

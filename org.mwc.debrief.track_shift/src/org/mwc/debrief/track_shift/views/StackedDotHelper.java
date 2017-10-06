@@ -108,7 +108,7 @@ public final class StackedDotHelper
   private static FixWrapper _cachedValue;
   private static HiResDate _cachedTime;
   private static TrackWrapper _cachedTrack;
-  
+
   public static class TestSlicing extends junit.framework.TestCase
   {
     public void testOSLegDetector()
@@ -294,7 +294,7 @@ public final class StackedDotHelper
           {
             final SensorContactWrapper scw =
                 (SensorContactWrapper) cuts.nextElement();
-                        
+
             if (!onlyVis || (onlyVis && scw.getVisible()))
             {
               // is this cut suitable for what we're looking for?
@@ -323,6 +323,9 @@ public final class StackedDotHelper
               final boolean newWay = false;
               if (newWay)
               {
+                // we no longer need to do it our own way,
+                // TrackWrapper processing has been optimised to
+                // cache the iterator
                 hostFix =
                     getNearestPositionOnHostTrack(sensorHost, scw.getDTG());
               }
@@ -367,7 +370,7 @@ public final class StackedDotHelper
                 // if there are any matching items
 
               } // if we find a match
-              else if(targetTrack == null && hostFix != null)
+              else if (targetTrack == null && hostFix != null)
               {
                 // no target data, just use ownship sensor data
                 thisDub = new Doublet(scw, null, null, hostFix);
@@ -771,8 +774,7 @@ public final class StackedDotHelper
       final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
-      final TimeSeries measuredValues,
-      final TimeSeries ambigValues,
+      final TimeSeries measuredValues, final TimeSeries ambigValues,
       final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
@@ -823,7 +825,6 @@ public final class StackedDotHelper
       return;
     }
 
-    
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
     final TimeSeries ambigErrorValues =
@@ -1440,7 +1441,7 @@ public final class StackedDotHelper
       }
 
       // find the color for maximum value in the error series, if we have error data
-      if(errorSeries.getSeriesCount() > 0)
+      if (errorSeries.getSeriesCount() > 0)
       {
         final Paint errorColor = calculateErrorShadeFor(errorSeries);
         dotPlot.setBackgroundPaint(errorColor);
@@ -1681,7 +1682,6 @@ public final class StackedDotHelper
 
     return false;
   }
-
 
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
       final ZoneChart.ColorProvider colorProvider)
