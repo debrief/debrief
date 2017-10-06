@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -1765,8 +1766,17 @@ public class ZoneChart extends Composite
                 }
                 else
                 {
-                  // ok, do the slicing
-                  performSlicing();
+                  final Runnable wrappedItem = new Runnable()
+                  {
+
+                    @Override
+                    public void run()
+                    {
+                      // ok, do the slicing
+                      performSlicing();
+                    }
+                  };
+                  BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
                 }
               }
             });
