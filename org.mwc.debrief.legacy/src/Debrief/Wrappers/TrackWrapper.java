@@ -320,6 +320,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
     }
 
+    public Editable currentElement()
+    {
+      return current;
+    }
+
     @Override
     public boolean hasMoreElements()
     {
@@ -343,18 +348,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // cache the previous value
       previous = current;
-      
+
       // cache the current value
       current = currentIter.nextElement();
 
       return current;
     }
 
-    public Editable currentElement()
-    {
-      return current;
-    }
-    
     public Editable previousElement()
     {
       return previous;
@@ -954,6 +954,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   private TrackColorModeHelper.TrackColorMode _trackColorMode =
       TrackColorModeHelper.LegacyTrackColorModes.PER_FIX;
+
+  /**
+   * cache the position iterator we last used. this prevents us from having to restart at the
+   * beginning when getNearestTo() is being called repetitively
+   */
+  private transient WrappedIterators _lastPosIterator;
 
   // //////////////////////////////////////
   // constructors
@@ -1649,6 +1655,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return new TrackWrapper_Support.IteratorWrapper(res.iterator());
   }
 
+  // //////////////////////////////////////
+  // editing parameters
+  // //////////////////////////////////////
+
   /**
    * export this track to REPLAY file
    */
@@ -1658,10 +1668,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     // call the method in PlainWrapper
     this.exportThis();
   }
-
-  // //////////////////////////////////////
-  // editing parameters
-  // //////////////////////////////////////
 
   /**
    * filter the list to the specified time period, then inform any listeners (such as the time
@@ -2106,6 +2112,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   /**
+   * this accessor is only present to support testing. It should not be used externally
+   * 
+   * @return the iterator we last used in getNearestTo()
+   */
+  public WrappedIterators getCachedIterator()
+  {
+    return _lastPosIterator;
+  }
+
+  /**
    * length of trail to plot
    */
   public final Duration getCustomTrailLength()
@@ -2434,17 +2450,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     return getNearestTo(srchDTG, true);
   }
 
-  /** cache the position iterator we last used. 
-   * this prevents us from having to restart at the beginning
-   * when getNearestTo() is being called repetitively
-   */
-  private WrappedIterators _lastPosIterator;
-
-  public WrappedIterators getCachedIterator()
-  {
-    return _lastPosIterator;
-  }
-  
   /**
    * find the fix nearest to this time (or the first fix for an invalid time)
    * 
@@ -2513,31 +2518,42 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           final Enumeration<Editable> pIter;
           if (_lastPosIterator != null)
           {
-            FixWrapper lastPos = (FixWrapper) _lastPosIterator.currentElement();
-            FixWrapper prevPos = (FixWrapper) _lastPosIterator.previousElement();
+            final FixWrapper lastPos =
+                (FixWrapper) _lastPosIterator.currentElement();
+            final FixWrapper prevPos =
+                (FixWrapper) _lastPosIterator.previousElement();
+
             if (lastPos.getDTG().equals(srchDTG))
             {
+              // ok, we know this answer, use it
               res = lastPos;
               pIter = null;
             }
             else if (lastPos.getDTG().lessThan(srchDTG))
             {
+              // the current iterator is still valid, stick with it
               pIter = _lastPosIterator;
               previous = lastPos;
             }
-            else if(prevPos != null && lastPos.getDTG().greaterThan(srchDTG) && prevPos.getDTG().lessThan(srchDTG))
+            else if (prevPos != null && lastPos.getDTG().greaterThan(srchDTG)
+                && prevPos.getDTG().lessThan(srchDTG))
             {
+              // we're currently either side of the required value
+              // we don't need to restart the iterator
               res = lastPos;
               previous = prevPos;
               pIter = _lastPosIterator;
             }
             else
             {
+              // we've gone past the required value, and
+              // the previous value isn't of any use
               pIter = getPositionIterator();
             }
           }
           else
           {
+            // we don't have a cached iterator, better create one then
             pIter = getPositionIterator();
           }
 
@@ -2561,13 +2577,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               }
             }
           }
-          
-          if(pIter != null && pIter.hasMoreElements())
+
+          // can we cache our iterator?
+          if (pIter != null && pIter.hasMoreElements())
           {
+            // ok, it's still of value
             _lastPosIterator = (WrappedIterators) pIter;
           }
           else
           {
+            // nope, drop it.
             _lastPosIterator = null;
           }
 
@@ -2595,7 +2614,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
               }
             }
           }
-
         }
         else if (srchDTG.equals(theFirst.getDTG()))
         {
@@ -4187,7 +4205,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   public final void setInterpolatePoints(final boolean val)
   {
     _interpolatePoints = val;
-    
+
     // note: when we switch interpolation on or off, it can change
     // the fix that is to be returned from getNearestTo().
     // So, we should clear the lastDTG cached value
