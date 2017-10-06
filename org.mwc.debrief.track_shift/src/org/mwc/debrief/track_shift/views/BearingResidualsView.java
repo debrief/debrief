@@ -413,7 +413,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-      Runnable toResolve = new Runnable()
+      final Runnable toResolve = new Runnable()
       {
         @Override
         public void run()
