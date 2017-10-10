@@ -662,7 +662,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
       // updating the text items has to be done in the UI thread. make it
       // so
-      Display.getDefault().asyncExec(new Runnable()
+      Display.getDefault().syncExec(new Runnable()
       {
         public void run()
         {
@@ -1138,6 +1138,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               final TimePeriod timeRange = _myTemporalDataset.getPeriod();
               if (timeRange != null)
               {
+                // we wish to cancel filtering to selection when
+                // we update the sliders, since it hides/reveals
+                // data
+
+                // remember the filter-to-window mode
+                final boolean filtering = _filterToSelectionAction.isChecked();
+
+                // switch it off
+                _filterToSelectionAction.setChecked(false);
+
                 // and our range selector - first the outer
                 // ranges
                 _dtgRangeSlider.updateOuterRanges(timeRange);
@@ -1149,6 +1159,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 // and the time slider range
                 _slideManager.resetRange(timeRange.getStartDTG(), timeRange
                     .getEndDTG());
+
+                // and restore the original value
+                _filterToSelectionAction.setChecked(filtering);
 
               }
 
