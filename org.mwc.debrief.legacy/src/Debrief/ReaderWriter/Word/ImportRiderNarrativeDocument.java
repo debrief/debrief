@@ -16,15 +16,14 @@ package Debrief.ReaderWriter.Word;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -51,23 +50,90 @@ import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 
 public class ImportRiderNarrativeDocument
 {
 
+  private static class DocHelper implements WordHelper
+  {
+    final private Table _table;
+
+    int rowCount = 2;
+
+    private DocHelper(final Table table)
+    {
+      _table = table;
+    }
+
+    @Override
+    public String getCell(final int i)
+    {
+      final TableRow row = _table.getRow(rowCount);
+      return row.getCell(i).text();
+    }
+
+    @Override
+    public String getHeaderCell(final int num)
+    {
+      final TableRow headerRow = _table.getRow(1);
+      final TableCell cell = headerRow.getCell(0);
+      return cell.text();
+    }
+
+    @Override
+    public boolean hasMoreEntries()
+    {
+      final int rows = _table.numRows();
+      return ++rowCount < rows;
+    }
+
+  }
+
+  private static class DocXHelper implements WordHelper
+  {
+    final private XWPFTable _table;
+
+    int rowCount = 2;
+
+    private DocXHelper(final XWPFTable table)
+    {
+      _table = table;
+    }
+
+    @Override
+    public String getCell(final int i)
+    {
+      final XWPFTableRow row = _table.getRow(rowCount);
+      return row.getCell(i).getText();
+    }
+
+    @Override
+    public String getHeaderCell(final int num)
+    {
+      final XWPFTableRow headerRow = _table.getRow(1);
+      final XWPFTableCell cell = headerRow.getCell(num);
+      return cell.getText();
+    }
+
+    @Override
+    public boolean hasMoreEntries()
+    {
+      final int rows = _table.getRows().size();
+      return ++rowCount < rows;
+    }
+
+  }
+
   private static class Header
   {
-    Date startDate;
-
-    String platform;
+    final Date startDate;
+    final String platform;
 
     public Header(final Date date, final String platform)
     {
@@ -89,21 +155,32 @@ public class ImportRiderNarrativeDocument
   {
     final Date date;
     final Integer bearing;
-    String text;
+    final Integer beam;
+    final String text;
 
-    public RiderEntry(final Date date, final Integer bearing, final String text)
+    public RiderEntry(final Date date, final Integer bearing,
+        final Integer beam, final String text)
     {
       this.date = date;
       this.bearing = bearing;
-      this.text = text;
+      this.beam = beam;
+      this.text = ImportNarrativeDocument.removeBadChars(text);;
+    }
+
+    @Override
+    public String toString()
+    {
+      // first the bearing bits
+      final String brgStr = bearing == null ? "" : "" + bearing;
+      final String beamStr = beam == null ? "" : "" + beam;
+      return "[" + brgStr + "/" + beamStr + "] " + text;
     }
   }
 
-  private static class TableBreakdown
+  public static class TableBreakdown
   {
-    Header header;
-
-    List<RiderEntry> entries;
+    final Header header;
+    final List<RiderEntry> entries;
 
     public TableBreakdown(final Header header, final List<RiderEntry> entries)
     {
@@ -160,8 +237,34 @@ public class ImportRiderNarrativeDocument
       });
     }
 
-    public void testImportRiderNarrative() throws FileNotFoundException,
-        InterruptedException
+    @SuppressWarnings("deprecation")
+    public void testCombineTime() throws ParseException
+    {
+      final ImportRiderNarrativeDocument im =
+          new ImportRiderNarrativeDocument(null);
+
+      final Date date = im.DATE_FORMAT.parse("090000Z JUL 17");
+      final Date time = im.TIME_FORMAT.parse("02:01:34");
+
+      final long millis = dateFor(date, time);
+
+      final Date res = new Date(millis);
+      assertEquals("9 Jul 2017 02:01:34 GMT", res.toGMTString());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testDateImport() throws ParseException
+    {
+      final String string2 = "090000Z JUL 17";
+
+      final DateFormat df = new SimpleDateFormat("ddHHmm'Z' MMM yy");
+      df.setTimeZone(TimeZone.getTimeZone("GMT"));
+      assertEquals("correct date", "9 Jul 2017 00:00:00 GMT", df.parse(string2)
+          .toGMTString());
+    }
+
+    public void testImportRiderNarrative() throws InterruptedException,
+        IOException
     {
       final Layers tLayers = new Layers();
 
@@ -185,144 +288,77 @@ public class ImportRiderNarrativeDocument
 
       final ImportRiderNarrativeDocument importer =
           new ImportRiderNarrativeDocument(tLayers);
-      final TableBreakdown data = importer.importFromWordX(testFile, is);
+      assertEquals("layers empty", 1, tLayers.size());
 
-      SimpleDateFormat dateF = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+      final XWPFDocument doc = new XWPFDocument(is);
+      final TableBreakdown data = importer.importFromWordX(doc);
+
+      final SimpleDateFormat dateF =
+          new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
       dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
-      
+
       assertNotNull(data);
       assertNotNull(data.header);
       assertNotNull(data.header.startDate);
       assertNotNull(data.entries);
       assertEquals(7, data.entries.size());
-      assertEquals("NONSUCH", data.header.platform);
-      assertEquals("2017/06/12 12:00:00", dateF.format(data.header.startDate));
+      assertEquals("HMS Nonsuch", data.header.platform);
+      assertEquals("2017/07/09 12:00:00", dateF.format(data.header.startDate));
+
+      final RiderEntry entry4 = data.entries.get(4);
+      assertEquals("2017/07/09 12:04:16", dateF.format(entry4.date));
+      assertEquals(null, entry4.bearing);
+      assertEquals("Lorem ipsum 5", entry4.text);
+      assertEquals(21, entry4.beam.intValue());
+      assertEquals("[/21] Lorem ipsum 5", entry4.toString());
 
       final RiderEntry entry5 = data.entries.get(5);
-      assertEquals("2017/06/12 06:07:22", dateF.format(entry5.date));
+      assertEquals("2017/07/09 12:05:17", dateF.format(entry5.date));
       assertEquals(22, entry5.bearing.intValue());
       assertEquals("Lorem ipsum 6", entry5.text);
+      assertEquals(null, entry5.beam);
+      assertEquals("[22/] Lorem ipsum 6", entry5.toString());
 
+      // ok, now store them
       importer.processThese(data);
 
-      //
-      //
-      // // hmmm, how many tracks
-      // assertEquals("got new tracks", 8, tLayers.size());
-      //
-      // final NarrativeWrapper narrLayer =
-      // (NarrativeWrapper) tLayers.elementAt(1);
-      // // correct final count
-      // assertEquals("Got num lines", 371, narrLayer.size());
-      //
-      // // hey, let's have a look them
-      // TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
-      // assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
-      // assertEquals("got fixes", 3, tw.numFixes());
-      //
-      // // hey, let's have a look them
-      // tw = (TrackWrapper) tLayers.elementAt(6);
-      // assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
-      // assertEquals("got fixes", 5, tw.numFixes());
-      //
-      // // we need to introduce a 500ms delay, so we don't use
-      // // the cahced visible period
-      // Thread.sleep(550);
-      //
-      // final TimePeriod bounds = tw.getVisiblePeriod();
-      // // in our sample data we have several FCSs at the same time,
-      // // so we have to increment the DTG (seconds) on successive points.
-      // // so,the dataset should end at 08:11:01 - since the last point
-      // // had a second added.
-      // assertEquals("correct bounds:", "Period:951212 080800 to 951212 081400",
-      // bounds.toString());
-      //
-      // // hey, let's have a look tthem
-      // tw = (TrackWrapper) tLayers.elementAt(7);
-      // assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
-      // assertEquals("got fixes", 3, tw.numFixes());
+      // hmmm, how many tracks
+      assertEquals("got new tracks", 2, tLayers.size());
 
+      final NarrativeWrapper narrLayer =
+          (NarrativeWrapper) tLayers.elementAt(1);
+      // correct final count
+      assertEquals("Got num lines", 7, narrLayer.size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testTimeImport() throws ParseException
+    {
+      final String string2 = "02:01:34";
+      final DateFormat df = new SimpleDateFormat("HH:mm:ss");
+      df.setTimeZone(TimeZone.getTimeZone("GMT"));
+      assertEquals("correct time", "1 Jan 1970 02:01:34 GMT", df.parse(string2)
+          .toGMTString());
     }
 
   }
 
   private static interface WordHelper
   {
+    public String getCell(int i);
+
     public String getHeaderCell(int num);
 
     public boolean hasMoreEntries();
-
-    public String getCell(int i);
   }
 
-  private static class DocXHelper implements WordHelper
+  private static List<String> SkipNames = null;
+
+  private static QuestionHelper questionHelper;
+
+  private static long dateFor(final Date start, final Date time)
   {
-    final private XWPFTable _table;
-
-    private DocXHelper(XWPFTable table)
-    {
-      _table = table;
-    }
-
-    @Override
-    public String getHeaderCell(int num)
-    {
-      final XWPFTableRow headerRow = _table.getRow(1);
-      final XWPFTableCell cell = headerRow.getCell(num);
-      return cell.getText();
-    }
-
-    @Override
-    public boolean hasMoreEntries()
-    {
-      int rows = _table.getRows().size();
-      return ++rowCount < rows;
-    }
-
-    int rowCount = 2;
-
-    @Override
-    public String getCell(int i)
-    {
-      XWPFTableRow row = _table.getRow(rowCount);
-      return row.getCell(i).getText();
-    }
-
-  }
-
-  private static class DocHelper implements WordHelper
-  {
-    final private Table _table;
-
-    private DocHelper(Table table)
-    {
-      _table = table;
-    }
-
-    @Override
-    public String getHeaderCell(int num)
-    {
-      final TableRow headerRow = _table.getRow(1);
-      final TableCell cell = headerRow.getCell(0);
-      return cell.text();
-    }
-
-    @Override
-    public boolean hasMoreEntries()
-    {
-      int rows = _table.numRows();
-      return ++rowCount < rows;
-    }
-
-    int rowCount = 2;
-
-    @Override
-    public String getCell(int i)
-    {
-      TableRow row = _table.getRow(rowCount);
-      return row.getCell(i).text();
-    }
-
+    return start.getTime() + time.getTime();
   }
 
   private static Header headerFor(final WordHelper helper,
@@ -341,6 +377,11 @@ public class ImportRiderNarrativeDocument
     Application.logError3(status, msg, e, true);
   }
 
+  public static void setQuestionHelper(final QuestionHelper helper)
+  {
+    questionHelper = helper;
+  }
+
   /**
    * keep track of which track-source combinations we've asked about
    * 
@@ -353,15 +394,6 @@ public class ImportRiderNarrativeDocument
    */
   private boolean _declaredNoHostFound = false;
 
-  private static List<String> SkipNames = null;
-
-  private static QuestionHelper questionHelper;
-
-  public static void setQuestionHelper(final QuestionHelper helper)
-  {
-    questionHelper = helper;
-  }
-
   /**
    * where we write our data
    * 
@@ -373,22 +405,19 @@ public class ImportRiderNarrativeDocument
    * 
    */
   Map<String, String> nameMatches = new HashMap<String, String>();
-
   private final SimpleDateFormat DATE_FORMAT;
+
   private final SimpleDateFormat TIME_FORMAT;
 
   public ImportRiderNarrativeDocument(final Layers target)
   {
     _layers = target;
 
-    DATE_FORMAT = new SimpleDateFormat(
-        "dd/MMM/yyyy");
+    DATE_FORMAT = new SimpleDateFormat("ddHHmm'Z' MMM yy");
     DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-    TIME_FORMAT =
-        new SimpleDateFormat("HHmmss:SS");
+    TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
     TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-    
     if (SkipNames == null)
     {
       SkipNames = new ArrayList<String>();
@@ -411,37 +440,25 @@ public class ImportRiderNarrativeDocument
       hisTrack = header.platform;
     }
 
-    final String textBit;
-    if (thisN.bearing != null)
-    {
-      textBit = "[" + thisN.bearing + "]" + thisN.text;
-    }
-    else
-    {
-      textBit = thisN.text;
-    }
+    final String textBit = thisN.toString();
 
     // sort out the time
-    final long correctedDTG = header.startDate.getTime() + thisN.date.getTime();
+    final long correctedDTG = thisN.date.getTime();
 
     final NarrativeEntry ne =
         new NarrativeEntry(hisTrack, "Rider", new HiResDate(correctedDTG),
             textBit);
 
-    // try to color the entry
-    final Layer host = _layers.findLayer(trackFor(header.platform));
-    if (host instanceof TrackWrapper)
-    {
-      final TrackWrapper tw = (TrackWrapper) host;
-      ne.setColor(tw.getColor());
-    }
+    // shade all rider's narratives black
+    ne.setColor(DebriefColors.BLACK);
 
     // and store it
     nw.add(ne);
   }
 
-  private List<RiderEntry> entriesFor(final WordHelper helper, Header header,
-      final SimpleDateFormat timeFormat) throws ParseException
+  private List<RiderEntry> entriesFor(final WordHelper helper,
+      final Header header, final SimpleDateFormat timeFormat)
+      throws ParseException
   {
     final List<RiderEntry> res = new ArrayList<RiderEntry>();
 
@@ -450,13 +467,12 @@ public class ImportRiderNarrativeDocument
       // ok, parse this row
       final String dateStr = helper.getCell(0);
       final String bearingStr = helper.getCell(1);
-      @SuppressWarnings("unused")
-      final String nextStr = helper.getCell(2);
+      final String beamStr = helper.getCell(2);
       final String text = helper.getCell(3);
 
       final Date date = timeFormat.parse(dateStr);
       Integer bearing;
-      if (bearingStr.toUpperCase().equals("NA"))
+      if (bearingStr.toUpperCase().equals("NO B"))
       {
         bearing = null;
       }
@@ -465,10 +481,20 @@ public class ImportRiderNarrativeDocument
         bearing = Integer.parseInt(bearingStr);
       }
 
-      final Date newDate =
-          new Date(header.startDate.getTime() + date.getTime());
+      final Integer beam;
+      if (beamStr.toUpperCase().equals("NO BM"))
+      {
+        beam = null;
+      }
+      else
+      {
+        beam = Integer.parseInt(beamStr);
+      }
 
-      final RiderEntry entry = new RiderEntry(newDate, bearing, text);
+      final Date newDate =
+          new Date(dateFor(header.startDate, date));
+
+      final RiderEntry entry = new RiderEntry(newDate, bearing, beam, text);
       res.add(entry);
 
     }
@@ -487,6 +513,49 @@ public class ImportRiderNarrativeDocument
     }
 
     return nw;
+  }
+
+  public void
+      handleImport(final String fileName, final InputStream inputStream)
+  {
+    // ok, read it into a document
+    XWPFDocument doc = null;
+
+    try
+    {
+      doc = new XWPFDocument(inputStream);
+    }
+    catch (final IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    boolean isRider = false;
+
+    // ok, now have a see if it's a rider's narrative
+    final List<XWPFTable> tables = doc.getTables();
+    if (tables.size() == 1)
+    {
+      // maybe
+      final String firstCell = tables.get(0).getRow(0).getCell(0).getText();
+      if (firstCell.toUpperCase().equals("DTG START"))
+      {
+        isRider = true;
+      }
+    }
+
+    if (isRider)
+    {
+      final TableBreakdown data = this.importFromWordX(doc);
+      this.processThese(data);
+    }
+    else
+    {
+      final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
+      final ArrayList<String> strings = iw.importFromWordX(doc);
+      iw.processThese(strings);
+    }
   }
 
   public ArrayList<String> importFromPdf(final String fileName,
@@ -528,13 +597,13 @@ public class ImportRiderNarrativeDocument
     {
       final HWPFDocument doc = new HWPFDocument(is);
 
-      Range range = doc.getRange();
+      final Range range = doc.getRange();
 
-      TableIterator tIter = new TableIterator(range);
+      final TableIterator tIter = new TableIterator(range);
 
-      Table table = tIter.next();
+      final Table table = tIter.next();
 
-      DocHelper helper = new DocHelper(table);
+      final DocHelper helper = new DocHelper(table);
 
       final Header header = headerFor(helper, DATE_FORMAT);
       final List<RiderEntry> entries = entriesFor(helper, header, TIME_FORMAT);
@@ -545,7 +614,7 @@ public class ImportRiderNarrativeDocument
     {
       e.printStackTrace();
     }
-    catch (ParseException e)
+    catch (final ParseException e)
     {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -554,16 +623,12 @@ public class ImportRiderNarrativeDocument
     return data;
   }
 
-  public TableBreakdown
-      importFromWordX(final String fName, final InputStream is)
+  public TableBreakdown importFromWordX(final XWPFDocument doc)
   {
     TableBreakdown data = null;
 
-    XWPFDocument doc = null;
     try
     {
-      doc = new XWPFDocument(is);
-
       final List<XWPFTable> tables = doc.getTables();
 
       if (tables.size() > 1)
@@ -573,15 +638,11 @@ public class ImportRiderNarrativeDocument
 
       final XWPFTable myTable = tables.get(0);
 
-      DocXHelper helper = new DocXHelper(myTable);
+      final DocXHelper helper = new DocXHelper(myTable);
 
       final Header header = headerFor(helper, DATE_FORMAT);
       final List<RiderEntry> entries = entriesFor(helper, header, TIME_FORMAT);
       data = new TableBreakdown(header, entries);
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
     }
     catch (final ParseException e)
     {
@@ -625,90 +686,20 @@ public class ImportRiderNarrativeDocument
     // keep track of if we've added anything
     boolean dataAdded = false;
 
-    // find the outer time period - we only load data into the current time period
-    TimePeriod outerPeriod = null;
-    final Enumeration<Editable> layers = _layers.elements();
-    while (layers.hasMoreElements())
-    {
-      final Layer thisL = (Layer) layers.nextElement();
-      if (thisL instanceof WatchableList)
-      {
-        final WatchableList wl = (WatchableList) thisL;
-        if (wl.getStartDTG() != null && wl.getEndDTG() != null)
-        {
-          final TimePeriod thisP =
-              new TimePeriod.BaseTimePeriod(wl.getStartDTG(), wl.getEndDTG());
-          if (outerPeriod == null)
-          {
-            outerPeriod = thisP;
-          }
-          else
-          {
-            outerPeriod.extend(wl.getStartDTG());
-            outerPeriod.extend(wl.getEndDTG());
-          }
-        }
-      }
-    }
-
     // ok, now we can loop through the strings
     for (final RiderEntry thisN : data.entries)
     {
-      // also remove any other control chars that may throw MS Word
-      thisN.text = removeBadChars(thisN.text);
-
-      final long combinedDate =
-          data.header.startDate.getTime() + thisN.date.getTime();
-      final HiResDate theDate = new HiResDate(combinedDate);
-
-      // do we know the outer time period?
-      if (outerPeriod != null && theDate != null)
-      {
-        // check it's in the currently loaded time period
-        if (!outerPeriod.contains(theDate))
-        {
-          // ok, it's not in our period - jump to the next row
-          continue;
-        }
-      }
-
       // add a narrative entry
       addEntry(thisN, data.header);
 
       // ok, take note that we've added something
       dataAdded = true;
-
     }
 
     if (dataAdded)
     {
       _layers.fireModified(getNarrativeLayer());
     }
-  }
-
-  /**
-   * do some pre-processing of text, to protect robustness of data written to file
-   * 
-   * @param raw_text
-   * @return text with some control chars removed
-   */
-  private String removeBadChars(final String raw_text)
-  {
-    // swap soft returns for hard ones
-    String res = raw_text.replace('\u000B', '\n');
-
-    // we learned that whilst MS Word includes the following
-    // control chars, and we can persist them via XML, we
-    // can't restore them via SAX. So, swap them for
-    // spaces
-    res = res.replace((char) 1, (char) 32);
-    res = res.replace((char) 19, (char) 32);
-    res = res.replace((char) 20, (char) 32);
-    res = res.replace((char) 21, (char) 32);
-    res = res.replace((char) 5, (char) 32); // MS Word comment marker
-
-    // done.
-    return res;
   }
 
   /**
@@ -767,11 +758,6 @@ public class ImportRiderNarrativeDocument
     }
 
     return res;
-  }
-
-  private String trackFor(final String originalName)
-  {
-    return trackFor(originalName, null);
   }
 
   private String trackFor(final String originalName, String name)
