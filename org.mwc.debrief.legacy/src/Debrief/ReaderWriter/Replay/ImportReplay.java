@@ -38,6 +38,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSetti
 import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -78,6 +79,28 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class ImportReplay extends PlainImporterBase
 {
 
+  final static class doublet
+  {
+    public final String label;
+
+    public final Color color;
+
+    public doublet(final String theLabel, final Color theColor)
+    {
+      label = theLabel;
+      color = theColor;
+    }
+  }
+
+  /**
+   * interface which we use to implement class capable of formatting a set of layers once they've
+   * been read in
+   */
+  public static interface LayersFormatter
+  {
+    public void formatLayers(List<Layer> newLayers);
+  }
+
   /**
    * interface for class that is able to retrieve the import mode from the user
    * 
@@ -100,7 +123,7 @@ public class ImportReplay extends PlainImporterBase
        */
       public final Long sampleFrequency;
 
-      public ImportSettings(String mode, Long freq)
+      public ImportSettings(final String mode, final Long freq)
       {
         importMode = mode;
         sampleFrequency = freq;
@@ -119,20 +142,334 @@ public class ImportReplay extends PlainImporterBase
     }
 
     /**
-     * find out how the user wants to import the new REP file
-     * 
-     * @param trackName
-     * @return
-     */
-    public ImportSettings getSelectedImportMode(final String trackName);
-
-    /**
      * find out the sample frequency for adding this data
      * 
      * @param trackName
      * @return
      */
     public Long getSelectedImportFrequency(final String trackName);
+
+    /**
+     * find out how the user wants to import the new REP file
+     * 
+     * @param trackName
+     * @return
+     */
+    public ImportSettings getSelectedImportMode(final String trackName);
+  }
+
+  /**
+   * interface for helpers that may be able to provide extra REP file importers
+   * 
+   */
+  public static interface RepImportHelper
+  {
+    /**
+     * provide an importer, if there is a suitable one
+     * 
+     * @param line
+     *          line we're trying to import
+     * @return a matching importer, if there is one.
+     */
+    public ExtensibleLineImporter canImport(final String line);
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testImport extends junit.framework.TestCase
+  {
+    public static class TestParent implements ToolParent, ProvidesModeSelector
+    {
+      final ImportSettings settings;
+      final Long freq;
+
+      public TestParent(final String mode, final Long freq)
+      {
+        settings = new ImportSettings(mode, freq);
+        this.freq = freq;
+      }
+
+      @Override
+      public void addActionToBuffer(final Action theAction)
+      {
+
+      }
+
+      @Override
+      public Map<String, String> getPropertiesLike(final String pattern)
+      {
+        return null;
+      }
+
+      @Override
+      public String getProperty(final String name)
+      {
+        if (name.equals(ImportReplay.TRACK_IMPORT_MODE))
+        {
+          return settings.importMode;
+        }
+        else if (name.equals(ImportReplay.RESAMPLE_FREQUENCY))
+        {
+          return "" + settings.sampleFrequency;
+        }
+        else
+        {
+          return null;
+        }
+      }
+
+      @Override
+      public Long getSelectedImportFrequency(final String trackName)
+      {
+        return null;
+      }
+
+      @Override
+      public ImportSettings getSelectedImportMode(final String trackName)
+      {
+        return settings;
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e)
+      {
+
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e, final boolean revealLog)
+      {
+        logError(status, text, e);
+      }
+
+      @Override
+      public void logStack(final int status, final String text)
+      {
+        logError(status, "Stack requested:" + text, null);
+      }
+
+      @Override
+      public void restoreCursor()
+      {
+
+      }
+
+      @Override
+      public void setCursor(final int theCursor)
+      {
+
+      }
+
+      @Override
+      public void setProperty(final String name, final String value)
+      {
+
+      }
+    }
+
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    private String fileName = "test.rep";
+
+    boolean fileFinished = false;
+
+    boolean allFilesFinished = false;
+
+    public testImport(final String val)
+    {
+      super(val);
+      final String fileRoot = "../org.mwc.debrief.legacy/src";
+
+      //
+      assertNotNull("Check data directory is configured", fileRoot);
+      fileName = fileRoot + File.separator + fileName;
+
+      // and check the file exists
+      final java.io.File iFile = new File(fileName);
+      assertTrue("Test file not found", iFile.exists());
+    }
+
+    private final void doReadRep(final String mode, final Long freq,
+        final int LAYER_COUNT, final int NUM_FIXES, final boolean checkArea)
+    {
+      java.io.File testFile = null;
+
+      // specify the parent object - so our processing can retrieve the
+      // OTG setting
+      ImportReplay.initialise(new TestParent(mode, freq));
+
+      // can we load it directly
+      testFile = new java.io.File(fileName);
+
+      if (!testFile.exists())
+      {
+
+        // first try to get the URL of the image
+        final java.lang.ClassLoader loader = getClass().getClassLoader();
+        if (loader != null)
+        {
+          final java.net.URL imLoc = loader.getResource(fileName);
+          if (imLoc != null)
+          {
+            testFile = new java.io.File(imLoc.getFile());
+          }
+        }
+        else
+        {
+          fail("Failed to find class loader");
+        }
+      }
+
+      // did we find it?
+      assertTrue("Failed to find file:" + fileName, testFile.exists());
+
+      // ok, now try to read it in
+      final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
+      final File[] _theFiles = new File[]
+      {testFile};
+
+      // add the REP importer
+      MWC.Utilities.ReaderWriter.ImportManager
+          .addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+
+      // get our thread to import this
+      final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
+          new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+              _theFiles, _theLayers)
+          {
+            // handle completion of the full import process
+            @Override
+            public void allFilesFinished(final File[] fNames,
+                final Layers newData)
+            {
+              allFilesFinished = true;
+            }
+
+            // handle the completion of each file
+            @Override
+            public void fileFinished(final File fName, final Layers newData)
+            {
+              fileFinished = true;
+            }
+          };
+
+      // and start it running
+      reader.start();
+
+      // wait for the results
+      while (reader.isAlive())
+      {
+        try
+        {
+          Thread.sleep(100);
+        }
+        catch (final java.lang.InterruptedException e)
+        {
+        }
+      }
+
+      // check it went ok
+      assertTrue("File finished received", fileFinished);
+      assertTrue("All Files finished received", allFilesFinished);
+
+      assertEquals("Count of layers", LAYER_COUNT, _theLayers.size());
+
+      final TrackWrapper track = (TrackWrapper) _theLayers.elementAt(0);
+      final int numFixes = track.numFixes();
+      assertEquals("got correct num fixes", NUM_FIXES, numFixes);
+
+      if (checkArea)
+      {
+        // area of coverage
+        final MWC.GenericData.WorldArea area =
+            _theLayers.elementAt(0).getBounds();
+        super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
+            11.92276, 0.01);
+        super.assertEquals("tl long of first layer", area.getTopLeft()
+            .getLong(), -11.59394, 0.01);
+        super.assertEquals("tl depth of first layer", area.getTopLeft()
+            .getDepth(), 0, 0.00001);
+
+        super.assertEquals("br lat of first layer", area.getBottomRight()
+            .getLat(), 11.89421, 0.001);
+        super.assertEquals("br long of first layer", area.getBottomRight()
+            .getLong(), -11.59376, 0.00001);
+        super.assertEquals("br depth of first layer", area.getBottomRight()
+            .getDepth(), 0, 0.00001);
+      }
+
+      // check those narrative lines got read in
+      final NarrativeWrapper narratives =
+          (NarrativeWrapper) _theLayers.elementAt(2);
+      assertEquals("have read in both narrative entries", 2, narratives.size());
+    }
+
+    public final void testDRimport()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_DR, null, 3, 25, true);
+    }
+
+    public final void testOTGimport1()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_OTG, 0L, 3, 25, true);
+    }
+
+    public final void testOTGimport2()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_OTG, 300000L, 3, 5, false);
+    }
+
+    public final void testOTGimport3()
+    {
+      doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
+    }
+
+    public final void testParseSymbology()
+    {
+      final String test =
+          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
+      final String test2 =
+          ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
+
+      final ImportReplay ir = new ImportReplay();
+
+      assertEquals("String not found", null, ir.getThisSymProperty(test,
+          "LAYDER"));
+      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test,
+          "LAYER"));
+
+      assertEquals("String not found", null, ir.getThisSymProperty(test2,
+          "LAYDER"));
+      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(
+          test2, "LAYER"));
+      assertEquals("String found", "OFF", ir.getThisSymProperty(test2,
+          "TEST_ON"));
+    }
+
+    public final void testParseSymbologyColor()
+    {
+      final String test1 = ";TEXT: 5j 21.42 0 0 N 21.88 0 0 W Other buoy";
+
+      final LabelWrapper label1 =
+          (LabelWrapper) new ImportLabel().readThisLine(test1);
+
+      // correct symbol
+      assertEquals("sym type correct", "Kingpin", label1.getSymbolType());
+      assertEquals("color correct", DebriefColors.LIGHT_GREEN, label1
+          .getColor());
+
+      final String test2 = ";TEXT: 4G 21.42 0 0 N 21.88 0 0 W Other buoy";
+
+      final LabelWrapper label2 =
+          (LabelWrapper) new ImportLabel().readThisLine(test2);
+
+      // correct symbol
+      assertEquals("sym type correct", "Hidar", label2.getSymbolType());
+      assertEquals("color correct", DebriefColors.PURPLE, label2.getColor());
+    }
   }
 
   /**
@@ -142,6 +479,7 @@ public class ImportReplay extends PlainImporterBase
       new java.text.SimpleDateFormat("yyMMdd HHmmss.SSS");
 
   private static Vector<PlainLineImporter> _coreImporters;
+
   private static ArrayList<ExtensibleLineImporter> _extensionImporters;
 
   static private Vector<doublet> colors; // list of Replay colours
@@ -155,117 +493,6 @@ public class ImportReplay extends PlainImporterBase
    * 
    */
   private static ToolParent _myParent;
-
-  /**
-   * the list of formatting objects we know about
-   */
-  private final LayersFormatter[] _myFormatters =
-  {new FormatTracks()};
-
-  /**
-   * a list of the sensors we've imported
-   * 
-   */
-  private HashMap<TrackWrapper, Vector<SensorWrapper>> _pendingSensors =
-      new HashMap<TrackWrapper, Vector<SensorWrapper>>();
-
-  /**
-   * a list of any exiting tracks that got modified (so we can tell people they've moved at the end
-   * of hte operation
-   */
-  private List<TrackWrapper> _existingTracksThatMoved =
-      new ArrayList<TrackWrapper>();
-
-  /**
-   * remember how the user wants this REP data imported
-   * 
-   */
-  private ImportSettings _importSettings;
-  private Map<String, Long> _lastImportedItem = new HashMap<String, Long>();
-
-  /**
-   * the property name we use for importing tracks (DR/ATG)
-   * 
-   */
-  public final static String TRACK_IMPORT_MODE = "TRACK_IMPORT_MODE";
-  public final static String RESAMPLE_FREQUENCY = "RESAMPLE_FREQUENCY";
-
-  /**
-   * the property values for importing modes
-   * 
-   */
-  public final static String IMPORT_AS_DR = "DR_IMPORT";
-  public final static String IMPORT_AS_OTG = "OTG_IMPORT";
-  public final static String ASK_THE_AUDIENCE = "ASK_AUDIENCE";
-
-  /**
-   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
-   */
-  public ImportReplay()
-  {
-
-    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-    _myTypes = new String[]
-    {".rep", ".dsf", ".dtf"};
-
-    checkImporters();
-
-    initialiseColours();
-  }
-
-  private synchronized static void initialiseColours()
-  {
-    // create a list of colours
-    if (colors == null)
-    {
-      colors = new Vector<doublet>(0, 1);
-      colors.addElement(new doublet("@", Color.white));
-      colors.addElement(new doublet("A", DebriefColors.BLUE));
-      colors.addElement(new doublet("B", DebriefColors.GREEN));
-      colors.addElement(new doublet("C", DebriefColors.RED));
-
-      colors.addElement(new doublet("D", DebriefColors.YELLOW));
-      colors.addElement(new doublet("E", DebriefColors.MAGENTA));
-      colors.addElement(new doublet("F", DebriefColors.ORANGE));
-      colors.addElement(new doublet("G", DebriefColors.PURPLE));
-      colors.addElement(new doublet("H", DebriefColors.CYAN));
-      colors.addElement(new doublet("I", DebriefColors.BROWN));
-      colors.addElement(new doublet("J", DebriefColors.LIGHT_GREEN));
-      colors.addElement(new doublet("K", DebriefColors.PINK));
-      colors.addElement(new doublet("L", DebriefColors.GOLD));
-      colors.addElement(new doublet("M", DebriefColors.LIGHT_GRAY));
-      colors.addElement(new doublet("N", DebriefColors.GRAY));
-      colors.addElement(new doublet("O", DebriefColors.DARK_GRAY));
-      colors.addElement(new doublet("P", DebriefColors.WHITE));
-      colors.addElement(new doublet("Q", DebriefColors.BLACK));
-      colors.addElement(new doublet("R", DebriefColors.MEDIUM_BLUE));
-      colors.addElement(new doublet("S", DebriefColors.DARK_BLUE));
-    }
-  }
-
-  /*****************************************************************************
-   * member methods
-   ****************************************************************************/
-
-  /**
-   * format a date using our format
-   */
-  public static String formatThis(final HiResDate val)
-  {
-    final String res = DebriefFormatDateTime.toStringHiRes(val);
-    return res;
-  }
-
-  /**
-   * initialise the tool, so that it knows where to get its prefs details
-   * 
-   * @param theParent
-   */
-  public static void initialise(final ToolParent theParent)
-  {
-    _myParent = theParent;
-  }
 
   /**
    * function to initialise the list of importers
@@ -311,6 +538,853 @@ public class ImportReplay extends PlainImporterBase
 
       _coreImporters.addElement(new ImportSensorArc());
     }
+  }
+
+  /**
+   * format a date using our format
+   */
+  public static String formatThis(final HiResDate val)
+  {
+    final String res = DebriefFormatDateTime.toStringHiRes(val);
+    return res;
+  }
+
+  /**
+   * initialise the tool, so that it knows where to get its prefs details
+   * 
+   * @param theParent
+   */
+  public static void initialise(final ToolParent theParent)
+  {
+    _myParent = theParent;
+  }
+
+  private synchronized static void initialiseColours()
+  {
+    // create a list of colours
+    if (colors == null)
+    {
+      colors = new Vector<doublet>(0, 1);
+      colors.addElement(new doublet("@", Color.white));
+      colors.addElement(new doublet("A", DebriefColors.BLUE));
+      colors.addElement(new doublet("B", DebriefColors.GREEN));
+      colors.addElement(new doublet("C", DebriefColors.RED));
+
+      colors.addElement(new doublet("D", DebriefColors.YELLOW));
+      colors.addElement(new doublet("E", DebriefColors.MAGENTA));
+      colors.addElement(new doublet("F", DebriefColors.ORANGE));
+      colors.addElement(new doublet("G", DebriefColors.PURPLE));
+      colors.addElement(new doublet("H", DebriefColors.CYAN));
+      colors.addElement(new doublet("I", DebriefColors.BROWN));
+      colors.addElement(new doublet("J", DebriefColors.LIGHT_GREEN));
+      colors.addElement(new doublet("K", DebriefColors.PINK));
+      colors.addElement(new doublet("L", DebriefColors.GOLD));
+      colors.addElement(new doublet("M", DebriefColors.LIGHT_GRAY));
+      colors.addElement(new doublet("N", DebriefColors.GRAY));
+      colors.addElement(new doublet("O", DebriefColors.DARK_GRAY));
+      colors.addElement(new doublet("P", DebriefColors.WHITE));
+      colors.addElement(new doublet("Q", DebriefColors.BLACK));
+      colors.addElement(new doublet("R", DebriefColors.MEDIUM_BLUE));
+      colors.addElement(new doublet("S", DebriefColors.DARK_BLUE));
+    }
+  }
+
+  /**
+   * the list of formatting objects we know about
+   */
+  private final LayersFormatter[] _myFormatters =
+  {new FormatTracks()};
+  /**
+   * a list of the sensors we've imported
+   * 
+   */
+  private final HashMap<TrackWrapper, Vector<SensorWrapper>> _pendingSensors =
+      new HashMap<TrackWrapper, Vector<SensorWrapper>>();
+
+  /**
+   * a list of any exiting tracks that got modified (so we can tell people they've moved at the end
+   * of hte operation
+   */
+  private final List<TrackWrapper> _existingTracksThatMoved =
+      new ArrayList<TrackWrapper>();
+
+  /**
+   * remember how the user wants this REP data imported
+   * 
+   */
+  private ImportSettings _importSettings;
+
+  /*****************************************************************************
+   * member methods
+   ****************************************************************************/
+
+  private final Map<String, Long> _lastImportedItem =
+      new HashMap<String, Long>();
+
+  /**
+   * the property name we use for importing tracks (DR/ATG)
+   * 
+   */
+  public final static String TRACK_IMPORT_MODE = "TRACK_IMPORT_MODE";
+
+  public final static String RESAMPLE_FREQUENCY = "RESAMPLE_FREQUENCY";
+
+  /**
+   * the property values for importing modes
+   * 
+   */
+  public final static String IMPORT_AS_DR = "DR_IMPORT";
+
+  public final static String IMPORT_AS_OTG = "OTG_IMPORT";
+
+  public final static String ASK_THE_AUDIENCE = "ASK_AUDIENCE";
+
+  /**
+   * provide an extra set of importers
+   * 
+   * @param importers
+   */
+  public static void addExtraImporters(
+      final List<ExtensibleLineImporter> importers)
+  {
+    // do we have a holder?
+    if (_extensionImporters == null)
+    {
+      _extensionImporters = new ArrayList<ExtensibleLineImporter>();
+    }
+
+    // now add the new ones
+    for (final ExtensibleLineImporter importer : importers)
+    {
+      _extensionImporters.add(importer);
+    }
+  }
+
+  static public Color replayColorFor(final int index)
+  {
+    Color res = null;
+
+    // check we have the colours
+    initialiseColours();
+
+    final int theIndex = index % colors.size();
+
+    res = colors.elementAt(theIndex).color;
+
+    return res;
+  }
+
+  static public Color replayColorFor(final String theSym)
+  {
+    Color res = null;
+    final String colorVal = theSym.substring(1, 2);
+
+    final String upperSym = colorVal.toUpperCase();
+
+    // check we have the colours
+    initialiseColours();
+
+    // step through our list of colours
+    final java.util.Enumeration<doublet> iter = colors.elements();
+    while (iter.hasMoreElements())
+    {
+      final doublet db = iter.nextElement();
+      if (db.label.equals(upperSym))
+      {
+        res = db.color;
+        break;
+      }
+    }
+
+    // if label not found, make it RED
+    if (res == null)
+    {
+      res = Color.red;
+    }
+
+    return res;
+  }
+
+  public static String replayFillStyleFor(final String theSym)
+  {
+    String res = null;
+    if (theSym.length() >= 5)
+    {
+      res = theSym.substring(4, 5);
+    }
+    return res;
+  }
+
+  static public int replayLineStyleFor(final String theSym)
+  {
+    int res = 0;
+    final String theStyle = theSym.substring(0, 1);
+
+    if (theStyle.equals("@"))
+    {
+      res = MWC.GUI.CanvasType.SOLID;
+    }
+    else if (theStyle.equals("A"))
+    {
+      res = MWC.GUI.CanvasType.DOTTED;
+    }
+    else if (theStyle.equals("B"))
+    {
+      res = MWC.GUI.CanvasType.DOT_DASH;
+    }
+    else if (theStyle.equals("C"))
+    {
+      res = MWC.GUI.CanvasType.SHORT_DASHES;
+    }
+    else if (theStyle.equals("D"))
+    {
+      res = MWC.GUI.CanvasType.LONG_DASHES;
+    }
+    else if (theStyle.equals("E"))
+    {
+      res = MWC.GUI.CanvasType.UNCONNECTED;
+    }
+
+    return res;
+  }
+
+  private static int replayLineThicknesFor(final String theSym)
+  {
+    int res = 0;
+    final String theThicknes = theSym.substring(0, 1);
+
+    try
+    {
+      res = new Integer(theThicknes);
+    }
+    catch (final NumberFormatException e)
+    {
+      // ignore; res = 0
+    }
+
+    return res;
+  }
+
+  static public String replaySymbolFor(final Color theCol,
+      final String theSymbol)
+  {
+    String res = null;
+
+    // step through our list of colours
+    final java.util.Enumeration<doublet> iter = colors.elements();
+    while (iter.hasMoreElements())
+    {
+      final doublet db = iter.nextElement();
+      if (db.color.equals(theCol))
+      {
+        res = db.label;
+        continue;
+      }
+    }
+
+    String symTxt;
+    if (theSymbol == null)
+    {
+      symTxt = "@";
+    }
+    else
+    {
+      symTxt = SymbolFactory.findIdForSymbolType(theSymbol);
+    }
+
+    // label not found, make it RED
+    if (res == null)
+    {
+      res = "A";
+    }
+
+    res = symTxt + res;
+
+    return res;
+
+  }
+
+  static public String replaySymbolForLineStyle(final int style)
+  {
+    switch (style)
+    {
+      case MWC.GUI.CanvasType.DOTTED:
+        return "A";
+
+      case MWC.GUI.CanvasType.DOT_DASH:
+        return "B";
+
+      case MWC.GUI.CanvasType.SHORT_DASHES:
+        return "C";
+
+      case MWC.GUI.CanvasType.LONG_DASHES:
+        return "D";
+
+      case MWC.GUI.CanvasType.UNCONNECTED:
+        return "E";
+
+      default:
+        break;
+    }
+    return "@";
+  }
+
+  public final static String replayTrackSymbolFor(final String theSym)
+  {
+    String res = null;
+    final String colorVal = theSym.substring(0, 1);
+
+    res = SymbolFactory.createSymbolFromId(colorVal);
+
+    // did we manage to find it?
+    if (res == null)
+    {
+      res = SymbolFactory.createSymbolFromId(SymbolFactory.DEFAULT_SYMBOL_TYPE);
+    }
+
+    return res;
+  }
+
+  /**
+   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
+   */
+  public ImportReplay()
+  {
+
+    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    _myTypes = new String[]
+    {".rep", ".dsf", ".dtf"};
+
+    checkImporters();
+
+    initialiseColours();
+  }
+
+  @Override
+  public final boolean canImportThisFile(final String theFile)
+  {
+    boolean res = false;
+    String theSuffix = null;
+    final int pos = theFile.lastIndexOf(".");
+    theSuffix = theFile.substring(pos, theFile.length());
+
+    for (int i = 0; i < _myTypes.length; i++)
+    {
+      if (theSuffix.equalsIgnoreCase(_myTypes[i]))
+      {
+        res = true;
+        break;
+      }
+    }
+
+    return res;
+  }
+
+  public void clearPendingSensorList()
+  {
+    _pendingSensors.clear();
+  }
+
+  /**
+   * convert the item to text, add it to the block we're building up
+   */
+  @Override
+  public final void exportThis(final Plottable item)
+  {
+
+    // check it's real
+    if (item == null)
+    {
+      throw new IllegalArgumentException("duff wrapper");
+    }
+
+    checkImporters();
+
+    // just see if it is a track which we are trying to export
+    if ((item instanceof Layer) && !(item instanceof ExportLayerAsSingleItem))
+    {
+      // ok, work through the layer
+      final Layer tw = (Layer) item;
+      // ha-ha! export the points one at a time
+      final java.util.Enumeration<Editable> iter = tw.elements();
+      while (iter.hasMoreElements())
+      {
+        final Plottable pt = (Plottable) iter.nextElement();
+        exportThis(pt);
+      }
+      // ta-da! done.
+    }
+    else
+    {
+      // check we have some importers
+      if (_coreImporters != null)
+      {
+        final Enumeration<PlainLineImporter> iter = _coreImporters.elements();
+
+        // step though our importers, to see if any will 'do the deal;
+        while (iter.hasMoreElements())
+        {
+          final PlainLineImporter thisImporter = iter.nextElement();
+
+          if (thisImporter.canExportThis(item))
+          {
+            // export it, add it to the data we're building up
+            final String thisLine = thisImporter.exportThis(item);
+            addThisToExport(thisLine);
+
+            // ok, we can drop out of the loop
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public final void exportThis(final String val)
+  {
+    if (val != null)
+    {
+      final java.awt.datatransfer.Clipboard cl =
+          java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+      final java.awt.datatransfer.StringSelection ss =
+          new java.awt.datatransfer.StringSelection(val);
+      cl.setContents(ss, ss);
+    }
+  }
+
+  /**
+   * some importers may need to finalize, if there is end of import processing to conduct. Trigger
+   * that here
+   */
+  private void finaliseImporters()
+  {
+    if (_extensionImporters != null)
+    {
+      for (final ExtensibleLineImporter importer : _extensionImporters)
+      {
+        if (importer instanceof PlainLineImporter.ImportRequiresFinalisation)
+        {
+          final PlainLineImporter.ImportRequiresFinalisation fin =
+              (ImportRequiresFinalisation) importer;
+          fin.finalise();
+        }
+      }
+    }
+    if (_coreImporters != null)
+    {
+      for (final PlainLineImporter importer : _coreImporters)
+      {
+        if (importer instanceof PlainLineImporter.ImportRequiresFinalisation)
+        {
+          final PlainLineImporter.ImportRequiresFinalisation fin =
+              (ImportRequiresFinalisation) importer;
+          fin.finalise();
+        }
+      }
+    }
+  }
+
+  private PlainLineImporter getImporterFor(final String rawString)
+  {
+    PlainLineImporter res = null;
+
+    // trim any leading whitespace
+    final String theLine = rawString.trim();
+
+    // check it's not an empty line
+    if (theLine.length() > 0)
+    {
+      // so, determine if this is a comment
+      if (theLine.charAt(0) == ';')
+      {
+        // get the type for this comment
+        final StringTokenizer st = new StringTokenizer(theLine);
+        final String type = st.nextToken();
+
+        // do we have any extension importers?
+        if (_extensionImporters != null)
+        {
+          for (final ExtensibleLineImporter importer : _extensionImporters)
+          {
+            final String thisType = importer.getYourType();
+            if (thisType.equals(type))
+            {
+              // ok, we also have to initialise it with this layers object
+              importer.setLayers(getLayers());
+
+              // remember it
+              res = importer;
+
+              // done
+              break;
+            }
+          }
+        }
+
+        // did it work?
+        if (res == null)
+        {
+          // nope, try the core ones
+
+          // look through types of import handler
+          final Enumeration<PlainLineImporter> iter = _coreImporters.elements();
+
+          // cycle through my types
+          while (iter.hasMoreElements())
+          {
+            final PlainLineImporter thisImporter = iter.nextElement();
+
+            // get the handler correct type?
+            final String thisType = thisImporter.getYourType();
+
+            if (thisType == null)
+            {
+              MWC.Utilities.Errors.Trace.trace("null returned by: "
+                  + thisImporter);
+              return null;
+            }
+
+            // does this one fit?
+            if (thisType.equals(type))
+            {
+              res = thisImporter;
+              break;
+            }
+          }
+        }
+      }
+      else
+      {
+        res = new ImportFix();
+      }
+    }
+
+    // done
+    return res;
+  }
+
+  public Vector<SensorWrapper> getPendingSensors()
+  {
+
+    final Vector<SensorWrapper> res = new Vector<SensorWrapper>();
+    final Iterator<TrackWrapper> tIter = _pendingSensors.keySet().iterator();
+    while (tIter.hasNext())
+    {
+      final TrackWrapper trackWrapper = tIter.next();
+      res.addAll(_pendingSensors.get(trackWrapper));
+    }
+    return res;
+  }
+
+  /**
+   * utility method to extract formatted property values from a symbology line, such as: ;TEXT:
+   * CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
+   * 
+   * @param symbology
+   * @param property_name
+   * @return
+   */
+  final private String getThisSymProperty(final String symbology,
+      final String property_name)
+  {
+    final String regexp = "\\[(?<NAME>.*?)\\=(?<VALUE>.*?)\\]";
+    final Matcher m = Pattern.compile(regexp).matcher(symbology);
+
+    // did we find any?
+    while (m.find())
+    {
+      // get the name of this property
+      final String property = m.group("NAME");
+
+      // does it match?
+      if (property.equals(property_name))
+      {
+        // yes, get the value
+        final String value = m.group("VALUE");
+
+        // done, return it.
+        return value;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * import data from this stream
+   */
+  @Override
+  public final void
+      importThis(final String fName, final java.io.InputStream is)
+  {
+    // declare linecounter
+    int lineCounter = 0;
+
+    final int numLines = countLinesFor(fName);
+
+    final Reader reader = new InputStreamReader(is);
+    final BufferedReader br = new ReaderMonitor(reader, numLines, fName);
+    String thisLine = null;
+    try
+    {
+
+      // check stream is valid
+      if (is.available() > 0)
+      {
+
+        // clear the output list
+        _newLayers.clear();
+        _existingTracksThatMoved.clear();
+
+        // clear the input settings
+        _importSettings = null;
+        _lastImportedItem.clear();
+
+        thisLine = br.readLine();
+
+        final long start = System.currentTimeMillis();
+
+        // loop through the lines
+        while (thisLine != null)
+        {
+          // keep line counter
+          lineCounter++;
+
+          // catch import problems
+          readLine(thisLine);
+
+          // read another line
+          thisLine = br.readLine();
+        }
+
+        // see if any importers need to finalise
+        finaliseImporters();
+
+        // lastly have a go at formatting these tracks
+        for (int k = 0; k < _myFormatters.length; k++)
+        {
+          _myFormatters[k].formatLayers(_newLayers);
+        }
+
+        // see if we've modified any existing tracks
+        final Iterator<TrackWrapper> tIter =
+            _existingTracksThatMoved.iterator();
+        while (tIter.hasNext())
+        {
+          final TrackWrapper track = tIter.next();
+
+          // tell it that it has changed
+          track.sortOutRelativePositions();
+        }
+
+        final long end = System.currentTimeMillis();
+        System.out.println(" |Elapsed:" + (end - start) + " ");
+
+      }
+    }
+    catch (final java.lang.NumberFormatException e)
+    {
+      // produce the error message
+      MWC.Utilities.Errors.Trace.trace(e);
+      // show the message dialog
+      super.readError(fName, lineCounter, "Number format error", thisLine);
+    }
+    catch (final IOException e)
+    {
+      // produce the error message
+      MWC.Utilities.Errors.Trace.trace(e);
+      // show the message dialog
+      super.readError(fName, lineCounter, "Unknown read error:" + e, thisLine);
+    }
+    catch (final java.util.NoSuchElementException e)
+    {
+      // produce the error message
+      MWC.Utilities.Errors.Trace.trace(e);
+      // show the message dialog
+      super.readError(fName, lineCounter, "Missing field error", thisLine);
+    }
+  }
+
+  private void proccessShapeWrapper(final PlainLineImporter thisOne,
+      final Object thisObject)
+  {
+    final ShapeWrapper shapeWrapper = (ShapeWrapper) thisObject;
+    final String symbology = thisOne.getSymbology();
+    if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
+    {
+      shapeWrapper.getShape().setLineStyle(
+          ImportReplay.replayLineStyleFor(symbology.substring(2)));
+      if (symbology.length() > 3)
+      {
+        shapeWrapper.getShape().setLineWidth(
+            ImportReplay.replayLineThicknesFor(symbology.substring(3)));
+      }
+      if (symbology.length() >= 5)
+      {
+        final PlainShape shape = shapeWrapper.getShape();
+        final String fillType = symbology.substring(4, 5);
+        if ("1".equals(fillType))
+        {
+          shape.setFilled(true);
+        }
+        else if ("2".equals(fillType))
+        {
+          shape.setFilled(true);
+          shape.setSemiTransparent(true);
+        }
+        else
+        {
+          shape.setFilled(false);
+          shape.setSemiTransparent(false);
+        }
+      }
+    }
+  }
+
+  private HiResDate processContactWrapper(final TMAContactWrapper sw)
+  {
+    final HiResDate res = sw.getTime();
+
+    TMAWrapper thisWrapper = null;
+
+    // do we have a sensor capable of handling this contact?
+    final String solutionName = sw.getSolutionName();
+
+    String trackName = sw.getTrackName();
+    Object val = getLayerFor(trackName);
+
+    // if we failed to get the trackname, try shortening it -
+    // it may have been mangled by BabelFish
+    if (val == null)
+    {
+      val = getLayerFor(trackName = trackName.substring(6));
+    }
+
+    // did we get anything?
+    // is this indeed a sensor?
+    if (val == null || !(val instanceof TrackWrapper))
+    {
+      return res;
+    }
+
+    // so, we've found a track - see if it holds this solution
+    final TrackWrapper theTrack = (TrackWrapper) val;
+    final Enumeration<Editable> iter = theTrack.getSolutions().elements();
+
+    // step through this track's solutions
+    if (iter != null)
+    {
+      while (iter.hasMoreElements())
+      {
+        final TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
+
+        // is this our sensor?
+        if (sensorw.getName().equals(solutionName))
+        {
+          // cool, drop out
+          thisWrapper = sensorw;
+          break;
+        }
+      } // looping through the sensors
+    } // whether there are any sensors
+
+    // did we find it?
+    if (thisWrapper == null)
+    {
+      // then create it
+      thisWrapper = new TMAWrapper(solutionName);
+
+      // set it's colour to the colour of the first data point
+      thisWrapper.setColor(sw.getColor());
+
+      // also set it's name
+      thisWrapper.setTrackName(sw.getTrackName());
+
+      theTrack.add(thisWrapper);
+    }
+
+    // so, we now have the wrapper. have a look to see if the colour
+    // of this data item is the same
+    // as the sensor - in which case we will erase the colour for
+    // this data item so that it
+    // always takes the colour of it's parent
+    if (sw.getColor().equals(thisWrapper.getColor()))
+    {
+      // clear the colour - so it takes it form it's parent
+      sw.setColor(null);
+    }
+
+    // lastly inform the sensor contact of it's parent
+    sw.setTMATrack(thisWrapper);
+
+    // now add the new contact to this sensor
+    thisWrapper.add(sw);
+
+    return res;
+  }
+
+  private HiResDate
+      processDynamicShapeWrapper(final DynamicTrackShapeWrapper sw)
+  {
+    final HiResDate res = null;
+
+    DynamicTrackShapeSetWrapper thisShape = null;
+
+    // do we have a sensor capable of handling this contact?
+    final String sensorName = sw.getSensorName();
+    String trackName = sw.getTrackName();
+    Object val = getLayerFor(trackName);
+
+    // if we failed to get the trackname, try shortening it -
+    // it may have been mangled by BabelFish
+    if (val == null)
+    {
+      val = getLayerFor(trackName = trackName.substring(6));
+    }
+
+    // did we get anything?
+    // is this indeed a sensor?
+    if (val == null || !(val instanceof TrackWrapper))
+    {
+      return res;
+    }
+
+    // so, we've found a track - see if it holds this shape
+    final TrackWrapper theTrack = (TrackWrapper) val;
+    final Enumeration<Editable> iter = theTrack.getDynamicShapes().elements();
+
+    // step through this track' shape
+    if (iter != null)
+    {
+      while (iter.hasMoreElements())
+      {
+        final DynamicTrackShapeSetWrapper shape =
+            (DynamicTrackShapeSetWrapper) iter.nextElement();
+
+        // is this our sensor?
+        if (shape.getName().equals(sensorName))
+        {
+          // cool, drop out
+          thisShape = shape;
+          break;
+        }
+      } // looping through the sensors
+    } // whether there are any sensors
+
+    // did we find it?
+    if (thisShape == null)
+    {
+      // then create it
+      thisShape = new DynamicTrackShapeSetWrapper(sensorName);
+
+      theTrack.add(thisShape);
+    }
+
+    // now add the new contact to this sensor
+    thisShape.add(sw);
+
+    return res;
   }
 
   private HiResDate processReplayFix(final ReplayFix rf)
@@ -380,7 +1454,7 @@ public class ImportReplay extends PlainImporterBase
         {
           final ProvidesModeSelector selector =
               (ProvidesModeSelector) _myParent;
-          Long freq = selector.getSelectedImportFrequency(theTrack);
+          final Long freq = selector.getSelectedImportFrequency(theTrack);
           if (freq == null)
           {
             // ok, skip the data
@@ -407,12 +1481,11 @@ public class ImportReplay extends PlainImporterBase
       }
       else
       {
-        // prob in a headless test. 
+        // prob in a headless test.
         importMode = IMPORT_AS_OTG;
         freqStr = "0";
       }
-      
-      
+
       final Long importFreq;
       if (freqStr != null && freqStr.length() > 0 && !freqStr.equals("null"))
       {
@@ -511,11 +1584,11 @@ public class ImportReplay extends PlainImporterBase
 
       // see if there is any formatting to be done
       // lastly - see if the layers object has some formatters
-      Iterator<INewItemListener> newIiter =
+      final Iterator<INewItemListener> newIiter =
           getLayers().getNewItemListeners().iterator();
       while (newIiter.hasNext())
       {
-        INewItemListener newI = newIiter.next();
+        final INewItemListener newI = newIiter.next();
         newI.newItem(trkWrapper, null, null);
       }
     }
@@ -539,7 +1612,7 @@ public class ImportReplay extends PlainImporterBase
     trkWrapper.addFix(thisFix);
 
     // let's also tell the fix about it's track
-    ((FixWrapper) thisFix).setTrackWrapper(trkWrapper);
+    thisFix.setTrackWrapper(trkWrapper);
 
     // also, see if this fix is specifying a different colour to use
     if (thisColor != trkWrapper.getColor())
@@ -549,11 +1622,11 @@ public class ImportReplay extends PlainImporterBase
     }
 
     // lastly - see if the layers object has some formatters
-    Iterator<INewItemListener> newIiter =
+    final Iterator<INewItemListener> newIiter =
         getLayers().getNewItemListeners().iterator();
     while (newIiter.hasNext())
     {
-      Layers.INewItemListener newI = (Layers.INewItemListener) newIiter.next();
+      final Layers.INewItemListener newI = newIiter.next();
       newI.newItem(trkWrapper, thisFix, rf.theSymbology);
     }
 
@@ -578,7 +1651,7 @@ public class ImportReplay extends PlainImporterBase
     {
       if (trackName.length() > 6)
       {
-        String tmpTrackName = trackName.substring(0, 6);
+        final String tmpTrackName = trackName.substring(0, 6);
         val = getLayerFor(tmpTrackName);
 
         if (val != null)
@@ -610,7 +1683,7 @@ public class ImportReplay extends PlainImporterBase
     {
       while (iter.hasNext())
       {
-        final SensorWrapper sensorw = (SensorWrapper) iter.next();
+        final SensorWrapper sensorw = iter.next();
 
         // is this our sensor?
         if (sensorw.getName().equals(sensorName))
@@ -657,143 +1730,6 @@ public class ImportReplay extends PlainImporterBase
     return res;
   }
 
-  private HiResDate
-      processDynamicShapeWrapper(final DynamicTrackShapeWrapper sw)
-  {
-    final HiResDate res = null;
-
-    DynamicTrackShapeSetWrapper thisShape = null;
-
-    // do we have a sensor capable of handling this contact?
-    final String sensorName = sw.getSensorName();
-    String trackName = sw.getTrackName();
-    Object val = getLayerFor(trackName);
-
-    // if we failed to get the trackname, try shortening it -
-    // it may have been mangled by BabelFish
-    if (val == null)
-      val = getLayerFor(trackName = trackName.substring(6));
-
-    // did we get anything?
-    // is this indeed a sensor?
-    if (val == null || !(val instanceof TrackWrapper))
-      return res;
-
-    // so, we've found a track - see if it holds this shape
-    final TrackWrapper theTrack = (TrackWrapper) val;
-    final Enumeration<Editable> iter = theTrack.getDynamicShapes().elements();
-
-    // step through this track' shape
-    if (iter != null)
-    {
-      while (iter.hasMoreElements())
-      {
-        final DynamicTrackShapeSetWrapper shape =
-            (DynamicTrackShapeSetWrapper) iter.nextElement();
-
-        // is this our sensor?
-        if (shape.getName().equals(sensorName))
-        {
-          // cool, drop out
-          thisShape = shape;
-          break;
-        }
-      } // looping through the sensors
-    } // whether there are any sensors
-
-    // did we find it?
-    if (thisShape == null)
-    {
-      // then create it
-      thisShape = new DynamicTrackShapeSetWrapper(sensorName);
-
-      theTrack.add(thisShape);
-    }
-
-    // now add the new contact to this sensor
-    thisShape.add(sw);
-
-    return res;
-  }
-
-  private HiResDate processContactWrapper(final TMAContactWrapper sw)
-  {
-    final HiResDate res = sw.getTime();
-
-    TMAWrapper thisWrapper = null;
-
-    // do we have a sensor capable of handling this contact?
-    final String solutionName = sw.getSolutionName();
-
-    String trackName = sw.getTrackName();
-    Object val = getLayerFor(trackName);
-
-    // if we failed to get the trackname, try shortening it -
-    // it may have been mangled by BabelFish
-    if (val == null)
-      val = getLayerFor(trackName = trackName.substring(6));
-
-    // did we get anything?
-    // is this indeed a sensor?
-    if (val == null || !(val instanceof TrackWrapper))
-      return res;
-
-    // so, we've found a track - see if it holds this solution
-    final TrackWrapper theTrack = (TrackWrapper) val;
-    final Enumeration<Editable> iter = theTrack.getSolutions().elements();
-
-    // step through this track's solutions
-    if (iter != null)
-    {
-      while (iter.hasMoreElements())
-      {
-        final TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
-
-        // is this our sensor?
-        if (sensorw.getName().equals(solutionName))
-        {
-          // cool, drop out
-          thisWrapper = sensorw;
-          break;
-        }
-      } // looping through the sensors
-    } // whether there are any sensors
-
-    // did we find it?
-    if (thisWrapper == null)
-    {
-      // then create it
-      thisWrapper = new TMAWrapper(solutionName);
-
-      // set it's colour to the colour of the first data point
-      thisWrapper.setColor(sw.getColor());
-
-      // also set it's name
-      thisWrapper.setTrackName(sw.getTrackName());
-
-      theTrack.add(thisWrapper);
-    }
-
-    // so, we now have the wrapper. have a look to see if the colour
-    // of this data item is the same
-    // as the sensor - in which case we will erase the colour for
-    // this data item so that it
-    // always takes the colour of it's parent
-    if (sw.getColor().equals(thisWrapper.getColor()))
-    {
-      // clear the colour - so it takes it form it's parent
-      sw.setColor(null);
-    }
-
-    // lastly inform the sensor contact of it's parent
-    sw.setTMATrack(thisWrapper);
-
-    // now add the new contact to this sensor
-    thisWrapper.add(sw);
-
-    return res;
-  }
-
   /**
    * parse this line
    * 
@@ -809,7 +1745,9 @@ public class ImportReplay extends PlainImporterBase
 
     // is this line invalid
     if (line.length() <= 0)
+    {
       return null;
+    }
 
     // what type of item is this?
     final PlainLineImporter thisOne = getImporterFor(line);
@@ -843,8 +1781,8 @@ public class ImportReplay extends PlainImporterBase
     else if (thisObject instanceof DynamicShapeWrapper)
     {
       proccessShapeWrapper(thisOne, thisObject);
-      DynamicShapeWrapper thisWrapper = (DynamicShapeWrapper) thisObject;
-      String trackName = thisWrapper.getTrackName();
+      final DynamicShapeWrapper thisWrapper = (DynamicShapeWrapper) thisObject;
+      final String trackName = thisWrapper.getTrackName();
       DynamicShapeLayer dsl = (DynamicShapeLayer) getLayerFor(trackName);
       if (dsl == null)
       {
@@ -882,11 +1820,11 @@ public class ImportReplay extends PlainImporterBase
       }
 
       // ok, can we provide a track color for it?
-      String source = entry.getTrackName();
-      Layer host = getLayerFor(source);
+      final String source = entry.getTrackName();
+      final Layer host = getLayerFor(source);
       if (host instanceof TrackWrapper)
       {
-        TrackWrapper tw = (TrackWrapper) host;
+        final TrackWrapper tw = (TrackWrapper) host;
         entry.setColor(tw.getColor());
       }
 
@@ -920,7 +1858,7 @@ public class ImportReplay extends PlainImporterBase
       }
 
       // see if the shape symbology specifies a layer
-      String targetLayer = targetLayerFor(thisOne);
+      final String targetLayer = targetLayerFor(thisOne);
 
       // ok, get that layer
       Layer dest = getLayerFor(targetLayer);
@@ -941,36 +1879,41 @@ public class ImportReplay extends PlainImporterBase
   }
 
   /**
-   * utility method to extract formatted property values from a symbology line, such as: ;TEXT:
-   * CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
+   * actually store the sensor data in its parent object
    * 
-   * @param symbology
-   * @param property_name
-   * @return
    */
-  final private String getThisSymProperty(final String symbology,
-      final String property_name)
+  public void storePendingSensors()
   {
-    final String regexp = "\\[(?<NAME>.*?)\\=(?<VALUE>.*?)\\]";
-    final Matcher m = Pattern.compile(regexp).matcher(symbology);
-
-    // did we find any?
-    while (m.find())
+    // ok, actually add the sensors to their parents now
+    final Iterator<TrackWrapper> tIter = _pendingSensors.keySet().iterator();
+    while (tIter.hasNext())
     {
-      // get the name of this property
-      final String property = m.group("NAME");
-
-      // does it match?
-      if (property.equals(property_name))
+      final TrackWrapper trackWrapper = tIter.next();
+      final Iterator<SensorWrapper> iter =
+          _pendingSensors.get(trackWrapper).iterator();
+      while (iter.hasNext())
       {
-        // yes, get the value
-        final String value = m.group("VALUE");
+        final SensorWrapper thisS = iter.next();
 
-        // done, return it.
-        return value;
+        // find the track
+        final TrackWrapper parent = thisS.getHost();
+
+        // now formally add the sensor, if we can
+        if (parent != null)
+        {
+          parent.add(thisS);
+        }
+        else
+        {
+          // SPECIAL HANDLING - the user may have declined
+          // to assign the sensor to a track, in which case
+          // we just skip the assignent
+          Application.logError2(ToolParent.INFO,
+              "Not storing sensor, track not found", null);
+        }
       }
     }
-    return null;
+
   }
 
   /**
@@ -1003,877 +1946,5 @@ public class ImportReplay extends PlainImporterBase
 
     // done
     return res;
-  }
-
-  private void proccessShapeWrapper(final PlainLineImporter thisOne,
-      final Object thisObject)
-  {
-    ShapeWrapper shapeWrapper = (ShapeWrapper) thisObject;
-    String symbology = thisOne.getSymbology();
-    if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
-    {
-      shapeWrapper.getShape().setLineStyle(
-          ImportReplay.replayLineStyleFor(symbology.substring(2)));
-      if (symbology.length() > 3)
-      {
-        shapeWrapper.getShape().setLineWidth(
-            ImportReplay.replayLineThicknesFor(symbology.substring(3)));
-      }
-      if (symbology.length() >= 5)
-      {
-        PlainShape shape = shapeWrapper.getShape();
-        String fillType = symbology.substring(4, 5);
-        if ("1".equals(fillType))
-        {
-          shape.setFilled(true);
-        }
-        else if ("2".equals(fillType))
-        {
-          shape.setFilled(true);
-          shape.setSemiTransparent(true);
-        }
-        else
-        {
-          shape.setFilled(false);
-          shape.setSemiTransparent(false);
-        }
-      }
-    }
-  }
-
-  public static String replayFillStyleFor(String theSym)
-  {
-    String res = null;
-    if (theSym.length() >= 5)
-      res = theSym.substring(4, 5);
-    return res;
-  }
-
-  private static int replayLineThicknesFor(String theSym)
-  {
-    int res = 0;
-    final String theThicknes = theSym.substring(0, 1);
-
-    try
-    {
-      res = new Integer(theThicknes);
-    }
-    catch (NumberFormatException e)
-    {
-      // ignore; res = 0
-    }
-
-    return res;
-  }
-
-  /**
-   * import data from this stream
-   */
-  public final void
-      importThis(final String fName, final java.io.InputStream is)
-  {
-    // declare linecounter
-    int lineCounter = 0;
-
-    final int numLines = countLinesFor(fName);
-
-    final Reader reader = new InputStreamReader(is);
-    final BufferedReader br = new ReaderMonitor(reader, numLines, fName);
-    String thisLine = null;
-    try
-    {
-
-      // check stream is valid
-      if (is.available() > 0)
-      {
-
-        // clear the output list
-        _newLayers.clear();
-        _existingTracksThatMoved.clear();
-
-        // clear the input settings
-        _importSettings = null;
-        _lastImportedItem.clear();
-
-        thisLine = br.readLine();
-
-        final long start = System.currentTimeMillis();
-
-        // loop through the lines
-        while (thisLine != null)
-        {
-          // keep line counter
-          lineCounter++;
-
-          // catch import problems
-          readLine(thisLine);
-
-          // read another line
-          thisLine = br.readLine();
-        }
-
-        // see if any importers need to finalise
-        finaliseImporters();
-
-        // lastly have a go at formatting these tracks
-        for (int k = 0; k < _myFormatters.length; k++)
-        {
-          _myFormatters[k].formatLayers(_newLayers);
-        }
-
-        // see if we've modified any existing tracks
-        Iterator<TrackWrapper> tIter = _existingTracksThatMoved.iterator();
-        while (tIter.hasNext())
-        {
-          TrackWrapper track = (TrackWrapper) tIter.next();
-
-          // tell it that it has changed
-          track.sortOutRelativePositions();
-        }
-
-        final long end = System.currentTimeMillis();
-        System.out.println(" |Elapsed:" + (end - start) + " ");
-
-      }
-    }
-    catch (final java.lang.NumberFormatException e)
-    {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Number format error", thisLine);
-    }
-    catch (final IOException e)
-    {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Unknown read error:" + e, thisLine);
-    }
-    catch (final java.util.NoSuchElementException e)
-    {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Missing field error", thisLine);
-    }
-  }
-
-  /**
-   * some importers may need to finalize, if there is end of import processing to conduct. Trigger
-   * that here
-   */
-  private void finaliseImporters()
-  {
-    if (_extensionImporters != null)
-    {
-      for (final ExtensibleLineImporter importer : _extensionImporters)
-      {
-        if (importer instanceof PlainLineImporter.ImportRequiresFinalisation)
-        {
-          PlainLineImporter.ImportRequiresFinalisation fin =
-              (ImportRequiresFinalisation) importer;
-          fin.finalise();
-        }
-      }
-    }
-    if (_coreImporters != null)
-    {
-      for (final PlainLineImporter importer : _coreImporters)
-      {
-        if (importer instanceof PlainLineImporter.ImportRequiresFinalisation)
-        {
-          PlainLineImporter.ImportRequiresFinalisation fin =
-              (ImportRequiresFinalisation) importer;
-          fin.finalise();
-        }
-      }
-    }
-  }
-
-  private PlainLineImporter getImporterFor(final String rawString)
-  {
-    PlainLineImporter res = null;
-
-    // trim any leading whitespace
-    final String theLine = rawString.trim();
-
-    // check it's not an empty line
-    if (theLine.length() > 0)
-    {
-      // so, determine if this is a comment
-      if (theLine.charAt(0) == ';')
-      {
-        // get the type for this comment
-        final StringTokenizer st = new StringTokenizer(theLine);
-        final String type = st.nextToken();
-
-        // do we have any extension importers?
-        if (_extensionImporters != null)
-        {
-          for (final ExtensibleLineImporter importer : _extensionImporters)
-          {
-            String thisType = importer.getYourType();
-            if (thisType.equals(type))
-            {
-              // ok, we also have to initialise it with this layers object
-              importer.setLayers(getLayers());
-
-              // remember it
-              res = importer;
-
-              // done
-              break;
-            }
-          }
-        }
-
-        // did it work?
-        if (res == null)
-        {
-          // nope, try the core ones
-
-          // look through types of import handler
-          final Enumeration<PlainLineImporter> iter = _coreImporters.elements();
-
-          // cycle through my types
-          while (iter.hasMoreElements())
-          {
-            final PlainLineImporter thisImporter = iter.nextElement();
-
-            // get the handler correct type?
-            final String thisType = thisImporter.getYourType();
-
-            if (thisType == null)
-            {
-              MWC.Utilities.Errors.Trace.trace("null returned by: "
-                  + thisImporter);
-              return null;
-            }
-
-            // does this one fit?
-            if (thisType.equals(type))
-            {
-              res = thisImporter;
-              break;
-            }
-          }
-        }
-      }
-      else
-      {
-        res = new ImportFix();
-      }
-    }
-
-    // done
-    return res;
-  }
-
-  /**
-   * convert the item to text, add it to the block we're building up
-   */
-  public final void exportThis(final Plottable item)
-  {
-
-    // check it's real
-    if (item == null)
-      throw new IllegalArgumentException("duff wrapper");
-
-    checkImporters();
-
-    // just see if it is a track which we are trying to export
-    if ((item instanceof Layer) && !(item instanceof ExportLayerAsSingleItem))
-    {
-      // ok, work through the layer
-      final Layer tw = (Layer) item;
-      // ha-ha! export the points one at a time
-      final java.util.Enumeration<Editable> iter = tw.elements();
-      while (iter.hasMoreElements())
-      {
-        final Plottable pt = (Plottable) iter.nextElement();
-        exportThis(pt);
-      }
-      // ta-da! done.
-    }
-    else
-    {
-      // check we have some importers
-      if (_coreImporters != null)
-      {
-        final Enumeration<PlainLineImporter> iter = _coreImporters.elements();
-
-        // step though our importers, to see if any will 'do the deal;
-        while (iter.hasMoreElements())
-        {
-          final PlainLineImporter thisImporter = iter.nextElement();
-
-          if (thisImporter.canExportThis(item))
-          {
-            // export it, add it to the data we're building up
-            final String thisLine = thisImporter.exportThis(item);
-            addThisToExport(thisLine);
-
-            // ok, we can drop out of the loop
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  public final boolean canImportThisFile(final String theFile)
-  {
-    boolean res = false;
-    String theSuffix = null;
-    final int pos = theFile.lastIndexOf(".");
-    theSuffix = theFile.substring(pos, theFile.length());
-
-    for (int i = 0; i < _myTypes.length; i++)
-    {
-      if (theSuffix.equalsIgnoreCase(_myTypes[i]))
-      {
-        res = true;
-        break;
-      }
-    }
-
-    return res;
-  }
-
-  public Vector<SensorWrapper> getPendingSensors()
-  {
-
-    Vector<SensorWrapper> res = new Vector<SensorWrapper>();
-    Iterator<TrackWrapper> tIter = _pendingSensors.keySet().iterator();
-    while (tIter.hasNext())
-    {
-      TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
-      res.addAll(_pendingSensors.get(trackWrapper));
-    }
-    return res;
-  }
-
-  /**
-   * actually store the sensor data in its parent object
-   * 
-   */
-  public void storePendingSensors()
-  {
-    // ok, actually add the sensors to their parents now
-    Iterator<TrackWrapper> tIter = _pendingSensors.keySet().iterator();
-    while (tIter.hasNext())
-    {
-      TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
-      Iterator<SensorWrapper> iter =
-          _pendingSensors.get(trackWrapper).iterator();
-      while (iter.hasNext())
-      {
-        SensorWrapper thisS = iter.next();
-
-        // find the track
-        TrackWrapper parent = thisS.getHost();
-
-        // now formally add the sensor, if we can
-        if (parent != null)
-        {
-          parent.add(thisS);
-        }
-        else
-        {
-          // SPECIAL HANDLING - the user may have declined
-          // to assign the sensor to a track, in which case
-          // we just skip the assignent
-          Application.logError2(Application.INFO,
-              "Not storing sensor, track not found", null);
-        }
-      }
-    }
-
-  }
-
-  public void clearPendingSensorList()
-  {
-    _pendingSensors.clear();
-  }
-
-  static public String replaySymbolForLineStyle(final int style)
-  {
-    switch (style)
-    {
-      case MWC.GUI.CanvasType.DOTTED:
-        return "A";
-
-      case MWC.GUI.CanvasType.DOT_DASH:
-        return "B";
-
-      case MWC.GUI.CanvasType.SHORT_DASHES:
-        return "C";
-
-      case MWC.GUI.CanvasType.LONG_DASHES:
-        return "D";
-
-      case MWC.GUI.CanvasType.UNCONNECTED:
-        return "E";
-
-      default:
-        break;
-    }
-    return "@";
-  }
-
-  static public int replayLineStyleFor(final String theSym)
-  {
-    int res = 0;
-    final String theStyle = theSym.substring(0, 1);
-
-    if (theStyle.equals("@"))
-    {
-      res = MWC.GUI.CanvasType.SOLID;
-    }
-    else if (theStyle.equals("A"))
-    {
-      res = MWC.GUI.CanvasType.DOTTED;
-    }
-    else if (theStyle.equals("B"))
-    {
-      res = MWC.GUI.CanvasType.DOT_DASH;
-    }
-    else if (theStyle.equals("C"))
-    {
-      res = MWC.GUI.CanvasType.SHORT_DASHES;
-    }
-    else if (theStyle.equals("D"))
-    {
-      res = MWC.GUI.CanvasType.LONG_DASHES;
-    }
-    else if (theStyle.equals("E"))
-    {
-      res = MWC.GUI.CanvasType.UNCONNECTED;
-    }
-
-    return res;
-  }
-
-  public final static String replayTrackSymbolFor(final String theSym)
-  {
-    String res = null;
-    final String colorVal = theSym.substring(0, 1);
-
-    res = SymbolFactory.createSymbolFromId(colorVal);
-
-    // did we manage to find it?
-    if (res == null)
-      res = SymbolFactory.createSymbolFromId(SymbolFactory.DEFAULT_SYMBOL_TYPE);
-
-    return res;
-  }
-
-  static public Color replayColorFor(final int index)
-  {
-    Color res = null;
-
-    // check we have the colours
-    initialiseColours();
-
-    final int theIndex = index % colors.size();
-
-    res = colors.elementAt(theIndex).color;
-
-    return res;
-  }
-
-  static public Color replayColorFor(final String theSym)
-  {
-    Color res = null;
-    final String colorVal = theSym.substring(1, 2);
-
-    // check we have the colours
-    initialiseColours();
-
-    // step through our list of colours
-    final java.util.Enumeration<doublet> iter = colors.elements();
-    while (iter.hasMoreElements())
-    {
-      final doublet db = iter.nextElement();
-      if (db.label.equals(colorVal))
-      {
-        res = db.color;
-        break;
-      }
-    }
-
-    // if label not found, make it RED
-    if (res == null)
-      res = Color.red;
-
-    return res;
-  }
-
-  static public String replaySymbolFor(final Color theCol,
-      final String theSymbol)
-  {
-    String res = null;
-
-    // step through our list of colours
-    final java.util.Enumeration<doublet> iter = colors.elements();
-    while (iter.hasMoreElements())
-    {
-      final doublet db = iter.nextElement();
-      if (db.color.equals(theCol))
-      {
-        res = db.label;
-        continue;
-      }
-    }
-
-    String symTxt;
-    if (theSymbol == null)
-    {
-      symTxt = "@";
-    }
-    else
-    {
-      symTxt = SymbolFactory.findIdForSymbolType(theSymbol);
-    }
-
-    // label not found, make it RED
-    if (res == null)
-      res = "A";
-
-    res = symTxt + res;
-
-    return res;
-
-  }
-
-  public final void exportThis(final String val)
-  {
-    if (val != null)
-    {
-      final java.awt.datatransfer.Clipboard cl =
-          java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-      final java.awt.datatransfer.StringSelection ss =
-          new java.awt.datatransfer.StringSelection(val);
-      cl.setContents(ss, ss);
-    }
-  }
-
-  final static class doublet
-  {
-    public final String label;
-
-    public final Color color;
-
-    public doublet(final String theLabel, final Color theColor)
-    {
-      label = theLabel;
-      color = theColor;
-    }
-  }
-
-  /**
-   * interface for helpers that may be able to provide extra REP file importers
-   * 
-   */
-  public static interface RepImportHelper
-  {
-    /**
-     * provide an importer, if there is a suitable one
-     * 
-     * @param line
-     *          line we're trying to import
-     * @return a matching importer, if there is one.
-     */
-    public ExtensibleLineImporter canImport(final String line);
-  }
-
-  /**
-   * interface which we use to implement class capable of formatting a set of layers once they've
-   * been read in
-   */
-  public static interface LayersFormatter
-  {
-    public void formatLayers(List<Layer> newLayers);
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testImport extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    private String fileName = "test.rep";
-
-    boolean fileFinished = false;
-
-    boolean allFilesFinished = false;
-
-    public testImport(final String val)
-    {
-      super(val);
-      final String fileRoot = "../org.mwc.debrief.legacy/src";
-
-      //
-      assertNotNull("Check data directory is configured", fileRoot);
-      fileName = fileRoot + File.separator + fileName;
-
-      // and check the file exists
-      final java.io.File iFile = new File(fileName);
-      assertTrue("Test file not found", iFile.exists());
-    }
-
-    public static class TestParent implements ToolParent, ProvidesModeSelector
-    {
-      final ImportSettings settings;
-      final Long freq;
-
-      public TestParent(String mode, Long freq)
-      {
-        settings = new ImportSettings(mode, freq);
-        this.freq = freq;
-      }
-
-      public void addActionToBuffer(final Action theAction)
-      {
-
-      }
-
-      @Override
-      public void logStack(int status, String text)
-      {
-        logError(status, "Stack requested:" + text, null);
-      }
-
-      public Map<String, String> getPropertiesLike(final String pattern)
-      {
-        return null;
-      }
-
-      public String getProperty(final String name)
-      {
-        if (name.equals(ImportReplay.TRACK_IMPORT_MODE))
-          return settings.importMode;
-        else if (name.equals(ImportReplay.RESAMPLE_FREQUENCY))
-          return "" + settings.sampleFrequency;
-        else
-          return null;
-      }
-
-      public void restoreCursor()
-      {
-
-      }
-
-      public void setCursor(final int theCursor)
-      {
-
-      }
-
-      public void setProperty(final String name, final String value)
-      {
-
-      }
-
-      public void logError(final int status, final String text,
-          final Exception e)
-      {
-
-      }
-
-      @Override
-      public void logError(int status, String text, Exception e,
-          boolean revealLog)
-      {
-        logError(status, text, e);
-      }
-
-      @Override
-      public ImportSettings getSelectedImportMode(String trackName)
-      {
-        return settings;
-      }
-
-      @Override
-      public Long getSelectedImportFrequency(String trackName)
-      {
-        return null;
-      }
-    }
-
-    public final void testDRimport()
-    {
-      doReadRep(ImportReplay.IMPORT_AS_DR, null, 3, 25, true);
-    }
-
-    public final void testOTGimport1()
-    {
-      doReadRep(ImportReplay.IMPORT_AS_OTG, 0L, 3, 25, true);
-    }
-
-    public final void testOTGimport2()
-    {
-      doReadRep(ImportReplay.IMPORT_AS_OTG, 300000L, 3, 5, false);
-    }
-
-    public final void testOTGimport3()
-    {
-      doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
-    }
-
-    public final void testParseSymbology()
-    {
-      final String test =
-          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
-      final String test2 =
-          ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
-      ImportReplay ir = new ImportReplay();
-
-      assertEquals("String not found", null, ir.getThisSymProperty(test,
-          "LAYDER"));
-      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test,
-          "LAYER"));
-
-      assertEquals("String not found", null, ir.getThisSymProperty(test2,
-          "LAYDER"));
-      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(
-          test2, "LAYER"));
-      assertEquals("String found", "OFF", ir.getThisSymProperty(test2,
-          "TEST_ON"));
-
-    }
-
-    private final void doReadRep(String mode, Long freq, int LAYER_COUNT,
-        int NUM_FIXES, boolean checkArea)
-    {
-      java.io.File testFile = null;
-
-      // specify the parent object - so our processing can retrieve the
-      // OTG setting
-      ImportReplay.initialise(new TestParent(mode, freq));
-
-      // can we load it directly
-      testFile = new java.io.File(fileName);
-
-      if (!testFile.exists())
-      {
-
-        // first try to get the URL of the image
-        final java.lang.ClassLoader loader = getClass().getClassLoader();
-        if (loader != null)
-        {
-          final java.net.URL imLoc = loader.getResource(fileName);
-          if (imLoc != null)
-          {
-            testFile = new java.io.File(imLoc.getFile());
-          }
-        }
-        else
-        {
-          fail("Failed to find class loader");
-        }
-      }
-
-      // did we find it?
-      assertTrue("Failed to find file:" + fileName, testFile.exists());
-
-      // ok, now try to read it in
-      final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
-      final File[] _theFiles = new File[]
-      {testFile};
-
-      // add the REP importer
-      MWC.Utilities.ReaderWriter.ImportManager
-          .addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
-
-      // get our thread to import this
-      final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
-          new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
-              _theFiles, _theLayers)
-          {
-            // handle the completion of each file
-            public void fileFinished(final File fName, final Layers newData)
-            {
-              fileFinished = true;
-            }
-
-            // handle completion of the full import process
-            public void allFilesFinished(final File[] fNames,
-                final Layers newData)
-            {
-              allFilesFinished = true;
-            }
-          };
-
-      // and start it running
-      reader.start();
-
-      // wait for the results
-      while (reader.isAlive())
-      {
-        try
-        {
-          Thread.sleep(100);
-        }
-        catch (final java.lang.InterruptedException e)
-        {
-        }
-      }
-
-      // check it went ok
-      assertTrue("File finished received", fileFinished);
-      assertTrue("All Files finished received", allFilesFinished);
-
-      assertEquals("Count of layers", LAYER_COUNT, _theLayers.size());
-
-      TrackWrapper track = (TrackWrapper) _theLayers.elementAt(0);
-      int numFixes = track.numFixes();
-      assertEquals("got correct num fixes", NUM_FIXES, numFixes);
-
-      if (checkArea)
-      {
-        // area of coverage
-        final MWC.GenericData.WorldArea area =
-            _theLayers.elementAt(0).getBounds();
-        super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
-            11.92276, 0.01);
-        super.assertEquals("tl long of first layer", area.getTopLeft()
-            .getLong(), -11.59394, 0.01);
-        super.assertEquals("tl depth of first layer", area.getTopLeft()
-            .getDepth(), 0, 0.00001);
-
-        super.assertEquals("br lat of first layer", area.getBottomRight()
-            .getLat(), 11.89421, 0.001);
-        super.assertEquals("br long of first layer", area.getBottomRight()
-            .getLong(), -11.59376, 0.00001);
-        super.assertEquals("br depth of first layer", area.getBottomRight()
-            .getDepth(), 0, 0.00001);
-      }
-
-      // check those narrative lines got read in
-      NarrativeWrapper narratives = (NarrativeWrapper) _theLayers.elementAt(2);
-      assertEquals("have read in both narrative entries", 2, narratives.size());
-    }
-  }
-
-  /**
-   * provide an extra set of importers
-   * 
-   * @param importers
-   */
-  public static void addExtraImporters(List<ExtensibleLineImporter> importers)
-  {
-    // do we have a holder?
-    if (_extensionImporters == null)
-    {
-      _extensionImporters = new ArrayList<ExtensibleLineImporter>();
-    }
-
-    // now add the new ones
-    for (final ExtensibleLineImporter importer : importers)
-    {
-      _extensionImporters.add(importer);
-    }
   }
 }
