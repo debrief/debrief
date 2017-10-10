@@ -461,23 +461,22 @@ public class ImportNarrativeDocument
         final String yrStr = parts[ctr++];
         platform = parts[ctr++].trim();
         type = parts[ctr++].trim();
-        
-        /** special processing, to overcome problem with
-         * entries being pulled back from the next day. The problem 
-         * has occurred when something that happened at, say
-         * 2345 only gets entered at 0005, so the user moves the
-         * entry back to the real time
+
+        /**
+         * special processing, to overcome problem with entries being pulled back from the next day.
+         * The problem has occurred when something that happened at, say 2345 only gets entered at
+         * 0005, so the user moves the entry back to the real time
          */
-        if(sixFigDTG)
+        if (sixFigDTG)
         {
-          final int dtgDate = Integer.valueOf(parts[0].substring(0,2));
-          final int hours = Integer.valueOf(parts[0].substring(2,4));
-          
-          // is this entry after 2300?  (that's the usual destination)
-          if(hours == 23)
+          final int dtgDate = Integer.valueOf(parts[0].substring(0, 2));
+          final int hours = Integer.valueOf(parts[0].substring(2, 4));
+
+          // is this entry after 2300? (that's the usual destination)
+          if (hours == 23)
           {
             final int hiddenDay = Integer.parseInt(dayStr);
-            if(hiddenDay == dtgDate + 1)
+            if (hiddenDay == dtgDate + 1)
             {
               // ok, the date in the hidden text is one day after
               // that in 6-fix DTG. correct the date
@@ -712,25 +711,27 @@ public class ImportNarrativeDocument
 
     @SuppressWarnings("unused")
     private String messageStr = null;
-    
+
     public void setUp()
     {
-      
+
       System.out.println("setting up message provider ");
-      
+
       // clear the message string
       messageStr = null;
-      
+
       // initialise the message provider
-      MessageProvider.Base.setProvider(new MessageProvider(){
+      MessageProvider.Base.setProvider(new MessageProvider()
+      {
 
         @Override
         public void show(String title, String message, int status)
         {
           messageStr = message;
-        }});
+        }
+      });
     }
-    
+
     public static int countLines(final String str)
     {
       if (str == null || str.isEmpty())
@@ -746,7 +747,8 @@ public class ImportNarrativeDocument
       return lines;
     }
 
-    public void testAddFCSToTrack() throws FileNotFoundException, InterruptedException
+    public void testAddFCSToTrack() throws FileNotFoundException,
+        InterruptedException
     {
       final Layers tLayers = new Layers();
 
@@ -790,8 +792,8 @@ public class ImportNarrativeDocument
       tw = (TrackWrapper) tLayers.elementAt(6);
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 5, tw.numFixes());
-      
-      // we need to introduce a 500ms delay, so we don't use 
+
+      // we need to introduce a 500ms delay, so we don't use
       // the cahced visible period
       Thread.sleep(550);
 
@@ -809,8 +811,9 @@ public class ImportNarrativeDocument
       assertEquals("got fixes", 3, tw.numFixes());
 
     }
-    
-    public void testAddFCSToHiddenTrack() throws FileNotFoundException, InterruptedException
+
+    public void testAddFCSToHiddenTrack() throws FileNotFoundException,
+        InterruptedException
     {
       final Layers tLayers = new Layers();
 
@@ -825,13 +828,14 @@ public class ImportNarrativeDocument
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
-      
+
       // ok, now filter it to a time period
       TrackWrapper track = (TrackWrapper) tLayers.elementAt(0);
-      
+
       // filter the list to a period of data after the narrative cuts
-      track.filterListTo(new HiResDate(818749200000L), new HiResDate(818766600000L));
-      
+      track.filterListTo(new HiResDate(818749200000L), new HiResDate(
+          818766600000L));
+
       // now load the FCS data
 
       final String testFile = valid_doc_path;
@@ -862,8 +866,8 @@ public class ImportNarrativeDocument
       tw = (TrackWrapper) tLayers.elementAt(6);
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 5, tw.numFixes());
-      
-      // we need to introduce a 500ms delay, so we don't use 
+
+      // we need to introduce a 500ms delay, so we don't use
       // the cahced visible period
       Thread.sleep(550);
 
@@ -1244,8 +1248,9 @@ public class ImportNarrativeDocument
    * 
    */
   private final List<String> askedAbout = new ArrayList<String>();
-  
-  /** flag for if we've informed user that we couldn't find host track
+
+  /**
+   * flag for if we've informed user that we couldn't find host track
    * 
    */
   private boolean _declaredNoHostFound = false;
@@ -1279,7 +1284,7 @@ public class ImportNarrativeDocument
           && thisL.getName().startsWith(ImportNMEA.WECDIS_OWNSHIP_PREFIX))
       {
         final String existingName = thisL.getName();
-        
+
         // ok, change the track name to the provided name
         thisL.setName(dataName);
 
@@ -1287,8 +1292,10 @@ public class ImportNarrativeDocument
         res = thisL.getName();
 
         // and politely tell the user
-        MessageProvider.Base.Provider.show("Import Narrative", "Since it looks like a WECDIS track, we've renamed "
-            + existingName + " to " + res + ", so we can add create FCSs.", MessageProvider.INFO);
+        MessageProvider.Base.Provider.show("Import Narrative",
+            "Since it looks like a WECDIS track, we've renamed " + existingName
+                + " to " + res + ", so we can add create FCSs.",
+            MessageProvider.INFO);
 
         // done
         break;
@@ -1559,14 +1566,12 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWordX(final String fName,
-      final InputStream is)
+  public ArrayList<String> importFromWordX(XWPFDocument doc)
   {
     final ArrayList<String> strings = new ArrayList<String>();
 
     try
     {
-      final XWPFDocument doc = new XWPFDocument(is);
 
       final List<XWPFParagraph> paragraphs = doc.getParagraphs();
 
@@ -1741,7 +1746,7 @@ public class ImportNarrativeDocument
    * @param raw_text
    * @return text with some control chars removed
    */
-  private String removeBadChars(final String raw_text)
+  public static String removeBadChars(final String raw_text)
   {
     // swap soft returns for hard ones
     String res = raw_text.replace('\u000B', '\n');
@@ -1894,21 +1899,19 @@ public class ImportNarrativeDocument
           else
           {
             // we can't find a host track.
-            
+
             // have we already told the user?
-            if(!_declaredNoHostFound)
+            if (!_declaredNoHostFound)
             {
               // ok, stop it appearing again
               _declaredNoHostFound = true;
-              
+
               // tell the user
-              MessageProvider.Base.Provider
-                  .show(
-                      "Import Narrative",
-                      "Narrative entries will be imported, but we won't be creating FCSs " + 
-                      "since we couldn't determine the host track for: "
-                          + originalName + ".", MessageProvider.WARNING);
-              
+              MessageProvider.Base.Provider.show("Import Narrative",
+                  "Narrative entries will be imported, but we won't be creating FCSs "
+                      + "since we couldn't determine the host track for: "
+                      + originalName + ".", MessageProvider.WARNING);
+
             }
           }
         }
