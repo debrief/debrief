@@ -38,6 +38,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSetti
 import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -1487,6 +1488,8 @@ public class ImportReplay extends PlainImporterBase
   {
     Color res = null;
     final String colorVal = theSym.substring(1, 2);
+    
+    final String upperSym = colorVal.toUpperCase();
 
     // check we have the colours
     initialiseColours();
@@ -1496,7 +1499,7 @@ public class ImportReplay extends PlainImporterBase
     while (iter.hasMoreElements())
     {
       final doublet db = iter.nextElement();
-      if (db.label.equals(colorVal))
+      if (db.label.equals(upperSym))
       {
         res = db.color;
         break;
@@ -1728,6 +1731,7 @@ public class ImportReplay extends PlainImporterBase
           ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
       final String test2 =
           ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
+
       ImportReplay ir = new ImportReplay();
 
       assertEquals("String not found", null, ir.getThisSymProperty(test,
@@ -1741,7 +1745,27 @@ public class ImportReplay extends PlainImporterBase
           test2, "LAYER"));
       assertEquals("String found", "OFF", ir.getThisSymProperty(test2,
           "TEST_ON"));
+    }
 
+    public final void testParseSymbologyColor()
+    {
+      final String test1 =
+          ";TEXT: 5j 21.42 0 0 N 21.88 0 0 W Other buoy";
+
+      LabelWrapper label1 = (LabelWrapper) new ImportLabel().readThisLine(test1);
+      
+      // correct symbol
+      assertEquals("sym type correct", "Kingpin", label1.getSymbolType());
+      assertEquals("color correct", DebriefColors.LIGHT_GREEN, label1.getColor());
+      
+      final String test2 =
+          ";TEXT: 4G 21.42 0 0 N 21.88 0 0 W Other buoy";
+
+      LabelWrapper label2 = (LabelWrapper) new ImportLabel().readThisLine(test2);
+      
+      // correct symbol
+      assertEquals("sym type correct", "Hidar", label2.getSymbolType());
+      assertEquals("color correct", DebriefColors.PURPLE, label2.getColor());
     }
 
     private final void doReadRep(String mode, Long freq, int LAYER_COUNT,
