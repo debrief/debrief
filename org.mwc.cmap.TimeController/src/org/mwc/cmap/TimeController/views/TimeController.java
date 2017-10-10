@@ -661,8 +661,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     {
 
       // updating the text items has to be done in the UI thread. make it
-      // so
-      Display.getDefault().asyncExec(new Runnable()
+      // so.  We do it  "sync" rather than "aSync" because 
+      // much higher up the call tree we switch off
+      // _filterToSelection, run this action, then switch that 
+      // setting back on.  If we do this async, the previous
+      // method reverts the setting, then calls this, which
+      // has no benefit.
+      Display.getDefault().syncExec(new Runnable()
       {
         public void run()
         {
@@ -1138,6 +1143,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               final TimePeriod timeRange = _myTemporalDataset.getPeriod();
               if (timeRange != null)
               {
+                // we wish to cancel filtering to selection when
+                // we update the sliders, since it hides/reveals
+                // data
+
+                // remember the filter-to-window mode
+                final boolean filtering;
+                if (_filterToSelectionAction != null)
+                {
+                  filtering = _filterToSelectionAction.isChecked();
+                  // switch it off
+                  _filterToSelectionAction.setChecked(false);
+                }
+                else
+                {
+                  filtering = false;
+                }
+
                 // and our range selector - first the outer
                 // ranges
                 _dtgRangeSlider.updateOuterRanges(timeRange);
@@ -1149,6 +1171,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 // and the time slider range
                 _slideManager.resetRange(timeRange.getStartDTG(), timeRange
                     .getEndDTG());
+
+                // and restore the original value
+                if (_filterToSelectionAction != null)
+                {
+                  _filterToSelectionAction.setChecked(filtering);
+                }
 
               }
 
@@ -1546,7 +1574,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 _slideManager.resetRange(startTime, endTime);
 
                 // ok, set the slider ranges...
-                _dtgRangeSlider.updateSelectedRanges(startTime, endTime);
+                //   _dtgRangeSlider.updateSelectedRanges(startTime, endTime);
+                // no - don't bother. we already do it on new Time Provider
 
                 // and set the time again - the slider has
                 // probably forgotten
