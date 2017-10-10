@@ -133,45 +133,45 @@ import java.util.Iterator;
 public final class SymbolFactory
 {
 
-  private static final String KINGPIN = "Kingpin";
+  public static final String KINGPIN = "Kingpin";
 
-  private static final String BARRA = "Barra";
+  public static final String BARRA = "Barra";
 
-  private static final String LOFAR = "Lofar";
+  public static final String LOFAR = "Lofar";
 
-  private static final String DIFAR = "Difar";
+  public static final String DIFAR = "Difar";
 
-  private static final String ACTIVE = "Active";
+  public static final String ACTIVE = "Active";
 
-  private static final String HIDAR = "Hidar";
+  public static final String HIDAR = "Hidar";
 
-  private static final String MPA = "MPA";
+  public static final String MPA = "MPA";
 
-  private static final String DESTROYER = "Destroyer";
+  public static final String DESTROYER = "Destroyer";
 
-  private static final String UNKNOWN = "Unknown";
+  public static final String UNKNOWN = "Unknown";
 
-  private static final String TROOP_CARRIER = "Troop_Carrier";
+  public static final String TROOP_CARRIER = "Troop_Carrier";
 
-  private static final String CRUISER = "Cruiser";
+  public static final String CRUISER = "Cruiser";
 
-  private static final String CARRIER = "Carrier";
+  public static final String CARRIER = "Carrier";
 
-  private static final String TA_FRIGATE = "TA Frigate";
+  public static final String TA_FRIGATE = "TA Frigate";
 
-  private static final String MINESWEEPER = "Minesweeper";
+  public static final String MINESWEEPER = "Minesweeper";
 
-  private static final String FRIGATE = "Frigate";
+  public static final String FRIGATE = "Frigate";
 
-  private static final String AIRCRAFT = "Aircraft";
+  public static final String AIRCRAFT = "Aircraft";
 
-  private static final String HELICOPTER = "Helicopter";
+  public static final String HELICOPTER = "Helicopter";
 
-  private static final String FILLED_CIRCLE = "FilledCircle";
+  public static final String FILLED_CIRCLE = "FilledCircle";
 
-  private static final String FILLED_SQUARE = "FilledSquare";
+  public static final String FILLED_SQUARE = "FilledSquare";
 
-  private static final String FISHING_VESSEL = "Fishing_Vessel";
+  public static final String FISHING_VESSEL = "Fishing_Vessel";
 
   public static final String SCALED_FRIGATE = "ScaledFrigate";
 
@@ -185,9 +185,9 @@ public final class SymbolFactory
 
   public static final String CROSS = "Cross";
 
-  private static final String REFERENCE_POSITION = "Reference Position";
+  public static final String REFERENCE_POSITION = "Reference Position";
   
-  private static final String WRECK = "Wreck";
+  public static final String WRECK = "Wreck";
 
 	public static final String DATUM = "Datum";
 

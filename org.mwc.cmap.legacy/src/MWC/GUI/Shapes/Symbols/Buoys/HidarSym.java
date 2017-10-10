@@ -58,6 +58,7 @@ package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
 public class HidarSym extends PlainSymbol {
@@ -116,7 +117,7 @@ public class HidarSym extends PlainSymbol {
 
   public String getType()
   {
-    return "Lofar";
+    return SymbolFactory.HIDAR;
   }
 
 }
