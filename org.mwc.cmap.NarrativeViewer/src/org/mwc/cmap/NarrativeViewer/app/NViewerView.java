@@ -86,7 +86,7 @@ import MWC.TacticalData.NarrativeEntry;
 public class NViewerView extends ViewPart implements PropertyChangeListener,
     ISelectionProvider
 {
-  NarrativeViewer myViewer;
+  private NarrativeViewer myViewer;
 
   /**
    * helper application to help track creation/activation of new plots
@@ -97,9 +97,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * help out with listening for selection changes
    * 
    */
-  ISelectionChangedListener _selectionChangeListener;
+  private ISelectionChangedListener _selectionChangeListener;
 
-  IRollingNarrativeProvider _myRollingNarrative;
+  private IRollingNarrativeProvider _myRollingNarrative;
 
   final protected INarrativeListener _myRollingNarrListener;
 
@@ -107,7 +107,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * whether to clip text to the visible size
    * 
    */
-  Action _clipText;
+  private Action _clipText;
 
   private static SimpleDateFormat _myFormat;
   private static String _myFormatString;
@@ -128,7 +128,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    * we don't want to process all new-time events, only the most recent one. So, take a note of the
    * most recent one
    */
-  AtomicLong _pendingTime = new AtomicLong(INVALID_TIME);
+  private final AtomicLong _pendingTime = new AtomicLong(INVALID_TIME);
 
   /**
    * whether to control the controllable time
@@ -153,9 +153,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   /**
    * the people listening to us
    */
-  Vector<ISelectionChangedListener> _selectionListeners;
-
-  private Action _setAsBookmarkAction;
+  private Vector<ISelectionChangedListener> _selectionListeners;
 
   protected Layers _myLayers;
 
@@ -183,15 +181,11 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     final java.util.Date theTime = new java.util.Date(micros / 1000);
 
     // do we already know about a date format?
-    if (_myFormatString != null)
+    if (_myFormatString != null && _myFormatString.equals(pattern))
     {
-      // right, see if it's what we're after
-      if (_myFormatString != pattern)
-      {
-        // nope, it's not what we're after. ditch gash
-        _myFormatString = null;
-        _myFormat = null;
-      }
+      // nope, it's not what we're after. ditch gash
+      _myFormatString = null;
+      _myFormat = null;
     }
 
     // so, we either don't have a format yet, or we did have, and now we
@@ -254,14 +248,14 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       public void
           dataReformatted(final Layers theData, final Layer changedLayer)
       {
-        if (changedLayer == _myRollingNarrative)
-        {
-          uiUpdate();
-        }
-
         // do we have a rolling narrative?
         if (_myRollingNarrative != null)
         {
+          if (changedLayer.equals(_myRollingNarrative))
+          {
+            uiUpdate();
+          }
+
           // ok, try to refresh the colors based on the new data
           refreshColor(changedLayer);
         }
@@ -312,11 +306,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       private void updated()
       {
         // is there already a pending update?
-        if (updatePending.get())
-        {
-          // hey, we don't need to fire another!
-        }
-        else
+        if (!updatePending.get())
         {
           // ok, indicate that there is an update pending
           updatePending.set(true);
@@ -647,12 +637,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   protected void fireNewSeletion(final NarrativeEntry newEntry)
   {
     // first update the time
-    if (_controlTime.isChecked())
+    if (_controlTime.isChecked() && _controllableTime != null)
     {
-      if (_controllableTime != null)
-      {
-        _controllableTime.setTime(this, newEntry.getDTG(), true);
-      }
+      _controllableTime.setTime(this, newEntry.getDTG(), true);
     }
 
     // now update the selection
@@ -698,7 +685,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         myViewer.setSearchMode(isChecked());
       }
     };
-    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _search.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/search.png"));
     _search.setToolTipText("Toggle search mode");
     _search.setChecked(true);
@@ -760,7 +747,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         myViewer.setWrappingEntries(_clipText.isChecked());
       }
     };
-    _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _clipText.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/wrap.png"));
     _clipText.setToolTipText("Whether to clip to visible space");
     _clipText.setChecked(true);
@@ -771,7 +758,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _followTime = new Action("Follow current time", IAction.AS_CHECK_BOX)
     {
     };
-    _followTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _followTime.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/follow_time.png"));
     _followTime.setToolTipText("Whether to listen to the time controller");
     _followTime.setChecked(true);
@@ -781,14 +768,14 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     _controlTime = new Action("Control current time", IAction.AS_CHECK_BOX)
     {
     };
-    _controlTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _controlTime.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/control_time.png"));
     _controlTime.setToolTipText("Whether to control the current time");
     _controlTime.setChecked(true);
     menuManager.add(_controlTime);
 
     // now the add-bookmark item
-    _setAsBookmarkAction =
+    final Action setAsBookmarkAction =
         new Action("Add DTG as bookmark", IAction.AS_PUSH_BUTTON)
         {
           @Override
@@ -797,11 +784,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
             addMarker();
           }
         };
-    _setAsBookmarkAction.setImageDescriptor(CorePlugin
+    setAsBookmarkAction.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/add_bookmark.png"));
-    _setAsBookmarkAction
-        .setToolTipText("Add this DTG to the list of bookmarks");
-    menuManager.add(_setAsBookmarkAction);
+    setAsBookmarkAction.setToolTipText("Add this DTG to the list of bookmarks");
+    menuManager.add(setAsBookmarkAction);
 
     // and the DTG formatter
     addDateFormats(menuManager);
@@ -907,7 +893,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   protected void setInput(final IRollingNarrativeProvider newNarr)
   {
-
     if (newNarr != _myRollingNarrative)
     {
       if (_myRollingNarrative != null)
@@ -975,7 +960,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
               final IWorkbenchPart parentPart)
           {
             final Layers layer = (Layers) part;
-            if (layer != _myLayers)
+            if (!layer.equals(_myLayers))
             {
               // ditch to old layers
               ditchOldLayers();
@@ -1003,7 +988,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
               final IWorkbenchPart parentPart)
           {
             final Layers layer = (Layers) part;
-            if (layer == _myLayers)
+            if (layer.equals(_myLayers))
             {
               // ditch to old layers
               ditchOldLayers();
@@ -1023,7 +1008,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
               final IWorkbenchPart parentPart)
           {
             // just check we're not already looking at it
-            if (part != _myTemporalDataset)
+            if (!part.equals(_myTemporalDataset))
             {
               // ok, better stop listening to the old one
               if (_myTemporalDataset != null)
@@ -1069,7 +1054,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            if (part == _myTemporalDataset)
+            if (part.equals(_myTemporalDataset))
             {
               _myTemporalDataset.removeListener(_temporalListener,
                   TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -1145,55 +1130,51 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
   protected void timeUpdated(final HiResDate dtg)
   {
-    if (_followTime.isChecked())
+    if (_followTime.isChecked() && !_amUpdating)
     {
-      if (!_amUpdating)
+      // ok, remember that we're updating
+      _amUpdating = true;
+
+      // remember the new one
+      _pendingTime.set(dtg.getMicros());
+
+      // get on with the update
+      try
       {
-        // ok, remember that we're updating
-        _amUpdating = true;
-
-        // remember the new one
-        _pendingTime.set(dtg.getMicros());
-
-        // get on with the update
-        try
+        Display.getDefault().asyncExec(new Runnable()
         {
-          Display.getDefault().asyncExec(new Runnable()
+
+          @Override
+          public void run()
           {
+            // quick, capture the time
+            final long safeTime = _pendingTime.get();
 
-            @Override
-            public void run()
+            // do we have a pending time value
+            if (safeTime != INVALID_TIME)
             {
-              // quick, capture the time
-              final long safeTime = _pendingTime.get();
+              _pendingTime.set(INVALID_TIME);
 
-              // do we have a pending time value
-              if (safeTime != INVALID_TIME)
-              {
-                _pendingTime.set(INVALID_TIME);
+              // now create the time object
+              final HiResDate theDTG = new HiResDate(0, safeTime);
 
-                // now create the time object
-                final HiResDate theDTG = new HiResDate(0, safeTime);
-
-                // ok, tell the model to move to the relevant item
-                myViewer.setDTG(theDTG);
-              }
-              else
-              {
-                // ok, there isn't a pending date, we can just skip the update
-              }
-
-              // Note: we don't need to clear the lock, we do it in the finally block
+              // ok, tell the model to move to the relevant item
+              myViewer.setDTG(theDTG);
             }
-          });
-        }
-        finally
-        {
-          // clear the updating lock
-          _amUpdating = false;
-        }
+            else
+            {
+              // ok, there isn't a pending date, we can just skip the update
+            }
+
+            // Note: we don't need to clear the lock, we do it in the finally block
+          }
+        });
+      }
+      finally
+      {
+        // clear the updating lock
+        _amUpdating = false;
       }
     }
   }
-
 }
