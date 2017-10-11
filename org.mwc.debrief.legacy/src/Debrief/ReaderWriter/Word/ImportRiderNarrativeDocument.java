@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +50,11 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
@@ -64,7 +69,7 @@ public class ImportRiderNarrativeDocument
   {
     final private Table _table;
 
-    int rowCount = 2;
+    private int rowCount = 2;
 
     private DocHelper(final Table table)
     {
@@ -75,15 +80,32 @@ public class ImportRiderNarrativeDocument
     public String getCell(final int i)
     {
       final TableRow row = _table.getRow(rowCount);
-      return row.getCell(i).text();
+      final String res;
+      if (row.numCells() <= i)
+      {
+        res = null;
+      }
+      else
+      {
+        res = row.getCell(i).text().trim();
+      }
+      return res;
+    }
+
+    @Override
+    public String getFirstCell()
+    {
+      final TableRow headerRow = _table.getRow(0);
+      final TableCell cell = headerRow.getCell(0);
+      return cell.text().trim();
     }
 
     @Override
     public String getHeaderCell(final int num)
     {
       final TableRow headerRow = _table.getRow(1);
-      final TableCell cell = headerRow.getCell(0);
-      return cell.text();
+      final TableCell cell = headerRow.getCell(num);
+      return cell.text().trim();
     }
 
     @Override
@@ -99,7 +121,7 @@ public class ImportRiderNarrativeDocument
   {
     final private XWPFTable _table;
 
-    int rowCount = 2;
+    private int rowCount = 2;
 
     private DocXHelper(final XWPFTable table)
     {
@@ -110,7 +132,25 @@ public class ImportRiderNarrativeDocument
     public String getCell(final int i)
     {
       final XWPFTableRow row = _table.getRow(rowCount);
-      return row.getCell(i).getText();
+      final List<XWPFTableCell> cells = row.getTableCells();
+      final String res;
+      if (cells.size() <= i)
+      {
+        res = null;
+      }
+      else
+      {
+        res = row.getCell(i).getText().trim();
+      }
+      return res;
+    }
+
+    @Override
+    public String getFirstCell()
+    {
+      final XWPFTableRow headerRow = _table.getRow(0);
+      final XWPFTableCell cell = headerRow.getCell(0);
+      return cell.getText().trim();
     }
 
     @Override
@@ -118,7 +158,7 @@ public class ImportRiderNarrativeDocument
     {
       final XWPFTableRow headerRow = _table.getRow(1);
       final XWPFTableCell cell = headerRow.getCell(num);
-      return cell.getText();
+      return cell.getText().trim();
     }
 
     @Override
@@ -132,8 +172,8 @@ public class ImportRiderNarrativeDocument
 
   private static class Header
   {
-    final Date startDate;
-    final String platform;
+    private final Date startDate;
+    private final String platform;
 
     public Header(final Date date, final String platform)
     {
@@ -153,10 +193,10 @@ public class ImportRiderNarrativeDocument
 
   private static class RiderEntry
   {
-    final Date date;
-    final Integer bearing;
-    final Integer beam;
-    final String text;
+    private final Date date;
+    private final Integer bearing;
+    private final Integer beam;
+    private final String text;
 
     public RiderEntry(final Date date, final Integer bearing,
         final Integer beam, final String text)
@@ -164,23 +204,23 @@ public class ImportRiderNarrativeDocument
       this.date = date;
       this.bearing = bearing;
       this.beam = beam;
-      this.text = ImportNarrativeDocument.removeBadChars(text);;
+      this.text = ImportNarrativeDocument.removeBadChars(text);
     }
 
     @Override
     public String toString()
     {
       // first the bearing bits
-      final String brgStr = bearing == null ? "" : "" + bearing;
-      final String beamStr = beam == null ? "" : "" + beam;
+      final String brgStr = bearing == null ? "" : "Brg:" + bearing;
+      final String beamStr = beam == null ? "" : "Beam:" + beam;
       return "[" + brgStr + "/" + beamStr + "] " + text;
     }
   }
 
   public static class TableBreakdown
   {
-    final Header header;
-    final List<RiderEntry> entries;
+    private final Header header;
+    private final List<RiderEntry> entries;
 
     public TableBreakdown(final Header header, final List<RiderEntry> entries)
     {
@@ -194,8 +234,16 @@ public class ImportRiderNarrativeDocument
     private final static String valid_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/RiderNarrative.docx";
 
+    private final static String test_doc_root =
+        "../org.mwc.debrief.legacy/src/Debrief/ReaderWriter/Word/test_docs";
+
+    private final static String bad_date_1 = test_doc_root + "/"
+        + "BadDate1.docx";
+    private final static String old_doc_format = test_doc_root + "/"
+        + "RiderNarrative.doc";
+
     private final static String ownship_track =
-        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/nonsuch.rep";
 
     public static int countLines(final String str)
     {
@@ -235,6 +283,30 @@ public class ImportRiderNarrativeDocument
           messageStr = message;
         }
       });
+    }
+
+    public void testBadDate() throws InterruptedException, IOException
+    {
+      final String testFile = bad_date_1;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      final XWPFDocument doc = new XWPFDocument(is);
+      final List<XWPFTable> tables = doc.getTables();
+      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
+      doc.close();
+    }
+
+    public void testCanImport() throws InterruptedException, IOException
+    {
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      final XWPFDocument doc = new XWPFDocument(is);
+      final List<XWPFTable> tables = doc.getTables();
+      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
+      doc.close();
     }
 
     @SuppressWarnings("deprecation")
@@ -279,6 +351,55 @@ public class ImportRiderNarrativeDocument
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
+      final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
+      assertNotNull("found parent track", parent);
+
+      // fix the track name
+      parent.setName("NONSUCH");
+
+      final String testFile = old_doc_format;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+      assertEquals("layers empty", 1, tLayers.size());
+
+      final ImportRiderNarrativeDocument importer =
+          new ImportRiderNarrativeDocument(tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
+
+      final Range range = doc.getRange();
+      final Table table = new TableIterator(range).next();
+      assertTrue(canImport(new DocHelper(table)));
+
+      final TableBreakdown data = importer.importFromWord(doc);
+      testThisData(tLayers, parent, importer, data);
+
+    }
+
+    public void testImportRiderNarrativeX() throws InterruptedException,
+        IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+
+      assertEquals("read in track", 1, tLayers.size());
+      final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
+      assertNotNull("found parent track", parent);
+
+      // fix the track name
+      parent.setName("NONSUCH");
 
       final String testFile = valid_doc_path;
       final File testI = new File(testFile);
@@ -293,6 +414,12 @@ public class ImportRiderNarrativeDocument
       final XWPFDocument doc = new XWPFDocument(is);
       final TableBreakdown data = importer.importFromWordX(doc);
 
+      testThisData(tLayers, parent, importer, data);
+    }
+
+    private void testThisData(final Layers tLayers, final TrackWrapper parent,
+        final ImportRiderNarrativeDocument importer, final TableBreakdown data)
+    {
       final SimpleDateFormat dateF =
           new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
       dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -301,23 +428,38 @@ public class ImportRiderNarrativeDocument
       assertNotNull(data.header);
       assertNotNull(data.header.startDate);
       assertNotNull(data.entries);
-      assertEquals(7, data.entries.size());
+      assertEquals(10, data.entries.size());
       assertEquals("HMS Nonsuch", data.header.platform);
-      assertEquals("2017/07/09 12:00:00", dateF.format(data.header.startDate));
+      assertEquals("2009/07/22 12:00:00", dateF.format(data.header.startDate));
 
       final RiderEntry entry4 = data.entries.get(4);
-      assertEquals("2017/07/09 12:04:16", dateF.format(entry4.date));
+      assertEquals("2009/07/22 04:14:16", dateF.format(entry4.date));
       assertEquals(null, entry4.bearing);
       assertEquals("Lorem ipsum 5", entry4.text);
       assertEquals(21, entry4.beam.intValue());
-      assertEquals("[/21] Lorem ipsum 5", entry4.toString());
+      assertEquals("[/Beam:21] Lorem ipsum 5", entry4.toString());
 
       final RiderEntry entry5 = data.entries.get(5);
-      assertEquals("2017/07/09 12:05:17", dateF.format(entry5.date));
-      assertEquals(22, entry5.bearing.intValue());
+      assertEquals("2009/07/22 04:15:17", dateF.format(entry5.date));
+      assertEquals(274, entry5.bearing.intValue());
       assertEquals("Lorem ipsum 6", entry5.text);
       assertEquals(null, entry5.beam);
-      assertEquals("[22/] Lorem ipsum 6", entry5.toString());
+      assertEquals("[Brg:274/] Lorem ipsum 6", entry5.toString());
+
+      final RiderEntry entry8 = data.entries.get(7);
+      assertEquals("2009/07/22 04:17:19", dateF.format(entry8.date));
+      assertEquals(null, entry8.bearing);
+      assertTrue("Contains newline", entry8.text.contains("\n"));
+      assertEquals(null, entry8.beam);
+
+      // the two different importers handle \r newlines differently.
+      // so we allow for both permutations here
+      final boolean matchesText =
+          entry8.toString().equals("[/] Lorem ipsum 8And more \nAnd more")
+              || entry8.toString().equals(
+                  "[/] Lorem ipsum 8\rAnd more \nAnd more");
+
+      assertTrue("correct text", matchesText);
 
       // ok, now store them
       importer.processThese(data);
@@ -328,7 +470,15 @@ public class ImportRiderNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 7, narrLayer.size());
+      assertEquals("Got num lines", 10, narrLayer.size());
+
+      // check ownship received cuts
+      assertNotNull("got a sensor", parent.getSensors());
+      final SensorWrapper sensor =
+          findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
+
+      assertNotNull("got our sensor", sensor);
+      assertEquals("got cuts", 4, sensor.size());
     }
 
     @SuppressWarnings("deprecation")
@@ -347,18 +497,73 @@ public class ImportRiderNarrativeDocument
   {
     public String getCell(int i);
 
+    public String getFirstCell();
+
     public String getHeaderCell(int num);
 
     public boolean hasMoreEntries();
   }
 
+  public static final String RIDER_SOURCE = "Rider";
+
+  private static final String NARRATIVE_CUTS_LAYER = "FromNarrative";
+
   private static List<String> SkipNames = null;
 
   private static QuestionHelper questionHelper;
 
+  private static boolean canImport(final WordHelper helper)
+  {
+    boolean isRider = false;
+    String firstCell = helper.getFirstCell();
+
+    if (firstCell != null)
+    {
+      // this block of text may have new-line or whitespace in it. Clean the text
+      // before we do the compare
+      firstCell = firstCell.trim();
+      firstCell = firstCell.replace(" ", "");
+      firstCell = firstCell.replace("\n", "");
+      firstCell = firstCell.replace("\r", "");
+
+      if (firstCell.toUpperCase().equals("DTGSTART"))
+      {
+        isRider = true;
+      }
+    }
+
+    return isRider;
+  }
+
   private static long dateFor(final Date start, final Date time)
   {
     return start.getTime() + time.getTime();
+  }
+
+  private static SensorWrapper findOurSensor(final String name,
+      final TrackWrapper parent, final boolean allowCreate)
+  {
+    final BaseLayer sensors = parent.getSensors();
+    final Enumeration<Editable> sIter = sensors.elements();
+    while (sIter.hasMoreElements())
+    {
+      final SensorWrapper thisS = (SensorWrapper) sIter.nextElement();
+      if (thisS.getName().equals(name))
+      {
+        return thisS;
+      }
+    }
+    if (allowCreate)
+    {
+      // aah. we didn't find it. make one
+      final SensorWrapper newS = new SensorWrapper(name);
+      parent.add(newS);
+      return newS;
+    }
+    else
+    {
+      return null;
+    }
   }
 
   private static Header headerFor(final WordHelper helper,
@@ -393,7 +598,6 @@ public class ImportRiderNarrativeDocument
    * 
    */
   private boolean _declaredNoHostFound = false;
-
   /**
    * where we write our data
    * 
@@ -405,6 +609,7 @@ public class ImportRiderNarrativeDocument
    * 
    */
   Map<String, String> nameMatches = new HashMap<String, String>();
+
   private final SimpleDateFormat DATE_FORMAT;
 
   private final SimpleDateFormat TIME_FORMAT;
@@ -429,15 +634,43 @@ public class ImportRiderNarrativeDocument
     }
   }
 
-  private void addEntry(final RiderEntry thisN, final Header header)
+  private void addCut(final RiderEntry thisN, final String platform)
   {
-    final NarrativeWrapper nw = getNarrativeLayer();
-    String hisTrack = trackFor(header.platform, header.platform);
+    String hisTrack = trackFor(platform, platform);
 
     // did we find a track? Don't worry if we didn't just use the raw text
     if (hisTrack == null)
     {
-      hisTrack = header.platform;
+      hisTrack = platform;
+    }
+
+    // can we find the parent?
+    final TrackWrapper parent = (TrackWrapper) _layers.findLayer(hisTrack);
+
+    if (parent != null)
+    {
+      // find our sensor
+      final SensorWrapper ourSensor =
+          findOurSensor(NARRATIVE_CUTS_LAYER, parent, true);
+
+      final HiResDate theDate = new HiResDate(thisN.date.getTime());
+      final SensorContactWrapper cut =
+          new SensorContactWrapper(parent.getName(), theDate, null, new Double(
+              thisN.bearing), null, DebriefColors.RED, "NARRATIVE", 0, hisTrack);
+
+      ourSensor.add(cut);
+    }
+  }
+
+  private void addEntry(final RiderEntry thisN, final String platform)
+  {
+    final NarrativeWrapper nw = getNarrativeLayer();
+    String hisTrack = trackFor(platform, platform);
+
+    // did we find a track? Don't worry if we didn't just use the raw text
+    if (hisTrack == null)
+    {
+      hisTrack = platform;
     }
 
     final String textBit = thisN.toString();
@@ -446,7 +679,7 @@ public class ImportRiderNarrativeDocument
     final long correctedDTG = thisN.date.getTime();
 
     final NarrativeEntry ne =
-        new NarrativeEntry(hisTrack, "Rider", new HiResDate(correctedDTG),
+        new NarrativeEntry(hisTrack, RIDER_SOURCE, new HiResDate(correctedDTG),
             textBit);
 
     // shade all rider's narratives black
@@ -470,9 +703,17 @@ public class ImportRiderNarrativeDocument
       final String beamStr = helper.getCell(2);
       final String text = helper.getCell(3);
 
+      // just check if we have enough data
+      if (dateStr == null || bearingStr == null || beamStr == null
+          || text == null)
+      {
+        // ok, go to the next row
+        continue;
+      }
+
       final Date date = timeFormat.parse(dateStr);
       Integer bearing;
-      if (bearingStr.toUpperCase().equals("NO B"))
+      if (bearingStr.isEmpty() || bearingStr.equalsIgnoreCase("NO B"))
       {
         bearing = null;
       }
@@ -482,7 +723,7 @@ public class ImportRiderNarrativeDocument
       }
 
       final Integer beam;
-      if (beamStr.toUpperCase().equals("NO BM"))
+      if (beamStr.isEmpty() || beamStr.equalsIgnoreCase("NO BM"))
       {
         beam = null;
       }
@@ -491,8 +732,7 @@ public class ImportRiderNarrativeDocument
         beam = Integer.parseInt(beamStr);
       }
 
-      final Date newDate =
-          new Date(dateFor(header.startDate, date));
+      final Date newDate = new Date(dateFor(header.startDate, date));
 
       final RiderEntry entry = new RiderEntry(newDate, bearing, beam, text);
       res.add(entry);
@@ -519,6 +759,42 @@ public class ImportRiderNarrativeDocument
       handleImport(final String fileName, final InputStream inputStream)
   {
     // ok, read it into a document
+    HWPFDocument doc = null;
+
+    try
+    {
+      doc = new HWPFDocument(inputStream);
+    }
+    catch (final IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    // ok, now have a see if it's a rider's narrative
+    final Range range = doc.getRange();
+    final TableIterator tIter = new TableIterator(range);
+
+    final boolean isRider =
+        tIter.hasNext() && canImport(new DocHelper(tIter.next()));
+
+    if (isRider)
+    {
+      final TableBreakdown data = this.importFromWord(doc);
+      this.processThese(data);
+    }
+    else
+    {
+      final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
+      final ArrayList<String> strings = iw.importFromWord(doc);
+      iw.processThese(strings);
+    }
+  }
+
+  public void
+      handleImportX(final String fileName, final InputStream inputStream)
+  {
+    // ok, read it into a document
     XWPFDocument doc = null;
 
     try
@@ -531,19 +807,11 @@ public class ImportRiderNarrativeDocument
       e.printStackTrace();
     }
 
-    boolean isRider = false;
-
     // ok, now have a see if it's a rider's narrative
     final List<XWPFTable> tables = doc.getTables();
-    if (tables.size() == 1)
-    {
-      // maybe
-      final String firstCell = tables.get(0).getRow(0).getCell(0).getText();
-      if (firstCell.toUpperCase().equals("DTG START"))
-      {
-        isRider = true;
-      }
-    }
+    final boolean isRider =
+        (tables != null && tables.size() > 0 && canImport(new DocXHelper(tables
+            .get(0))));
 
     if (isRider)
     {
@@ -588,15 +856,12 @@ public class ImportRiderNarrativeDocument
     return strings;
   }
 
-  public TableBreakdown
-      importFromWord(final String fName, final InputStream is)
+  public TableBreakdown importFromWord(final HWPFDocument doc)
   {
     TableBreakdown data = null;
 
     try
     {
-      final HWPFDocument doc = new HWPFDocument(is);
-
       final Range range = doc.getRange();
 
       final TableIterator tIter = new TableIterator(range);
@@ -609,10 +874,6 @@ public class ImportRiderNarrativeDocument
       final List<RiderEntry> entries = entriesFor(helper, header, TIME_FORMAT);
       data = new TableBreakdown(header, entries);
 
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
     }
     catch (final ParseException e)
     {
@@ -690,7 +951,13 @@ public class ImportRiderNarrativeDocument
     for (final RiderEntry thisN : data.entries)
     {
       // add a narrative entry
-      addEntry(thisN, data.header);
+      addEntry(thisN, data.header.platform);
+
+      // does it have a bearing?
+      if (thisN.bearing != null)
+      {
+        addCut(thisN, data.header.platform);
+      }
 
       // ok, take note that we've added something
       dataAdded = true;
@@ -843,5 +1110,4 @@ public class ImportRiderNarrativeDocument
 
     return match;
   }
-
 }

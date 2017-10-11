@@ -17,7 +17,6 @@ package Debrief.ReaderWriter.Word;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -747,8 +746,7 @@ public class ImportNarrativeDocument
       return lines;
     }
 
-    public void testAddFCSToTrack() throws FileNotFoundException,
-        InterruptedException
+    public void testAddFCSToTrack() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -772,7 +770,8 @@ public class ImportNarrativeDocument
 
       final ImportNarrativeDocument importer =
           new ImportNarrativeDocument(tLayers);
-      final ArrayList<String> strings = importer.importFromWord(testFile, is);
+      HWPFDocument doc = new HWPFDocument(is);
+      final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -812,8 +811,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public void testAddFCSToHiddenTrack() throws FileNotFoundException,
-        InterruptedException
+    public void testAddFCSToHiddenTrack() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -846,7 +844,8 @@ public class ImportNarrativeDocument
 
       final ImportNarrativeDocument importer =
           new ImportNarrativeDocument(tLayers);
-      final ArrayList<String> strings = importer.importFromWord(testFile, is);
+      HWPFDocument doc = new HWPFDocument(is);
+      final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -965,7 +964,7 @@ public class ImportNarrativeDocument
       assertEquals("got source", "AAAA AAAA AAA (AAAA)", match3);
     }
 
-    public void testImportEmptyLayers() throws FileNotFoundException
+    public void testImportEmptyLayers() throws IOException
     {
       final String testFile = dummy_doc_path;
       final File testI = new File(testFile);
@@ -977,7 +976,8 @@ public class ImportNarrativeDocument
 
       final ImportNarrativeDocument importer =
           new ImportNarrativeDocument(tLayers);
-      final ArrayList<String> strings = importer.importFromWord(testFile, is);
+      HWPFDocument doc = new HWPFDocument(is);
+      final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -1537,30 +1537,20 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWord(final String fName,
-      final InputStream is)
+  public ArrayList<String> importFromWord(final HWPFDocument doc)
   {
     final ArrayList<String> strings = new ArrayList<String>();
 
-    try
+    final Range r = doc.getRange();
+
+    // clear the stored data in the MS Word importer
+    NarrEntry.reset();
+
+    final int lenParagraph = r.numParagraphs();
+    for (int x = 0; x < lenParagraph; x++)
     {
-      final HWPFDocument doc = new HWPFDocument(is);
-
-      final Range r = doc.getRange();
-
-      // clear the stored data in the MS Word importer
-      NarrEntry.reset();
-
-      final int lenParagraph = r.numParagraphs();
-      for (int x = 0; x < lenParagraph; x++)
-      {
-        final Paragraph p = r.getParagraph(x);
-        strings.add(p.text());
-      }
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
+      final Paragraph p = r.getParagraph(x);
+      strings.add(p.text());
     }
 
     return strings;

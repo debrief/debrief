@@ -50,7 +50,7 @@ public class MsDocXLoader extends IPlotLoader.BaseLoader
                 // plain importer
                 ImportRiderNarrativeDocument iw =
                     new ImportRiderNarrativeDocument(theLayers);
-                iw.handleImport(fileName, inputStream);
+                iw.handleImportX(fileName, inputStream);
               }
 
               // and inform the plot editor

@@ -112,7 +112,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  * class that is able to export a polygon - note the Replay file format doesn't
  * include polygons, so we only export it.
  */
-class ImportPolygon extends AbstractPlainLineImporter
+public class ImportPolygon extends AbstractPlainLineImporter
 {
 
 	/**

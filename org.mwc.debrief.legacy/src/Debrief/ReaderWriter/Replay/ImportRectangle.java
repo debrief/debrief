@@ -90,7 +90,7 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 /**
  * class to parse a label from a line of text
  */
-final class ImportRectangle extends AbstractPlainLineImporter {
+public final class ImportRectangle extends AbstractPlainLineImporter {
 	/**
 	 * the type for this string
 	 */
