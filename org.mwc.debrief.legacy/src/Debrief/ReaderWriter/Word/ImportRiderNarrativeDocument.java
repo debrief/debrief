@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +50,11 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
@@ -59,6 +64,8 @@ import MWC.TacticalData.NarrativeEntry;
 
 public class ImportRiderNarrativeDocument
 {
+
+  private static final String NARRATIVE_CUTS_LAYER = "FromNarrative";
 
   private static class DocHelper implements WordHelper
   {
@@ -347,6 +354,11 @@ public class ImportRiderNarrativeDocument
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
+      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NELSON");
+      assertNotNull("found parent track", parent);
+
+      // fix the track name
+      parent.setName("NONSUCH");
 
       final String testFile = old_doc_format;
       final File testI = new File(testFile);
@@ -408,6 +420,13 @@ public class ImportRiderNarrativeDocument
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
       assertEquals("Got num lines", 10, narrLayer.size());
+
+      // check ownship received cuts
+      assertNotNull("got a sensor", parent.getSensors());
+      SensorWrapper sensor = findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
+
+      assertNotNull("got our sensor", sensor);
+      assertEquals("got cuts", 4, sensor.size());
     }
 
     public void testImportRiderNarrativeX() throws InterruptedException,
@@ -426,6 +445,13 @@ public class ImportRiderNarrativeDocument
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
+
+      assertEquals("read in track", 1, tLayers.size());
+      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NELSON");
+      assertNotNull("found parent track", parent);
+
+      // fix the track name
+      parent.setName("NONSUCH");
 
       final String testFile = valid_doc_path;
       final File testI = new File(testFile);
@@ -483,6 +509,13 @@ public class ImportRiderNarrativeDocument
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
       assertEquals("Got num lines", 10, narrLayer.size());
+
+      // check ownship received cuts
+      assertNotNull("got a sensor", parent.getSensors());
+      SensorWrapper sensor = findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
+
+      assertNotNull("got our sensor", sensor);
+      assertEquals("got cuts", 4, sensor.size());
     }
 
     @SuppressWarnings("deprecation")
@@ -608,15 +641,15 @@ public class ImportRiderNarrativeDocument
     }
   }
 
-  private void addEntry(final RiderEntry thisN, final Header header)
+  private void addEntry(final RiderEntry thisN, final String platform)
   {
     final NarrativeWrapper nw = getNarrativeLayer();
-    String hisTrack = trackFor(header.platform, header.platform);
+    String hisTrack = trackFor(platform, platform);
 
     // did we find a track? Don't worry if we didn't just use the raw text
     if (hisTrack == null)
     {
-      hisTrack = header.platform;
+      hisTrack = platform;
     }
 
     final String textBit = thisN.toString();
@@ -897,7 +930,13 @@ public class ImportRiderNarrativeDocument
     for (final RiderEntry thisN : data.entries)
     {
       // add a narrative entry
-      addEntry(thisN, data.header);
+      addEntry(thisN, data.header.platform);
+
+      // does it have a bearing?
+      if (thisN.bearing != null)
+      {
+        addCut(thisN, data.header.platform);
+      }
 
       // ok, take note that we've added something
       dataAdded = true;
@@ -906,6 +945,61 @@ public class ImportRiderNarrativeDocument
     if (dataAdded)
     {
       _layers.fireModified(getNarrativeLayer());
+    }
+  }
+
+  private void addCut(RiderEntry thisN, String platform)
+  {
+    String hisTrack = trackFor(platform, platform);
+
+    // did we find a track? Don't worry if we didn't just use the raw text
+    if (hisTrack == null)
+    {
+      hisTrack = platform;
+    }
+
+    // can we find the parent?
+    TrackWrapper parent = (TrackWrapper) _layers.findLayer(hisTrack);
+
+    if (parent != null)
+    {
+      // find our sensor
+      SensorWrapper ourSensor =
+          findOurSensor(NARRATIVE_CUTS_LAYER, parent, true);
+
+      HiResDate theDate = new HiResDate(thisN.date.getTime());
+      SensorContactWrapper cut =
+          new SensorContactWrapper(parent.getName(), theDate, null, new Double(
+              thisN.bearing), null, DebriefColors.RED, "NARRATIVE",
+              0, hisTrack);
+
+      ourSensor.add(cut);
+    }
+  }
+
+  private static SensorWrapper findOurSensor(String name, TrackWrapper parent,
+      boolean allowCreate)
+  {
+    BaseLayer sensors = parent.getSensors();
+    Enumeration<Editable> sIter = sensors.elements();
+    while (sIter.hasMoreElements())
+    {
+      SensorWrapper thisS = (SensorWrapper) sIter.nextElement();
+      if (thisS.getName().equals(name))
+      {
+        return thisS;
+      }
+    }
+    if (allowCreate)
+    {
+      // aah. we didn't find it. make one
+      SensorWrapper newS = new SensorWrapper(name);
+      parent.add(newS);
+      return newS;
+    }
+    else
+    {
+      return null;
     }
   }
 
