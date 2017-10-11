@@ -65,10 +65,6 @@ import MWC.TacticalData.NarrativeEntry;
 public class ImportRiderNarrativeDocument
 {
 
-  public static final String RIDER_SOURCE = "Rider";
-
-  private static final String NARRATIVE_CUTS_LAYER = "FromNarrative";
-
   private static class DocHelper implements WordHelper
   {
     final private Table _table;
@@ -209,7 +205,6 @@ public class ImportRiderNarrativeDocument
       this.bearing = bearing;
       this.beam = beam;
       this.text = ImportNarrativeDocument.removeBadChars(text);
-      ;
     }
 
     @Override
@@ -356,7 +351,7 @@ public class ImportRiderNarrativeDocument
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
-      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
+      final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
       assertNotNull("found parent track", parent);
 
       // fix the track name
@@ -400,7 +395,7 @@ public class ImportRiderNarrativeDocument
       assertEquals("read in track", 1, tLayers.size());
 
       assertEquals("read in track", 1, tLayers.size());
-      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
+      final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
       assertNotNull("found parent track", parent);
 
       // fix the track name
@@ -422,7 +417,7 @@ public class ImportRiderNarrativeDocument
       testThisData(tLayers, parent, importer, data);
     }
 
-    private void testThisData(final Layers tLayers, TrackWrapper parent,
+    private void testThisData(final Layers tLayers, final TrackWrapper parent,
         final ImportRiderNarrativeDocument importer, final TableBreakdown data)
     {
       final SimpleDateFormat dateF =
@@ -459,7 +454,7 @@ public class ImportRiderNarrativeDocument
 
       // the two different importers handle \r newlines differently.
       // so we allow for both permutations here
-      boolean matchesText =
+      final boolean matchesText =
           entry8.toString().equals("[/] Lorem ipsum 8And more \nAnd more")
               || entry8.toString().equals(
                   "[/] Lorem ipsum 8\rAnd more \nAnd more");
@@ -479,7 +474,8 @@ public class ImportRiderNarrativeDocument
 
       // check ownship received cuts
       assertNotNull("got a sensor", parent.getSensors());
-      SensorWrapper sensor = findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
+      final SensorWrapper sensor =
+          findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
 
       assertNotNull("got our sensor", sensor);
       assertEquals("got cuts", 4, sensor.size());
@@ -507,6 +503,10 @@ public class ImportRiderNarrativeDocument
 
     public boolean hasMoreEntries();
   }
+
+  public static final String RIDER_SOURCE = "Rider";
+
+  private static final String NARRATIVE_CUTS_LAYER = "FromNarrative";
 
   private static List<String> SkipNames = null;
 
@@ -538,6 +538,32 @@ public class ImportRiderNarrativeDocument
   private static long dateFor(final Date start, final Date time)
   {
     return start.getTime() + time.getTime();
+  }
+
+  private static SensorWrapper findOurSensor(final String name,
+      final TrackWrapper parent, final boolean allowCreate)
+  {
+    final BaseLayer sensors = parent.getSensors();
+    final Enumeration<Editable> sIter = sensors.elements();
+    while (sIter.hasMoreElements())
+    {
+      final SensorWrapper thisS = (SensorWrapper) sIter.nextElement();
+      if (thisS.getName().equals(name))
+      {
+        return thisS;
+      }
+    }
+    if (allowCreate)
+    {
+      // aah. we didn't find it. make one
+      final SensorWrapper newS = new SensorWrapper(name);
+      parent.add(newS);
+      return newS;
+    }
+    else
+    {
+      return null;
+    }
   }
 
   private static Header headerFor(final WordHelper helper,
@@ -572,12 +598,12 @@ public class ImportRiderNarrativeDocument
    * 
    */
   private boolean _declaredNoHostFound = false;
-
   /**
    * where we write our data
    * 
    */
   private final Layers _layers;
+
   /**
    * keep track of track names that we have matched
    * 
@@ -605,6 +631,34 @@ public class ImportRiderNarrativeDocument
       SkipNames.add("USS");
       SkipNames.add("RNAS");
       SkipNames.add("HNLMS");
+    }
+  }
+
+  private void addCut(final RiderEntry thisN, final String platform)
+  {
+    String hisTrack = trackFor(platform, platform);
+
+    // did we find a track? Don't worry if we didn't just use the raw text
+    if (hisTrack == null)
+    {
+      hisTrack = platform;
+    }
+
+    // can we find the parent?
+    final TrackWrapper parent = (TrackWrapper) _layers.findLayer(hisTrack);
+
+    if (parent != null)
+    {
+      // find our sensor
+      final SensorWrapper ourSensor =
+          findOurSensor(NARRATIVE_CUTS_LAYER, parent, true);
+
+      final HiResDate theDate = new HiResDate(thisN.date.getTime());
+      final SensorContactWrapper cut =
+          new SensorContactWrapper(parent.getName(), theDate, null, new Double(
+              thisN.bearing), null, DebriefColors.RED, "NARRATIVE", 0, hisTrack);
+
+      ourSensor.add(cut);
     }
   }
 
@@ -659,7 +713,7 @@ public class ImportRiderNarrativeDocument
 
       final Date date = timeFormat.parse(dateStr);
       Integer bearing;
-      if (bearingStr.isEmpty() || bearingStr.toUpperCase().equals("NO B"))
+      if (bearingStr.isEmpty() || bearingStr.equalsIgnoreCase("NO B"))
       {
         bearing = null;
       }
@@ -669,7 +723,7 @@ public class ImportRiderNarrativeDocument
       }
 
       final Integer beam;
-      if (beamStr.isEmpty() || beamStr.toUpperCase().equals("NO BM"))
+      if (beamStr.isEmpty() || beamStr.equalsIgnoreCase("NO BM"))
       {
         beam = null;
       }
@@ -912,60 +966,6 @@ public class ImportRiderNarrativeDocument
     if (dataAdded)
     {
       _layers.fireModified(getNarrativeLayer());
-    }
-  }
-
-  private void addCut(RiderEntry thisN, String platform)
-  {
-    String hisTrack = trackFor(platform, platform);
-
-    // did we find a track? Don't worry if we didn't just use the raw text
-    if (hisTrack == null)
-    {
-      hisTrack = platform;
-    }
-
-    // can we find the parent?
-    TrackWrapper parent = (TrackWrapper) _layers.findLayer(hisTrack);
-
-    if (parent != null)
-    {
-      // find our sensor
-      SensorWrapper ourSensor =
-          findOurSensor(NARRATIVE_CUTS_LAYER, parent, true);
-
-      HiResDate theDate = new HiResDate(thisN.date.getTime());
-      SensorContactWrapper cut =
-          new SensorContactWrapper(parent.getName(), theDate, null, new Double(
-              thisN.bearing), null, DebriefColors.RED, "NARRATIVE", 0, hisTrack);
-
-      ourSensor.add(cut);
-    }
-  }
-
-  private static SensorWrapper findOurSensor(String name, TrackWrapper parent,
-      boolean allowCreate)
-  {
-    BaseLayer sensors = parent.getSensors();
-    Enumeration<Editable> sIter = sensors.elements();
-    while (sIter.hasMoreElements())
-    {
-      SensorWrapper thisS = (SensorWrapper) sIter.nextElement();
-      if (thisS.getName().equals(name))
-      {
-        return thisS;
-      }
-    }
-    if (allowCreate)
-    {
-      // aah. we didn't find it. make one
-      SensorWrapper newS = new SensorWrapper(name);
-      parent.add(newS);
-      return newS;
-    }
-    else
-    {
-      return null;
     }
   }
 
