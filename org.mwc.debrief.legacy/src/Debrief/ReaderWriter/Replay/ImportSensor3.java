@@ -101,7 +101,7 @@ import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 /**
  * class to parse a label from a line of text
  */
-final class ImportSensor3 extends AbstractPlainLineImporter {
+public final class ImportSensor3 extends AbstractPlainLineImporter {
   /**
    * the type for this string
    */
