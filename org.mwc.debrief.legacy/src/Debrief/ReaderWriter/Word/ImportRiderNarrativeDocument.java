@@ -64,7 +64,7 @@ public class ImportRiderNarrativeDocument
   {
     final private Table _table;
 
-    int rowCount = 2;
+    private int rowCount = 2;
 
     private DocHelper(final Table table)
     {
@@ -88,6 +88,14 @@ public class ImportRiderNarrativeDocument
     }
 
     @Override
+    public String getFirstCell()
+    {
+      final TableRow headerRow = _table.getRow(0);
+      final TableCell cell = headerRow.getCell(0);
+      return cell.text().trim();
+    }
+
+    @Override
     public String getHeaderCell(final int num)
     {
       final TableRow headerRow = _table.getRow(1);
@@ -102,21 +110,13 @@ public class ImportRiderNarrativeDocument
       return ++rowCount < rows;
     }
 
-    @Override
-    public String getFirstCell()
-    {
-      final TableRow headerRow = _table.getRow(0);
-      final TableCell cell = headerRow.getCell(0);
-      return cell.text().trim();
-    }
-
   }
 
   private static class DocXHelper implements WordHelper
   {
     final private XWPFTable _table;
 
-    int rowCount = 2;
+    private int rowCount = 2;
 
     private DocXHelper(final XWPFTable table)
     {
@@ -127,7 +127,7 @@ public class ImportRiderNarrativeDocument
     public String getCell(final int i)
     {
       final XWPFTableRow row = _table.getRow(rowCount);
-      List<XWPFTableCell> cells = row.getTableCells();
+      final List<XWPFTableCell> cells = row.getTableCells();
       final String res;
       if (cells.size() <= i)
       {
@@ -141,17 +141,18 @@ public class ImportRiderNarrativeDocument
     }
 
     @Override
-    public String getHeaderCell(final int num)
-    {
-      final XWPFTableRow headerRow = _table.getRow(1);
-      final XWPFTableCell cell = headerRow.getCell(num);
-      return cell.getText().trim();
-    }
-
     public String getFirstCell()
     {
       final XWPFTableRow headerRow = _table.getRow(0);
       final XWPFTableCell cell = headerRow.getCell(0);
+      return cell.getText().trim();
+    }
+
+    @Override
+    public String getHeaderCell(final int num)
+    {
+      final XWPFTableRow headerRow = _table.getRow(1);
+      final XWPFTableCell cell = headerRow.getCell(num);
       return cell.getText().trim();
     }
 
@@ -166,8 +167,8 @@ public class ImportRiderNarrativeDocument
 
   private static class Header
   {
-    final Date startDate;
-    final String platform;
+    private final Date startDate;
+    private final String platform;
 
     public Header(final Date date, final String platform)
     {
@@ -187,10 +188,10 @@ public class ImportRiderNarrativeDocument
 
   private static class RiderEntry
   {
-    final Date date;
-    final Integer bearing;
-    final Integer beam;
-    final String text;
+    private final Date date;
+    private final Integer bearing;
+    private final Integer beam;
+    private final String text;
 
     public RiderEntry(final Date date, final Integer bearing,
         final Integer beam, final String text)
@@ -214,8 +215,8 @@ public class ImportRiderNarrativeDocument
 
   public static class TableBreakdown
   {
-    final Header header;
-    final List<RiderEntry> entries;
+    private final Header header;
+    private final List<RiderEntry> entries;
 
     public TableBreakdown(final Header header, final List<RiderEntry> entries)
     {
@@ -280,6 +281,30 @@ public class ImportRiderNarrativeDocument
       });
     }
 
+    public void testBadDate() throws InterruptedException, IOException
+    {
+      final String testFile = bad_date_1;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      final XWPFDocument doc = new XWPFDocument(is);
+      final List<XWPFTable> tables = doc.getTables();
+      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
+      doc.close();
+    }
+
+    public void testCanImport() throws InterruptedException, IOException
+    {
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      final XWPFDocument doc = new XWPFDocument(is);
+      final List<XWPFTable> tables = doc.getTables();
+      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
+      doc.close();
+    }
+
     @SuppressWarnings("deprecation")
     public void testCombineTime() throws ParseException
     {
@@ -304,30 +329,6 @@ public class ImportRiderNarrativeDocument
       df.setTimeZone(TimeZone.getTimeZone("GMT"));
       assertEquals("correct date", "9 Jul 2017 00:00:00 GMT", df.parse(string2)
           .toGMTString());
-    }
-
-    public void testCanImport() throws InterruptedException, IOException
-    {
-      final String testFile = valid_doc_path;
-      final File testI = new File(testFile);
-      assertTrue(testI.exists());
-      final InputStream is = new FileInputStream(testI);
-      final XWPFDocument doc = new XWPFDocument(is);
-      List<XWPFTable> tables = doc.getTables();
-      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
-      doc.close();
-    }
-
-    public void testBadDate() throws InterruptedException, IOException
-    {
-      final String testFile = bad_date_1;
-      final File testI = new File(testFile);
-      assertTrue(testI.exists());
-      final InputStream is = new FileInputStream(testI);
-      final XWPFDocument doc = new XWPFDocument(is);
-      List<XWPFTable> tables = doc.getTables();
-      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
-      doc.close();
     }
 
     public void testImportRiderNarrative() throws InterruptedException,
@@ -358,8 +359,8 @@ public class ImportRiderNarrativeDocument
           new ImportRiderNarrativeDocument(tLayers);
       final HWPFDocument doc = new HWPFDocument(is);
 
-      Range range = doc.getRange();
-      Table table = new TableIterator(range).next();
+      final Range range = doc.getRange();
+      final Table table = new TableIterator(range).next();
       assertTrue(canImport(new DocHelper(table)));
 
       final TableBreakdown data = importer.importFromWord(doc);
@@ -500,16 +501,39 @@ public class ImportRiderNarrativeDocument
   {
     public String getCell(int i);
 
+    public String getFirstCell();
+
     public String getHeaderCell(int num);
 
     public boolean hasMoreEntries();
-
-    public String getFirstCell();
   }
 
   private static List<String> SkipNames = null;
 
   private static QuestionHelper questionHelper;
+
+  private static boolean canImport(final WordHelper helper)
+  {
+    boolean isRider = false;
+    String firstCell = helper.getFirstCell();
+
+    if (firstCell != null)
+    {
+      // this block of text may have new-line or whitespace in it. Clean the text
+      // before we do the compare
+      firstCell = firstCell.trim();
+      firstCell = firstCell.replace(" ", "");
+      firstCell = firstCell.replace("\n", "");
+      firstCell = firstCell.replace("\r", "");
+
+      if (firstCell.toUpperCase().equals("DTGSTART"))
+      {
+        isRider = true;
+      }
+    }
+
+    return isRider;
+  }
 
   private static long dateFor(final Date start, final Date time)
   {
@@ -554,12 +578,12 @@ public class ImportRiderNarrativeDocument
    * 
    */
   private final Layers _layers;
-
   /**
    * keep track of track names that we have matched
    * 
    */
   Map<String, String> nameMatches = new HashMap<String, String>();
+
   private final SimpleDateFormat DATE_FORMAT;
 
   private final SimpleDateFormat TIME_FORMAT;
@@ -678,41 +702,6 @@ public class ImportRiderNarrativeDocument
   }
 
   public void
-      handleImportX(final String fileName, final InputStream inputStream)
-  {
-    // ok, read it into a document
-    XWPFDocument doc = null;
-
-    try
-    {
-      doc = new XWPFDocument(inputStream);
-    }
-    catch (final IOException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-    // ok, now have a see if it's a rider's narrative
-    List<XWPFTable> tables = doc.getTables();
-    boolean isRider =
-        (tables != null && tables.size() > 0 && canImport(new DocXHelper(tables
-            .get(0))));
-
-    if (isRider)
-    {
-      final TableBreakdown data = this.importFromWordX(doc);
-      this.processThese(data);
-    }
-    else
-    {
-      final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
-      final ArrayList<String> strings = iw.importFromWordX(doc);
-      iw.processThese(strings);
-    }
-  }
-
-  public void
       handleImport(final String fileName, final InputStream inputStream)
   {
     // ok, read it into a document
@@ -729,10 +718,11 @@ public class ImportRiderNarrativeDocument
     }
 
     // ok, now have a see if it's a rider's narrative
-    Range range = doc.getRange();
-    TableIterator tIter = new TableIterator(range);
+    final Range range = doc.getRange();
+    final TableIterator tIter = new TableIterator(range);
 
-    boolean isRider = tIter.hasNext() && canImport(new DocHelper(tIter.next()));
+    final boolean isRider =
+        tIter.hasNext() && canImport(new DocHelper(tIter.next()));
 
     if (isRider)
     {
@@ -747,27 +737,39 @@ public class ImportRiderNarrativeDocument
     }
   }
 
-  private static boolean canImport(WordHelper helper)
+  public void
+      handleImportX(final String fileName, final InputStream inputStream)
   {
-    boolean isRider = false;
-    String firstCell = helper.getFirstCell();
+    // ok, read it into a document
+    XWPFDocument doc = null;
 
-    if (firstCell != null)
+    try
     {
-      // this block of text may have new-line or whitespace in it. Clean the text
-      // before we do the compare
-      firstCell = firstCell.trim();
-      firstCell = firstCell.replace(" ", "");
-      firstCell = firstCell.replace("\n", "");
-      firstCell = firstCell.replace("\r", "");
-
-      if (firstCell.toUpperCase().equals("DTGSTART"))
-      {
-        isRider = true;
-      }
+      doc = new XWPFDocument(inputStream);
+    }
+    catch (final IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    return isRider;
+    // ok, now have a see if it's a rider's narrative
+    final List<XWPFTable> tables = doc.getTables();
+    final boolean isRider =
+        (tables != null && tables.size() > 0 && canImport(new DocXHelper(tables
+            .get(0))));
+
+    if (isRider)
+    {
+      final TableBreakdown data = this.importFromWordX(doc);
+      this.processThese(data);
+    }
+    else
+    {
+      final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
+      final ArrayList<String> strings = iw.importFromWordX(doc);
+      iw.processThese(strings);
+    }
   }
 
   public ArrayList<String> importFromPdf(final String fileName,
