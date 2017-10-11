@@ -75,15 +75,24 @@ public class ImportRiderNarrativeDocument
     public String getCell(final int i)
     {
       final TableRow row = _table.getRow(rowCount);
-      return row.getCell(i).text();
+      final String res;
+      if (row.numCells() <= i)
+      {
+        res = null;
+      }
+      else
+      {
+        res = row.getCell(i).text().trim();
+      }
+      return res;
     }
 
     @Override
     public String getHeaderCell(final int num)
     {
       final TableRow headerRow = _table.getRow(1);
-      final TableCell cell = headerRow.getCell(0);
-      return cell.text();
+      final TableCell cell = headerRow.getCell(num);
+      return cell.text().trim();
     }
 
     @Override
@@ -91,6 +100,14 @@ public class ImportRiderNarrativeDocument
     {
       final int rows = _table.numRows();
       return ++rowCount < rows;
+    }
+
+    @Override
+    public String getFirstCell()
+    {
+      final TableRow headerRow = _table.getRow(0);
+      final TableCell cell = headerRow.getCell(0);
+      return cell.text().trim();
     }
 
   }
@@ -110,7 +127,17 @@ public class ImportRiderNarrativeDocument
     public String getCell(final int i)
     {
       final XWPFTableRow row = _table.getRow(rowCount);
-      return row.getCell(i).getText();
+      List<XWPFTableCell> cells = row.getTableCells();
+      final String res;
+      if (cells.size() <= i)
+      {
+        res = null;
+      }
+      else
+      {
+        res = row.getCell(i).getText().trim();
+      }
+      return res;
     }
 
     @Override
@@ -118,7 +145,14 @@ public class ImportRiderNarrativeDocument
     {
       final XWPFTableRow headerRow = _table.getRow(1);
       final XWPFTableCell cell = headerRow.getCell(num);
-      return cell.getText();
+      return cell.getText().trim();
+    }
+
+    public String getFirstCell()
+    {
+      final XWPFTableRow headerRow = _table.getRow(0);
+      final XWPFTableCell cell = headerRow.getCell(0);
+      return cell.getText().trim();
     }
 
     @Override
@@ -164,7 +198,8 @@ public class ImportRiderNarrativeDocument
       this.date = date;
       this.bearing = bearing;
       this.beam = beam;
-      this.text = ImportNarrativeDocument.removeBadChars(text);;
+      this.text = ImportNarrativeDocument.removeBadChars(text);
+      ;
     }
 
     @Override
@@ -193,6 +228,14 @@ public class ImportRiderNarrativeDocument
   {
     private final static String valid_doc_path =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/RiderNarrative.docx";
+
+    private final static String test_doc_root =
+        "../org.mwc.debrief.legacy/src/Debrief/ReaderWriter/Word/test_docs";
+
+    private final static String bad_date_1 = test_doc_root + "/"
+        + "BadDate1.docx";
+    private final static String old_doc_format = test_doc_root + "/"
+        + "RiderNarrative.doc";
 
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
@@ -263,7 +306,110 @@ public class ImportRiderNarrativeDocument
           .toGMTString());
     }
 
+    public void testCanImport() throws InterruptedException, IOException
+    {
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      final XWPFDocument doc = new XWPFDocument(is);
+      List<XWPFTable> tables = doc.getTables();
+      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
+      doc.close();
+    }
+
+    public void testBadDate() throws InterruptedException, IOException
+    {
+      final String testFile = bad_date_1;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      final XWPFDocument doc = new XWPFDocument(is);
+      List<XWPFTable> tables = doc.getTables();
+      assertTrue("can import", canImport(new DocXHelper(tables.get(0))));
+      doc.close();
+    }
+
     public void testImportRiderNarrative() throws InterruptedException,
+        IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+
+      final String testFile = old_doc_format;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+      assertEquals("layers empty", 1, tLayers.size());
+
+      final ImportRiderNarrativeDocument importer =
+          new ImportRiderNarrativeDocument(tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
+
+      Range range = doc.getRange();
+      Table table = new TableIterator(range).next();
+      assertTrue(canImport(new DocHelper(table)));
+
+      final TableBreakdown data = importer.importFromWord(doc);
+
+      final SimpleDateFormat dateF =
+          new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+      dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+      assertNotNull(data);
+      assertNotNull(data.header);
+      assertNotNull(data.header.startDate);
+      assertNotNull(data.entries);
+      assertEquals(10, data.entries.size());
+      assertEquals("HMS Nonsuch", data.header.platform);
+      assertEquals("2017/07/09 12:00:00", dateF.format(data.header.startDate));
+
+      final RiderEntry entry4 = data.entries.get(4);
+      assertEquals("2017/07/09 12:04:16", dateF.format(entry4.date));
+      assertEquals(null, entry4.bearing);
+      assertEquals("Lorem ipsum 5", entry4.text);
+      assertEquals(21, entry4.beam.intValue());
+      assertEquals("[/21] Lorem ipsum 5", entry4.toString());
+
+      final RiderEntry entry5 = data.entries.get(5);
+      assertEquals("2017/07/09 12:05:17", dateF.format(entry5.date));
+      assertEquals(22, entry5.bearing.intValue());
+      assertEquals("Lorem ipsum 6", entry5.text);
+      assertEquals(null, entry5.beam);
+      assertEquals("[22/] Lorem ipsum 6", entry5.toString());
+
+      final RiderEntry entry8 = data.entries.get(7);
+      assertEquals("2017/07/09 12:07:19", dateF.format(entry8.date));
+      assertEquals(null, entry8.bearing);
+      assertTrue("Contains newline", entry8.text.contains("\n"));
+      assertEquals(null, entry8.beam);
+      assertEquals("[/] Lorem ipsum 8\rAnd more \nAnd more", entry8.toString());
+
+      // ok, now store them
+      importer.processThese(data);
+
+      // hmmm, how many tracks
+      assertEquals("got new tracks", 2, tLayers.size());
+
+      final NarrativeWrapper narrLayer =
+          (NarrativeWrapper) tLayers.elementAt(1);
+      // correct final count
+      assertEquals("Got num lines", 10, narrLayer.size());
+    }
+
+    public void testImportRiderNarrativeX() throws InterruptedException,
         IOException
     {
       final Layers tLayers = new Layers();
@@ -301,7 +447,7 @@ public class ImportRiderNarrativeDocument
       assertNotNull(data.header);
       assertNotNull(data.header.startDate);
       assertNotNull(data.entries);
-      assertEquals(7, data.entries.size());
+      assertEquals(10, data.entries.size());
       assertEquals("HMS Nonsuch", data.header.platform);
       assertEquals("2017/07/09 12:00:00", dateF.format(data.header.startDate));
 
@@ -319,6 +465,13 @@ public class ImportRiderNarrativeDocument
       assertEquals(null, entry5.beam);
       assertEquals("[22/] Lorem ipsum 6", entry5.toString());
 
+      final RiderEntry entry8 = data.entries.get(7);
+      assertEquals("2017/07/09 12:07:19", dateF.format(entry8.date));
+      assertEquals(null, entry8.bearing);
+      assertTrue("Contains newline", entry8.text.contains("\n"));
+      assertEquals(null, entry8.beam);
+      assertEquals("[/] Lorem ipsum 8And more \nAnd more", entry8.toString());
+
       // ok, now store them
       importer.processThese(data);
 
@@ -328,7 +481,7 @@ public class ImportRiderNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 7, narrLayer.size());
+      assertEquals("Got num lines", 10, narrLayer.size());
     }
 
     @SuppressWarnings("deprecation")
@@ -350,6 +503,8 @@ public class ImportRiderNarrativeDocument
     public String getHeaderCell(int num);
 
     public boolean hasMoreEntries();
+
+    public String getFirstCell();
   }
 
   private static List<String> SkipNames = null;
@@ -470,9 +625,17 @@ public class ImportRiderNarrativeDocument
       final String beamStr = helper.getCell(2);
       final String text = helper.getCell(3);
 
+      // just check if we have enough data
+      if (dateStr == null || bearingStr == null || beamStr == null
+          || text == null)
+      {
+        // ok, go to the next row
+        continue;
+      }
+
       final Date date = timeFormat.parse(dateStr);
       Integer bearing;
-      if (bearingStr.toUpperCase().equals("NO B"))
+      if (bearingStr.isEmpty() || bearingStr.toUpperCase().equals("NO B"))
       {
         bearing = null;
       }
@@ -482,7 +645,7 @@ public class ImportRiderNarrativeDocument
       }
 
       final Integer beam;
-      if (beamStr.toUpperCase().equals("NO BM"))
+      if (beamStr.isEmpty() || beamStr.toUpperCase().equals("NO BM"))
       {
         beam = null;
       }
@@ -491,8 +654,7 @@ public class ImportRiderNarrativeDocument
         beam = Integer.parseInt(beamStr);
       }
 
-      final Date newDate =
-          new Date(dateFor(header.startDate, date));
+      final Date newDate = new Date(dateFor(header.startDate, date));
 
       final RiderEntry entry = new RiderEntry(newDate, bearing, beam, text);
       res.add(entry);
@@ -516,7 +678,7 @@ public class ImportRiderNarrativeDocument
   }
 
   public void
-      handleImport(final String fileName, final InputStream inputStream)
+      handleImportX(final String fileName, final InputStream inputStream)
   {
     // ok, read it into a document
     XWPFDocument doc = null;
@@ -531,19 +693,11 @@ public class ImportRiderNarrativeDocument
       e.printStackTrace();
     }
 
-    boolean isRider = false;
-
     // ok, now have a see if it's a rider's narrative
-    final List<XWPFTable> tables = doc.getTables();
-    if (tables.size() == 1)
-    {
-      // maybe
-      final String firstCell = tables.get(0).getRow(0).getCell(0).getText();
-      if (firstCell.toUpperCase().equals("DTG START"))
-      {
-        isRider = true;
-      }
-    }
+    List<XWPFTable> tables = doc.getTables();
+    boolean isRider =
+        (tables != null && tables.size() > 0 && canImport(new DocXHelper(tables
+            .get(0))));
 
     if (isRider)
     {
@@ -556,6 +710,64 @@ public class ImportRiderNarrativeDocument
       final ArrayList<String> strings = iw.importFromWordX(doc);
       iw.processThese(strings);
     }
+  }
+
+  public void
+      handleImport(final String fileName, final InputStream inputStream)
+  {
+    // ok, read it into a document
+    HWPFDocument doc = null;
+
+    try
+    {
+      doc = new HWPFDocument(inputStream);
+    }
+    catch (final IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    // ok, now have a see if it's a rider's narrative
+    Range range = doc.getRange();
+    TableIterator tIter = new TableIterator(range);
+
+    boolean isRider = tIter.hasNext() && canImport(new DocHelper(tIter.next()));
+
+    if (isRider)
+    {
+      final TableBreakdown data = this.importFromWord(doc);
+      this.processThese(data);
+    }
+    else
+    {
+      final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
+      final ArrayList<String> strings = iw.importFromWord(doc);
+      iw.processThese(strings);
+    }
+  }
+
+  private static boolean canImport(WordHelper helper)
+  {
+    boolean isRider = false;
+    String firstCell = helper.getFirstCell();
+
+    if (firstCell != null)
+    {
+      // this block of text may have new-line or whitespace in it. Clean the text
+      // before we do the compare
+      firstCell = firstCell.trim();
+      firstCell = firstCell.replace(" ", "");
+      firstCell = firstCell.replace("\n", "");
+      firstCell = firstCell.replace("\r", "");
+
+      if (firstCell.toUpperCase().equals("DTGSTART"))
+      {
+        isRider = true;
+      }
+    }
+
+    return isRider;
   }
 
   public ArrayList<String> importFromPdf(final String fileName,
@@ -588,15 +800,12 @@ public class ImportRiderNarrativeDocument
     return strings;
   }
 
-  public TableBreakdown
-      importFromWord(final String fName, final InputStream is)
+  public TableBreakdown importFromWord(final HWPFDocument doc)
   {
     TableBreakdown data = null;
 
     try
     {
-      final HWPFDocument doc = new HWPFDocument(is);
-
       final Range range = doc.getRange();
 
       final TableIterator tIter = new TableIterator(range);
@@ -609,10 +818,6 @@ public class ImportRiderNarrativeDocument
       final List<RiderEntry> entries = entriesFor(helper, header, TIME_FORMAT);
       data = new TableBreakdown(header, entries);
 
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
     }
     catch (final ParseException e)
     {
@@ -843,5 +1048,4 @@ public class ImportRiderNarrativeDocument
 
     return match;
   }
-
 }
