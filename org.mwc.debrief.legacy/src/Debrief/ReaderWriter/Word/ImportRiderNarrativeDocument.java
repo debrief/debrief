@@ -214,8 +214,8 @@ public class ImportRiderNarrativeDocument
     public String toString()
     {
       // first the bearing bits
-      final String brgStr = bearing == null ? "" : "" + bearing;
-      final String beamStr = beam == null ? "" : "" + beam;
+      final String brgStr = bearing == null ? "" : "Brg:" + bearing;
+      final String beamStr = beam == null ? "" : "Beam:" + beam;
       return "[" + brgStr + "/" + beamStr + "] " + text;
     }
   }
@@ -246,7 +246,7 @@ public class ImportRiderNarrativeDocument
         + "RiderNarrative.doc";
 
     private final static String ownship_track =
-        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/nonsuch.rep";
 
     public static int countLines(final String str)
     {
@@ -354,7 +354,7 @@ public class ImportRiderNarrativeDocument
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
-      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NELSON");
+      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
       assertNotNull("found parent track", parent);
 
       // fix the track name
@@ -376,57 +376,8 @@ public class ImportRiderNarrativeDocument
       assertTrue(canImport(new DocHelper(table)));
 
       final TableBreakdown data = importer.importFromWord(doc);
+      testThisData(tLayers, parent, importer, data);
 
-      final SimpleDateFormat dateF =
-          new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-      dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-      assertNotNull(data);
-      assertNotNull(data.header);
-      assertNotNull(data.header.startDate);
-      assertNotNull(data.entries);
-      assertEquals(10, data.entries.size());
-      assertEquals("HMS Nonsuch", data.header.platform);
-      assertEquals("2017/07/09 12:00:00", dateF.format(data.header.startDate));
-
-      final RiderEntry entry4 = data.entries.get(4);
-      assertEquals("2017/07/09 12:04:16", dateF.format(entry4.date));
-      assertEquals(null, entry4.bearing);
-      assertEquals("Lorem ipsum 5", entry4.text);
-      assertEquals(21, entry4.beam.intValue());
-      assertEquals("[/21] Lorem ipsum 5", entry4.toString());
-
-      final RiderEntry entry5 = data.entries.get(5);
-      assertEquals("2017/07/09 12:05:17", dateF.format(entry5.date));
-      assertEquals(22, entry5.bearing.intValue());
-      assertEquals("Lorem ipsum 6", entry5.text);
-      assertEquals(null, entry5.beam);
-      assertEquals("[22/] Lorem ipsum 6", entry5.toString());
-
-      final RiderEntry entry8 = data.entries.get(7);
-      assertEquals("2017/07/09 12:07:19", dateF.format(entry8.date));
-      assertEquals(null, entry8.bearing);
-      assertTrue("Contains newline", entry8.text.contains("\n"));
-      assertEquals(null, entry8.beam);
-      assertEquals("[/] Lorem ipsum 8\rAnd more \nAnd more", entry8.toString());
-
-      // ok, now store them
-      importer.processThese(data);
-
-      // hmmm, how many tracks
-      assertEquals("got new tracks", 2, tLayers.size());
-
-      final NarrativeWrapper narrLayer =
-          (NarrativeWrapper) tLayers.elementAt(1);
-      // correct final count
-      assertEquals("Got num lines", 10, narrLayer.size());
-
-      // check ownship received cuts
-      assertNotNull("got a sensor", parent.getSensors());
-      SensorWrapper sensor = findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
-
-      assertNotNull("got our sensor", sensor);
-      assertEquals("got cuts", 4, sensor.size());
     }
 
     public void testImportRiderNarrativeX() throws InterruptedException,
@@ -447,7 +398,7 @@ public class ImportRiderNarrativeDocument
       assertEquals("read in track", 1, tLayers.size());
 
       assertEquals("read in track", 1, tLayers.size());
-      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NELSON");
+      TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
       assertNotNull("found parent track", parent);
 
       // fix the track name
@@ -466,6 +417,12 @@ public class ImportRiderNarrativeDocument
       final XWPFDocument doc = new XWPFDocument(is);
       final TableBreakdown data = importer.importFromWordX(doc);
 
+      testThisData(tLayers, parent, importer, data);
+    }
+
+    private void testThisData(final Layers tLayers, TrackWrapper parent,
+        final ImportRiderNarrativeDocument importer, final TableBreakdown data)
+    {
       final SimpleDateFormat dateF =
           new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
       dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -476,28 +433,36 @@ public class ImportRiderNarrativeDocument
       assertNotNull(data.entries);
       assertEquals(10, data.entries.size());
       assertEquals("HMS Nonsuch", data.header.platform);
-      assertEquals("2017/07/09 12:00:00", dateF.format(data.header.startDate));
+      assertEquals("2009/07/22 12:00:00", dateF.format(data.header.startDate));
 
       final RiderEntry entry4 = data.entries.get(4);
-      assertEquals("2017/07/09 12:04:16", dateF.format(entry4.date));
+      assertEquals("2009/07/22 04:14:16", dateF.format(entry4.date));
       assertEquals(null, entry4.bearing);
       assertEquals("Lorem ipsum 5", entry4.text);
       assertEquals(21, entry4.beam.intValue());
-      assertEquals("[/21] Lorem ipsum 5", entry4.toString());
+      assertEquals("[/Beam:21] Lorem ipsum 5", entry4.toString());
 
       final RiderEntry entry5 = data.entries.get(5);
-      assertEquals("2017/07/09 12:05:17", dateF.format(entry5.date));
-      assertEquals(22, entry5.bearing.intValue());
+      assertEquals("2009/07/22 04:15:17", dateF.format(entry5.date));
+      assertEquals(274, entry5.bearing.intValue());
       assertEquals("Lorem ipsum 6", entry5.text);
       assertEquals(null, entry5.beam);
-      assertEquals("[22/] Lorem ipsum 6", entry5.toString());
+      assertEquals("[Brg:274/] Lorem ipsum 6", entry5.toString());
 
       final RiderEntry entry8 = data.entries.get(7);
-      assertEquals("2017/07/09 12:07:19", dateF.format(entry8.date));
+      assertEquals("2009/07/22 04:17:19", dateF.format(entry8.date));
       assertEquals(null, entry8.bearing);
       assertTrue("Contains newline", entry8.text.contains("\n"));
       assertEquals(null, entry8.beam);
-      assertEquals("[/] Lorem ipsum 8And more \nAnd more", entry8.toString());
+
+      // the two different importers handle \r newlines differently.
+      // so we allow for both permutations here
+      boolean matchesText =
+          entry8.toString().equals("[/] Lorem ipsum 8And more \nAnd more")
+              || entry8.toString().equals(
+                  "[/] Lorem ipsum 8\rAnd more \nAnd more");
+
+      assertTrue("correct text", matchesText);
 
       // ok, now store them
       importer.processThese(data);
@@ -970,8 +935,7 @@ public class ImportRiderNarrativeDocument
       HiResDate theDate = new HiResDate(thisN.date.getTime());
       SensorContactWrapper cut =
           new SensorContactWrapper(parent.getName(), theDate, null, new Double(
-              thisN.bearing), null, DebriefColors.RED, "NARRATIVE",
-              0, hisTrack);
+              thisN.bearing), null, DebriefColors.RED, "NARRATIVE", 0, hisTrack);
 
       ourSensor.add(cut);
     }
