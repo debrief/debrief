@@ -65,6 +65,8 @@ import MWC.TacticalData.NarrativeEntry;
 public class ImportRiderNarrativeDocument
 {
 
+  public static final String RIDER_SOURCE = "Rider";
+
   private static final String NARRATIVE_CUTS_LAYER = "FromNarrative";
 
   private static class DocHelper implements WordHelper
@@ -623,7 +625,7 @@ public class ImportRiderNarrativeDocument
     final long correctedDTG = thisN.date.getTime();
 
     final NarrativeEntry ne =
-        new NarrativeEntry(hisTrack, "Rider", new HiResDate(correctedDTG),
+        new NarrativeEntry(hisTrack, RIDER_SOURCE, new HiResDate(correctedDTG),
             textBit);
 
     // shade all rider's narratives black
