@@ -71,6 +71,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -840,7 +841,14 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       {
         if (entry.getTrackName() != null && entry.getTrackName().equals(name))
         {
-          if (!internalEquals(color, entry.getColor()))
+          // special handling for rider narratives
+          if (entry.getType() != null
+              && entry.getType().equals(
+                  ImportRiderNarrativeDocument.RIDER_SOURCE))
+          {
+            // don't over-write the color. We leave rider narratives unchanged
+          }
+          else if (!internalEquals(color, entry.getColor()))
           {
             if (color == null)
             {

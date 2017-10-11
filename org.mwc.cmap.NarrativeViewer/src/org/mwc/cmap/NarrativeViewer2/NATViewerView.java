@@ -72,6 +72,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -685,12 +686,6 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         getViewSite().getActionBars().getMenuManager();
     final IToolBarManager toolManager =
         getViewSite().getActionBars().getToolBarManager();
-    
-    
-    
-    
-    
-    
 
     _search = new Action("Search", IAction.AS_CHECK_BOX)
     {
@@ -812,66 +807,71 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     menuManager.add(new Separator());
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
-    
-    
-    
-    
+
     Action fontPlus = new Action("+", IAction.AS_PUSH_BUTTON)
     {
 
       @Override
       public void run()
       {
-        IPreferenceStore preferenceStore = CorePlugin.getDefault()
-            .getPreferenceStore();
-            
-            final String fontStr =
-                preferenceStore
-                    .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
-            if(fontStr!=null)
-            {
-              final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-              if (readFontData != null && readFontData.length>0)
-              {
-            	  readFontData[0].setHeight((int)readFontData[0].height +1);
-                FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
-                		readFontData, Display.getCurrent());
-                if(bestFont!=null)
-                	preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(bestFont));
-                
-              }
-            }
+        IPreferenceStore preferenceStore =
+            CorePlugin.getDefault().getPreferenceStore();
+
+        final String fontStr =
+            preferenceStore
+                .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+        if (fontStr != null)
+        {
+          final FontData[] readFontData =
+              PreferenceConverter.readFontData(fontStr);
+          if (readFontData != null && readFontData.length > 0)
+          {
+            readFontData[0].setHeight((int) readFontData[0].height + 1);
+            FontData[] bestFont =
+                JFaceResources.getFontRegistry().filterData(readFontData,
+                    Display.getCurrent());
+            if (bestFont != null)
+              preferenceStore
+                  .setValue(NarrativeViewerPrefsPage.PreferenceConstants.FONT,
+                      org.eclipse.jface.resource.StringConverter
+                          .asString(bestFont));
+
+          }
+        }
       }
     };
     fontPlus.setImageDescriptor(org.mwc.cmap.core.CorePlugin
         .getImageDescriptor("icons/16/increase.png"));
     fontPlus.setToolTipText("+");
-    
-    
-    
+
     Action fontMin = new Action("-", IAction.AS_PUSH_BUTTON)
     {
 
       @Override
       public void run()
       {
-        IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-        
+        IPreferenceStore preferenceStore =
+            CorePlugin.getDefault().getPreferenceStore();
+
         final String fontStr =
             preferenceStore
                 .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
-        if(fontStr!=null)
+        if (fontStr != null)
         {
-          final FontData[] readFontData = PreferenceConverter.readFontData(fontStr);
-          if (readFontData != null && readFontData.length>0)
+          final FontData[] readFontData =
+              PreferenceConverter.readFontData(fontStr);
+          if (readFontData != null && readFontData.length > 0)
           {
-            readFontData[0].setHeight((int)readFontData[0].height -1);
-            FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
-            		readFontData, Display.getCurrent());
-            if(bestFont!=null)
-            	preferenceStore.setValue( NarrativeViewerPrefsPage.PreferenceConstants.FONT, org.eclipse.jface.resource.StringConverter.asString(bestFont));
-            
+            readFontData[0].setHeight((int) readFontData[0].height - 1);
+            FontData[] bestFont =
+                JFaceResources.getFontRegistry().filterData(readFontData,
+                    Display.getCurrent());
+            if (bestFont != null)
+              preferenceStore
+                  .setValue(NarrativeViewerPrefsPage.PreferenceConstants.FONT,
+                      org.eclipse.jface.resource.StringConverter
+                          .asString(bestFont));
+
           }
         }
       }
@@ -879,11 +879,9 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     fontMin.setImageDescriptor(org.mwc.cmap.core.CorePlugin
         .getImageDescriptor("icons/16/decrease.png"));
     fontMin.setToolTipText("-");
-    
-    
+
     toolManager.add(fontPlus);
     toolManager.add(fontMin);
-    
 
   }
 
@@ -916,7 +914,14 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       {
         if (entry.getTrackName() != null && entry.getTrackName().equals(name))
         {
-          if (!internalEquals(color, entry.getColor()))
+          // special handling for rider narratives
+          if (entry.getType() != null
+              && entry.getType().equals(
+                  ImportRiderNarrativeDocument.RIDER_SOURCE))
+          {
+            // don't over-write the color. We leave rider narratives unchanged
+          }
+          else if (!internalEquals(color, entry.getColor()))
           {
             if (color == null)
             {
