@@ -61,7 +61,9 @@ import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.TrackDataProvider;
 
 public class ImportRiderNarrativeDocument
 {
@@ -324,7 +326,7 @@ public class ImportRiderNarrativeDocument
     public void testCombineTime() throws ParseException
     {
       final ImportRiderNarrativeDocument im =
-          new ImportRiderNarrativeDocument(null);
+          new ImportRiderNarrativeDocument(null, null);
 
       final Date date = im.DATE_FORMAT.parse("090000Z JUL 17");
       final Date time = im.TIME_FORMAT.parse("02:01:34");
@@ -376,7 +378,7 @@ public class ImportRiderNarrativeDocument
       assertEquals("layers empty", 1, tLayers.size());
 
       final ImportRiderNarrativeDocument importer =
-          new ImportRiderNarrativeDocument(tLayers);
+          new ImportRiderNarrativeDocument(tLayers, null);
       final HWPFDocument doc = new HWPFDocument(is);
 
       final Range range = doc.getRange();
@@ -388,8 +390,8 @@ public class ImportRiderNarrativeDocument
 
     }
 
-    public void testImportRiderNarrativeXMissingPlatform() throws InterruptedException,
-        IOException
+    public void testImportRiderNarrativeXMissingPlatform_SingleTrack()
+        throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -407,6 +409,8 @@ public class ImportRiderNarrativeDocument
       final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
       assertNotNull("found parent track", parent);
 
+      parent.setName("NELSON");
+
       final String testFile = valid_doc_path;
       final File testI = new File(testFile);
       assertTrue(testI.exists());
@@ -414,13 +418,179 @@ public class ImportRiderNarrativeDocument
       final InputStream is = new FileInputStream(testI);
 
       final ImportRiderNarrativeDocument importer =
-          new ImportRiderNarrativeDocument(tLayers);
+          new ImportRiderNarrativeDocument(tLayers, null);
       assertEquals("layers empty", 1, tLayers.size());
 
       final XWPFDocument doc = new XWPFDocument(is);
       final TableBreakdown data = importer.importFromWordX(doc);
-      
+
       importer.processThese(data);
+
+      // ok, check the sensors got added
+      BaseLayer sensors = parent.getSensors();
+      assertEquals("Sensor created", 1, sensors.size());
+      SensorWrapper theS = (SensorWrapper) sensors.elements().nextElement();
+      assertEquals(7, theS.size());
+    }
+
+    private class DummyTrackDataProvider implements TrackDataProvider
+    {
+      final private TrackWrapper _primary;
+
+      private DummyTrackDataProvider(TrackWrapper primary)
+      {
+        _primary = primary;
+      }
+
+      @Override
+      public void addTrackDataListener(TrackDataListener listener)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public void removeTrackDataListener(TrackDataListener listener)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public void addTrackShiftListener(TrackShiftListener listener)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public void removeTrackShiftListener(TrackShiftListener listener)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public void fireTrackShift(WatchableList watchableList)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public void fireTracksChanged()
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public WatchableList getPrimaryTrack()
+      {
+        return _primary;
+      }
+
+      @Override
+      public WatchableList[] getSecondaryTracks()
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+    }
+
+    public void testImportRiderNarrativeXMissingPlatform_NoPrimaryTrack()
+        throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+      final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
+      assertNotNull("found parent track", parent);
+
+      // add in a second track
+      TrackWrapper secondTrack = new TrackWrapper();
+      secondTrack.setName("some name");
+      tLayers.addThisLayer(secondTrack);
+
+      parent.setName("NELSON");
+
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportRiderNarrativeDocument importer =
+          new ImportRiderNarrativeDocument(tLayers, new DummyTrackDataProvider(
+              null));
+      assertEquals("tracks present", 2, tLayers.size());
+
+      final XWPFDocument doc = new XWPFDocument(is);
+      final TableBreakdown data = importer.importFromWordX(doc);
+
+      importer.processThese(data);
+
+      // ok, check the sensors got added
+      BaseLayer sensors = parent.getSensors();
+      assertEquals("No Sensors created", 0, sensors.size());
+
+      // also check no narrative entries added
+      NarrativeWrapper narr =
+          (NarrativeWrapper) tLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+      assertNull(narr);
+    }
+
+    public void testImportRiderNarrativeXMissingPlatform_PrimaryTrack()
+        throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+      final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
+      assertNotNull("found parent track", parent);
+
+      // add in a second track
+      TrackWrapper secondTrack = new TrackWrapper();
+      secondTrack.setName("some name");
+      tLayers.addThisLayer(secondTrack);
+
+      parent.setName("NELSON");
+
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportRiderNarrativeDocument importer =
+          new ImportRiderNarrativeDocument(tLayers, new DummyTrackDataProvider(
+              parent));
+      assertEquals("tracks present", 2, tLayers.size());
+
+      final XWPFDocument doc = new XWPFDocument(is);
+      final TableBreakdown data = importer.importFromWordX(doc);
+
+      importer.processThese(data);
+
+      // ok, check the sensors got added
+      BaseLayer sensors = parent.getSensors();
+      assertEquals("Sensor created", 1, sensors.size());
+      SensorWrapper theS = (SensorWrapper) sensors.elements().nextElement();
+      assertEquals(7, theS.size());
     }
 
     public void testImportRiderNarrativeX() throws InterruptedException,
@@ -454,7 +624,7 @@ public class ImportRiderNarrativeDocument
       final InputStream is = new FileInputStream(testI);
 
       final ImportRiderNarrativeDocument importer =
-          new ImportRiderNarrativeDocument(tLayers);
+          new ImportRiderNarrativeDocument(tLayers, null);
       assertEquals("layers empty", 1, tLayers.size());
 
       final XWPFDocument doc = new XWPFDocument(is);
@@ -561,19 +731,19 @@ public class ImportRiderNarrativeDocument
 
       assertNotNull("got our sensor", sensor);
       assertEquals("got cuts", 7, sensor.size());
-      
+
       Enumeration<Editable> cuts = sensor.elements();
       SensorContactWrapper lastCut = null;
       SensorContactWrapper firstCut = null;
-      while(cuts.hasMoreElements())
+      while (cuts.hasMoreElements())
       {
         lastCut = (SensorContactWrapper) cuts.nextElement();
-        if(firstCut == null)
+        if (firstCut == null)
         {
           firstCut = lastCut;
         }
       }
-      
+
       assertNotNull(firstCut);
       assertEquals("090722 041012", firstCut.toString());
       assertNull(firstCut.getRange());
@@ -589,7 +759,7 @@ public class ImportRiderNarrativeDocument
       assertEquals("090722 042022", lastCut.toString());
       assertNull(lastCut.getRange());
       assertEquals(NARRATIVE_CUTS_SENSOR, lastCut.getSensor().getName());
-      
+
     }
 
     @SuppressWarnings("deprecation")
@@ -620,8 +790,6 @@ public class ImportRiderNarrativeDocument
   private static final String NARRATIVE_CUTS_SENSOR = "FromNarrative";
 
   private static List<String> SkipNames = null;
-
-  private static QuestionHelper questionHelper;
 
   private static boolean canImport(final WordHelper helper)
   {
@@ -693,11 +861,6 @@ public class ImportRiderNarrativeDocument
     Application.logError3(status, msg, e, true);
   }
 
-  public static void setQuestionHelper(final QuestionHelper helper)
-  {
-    questionHelper = helper;
-  }
-
   /**
    * keep track of which track-source combinations we've asked about
    * 
@@ -725,9 +888,20 @@ public class ImportRiderNarrativeDocument
 
   private final SimpleDateFormat TIME_FORMAT;
 
-  public ImportRiderNarrativeDocument(final Layers target)
+  private final TrackDataProvider _trackProvider;
+
+  /**
+   * 
+   * @param target
+   *          where to dump the data
+   * @param trackProvider
+   *          how to find the primary track
+   */
+  public ImportRiderNarrativeDocument(final Layers target,
+      final TrackDataProvider trackProvider)
   {
     _layers = target;
+    _trackProvider = trackProvider;
 
     DATE_FORMAT = new SimpleDateFormat("ddHHmm'Z' MMM yy");
     DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -746,6 +920,7 @@ public class ImportRiderNarrativeDocument
   }
 
   private void addCut(final RiderEntry thisN, final String platform)
+      throws NoHostPlatformException
   {
     String hisTrack = trackFor(platform, platform);
 
@@ -765,20 +940,22 @@ public class ImportRiderNarrativeDocument
           findOurSensor(NARRATIVE_CUTS_SENSOR, parent, true);
 
       final HiResDate theDate = new HiResDate(thisN.date.getTime());
-      
-      final Double ambigBearing = thisN.ambig != null ? new Double(thisN.ambig) : null;
-      
+
+      final Double ambigBearing =
+          thisN.ambig != null ? new Double(thisN.ambig) : null;
+
       final SensorContactWrapper cut =
           new SensorContactWrapper(parent.getName(), theDate, null, new Double(
-              thisN.bearing), ambigBearing, null, null, DebriefColors.RED, "NARRATIVE", 0, hisTrack);
+              thisN.bearing), ambigBearing, null, null, DebriefColors.RED,
+              "NARRATIVE", 0, hisTrack);
 
       ourSensor.add(cut);
     }
   }
 
-  private void addEntry(final RiderEntry thisN, final String platform)
+  private void addEntry(final RiderEntry thisN, final String platform,
+      final NarrativeWrapper narrative) throws NoHostPlatformException
   {
-    final NarrativeWrapper nw = getNarrativeLayer();
     String hisTrack = trackFor(platform, platform);
 
     // did we find a track? Don't worry if we didn't just use the raw text
@@ -800,7 +977,7 @@ public class ImportRiderNarrativeDocument
     ne.setColor(DebriefColors.BLACK);
 
     // and store it
-    nw.add(ne);
+    narrative.add(ne);
   }
 
   private List<RiderEntry> entriesFor(final WordHelper helper,
@@ -944,7 +1121,6 @@ public class ImportRiderNarrativeDocument
     }
     catch (final IOException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -980,7 +1156,6 @@ public class ImportRiderNarrativeDocument
     }
     catch (final IOException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -1054,7 +1229,6 @@ public class ImportRiderNarrativeDocument
     }
     catch (final ParseException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -1124,25 +1298,34 @@ public class ImportRiderNarrativeDocument
     // keep track of if we've added anything
     boolean dataAdded = false;
 
-    // ok, now we can loop through the strings
-    for (final RiderEntry thisN : data.entries)
+    try
     {
-      // add a narrative entry
-      addEntry(thisN, data.header.platform);
+      NarrativeWrapper narrative = getNarrativeLayer();
 
-      // does it have a bearing?
-      if (thisN.bearing != null)
+      // ok, now we can loop through the strings
+      for (final RiderEntry thisN : data.entries)
       {
-        addCut(thisN, data.header.platform);
+        // does it have a bearing?
+        if (thisN.bearing != null)
+        {
+          addCut(thisN, data.header.platform);
+        }
+
+        // add a narrative entry
+        addEntry(thisN, data.header.platform, narrative);
+
+        // ok, take note that we've added something
+        dataAdded = true;
       }
 
-      // ok, take note that we've added something
-      dataAdded = true;
+      if (dataAdded)
+      {
+        _layers.fireModified(getNarrativeLayer());
+      }
     }
-
-    if (dataAdded)
+    catch (NoHostPlatformException ne)
     {
-      _layers.fireModified(getNarrativeLayer());
+      // ok, user should have been warned. We're done.
     }
   }
 
@@ -1205,6 +1388,7 @@ public class ImportRiderNarrativeDocument
   }
 
   private String trackFor(final String originalName, String name)
+      throws NoHostPlatformException
   {
     if (name == null)
     {
@@ -1244,41 +1428,43 @@ public class ImportRiderNarrativeDocument
           // did we find one?
           if (singleTrack != null)
           {
-            // ok, ask the user if he wants to change the subject track to this track's name
-            if (questionHelper != null)
-            {
-
-              final boolean wantsTo =
-                  questionHelper.askYes("Change track name",
-                      "Host platform not found for narrative entries.\nDo you want to rename track ["
-                          + singleTrack.getName() + "] to [" + name + "]");
-
-              // remember that we've asked about it
-              askedAbout.add(singleTrack.getName() + name);
-
-              if (wantsTo)
-              {
-                singleTrack.setName(name);
-                match = name;
-              }
-            }
+            // ok, just use the name of this single track
+            match = singleTrack.getName();
+            nameMatches.put(originalName, match);
           }
           else
           {
             // we can't find a host track.
 
-            // have we already told the user?
-            if (!_declaredNoHostFound)
+            // is there a primary allocated?
+            if (_trackProvider != null)
             {
-              // ok, stop it appearing again
-              _declaredNoHostFound = true;
+              WatchableList parent = _trackProvider.getPrimaryTrack();
+              if (parent != null)
+              {
+                // cool, use it
+                match = parent.getName();
+                nameMatches.put(originalName, match);
+              }
+            }
 
-              // tell the user
-              MessageProvider.Base.Provider.show("Import Narrative",
-                  "Narrative entries will be imported, but we won't be creating FCSs "
-                      + "since we couldn't determine the host track for: "
-                      + originalName + ".", MessageProvider.WARNING);
+            if (match == null)
+            {
+              // have we already told the user?
+              if (!_declaredNoHostFound)
+              {
+                // ok, stop it appearing again
+                _declaredNoHostFound = true;
 
+                // tell the user
+                MessageProvider.Base.Provider
+                    .show(
+                        "Import Rider's Narrative",
+                        "Platform in Rider's narrative doesn't match any loaded tracks.\nPlease assign a primary, and the cuts will be added to that platform.",
+                        MessageProvider.ERROR);
+
+                throw new NoHostPlatformException();
+              }
             }
           }
         }
@@ -1286,5 +1472,15 @@ public class ImportRiderNarrativeDocument
     }
 
     return match;
+  }
+
+  private static class NoHostPlatformException extends Exception
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
   }
 }
