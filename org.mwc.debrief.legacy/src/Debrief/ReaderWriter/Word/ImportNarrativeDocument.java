@@ -1747,6 +1747,7 @@ public class ImportNarrativeDocument
     // spaces
     res = res.replace((char) 1, (char) 32);
     res = res.replace((char) 19, (char) 32);
+    res = res.replace((char) 8, (char) 32); // backspace char, occurred in Oct 17, near an inserted picture
     res = res.replace((char) 20, (char) 32);
     res = res.replace((char) 21, (char) 32);
     res = res.replace((char) 5, (char) 32); // MS Word comment marker
