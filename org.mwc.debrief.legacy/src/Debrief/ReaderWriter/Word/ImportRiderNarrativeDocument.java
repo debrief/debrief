@@ -55,6 +55,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
@@ -195,15 +196,16 @@ public class ImportRiderNarrativeDocument
   {
     private final Date date;
     private final Integer bearing;
-//    private final Integer ambig;
+    private final Integer ambig;
     private final String beam;
     private final String text;
 
     public RiderEntry(final Date date, final Integer bearing,
-        final String beam, final String text)
+        final Integer ambig, final String beam, final String text)
     {
       this.date = date;
       this.bearing = bearing;
+      this.ambig = ambig;
       this.beam = beam;
       this.text = ImportNarrativeDocument.removeBadChars(text);
     }
@@ -212,9 +214,14 @@ public class ImportRiderNarrativeDocument
     public String toString()
     {
       // first the bearing bits
-      final String brgStr = bearing == null ? "" : "Brg:" + bearing;
+      final String ambigStr = ambig == null ? "" : "/" + ambig;
+      final String brgStr = bearing == null ? "" : "Brg:" + bearing + ambigStr;
       final String beamStr = beam == null ? "" : "Beam:" + beam;
-      return "[" + brgStr + "/" + beamStr + "] " + text;
+      final String separator = brgStr != "" && beamStr != "" ? ", " : "";
+      final String res =
+          beamStr == "" && brgStr == "" ? text : "[" + brgStr + separator
+              + beamStr + "] " + text;
+      return res;
     }
   }
 
@@ -438,35 +445,41 @@ public class ImportRiderNarrativeDocument
       assertEquals(null, entry4.bearing);
       assertEquals("Lorem ipsum 5", entry4.text);
       assertEquals("21", entry4.beam);
-      assertEquals("[/Beam:21] Lorem ipsum 5", entry4.toString());
+      assertEquals("[Beam:21] Lorem ipsum 5", entry4.toString());
 
       final RiderEntry entry5 = data.entries.get(5);
       assertEquals("2009/07/22 04:15:17", dateF.format(entry5.date));
       assertEquals(274, entry5.bearing.intValue());
       assertEquals("Lorem ipsum 6", entry5.text);
       assertEquals(null, entry5.beam);
-      assertEquals("[Brg:274/] Lorem ipsum 6", entry5.toString());
-
+      assertEquals("[Brg:274] Lorem ipsum 6", entry5.toString());
 
       final RiderEntry entry8 = data.entries.get(7);
       assertEquals("2009/07/22 04:17:19", dateF.format(entry8.date));
       assertEquals(null, entry8.bearing);
       assertTrue("Contains newline", entry8.text.contains("\n"));
       assertEquals(null, entry8.beam);
-      
-      final RiderEntry entry9 = data.entries.get(9);
-      assertEquals("2009/07/22 04:19:21", dateF.format(entry9.date));
-      assertEquals(92, entry9.bearing.intValue());
-      assertEquals("12/13", entry9.beam);
 
       // the two different importers handle \r newlines differently.
       // so we allow for both permutations here
       final boolean matchesText =
-          entry8.toString().equals("[/] Lorem ipsum 8And more \nAnd more")
+          entry8.toString().equals("Lorem ipsum 8And more \nAnd more")
               || entry8.toString().equals(
-                  "[/] Lorem ipsum 8\rAnd more \nAnd more");
-
+                  "Lorem ipsum 8\rAnd more \nAnd more");
       assertTrue("correct text", matchesText);
+
+      final RiderEntry entry9 = data.entries.get(9);
+      assertEquals("2009/07/22 04:19:21", dateF.format(entry9.date));
+      assertEquals(92, entry9.bearing.intValue());
+      assertEquals(112, entry9.ambig.intValue());
+      assertEquals("12/13", entry9.beam);
+      assertEquals("[Brg:92/112, Beam:12/13] Lorem ipsum 10", entry9.toString());
+
+      final RiderEntry entry10 = data.entries.get(10);
+      assertEquals("2009/07/22 04:20:22", dateF.format(entry10.date));
+      assertEquals(94, entry10.bearing.intValue());
+      assertEquals(123, entry10.ambig.intValue());
+      assertEquals(null, entry10.beam);
 
       // ok, now store them
       importer.processThese(data);
@@ -719,14 +732,37 @@ public class ImportRiderNarrativeDocument
       }
 
       final Date date = timeFormat.parse(dateStr);
-      Integer bearing;
+      final Integer bearing;
+      final Integer ambig;
       if (bearingStr.isEmpty() || bearingStr.equalsIgnoreCase("NO B"))
       {
         bearing = null;
+        ambig = null;
       }
       else
       {
-        bearing = Integer.parseInt(bearingStr);
+        // hmm, do we have ambig data?
+        if (bearingStr.contains("/"))
+        {
+          String[] items = bearingStr.trim().split("/");
+          if (items.length == 2)
+          {
+            bearing = Integer.parseInt(items[0].trim());
+            ambig = Integer.parseInt(items[1].trim());
+          }
+          else
+          {
+            bearing = null;
+            ambig = null;
+            logThisError(ErrorLogger.ERROR,
+                "Not correct number of bearings to be ambiguous", null);
+          }
+        }
+        else
+        {
+          bearing = Integer.parseInt(bearingStr);
+          ambig = null;
+        }
       }
 
       final String beam;
@@ -741,7 +777,8 @@ public class ImportRiderNarrativeDocument
 
       final Date newDate = new Date(dateFor(header.startDate, date));
 
-      final RiderEntry entry = new RiderEntry(newDate, bearing, beam, text);
+      final RiderEntry entry =
+          new RiderEntry(newDate, bearing, ambig, beam, text);
       res.add(entry);
 
     }
