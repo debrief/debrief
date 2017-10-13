@@ -16,6 +16,7 @@ package Debrief.ReaderWriter.Word;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -42,6 +43,7 @@ import org.apache.poi.hwpf.usermodel.Table;
 import org.apache.poi.hwpf.usermodel.TableCell;
 import org.apache.poi.hwpf.usermodel.TableIterator;
 import org.apache.poi.hwpf.usermodel.TableRow;
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
@@ -321,6 +323,9 @@ public class ImportRiderNarrativeDocument
     private final static String old_doc_format = test_doc_root + "/"
         + "RiderNarrative.doc";
 
+    private final static String wrong_type_path = test_doc_root + "/"
+        + "RiderNarrative_WrongType.doc";
+
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/nonsuch.rep";
 
@@ -454,6 +459,30 @@ public class ImportRiderNarrativeDocument
       final TableBreakdown data = importer.importFromWord(doc);
       testThisData(tLayers, parent, importer, data);
 
+    }
+
+    public void testWronglyNamedVersion() throws FileNotFoundException
+    {
+      final String testFile = wrong_type_path;
+      Layers layers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, layers);
+
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      ImportRiderNarrativeDocument importer =
+          new ImportRiderNarrativeDocument(layers, null);
+      importer.handleImport(testFile, is);
+      assertEquals("have loaded track and narrative", 2, layers.size());
     }
 
     public void testImportRiderNarrativeX() throws InterruptedException,
@@ -1131,28 +1160,48 @@ public class ImportRiderNarrativeDocument
     {
       doc = new HWPFDocument(inputStream);
     }
+    catch (OfficeXmlFileException xw)
+    {
+      logError(
+          ErrorLogger.WARNING,
+          ".Doc file appears to contain .Docx data. Switching to other importer",
+          xw);
+      // ok, it's .docx data in a .doc file
+      try
+      {
+        FileInputStream is2 = new FileInputStream(fileName);
+        handleImportX(fileName, is2);
+      }
+      catch (FileNotFoundException e)
+      {
+        e.printStackTrace();
+      }
+    }
     catch (final IOException e)
     {
       e.printStackTrace();
     }
 
-    // ok, now have a see if it's a rider's narrative
-    final Range range = doc.getRange();
-    final TableIterator tIter = new TableIterator(range);
-
-    final boolean isRider =
-        tIter.hasNext() && canImport(new DocHelper(tIter.next()));
-
-    if (isRider)
+    if (doc != null)
     {
-      final TableBreakdown data = this.importFromWord(doc);
-      this.processThese(data);
-    }
-    else
-    {
-      final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
-      final ArrayList<String> strings = iw.importFromWord(doc);
-      iw.processThese(strings);
+      // ok, now have a see if it's a rider's narrative
+      final Range range = doc.getRange();
+      final TableIterator tIter = new TableIterator(range);
+
+      final boolean isRider =
+          tIter.hasNext() && canImport(new DocHelper(tIter.next()));
+
+      if (isRider)
+      {
+        final TableBreakdown data = this.importFromWord(doc);
+        this.processThese(data);
+      }
+      else
+      {
+        final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
+        final ArrayList<String> strings = iw.importFromWord(doc);
+        iw.processThese(strings);
+      }
     }
   }
 
@@ -1312,7 +1361,7 @@ public class ImportRiderNarrativeDocument
 
     try
     {
-      final NarrativeWrapper narrative = getNarrativeLayer();
+      NarrativeWrapper narrative = null;
 
       // ok, now we can loop through the strings
       for (final RiderEntry thisN : data.entries)
@@ -1323,6 +1372,14 @@ public class ImportRiderNarrativeDocument
           addCut(thisN, data.header.platform);
         }
 
+        if(narrative == null)
+        {
+          // note, we defer getting/creating the narrative layer
+          // until we get here, since if we can't find a parent 
+          // track to use, we won't load any data
+          narrative = getNarrativeLayer();
+        }
+        
         // add a narrative entry
         addEntry(thisN, data.header.platform, narrative);
 
