@@ -19,6 +19,7 @@ import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
 import MWC.GUI.Layers;
+import MWC.TacticalData.TrackDataProvider;
 
 public class MsDocLoader extends IPlotLoader.BaseLoader
 {
@@ -28,7 +29,8 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
       final String fileName)
   {
     final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
-
+    final TrackDataProvider trackData = (TrackDataProvider) thePlot.getAdapter(TrackDataProvider.class);
+    
     try
     {
 
@@ -55,7 +57,7 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
                 // ok. we'll pass it to the rider import. If that fails, we can offer it to the
                 // plain importer
                 ImportRiderNarrativeDocument iw =
-                    new ImportRiderNarrativeDocument(theLayers);
+                    new ImportRiderNarrativeDocument(theLayers, trackData);
                 iw.handleImport(fileName, inputStream);                
               }
 
