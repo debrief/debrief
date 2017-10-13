@@ -195,11 +195,12 @@ public class ImportRiderNarrativeDocument
   {
     private final Date date;
     private final Integer bearing;
-    private final Integer beam;
+//    private final Integer ambig;
+    private final String beam;
     private final String text;
 
     public RiderEntry(final Date date, final Integer bearing,
-        final Integer beam, final String text)
+        final String beam, final String text)
     {
       this.date = date;
       this.bearing = bearing;
@@ -428,7 +429,7 @@ public class ImportRiderNarrativeDocument
       assertNotNull(data.header);
       assertNotNull(data.header.startDate);
       assertNotNull(data.entries);
-      assertEquals(10, data.entries.size());
+      assertEquals(14, data.entries.size());
       assertEquals("HMS Nonsuch", data.header.platform);
       assertEquals("2009/07/22 12:00:00", dateF.format(data.header.startDate));
 
@@ -436,7 +437,7 @@ public class ImportRiderNarrativeDocument
       assertEquals("2009/07/22 04:14:16", dateF.format(entry4.date));
       assertEquals(null, entry4.bearing);
       assertEquals("Lorem ipsum 5", entry4.text);
-      assertEquals(21, entry4.beam.intValue());
+      assertEquals("21", entry4.beam);
       assertEquals("[/Beam:21] Lorem ipsum 5", entry4.toString());
 
       final RiderEntry entry5 = data.entries.get(5);
@@ -446,11 +447,17 @@ public class ImportRiderNarrativeDocument
       assertEquals(null, entry5.beam);
       assertEquals("[Brg:274/] Lorem ipsum 6", entry5.toString());
 
+
       final RiderEntry entry8 = data.entries.get(7);
       assertEquals("2009/07/22 04:17:19", dateF.format(entry8.date));
       assertEquals(null, entry8.bearing);
       assertTrue("Contains newline", entry8.text.contains("\n"));
       assertEquals(null, entry8.beam);
+      
+      final RiderEntry entry9 = data.entries.get(9);
+      assertEquals("2009/07/22 04:19:21", dateF.format(entry9.date));
+      assertEquals(92, entry9.bearing.intValue());
+      assertEquals("12/13", entry9.beam);
 
       // the two different importers handle \r newlines differently.
       // so we allow for both permutations here
@@ -470,7 +477,7 @@ public class ImportRiderNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 10, narrLayer.size());
+      assertEquals("Got num lines", 14, narrLayer.size());
 
       // check ownship received cuts
       assertNotNull("got a sensor", parent.getSensors());
@@ -478,7 +485,7 @@ public class ImportRiderNarrativeDocument
           findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
 
       assertNotNull("got our sensor", sensor);
-      assertEquals("got cuts", 4, sensor.size());
+      assertEquals("got cuts", 8, sensor.size());
     }
 
     @SuppressWarnings("deprecation")
@@ -722,14 +729,14 @@ public class ImportRiderNarrativeDocument
         bearing = Integer.parseInt(bearingStr);
       }
 
-      final Integer beam;
+      final String beam;
       if (beamStr.isEmpty() || beamStr.equalsIgnoreCase("NO BM"))
       {
         beam = null;
       }
       else
       {
-        beam = Integer.parseInt(beamStr);
+        beam = beamStr;
       }
 
       final Date newDate = new Date(dateFor(header.startDate, date));
