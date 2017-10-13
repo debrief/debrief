@@ -481,6 +481,13 @@ public class ImportRiderNarrativeDocument
       assertEquals(123, entry10.ambig.intValue());
       assertEquals(null, entry10.beam);
 
+      final RiderEntry entry11 = data.entries.get(11);
+      assertEquals("2009/07/22 04:21:23", dateF.format(entry11.date));
+      assertEquals(null, entry11.bearing);
+      assertEquals(null, entry11.ambig);
+      assertEquals(null, entry11.beam);
+      assertEquals("[Bearing represents arc (096-112). Not imported.]Lorem ipsum 12", entry11.toString());
+
       // ok, now store them
       importer.processThese(data);
 
@@ -498,7 +505,7 @@ public class ImportRiderNarrativeDocument
           findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
 
       assertNotNull("got our sensor", sensor);
-      assertEquals("got cuts", 8, sensor.size());
+      assertEquals("got cuts", 7, sensor.size());
     }
 
     @SuppressWarnings("deprecation")
@@ -730,6 +737,9 @@ public class ImportRiderNarrativeDocument
         // ok, go to the next row
         continue;
       }
+      
+      // ability to store errors
+      String warningStr = "";
 
       final Date date = timeFormat.parse(dateStr);
       final Integer bearing;
@@ -758,6 +768,13 @@ public class ImportRiderNarrativeDocument
                 "Not correct number of bearings to be ambiguous", null);
           }
         }
+        else if(bearingStr.contains("-"))
+        {
+          // it's an arc, ignore the bearing
+          bearing = null;
+          ambig = null;
+          warningStr += "[Bearing represents arc (" + bearingStr + "). Not imported.]";
+        }
         else
         {
           bearing = Integer.parseInt(bearingStr);
@@ -776,9 +793,11 @@ public class ImportRiderNarrativeDocument
       }
 
       final Date newDate = new Date(dateFor(header.startDate, date));
+      
+      final String finalText = warningStr + text;
 
       final RiderEntry entry =
-          new RiderEntry(newDate, bearing, ambig, beam, text);
+          new RiderEntry(newDate, bearing, ambig, beam, finalText);
       res.add(entry);
 
     }
