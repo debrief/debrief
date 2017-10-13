@@ -23,7 +23,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -34,9 +33,6 @@ import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPageTree;
-import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Range;
 import org.apache.poi.hwpf.usermodel.Table;
@@ -195,15 +191,6 @@ public class ImportRiderNarrativeDocument
      */
     private static final long serialVersionUID = 1L;
 
-  }
-
-  /**
-   * helper that can ask the user a question
-   * 
-   */
-  public static interface QuestionHelper
-  {
-    boolean askYes(String title, String message);
   }
 
   private static class RiderEntry
@@ -459,30 +446,6 @@ public class ImportRiderNarrativeDocument
       final TableBreakdown data = importer.importFromWord(doc);
       testThisData(tLayers, parent, importer, data);
 
-    }
-
-    public void testWronglyNamedVersion() throws FileNotFoundException
-    {
-      final String testFile = wrong_type_path;
-      Layers layers = new Layers();
-
-      // start off with the ownship track
-      final File boatFile = new File(ownship_track);
-      assertTrue(boatFile.exists());
-      final InputStream bs = new FileInputStream(boatFile);
-
-      final ImportReplay trackImporter = new ImportReplay();
-      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
-          ImportReplay.IMPORT_AS_OTG, 0L));
-      trackImporter.importThis(ownship_track, bs, layers);
-
-      final File testI = new File(testFile);
-      assertTrue(testI.exists());
-      final InputStream is = new FileInputStream(testI);
-      ImportRiderNarrativeDocument importer =
-          new ImportRiderNarrativeDocument(layers, null);
-      importer.handleImport(testFile, is);
-      assertEquals("have loaded track and narrative", 2, layers.size());
     }
 
     public void testImportRiderNarrativeX() throws InterruptedException,
@@ -810,6 +773,30 @@ public class ImportRiderNarrativeDocument
           .toGMTString());
     }
 
+    public void testWronglyNamedVersion() throws FileNotFoundException
+    {
+      final String testFile = wrong_type_path;
+      final Layers layers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, layers);
+
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+      final InputStream is = new FileInputStream(testI);
+      final ImportRiderNarrativeDocument importer =
+          new ImportRiderNarrativeDocument(layers, null);
+      importer.handleImport(testFile, is);
+      assertEquals("have loaded track and narrative", 2, layers.size());
+    }
+
   }
 
   private static interface WordHelper
@@ -860,168 +847,7 @@ public class ImportRiderNarrativeDocument
     return start.getTime() + time.getTime();
   }
 
-  private static SensorWrapper findOurSensor(final String name,
-      final TrackWrapper parent, final boolean allowCreate)
-  {
-    final BaseLayer sensors = parent.getSensors();
-    final Enumeration<Editable> sIter = sensors.elements();
-    while (sIter.hasMoreElements())
-    {
-      final SensorWrapper thisS = (SensorWrapper) sIter.nextElement();
-      if (thisS.getName().equals(name))
-      {
-        return thisS;
-      }
-    }
-    if (allowCreate)
-    {
-      // aah. we didn't find it. make one
-      final SensorWrapper newS = new SensorWrapper(name);
-      parent.add(newS);
-      return newS;
-    }
-    else
-    {
-      return null;
-    }
-  }
-
-  private static Header headerFor(final WordHelper helper,
-      final SimpleDateFormat dateFormat) throws ParseException
-  {
-    final String dateText = helper.getHeaderCell(0);
-    final String platform = helper.getHeaderCell(4);
-    final Date date = dateFormat.parse(dateText);
-    final Header header = new Header(date, platform);
-    return header;
-  }
-
-  public static void logThisError(final int status, final String msg,
-      final Exception e)
-  {
-    Application.logError3(status, msg, e, true);
-  }
-
-  /**
-   * keep track of which track-source combinations we've asked about
-   * 
-   */
-  private final List<String> askedAbout = new ArrayList<String>();
-  /**
-   * flag for if we've informed user that we couldn't find host track
-   * 
-   */
-  private boolean _declaredNoHostFound = false;
-
-  /**
-   * where we write our data
-   * 
-   */
-  private final Layers _layers;
-
-  /**
-   * keep track of track names that we have matched
-   * 
-   */
-  Map<String, String> nameMatches = new HashMap<String, String>();
-
-  private final SimpleDateFormat DATE_FORMAT;
-
-  private final SimpleDateFormat TIME_FORMAT;
-
-  private final TrackDataProvider _trackProvider;
-
-  /**
-   * 
-   * @param target
-   *          where to dump the data
-   * @param trackProvider
-   *          how to find the primary track
-   */
-  public ImportRiderNarrativeDocument(final Layers target,
-      final TrackDataProvider trackProvider)
-  {
-    _layers = target;
-    _trackProvider = trackProvider;
-
-    DATE_FORMAT = new SimpleDateFormat("ddHHmm'Z' MMM yy");
-    DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-    TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-    TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-    if (SkipNames == null)
-    {
-      SkipNames = new ArrayList<String>();
-      SkipNames.add("HMS");
-      SkipNames.add("Hms");
-      SkipNames.add("USS");
-      SkipNames.add("RNAS");
-      SkipNames.add("HNLMS");
-    }
-  }
-
-  private void addCut(final RiderEntry thisN, final String platform)
-      throws NoHostPlatformException
-  {
-    String hisTrack = trackFor(platform, platform);
-
-    // did we find a track? Don't worry if we didn't just use the raw text
-    if (hisTrack == null)
-    {
-      hisTrack = platform;
-    }
-
-    // can we find the parent?
-    final TrackWrapper parent = (TrackWrapper) _layers.findLayer(hisTrack);
-
-    if (parent != null)
-    {
-      // find our sensor
-      final SensorWrapper ourSensor =
-          findOurSensor(NARRATIVE_CUTS_SENSOR, parent, true);
-
-      final HiResDate theDate = new HiResDate(thisN.date.getTime());
-
-      final Double ambigBearing =
-          thisN.ambig != null ? new Double(thisN.ambig) : null;
-
-      final SensorContactWrapper cut =
-          new SensorContactWrapper(parent.getName(), theDate, null, new Double(
-              thisN.bearing), ambigBearing, null, null, DebriefColors.RED,
-              "NARRATIVE", 0, hisTrack);
-
-      ourSensor.add(cut);
-    }
-  }
-
-  private void addEntry(final RiderEntry thisN, final String platform,
-      final NarrativeWrapper narrative) throws NoHostPlatformException
-  {
-    String hisTrack = trackFor(platform, platform);
-
-    // did we find a track? Don't worry if we didn't just use the raw text
-    if (hisTrack == null)
-    {
-      hisTrack = platform;
-    }
-
-    final String textBit = thisN.toString();
-
-    // sort out the time
-    final long correctedDTG = thisN.date.getTime();
-
-    final NarrativeEntry ne =
-        new NarrativeEntry(hisTrack, RIDER_SOURCE, new HiResDate(correctedDTG),
-            textBit);
-
-    // shade all rider's narratives black
-    ne.setColor(DebriefColors.BLACK);
-
-    // and store it
-    narrative.add(ne);
-  }
-
-  private List<RiderEntry> entriesFor(final WordHelper helper,
+  private static List<RiderEntry> entriesFor(final WordHelper helper,
       final Header header, final SimpleDateFormat timeFormat)
       throws ParseException
   {
@@ -1136,6 +962,174 @@ public class ImportRiderNarrativeDocument
     return res;
   }
 
+  private static SensorWrapper findOurSensor(final String name,
+      final TrackWrapper parent, final boolean allowCreate)
+  {
+    final BaseLayer sensors = parent.getSensors();
+    final Enumeration<Editable> sIter = sensors.elements();
+    while (sIter.hasMoreElements())
+    {
+      final SensorWrapper thisS = (SensorWrapper) sIter.nextElement();
+      if (thisS.getName().equals(name))
+      {
+        return thisS;
+      }
+    }
+    if (allowCreate)
+    {
+      // aah. we didn't find it. make one
+      final SensorWrapper newS = new SensorWrapper(name);
+      parent.add(newS);
+      return newS;
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  private static Header headerFor(final WordHelper helper,
+      final SimpleDateFormat dateFormat) throws ParseException
+  {
+    final String dateText = helper.getHeaderCell(0);
+    final String platform = helper.getHeaderCell(4);
+    final Date date = dateFormat.parse(dateText);
+    final Header header = new Header(date, platform);
+    return header;
+  }
+
+  private static void logError(final int status, final String msg,
+      final Exception e)
+  {
+    logThisError(status, msg, e);
+  }
+
+  private static void logThisError(final int status, final String msg,
+      final Exception e)
+  {
+    Application.logError3(status, msg, e, true);
+  }
+
+  /**
+   * keep track of which track-source combinations we've asked about
+   * 
+   */
+  private final List<String> askedAbout = new ArrayList<String>();
+
+  /**
+   * flag for if we've informed user that we couldn't find host track
+   * 
+   */
+  private boolean _declaredNoHostFound = false;
+
+  /**
+   * where we write our data
+   * 
+   */
+  private final Layers _layers;
+
+  /**
+   * keep track of track names that we have matched
+   * 
+   */
+  Map<String, String> nameMatches = new HashMap<String, String>();
+
+  private final SimpleDateFormat DATE_FORMAT;
+
+  private final SimpleDateFormat TIME_FORMAT;
+
+  private final TrackDataProvider _trackProvider;
+
+  /**
+   * 
+   * @param target
+   *          where to dump the data
+   * @param trackProvider
+   *          how to find the primary track
+   */
+  public ImportRiderNarrativeDocument(final Layers target,
+      final TrackDataProvider trackProvider)
+  {
+    _layers = target;
+    _trackProvider = trackProvider;
+
+    DATE_FORMAT = new SimpleDateFormat("ddHHmm'Z' MMM yy");
+    DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    if (SkipNames == null)
+    {
+      SkipNames = new ArrayList<String>();
+      SkipNames.add("HMS");
+      SkipNames.add("Hms");
+      SkipNames.add("USS");
+      SkipNames.add("RNAS");
+      SkipNames.add("HNLMS");
+    }
+  }
+
+  private void addCut(final RiderEntry thisN, final String platform)
+      throws NoHostPlatformException
+  {
+    String hisTrack = trackFor(platform, platform);
+
+    // did we find a track? Don't worry if we didn't just use the raw text
+    if (hisTrack == null)
+    {
+      hisTrack = platform;
+    }
+
+    // can we find the parent?
+    final TrackWrapper parent = (TrackWrapper) _layers.findLayer(hisTrack);
+
+    if (parent != null)
+    {
+      // find our sensor
+      final SensorWrapper ourSensor =
+          findOurSensor(NARRATIVE_CUTS_SENSOR, parent, true);
+
+      final HiResDate theDate = new HiResDate(thisN.date.getTime());
+
+      final Double ambigBearing =
+          thisN.ambig != null ? new Double(thisN.ambig) : null;
+
+      final SensorContactWrapper cut =
+          new SensorContactWrapper(parent.getName(), theDate, null, new Double(
+              thisN.bearing), ambigBearing, null, null, DebriefColors.RED,
+              "NARRATIVE", 0, hisTrack);
+
+      ourSensor.add(cut);
+    }
+  }
+
+  private void addEntry(final RiderEntry thisN, final String platform,
+      final NarrativeWrapper narrative) throws NoHostPlatformException
+  {
+    String hisTrack = trackFor(platform, platform);
+
+    // did we find a track? Don't worry if we didn't just use the raw text
+    if (hisTrack == null)
+    {
+      hisTrack = platform;
+    }
+
+    final String textBit = thisN.toString();
+
+    // sort out the time
+    final long correctedDTG = thisN.date.getTime();
+
+    final NarrativeEntry ne =
+        new NarrativeEntry(hisTrack, RIDER_SOURCE, new HiResDate(correctedDTG),
+            textBit);
+
+    // shade all rider's narratives black
+    ne.setColor(DebriefColors.BLACK);
+
+    // and store it
+    narrative.add(ne);
+  }
+
   private NarrativeWrapper getNarrativeLayer()
   {
     NarrativeWrapper nw =
@@ -1160,7 +1154,7 @@ public class ImportRiderNarrativeDocument
     {
       doc = new HWPFDocument(inputStream);
     }
-    catch (OfficeXmlFileException xw)
+    catch (final OfficeXmlFileException xw)
     {
       logError(
           ErrorLogger.WARNING,
@@ -1169,10 +1163,10 @@ public class ImportRiderNarrativeDocument
       // ok, it's .docx data in a .doc file
       try
       {
-        FileInputStream is2 = new FileInputStream(fileName);
+        final FileInputStream is2 = new FileInputStream(fileName);
         handleImportX(fileName, is2);
       }
-      catch (FileNotFoundException e)
+      catch (final FileNotFoundException e)
       {
         e.printStackTrace();
       }
@@ -1239,37 +1233,7 @@ public class ImportRiderNarrativeDocument
     }
   }
 
-  public ArrayList<String> importFromPdf(final String fileName,
-      final InputStream inputStream)
-  {
-    final ArrayList<String> strings = new ArrayList<String>();
-
-    try
-    {
-      final PDDocument document = PDDocument.load(inputStream);
-
-      final PDFTextStripper textStripper = new PDFTextStripper();
-      final PDPageTree pages = document.getPages();
-      for (int i = 1; i <= pages.getCount(); i++)
-      {
-        textStripper.setStartPage(i);
-        textStripper.setEndPage(i);
-        final String pageText = textStripper.getText(document);
-        final String[] split = pageText.split(textStripper.getLineSeparator());
-        strings.addAll(Arrays.asList(split));
-
-      }
-      document.close();
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
-    }
-
-    return strings;
-  }
-
-  public TableBreakdown importFromWord(final HWPFDocument doc)
+  private TableBreakdown importFromWord(final HWPFDocument doc)
   {
     TableBreakdown data = null;
 
@@ -1296,7 +1260,7 @@ public class ImportRiderNarrativeDocument
     return data;
   }
 
-  public TableBreakdown importFromWordX(final XWPFDocument doc)
+  private TableBreakdown importFromWordX(final XWPFDocument doc)
   {
     TableBreakdown data = null;
 
@@ -1339,17 +1303,12 @@ public class ImportRiderNarrativeDocument
     return data;
   }
 
-  public void logError(final int status, final String msg, final Exception e)
-  {
-    logThisError(status, msg, e);
-  }
-
   /**
    * parse a list of strings
    * 
    * @param data
    */
-  public void processThese(final TableBreakdown data)
+  private void processThese(final TableBreakdown data)
   {
     if (data == null)
     {
@@ -1372,14 +1331,14 @@ public class ImportRiderNarrativeDocument
           addCut(thisN, data.header.platform);
         }
 
-        if(narrative == null)
+        if (narrative == null)
         {
           // note, we defer getting/creating the narrative layer
-          // until we get here, since if we can't find a parent 
+          // until we get here, since if we can't find a parent
           // track to use, we won't load any data
           narrative = getNarrativeLayer();
         }
-        
+
         // add a narrative entry
         addEntry(thisN, data.header.platform, narrative);
 
