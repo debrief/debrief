@@ -66,6 +66,9 @@ import MWC.TacticalData.NarrativeEntry;
 public class ImportRiderNarrativeDocument
 {
 
+  private static final String DTG_MISSING_STR =
+      "[DTG missing. Re-using previous DTG]";
+
   private static class DocHelper implements WordHelper
   {
     final private Table _table;
@@ -385,6 +388,41 @@ public class ImportRiderNarrativeDocument
 
     }
 
+    public void testImportRiderNarrativeXMissingPlatform() throws InterruptedException,
+        IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+      final TrackWrapper parent = (TrackWrapper) tLayers.findLayer("NONSUCH");
+      assertNotNull("found parent track", parent);
+
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportRiderNarrativeDocument importer =
+          new ImportRiderNarrativeDocument(tLayers);
+      assertEquals("layers empty", 1, tLayers.size());
+
+      final XWPFDocument doc = new XWPFDocument(is);
+      final TableBreakdown data = importer.importFromWordX(doc);
+      
+      importer.processThese(data);
+    }
+
     public void testImportRiderNarrativeX() throws InterruptedException,
         IOException
     {
@@ -436,7 +474,7 @@ public class ImportRiderNarrativeDocument
       assertNotNull(data.header);
       assertNotNull(data.header.startDate);
       assertNotNull(data.entries);
-      assertEquals(14, data.entries.size());
+      assertEquals(15, data.entries.size());
       assertEquals("HMS Nonsuch", data.header.platform);
       assertEquals("2009/07/22 12:00:00", dateF.format(data.header.startDate));
 
@@ -464,8 +502,7 @@ public class ImportRiderNarrativeDocument
       // so we allow for both permutations here
       final boolean matchesText =
           entry8.toString().equals("Lorem ipsum 8And more \nAnd more")
-              || entry8.toString().equals(
-                  "Lorem ipsum 8\rAnd more \nAnd more");
+              || entry8.toString().equals("Lorem ipsum 8\rAnd more \nAnd more");
       assertTrue("correct text", matchesText);
 
       final RiderEntry entry9 = data.entries.get(9);
@@ -486,7 +523,25 @@ public class ImportRiderNarrativeDocument
       assertEquals(null, entry11.bearing);
       assertEquals(null, entry11.ambig);
       assertEquals(null, entry11.beam);
-      assertEquals("[Bearing represents arc (096-112). Not imported.]Lorem ipsum 12", entry11.toString());
+      assertEquals(
+          "[Bearing represents arc (096-112). Not imported.]Lorem ipsum 12",
+          entry11.toString());
+
+      final RiderEntry entry12 = data.entries.get(12);
+      assertEquals("2009/07/22 04:21:23", dateF.format(entry12.date));
+      assertEquals(null, entry12.bearing);
+      assertEquals(null, entry12.ambig);
+      assertEquals(null, entry12.beam);
+      assertEquals(DTG_MISSING_STR + "Lorem ipsum 13", entry12.toString());
+
+      final RiderEntry entry13 = data.entries.get(13);
+      assertEquals("2009/07/22 04:21:23", dateF.format(entry13.date));
+      assertEquals(null, entry13.bearing);
+      assertEquals(null, entry13.ambig);
+      assertEquals(null, entry13.beam);
+      assertEquals(DTG_MISSING_STR
+          + "[Bearing represents arc (119-143). Not imported.]Lorem ipsum 14",
+          entry13.toString());
 
       // ok, now store them
       importer.processThese(data);
@@ -497,15 +552,44 @@ public class ImportRiderNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 14, narrLayer.size());
+      assertEquals("Got num lines", 15, narrLayer.size());
 
       // check ownship received cuts
       assertNotNull("got a sensor", parent.getSensors());
       final SensorWrapper sensor =
-          findOurSensor(NARRATIVE_CUTS_LAYER, parent, false);
+          findOurSensor(NARRATIVE_CUTS_SENSOR, parent, false);
 
       assertNotNull("got our sensor", sensor);
       assertEquals("got cuts", 7, sensor.size());
+      
+      Enumeration<Editable> cuts = sensor.elements();
+      SensorContactWrapper lastCut = null;
+      SensorContactWrapper firstCut = null;
+      while(cuts.hasMoreElements())
+      {
+        lastCut = (SensorContactWrapper) cuts.nextElement();
+        if(firstCut == null)
+        {
+          firstCut = lastCut;
+        }
+      }
+      
+      assertNotNull(firstCut);
+      assertEquals("090722 041012", firstCut.toString());
+      assertNull(firstCut.getRange());
+      assertEquals(NARRATIVE_CUTS_SENSOR, firstCut.getSensor().getName());
+      assertFalse(firstCut.getHasAmbiguousBearing());
+      assertEquals(273d, firstCut.getBearing(), 0.001);
+      assertEquals(Double.NaN, firstCut.getAmbiguousBearing(), 0.001);
+
+      assertNotNull(lastCut);
+      assertTrue(lastCut.getHasAmbiguousBearing());
+      assertEquals(094d, lastCut.getBearing(), 0.001);
+      assertEquals(123d, lastCut.getAmbiguousBearing(), 0.001);
+      assertEquals("090722 042022", lastCut.toString());
+      assertNull(lastCut.getRange());
+      assertEquals(NARRATIVE_CUTS_SENSOR, lastCut.getSensor().getName());
+      
     }
 
     @SuppressWarnings("deprecation")
@@ -533,7 +617,7 @@ public class ImportRiderNarrativeDocument
 
   public static final String RIDER_SOURCE = "Rider";
 
-  private static final String NARRATIVE_CUTS_LAYER = "FromNarrative";
+  private static final String NARRATIVE_CUTS_SENSOR = "FromNarrative";
 
   private static List<String> SkipNames = null;
 
@@ -678,12 +762,15 @@ public class ImportRiderNarrativeDocument
     {
       // find our sensor
       final SensorWrapper ourSensor =
-          findOurSensor(NARRATIVE_CUTS_LAYER, parent, true);
+          findOurSensor(NARRATIVE_CUTS_SENSOR, parent, true);
 
       final HiResDate theDate = new HiResDate(thisN.date.getTime());
+      
+      final Double ambigBearing = thisN.ambig != null ? new Double(thisN.ambig) : null;
+      
       final SensorContactWrapper cut =
           new SensorContactWrapper(parent.getName(), theDate, null, new Double(
-              thisN.bearing), null, DebriefColors.RED, "NARRATIVE", 0, hisTrack);
+              thisN.bearing), ambigBearing, null, null, DebriefColors.RED, "NARRATIVE", 0, hisTrack);
 
       ourSensor.add(cut);
     }
@@ -722,6 +809,9 @@ public class ImportRiderNarrativeDocument
   {
     final List<RiderEntry> res = new ArrayList<RiderEntry>();
 
+    // track the last date, in case a date is missing
+    Date lastDate = null;
+
     while (helper.hasMoreEntries())
     {
       // ok, parse this row
@@ -737,11 +827,34 @@ public class ImportRiderNarrativeDocument
         // ok, go to the next row
         continue;
       }
-      
+
       // ability to store errors
       String warningStr = "";
 
-      final Date date = timeFormat.parse(dateStr);
+      final Date date;
+      if (!dateStr.equals(""))
+      {
+        date = timeFormat.parse(dateStr);
+
+        // cache the date;
+        lastDate = date;
+      }
+      else
+      {
+        if (lastDate != null)
+        {
+          date = new Date(lastDate.getTime() + 1);
+          warningStr += DTG_MISSING_STR;
+        }
+        else
+        {
+          date = null;
+          logError(ErrorLogger.ERROR,
+              "Unable to find date in first row. Skipping this row", null);
+          continue;
+        }
+      }
+
       final Integer bearing;
       final Integer ambig;
       if (bearingStr.isEmpty() || bearingStr.equalsIgnoreCase("NO B"))
@@ -768,12 +881,13 @@ public class ImportRiderNarrativeDocument
                 "Not correct number of bearings to be ambiguous", null);
           }
         }
-        else if(bearingStr.contains("-"))
+        else if (bearingStr.contains("-"))
         {
           // it's an arc, ignore the bearing
           bearing = null;
           ambig = null;
-          warningStr += "[Bearing represents arc (" + bearingStr + "). Not imported.]";
+          warningStr +=
+              "[Bearing represents arc (" + bearingStr + "). Not imported.]";
         }
         else
         {
@@ -793,7 +907,7 @@ public class ImportRiderNarrativeDocument
       }
 
       final Date newDate = new Date(dateFor(header.startDate, date));
-      
+
       final String finalText = warningStr + text;
 
       final RiderEntry entry =
