@@ -3,11 +3,8 @@ package Debrief.ReaderWriter.Replay.extensions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
-
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -15,40 +12,28 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class TA_ForeAft_DataHandler extends Core_TA_Handler
 {
 
-  final private String _datasetName;
-
-  public TA_ForeAft_DataHandler()
-  {
-    this("TA_FORE_AFT", "Fore & Aft");
-  }
-
-  public TA_ForeAft_DataHandler(String title, String datasetName)
-  {
-    super(title);
-
-    _datasetName = datasetName;
-  }
-
   public static class TestMe extends TestCase
   {
     //
-    private List<String> _messages = new ArrayList<String>();
+    private final List<String> _messages = new ArrayList<String>();
 
     public void testImport()
     {
       final String str =
-          ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" [12.75 3.00] [14.75 10.00]";
-      TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler()
+          ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 12.75 3.00\t14.75 10.00";
+      final TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler()
       {
 
         @Override
-        protected void storeMeasurement(String platform_name,
-            String sensor_name, String folder, String dataset,
-            final String units, HiResDate theDate, double measurement)
+        protected void storeMeasurement(final String platform_name,
+            final String sensor_name, final String folder,
+            final String dataset, final String units, final HiResDate theDate,
+            final double measurement)
         {
           super.storeMeasurement(platform_name, sensor_name, folder, dataset,
               units, theDate, measurement);
-          String outStr = "stored:" + dataset + " value of:" + measurement;
+          final String outStr =
+              "stored:" + dataset + " value of:" + measurement;
           _messages.add(outStr);
 
         }
@@ -61,8 +46,43 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
     }
   }
 
+  final private String _datasetName;
+
+  public TA_ForeAft_DataHandler()
+  {
+    this("TA_FORE_AFT", "Fore & Aft");
+  }
+
+  public TA_ForeAft_DataHandler(final String title, final String datasetName)
+  {
+    super(title);
+
+    _datasetName = datasetName;
+  }
+
+  protected boolean checkIfLong(final String[] tokens)
+  {
+    return false;
+  }
+
+  protected String nameForRow(final int ctr, final boolean isLong)
+  {
+    final String datasetName;
+
+    if (ctr <= 1)
+    {
+      datasetName = "Fore";
+    }
+    else
+    {
+      datasetName = "Aft";
+    }
+
+    return datasetName;
+  }
+
   @Override
-  public Object readThisLine(String theLine)
+  public Object readThisLine(final String theLine)
   {
 
     // should look like:
@@ -94,51 +114,50 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
 
     // extract the measuremetns
     // ok, parse the rest of the line
-    String remainingText = st.nextToken("");
+    final String remainingText = st.nextToken("").trim();
 
-    Pattern pattern = Pattern.compile("\\[(.*?)\\]");
-    Matcher matcher = pattern.matcher(remainingText);
+    // now split this into tab separated tokens
+    final String[] tokens = remainingText.split("\\s+");
 
-    int ctr = 1;
+    // SPECIAL CASE: for a modules entry, the line will either contain a set of values, then zeros,
+    // or a set of zeroes, then values.
+    // Introduce test, to check
+    final boolean isLong = checkIfLong(tokens);
 
-    while (matcher.find())
+    int ctr = 0;
+    for (final String str : tokens)
     {
+      // hmm, depth or heading value?
+      final boolean isDepth = (ctr % 2) == 0;
 
-      String block = matcher.group(1);
-      final StringTokenizer blockT = new StringTokenizer(block);
+      // extract the double
+      final double thisVal = Double.valueOf(str.trim());
 
-      final double depth = Double.valueOf(blockT.nextToken());
-      final double heading = Double.valueOf(blockT.nextToken());
+      if (isLong && ctr > 7 || !isLong && ctr < 8)
+      {
 
-      final String datasetName = nameForRow(ctr);
+        // sort out if we're fore or aft
+        final String datasetName = nameForRow(ctr, isLong);
 
-      // ok, try to store the measurement
-      storeMeasurement(platform_name, sensor_name, _datasetName + " / "
-          + datasetName, "Heading", "\u00b0", theDate, heading);
-      storeMeasurement(platform_name, sensor_name, _datasetName + " / "
-          + datasetName, "Depth", "m", theDate, depth);
+        // ok, try to store the measurement
+        if (isDepth)
+        {
+          storeMeasurement(platform_name, sensor_name, _datasetName + " / "
+              + datasetName, "Depth", "m", theDate, thisVal);
+        }
+        else
+        {
+          storeMeasurement(platform_name, sensor_name, _datasetName + " / "
+              + datasetName, "Heading", "\u00b0", theDate, thisVal);
+        }
+      }
 
+      // and increment
       ctr++;
     }
 
     return null;
 
-  }
-
-  protected String nameForRow(int ctr)
-  {
-    final String datasetName;
-
-    if (ctr == 1)
-    {
-      datasetName = "Fore";
-    }
-    else
-    {
-      datasetName = "Aft";
-    }
-
-    return datasetName;
   }
 
 }

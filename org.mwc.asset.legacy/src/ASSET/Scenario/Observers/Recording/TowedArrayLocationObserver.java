@@ -151,6 +151,13 @@ public class TowedArrayLocationObserver extends RecordStatusToFileObserverType
     final StringBuffer theseValues = new StringBuffer();
 
     DecimalFormat df = new DecimalFormat("0.00");
+    
+    // SPECIAL CASE: for an 8 element array, we need to prepend 4 zero pairs
+    if(_offsets.size() == 8 && _recorderType == RecorderType.HDG_DEPTH)
+    {
+      theseValues.append(" 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ");
+    }
+
 
     // ok, see if we are ready to sort out the array locations
     for (Double thisO : _offsets)
@@ -170,8 +177,8 @@ public class TowedArrayLocationObserver extends RecordStatusToFileObserverType
         case HDG_DEPTH:
           // get the heading and depth
           double hdgDegs = pos.getCourseDegs();
-          theseValues.append("[" + df.format(depthM) + " " + df.format(hdgDegs)
-              + "] ");
+          theseValues.append("" + df.format(depthM) + " " + df.format(hdgDegs)
+              + " ");
           break;
         case LOC_ABS:
           theseValues.append("" + aLoc.getLat() + " " + aLoc.getLong() + " "
@@ -197,6 +204,12 @@ public class TowedArrayLocationObserver extends RecordStatusToFileObserverType
         }
 
       }
+    }
+    
+    // SPECIAL CASE: for an 4 element array, we need to append 8 zero pairs
+    if(_offsets.size() == 4 && _recorderType == RecorderType.HDG_DEPTH)
+    {
+      theseValues.append("0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ");
     }
 
     // do we have anything to output?

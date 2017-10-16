@@ -83,7 +83,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   private boolean _recordPositions = false;
   private boolean _recordDecisions = false;
   private TargetType _targetType = null;
-  private List<String> _formatHelpers;
+  final private List<String> _formatHelpers = new ArrayList<String>();
   private String _subjectSensor = null;
 
   private static final String RECORD_DETECTIONS = "record_detections";
@@ -137,10 +137,6 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
       @Override
       public void storeMe(final String text)
       {
-        if (_formatHelpers == null)
-        {
-          _formatHelpers = new ArrayList<String>();
-        }
         _formatHelpers.add(text);
       }
     });
@@ -177,7 +173,6 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     
     // and clear the format helpers
     _formatHelpers.clear();
-
   }
 
   protected DebriefReplayObserver getObserver(String name, boolean isActive,

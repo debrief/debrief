@@ -26,9 +26,9 @@
 			</SubjectToTrack>
 		</DebriefReplayObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="TA_MODULES" DEFAULT_DEPTH="28"
+			Active="true" file_name="LONG_TA_MODULES" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_MODULES" RECORDER_TYPE="HDG_BRG"
-			OFFSETS="800, 1000, 1200, 1400, 1600, 1800" SENSOR_NAME="TA_ARRAY">
+			OFFSETS="800, 1000, 1200, 1400, 1600, 1800, 2000, 2200" SENSOR_NAME="LONG_TA">
 			<SubjectToTrack>
 				<Type Name="BLUE" />
 			</SubjectToTrack>
