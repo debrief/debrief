@@ -12,40 +12,28 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class TA_ForeAft_DataHandler extends Core_TA_Handler
 {
 
-  final private String _datasetName;
-
-  public TA_ForeAft_DataHandler()
-  {
-    this("TA_FORE_AFT", "Fore & Aft");
-  }
-
-  public TA_ForeAft_DataHandler(String title, String datasetName)
-  {
-    super(title);
-
-    _datasetName = datasetName;
-  }
-
   public static class TestMe extends TestCase
   {
     //
-    private List<String> _messages = new ArrayList<String>();
+    private final List<String> _messages = new ArrayList<String>();
 
     public void testImport()
     {
       final String str =
           ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 12.75 3.00\t14.75 10.00";
-      TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler()
+      final TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler()
       {
 
         @Override
-        protected void storeMeasurement(String platform_name,
-            String sensor_name, String folder, String dataset,
-            final String units, HiResDate theDate, double measurement)
+        protected void storeMeasurement(final String platform_name,
+            final String sensor_name, final String folder,
+            final String dataset, final String units, final HiResDate theDate,
+            final double measurement)
         {
           super.storeMeasurement(platform_name, sensor_name, folder, dataset,
               units, theDate, measurement);
-          String outStr = "stored:" + dataset + " value of:" + measurement;
+          final String outStr =
+              "stored:" + dataset + " value of:" + measurement;
           _messages.add(outStr);
 
         }
@@ -58,8 +46,53 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
     }
   }
 
+  final private String _datasetName;
+
+  public TA_ForeAft_DataHandler()
+  {
+    this("TA_FORE_AFT", "Fore & Aft");
+  }
+
+  public TA_ForeAft_DataHandler(final String title, final String datasetName)
+  {
+    super(title);
+
+    _datasetName = datasetName;
+  }
+
+  private boolean checkIfLong(final String[] tokens)
+  {
+    boolean res = true;
+    for (int i = 0; i < 8; i++)
+    {
+      final double val = Double.valueOf(tokens[i]);
+      if (val != 0d)
+      {
+        res = false;
+        break;
+      }
+    }
+    return res;
+  }
+
+  protected String nameForRow(final int ctr, final boolean isLong)
+  {
+    final String datasetName;
+
+    if (ctr <= 1)
+    {
+      datasetName = "Fore";
+    }
+    else
+    {
+      datasetName = "Aft";
+    }
+
+    return datasetName;
+  }
+
   @Override
-  public Object readThisLine(String theLine)
+  public Object readThisLine(final String theLine)
   {
 
     // should look like:
@@ -91,10 +124,10 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
 
     // extract the measuremetns
     // ok, parse the rest of the line
-    String remainingText = st.nextToken("").trim();
+    final String remainingText = st.nextToken("").trim();
 
     // now split this into tab separated tokens
-    String[] tokens = remainingText.split("\\s+");
+    final String[] tokens = remainingText.split("\\s+");
 
     // SPECIAL CASE: for a modules entry, the line will either contain a set of values, then zeros,
     // or a set of zeroes, then values.
@@ -135,37 +168,6 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
 
     return null;
 
-  }
-
-  private boolean checkIfLong(String[] tokens)
-  {
-    boolean res = true;
-    for (int i = 0; i < 8; i++)
-    {
-      double val = Double.valueOf(tokens[i]);
-      if (val != 0d)
-      {
-        res = false;
-        break;
-      }
-    }
-    return res;
-  }
-
-  protected String nameForRow(int ctr, boolean isLong)
-  {
-    final String datasetName;
-
-    if (ctr <= 1)
-    {
-      datasetName = "Fore";
-    }
-    else
-    {
-      datasetName = "Aft";
-    }
-
-    return datasetName;
   }
 
 }
