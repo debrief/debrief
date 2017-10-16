@@ -170,8 +170,8 @@ public class TowedArrayLocationObserver extends RecordStatusToFileObserverType
         case HDG_DEPTH:
           // get the heading and depth
           double hdgDegs = pos.getCourseDegs();
-          theseValues.append("[" + df.format(depthM) + " " + df.format(hdgDegs)
-              + "] ");
+          theseValues.append("" + df.format(depthM) + " " + df.format(hdgDegs)
+              + " ");
           break;
         case LOC_ABS:
           theseValues.append("" + aLoc.getLat() + " " + aLoc.getLong() + " "
