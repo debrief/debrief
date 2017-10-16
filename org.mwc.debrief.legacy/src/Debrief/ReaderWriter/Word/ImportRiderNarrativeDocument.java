@@ -218,10 +218,11 @@ public class ImportRiderNarrativeDocument
       final String ambigStr = ambig == null ? "" : "/" + ambig;
       final String brgStr = bearing == null ? "" : "Brg:" + bearing + ambigStr;
       final String beamStr = beam == null ? "" : "Beam:" + beam;
-      final String separator = brgStr != "" && beamStr != "" ? ", " : "";
+      final String separator =
+          !brgStr.equals("") && !beamStr.equals("") ? ", " : "";
       final String res =
-          beamStr == "" && brgStr == "" ? text : "[" + brgStr + separator
-              + beamStr + "] " + text;
+          beamStr.equals("") && brgStr.equals("") ? text : "[" + brgStr
+              + separator + beamStr + "] " + text;
       return res;
     }
   }
@@ -488,7 +489,7 @@ public class ImportRiderNarrativeDocument
       testThisData(tLayers, parent, importer, data);
     }
 
-    public void testImportRiderNarrativeXMissingPlatform_NoPrimaryTrack()
+    public void testImportRiderNarrativeXMissingPlatformNoPrimaryTrack()
         throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
@@ -540,7 +541,7 @@ public class ImportRiderNarrativeDocument
       assertNull(narr);
     }
 
-    public void testImportRiderNarrativeXMissingPlatform_PrimaryTrack()
+    public void testImportRiderNarrativeXMissingPlatformPrimaryTrack()
         throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
@@ -876,7 +877,7 @@ public class ImportRiderNarrativeDocument
       String warningStr = "";
 
       final Date date;
-      if (!dateStr.equals(""))
+      if (!"".equals(dateStr))
       {
         date = timeFormat.parse(dateStr);
 
@@ -1476,23 +1477,20 @@ public class ImportRiderNarrativeDocument
               }
             }
 
-            if (match == null)
+            // have we already told the user?
+            if (match == null && !_declaredNoHostFound)
             {
-              // have we already told the user?
-              if (!_declaredNoHostFound)
-              {
-                // ok, stop it appearing again
-                _declaredNoHostFound = true;
+              // ok, stop it appearing again
+              _declaredNoHostFound = true;
 
-                // tell the user
-                MessageProvider.Base.Provider
-                    .show(
-                        "Import Rider's Narrative",
-                        "Platform in Rider's narrative doesn't match any loaded tracks.\nPlease assign a primary, and the cuts will be added to that platform.",
-                        MessageProvider.ERROR);
+              // tell the user
+              MessageProvider.Base.Provider
+                  .show(
+                      "Import Rider's Narrative",
+                      "Platform in Rider's narrative doesn't match any loaded tracks.\nPlease assign a primary, and the cuts will be added to that platform.",
+                      MessageProvider.ERROR);
 
-                throw new NoHostPlatformException();
-              }
+              throw new NoHostPlatformException();
             }
           }
         }
