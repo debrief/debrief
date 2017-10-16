@@ -16,6 +16,7 @@ package org.mwc.debrief.core.editors;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -38,6 +39,7 @@ import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IElementComparer;
 import org.eclipse.jface.viewers.ISelection;
@@ -221,7 +223,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       {
         Object obj1 = a;
         Object obj2 = b;
-        
+
         // do our special case for comparing plottables
         if (obj1 instanceof EditableWrapper)
         {
@@ -234,7 +236,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
           final EditableWrapper pw = (EditableWrapper) obj2;
           obj2 = pw.getEditable();
         }
-        
+
         return obj1.equals(obj2);
       }
 
@@ -616,18 +618,18 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
         // go for it.
-    	  try
-    	  {
-    		  //workaround to avoid NPE on windows 
-    		  _treeViewer.setSelection(new StructuredSelection());
-    		  _treeViewer.getTree().setRedraw(true);
-    		  _treeViewer.collapseAll();
-    	  }
-    	  finally{
-    		  
-    		  
-    		  _treeViewer.getTree().setRedraw(true);
-    	  }
+        try
+        {
+          // workaround to avoid NPE on windows
+          _treeViewer.setSelection(new StructuredSelection());
+          _treeViewer.getTree().setRedraw(true);
+          _treeViewer.collapseAll();
+        }
+        finally
+        {
+
+          _treeViewer.getTree().setRedraw(true);
+        }
       }
     };
 
@@ -1732,7 +1734,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       _pendingLayers.clear();
     }
   }
-  
 
   /**
    * The job used to refresh the grid.
@@ -1749,17 +1750,57 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       if (newItem == null)
       {
         // ok, we should probably schedule the delete on update job.
-        
+        StructuredSelection ss = (StructuredSelection) this.getSelection();
+
+        // special handling. Let's try to select the item immediately before the
+        // selected one - since that's probably what is being deleted
+        EditableWrapper firstVar = (EditableWrapper) ss.getFirstElement();
+        Editable selectedItem = firstVar.getEditable();
+
+        if (firstVar != null)
+        {
+          // ok, can we find the one before it?
+          Object[] elements = _treeViewer.getExpandedElements();
+          EditableWrapper lastElement = null;
+          for (Object element : elements)
+          {
+            EditableWrapper thisI = (EditableWrapper) element;
+            if(thisI.hasChildren())
+            {
+              // ok, work through children
+              HasEditables hasKits = (HasEditables) thisI.getEditable();
+              Enumeration<Editable> ele = hasKits.elements();
+              while(ele.hasMoreElements())
+              {
+                Editable thisE = ele.nextElement();
+                if(selectedItem.equals(thisE))
+                {
+                  break;
+                }
+                lastElement = thisE;
+              }
+            }
+            
+          }
+
+          if (firstVar != null && lastElement != null)
+          {
+            System.out.println("current sel:" + firstVar.getEditable()
+                + " previous item:" + lastElement.getEditable());
+          }
+
+        }
+
         // do we need to create the job?
-        if(refreshOnDeleteJob == null)
+        if (refreshOnDeleteJob == null)
         {
           // ok, create it
           refreshOnDeleteJob = createRefreshOnDeleteJob();
         }
-        
+
         // ok, cancel any existing scheduled instance
         refreshOnDeleteJob.cancel();
-        
+
         // and request one after a pause
         refreshOnDeleteJob.schedule(200);
       }
@@ -1803,7 +1844,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
   }
 
-  /** produce a job to force an outline UI refresh
+  /**
+   * produce a job to force an outline UI refresh
    * 
    * @return
    */
@@ -1836,7 +1878,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
             _treeViewer.setExpandedTreePaths(paths);
           }
         });
-        
+
         return Status.OK_STATUS;
       }
     };
