@@ -219,9 +219,9 @@ public class ImportRiderNarrativeDocument
       final String brgStr = bearing == null ? "" : "Brg:" + bearing + ambigStr;
       final String beamStr = beam == null ? "" : "Beam:" + beam;
       final String separator =
-          !brgStr.equals("") && !beamStr.equals("") ? ", " : "";
+          !"".equals(brgStr) && !"".equals(beamStr) ? ", " : "";
       final String res =
-          beamStr.equals("") && brgStr.equals("") ? text : "[" + brgStr
+          "".equals(beamStr) && "".equals(brgStr) ? text : "[" + brgStr
               + separator + beamStr + "] " + text;
       return res;
     }
@@ -591,7 +591,7 @@ public class ImportRiderNarrativeDocument
       assertEquals(7, theS.size());
     }
 
-    public void testImportRiderNarrativeXMissingPlatform_SingleTrack()
+    public void testImportRiderNarrativeXMissingPlatformSingleTrack()
         throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
