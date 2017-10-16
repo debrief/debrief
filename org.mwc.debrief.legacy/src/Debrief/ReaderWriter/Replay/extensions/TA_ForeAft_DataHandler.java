@@ -60,19 +60,9 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
     _datasetName = datasetName;
   }
 
-  private boolean checkIfLong(final String[] tokens)
+  protected boolean checkIfLong(final String[] tokens)
   {
-    boolean res = true;
-    for (int i = 0; i < 8; i++)
-    {
-      final double val = Double.valueOf(tokens[i]);
-      if (val != 0d)
-      {
-        res = false;
-        break;
-      }
-    }
-    return res;
+    return false;
   }
 
   protected String nameForRow(final int ctr, final boolean isLong)

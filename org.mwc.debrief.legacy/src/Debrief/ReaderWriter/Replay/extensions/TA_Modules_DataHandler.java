@@ -98,6 +98,22 @@ public class TA_Modules_DataHandler extends TA_ForeAft_DataHandler
   }
 
   @Override
+  protected boolean checkIfLong(final String[] tokens)
+  {
+    boolean res = true;
+    for (int i = 0; i < 8; i++)
+    {
+      final double val = Double.valueOf(tokens[i]);
+      if (val != 0d)
+      {
+        res = false;
+        break;
+      }
+    }
+    return res;
+  }
+
+  @Override
   protected String nameForRow(final int ctr, final boolean isLong)
   {
     return isLong ? "" + (1 + (ctr - 8) / 2) : "" + (1 + (ctr / 2));
