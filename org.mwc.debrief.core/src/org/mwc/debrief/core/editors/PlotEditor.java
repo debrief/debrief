@@ -752,12 +752,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                     }
                   }
                 }
-
-                // see if there are any sensors awaiting a color
-                if (sensors.size() == 1)
+                else if (sensors.size() == 1)
                 {
+                  // see if there are any sensors awaiting a color
                   final SensorWrapper thisS = sensors.firstElement();
-                  nameThisSensor(thisS);
+                  final boolean success = nameThisSensor(thisS);
+                  
+                  // does user wish to name/format sensor?
+                  if(!success)
+                  {
+                    // nope, cancel the import.
+                    ir.clearPendingSensorList();
+                  }
                 }
 
                 // ok, now we can store the pending sensors in their
@@ -836,7 +842,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
   }
 
-  private void nameThisSensor(final SensorWrapper thisS)
+  private boolean nameThisSensor(final SensorWrapper thisS)
   {
     // right, just have a quick look and see if the sensor has range data -
     // because
@@ -894,6 +900,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         applyRainbowShadingTo(thisS);
       }
     }
+    
+    return importHelper.success();
   }
 
   private boolean areWeWaitingForRange(final SensorWrapper thisS)
