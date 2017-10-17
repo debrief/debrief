@@ -464,12 +464,21 @@ public class RightClickCutCopyAdaptor
 
           boolean multipleLayersModified = false;
           HasEditables lastLayerModified = null;
+          
+          Plottable toHighlight = null;
 
           for (int i = 0; i < _data.length; i++)
           {
             final Editable thisE = _data[i];
             final HasEditables parentLayer = _theParent[i];
 
+            // if this is the first (or only) item being
+            // restored - remember it, so we can highlgiht it
+            if(toHighlight == null)
+            {
+              toHighlight = (Plottable) thisE;
+            }
+            
             // is the parent the data object itself?
             if (parentLayer == null)
             {
@@ -510,7 +519,7 @@ public class RightClickCutCopyAdaptor
           }
           else
           {
-            _theLayers.fireExtended(null, lastLayerModified);
+            _theLayers.fireExtended(toHighlight, lastLayerModified);
           }
 
           // and restore the previous contents
