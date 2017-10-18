@@ -32,9 +32,13 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 
 public class AmbiguityResolver
 {
+  private static final long OS_TURN_MIN_TIME_INTERVAL = 180l;
+  private static final double OS_TURN_MIN_COURSE_CHANGE = 10d;
+
   private static class LegPermutation
   {
     final private double[] coreSlopeEarly;
@@ -590,7 +594,7 @@ public class AmbiguityResolver
       final LegOfCuts zigs = res.zigCuts;
 
       assertNotNull("found zones", legs);
-      assertEquals("found correct number of zones", 8, legs.size());
+      assertEquals("found correct number of zones", 9, legs.size());
 
       assertNotNull("found zigs", zigs);
       assertEquals("found correct number of zig cuts", 16, zigs.size());
@@ -1210,6 +1214,7 @@ public class AmbiguityResolver
     HiResDate lastTime = null;
     LegOfCuts thisLeg = null;
     LegOfCuts thisZig = null;
+    Double lastCourse = null;
     SensorContactWrapper firstCut = null;
     final LegOfCuts possLeg = new LegOfCuts();
 
@@ -1225,6 +1230,11 @@ public class AmbiguityResolver
         double delta = cut.getAmbiguousBearing() - cut.getBearing();
 
         final HiResDate time = cut.getDTG();
+
+//        if (time.getDate().toString().contains("12:32:00"))
+//        {
+//          System.out.println("here");
+//        }
 
         // is this the first cut?
         if (lastDelta == null)
@@ -1296,6 +1306,35 @@ public class AmbiguityResolver
               Math.signum(brgDelta) == Math.signum(ambigBrgDelta)
                   && Math.abs(brgRate) > minBoth;
 
+          // introduce an extra test, for if there's a large period of missing data
+          boolean MISSING_CUTS = false;
+
+          Watchable[] nearest = sensor.getHost().getNearestTo(time);
+          if (nearest != null && nearest.length > 0)
+          {
+            double course =
+                MWC.Algorithms.Conversions.Rads2Degs(nearest[0].getCourse());
+
+            if (lastCourse != null)
+            {
+              double courseDelta = Math.abs(shortAngle(course, lastCourse));
+              MISSING_CUTS =
+                  courseDelta > OS_TURN_MIN_COURSE_CHANGE
+                      && timeDeltaSecs > OS_TURN_MIN_TIME_INTERVAL;
+              if (MISSING_CUTS)
+              {
+                // ok, we've had a large course change, and it's been a long
+                // time since we last had any data. Assume we're now on a new leg.
+                // we can't create a zig for the list, since we don't have
+                // any cuts to put into it.
+                thisLeg = null;
+              }
+            }
+
+            // ok, remember it
+            lastCourse = course;
+          }
+
           if (scores != null)
           {
             final FixedMillisecond sec =
@@ -1317,7 +1356,9 @@ public class AmbiguityResolver
             doLog(logger, stats, time);
           }
 
-          if (TRIP_ZIG || gapRate > minZig)
+          // note: we ignore the gap rate if we know we've got missing cuts.
+          
+          if (TRIP_ZIG || (gapRate > minZig && !MISSING_CUTS))
           {
             // ok, were we on a straight leg?
             if (thisLeg != null)
