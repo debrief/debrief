@@ -1743,8 +1743,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   {
     if (!_treeViewer.getTree().isDisposed())
     {
-      // hmm, if newItem is null, it's probably a delete operation, asking for a general
-      // refresh. Let's group up such updates
+      // hmm, if newItem is null, it's probably because lots of things have
+      // changed.  We may have some more updates coming.
+      // Let's group up such updates
       if (newItem == null)
       {
         // do we need to create the job?
