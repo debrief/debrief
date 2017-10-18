@@ -1128,7 +1128,7 @@ public class AmbiguityResolver
         new ArrayList<LegPermutation>();
 
     // ok, loop through the legs
-    LegOfCuts lastLeg = null;
+    LegOfCuts previousLeg = null;
     LegPermutation lastPerm = null;
     for (final LegOfCuts leg : legs)
     {
@@ -1152,9 +1152,9 @@ public class AmbiguityResolver
                 coreSlopeLate, ambigSlopeLate);
 
         // have we already processed a leg?
-        if (lastLeg != null)
+        if (previousLeg != null)
         {
-          final long midTime = midTimeFor(lastLeg, leg);
+          final long midTime = midTimeFor(previousLeg, leg);
 
           // sort out the after scores for the last leg
           lastPerm.coreAfter = valueAt(midTime, lastPerm.coreSlopeLate);
@@ -1168,9 +1168,10 @@ public class AmbiguityResolver
         // store the leg permutation
         listOfPermutations.add(thisPerm);
         lastPerm = thisPerm;
+        
+        // special handling. 
+        previousLeg = leg;
       }
-
-      lastLeg = leg;
     }
     return listOfPermutations;
   }
