@@ -111,9 +111,9 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
       // get the data series
       final TimeSeries bts = tsc.getSeries(row);
       final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-      if (tsdp instanceof ColouredDataItem)
+      if (tsdp instanceof AttractiveDataItem)
       {
-        final ColouredDataItem item = (ColouredDataItem) tsdp;
+        final AttractiveDataItem item = (AttractiveDataItem) tsdp;
         if (item.connectToPrevious())
         {
           res = false;
@@ -131,8 +131,7 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
   @Override
   public Paint getItemPaint(final int row, final int column)
   {
-    Paint res = null;
-    Color theColor = null;
+    final Paint theColor;
     
     final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
     // get the data series
@@ -143,13 +142,12 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
       final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
       theColor = cdi.getColor();
     }
-
-    if (theColor != null)
-      res = theColor;
     else
-      res = super.getItemPaint(row, column);
+    {
+      theColor = super.getItemPaint(row, column);
+    }
 
-    return res;
+    return theColor;
   }
 
   /**

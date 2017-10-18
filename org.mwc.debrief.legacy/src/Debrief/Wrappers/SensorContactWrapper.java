@@ -646,7 +646,7 @@ public final class SensorContactWrapper extends
   /**
    *  cache the date string
    */
-  transient String _cachedName = null;
+  private transient String _cachedName = null;
 
   /**
    * the calculation to determine if the bearing is to the port is expensive, so cache the result
