@@ -327,7 +327,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Vector<DraggableItem> _draggableSelection;
   protected boolean _itemSelectedPending = false;
   protected ZoneChart ownshipZoneChart;
-  private ZoneChart targetZoneChart;
+  protected ZoneChart targetZoneChart;
   final protected TimeSeries ownshipCourseSeries = new TimeSeries(
       "Ownship course");
 
