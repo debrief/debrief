@@ -641,6 +641,12 @@ public final class SensorContactWrapper extends
   private boolean _hasFreq = false;
 
   private double _freq;
+  
+
+  /**
+   *  cache the date string
+   */
+  transient String _cachedName = null;
 
   /**
    * the calculation to determine if the bearing is to the port is expensive, so cache the result
@@ -1142,14 +1148,18 @@ public final class SensorContactWrapper extends
     return "Sensor:" + getSensorName() + "\nDTG:" + getName() + "\nTrack:"
         + getLabel();
   }
-
+  
   /**
    * get the name of this entry, using the formatted DTG
    */
   @Override
   public final String getName()
   {
-    return DebriefFormatDateTime.toStringHiRes(_DTG);
+    if(_cachedName == null)
+    {
+      _cachedName = DebriefFormatDateTime.toStringHiRes(_DTG);
+    }
+    return _cachedName;
   }
 
   public final WorldLocation getOrigin()
@@ -1527,6 +1537,9 @@ public final class SensorContactWrapper extends
   public final void setDTG(final HiResDate val)
   {
     _DTG = val;
+    
+    // also clear the cached name
+    _cachedName = null;
   }
 
   public final void setFrequency(final double val)
