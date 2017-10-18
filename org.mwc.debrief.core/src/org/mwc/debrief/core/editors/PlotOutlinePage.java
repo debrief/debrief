@@ -221,7 +221,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       {
         Object obj1 = a;
         Object obj2 = b;
-        
+
         // do our special case for comparing plottables
         if (obj1 instanceof EditableWrapper)
         {
@@ -234,7 +234,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
           final EditableWrapper pw = (EditableWrapper) obj2;
           obj2 = pw.getEditable();
         }
-        
+
         return obj1.equals(obj2);
       }
 
@@ -616,18 +616,18 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
         // go for it.
-    	  try
-    	  {
-    		  //workaround to avoid NPE on windows 
-    		  _treeViewer.setSelection(new StructuredSelection());
-    		  _treeViewer.getTree().setRedraw(true);
-    		  _treeViewer.collapseAll();
-    	  }
-    	  finally{
-    		  
-    		  
-    		  _treeViewer.getTree().setRedraw(true);
-    	  }
+        try
+        {
+          // workaround to avoid NPE on windows
+          _treeViewer.setSelection(new StructuredSelection());
+          _treeViewer.getTree().setRedraw(true);
+          _treeViewer.collapseAll();
+        }
+        finally
+        {
+
+          _treeViewer.getTree().setRedraw(true);
+        }
       }
     };
 
@@ -1732,7 +1732,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       _pendingLayers.clear();
     }
   }
-  
 
   /**
    * The job used to refresh the grid.
@@ -1744,22 +1743,21 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   {
     if (!_treeViewer.getTree().isDisposed())
     {
-      // hmm, if newItem is null, it's probably a delete operation, asking for a general
-      // refresh. Let's group up such updates
+      // hmm, if newItem is null, it's probably because lots of things have
+      // changed.  We may have some more updates coming.
+      // Let's group up such updates
       if (newItem == null)
       {
-        // ok, we should probably schedule the delete on update job.
-        
         // do we need to create the job?
-        if(refreshOnDeleteJob == null)
+        if (refreshOnDeleteJob == null)
         {
           // ok, create it
           refreshOnDeleteJob = createRefreshOnDeleteJob();
         }
-        
+
         // ok, cancel any existing scheduled instance
         refreshOnDeleteJob.cancel();
-        
+
         // and request one after a pause
         refreshOnDeleteJob.schedule(200);
       }
@@ -1803,7 +1801,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
   }
 
-  /** produce a job to force an outline UI refresh
+  /**
+   * produce a job to force an outline UI refresh
    * 
    * @return
    */
@@ -1836,7 +1835,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
             _treeViewer.setExpandedTreePaths(paths);
           }
         });
-        
+
         return Status.OK_STATUS;
       }
     };

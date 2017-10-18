@@ -1213,7 +1213,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
      * @param theData
      *          the Layers which have had something edited
      * @param newItem
-     *          the item which has been added
+     *          the item that has been added/edited/deleted (if just one)
      * @param parent
      *          the layer containing the item
      */
