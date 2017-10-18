@@ -61,6 +61,10 @@ public class AmbiguityPrefs extends FieldEditorPreferencePage implements
         "Output slicing diagnostics to Error Log", getFieldEditorParent()));
     addField(new BooleanFieldEditor(PreferenceConstants.DISPLAY,
         "Display controls for TA data slicing", getFieldEditorParent()));
+    addField(new StringFieldEditor(PreferenceConstants.OS_TURN_MIN_COURSE_CHANGE,
+        "Minimum number of degrees where we treat missing cuts as a course change, such as 10 (degs)", getFieldEditorParent()));
+    addField(new StringFieldEditor(PreferenceConstants.OS_TURN_MIN_TIME_INTERVAL,
+        "Minimum time period before we treat missing cuts as a course change, such as 120 (secs)", getFieldEditorParent()));
   }
 
 }
