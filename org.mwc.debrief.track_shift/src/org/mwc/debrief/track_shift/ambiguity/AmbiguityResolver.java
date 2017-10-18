@@ -544,7 +544,7 @@ public class AmbiguityResolver
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
-              null);
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -589,7 +589,7 @@ public class AmbiguityResolver
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
-              null);
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -746,7 +746,7 @@ public class AmbiguityResolver
 
       final LegsAndZigs sliced =
           solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, logger,
-              null);
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
 
       assertNotNull("produced slices", sliced);
       assertEquals("correct legs", 4, sliced.legs.size());
@@ -1193,12 +1193,15 @@ public class AmbiguityResolver
    *          a time-series of scores, to be plotted in the zone chart
    * @param trackPeriod
    *          the extent of the parent track, since we don't want to plot outside this
+   * @param osTurnMinCourseChange
+   * @param osTurnMinTimeDelta
    * @return A collection of legs and zigs.
    */
   private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
       final SensorWrapper sensor, final double minZig, final double minBoth,
       final double minLegLength, final Logger logger, final TimeSeries scores,
-      final TimePeriod trackPeriod)
+      final TimePeriod trackPeriod, Double osTurnMinCourseChange,
+      Long osTurnMinTimeDelta)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
@@ -1231,10 +1234,10 @@ public class AmbiguityResolver
 
         final HiResDate time = cut.getDTG();
 
-//        if (time.getDate().toString().contains("12:32:00"))
-//        {
-//          System.out.println("here");
-//        }
+        // if (time.getDate().toString().contains("12:32:00"))
+        // {
+        // System.out.println("here");
+        // }
 
         // is this the first cut?
         if (lastDelta == null)
@@ -1309,30 +1312,33 @@ public class AmbiguityResolver
           // introduce an extra test, for if there's a large period of missing data
           boolean MISSING_CUTS = false;
 
-          Watchable[] nearest = sensor.getHost().getNearestTo(time);
-          if (nearest != null && nearest.length > 0)
+          if (osTurnMinCourseChange != null && osTurnMinTimeDelta != null)
           {
-            double course =
-                MWC.Algorithms.Conversions.Rads2Degs(nearest[0].getCourse());
-
-            if (lastCourse != null)
+            Watchable[] nearest = sensor.getHost().getNearestTo(time);
+            if (nearest != null && nearest.length > 0)
             {
-              double courseDelta = Math.abs(shortAngle(course, lastCourse));
-              MISSING_CUTS =
-                  courseDelta > OS_TURN_MIN_COURSE_CHANGE
-                      && timeDeltaSecs > OS_TURN_MIN_TIME_INTERVAL;
-              if (MISSING_CUTS)
-              {
-                // ok, we've had a large course change, and it's been a long
-                // time since we last had any data. Assume we're now on a new leg.
-                // we can't create a zig for the list, since we don't have
-                // any cuts to put into it.
-                thisLeg = null;
-              }
-            }
+              double course =
+                  MWC.Algorithms.Conversions.Rads2Degs(nearest[0].getCourse());
 
-            // ok, remember it
-            lastCourse = course;
+              if (lastCourse != null)
+              {
+                double courseDelta = Math.abs(shortAngle(course, lastCourse));
+                MISSING_CUTS =
+                    courseDelta > osTurnMinCourseChange
+                        && timeDeltaSecs > osTurnMinTimeDelta;
+                if (MISSING_CUTS)
+                {
+                  // ok, we've had a large course change, and it's been a long
+                  // time since we last had any data. Assume we're now on a new leg.
+                  // we can't create a zig for the list, since we don't have
+                  // any cuts to put into it.
+                  thisLeg = null;
+                }
+              }
+
+              // ok, remember it
+              lastCourse = course;
+            }
           }
 
           if (scores != null)
@@ -1357,7 +1363,7 @@ public class AmbiguityResolver
           }
 
           // note: we ignore the gap rate if we know we've got missing cuts.
-          
+
           if (TRIP_ZIG || (gapRate > minZig && !MISSING_CUTS))
           {
             // ok, were we on a straight leg?
@@ -1505,7 +1511,8 @@ public class AmbiguityResolver
 
   public LegsAndZigs sliceTrackIntoLegsUsingAmbiguity(final TrackWrapper track,
       final double minZig, final double minBoth, final double minLegLength,
-      final Logger logger, final TimeSeries scores)
+      final Logger logger, final TimeSeries scores,
+      Double osTurnMinCourseChange, Long osTurnMinTimeInterval)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1525,7 +1532,8 @@ public class AmbiguityResolver
       {
         final LegsAndZigs thisL =
             sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, minBoth,
-                minLegLength, logger, scores, period);
+                minLegLength, logger, scores, period, osTurnMinCourseChange,
+                osTurnMinTimeInterval);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);

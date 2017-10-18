@@ -27,5 +27,15 @@ public class PreferenceConstants
    * 
    */
   public static final String MIN_LEG_LENGTH = "MinLegLength";
+
+  /** minimum course change before we treat it as a zig
+   * 
+   */
+  public static final String OS_TURN_MIN_COURSE_CHANGE = "OSTurnMinCourseChange";
+
+  /** minimum time interval before we treat it as missing cuts
+   * (since the cuts in the turn have been deleted).
+   */
+  public static final String OS_TURN_MIN_TIME_INTERVAL = "OSTurnMintimeInterval";
   
 }
