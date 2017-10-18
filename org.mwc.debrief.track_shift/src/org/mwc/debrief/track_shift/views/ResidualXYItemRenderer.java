@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.track_shift.views;
 
-import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -30,7 +29,6 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 
 import MWC.GUI.JFreeChart.AttractiveDataItem;
-import MWC.GUI.JFreeChart.ColouredDataItem;
 
 // ////////////////////////////////////////////////
 // custom renderer, which uses the specified color for the data series
