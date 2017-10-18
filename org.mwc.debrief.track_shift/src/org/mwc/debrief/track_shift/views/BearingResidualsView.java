@@ -1031,6 +1031,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     _overviewCourseRenderer.setRange(minVal, maxVal);
 
     processShowCourse();
+    
+    // also update the renderer for the zone charts
+    ownshipZoneChart.setBearingRange(minVal, maxVal);
+    targetZoneChart.setBearingRange(minVal, maxVal);
   }
 
   private void processShowCourse()
