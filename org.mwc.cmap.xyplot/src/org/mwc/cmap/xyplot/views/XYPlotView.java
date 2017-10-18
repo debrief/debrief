@@ -107,6 +107,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
+import MWC.GUI.JFreeChart.AttractiveDataItem;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.JFreeChart.DateAxisEditor;
@@ -670,9 +671,9 @@ public class XYPlotView extends ViewPart
         if (ts.getItemCount() > 0)
         {
           final TimeSeriesDataItem dataItem = ts.getDataItem(0);
-          if (dataItem instanceof ColouredDataItem)
+          if (dataItem instanceof AttractiveDataItem)
           {
-            final ColouredDataItem cd = (ColouredDataItem) dataItem;
+            final AttractiveDataItem cd = (AttractiveDataItem) dataItem;
             seriesCol = cd.getColor();
             _thePlot.getRenderer().setSeriesPaint(i, seriesCol);
           }

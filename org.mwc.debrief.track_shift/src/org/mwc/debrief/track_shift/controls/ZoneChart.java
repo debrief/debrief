@@ -2,7 +2,6 @@ package org.mwc.debrief.track_shift.controls;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.time.FixedMillisecond;
@@ -54,13 +54,13 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.track_shift.views.WrappingResidualRenderer;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 
@@ -1251,44 +1251,9 @@ public class ZoneChart extends Composite
     plot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
     plot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
+    
+    WrappingResidualRenderer renderer = new WrappingResidualRenderer(null, null, dataset, 0, 360);
 
-    // and sort out the color for the line
-    final XYLineAndShapeRenderer renderer =
-        new XYLineAndShapeRenderer(true, true)
-        {
-
-          /**
-       * 
-       */
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          public Paint getItemPaint(final int row, final int column)
-          {
-            final Paint res;
-            if (row == 0)
-            {
-              res = super.getItemPaint(row, column);
-            }
-            else
-            {
-              final TimeSeries series = otherSeriesArr[row - 1];
-              final TimeSeriesDataItem item = series.getDataItem(column);
-              if (item instanceof ColouredDataItem)
-              {
-                final ColouredDataItem color = (ColouredDataItem) item;
-                res = color.getColor();
-              }
-              else
-              {
-                res = super.getItemPaint(row, column);
-              }
-            }
-
-            return res;
-          }
-
-        };
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, config._lineColor);
     renderer.setSeriesShape(0, square);
@@ -2122,6 +2087,21 @@ public class ZoneChart extends Composite
         addZoneMarker(plot, zone, zoneMarkers);
         zones.add(zone);
       }
+    }
+  }
+
+  public void setBearingRange(double minVal, double maxVal)
+  {
+    XYPlot plot = this.chart.getXYPlot();
+    XYItemRenderer currentRenderer = plot.getRenderer(0);
+    if(currentRenderer instanceof WrappingResidualRenderer)
+    {
+      WrappingResidualRenderer rend = (WrappingResidualRenderer) currentRenderer;
+      rend.setRange(minVal, maxVal);
+    }
+    else
+    {
+      throw new IllegalArgumentException("Surely the renderer should be wrapping residual one?");
     }
   }
 }
