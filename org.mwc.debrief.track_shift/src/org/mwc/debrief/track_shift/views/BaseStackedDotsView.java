@@ -1474,25 +1474,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
         final TrackWrapper priTrack = _myHelper.getPrimaryTrack();
 
-        // fire the finished event
-        for (int i = 0; i < zones.length; i++)
+        // we need a secondary track to do this, so only fire if we have a secondary
+        if (secTrack != null)
         {
-          final Zone zone = zones[i];
-          setLeg(priTrack, secTrack, zone);
-        }
 
-        // ok, fire some updates
-        if (_ourLayersSubject != null)
-        {
-          // share the good news
-          _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
+          // fire the finished event
+          for (int i = 0; i < zones.length; i++)
+          {
+            final Zone zone = zones[i];
+            setLeg(priTrack, secTrack, zone);
+          }
 
-          // do a fire extended, so the outline re-calculates itself
-          _ourLayersSubject.fireExtended(null, (HasEditables) _myHelper
-              .getSecondaryTrack());
+          // ok, fire some updates
+          if (_ourLayersSubject != null)
+          {
+            // share the good news
+            _ourLayersSubject.fireModified((Layer) _myHelper
+                .getSecondaryTrack());
 
-          // and re-generate the doublets
-          updateData(true);
+            // do a fire extended, so the outline re-calculates itself
+            _ourLayersSubject.fireExtended(null, (HasEditables) _myHelper
+                .getSecondaryTrack());
+
+            // and re-generate the doublets
+            updateData(true);
+          }
         }
 
       }
