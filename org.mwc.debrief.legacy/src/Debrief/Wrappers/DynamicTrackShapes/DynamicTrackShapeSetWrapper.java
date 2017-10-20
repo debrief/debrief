@@ -21,9 +21,9 @@ import java.util.Enumeration;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
-import MWC.GUI.DynamicPlottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
@@ -32,126 +32,6 @@ import MWC.GenericData.WatchableList;
 public class DynamicTrackShapeSetWrapper extends BaseLayer implements
     Cloneable, DynamicPlottable
 {
-  /**
-	 * 
-	 */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * our editor
-   */
-  protected transient MWC.GUI.Editable.EditorType _myEditor;
-
-  private int _lineWidth;
-
-  private TrackWrapper _myHost;
-
-  private BaseTimePeriod _timePeriod;
-
-  // //////////////////////////////////////
-  // constructors
-  /**
-   * ////////////////////////////////////////
-   */
-  public DynamicTrackShapeSetWrapper(final String title)
-  {
-    super.setName(title);
-  }
-
-  // //////////////////////////////////////
-  // member methods to meet plain wrapper responsibilities
-  // //////////////////////////////////////
-
-  /**
-   * find the data area occupied by this item
-   */
-  public final MWC.GenericData.WorldArea getBounds()
-  {
-    // this object only has a context in time-stepping.
-    // since it's dynamic, it doesn't have a concrete bounds.
-    return null;
-  }
-
-  /**
-   * getInfo
-   * 
-   * @return the returned MWC.GUI.Editable.EditorType
-   */
-  public final MWC.GUI.Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new SensorInfo(this);
-
-    return _myEditor;
-  }
-
-  /**
-   * add
-   * 
-   * @param plottable
-   *          parameter for add
-   */
-  public final void add(final MWC.GUI.Editable plottable)
-  {
-    // check it's a sensor contact entry
-    if (plottable instanceof DynamicTrackShapeWrapper)
-    {
-      super.add(plottable);
-
-      final DynamicTrackShapeWrapper scw = (DynamicTrackShapeWrapper) plottable;
-
-      // maintain our time period
-      if (_timePeriod == null)
-        _timePeriod =
-            new MWC.GenericData.TimePeriod.BaseTimePeriod(scw.getStartDTG(),
-                scw.getEndDTG());
-      else
-      {
-        _timePeriod.extend(scw.getStartDTG());
-        _timePeriod.extend(scw.getEndDTG());
-      }
-
-      // and tell the contact about us
-      scw.setParent(this);
-    }
-  }
-
-  // public final void append(final Layer theLayer)
-  // {
-  // if (theLayer instanceof DynamicTrackShapeSetWrapper)
-  // {
-  // final DynamicTrackShapeSetWrapper other = (DynamicTrackShapeSetWrapper) theLayer;
-  //
-  // final Enumeration<Editable> it = other.elements();
-  // while (it.hasMoreElements())
-  // {
-  // final DynamicTrackShapeWrapper fw = (DynamicTrackShapeWrapper) it
-  // .nextElement();
-  // this.add(fw);
-  // }
-  //
-  // // and clear him out...
-  // other.removeAllElements();
-  // }
-  // }
-
-  public boolean hasOrderedChildren()
-  {
-    return false;
-  }
-
-  // ///////////////////////////////////////
-  // other member functions
-  // ///////////////////////////////////////
-
-  /**
-   */
-
-  public final String toString()
-  {
-    return getName() + " (" + size() + " items)";
-  }
-
   // //////////////////////////////////////////////////////////////////////////
   // embedded class, used for editing the projection
   // //////////////////////////////////////////////////////////////////////////
@@ -178,6 +58,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
      * 
      * @return property descriptions
      */
+    @Override
     public final PropertyDescriptor[] getPropertyDescriptors()
     {
       try
@@ -202,10 +83,6 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
     }
   }
 
-  // ////////////////////////////////////////////////////
-  // nested class for testing
-  // /////////////////////////////////////////////////////
-
   static public final class testSensors extends junit.framework.TestCase
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
@@ -222,10 +99,144 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
 
   }
 
+  /**
+	 * 
+	 */
+  private static final long serialVersionUID = 1L;
+
   public static void main(final String[] args)
   {
     final testSensors ts = new testSensors("Ian");
     ts.testValues();
+  }
+
+  /**
+   * our editor
+   */
+  protected transient MWC.GUI.Editable.EditorType _myEditor;
+
+  private int _lineWidth;
+
+  // //////////////////////////////////////
+  // member methods to meet plain wrapper responsibilities
+  // //////////////////////////////////////
+
+  private TrackWrapper _myHost;
+
+  private BaseTimePeriod _timePeriod;
+
+  // //////////////////////////////////////
+  // constructors
+  /**
+   * ////////////////////////////////////////
+   */
+  public DynamicTrackShapeSetWrapper(final String title)
+  {
+    super.setName(title);
+  }
+
+  // public final void append(final Layer theLayer)
+  // {
+  // if (theLayer instanceof DynamicTrackShapeSetWrapper)
+  // {
+  // final DynamicTrackShapeSetWrapper other = (DynamicTrackShapeSetWrapper) theLayer;
+  //
+  // final Enumeration<Editable> it = other.elements();
+  // while (it.hasMoreElements())
+  // {
+  // final DynamicTrackShapeWrapper fw = (DynamicTrackShapeWrapper) it
+  // .nextElement();
+  // this.add(fw);
+  // }
+  //
+  // // and clear him out...
+  // other.removeAllElements();
+  // }
+  // }
+
+  /**
+   * add
+   * 
+   * @param plottable
+   *          parameter for add
+   */
+  @Override
+  public final void add(final MWC.GUI.Editable plottable)
+  {
+    // check it's a sensor contact entry
+    if (plottable instanceof DynamicTrackShapeWrapper)
+    {
+      super.add(plottable);
+
+      final DynamicTrackShapeWrapper scw = (DynamicTrackShapeWrapper) plottable;
+
+      // maintain our time period
+      if (_timePeriod == null)
+      {
+        _timePeriod =
+            new MWC.GenericData.TimePeriod.BaseTimePeriod(scw.getStartDTG(),
+                scw.getEndDTG());
+      }
+      else
+      {
+        _timePeriod.extend(scw.getStartDTG());
+        _timePeriod.extend(scw.getEndDTG());
+      }
+
+      // and tell the contact about us
+      scw.setParent(this);
+    }
+  }
+
+  // ///////////////////////////////////////
+  // other member functions
+  // ///////////////////////////////////////
+
+  /**
+   * find the data area occupied by this item
+   */
+  @Override
+  public final MWC.GenericData.WorldArea getBounds()
+  {
+    // this object only has a context in time-stepping.
+    // since it's dynamic, it doesn't have a concrete bounds.
+    return null;
+  }
+
+  public WatchableList getHost()
+  {
+    return _myHost;
+  }
+
+  // ////////////////////////////////////////////////////
+  // nested class for testing
+  // /////////////////////////////////////////////////////
+
+  /**
+   * getInfo
+   * 
+   * @return the returned MWC.GUI.Editable.EditorType
+   */
+  @Override
+  public final MWC.GUI.Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+    {
+      _myEditor = new SensorInfo(this);
+    }
+
+    return _myEditor;
+  }
+
+  /**
+   * the line thickness (convenience wrapper around width)
+   * 
+   * @return
+   */
+  @Override
+  public final int getLineThickness()
+  {
+    return _lineWidth;
   }
 
   public Editable getSampleGriddable()
@@ -235,15 +246,40 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
     // check we have an item before we edit it
     final Enumeration<Editable> eles = this.elements();
     if (eles.hasMoreElements())
+    {
       res = eles.nextElement();
+    }
     return res;
   }
 
   @Override
-  public void paint(CanvasType canvas, long time)
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean hasOrderedChildren()
+  {
+    return false;
+  }
+
+  @Override
+  public void paint(final CanvasType dest)
+  {
+    // this method shouldn't be called = we're a time dependent object
+    MWC.Utilities.Errors.Trace
+        .trace("Sensor Arc Wrapper paint() should not be called!");
+
+  }
+
+  @Override
+  public void paint(final CanvasType canvas, final long time)
   {
     if (!getVisible())
+    {
       return;
+    }
 
     // remember the current line width
     final float oldLineWidth = canvas.getLineWidth();
@@ -258,12 +294,16 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
       final DynamicTrackShapeWrapper con =
           (DynamicTrackShapeWrapper) it.nextElement();
 
-      HiResDate dtg = new HiResDate(time);
+      final HiResDate dtg = new HiResDate(time);
 
       if (con.getStartDTG() != null && dtg.lessThan(con.getStartDTG()))
+      {
         continue;
+      }
       if (con.getEndDTG() != null && dtg.greaterThanOrEqualTo(con.getEndDTG()))
+      {
         continue;
+      }
       // ok, plot it - and don't make it keep it simple, lets really go
       // for it man!
       con.paint(canvas, dtg);
@@ -274,40 +314,6 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
 
   }
 
-  @Override
-  public void paint(CanvasType dest)
-  {
-    // this method shouldn't be called = we're a time dependent object
-    MWC.Utilities.Errors.Trace
-        .trace("Sensor Arc Wrapper paint() should not be called!");
-
-  }
-
-  @Override
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  /**
-   * the line thickness (convenience wrapper around width)
-   * 
-   * @return
-   */
-  public final int getLineThickness()
-  {
-    return _lineWidth;
-  }
-
-  /**
-   * the line thickness (convenience wrapper around width)
-   */
-  @FireReformatted
-  public final void setLineThickness(final int val)
-  {
-    _lineWidth = val;
-  }
-
   /**
    * set our host track
    */
@@ -316,14 +322,29 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
     _myHost = host;
   }
 
-  public WatchableList getHost()
+  /**
+   * the line thickness (convenience wrapper around width)
+   */
+  @Override
+  @FireReformatted
+  public final void setLineThickness(final int val)
   {
-    return _myHost;
+    _lineWidth = val;
   }
 
-  public void trimTo(TimePeriod period)
+  /**
+   */
+
+  @Override
+  public final String toString()
   {
-    java.util.SortedSet<Editable> newList = new java.util.TreeSet<Editable>();
+    return getName() + " (" + size() + " items)";
+  }
+
+  public void trimTo(final TimePeriod period)
+  {
+    final java.util.SortedSet<Editable> newList =
+        new java.util.TreeSet<Editable>();
 
     final Enumeration<Editable> it = this.elements();
     while (it.hasMoreElements())
@@ -341,7 +362,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
 
     // ok, copy over the matching items
     // add the items individually, so we can update the segment
-    for (Editable item : newList)
+    for (final Editable item : newList)
     {
       add(item);
     }
