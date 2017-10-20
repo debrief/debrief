@@ -1433,6 +1433,10 @@ public class ImportReplay extends PlainImporterBase
       thisFix.setLabel(rf.label);
       thisFix.setUserLabelSupplied(true);
     }
+    else
+    {
+      thisFix.resetName();
+    }
 
     // keep track of the wrapper for this track
     // is there a layer for this track?
