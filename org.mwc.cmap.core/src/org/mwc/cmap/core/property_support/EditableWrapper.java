@@ -30,9 +30,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.mwc.cmap.core.CorePlugin;
 
-import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
 import MWC.GUI.FireExtended;
@@ -306,37 +303,7 @@ public class EditableWrapper implements IPropertySource
   {
     _editable = plottable;
     _theLayers = theLayers;
-
-    // do bit of fiddling
-    if (plottable instanceof TrackSegment)
-    {
-      // ok, here's the issue. While in our object model there
-      // is a segment list between a TrackSegment and the track,
-      // in the UI if there's just one segment we show it directly under the track.
-      // so, if we're receive a segment that mistakenly thinks
-      // it's parent is the track, we insert the segment list
-      // between them.
-      if (parent != null && parent.getEditable() instanceof TrackWrapper)
-      {
-        final TrackWrapper track = (TrackWrapper) parent.getEditable();
-        final SegmentList segs = track.getSegments();
-        final EditableWrapper segList =
-            new EditableWrapper(segs, parent, theLayers);
-        _parent = segList;
-      }
-      else
-      {
-        // ok, this has either already been fixed,
-        // or there is more than one segment, and the
-        // UI matches the object model
-        _parent = parent;
-      }
-    }
-    else
-    {
-      _parent = parent;
-    }
-
+    _parent = parent;
   }
 
   /**
