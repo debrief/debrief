@@ -267,11 +267,6 @@ public final class TMAWrapper extends TacticalDataWrapper
 		return "TMA:" + getName() + " (" + _myContacts.size() + " items)";
 	}
 
-	public boolean hasOrderedChildren()
-	{
-		return false;
-	}
-
 	/**
 	 * the real getBounds object, which uses properties of the parent
 	 */
