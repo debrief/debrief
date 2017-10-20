@@ -424,11 +424,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
     }
   }
 
-  public boolean hasOrderedChildren()
-  {
-    return false;
-  }
-
   // ///////////////////////////////////////
   // other member functions
   // ///////////////////////////////////////
