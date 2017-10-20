@@ -122,8 +122,11 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		_endTime = endTime;
 
 		// lastly, insert the fixes
-		getData().addAll(theItems);
-
+    for(Editable item: theItems)
+    {
+      add(item);
+    }
+    
 		// now sort out the name
 		sortOutDateLabel(null);
 

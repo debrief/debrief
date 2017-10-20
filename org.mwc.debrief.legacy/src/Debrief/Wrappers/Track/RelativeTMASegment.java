@@ -230,7 +230,10 @@ public class RelativeTMASegment extends CoreTMASegment implements
     setTrack(relevantSegment._referenceTrack);
 
     // lastly, insert the fixes
-    getData().addAll(theItems);
+    for(Editable item: theItems)
+    {
+      add(item);
+    }
 
     // now sort out the name
     sortOutDateLabel(null);

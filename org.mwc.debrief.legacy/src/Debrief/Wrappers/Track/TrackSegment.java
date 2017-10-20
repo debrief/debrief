@@ -409,7 +409,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     this(false);
 
-    getData().addAll(theItems);
+    // add the items individually, so we can update the segment
+    for(Editable item: theItems)
+    {
+      add(item);
+    }
 
     // now sort out the name
     sortOutDateLabel(null);
