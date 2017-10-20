@@ -1172,51 +1172,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
             {
               final EditableWrapper ew = (EditableWrapper) first;
 
-              // is it already loaded by the lazy tree manager?
-              final Widget res = _treeViewer.findEditable(ew.getEditable());
-
-              if (res == null)
-              {
-                // nope, laod that whole data object
-                EditableWrapper thisP = ew.getParent();
-                final ArrayList<EditableWrapper> al =
-                    new ArrayList<EditableWrapper>();
-
-                // we may have a chain of parents (though it's unlikely). Never
-                // the less, store them in reverse order, top-level first
-                while (thisP != null)
-                {
-                  al.add(0, thisP);
-                  thisP = thisP.getParent();
-                }
-
-                // ok, now we have to open all these items, starting at the
-                // highest level parent
-                final Iterator<EditableWrapper> iter = al.iterator();
-                while (iter.hasNext())
-                {
-                  final EditableWrapper editableWrapper =
-                      (EditableWrapper) iter.next();
-
-                  // ok, get the content
-                  final ViewContentProvider contentP =
-                      (ViewContentProvider) _treeViewer.getContentProvider();
-
-                  // find the wrapped children of this object
-                  final Object[] contents =
-                      contentP.getChildren(editableWrapper);
-
-                  // loop through, expanding them
-                  for (final Object content : contents)
-                  {
-                    // expand the particular child. Note we go down through all
-                    // the layers, since the target
-                    // object may be several layers deep
-                    _treeViewer.expandToLevel(content,
-                        AbstractTreeViewer.ALL_LEVELS);
-                  }
-                }
-              }
+              // ensure the parent levels are visible
+              _treeViewer.expandToLevel(ew, AbstractTreeViewer.ALL_LEVELS);
 
               // now just display it. This part of the tree may not have been
               // loaded before,
@@ -1744,7 +1701,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     if (!_treeViewer.getTree().isDisposed())
     {
       // hmm, if newItem is null, it's probably because lots of things have
-      // changed.  We may have some more updates coming.
+      // changed. We may have some more updates coming.
       // Let's group up such updates
       if (newItem == null)
       {
