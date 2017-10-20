@@ -78,8 +78,10 @@ public class SelectCutsForThisTMASegment extends ShowCutsForThisTMASegment
             {
               final EditableWrapper track =
                   new EditableWrapper(thisS.getSensor().getHost(), null, _theLayers);
+              final EditableWrapper sList = new
+                  EditableWrapper(thisS.getSensor().getHost().getSensors(), track, _theLayers);
               final EditableWrapper parentP =
-                  new EditableWrapper(thisS.getSensor(), track, _theLayers);
+                  new EditableWrapper(thisS.getSensor(), sList, _theLayers);
               final EditableWrapper wrapped =
                   new EditableWrapper(thisS, parentP, _theLayers);
 
