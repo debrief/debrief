@@ -72,6 +72,156 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   public static class testListMgt extends TestCase
   {
 
+    private static class MockParent implements ToolParent
+    {
+      final private List<String> log;
+
+      public MockParent(final List<String> log)
+      {
+        this.log = log;
+      }
+
+      @Override
+      public void addActionToBuffer(final Action theAction)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public Map<String, String> getPropertiesLike(final String pattern)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public String getProperty(final String name)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e)
+      {
+        log.add(text);
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e, final boolean revealLog)
+      {
+        log.add(text);
+      }
+
+      @Override
+      public void logStack(final int status, final String text)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void restoreCursor()
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void setCursor(final int theCursor)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void setProperty(final String name, final String value)
+      {
+        // TODO Auto-generated method stub
+
+      }
+    }
+
+    private TrackSegment getDummyList()
+    {
+      final TrackSegment ts0 = new TrackSegment(false);
+      final FixWrapper newFix1 =
+          new FixWrapper(new Fix(new HiResDate(10000), new WorldLocation(1, -1,
+              3), 1, 2));
+      final FixWrapper newFix2 =
+          new FixWrapper(new Fix(new HiResDate(20000), new WorldLocation(1, 0,
+              3), 1, 2));
+      final FixWrapper newFix3 =
+          new FixWrapper(new Fix(new HiResDate(30000), new WorldLocation(1, 1,
+              3), 1, 2));
+      final FixWrapper newFix4 =
+          new FixWrapper(new Fix(new HiResDate(40000), new WorldLocation(1, 2,
+              3), 1, 2));
+      ts0.addFix(newFix1);
+      ts0.addFix(newFix2);
+      ts0.addFix(newFix3);
+      ts0.addFix(newFix4);
+      return ts0;
+    }
+
+    private FixWrapper getFix(final long dtg, final double course,
+        final double speed)
+    {
+      final Fix theFix =
+          new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, speed);
+      final FixWrapper res = new FixWrapper(theFix);
+
+      return res;
+    }
+
+    public void testResample()
+    {
+      final TrackWrapper tw = new TrackWrapper();
+      tw.setName("Some name");
+
+      final List<String> log = new ArrayList<String>();
+
+      tw.add(getFix(0, 2, 4));
+      tw.add(getFix(60000, 2, 4));
+      tw.add(getFix(120000, 2, 4));
+      tw.add(getFix(180000, 2, 4));
+      tw.add(getFix(240000, 2, 4));
+      tw.add(getFix(300000, 2, 4));
+
+      final TrackSegment t1 =
+          (TrackSegment) tw.getSegments().elements().nextElement();
+      assertEquals("right length", 6, t1.size());
+
+      // do resample
+      t1.setResampleDataAt(new HiResDate(120000));
+      assertEquals("right length", 3, t1.size());
+
+      t1.setResampleDataAt(new HiResDate(12000));
+      assertEquals("right length", 21, t1.size());
+
+      // also try it for a TMA segment
+      tw.removeElement(t1);
+
+      Application.initialise(new MockParent(log));
+
+      final AbsoluteTMASegment as =
+          new AbsoluteTMASegment(12, new WorldSpeed(4, WorldSpeed.Kts),
+              new WorldLocation(2, 2, 2), new HiResDate(100000), new HiResDate(
+                  1000000));
+      tw.add(as);
+      assertEquals("right length", 16, as.size());
+      assertEquals("empty log", 0, log.size());
+
+      as.setResampleDataAt(new HiResDate(120000));
+
+      assertEquals("still right length", 16, as.size());
+      assertEquals("non-empty log", 1, log.size());
+
+    }
+
     public void testTrim()
     {
       TrackSegment ts0 = getDummyList();
@@ -106,154 +256,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       ts0.trimTo(newP);
       assertEquals("correct new len", 0, ts0.size());
 
-    }
-
-    private TrackSegment getDummyList()
-    {
-      final TrackSegment ts0 = new TrackSegment(false);
-      final FixWrapper newFix1 =
-          new FixWrapper(new Fix(new HiResDate(10000), new WorldLocation(1, -1,
-              3), 1, 2));
-      final FixWrapper newFix2 =
-          new FixWrapper(new Fix(new HiResDate(20000), new WorldLocation(1, 0,
-              3), 1, 2));
-      final FixWrapper newFix3 =
-          new FixWrapper(new Fix(new HiResDate(30000), new WorldLocation(1, 1,
-              3), 1, 2));
-      final FixWrapper newFix4 =
-          new FixWrapper(new Fix(new HiResDate(40000), new WorldLocation(1, 2,
-              3), 1, 2));
-      ts0.addFix(newFix1);
-      ts0.addFix(newFix2);
-      ts0.addFix(newFix3);
-      ts0.addFix(newFix4);
-      return ts0;
-    }
-
-    private static class MockParent implements ToolParent
-    {
-      final private List<String> log;
-
-      public MockParent(List<String> log)
-      {
-        this.log = log;
-      }
-
-      @Override
-      public void logError(int status, String text, Exception e)
-      {
-        log.add(text);
-      }
-
-      @Override
-      public void logError(int status, String text, Exception e,
-          boolean revealLog)
-      {
-        log.add(text);
-      }
-
-      @Override
-      public void logStack(int status, String text)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public void setCursor(int theCursor)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public void restoreCursor()
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public void addActionToBuffer(Action theAction)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public String getProperty(String name)
-      {
-        // TODO Auto-generated method stub
-        return null;
-      }
-
-      @Override
-      public Map<String, String> getPropertiesLike(String pattern)
-      {
-        // TODO Auto-generated method stub
-        return null;
-      }
-
-      @Override
-      public void setProperty(String name, String value)
-      {
-        // TODO Auto-generated method stub
-
-      }
-    }
-
-    public void testResample()
-    {
-      TrackWrapper tw = new TrackWrapper();
-      tw.setName("Some name");
-
-      final List<String> log = new ArrayList<String>();
-
-      tw.add(getFix(0, 2, 4));
-      tw.add(getFix(60000, 2, 4));
-      tw.add(getFix(120000, 2, 4));
-      tw.add(getFix(180000, 2, 4));
-      tw.add(getFix(240000, 2, 4));
-      tw.add(getFix(300000, 2, 4));
-
-      TrackSegment t1 =
-          (TrackSegment) tw.getSegments().elements().nextElement();
-      assertEquals("right length", 6, t1.size());
-
-      // do resample
-      t1.setResampleDataAt(new HiResDate(120000));
-      assertEquals("right length", 3, t1.size());
-
-      t1.setResampleDataAt(new HiResDate(12000));
-      assertEquals("right length", 21, t1.size());
-
-      // also try it for a TMA segment
-      tw.removeElement(t1);
-
-      Application.initialise(new MockParent(log));
-
-      AbsoluteTMASegment as =
-          new AbsoluteTMASegment(12, new WorldSpeed(4, WorldSpeed.Kts),
-              new WorldLocation(2, 2, 2), new HiResDate(100000), new HiResDate(
-                  1000000));
-      tw.add(as);
-      assertEquals("right length", 16, as.size());
-      assertEquals("empty log", 0, log.size());
-
-      as.setResampleDataAt(new HiResDate(120000));
-
-      assertEquals("still right length", 16, as.size());
-      assertEquals("non-empty log", 1, log.size());
-
-    }
-
-    private FixWrapper getFix(long dtg, double course, double speed)
-    {
-      Fix theFix =
-          new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, speed);
-      FixWrapper res = new FixWrapper(theFix);
-
-      return res;
     }
 
   }
@@ -409,7 +411,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     this(false);
 
-    getData().addAll(theItems);
+    // add the items individually, so we can update the segment
+    for (final Editable item : theItems)
+    {
+      add(item);
+    }
 
     // now sort out the name
     sortOutDateLabel(null);
@@ -419,9 +425,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   public void add(final Editable item)
   {
     if (item instanceof FixWrapper)
+    {
       addFix((FixWrapper) item);
+    }
     else
+    {
       System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO TRACK SEGMENT");
+    }
   }
 
   public void addFix(final FixWrapper fix)
@@ -448,17 +458,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _myTrack
           .getLocationListener());
     }
-  }
-
-  @Override
-  public void removeElement(Editable p)
-  {
-    // disconnect this fix from us
-    FixWrapper fw = (FixWrapper) p;
-    fw.setSegment(null);
-
-    // and let the list do its stuff
-    super.removeElement(p);
   }
 
   /**
@@ -525,9 +524,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       // sort them in dtg order
       final TrackSegment other = (TrackSegment) arg0;
       if ((startDTG() != null) && (other.startDTG() != null))
+      {
         res = startDTG().compareTo(other.startDTG());
+      }
       else
+      {
         res = getName().compareTo(arg0.getName());
+      }
     }
     else
     {
@@ -570,7 +573,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     {
       final FixWrapper fix = iterator.next();
       this.addFixSilent(fix);
-      
+
       // and reset the label on the fix
       fix.resetName();
     }
@@ -612,171 +615,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     // }
   }
 
-  private void decimateRelative(final HiResDate theVal,
-      final TrackWrapper parentTrack, final long startTime,
-      final Vector<FixWrapper> newItems)
-  {
-    long theStartTime = startTime;
-
-    // get the time interval
-    final long interval = theVal.getMicros();
-
-    // round myStart time to the supplied interval
-    long myStart = this.startDTG().getMicros();
-    myStart = (myStart / interval) * interval;
-
-    // back to millis
-    myStart /= 1000L;
-
-    // set the start time to be the later of our start time and the provided
-    // time
-    theStartTime = Math.max(theStartTime, myStart);
-
-    if (this instanceof CoreTMASegment)
-    {
-      decimateRelativeTMA(theVal, newItems, theStartTime);
-    }
-    else
-    {
-      decimatePointsTrack(theVal, parentTrack, theStartTime, newItems, true);
-    }
-  }
-
-  private void decimateRelativeTMA(final HiResDate theVal,
-      final Vector<FixWrapper> newItems, long theStartTime)
-  {
-    long tNow;
-    final CoreTMASegment tma = (CoreTMASegment) this;
-    
-    final long startMicros = theStartTime * 1000L;
-
-    // hey, it's a TMA segment - on steady course/speed. cool
-    final double courseRads =
-        MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
-    final double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
-
-    // find the new start location - after we've slipped
-    final WorldLocation myStartLocation =
-        new WorldLocation(tma.getTrackStart());
-
-    // right - sort out what time period we're working through
-    for (tNow = startMicros; tNow <= endDTG().getMicros(); tNow +=
-        theVal.getMicros())
-    {
-      final Fix theFix =
-          new Fix(new HiResDate(0, tNow), new WorldLocation(myStartLocation),
-              courseRads, speedYps);
-      final FixWrapper newFix = new FixWrapper(theFix);
-      newFix.setSymbolShowing(true);
-
-      // also give it a name
-      newFix.resetName();
-
-      newItems.add(newFix);
-    }
-
-    // right, if it's a relative segment, then we need to shift the
-    // offset to
-    // reflect the new relationship
-    if (tma instanceof RelativeTMASegment)
-    {
-      final FixWrapper myStarter = (FixWrapper) tma.first();
-      final FixWrapper myEnder = (FixWrapper) tma.last();
-      final HiResDate startDTG = new HiResDate(0, theStartTime);
-      final FixWrapper newStarter =
-          FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
-      final WorldLocation newStartLoc = newStarter.getLocation();
-
-      final RelativeTMASegment rel = (RelativeTMASegment) tma;
-      final Watchable[] newHost =
-          rel.getReferenceTrack().getNearestTo(startDTG);
-      if (newHost.length > 0)
-      {
-        final WorldLocation newOrigin = newHost[0].getLocation();
-        final WorldVector newOffset = newStartLoc.subtract(newOrigin);
-        rel.setOffset(newOffset);
-      }
-
-      // is our name date-oriented?
-      if (rel.getName().startsWith(TMA_LEADER))
-      {
-        // yes, calculate a new one
-
-        // lastly, reset the track name
-        rel.sortOutDateLabel(startDTG);
-
-        // and change the track name
-        rel._myTrack.setName(rel.getName());
-      }
-    }
-  }
-
-  @SuppressWarnings("unused")
-  @Deprecated
-  /** we've deprecated this, since it gets very compuationally expensive
-   * when processing a very long track
-   * @param theVal
-   * @param parentTrack
-   * @param theStartTime
-   * @param newItems
-   */
-  private void usingNearest(final HiResDate theVal,
-      final TrackWrapper parentTrack, final long theStartTime,
-      final Vector<FixWrapper> newItems)
-  {
-    long tNow;
-    FixWrapper lastPositionStored = null;
-    FixWrapper currentPosition = null;
-    tNow = 0;
-    //
-    // right - sort out what time period we're working through
-    for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow +=
-        theVal.getMicros())
-    {
-
-      // find hte new datum
-      final Watchable[] matches =
-          parentTrack.getNearestTo(new HiResDate(0, tNow));
-      if (matches.length > 0)
-      {
-        // remember the last position - we;re going to be
-        // calculating future
-        // courses and speeds from it
-        lastPositionStored = currentPosition;
-
-        currentPosition = (FixWrapper) matches[0];
-
-        // is this our first point?
-        if (lastPositionStored != null)
-        {
-          // start off with the course
-          final WorldVector offset =
-              currentPosition.getLocation().subtract(
-                  lastPositionStored.getLocation());
-          lastPositionStored.getFix().setCourse(offset.getBearing());
-
-          // and now the speed
-          final double distYds =
-              new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-                  .getValueIn(WorldDistance.YARDS);
-          final double timeSecs =
-              (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
-          final double spdYps = distYds / timeSecs;
-          lastPositionStored.getFix().setSpeed(spdYps);
-
-          // do we correct the name?
-          if (lastPositionStored.getName().equals(FixWrapper.INTERPOLATED_FIX))
-          {
-            // reset the name
-            lastPositionStored.resetName();
-          }
-          // add to our working list
-          newItems.add(lastPositionStored);
-        }
-      }
-    }
-  }
-
   private void decimatePointsTrack(final HiResDate theVal,
       final TrackWrapper parentTrack, final long theStartTime,
       final Vector<FixWrapper> newItems, final boolean fixRelative)
@@ -785,12 +623,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     final long interval = theVal.getDate().getTime();
     FixWrapper previousPosition = null;
 
-    Enumeration<Editable> iter = parentTrack.getPositionIterator();
+    final Enumeration<Editable> iter = parentTrack.getPositionIterator();
     while (iter.hasMoreElements())
     {
-      FixWrapper currentPosition = (FixWrapper) iter.nextElement();
+      final FixWrapper currentPosition = (FixWrapper) iter.nextElement();
 
-      long thisTime = currentPosition.getDateTimeGroup().getDate().getTime();
+      final long thisTime =
+          currentPosition.getDateTimeGroup().getDate().getTime();
 
       if (previousPosition == null)
       {
@@ -801,7 +640,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           requiredTime += interval;
 
           // we should also store this, as the first position
-          FixWrapper storeMe = new FixWrapper(currentPosition.getFix());
+          final FixWrapper storeMe = new FixWrapper(currentPosition.getFix());
 
           // and add it
           newItems.add(storeMe);
@@ -865,6 +704,105 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
   }
 
+  private void decimateRelative(final HiResDate theVal,
+      final TrackWrapper parentTrack, final long startTime,
+      final Vector<FixWrapper> newItems)
+  {
+    long theStartTime = startTime;
+
+    // get the time interval
+    final long interval = theVal.getMicros();
+
+    // round myStart time to the supplied interval
+    long myStart = this.startDTG().getMicros();
+    myStart = (myStart / interval) * interval;
+
+    // back to millis
+    myStart /= 1000L;
+
+    // set the start time to be the later of our start time and the provided
+    // time
+    theStartTime = Math.max(theStartTime, myStart);
+
+    if (this instanceof CoreTMASegment)
+    {
+      decimateRelativeTMA(theVal, newItems, theStartTime);
+    }
+    else
+    {
+      decimatePointsTrack(theVal, parentTrack, theStartTime, newItems, true);
+    }
+  }
+
+  private void decimateRelativeTMA(final HiResDate theVal,
+      final Vector<FixWrapper> newItems, final long theStartTime)
+  {
+    long tNow;
+    final CoreTMASegment tma = (CoreTMASegment) this;
+
+    final long startMicros = theStartTime * 1000L;
+
+    // hey, it's a TMA segment - on steady course/speed. cool
+    final double courseRads =
+        MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
+    final double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
+
+    // find the new start location - after we've slipped
+    final WorldLocation myStartLocation =
+        new WorldLocation(tma.getTrackStart());
+
+    // right - sort out what time period we're working through
+    for (tNow = startMicros; tNow <= endDTG().getMicros(); tNow +=
+        theVal.getMicros())
+    {
+      final Fix theFix =
+          new Fix(new HiResDate(0, tNow), new WorldLocation(myStartLocation),
+              courseRads, speedYps);
+      final FixWrapper newFix = new FixWrapper(theFix);
+      newFix.setSymbolShowing(true);
+
+      // also give it a name
+      newFix.resetName();
+
+      newItems.add(newFix);
+    }
+
+    // right, if it's a relative segment, then we need to shift the
+    // offset to
+    // reflect the new relationship
+    if (tma instanceof RelativeTMASegment)
+    {
+      final FixWrapper myStarter = (FixWrapper) tma.first();
+      final FixWrapper myEnder = (FixWrapper) tma.last();
+      final HiResDate startDTG = new HiResDate(0, theStartTime);
+      final FixWrapper newStarter =
+          FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
+      final WorldLocation newStartLoc = newStarter.getLocation();
+
+      final RelativeTMASegment rel = (RelativeTMASegment) tma;
+      final Watchable[] newHost =
+          rel.getReferenceTrack().getNearestTo(startDTG);
+      if (newHost.length > 0)
+      {
+        final WorldLocation newOrigin = newHost[0].getLocation();
+        final WorldVector newOffset = newStartLoc.subtract(newOrigin);
+        rel.setOffset(newOffset);
+      }
+
+      // is our name date-oriented?
+      if (rel.getName().startsWith(TMA_LEADER))
+      {
+        // yes, calculate a new one
+
+        // lastly, reset the track name
+        rel.sortOutDateLabel(startDTG);
+
+        // and change the track name
+        rel._myTrack.setName(rel.getName());
+      }
+    }
+  }
+
   @Override
   public void doSave(final String message)
   {
@@ -883,7 +821,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     int myLen = STALK_LEN;
     if (!forwards)
+    {
       myLen = -STALK_LEN;
+    }
 
     final Point backPoint =
         new Point(lastPoint.x + (int) (myLen * gradient), lastPoint.y + myLen);
@@ -940,6 +880,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     return _plotRelative;
   }
 
+  /**
+   * method to allow the setting of data sampling frequencies for the track & sensor data
+   * 
+   * @return frequency to use
+   */
+  public final HiResDate getResampleDataAt()
+  {
+    return this._lastDataFrequency;
+  }
+
   @Override
   public Editable getSampleGriddable()
   {
@@ -981,7 +931,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     final Color col = template.getActualColor();
     if (col != null)
+    {
       result.setColor(col);
+    }
 
     return result;
   }
@@ -1055,6 +1007,17 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   }
 
   @Override
+  public void removeElement(final Editable p)
+  {
+    // disconnect this fix from us
+    final FixWrapper fw = (FixWrapper) p;
+    fw.setSegment(null);
+
+    // and let the list do its stuff
+    super.removeElement(p);
+  }
+
+  @Override
   public boolean requiresManualSave()
   {
     return false;
@@ -1117,13 +1080,76 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     _lineStyle = lineStyle;
   }
 
+  /**
+   * set the data frequency (in seconds) for the track & sensor data
+   * 
+   * @param theVal
+   *          frequency to use
+   */
+  @FireExtended
+  public final void setResampleDataAt(final HiResDate theVal)
+  {
+    this._lastDataFrequency = theVal;
+
+    // just check that we're not a TMA segment. We can't do TMA tracks from here
+    // because it's the top level TrackWrapper that is able to re-connect the legs.
+    if (this instanceof CoreTMASegment)
+    {
+      Application.logError2(ErrorLogger.WARNING, "Can't resample TMA track",
+          null);
+      return;
+    }
+
+    // have a go at trimming the start time to a whole number of intervals
+    final long intervalMicros = theVal.getMicros();
+
+    // do we have a start time (we may just be being tested...)
+    if (!this.elements().hasMoreElements())
+    {
+      return;
+    }
+
+    // get the first item
+    final FixWrapper first = (FixWrapper) elements().nextElement();
+
+    // sort out the start time & time steps
+    final long currentStartMicros = first.getTime().getMicros();
+    long startTimeMicros =
+        (currentStartMicros / intervalMicros) * intervalMicros;
+
+    // just check we're in the range
+    if (startTimeMicros < currentStartMicros)
+    {
+      startTimeMicros += intervalMicros;
+    }
+
+    // back into millis
+    final long startTime = startTimeMicros / 1000L;
+
+    // just check it's not a barking frequency
+    if (theVal.getDate().getTime() <= 0)
+    {
+      // ignore, we don't need to do anything for a zero or a -1
+    }
+    else
+    {
+      // get the parent track
+      final TrackWrapper parent = this.getWrapper();
+
+      // and do the decimate
+      decimate(theVal, parent, startTime);
+    }
+  }
+
   @Override
   public void setWrapper(final TrackWrapper wrapper)
   {
 
     // is it different?
     if (wrapper == _myTrack)
+    {
       return;
+    }
 
     // ok, and clear the property change listeners, if necessary
     if (_myTrack != null)
@@ -1188,7 +1214,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     Enumeration<Editable> enumA = theEnum;
     if (enumA == null)
+    {
       enumA = elements();
+    }
 
     while (enumA.hasMoreElements())
     {
@@ -1250,6 +1278,99 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     return true;
   }
 
+  public void trimTo(final TimePeriod period)
+  {
+    final java.util.SortedSet<Editable> newList =
+        new java.util.TreeSet<Editable>();
+
+    Iterator<Editable> iter = getData().iterator();
+    while (iter.hasNext())
+    {
+      final FixWrapper thisE = (FixWrapper) iter.next();
+      if (period.contains(thisE.getTime()))
+      {
+        newList.add(thisE);
+      }
+    }
+
+    // clear the existing list
+    super.removeAllElements();
+
+    // ok, copy over the new list
+    iter = newList.iterator();
+    while (iter.hasNext())
+    {
+      final Editable editable = iter.next();
+      super.add(editable);
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @Deprecated
+  /** we've deprecated this, since it gets very compuationally expensive
+   * when processing a very long track
+   * @param theVal
+   * @param parentTrack
+   * @param theStartTime
+   * @param newItems
+   */
+  private void usingNearest(final HiResDate theVal,
+      final TrackWrapper parentTrack, final long theStartTime,
+      final Vector<FixWrapper> newItems)
+  {
+    long tNow;
+    FixWrapper lastPositionStored = null;
+    FixWrapper currentPosition = null;
+    tNow = 0;
+    //
+    // right - sort out what time period we're working through
+    for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow +=
+        theVal.getMicros())
+    {
+
+      // find hte new datum
+      final Watchable[] matches =
+          parentTrack.getNearestTo(new HiResDate(0, tNow));
+      if (matches.length > 0)
+      {
+        // remember the last position - we;re going to be
+        // calculating future
+        // courses and speeds from it
+        lastPositionStored = currentPosition;
+
+        currentPosition = (FixWrapper) matches[0];
+
+        // is this our first point?
+        if (lastPositionStored != null)
+        {
+          // start off with the course
+          final WorldVector offset =
+              currentPosition.getLocation().subtract(
+                  lastPositionStored.getLocation());
+          lastPositionStored.getFix().setCourse(offset.getBearing());
+
+          // and now the speed
+          final double distYds =
+              new WorldDistance(offset.getRange(), WorldDistance.DEGS)
+                  .getValueIn(WorldDistance.YARDS);
+          final double timeSecs =
+              (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
+          final double spdYps = distYds / timeSecs;
+          lastPositionStored.getFix().setSpeed(spdYps);
+
+          // do we correct the name?
+          if (lastPositionStored.getName().equals(FixWrapper.INTERPOLATED_FIX))
+          {
+            // reset the name
+            lastPositionStored.resetName();
+          }
+          // add to our working list
+          newItems.add(lastPositionStored);
+        }
+      }
+    }
+  }
+
   /**
    * represent the named leg as a DR vector
    * 
@@ -1286,103 +1407,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     newTrack.add(this);
 
     return newTrack;
-  }
-
-  public void trimTo(TimePeriod period)
-  {
-    java.util.SortedSet<Editable> newList = new java.util.TreeSet<Editable>();
-
-    Iterator<Editable> iter = getData().iterator();
-    while (iter.hasNext())
-    {
-      FixWrapper thisE = (FixWrapper) iter.next();
-      if (period.contains(thisE.getTime()))
-      {
-        newList.add(thisE);
-      }
-    }
-
-    // clear the existing list
-    super.removeAllElements();
-
-    // ok, copy over the new list
-    iter = newList.iterator();
-    while (iter.hasNext())
-    {
-      Editable editable = (Editable) iter.next();
-      super.add(editable);
-    }
-  }
-
-  /**
-   * set the data frequency (in seconds) for the track & sensor data
-   * 
-   * @param theVal
-   *          frequency to use
-   */
-  @FireExtended
-  public final void setResampleDataAt(final HiResDate theVal)
-  {
-    this._lastDataFrequency = theVal;
-
-    // just check that we're not a TMA segment. We can't do TMA tracks from here
-    // because it's the top level TrackWrapper that is able to re-connect the legs.
-    if (this instanceof CoreTMASegment)
-    {
-      Application.logError2(ErrorLogger.WARNING, "Can't resample TMA track",
-          null);
-      return;
-    }
-
-    // have a go at trimming the start time to a whole number of intervals
-    final long intervalMicros = theVal.getMicros();
-
-    // do we have a start time (we may just be being tested...)
-    if (!this.elements().hasMoreElements())
-    {
-      return;
-    }
-
-    // get the first item
-    FixWrapper first = (FixWrapper) elements().nextElement();
-
-    // sort out the start time & time steps
-    final long currentStartMicros = first.getTime().getMicros();
-    long startTimeMicros =
-        (currentStartMicros / intervalMicros) * intervalMicros;
-
-    // just check we're in the range
-    if (startTimeMicros < currentStartMicros)
-    {
-      startTimeMicros += intervalMicros;
-    }
-
-    // back into millis
-    final long startTime = startTimeMicros / 1000L;
-
-    // just check it's not a barking frequency
-    if (theVal.getDate().getTime() <= 0)
-    {
-      // ignore, we don't need to do anything for a zero or a -1
-    }
-    else
-    {
-      // get the parent track
-      TrackWrapper parent = this.getWrapper();
-
-      // and do the decimate
-      decimate(theVal, parent, startTime);
-    }
-  }
-
-  /**
-   * method to allow the setting of data sampling frequencies for the track & sensor data
-   * 
-   * @return frequency to use
-   */
-  public final HiResDate getResampleDataAt()
-  {
-    return this._lastDataFrequency;
   }
 
 }
