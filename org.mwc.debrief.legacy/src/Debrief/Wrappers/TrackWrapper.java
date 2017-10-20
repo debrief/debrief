@@ -1543,7 +1543,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   {
     final WrappedIterators we = new WrappedIterators();
 
-    if (_mySensors != null)
+    if (_mySensors != null && _mySensors.getVisible())
     {
       final Enumeration<Editable> iter = _mySensors.elements();
       while (iter.hasMoreElements())
@@ -1557,7 +1557,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
     }
 
-    if (_myDynamicShapes != null)
+    if (_myDynamicShapes != null && _myDynamicShapes.getVisible())
     {
       final Enumeration<Editable> iter = _myDynamicShapes.elements();
       while (iter.hasMoreElements())
@@ -1572,7 +1572,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
     }
 
-    if (_mySolutions != null)
+    if (_mySolutions != null && _mySolutions.getVisible())
     {
       final Enumeration<Editable> iter = _mySolutions.elements();
       while (iter.hasMoreElements())
@@ -1585,9 +1585,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       }
     }
 
-    if (_thePositions != null)
+    if (_thePositions != null && _thePositions.getVisible())
     {
-
       we.add(getPositionIterator());
     }
 
@@ -2654,7 +2653,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    */
   public Enumeration<Editable> getPositionIterator()
   {
-    return  new WrappedIterators(_thePositions);
+    return new WrappedIterators(_thePositions);
   }
 
   /**
