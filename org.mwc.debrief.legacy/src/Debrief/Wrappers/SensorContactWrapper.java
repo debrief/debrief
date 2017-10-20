@@ -1502,6 +1502,26 @@ public final class SensorContactWrapper extends
         final WorldDistance dist = other.rangeFrom(_calculatedOrigin, farEnd);
         res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
       }
+      
+      // we should also do this for an ambiguous cut
+      if(getHasAmbiguousBearing())
+      {
+        // we can only do the far end if we have the range of the sensor contact
+        final WorldLocation farEndAmbig = getAmbiguousFarEnd(outerEnvelope);
+
+        // and get the range from the far end
+        if (farEndAmbig != null)
+        {
+          res = Math.min(res, farEndAmbig.rangeFrom(other));
+        }
+
+        // lastly determine the range from the nearest point on the track
+        if ((_calculatedOrigin != null) && (farEndAmbig != null))
+        {
+          final WorldDistance dist = other.rangeFrom(_calculatedOrigin, farEndAmbig);
+          res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
+        }        
+      }
     }
 
     return res;
