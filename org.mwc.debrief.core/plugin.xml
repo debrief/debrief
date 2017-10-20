@@ -1095,6 +1095,7 @@
         <helper class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
         <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>
         <helper class="org.mwc.debrief.core.ContextOperations.CalculateTrackLength"/>
+        <helper class="org.mwc.debrief.core.ContextOperations.SelectAllChildren"/>
     </extension>
     
     <extension
