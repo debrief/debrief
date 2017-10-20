@@ -37,6 +37,7 @@ import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
@@ -47,7 +48,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
-		implements MWC.GUI.Layer, SnailDrawTacticalContact.HostedList
+		implements MWC.GUI.Layer, SnailDrawTacticalContact.HostedList, HasEditables
 {
 
 	// //////////////////////////////////////////////////////////////////
@@ -591,9 +592,13 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			this.add(fix);
 		}
 	}
+	
 
-	// //////////////////////////////////////
-	// member methods to meet Layer responsibilities
+  public final boolean hasOrderedChildren()
+  {
+    return false;
+  }
+
 	/**
 	 * ////////////////////////////////////////
 	 */
