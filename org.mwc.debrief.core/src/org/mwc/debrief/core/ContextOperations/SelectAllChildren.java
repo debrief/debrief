@@ -38,7 +38,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.debrief.core.editors.PlotOutlinePage;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -249,6 +249,8 @@ public class SelectAllChildren implements RightClickContextItemGenerator
             runIt(action);
           }
         };
+        doIt.setImageDescriptor(DebriefPlugin
+        .getImageDescriptor("icons/16/show.png"));
 
         // ok, go for it
         parent.add(doIt);
