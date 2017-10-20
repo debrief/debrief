@@ -71,6 +71,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -114,6 +115,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
@@ -152,12 +154,16 @@ import org.osgi.framework.Bundle;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
@@ -757,9 +763,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                   // see if there are any sensors awaiting a color
                   final SensorWrapper thisS = sensors.firstElement();
                   final boolean success = nameThisSensor(thisS);
-                  
+
                   // does user wish to name/format sensor?
-                  if(!success)
+                  if (!success)
                   {
                     // nope, cancel the import.
                     ir.clearPendingSensorList();
@@ -868,7 +874,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
 
     SensorImportHelper importHelper =
-        getSensorImportHelperFor(thisS.getName(), thisS.getColor(), introString, needsRange);
+        getSensorImportHelperFor(thisS.getName(), thisS.getColor(),
+            introString, needsRange);
 
     // did it work?
     if (importHelper.success())
@@ -900,7 +907,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         applyRainbowShadingTo(thisS);
       }
     }
-    
+
     return importHelper.success();
   }
 
@@ -944,8 +951,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return alreadyLoaded;
   }
 
-  private SensorImportHelper getSensorImportHelperFor(String sensorName, Color sensorColor,
-      String introString, boolean needsRange)
+  private SensorImportHelper getSensorImportHelperFor(String sensorName,
+      Color sensorColor, String introString, boolean needsRange)
   {
     // ok, check the property
     final String showImportWizard =
@@ -1202,6 +1209,73 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   }
 
   private static boolean _updatingPlot = false;
+
+  @Override
+  public void selectPlottable(Plottable tgt, Layer parentLayer)
+  {
+    // handle some special cases.
+    if (tgt instanceof FixWrapper)
+    {
+      CorePlugin.logError(Status.INFO,
+          "Double-click processed, fixing parent levels for:" + tgt, null);
+
+      // ok, we have to generate the correct object model
+      FixWrapper fix = (FixWrapper) tgt;
+      TrackSegment segment = fix.getSegment();
+      TrackWrapper track = segment.getWrapper();
+      SegmentList segList = track.getSegments();
+      Layers layers = getChart().getLayers();
+      final ISelection selected =
+          wrapObjects(parentLayer, fix, segment, segList, layers);
+      fireSelectionChanged(selected);
+    }
+    else if (tgt instanceof SensorContactWrapper)
+    {
+      CorePlugin.logError(Status.INFO,
+          "Double-click processed, fixing parent levels for:" + tgt, null);
+      
+      // ok, we have to generate the correct object model
+      SensorContactWrapper cut = (SensorContactWrapper) tgt;
+      SensorWrapper sensor = cut.getSensor();
+      TrackWrapper track = sensor.getHost();
+      BaseLayer sList = track.getSensors();
+      Layers layers = getChart().getLayers();
+      final ISelection selected =
+          wrapObjects(parentLayer, cut, sensor, sList, layers);
+      fireSelectionChanged(selected);
+    }
+    else if (tgt instanceof TMAContactWrapper)
+    {
+      CorePlugin.logError(Status.INFO,
+          "Double-click processed, fixing parent levels for:" + tgt, null);
+      
+      // ok, we have to generate the correct object model
+      TMAContactWrapper cut = (TMAContactWrapper) tgt;
+      TMAWrapper sensor = cut.getTMATrack();
+      TrackWrapper track = sensor.getHost();
+      BaseLayer sList = track.getSolutions();
+      Layers layers = getChart().getLayers();
+      final ISelection selected =
+          wrapObjects(parentLayer, cut, sensor, sList, layers);
+      fireSelectionChanged(selected);
+    }
+    else
+    {
+      super.selectPlottable(tgt, parentLayer);
+    }
+  }
+
+  private ISelection wrapObjects(Layer track, Editable item,
+      Editable itemParent, Editable parentList, Layers layers)
+  {
+    final EditableWrapper parentP =
+        new EditableWrapper(track, null, layers);
+    final EditableWrapper segListW = new EditableWrapper(parentList, parentP, layers);
+    final EditableWrapper segmentW = new EditableWrapper(itemParent, segListW, layers);
+    final EditableWrapper fixW = new EditableWrapper(item, segmentW, layers);
+    final ISelection selected = new StructuredSelection(fixW);
+    return selected;
+  }
 
   /*
    * (non-Javadoc)
