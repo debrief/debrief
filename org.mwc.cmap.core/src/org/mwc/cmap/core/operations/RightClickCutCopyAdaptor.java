@@ -386,7 +386,7 @@ public class RightClickCutCopyAdaptor
 
               // remember the layer, so we can provide
               // the Outline view with what to select (the previous visible layer)
-              changedLayers.add((HasEditables) thisE);
+              changedLayers.add((HasEditables) toBeSelected);
             }
             else
             {
