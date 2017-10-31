@@ -1120,7 +1120,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
               // loaded before,
               // but we're sure it is now.
               _treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
-         
+
               // the API indicates the "reveal" parameter in setSelection
               // is ignored. So, let's try to force it
               _treeViewer.reveal(first);
@@ -1872,10 +1872,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
               if (newItem == parentLayer)
               {
                 // ok, it's a top-level layer.
-                final EditableWrapper parentWrapper =
-                    new EditableWrapper((Editable) newItem, null, theData);
                 wrapped = new EditableWrapper(newItem, null, theData);
-                selected = new StructuredSelection(parentWrapper);
+                selected = new StructuredSelection(wrapped);
               }
               else
               {
