@@ -36,7 +36,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IElementComparer;
@@ -1115,12 +1114,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
               final EditableWrapper ew = (EditableWrapper) first;
 
               // ensure the parent levels are visible
-              _treeViewer.expandToLevel(ew, AbstractTreeViewer.ALL_LEVELS);
+              _treeViewer.expandToLevel(ew, 0);
 
               // now just display it. This part of the tree may not have been
               // loaded before,
               // but we're sure it is now.
               _treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
+         
+              // the API indicates the "reveal" parameter in setSelection
+              // is ignored. So, let's try to force it
+              _treeViewer.reveal(first);
             }
           }
         }
@@ -1864,14 +1867,26 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
             // hmm, do we know about the new item? If so, better select it
             if (newItem != null)
             {
-              // wrap the plottable
-              final EditableWrapper parentWrapper =
-                  new EditableWrapper((Editable) parentLayer, null, theData);
-              final EditableWrapper wrapped =
-                  new EditableWrapper(newItem, parentWrapper, theData);
-              final ISelection selected = new StructuredSelection(wrapped);
+              final ISelection selected;
+              final EditableWrapper wrapped;
+              if (newItem == parentLayer)
+              {
+                // ok, it's a top-level layer.
+                final EditableWrapper parentWrapper =
+                    new EditableWrapper((Editable) newItem, null, theData);
+                wrapped = new EditableWrapper(newItem, null, theData);
+                selected = new StructuredSelection(parentWrapper);
+              }
+              else
+              {
+                // wrap the plottable
+                final EditableWrapper parentWrapper =
+                    new EditableWrapper((Editable) parentLayer, null, theData);
+                wrapped = new EditableWrapper(newItem, parentWrapper, theData);
+                selected = new StructuredSelection(wrapped);
+              }
 
-              // and select it
+              // ok, now select it
               editableSelected(selected, wrapped);
             }
           }
