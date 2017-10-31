@@ -1251,8 +1251,9 @@ public class ZoneChart extends Composite
     plot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
     plot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
-    
-    WrappingResidualRenderer renderer = new WrappingResidualRenderer(null, null, dataset, 0, 360);
+
+    WrappingResidualRenderer renderer =
+        new WrappingResidualRenderer(null, null, dataset, 0, 360);
 
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, config._lineColor);
@@ -1876,6 +1877,15 @@ public class ZoneChart extends Composite
     return res;
   }
 
+  public void setPeriod(final TimePeriod period)
+  {
+    final XYPlot plot = (XYPlot) chart.getPlot();
+    // final Range outerRange = plot.getDataRange(plot.getDomainAxis());
+    plot.getDomainAxis().setRange(period.getStartDTG().getDate().getTime(),
+        period.getEndDTG().getDate().getTime());
+
+  }
+
   private List<ZoneListener> getZoneListeners()
   {
     return new ArrayList<ZoneListener>(zoneListeners);
@@ -2094,14 +2104,16 @@ public class ZoneChart extends Composite
   {
     XYPlot plot = this.chart.getXYPlot();
     XYItemRenderer currentRenderer = plot.getRenderer(0);
-    if(currentRenderer instanceof WrappingResidualRenderer)
+    if (currentRenderer instanceof WrappingResidualRenderer)
     {
-      WrappingResidualRenderer rend = (WrappingResidualRenderer) currentRenderer;
+      WrappingResidualRenderer rend =
+          (WrappingResidualRenderer) currentRenderer;
       rend.setRange(minVal, maxVal);
     }
     else
     {
-      throw new IllegalArgumentException("Surely the renderer should be wrapping residual one?");
+      throw new IllegalArgumentException(
+          "Surely the renderer should be wrapping residual one?");
     }
   }
 }
