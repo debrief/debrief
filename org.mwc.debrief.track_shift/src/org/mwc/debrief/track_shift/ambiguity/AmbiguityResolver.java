@@ -1226,8 +1226,10 @@ public class AmbiguityResolver
     {
       final SensorContactWrapper cut =
           (SensorContactWrapper) enumer.nextElement();
+      
+      final boolean hasAmbig = !Double.isNaN(cut.getAmbiguousBearing());
 
-      if (cut.getVisible() && cut.getHasAmbiguousBearing()
+      if (cut.getVisible() && hasAmbig
           && trackPeriod.contains(cut.getDTG()))
       {
         // ok, TA data
