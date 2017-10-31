@@ -74,7 +74,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.TimePeriod.BaseTimePeriod;
 
 public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
@@ -135,7 +134,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           {
             final SensorContactWrapper contact =
                 (SensorContactWrapper) elements.nextElement();
-            
+
             // change we check if the ambig is NaN
             hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
           }
@@ -163,14 +162,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
                 PreferenceConstants.OS_TURN_MIN_TIME_INTERVAL);
         final AmbiguityResolver resolver = new AmbiguityResolver();
         final Logger logger = getLogger();
+
+        final TimePeriod visiblePeriod = ownshipZoneChart.getVisiblePeriod();
+
         _ambiguousResolverLegsAndCuts =
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
                 .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger,
-                ambigScores, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
-        
+                ambigScores, OS_TURN_MIN_COURSE_CHANGE,
+                OS_TURN_MIN_TIME_INTERVAL, visiblePeriod);
+
         // constrain the max number of legs we slice
         final int MAX_LEGS = 8;
-        
+
         zones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
         {
@@ -179,21 +182,21 @@ public class BearingResidualsView extends BaseStackedDotsView implements
                   leg.size() - 1).getDTG().getDate().getTime(), _blueProv
                   .getZoneColor());
           zones.add(thisZone);
-          
-          if(zones.size() >= MAX_LEGS)
+
+          if (zones.size() >= MAX_LEGS)
           {
             break;
           }
         }
-        
+
         // ok, now we have to trim the visible period to these legs
-        if(!zones.isEmpty())
+        if (!zones.isEmpty())
         {
           TimePeriod period =
               new TimePeriod.BaseTimePeriod(new HiResDate(zones.get(0)
                   .getStart()), new HiResDate(zones.get(zones.size() - 1)
                   .getEnd()));
-          
+
           ownshipZoneChart.setPeriod(period);
           targetZoneChart.setPeriod(period);
         }
@@ -546,10 +549,14 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       // ok, get resolving
       final AmbiguityResolver solver = new AmbiguityResolver();
 
+      TimePeriod timePeriod =
+          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
+              .getEndDTG());
+
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
-              null, null, null);
+              null, null, null, timePeriod);
       final List<LegOfCuts> legs = res.getLegs();
       final LegOfCuts zigs = res.getZigs();
 
@@ -576,7 +583,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       assertNotNull(resolvedLegs);
       assertEquals("right num legs", 12, legs.size());
 
-      assertEquals("correct leg", 252.85d, resolvedLegs.get(0).leg.get(0)
+      assertEquals("correct leg", 251.33d, resolvedLegs.get(0).leg.get(0)
           .getBearing(), 1d);
       assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0)
           .getBearing(), 1d);
@@ -645,7 +652,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     if (ownshipZones != null && ownshipZones.length > 0)
     {
       // find the time period of hte chart
-      final TimePeriod outerPeriod = ownshipZoneChart.getPeriod();
+      final TimePeriod outerPeriod = ownshipZoneChart.getVisiblePeriod();
 
       // ok, produce the list of cuts to cull
       final LegOfCuts cutsToDelete =
@@ -1061,7 +1068,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     _overviewCourseRenderer.setRange(minVal, maxVal);
 
     processShowCourse();
-    
+
     // also update the renderer for the zone charts
     ownshipZoneChart.setBearingRange(minVal, maxVal);
     targetZoneChart.setBearingRange(minVal, maxVal);
