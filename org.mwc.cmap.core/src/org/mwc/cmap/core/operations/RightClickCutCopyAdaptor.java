@@ -272,7 +272,7 @@ public class RightClickCutCopyAdaptor
     {
       final AbstractOperation myOperation = new AbstractOperation(getText())
       {
-        private Plottable adjacentItemfor(final HasEditables parentLayer,
+        private Plottable adjacentItemFor(final Object parentLayer,
             final Editable thisE)
         {
           final Plottable res;
@@ -282,19 +282,18 @@ public class RightClickCutCopyAdaptor
             final Enumeration<Editable> numer = segs.elements();
             res = findAdjacentEditable(thisE, numer);
           }
+          else if (parentLayer instanceof HasEditables)
+          {
+            final HasEditables segs = (HasEditables) parentLayer;
+            final Enumeration<Editable> numer = segs.elements();
+            res = findAdjacentEditable(thisE, numer);
+          }
           else
           {
             System.out.println("failed");
             res = null;
           }
           return res;
-        }
-
-        private Plottable
-            adjacentItemFor(final Layers layers, final Layer thisE)
-        {
-          final Enumeration<Editable> numer = layers.elements();
-          return findAdjacentEditable(thisE, numer);
         }
 
         /**
@@ -327,7 +326,7 @@ public class RightClickCutCopyAdaptor
             // is the parent the data object itself?
             if (parentLayer == null)
             {
-              toBeSelected = adjacentItemFor(_theLayers, (Layer) thisE);
+              toBeSelected = adjacentItemFor(_theLayers, thisE);
 
               // no, it must be the top layers object
               _theLayers.removeThisLayer((Layer) thisE);
@@ -340,7 +339,7 @@ public class RightClickCutCopyAdaptor
             {
               // special handling. On some occasions we wish to select
               // the previous item, if it's in a long list.
-              toBeSelected = adjacentItemfor(parentLayer, thisE);
+              toBeSelected = adjacentItemFor(parentLayer, thisE);
 
               // remove the new data from it's parent
               parentLayer.removeElement(thisE);
