@@ -229,22 +229,6 @@ public class RightClickCutCopyAdaptor
 
     }
 
-    protected Plottable previousItemFor(final Layers layers, final Layer thisE)
-    {
-      Plottable res = null;
-      final Enumeration<Editable> numer = layers.elements();
-      while (numer.hasMoreElements())
-      {
-        final Layer seg = (Layer) numer.nextElement();
-        if (seg.equals(thisE))
-        {
-          break;
-        }
-        res = seg;
-      }
-      return res;
-    }
-
     // remember what used to be on the clipboard
     protected void rememberPreviousContents()
     {
@@ -284,8 +268,8 @@ public class RightClickCutCopyAdaptor
     {
       final AbstractOperation myOperation = new AbstractOperation(getText())
       {
-        
-        private Plottable previousItemfor(final HasEditables parentLayer,
+
+        private Plottable adjacentItemfor(final HasEditables parentLayer,
             final FixWrapper thisE)
         {
           Plottable res = null;
@@ -293,20 +277,12 @@ public class RightClickCutCopyAdaptor
           {
             final TrackSegment segs = (TrackSegment) parentLayer;
             final Enumeration<Editable> numer = segs.elements();
-            while (numer.hasMoreElements())
-            {
-              final FixWrapper seg = (FixWrapper) numer.nextElement();
-              if (seg.equals(thisE))
-              {
-                break;
-              }
-              res = seg;
-            }
+            res = findAdjacentEditable(thisE, res, numer);
           }
           return res;
         }
 
-        private Plottable previousItemfor(final HasEditables parentLayer,
+        private Plottable adjacentItemfor(final HasEditables parentLayer,
             final SensorContactWrapper thisE)
         {
           Plottable res = null;
@@ -314,21 +290,12 @@ public class RightClickCutCopyAdaptor
           {
             final SensorWrapper segs = (SensorWrapper) parentLayer;
             final Enumeration<Editable> numer = segs.elements();
-            while (numer.hasMoreElements())
-            {
-              final SensorContactWrapper seg =
-                  (SensorContactWrapper) numer.nextElement();
-              if (seg.equals(thisE))
-              {
-                break;
-              }
-              res = seg;
-            }
+            res = findAdjacentEditable(thisE, res, numer);
           }
           return res;
         }
 
-        private Plottable previousItemfor(final HasEditables parentLayer,
+        private Plottable adjacentItemfor(final HasEditables parentLayer,
             final TrackSegment thisE)
         {
           Plottable res = null;
@@ -336,15 +303,51 @@ public class RightClickCutCopyAdaptor
           {
             final SegmentList segs = (SegmentList) parentLayer;
             final Enumeration<Editable> numer = segs.elements();
-            while (numer.hasMoreElements())
+            res = findAdjacentEditable(thisE, res, numer);
+          }
+          return res;
+        }
+        
+
+        protected Plottable adjacentItemFor(final Layers layers, final Layer thisE)
+        {
+          Plottable res = null;
+          final Enumeration<Editable> numer = layers.elements();
+          res = findAdjacentEditable(thisE, res, numer);
+          return res;
+        }
+
+        private Plottable findAdjacentEditable(final Editable thisE,
+            Plottable res, final Enumeration<Editable> numer)
+        {
+          boolean matched = false;
+          while (numer.hasMoreElements())
+          {
+            final Plottable seg = (Plottable) numer.nextElement();
+            if (!matched)
             {
-              final TrackSegment seg = (TrackSegment) numer.nextElement();
               if (seg.equals(thisE))
               {
-                break;
+                if (res != null)
+                {
+                  // ok, we have a previous, and this matches
+                  break;
+                }
+                else
+                {
+                  // ok, it's the first item. we need to move to the next one
+                  matched = true;
+                }
               }
-              res = seg;
             }
+            else
+            {
+              // ok, we've matched the item, but we didnt' have a previous item. So, we want to
+              // move onto the next one, then return
+              res = seg;
+              break;
+            }
+            res = seg;
           }
           return res;
         }
@@ -379,7 +382,7 @@ public class RightClickCutCopyAdaptor
             // is the parent the data object itself?
             if (parentLayer == null)
             {
-              toBeSelected = previousItemFor(_theLayers, (Layer) thisE);
+              toBeSelected = adjacentItemFor(_theLayers, (Layer) thisE);
 
               // no, it must be the top layers object
               _theLayers.removeThisLayer((Layer) thisE);
@@ -396,16 +399,16 @@ public class RightClickCutCopyAdaptor
               {
                 // ok, find the previous track segemnt
                 toBeSelected =
-                    previousItemfor(parentLayer, (TrackSegment) thisE);
+                    adjacentItemfor(parentLayer, (TrackSegment) thisE);
               }
               else if (thisE instanceof FixWrapper)
               {
-                toBeSelected = previousItemfor(parentLayer, (FixWrapper) thisE);
+                toBeSelected = adjacentItemfor(parentLayer, (FixWrapper) thisE);
               }
               else if (thisE instanceof SensorContactWrapper)
               {
                 toBeSelected =
-                    previousItemfor(parentLayer, (SensorContactWrapper) thisE);
+                    adjacentItemfor(parentLayer, (SensorContactWrapper) thisE);
               }
 
               // remove the new data from it's parent
@@ -464,7 +467,7 @@ public class RightClickCutCopyAdaptor
 
           boolean multipleLayersModified = false;
           HasEditables lastLayerModified = null;
-          
+
           Plottable toHighlight = null;
 
           for (int i = 0; i < _data.length; i++)
@@ -474,11 +477,11 @@ public class RightClickCutCopyAdaptor
 
             // if this is the first (or only) item being
             // restored - remember it, so we can highlgiht it
-            if(toHighlight == null)
+            if (toHighlight == null)
             {
               toHighlight = (Plottable) thisE;
             }
-            
+
             // is the parent the data object itself?
             if (parentLayer == null)
             {
