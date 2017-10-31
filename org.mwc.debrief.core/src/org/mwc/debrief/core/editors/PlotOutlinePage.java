@@ -1799,7 +1799,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
             {
               final ISelection selected;
               final EditableWrapper wrapped;
-              if (newItem == parentLayer)
+              if (newItem.equals(parentLayer))
               {
                 // ok, it's a top-level layer.
                 wrapped = new EditableWrapper(newItem, null, theData);
