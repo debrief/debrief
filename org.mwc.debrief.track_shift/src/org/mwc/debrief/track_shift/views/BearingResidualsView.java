@@ -134,7 +134,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           {
             final SensorContactWrapper contact =
                 (SensorContactWrapper) elements.nextElement();
-            hasAmbiguous = contact.getHasAmbiguousBearing();
+            
+            // change we check if the ambig is NaN
+            hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
           }
         }
       }
