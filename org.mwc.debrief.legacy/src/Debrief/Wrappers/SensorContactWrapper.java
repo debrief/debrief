@@ -689,7 +689,7 @@ public final class SensorContactWrapper extends
     else
     {
       _hasBearing = false;
-      _bearing = 0;
+      _bearing = Doublet.INVALID_BASE_FREQUENCY;
     }
 
     // do we have ambiguous bearing data?
