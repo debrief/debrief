@@ -20,7 +20,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -42,6 +46,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.ui_support.OutlineNameSorter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -49,14 +54,13 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.Plottable;
+import MWC.GUI.PlottablesType;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -268,88 +272,29 @@ public class RightClickCutCopyAdaptor
     {
       final AbstractOperation myOperation = new AbstractOperation(getText())
       {
-
         private Plottable adjacentItemfor(final HasEditables parentLayer,
-            final FixWrapper thisE)
+            final Editable thisE)
         {
-          Plottable res = null;
-          if (parentLayer instanceof TrackSegment)
+          final Plottable res;
+          if (parentLayer instanceof PlottablesType)
           {
-            final TrackSegment segs = (TrackSegment) parentLayer;
+            final PlottablesType segs = (PlottablesType) parentLayer;
             final Enumeration<Editable> numer = segs.elements();
-            res = findAdjacentEditable(thisE, res, numer);
+            res = findAdjacentEditable(thisE, numer);
+          }
+          else
+          {
+            System.out.println("failed");
+            res = null;
           }
           return res;
         }
 
-        private Plottable adjacentItemfor(final HasEditables parentLayer,
-            final SensorContactWrapper thisE)
+        private Plottable
+            adjacentItemFor(final Layers layers, final Layer thisE)
         {
-          Plottable res = null;
-          if (parentLayer instanceof SensorWrapper)
-          {
-            final SensorWrapper segs = (SensorWrapper) parentLayer;
-            final Enumeration<Editable> numer = segs.elements();
-            res = findAdjacentEditable(thisE, res, numer);
-          }
-          return res;
-        }
-
-        private Plottable adjacentItemfor(final HasEditables parentLayer,
-            final TrackSegment thisE)
-        {
-          Plottable res = null;
-          if (parentLayer instanceof SegmentList)
-          {
-            final SegmentList segs = (SegmentList) parentLayer;
-            final Enumeration<Editable> numer = segs.elements();
-            res = findAdjacentEditable(thisE, res, numer);
-          }
-          return res;
-        }
-        
-
-        protected Plottable adjacentItemFor(final Layers layers, final Layer thisE)
-        {
-          Plottable res = null;
           final Enumeration<Editable> numer = layers.elements();
-          res = findAdjacentEditable(thisE, res, numer);
-          return res;
-        }
-
-        private Plottable findAdjacentEditable(final Editable thisE,
-            Plottable res, final Enumeration<Editable> numer)
-        {
-          boolean matched = false;
-          while (numer.hasMoreElements())
-          {
-            final Plottable seg = (Plottable) numer.nextElement();
-            if (!matched)
-            {
-              if (seg.equals(thisE))
-              {
-                if (res != null)
-                {
-                  // ok, we have a previous, and this matches
-                  break;
-                }
-                else
-                {
-                  // ok, it's the first item. we need to move to the next one
-                  matched = true;
-                }
-              }
-            }
-            else
-            {
-              // ok, we've matched the item, but we didnt' have a previous item. So, we want to
-              // move onto the next one, then return
-              res = seg;
-              break;
-            }
-            res = seg;
-          }
-          return res;
+          return findAdjacentEditable(thisE, numer);
         }
 
         /**
@@ -395,21 +340,7 @@ public class RightClickCutCopyAdaptor
             {
               // special handling. On some occasions we wish to select
               // the previous item, if it's in a long list.
-              if (thisE instanceof TrackSegment)
-              {
-                // ok, find the previous track segemnt
-                toBeSelected =
-                    adjacentItemfor(parentLayer, (TrackSegment) thisE);
-              }
-              else if (thisE instanceof FixWrapper)
-              {
-                toBeSelected = adjacentItemfor(parentLayer, (FixWrapper) thisE);
-              }
-              else if (thisE instanceof SensorContactWrapper)
-              {
-                toBeSelected =
-                    adjacentItemfor(parentLayer, (SensorContactWrapper) thisE);
-              }
+              toBeSelected = adjacentItemfor(parentLayer, thisE);
 
               // remove the new data from it's parent
               parentLayer.removeElement(thisE);
@@ -449,6 +380,56 @@ public class RightClickCutCopyAdaptor
         {
           doCut();
           return Status.OK_STATUS;
+        }
+
+        private Plottable findAdjacentEditable(final Editable thisE,
+            final Enumeration<Editable> numer)
+        {
+          boolean matched = false;
+          Plottable res = null;
+
+          // put them into a list, so we can sort them properly
+          final List<Editable> list = new ArrayList<Editable>();
+          while (numer.hasMoreElements())
+          {
+            list.add(numer.nextElement());
+          }
+
+          final Comparator<Editable> comparator =
+              new OutlineNameSorter.EditableComparer();
+
+          // okm now sort them out
+          Collections.sort(list, comparator);
+
+          for (final Editable item : list)
+          {
+            final Plottable seg = (Plottable) item;
+            if (!matched)
+            {
+              if (seg.equals(thisE))
+              {
+                if (res != null)
+                {
+                  // ok, we have a previous, and this matches
+                  break;
+                }
+                else
+                {
+                  // ok, it's the first item. we need to move to the next one
+                  matched = true;
+                }
+              }
+            }
+            else
+            {
+              // ok, we've matched the item, but we didn't have a previous item. So, we want to
+              // move onto the next one, then return
+              res = seg;
+              break;
+            }
+            res = seg;
+          }
+          return res;
         }
 
         @Override

@@ -47,9 +47,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -89,6 +87,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.core.ui_support.DragDropSupport;
+import org.mwc.cmap.core.ui_support.OutlineNameSorter;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import MWC.GUI.BaseLayer;
@@ -97,8 +96,6 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 
 public class PlotOutlinePage extends Page implements IContentOutlinePage
@@ -124,73 +121,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     public Widget findEditable(final Editable item)
     {
       return super.findItem(item);
-    }
-  }
-
-  class NameSorter extends ViewerSorter
-  {
-    @Override
-    @SuppressWarnings("unchecked")
-    public int compare(final Viewer viewer, final Object e1, final Object e2)
-    {
-      int res = 0;
-      final EditableWrapper p1 = (EditableWrapper) e1;
-      final EditableWrapper p2 = (EditableWrapper) e2;
-
-      // just see if we have sorted editables
-      if ((p1 instanceof Comparable) && (p2 instanceof Comparable))
-      {
-        final Comparable<Object> w1 = (Comparable<Object>) p1;
-        final Comparable<Object> w2 = (Comparable<Object>) p2;
-        res = w1.compareTo(w2);
-      }
-      else
-      {
-        // ha. if they're watchables, sort them in time order
-        if ((p1.getEditable() instanceof Watchable)
-            && (p2.getEditable() instanceof Watchable))
-        {
-          final Watchable wa = (Watchable) p1.getEditable();
-          final Watchable wb = (Watchable) p2.getEditable();
-
-          // hmm, just check we have times
-          final HiResDate ha = wa.getTime();
-          final HiResDate hb = wb.getTime();
-
-          if ((ha != null) && (hb != null))
-          {
-            res = wa.getTime().compareTo(wb.getTime());
-          }
-          else
-          {
-            res =
-                p1.getEditable().getName()
-                    .compareTo(p2.getEditable().getName());
-          }
-        }
-        else if ((p1.getEditable() instanceof Comparable)
-            && (p2.getEditable() instanceof Comparable))
-        {
-          @SuppressWarnings("rawtypes")
-          final Comparable p1c = (Comparable) p1.getEditable();
-          @SuppressWarnings("rawtypes")
-          final Comparable p2c = (Comparable) p2.getEditable();
-          res = p1c.compareTo(p2c);
-
-          // Note: use the native compare-to, not just comparing names
-          // final String name1 = p1.getEditable().toString();
-          // final String name2 = p2.getEditable().toString();
-          // res = name1.compareTo(name2);
-        }
-        else
-        {
-          final String p1Name = p1.getEditable().getName();
-          final String p2Name = p2.getEditable().getName();
-          res = p1Name.compareTo(p2Name);
-        }
-      }
-
-      return res;
     }
   }
 
@@ -830,7 +760,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     _treeViewer.setContentProvider(new ViewContentProvider());
     _myLabelProvider = new CoreViewLabelProvider();
     _treeViewer.setLabelProvider(_myLabelProvider);
-    _treeViewer.setSorter(new NameSorter());
+    _treeViewer.setSorter(new OutlineNameSorter());
     _treeViewer.setInput(_myLayers);
     _treeViewer.setComparer(new IElementComparer()
     {
