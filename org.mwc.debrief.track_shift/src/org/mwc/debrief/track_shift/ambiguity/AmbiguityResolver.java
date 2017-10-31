@@ -548,7 +548,7 @@ public class AmbiguityResolver
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
               null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
-              timePeriod);
+              timePeriod, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -597,7 +597,7 @@ public class AmbiguityResolver
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
               null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
-              timePeriod);
+              timePeriod, null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -758,7 +758,7 @@ public class AmbiguityResolver
       final LegsAndZigs sliced =
           solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, logger,
               null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
-              timePeriod);
+              timePeriod, null);
 
       assertNotNull("produced slices", sliced);
       assertEquals("correct legs", 4, sliced.legs.size());
@@ -1213,8 +1213,8 @@ public class AmbiguityResolver
   private LegsAndZigs sliceSensorIntoLegsUsingAmbiguity(
       final SensorWrapper sensor, final double minZig, final double minBoth,
       final double minLegLength, final Logger logger, final TimeSeries scores,
-      final TimePeriod trackPeriod, Double osTurnMinCourseChange,
-      Long osTurnMinTimeDelta)
+      final TimePeriod trackPeriod, final Double osTurnMinCourseChange,
+      final Long osTurnMinTimeDelta, final Integer allowedLegs)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigs = new LegOfCuts();
@@ -1234,7 +1234,7 @@ public class AmbiguityResolver
     SensorContactWrapper firstCut = null;
     final LegOfCuts possLeg = new LegOfCuts();
 
-    while (enumer.hasMoreElements())
+    while (enumer.hasMoreElements() && (allowedLegs != null && legs.size() <= allowedLegs))
     {
       final SensorContactWrapper cut =
           (SensorContactWrapper) enumer.nextElement();
@@ -1527,7 +1527,7 @@ public class AmbiguityResolver
       final double minZig, final double minBoth, final double minLegLength,
       final Logger logger, final TimeSeries scores,
       final Double osTurnMinCourseChange, final Long osTurnMinTimeInterval,
-      final TimePeriod visiblePeriod)
+      final TimePeriod visiblePeriod, Integer maxLegs)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
@@ -1544,7 +1544,7 @@ public class AmbiguityResolver
         final LegsAndZigs thisL =
             sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, minBoth,
                 minLegLength, logger, scores, visiblePeriod,
-                osTurnMinCourseChange, osTurnMinTimeInterval);
+                osTurnMinCourseChange, osTurnMinTimeInterval, maxLegs - res.legs.size());
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);

@@ -160,6 +160,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final long OS_TURN_MIN_TIME_INTERVAL =
             TrackShiftActivator.getDefault().getPreferenceStore().getLong(
                 PreferenceConstants.OS_TURN_MIN_TIME_INTERVAL);
+        final int MAX_LEGS =
+            TrackShiftActivator.getDefault().getPreferenceStore().getInt(
+                PreferenceConstants.OS_TURN_MAX_LEGS);
         final AmbiguityResolver resolver = new AmbiguityResolver();
         final Logger logger = getLogger();
 
@@ -169,10 +172,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
                 .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger,
                 ambigScores, OS_TURN_MIN_COURSE_CHANGE,
-                OS_TURN_MIN_TIME_INTERVAL, visiblePeriod);
-
-        // constrain the max number of legs we slice
-        final int MAX_LEGS = 8;
+                OS_TURN_MIN_TIME_INTERVAL, visiblePeriod, MAX_LEGS);
 
         zones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
@@ -556,7 +556,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
-              null, null, null, timePeriod);
+              null, null, null, timePeriod, null);
       final List<LegOfCuts> legs = res.getLegs();
       final LegOfCuts zigs = res.getZigs();
 
