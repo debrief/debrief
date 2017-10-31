@@ -1858,16 +1858,16 @@ public class ZoneChart extends Composite
       listener.resized(zone);
     }
   }
-
+ 
   /**
    * get the time period covered by the data in this zone chart
    * 
    * @return
    */
-  public TimePeriod getPeriod()
+  public TimePeriod getVisiblePeriod()
   {
     final XYPlot plot = (XYPlot) chart.getPlot();
-    final Range outerRange = plot.getDataRange(plot.getDomainAxis());
+    final Range outerRange = plot.getDomainAxis().getRange();
     final long lower = (long) outerRange.getLowerBound();
     final long upper = (long) outerRange.getUpperBound();
     final TimePeriod res =

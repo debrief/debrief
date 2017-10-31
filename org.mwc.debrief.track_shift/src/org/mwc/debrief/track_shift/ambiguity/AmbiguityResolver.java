@@ -533,6 +533,9 @@ public class AmbiguityResolver
 
       final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
       sensor.setVisible(true);
+      TimePeriod timePeriod =
+          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
+              .getEndDTG());
 
       // check we have the correct sensor
       assertEquals("correct name", "TA", sensor.getName());
@@ -544,7 +547,8 @@ public class AmbiguityResolver
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
-              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
+              timePeriod);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -567,6 +571,9 @@ public class AmbiguityResolver
       final SensorWrapper sensor =
           (SensorWrapper) track.getSensors().elements().nextElement();
       sensor.setVisible(true);
+      TimePeriod timePeriod =
+          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
+              .getEndDTG());
 
       // set some cuts to hidden
       int ctr = 0;
@@ -589,7 +596,8 @@ public class AmbiguityResolver
       // try to get zones using ambiguity delta
       final LegsAndZigs res =
           solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
-              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
+              timePeriod);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -725,6 +733,9 @@ public class AmbiguityResolver
       // sensor.add(wrapMe(sensor, 410000, 345d, 20d));
 
       sensor.setVisible(true);
+      TimePeriod timePeriod =
+          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
+              .getEndDTG());
 
       final TrackWrapper host = new TrackWrapper();
       host.setName("Host");
@@ -746,7 +757,8 @@ public class AmbiguityResolver
 
       final LegsAndZigs sliced =
           solver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, logger,
-              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
+              timePeriod);
 
       assertNotNull("produced slices", sliced);
       assertEquals("correct legs", 4, sliced.legs.size());
@@ -1168,8 +1180,8 @@ public class AmbiguityResolver
         // store the leg permutation
         listOfPermutations.add(thisPerm);
         lastPerm = thisPerm;
-        
-        // special handling. 
+
+        // special handling.
         previousLeg = leg;
       }
     }
@@ -1226,11 +1238,10 @@ public class AmbiguityResolver
     {
       final SensorContactWrapper cut =
           (SensorContactWrapper) enumer.nextElement();
-      
+
       final boolean hasAmbig = !Double.isNaN(cut.getAmbiguousBearing());
 
-      if (cut.getVisible() && hasAmbig
-          && trackPeriod.contains(cut.getDTG()))
+      if (cut.getVisible() && hasAmbig && trackPeriod.contains(cut.getDTG()))
       {
         // ok, TA data
         double delta = cut.getAmbiguousBearing() - cut.getBearing();
@@ -1515,15 +1526,12 @@ public class AmbiguityResolver
   public LegsAndZigs sliceTrackIntoLegsUsingAmbiguity(final TrackWrapper track,
       final double minZig, final double minBoth, final double minLegLength,
       final Logger logger, final TimeSeries scores,
-      Double osTurnMinCourseChange, Long osTurnMinTimeInterval)
+      final Double osTurnMinCourseChange, final Long osTurnMinTimeInterval,
+      final TimePeriod visiblePeriod)
   {
     final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
     final LegOfCuts zigCuts = new LegOfCuts();
     final LegsAndZigs res = new LegsAndZigs(legs, zigCuts);
-
-    // find the lenght of the track
-    final TimePeriod period =
-        new TimePeriod.BaseTimePeriod(track.getStartDTG(), track.getEndDTG());
 
     // ok, go for it
     final BaseLayer sensors = track.getSensors();
@@ -1535,8 +1543,8 @@ public class AmbiguityResolver
       {
         final LegsAndZigs thisL =
             sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, minBoth,
-                minLegLength, logger, scores, period, osTurnMinCourseChange,
-                osTurnMinTimeInterval);
+                minLegLength, logger, scores, visiblePeriod,
+                osTurnMinCourseChange, osTurnMinTimeInterval);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
