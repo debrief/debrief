@@ -74,6 +74,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.TimePeriod.BaseTimePeriod;
 
 public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
@@ -166,6 +167,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
                 .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger,
                 ambigScores, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL);
+        
+        // constrain the max number of legs we slice
+        final int MAX_LEGS = 8;
+        
         zones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
         {
@@ -174,6 +179,23 @@ public class BearingResidualsView extends BaseStackedDotsView implements
                   leg.size() - 1).getDTG().getDate().getTime(), _blueProv
                   .getZoneColor());
           zones.add(thisZone);
+          
+          if(zones.size() >= MAX_LEGS)
+          {
+            break;
+          }
+        }
+        
+        // ok, now we have to trim the visible period to these legs
+        if(!zones.isEmpty())
+        {
+          TimePeriod period =
+              new TimePeriod.BaseTimePeriod(new HiResDate(zones.get(0)
+                  .getStart()), new HiResDate(zones.get(zones.size() - 1)
+                  .getEnd()));
+          
+          ownshipZoneChart.setPeriod(period);
+          targetZoneChart.setPeriod(period);
         }
       }
       else
