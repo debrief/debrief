@@ -1813,7 +1813,6 @@ public class ZoneChart extends Composite
     }
     if (resolveAmbiguityEvent != null)
     {
-      @SuppressWarnings("unused")
       final Button resolve =
           createButton(col1, SWT.PUSH, autoResolve24, "Resolve",
               "Resolve Ambiguity", resolveAmbiguityEvent);
@@ -1920,6 +1919,25 @@ public class ZoneChart extends Composite
     return zones;
   }
 
+  private Layers getLayers()
+  {
+    // ok, populate the data
+    final IEditorPart curEditor =
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+            .getActiveEditor();
+    Layers res;
+    if (curEditor instanceof IAdaptable)
+    {
+      res = (Layers) curEditor.getAdapter(Layers.class);
+    }
+    else
+    {
+      res = null;
+    }
+
+    return res;
+  }
+
   /**
    * called from the UI button
    * 
@@ -1933,90 +1951,7 @@ public class ZoneChart extends Composite
     // do we have any data?
     if (xySeries.getItemCount() == 0)
     {
-      // ok, populate the data
-      final IEditorPart curEditor =
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-              .getActiveEditor();
-      if (curEditor instanceof IAdaptable)
-      {
-        final Layers layers = (Layers) curEditor.getAdapter(Layers.class);
-        if (layers != null)
-        {
-          @SuppressWarnings("unchecked")
-          final List<TimeSeriesDataItem> undoData =
-              new ArrayList<TimeSeriesDataItem>(xySeries.getItems());
-          final List<TimeSeriesDataItem> data =
-              new ArrayList<TimeSeriesDataItem>();
-
-          // find the first track
-          final Enumeration<Editable> numer = layers.elements();
-          while (numer.hasMoreElements())
-          {
-            final Layer thisL = (Layer) numer.nextElement();
-            if (thisL instanceof TrackWrapper)
-            {
-              // ok, go for it.
-              final TrackWrapper thisT = (TrackWrapper) thisL;
-              final Enumeration<Editable> posits = thisT.getPositionIterator();
-              while (posits.hasMoreElements())
-              {
-                final FixWrapper thisF = (FixWrapper) posits.nextElement();
-                final TimeSeriesDataItem newItem =
-                    new TimeSeriesDataItem(new FixedMillisecond(thisF
-                        .getDateTimeGroup().getDate().getTime()), thisF
-                        .getCourseDegs());
-                data.add(newItem);
-              }
-
-              // and we can stop looping
-              break;
-            }
-          }
-
-          reversOp.add(new AbstractOperation("populate data")
-          {
-            @Override
-            public IStatus execute(final IProgressMonitor monitor,
-                final IAdaptable info) throws ExecutionException
-            {
-              // ditch the zones. We're having a fresh start
-              clearZones();
-
-              // prob have some data - so we can clear the list
-              xySeries.clear();
-              for (final TimeSeriesDataItem item : data)
-              {
-                xySeries.add(item, false);
-              }
-              // ok, share the good news
-              xySeries.fireSeriesChanged();
-              return Status.OK_STATUS;
-            }
-
-            @Override
-            public IStatus redo(final IProgressMonitor monitor,
-                final IAdaptable info) throws ExecutionException
-            {
-              return execute(monitor, info);
-            }
-
-            @Override
-            public IStatus undo(final IProgressMonitor monitor,
-                final IAdaptable info) throws ExecutionException
-            {
-
-              xySeries.clear();
-              for (final TimeSeriesDataItem item : undoData)
-              {
-                xySeries.add(item, false);
-              }
-              // ok, share the good news
-              xySeries.fireSeriesChanged();
-              return Status.OK_STATUS;
-            }
-          });
-        }
-      }
+      getSomeTrackData(reversOp);
     }
     // ok, do the slicing
     final List<Zone> newZones = zoneSlicer.performSlicing(wholePeriod);
@@ -2090,6 +2025,87 @@ public class ZoneChart extends Composite
       }
     });
     undoRedoProvider.execute(reversOp);
+  }
+
+  private void getSomeTrackData(final ReversibleOperation reversOp)
+  {
+    final Layers layers = getLayers();
+    if (layers != null)
+    {
+      @SuppressWarnings("unchecked")
+      final List<TimeSeriesDataItem> undoData =
+          new ArrayList<TimeSeriesDataItem>(xySeries.getItems());
+      final List<TimeSeriesDataItem> data =
+          new ArrayList<TimeSeriesDataItem>();
+
+      // find the first track
+      final Enumeration<Editable> numer = layers.elements();
+      while (numer.hasMoreElements())
+      {
+        final Layer thisL = (Layer) numer.nextElement();
+        if (thisL instanceof TrackWrapper)
+        {
+          // ok, go for it.
+          final TrackWrapper thisT = (TrackWrapper) thisL;
+          final Enumeration<Editable> posits = thisT.getPositionIterator();
+          while (posits.hasMoreElements())
+          {
+            final FixWrapper thisF = (FixWrapper) posits.nextElement();
+            final TimeSeriesDataItem newItem =
+                new TimeSeriesDataItem(new FixedMillisecond(thisF
+                    .getDateTimeGroup().getDate().getTime()), thisF
+                    .getCourseDegs());
+            data.add(newItem);
+          }
+
+          // and we can stop looping
+          break;
+        }
+      }
+
+      reversOp.add(new AbstractOperation("populate data")
+      {
+        @Override
+        public IStatus execute(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          // ditch the zones. We're having a fresh start
+          clearZones();
+
+          // prob have some data - so we can clear the list
+          xySeries.clear();
+          for (final TimeSeriesDataItem item : data)
+          {
+            xySeries.add(item, false);
+          }
+          // ok, share the good news
+          xySeries.fireSeriesChanged();
+          return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+          return execute(monitor, info);
+        }
+
+        @Override
+        public IStatus undo(final IProgressMonitor monitor,
+            final IAdaptable info) throws ExecutionException
+        {
+
+          xySeries.clear();
+          for (final TimeSeriesDataItem item : undoData)
+          {
+            xySeries.add(item, false);
+          }
+          // ok, share the good news
+          xySeries.fireSeriesChanged();
+          return Status.OK_STATUS;
+        }
+      });
+    }
   }
 
   public void removeZoneListener(final ZoneListener listener)
@@ -2167,14 +2183,10 @@ public class ZoneChart extends Composite
     for (final TimeSeries t : list)
     {
       final String name = (String) t.getKey();
-      if (name.equals(BaseStackedDotsView.AMBIG_NAME))
+      if (name.equals(BaseStackedDotsView.AMBIG_NAME) && !t.isEmpty())
       {
-        // any contents?
-        if (t.getItemCount() > 0)
-        {
-          hasAmbig = true;
-          break;
-        }
+        hasAmbig = true;
+        break;
       }
     }
 

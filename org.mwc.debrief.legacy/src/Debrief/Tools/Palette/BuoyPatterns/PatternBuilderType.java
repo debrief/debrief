@@ -178,7 +178,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
    * method called by child classes to format a new symbol (LabelWrapper) with the current default
    * formatting options
    */
-  final void formatSymbol(final Debrief.Wrappers.LabelWrapper wrapper,
+  final protected void formatSymbol(final Debrief.Wrappers.LabelWrapper wrapper,
       final Debrief.Wrappers.BuoyPatternWrapper parent)
   {
     // get the shape for the symbol
@@ -194,7 +194,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     wrapper.setColor(getColor());
 
     // specify whether the buoy label should be shown
-    wrapper.setLabelVisible(new Boolean(getBuoyLabelVisible()));
+    wrapper.setLabelVisible(getBuoyLabelVisible());
 
     // the time period is managed by the buoypattern, so assign it
     final TimePeriod period =
