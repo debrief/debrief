@@ -335,10 +335,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
   final protected TimeSeries measuredValues = new TimeSeries("Measured");
-  final protected TimeSeries ambigValues = new TimeSeries(
-      "Measured (Ambiguous)");
+  final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
+
+  final public static String AMBIG_NAME = "Measured (Ambiguous)";
 
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
@@ -803,6 +804,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
             ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
             ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
+    ownshipZoneChart.updateControls();
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -1479,9 +1481,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
 
           // fire the finished event
-          for(Zone zone: zones)
+          for (Zone zone : zones)
           {
-            setLeg(priTrack, secTrack, zone);            
+            setLeg(priTrack, secTrack, zone);
           }
 
           // ok, fire some updates

@@ -55,6 +55,7 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
+import org.mwc.debrief.track_shift.views.BaseStackedDotsView;
 import org.mwc.debrief.track_shift.views.WrappingResidualRenderer;
 
 import Debrief.Wrappers.FixWrapper;
@@ -1253,7 +1254,7 @@ public class ZoneChart extends Composite
     plot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
 
-    WrappingResidualRenderer renderer =
+    final WrappingResidualRenderer renderer =
         new WrappingResidualRenderer(null, null, dataset, 0, 360);
 
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
@@ -1381,29 +1382,29 @@ public class ZoneChart extends Composite
    * @param backwards
    *          whether we're going backwards
    */
-//  private static void panViewport(final JFreeChart chart,
-//      final boolean backwards)
-//  {
-//    // ok, find the current time coverage
-//    final XYPlot plot = chart.getXYPlot();
-//    final Range outerRange = plot.getDataRange(plot.getDomainAxis());
-//    final ValueAxis timeAxis = plot.getDomainAxis();
-//
-//    final long currentStart = (long) timeAxis.getLowerBound();
-//    final long currentEnd = (long) timeAxis.getUpperBound();
-//
-//    final long outerLower = (long) outerRange.getLowerBound();
-//    final long outerUpper = (long) outerRange.getUpperBound();
-//
-//    // get the new coverage
-//    final TimePeriod newPeriod =
-//        calculatePanData(backwards, outerLower, outerUpper, currentStart,
-//            currentEnd);
-//
-//    // and update the values
-//    timeAxis.setLowerBound(newPeriod.getStartDTG().getDate().getTime());
-//    timeAxis.setUpperBound(newPeriod.getEndDTG().getDate().getTime());
-//  }
+  // private static void panViewport(final JFreeChart chart,
+  // final boolean backwards)
+  // {
+  // // ok, find the current time coverage
+  // final XYPlot plot = chart.getXYPlot();
+  // final Range outerRange = plot.getDataRange(plot.getDomainAxis());
+  // final ValueAxis timeAxis = plot.getDomainAxis();
+  //
+  // final long currentStart = (long) timeAxis.getLowerBound();
+  // final long currentEnd = (long) timeAxis.getUpperBound();
+  //
+  // final long outerLower = (long) outerRange.getLowerBound();
+  // final long outerUpper = (long) outerRange.getUpperBound();
+  //
+  // // get the new coverage
+  // final TimePeriod newPeriod =
+  // calculatePanData(backwards, outerLower, outerUpper, currentStart,
+  // currentEnd);
+  //
+  // // and update the values
+  // timeAxis.setLowerBound(newPeriod.getStartDTG().getDate().getTime());
+  // timeAxis.setUpperBound(newPeriod.getEndDTG().getDate().getTime());
+  // }
 
   private static Zone periodToCutFor(final List<TimeSeriesDataItem> cutsInZone,
       final long timeOfNearestCut, final ColorProvider colorProvider)
@@ -1544,8 +1545,8 @@ public class ZoneChart extends Composite
       "/icons/24/auto_delete.png").createImage();
   private final Image clearZones24 = CorePlugin.getImageDescriptor(
       "/icons/24/Binocular.png").createImage();
-//  private final Image panRight24 = CorePlugin.getImageDescriptor(
-//      "/icons/24/media_fast_forward.png").createImage();
+  // private final Image panRight24 = CorePlugin.getImageDescriptor(
+  // "/icons/24/media_fast_forward.png").createImage();
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
 
@@ -1604,7 +1605,9 @@ public class ZoneChart extends Composite
   private final Runnable deleteEvent;
 
   private final Runnable resolveAmbiguityEvent;
-  
+
+  private final List<Button> ambigControls = new ArrayList<Button>();
+
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
@@ -1703,14 +1706,16 @@ public class ZoneChart extends Composite
       switcher.addSelectionListener(new RadioEvent(buttons, switcher,
           EditMode.SWITCH));
 
+      ambigControls.add(switcher);
+
       // introduce a placeholder, to separate the mode toggles from the command ones
       @SuppressWarnings("unused")
       final Label placeHolder = new Label(col1, SWT.NONE);
     }
 
     @SuppressWarnings("unused")
-    final Button fitToWin =
-        createButton(col1, SWT.PUSH, fitToWin24, "Reveal", "Reveal all zones",
+    final Button revealBtn =
+        createButton(col1, SWT.PUSH, fitToWin24, "Reveal", "Reveal all data",
             new Runnable()
             {
               @Override
@@ -1720,40 +1725,83 @@ public class ZoneChart extends Composite
               }
             });
 
-    
-
+    // ok, now the clear buttons
+    @SuppressWarnings("unused")
+    final Button clearZones =
+        createButton(col1, SWT.PUSH, clearZones24, "Clear zones",
+            "Clear zone markings", new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                clearZones();
+              }
+            });
 
     final int MAX_LEGS =
         TrackShiftActivator.getDefault().getPreferenceStore().getInt(
             PreferenceConstants.OS_TURN_MAX_LEGS);
     final String btnName = "Slice next " + MAX_LEGS;
     @SuppressWarnings("unused")
-    final Button sliceBtn = createButton(col1, SWT.PUSH, autoSlice24, btnName,
-        "Automatically slice zones", new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            if (zoneSlicer == null)
+    final Button sliceBtn =
+        createButton(col1, SWT.PUSH, autoSlice24, btnName,
+            "Automatically slice zones", new Runnable()
             {
-              CorePlugin.showMessage("Manage legs", "Slicing happens here");
-            }
-            else
-            {
-              final Runnable wrappedItem = new Runnable()
+              @Override
+              public void run()
               {
-
-                @Override
-                public void run()
+                if (zoneSlicer == null)
                 {
-                  // ok, do the slicing
-                  performSlicing(false);
+                  CorePlugin.showMessage("Manage legs", "Slicing happens here");
                 }
-              };
-              BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
-            }
-          }
-        });
+                else
+                {
+                  final Runnable wrappedItem = new Runnable()
+                  {
+
+                    @Override
+                    public void run()
+                    {
+                      // ok, do the slicing
+                      performSlicing(false);
+                    }
+                  };
+                  BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
+                }
+              }
+            });
+
+    @SuppressWarnings("unused")
+    final Button sliceAllBtn =
+        createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
+            "Automatically slice zones", new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                if (zoneSlicer == null)
+                {
+                  CorePlugin.showMessage("Manage legs", "Slicing happens here");
+                }
+                else
+                {
+                  final Runnable wrappedItem = new Runnable()
+                  {
+
+                    @Override
+                    public void run()
+                    {
+                      // ditch any existing zones
+                      clearZones();
+
+                      // ok, do the slicing
+                      performSlicing(true);
+                    }
+                  };
+                  BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
+                }
+              }
+            });
 
     if (deleteEvent != null)
     {
@@ -1769,51 +1817,9 @@ public class ZoneChart extends Composite
       final Button resolve =
           createButton(col1, SWT.PUSH, autoResolve24, "Resolve",
               "Resolve Ambiguity", resolveAmbiguityEvent);
+      ambigControls.add(resolve);
     }
-    
-    @SuppressWarnings("unused")
-    Button sliceAllBtn = createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
-        "Automatically slice zones", new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            if (zoneSlicer == null)
-            {
-              CorePlugin.showMessage("Manage legs", "Slicing happens here");
-            }
-            else
-            {
-              final Runnable wrappedItem = new Runnable()
-              {
 
-                @Override
-                public void run()
-                {
-                  // ditch any existing zones
-                  clearZones();
-                  
-                  // ok, do the slicing
-                  performSlicing(true);
-                }
-              };
-              BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
-            }
-          }
-        });
-
-    // ok, now the left/right buttons
-    @SuppressWarnings("unused")
-    final Button panLeft =
-        createButton(col1, SWT.PUSH, clearZones24, "Clear", "Clear zones",
-            new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                clearZones();
-              }
-            });
   }
 
   @Override
@@ -1849,7 +1855,7 @@ public class ZoneChart extends Composite
     autoResolve24.dispose();
     autoDelete24.dispose();
     clearZones24.dispose();
-//    panRight24.dispose();
+    // panRight24.dispose();
 
     super.dispose();
   }
@@ -1904,15 +1910,6 @@ public class ZoneChart extends Composite
     return res;
   }
 
-  public void setPeriod(final TimePeriod period)
-  {
-    final XYPlot plot = (XYPlot) chart.getPlot();
-    // final Range outerRange = plot.getDataRange(plot.getDomainAxis());
-    plot.getDomainAxis().setRange(period.getStartDTG().getDate().getTime(),
-        period.getEndDTG().getDate().getTime());
-
-  }
-
   private List<ZoneListener> getZoneListeners()
   {
     return new ArrayList<ZoneListener>(zoneListeners);
@@ -1925,10 +1922,11 @@ public class ZoneChart extends Composite
 
   /**
    * called from the UI button
-   * @param wholePeriod 
+   * 
+   * @param wholePeriod
    * 
    */
-  private void performSlicing(boolean wholePeriod)
+  private void performSlicing(final boolean wholePeriod)
   {
     final ReversibleOperation reversOp = new ReversibleOperation("Slice legs");
 
@@ -2099,9 +2097,35 @@ public class ZoneChart extends Composite
     zoneListeners.remove(listener);
   }
 
+  public void setBearingRange(final double minVal, final double maxVal)
+  {
+    final XYPlot plot = this.chart.getXYPlot();
+    final XYItemRenderer currentRenderer = plot.getRenderer(0);
+    if (currentRenderer instanceof WrappingResidualRenderer)
+    {
+      final WrappingResidualRenderer rend =
+          (WrappingResidualRenderer) currentRenderer;
+      rend.setRange(minVal, maxVal);
+    }
+    else
+    {
+      throw new IllegalArgumentException(
+          "Surely the renderer should be wrapping residual one?");
+    }
+  }
+
   private void setMode(final EditMode mode)
   {
     this.mode = mode;
+  }
+
+  public void setPeriod(final TimePeriod period)
+  {
+    final XYPlot plot = (XYPlot) chart.getPlot();
+    // final Range outerRange = plot.getDataRange(plot.getDomainAxis());
+    plot.getDomainAxis().setRange(period.getStartDTG().getDate().getTime(),
+        period.getEndDTG().getDate().getTime());
+
   }
 
   final public void setZones(final List<Zone> newZones)
@@ -2128,20 +2152,36 @@ public class ZoneChart extends Composite
     }
   }
 
-  public void setBearingRange(double minVal, double maxVal)
+  /**
+   * the sensor data may have changed. Double-check if we should be showing resolve-related
+   * controls, or not.
+   */
+  public void updateControls()
   {
-    XYPlot plot = this.chart.getXYPlot();
-    XYItemRenderer currentRenderer = plot.getRenderer(0);
-    if (currentRenderer instanceof WrappingResidualRenderer)
+    // ok, check if we have ambiguous data to play with
+    final XYPlot plot = this.chart.getXYPlot();
+    final TimeSeriesCollection data = (TimeSeriesCollection) plot.getDataset();
+    @SuppressWarnings("unchecked")
+    final List<TimeSeries> list = data.getSeries();
+    boolean hasAmbig = false;
+    for (final TimeSeries t : list)
     {
-      WrappingResidualRenderer rend =
-          (WrappingResidualRenderer) currentRenderer;
-      rend.setRange(minVal, maxVal);
+      final String name = (String) t.getKey();
+      if (name.equals(BaseStackedDotsView.AMBIG_NAME))
+      {
+        // any contents?
+        if (t.getItemCount() > 0)
+        {
+          hasAmbig = true;
+          break;
+        }
+      }
     }
-    else
+
+    // ok, now we show/hide the relevant controls
+    for (final Button t : ambigControls)
     {
-      throw new IllegalArgumentException(
-          "Surely the renderer should be wrapping residual one?");
+      t.setVisible(hasAmbig);
     }
   }
 }
