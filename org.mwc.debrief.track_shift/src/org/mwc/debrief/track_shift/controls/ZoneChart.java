@@ -1891,9 +1891,9 @@ public class ZoneChart extends Composite
     return new ArrayList<ZoneListener>(zoneListeners);
   }
 
-  public Zone[] getZones()
+  public List<Zone> getZones()
   {
-    return zones.toArray(new Zone[zones.size()]);
+    return zones;
   }
 
   /**

@@ -11,6 +11,7 @@ import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import Debrief.Wrappers.SensorContactWrapper;
+import MWC.GenericData.HiResDate;
 
 public class LegOfCuts extends ArrayList<SensorContactWrapper>
 {
@@ -314,6 +315,38 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
     return weighting;
   }
 
+  public HiResDate getStartDTG()
+  {
+    final HiResDate res;
+    if(isEmpty())
+    {
+      res = null;
+    }
+    else
+    {
+      res = get(0).getDTG();
+    }
+    
+    return res;
+  }
+  
+  public HiResDate getEndDTG()
+  {
+    final HiResDate res;
+    if(isEmpty())
+    {
+      res = null;
+    }
+    else
+    {
+      res = get(size()-1).getDTG();
+    }
+    
+    return res;
+  }
+  
+  
+  
   public double getPeriodSecs()
   {
     final double res;

@@ -167,12 +167,14 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final Logger logger = getLogger();
 
         final TimePeriod visiblePeriod = ownshipZoneChart.getVisiblePeriod();
+        final TimePeriod trackPeriod = _myHelper.getPrimaryTrack().getVisiblePeriod();
+        final TimePeriod interPeriod = visiblePeriod.intersects(trackPeriod);
 
         _ambiguousResolverLegsAndCuts =
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
                 .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger,
                 ambigScores, OS_TURN_MIN_COURSE_CHANGE,
-                OS_TURN_MIN_TIME_INTERVAL, visiblePeriod, MAX_LEGS);
+                OS_TURN_MIN_TIME_INTERVAL, interPeriod, MAX_LEGS);
 
         zones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
@@ -383,7 +385,12 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       if (sensor != null)
       {
         // remember the zones
-        final Zone[] zones = zoneChart.getZones();
+        final List<Zone> zones = zoneChart.getZones();
+
+        // hmm let's take a safe copy, in case the next call
+        // clears the zone list
+        final List<Zone> zoneList = new ArrayList<Zone>();
+        zoneList.addAll(zones);
 
         // fire the update. Note: doing this will remove
         // the displayed zones, since the chart will think
@@ -391,11 +398,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         sensor.getHost().firePropertyChange(SupportsPropertyListeners.EXTENDED,
             null, System.currentTimeMillis());
 
-        final List<Zone> zoneList = new ArrayList<Zone>();
-        for (final Zone z : zones)
-        {
-          zoneList.add(z);
-        }
+        // and restore the zones
         zoneChart.setZones(zoneList);
       }
     }
@@ -647,9 +650,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       final Runnable updateData, final ZoneChart ownshipZoneChart,
       final ZoneUndoRedoProvider undoRedoProvider)
   {
-    final Zone[] ownshipZones = ownshipZoneChart.getZones();
+    final List<Zone> ownshipZones = ownshipZoneChart.getZones();
 
-    if (ownshipZones != null && ownshipZones.length > 0)
+    if (ownshipZones != null && ownshipZones.size() > 0)
     {
       // find the time period of hte chart
       final TimePeriod outerPeriod = ownshipZoneChart.getVisiblePeriod();
@@ -671,7 +674,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
   }
 
-  private static LegOfCuts findCutsNotInZones(final Zone[] zones,
+  public static LegOfCuts findCutsNotInZones(final List<Zone> ownshipZones,
       final TimePeriod outerPeriod, final TrackWrapper primaryTrack)
   {
     final LegOfCuts res = new LegOfCuts();
@@ -692,7 +695,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
             // ok, see if it;s in one of the zones
             boolean inZone = false;
-            for (final Zone zone : zones)
+            for (final Zone zone : ownshipZones)
             {
               // does this time occur within this zone?
               if (zone.getStart() <= thisT && zone.getEnd() >= thisT)
@@ -1086,8 +1089,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   protected void resolveAmbiguousCutsB()
   {
 
-    final Zone[] zones = ownshipZoneChart.getZones();
-    if (zones == null || zones.length == 0)
+    final List<Zone> zones = ownshipZoneChart.getZones();
+    if (zones == null || zones.size() == 0)
     {
       CorePlugin.showMessage("Resolve ambiguity",
           "Please slice ownship legs before resolving ambiguity");

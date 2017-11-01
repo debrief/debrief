@@ -1469,7 +1469,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       private void fireUpdates()
       {
         // collate the current list of legs
-        final Zone[] zones = targetZoneChart.getZones();
+        final List<Zone> zones = targetZoneChart.getZones();
 
         final ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
         final TrackWrapper priTrack = _myHelper.getPrimaryTrack();
@@ -1479,10 +1479,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
 
           // fire the finished event
-          for (int i = 0; i < zones.length; i++)
+          for(Zone zone: zones)
           {
-            final Zone zone = zones[i];
-            setLeg(priTrack, secTrack, zone);
+            setLeg(priTrack, secTrack, zone);            
           }
 
           // ok, fire some updates
@@ -2263,14 +2262,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /**
    * slice the target bearings according to these zones
    * 
-   * @param ownshipLegs
+   * @param list2
    * @param randomProv
    * @param slicePrecision
    * @param secondaryTrack
    * @param targetBearingSeries2
    * @return
    */
-  protected List<Zone> sliceTarget(final Zone[] ownshipLegs,
+  protected List<Zone> sliceTarget(final List<Zone> list2,
       final List<SensorContactWrapper> cuts, final ColorProvider randomProv,
       final ISecondaryTrack tgtTrack, final Precision slicePrecision)
   {
@@ -2285,7 +2284,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       return null;
     }
 
-    if (ownshipLegs == null || ownshipLegs.length == 0)
+    if (list2 == null || list2.isEmpty())
     {
       Application.logError2(ToolParent.ERROR, "List of ownship legs is empty",
           null);
@@ -2347,7 +2346,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // ok, loop through the ownship legs
-    for (final Zone thisZ : ownshipLegs)
+    for (final Zone thisZ : list2)
     {
       final long wholeStart = thisZ.getStart();
       final long wholeEnd = thisZ.getEnd();
@@ -2395,8 +2394,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // endTime = cuts.get(cuts.size() - 1).getDTG().getDate().getTime();
     // }
     // get the start/end from the ownship legs
-    startTime = ownshipLegs[0].getStart();
-    endTime = ownshipLegs[ownshipLegs.length - 1].getEnd();
+    startTime = list2.get(0).getStart();
+    endTime = list2.get(list2.size() - 1).getEnd();
 
     // ok, we've got to turn the zigs into legs
     final List<Zone> oldLegs =

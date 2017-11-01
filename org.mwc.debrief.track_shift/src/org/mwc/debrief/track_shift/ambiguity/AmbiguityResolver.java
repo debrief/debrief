@@ -22,6 +22,8 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichBearing;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichPeriod;
+import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
+import org.mwc.debrief.track_shift.views.BearingResidualsView;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -596,7 +598,37 @@ public class AmbiguityResolver
       assertNotNull("found zigs", zigs);
       assertEquals("found correct number of zig cuts", 8, zigs.size());
       
-      // ok, simulate moving along. Now delete the cuts
+      assertEquals("cuts present", 121, sensor.size());
+      
+      
+      // ok, simulate moving along. Now delete the cuts.
+      HiResDate firstLegStart = legs.get(0).getStartDTG();
+      HiResDate lastLegEnd = legs.get(legs.size()-1).getEndDTG();
+      TimePeriod period = new TimePeriod.BaseTimePeriod(firstLegStart, lastLegEnd);
+      List<Zone> zones = new ArrayList<Zone>();
+      for(LegOfCuts leg: legs)
+      {
+        long startT = leg.getStartDTG().getDate().getTime();
+        long endT = leg.getEndDTG().getDate().getTime();
+        Zone newZone = new Zone(startT, endT, null);
+        zones.add(newZone);
+      }
+      LegOfCuts toDelete = BearingResidualsView.findCutsNotInZones(zones, period, track);
+      
+      // and delete them
+      for(SensorContactWrapper cut: toDelete)
+      {
+        cut.getSensor().removeElement(cut);
+      }
+      
+      // check the cuts got deleted Note - this isn't the same as cuts.size() - zigs.size(),
+      // since I suspect we're constraining the cut period to the period of the 
+      // identified legs, which may ignore a period of zig cuts are the
+      // last leg
+      assertEquals("cuts deleted", 115, sensor.size());
+      
+      // now we run the slicer gain
+      
       
       
       
