@@ -1234,7 +1234,7 @@ public class AmbiguityResolver
     SensorContactWrapper firstCut = null;
     final LegOfCuts possLeg = new LegOfCuts();
 
-    while (enumer.hasMoreElements() && (allowedLegs != null && legs.size() <= allowedLegs))
+    while (enumer.hasMoreElements() && (allowedLegs == null || legs.size() <= allowedLegs))
     {
       final SensorContactWrapper cut =
           (SensorContactWrapper) enumer.nextElement();
@@ -1541,10 +1541,12 @@ public class AmbiguityResolver
       final SensorWrapper sensor = (SensorWrapper) numer.nextElement();
       if (sensor.getVisible())
       {
+        final Integer allowedLegs = maxLegs == null ? null : maxLegs - res.legs.size();
+        
         final LegsAndZigs thisL =
             sliceSensorIntoLegsUsingAmbiguity(sensor, minZig, minBoth,
                 minLegLength, logger, scores, visiblePeriod,
-                osTurnMinCourseChange, osTurnMinTimeInterval, maxLegs - res.legs.size());
+                osTurnMinCourseChange, osTurnMinTimeInterval, allowedLegs);
         if (thisL.legs.size() > 0)
         {
           res.legs.addAll(thisL.legs);
