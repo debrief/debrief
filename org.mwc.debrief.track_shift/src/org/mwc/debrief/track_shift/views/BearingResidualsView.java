@@ -179,15 +179,15 @@ public class BearingResidualsView extends BaseStackedDotsView implements
             _myHelper.getPrimaryTrack().getVisiblePeriod();
 
         // ok, we may be walking along. see if we have ones
-        List<Zone> existingZones = ownshipZoneChart.getZones();
+        final List<Zone> existingZones = ownshipZoneChart.getZones();
         final TimePeriod interPeriod;
         if (!wholePeriod && existingZones != null && !existingZones.isEmpty())
         {
           // ok, we've got some zones. Let's start with the last zone
-          Zone lastZone = existingZones.get(existingZones.size() - 1);
-          HiResDate lastZoneStart = new HiResDate(lastZone.getStart());
-          HiResDate lastZoneEnd = new HiResDate(lastZone.getEnd());
-          TimePeriod sensorDataCoverage =
+          final Zone lastZone = existingZones.get(existingZones.size() - 1);
+          final HiResDate lastZoneStart = new HiResDate(lastZone.getStart());
+          final HiResDate lastZoneEnd = new HiResDate(lastZone.getEnd());
+          final TimePeriod sensorDataCoverage =
               timePeriodFor(_myHelper.getPrimaryTrack());
           // HiResDate trackEnd = trackPeriod.getEndDTG();
 
@@ -237,7 +237,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         // ok, now we have to trim the visible period to these legs
         if (!zones.isEmpty())
         {
-          TimePeriod period =
+          final TimePeriod period =
               new TimePeriod.BaseTimePeriod(new HiResDate(zones.get(0)
                   .getStart()), new HiResDate(zones.get(zones.size() - 1)
                   .getEnd()));
@@ -252,37 +252,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       }
 
       return zones;
-    }
-
-    private TimePeriod timePeriodFor(TrackWrapper track)
-    {
-      Enumeration<Editable> sensors = track.getSensors().elements();
-      TimePeriod res = null;
-      while (sensors.hasMoreElements())
-      {
-        SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
-        if (sensor.getVisible())
-        {
-          Enumeration<Editable> ele = sensor.elements();
-          while (ele.hasMoreElements())
-          {
-            SensorContactWrapper scw = (SensorContactWrapper) ele.nextElement();
-            if (scw.getVisible())
-            {
-              HiResDate thisT = scw.getDTG();
-              if (res == null)
-              {
-                res = new TimePeriod.BaseTimePeriod(thisT, thisT);
-              }
-              else
-              {
-                res.extend(thisT);
-              }
-            }
-          }
-        }
-      }
-      return res;
     }
 
     @Override
@@ -354,6 +323,38 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           updateData(true);
         }
       }
+    }
+
+    private TimePeriod timePeriodFor(final TrackWrapper track)
+    {
+      final Enumeration<Editable> sensors = track.getSensors().elements();
+      TimePeriod res = null;
+      while (sensors.hasMoreElements())
+      {
+        final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+        if (sensor.getVisible())
+        {
+          final Enumeration<Editable> ele = sensor.elements();
+          while (ele.hasMoreElements())
+          {
+            final SensorContactWrapper scw =
+                (SensorContactWrapper) ele.nextElement();
+            if (scw.getVisible())
+            {
+              final HiResDate thisT = scw.getDTG();
+              if (res == null)
+              {
+                res = new TimePeriod.BaseTimePeriod(thisT, thisT);
+              }
+              else
+              {
+                res.extend(thisT);
+              }
+            }
+          }
+        }
+      }
+      return res;
     }
   }
 
@@ -626,7 +627,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       // ok, get resolving
       final AmbiguityResolver solver = new AmbiguityResolver();
 
-      TimePeriod timePeriod =
+      final TimePeriod timePeriod =
           new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
               .getEndDTG());
 
@@ -1214,5 +1215,11 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         _targetCourseSeries, _targetSpeedSeries, measuredValues, ambigValues,
         ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
         _overviewSpeedRenderer, _overviewCourseRenderer);
+
+    // and tell the O/S zone chart to update it's controls
+    if (ownshipZoneChart != null)
+    {
+      ownshipZoneChart.updateControls();
+    }
   }
 }
