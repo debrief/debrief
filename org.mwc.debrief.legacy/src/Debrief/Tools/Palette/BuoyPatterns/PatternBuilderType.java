@@ -235,7 +235,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
   /**
    * perform the actual creation process
    */
-  final void Create()
+  final protected void create()
   {
     // create the new feature
     final Debrief.Wrappers.BuoyPatternWrapper bw =
@@ -284,10 +284,6 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     // _theData = null;
   }
 
-  public final void execute()
-  {
-  }
-
   public final void undo()
   {
     if (_theLastPattern != null)
@@ -324,12 +320,10 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
   public final void setSymbolType(final String val)
   {
     // is this the type of our symbol?
-    if (val.equals(_theShape.getType()))
+    if (!val.equals(_theShape.getType()))
     {
-      // don't bother we're using it already
-    }
-    else
-    {
+      // ok, new type.
+      
       // remember the size of the symbol
       final double scale = _theShape.getScaleVal();
       // replace our symbol with this new one

@@ -171,20 +171,21 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
  * the BuoyPatternWrapper is a Layer containing a buoypattern
  */
-public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
-		MWC.GenericData.WatchableList, 
-		MWC.GUI.Layer, Editable.DoNotHighlightMe
+public final class BuoyPatternWrapper extends PlainWrapper implements
+    WatchableList, Layer, Editable.DoNotHighlightMe
 {
 
 	// //////////////////////////////////////

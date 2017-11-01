@@ -601,8 +601,6 @@ public class ZoneChart extends Composite
             }
             break;
           }
-          case ZOOM:
-            break;
           case SPLIT:
           {
             dragZone = null;
@@ -642,6 +640,9 @@ public class ZoneChart extends Composite
             }
             break;
           }
+          case ZOOM:
+          default:
+            break;
         }
       }
 
@@ -1859,7 +1860,7 @@ public class ZoneChart extends Composite
     super.dispose();
   }
 
-  void fireZoneAdded(final Zone zone)
+  private void fireZoneAdded(final Zone zone)
   {
     for (final ZoneListener listener : getZoneListeners())
     {
@@ -1867,15 +1868,7 @@ public class ZoneChart extends Composite
     }
   }
 
-  void fireZoneMoved(final Zone zone)
-  {
-    for (final ZoneListener listener : getZoneListeners())
-    {
-      listener.moved(zone);
-    }
-  }
-
-  void fireZoneRemoved(final Zone zone)
+  private void fireZoneRemoved(final Zone zone)
   {
     for (final ZoneListener listener : getZoneListeners())
     {
@@ -1883,7 +1876,7 @@ public class ZoneChart extends Composite
     }
   }
 
-  void fireZoneResized(final Zone zone)
+  private void fireZoneResized(final Zone zone)
   {
     for (final ZoneListener listener : getZoneListeners())
     {

@@ -235,9 +235,9 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     public final void extend(final HiResDate val)
     {
       // are we using duff values
-      if (_startDTG == INVALID_DATE)
+      if (_startDTG.equals(INVALID_DATE))
         _startDTG = val;
-      if (_endDTG == INVALID_DATE)
+      if (_endDTG.equals(INVALID_DATE))
         _endDTG = val;
 
       if (_startDTG.greaterThan(val))
@@ -259,7 +259,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     {
       boolean res = false;
 
-      if (_startDTG == INVALID_DATE && _endDTG == INVALID_DATE)
+      if (_startDTG.equals(INVALID_DATE) && _endDTG.equals(INVALID_DATE))
       {
         res = true;
       }
@@ -279,9 +279,9 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
       boolean res = false;
 
       // check we have data
-      if (_startDTG != INVALID_DATE)
+      if (!_startDTG.equals(INVALID_DATE))
       {
-        if (_endDTG != INVALID_DATE)
+        if (!_endDTG.equals(INVALID_DATE))
         {
           // we have both times. check if we overlap
           if ((_startDTG.lessThan(end)) && (_endDTG.greaterThan(start)))
