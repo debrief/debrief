@@ -826,7 +826,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ZoneSlicer targetLegSlicer = new ZoneSlicer()
     {
       @Override
-      public List<Zone> performSlicing()
+      public List<Zone> performSlicing(final boolean wholePeriod)
       {
         // hmm, the above set of bearings only covers windows where we have
         // target track defined. But, in order to consider the actual extent
