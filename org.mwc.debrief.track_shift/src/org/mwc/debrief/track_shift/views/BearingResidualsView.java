@@ -118,7 +118,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
 
     @Override
-    public ArrayList<Zone> performSlicing()
+    public ArrayList<Zone> performSlicing(final boolean wholePeriod)
     {
       // hmm, see if we have ambiguous data
       final TrackWrapper primary = _myHelper.getPrimaryTrack();
@@ -160,15 +160,58 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final long OS_TURN_MIN_TIME_INTERVAL =
             TrackShiftActivator.getDefault().getPreferenceStore().getLong(
                 PreferenceConstants.OS_TURN_MIN_TIME_INTERVAL);
-        final int MAX_LEGS =
-            TrackShiftActivator.getDefault().getPreferenceStore().getInt(
-                PreferenceConstants.OS_TURN_MAX_LEGS);
+        final Integer MAX_LEGS;
+        if (wholePeriod)
+        {
+          MAX_LEGS = null;
+        }
+        else
+        {
+          MAX_LEGS =
+              TrackShiftActivator.getDefault().getPreferenceStore().getInt(
+                  PreferenceConstants.OS_TURN_MAX_LEGS);
+        }
         final AmbiguityResolver resolver = new AmbiguityResolver();
         final Logger logger = getLogger();
 
-        final TimePeriod visiblePeriod = ownshipZoneChart.getVisiblePeriod();
-        final TimePeriod trackPeriod = _myHelper.getPrimaryTrack().getVisiblePeriod();
-        final TimePeriod interPeriod = visiblePeriod.intersects(trackPeriod);
+        // sort out what time period we're using
+        final TimePeriod trackPeriod =
+            _myHelper.getPrimaryTrack().getVisiblePeriod();
+
+        // ok, we may be walking along. see if we have ones
+        List<Zone> existingZones = ownshipZoneChart.getZones();
+        final TimePeriod interPeriod;
+        if (!wholePeriod && existingZones != null && !existingZones.isEmpty())
+        {
+          // ok, we've got some zones. Let's start with the last zone
+          Zone lastZone = existingZones.get(existingZones.size() - 1);
+          HiResDate lastZoneStart = new HiResDate(lastZone.getStart());
+          HiResDate lastZoneEnd = new HiResDate(lastZone.getEnd());
+          TimePeriod sensorDataCoverage =
+              timePeriodFor(_myHelper.getPrimaryTrack());
+          // HiResDate trackEnd = trackPeriod.getEndDTG();
+
+          // have we reached the end of the data?
+          if (lastZoneEnd.equals(sensorDataCoverage.getEndDTG()))
+          {
+            // ok, we're at the end. Just use the whole period
+            interPeriod = sensorDataCoverage.intersects(trackPeriod);
+          }
+          else
+          {
+            // we're not at the end - let the algorithm run to the end
+            final TimePeriod visiblePeriod =
+                new TimePeriod.BaseTimePeriod(lastZoneStart, sensorDataCoverage
+                    .getEndDTG());
+            interPeriod = visiblePeriod.intersects(trackPeriod);
+          }
+        }
+        else
+        {
+          // we don't have any zones
+          final TimePeriod visiblePeriod = ownshipZoneChart.getVisiblePeriod();
+          interPeriod = visiblePeriod.intersects(trackPeriod);
+        }
 
         _ambiguousResolverLegsAndCuts =
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
@@ -185,7 +228,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
                   .getZoneColor());
           zones.add(thisZone);
 
-          if (zones.size() >= MAX_LEGS)
+          if (MAX_LEGS != null && zones.size() >= MAX_LEGS)
           {
             break;
           }
@@ -209,6 +252,37 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       }
 
       return zones;
+    }
+
+    private TimePeriod timePeriodFor(TrackWrapper track)
+    {
+      Enumeration<Editable> sensors = track.getSensors().elements();
+      TimePeriod res = null;
+      while (sensors.hasMoreElements())
+      {
+        SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+        if (sensor.getVisible())
+        {
+          Enumeration<Editable> ele = sensor.elements();
+          while (ele.hasMoreElements())
+          {
+            SensorContactWrapper scw = (SensorContactWrapper) ele.nextElement();
+            if (scw.getVisible())
+            {
+              HiResDate thisT = scw.getDTG();
+              if (res == null)
+              {
+                res = new TimePeriod.BaseTimePeriod(thisT, thisT);
+              }
+              else
+              {
+                res.extend(thisT);
+              }
+            }
+          }
+        }
+      }
+      return res;
     }
 
     @Override
