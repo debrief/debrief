@@ -41,7 +41,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -54,6 +53,8 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
+import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.views.WrappingResidualRenderer;
 
 import Debrief.Wrappers.FixWrapper;
@@ -1154,7 +1155,7 @@ public class ZoneChart extends Composite
      * 
      * @return list of zones
      */
-    List<Zone> performSlicing();
+    List<Zone> performSlicing(final boolean wholePeriod);
 
     /**
      * switch over any TA bearings in this zone
@@ -1177,7 +1178,7 @@ public class ZoneChart extends Composite
       final long outerLower, final long outerUpper, final long currentStart,
       final long currentEnd)
   {
-    final long period = currentEnd - currentStart;
+    final long period = (currentEnd - currentStart);
     final long newStart;
     if (backwards)
     {
@@ -1380,29 +1381,29 @@ public class ZoneChart extends Composite
    * @param backwards
    *          whether we're going backwards
    */
-  private static void panViewport(final JFreeChart chart,
-      final boolean backwards)
-  {
-    // ok, find the current time coverage
-    final XYPlot plot = chart.getXYPlot();
-    final Range outerRange = plot.getDataRange(plot.getDomainAxis());
-    final ValueAxis timeAxis = plot.getDomainAxis();
-
-    final long currentStart = (long) timeAxis.getLowerBound();
-    final long currentEnd = (long) timeAxis.getUpperBound();
-
-    final long outerLower = (long) outerRange.getLowerBound();
-    final long outerUpper = (long) outerRange.getUpperBound();
-
-    // get the new coverage
-    final TimePeriod newPeriod =
-        calculatePanData(backwards, outerLower, outerUpper, currentStart,
-            currentEnd);
-
-    // and update the values
-    timeAxis.setLowerBound(newPeriod.getStartDTG().getDate().getTime());
-    timeAxis.setUpperBound(newPeriod.getEndDTG().getDate().getTime());
-  }
+//  private static void panViewport(final JFreeChart chart,
+//      final boolean backwards)
+//  {
+//    // ok, find the current time coverage
+//    final XYPlot plot = chart.getXYPlot();
+//    final Range outerRange = plot.getDataRange(plot.getDomainAxis());
+//    final ValueAxis timeAxis = plot.getDomainAxis();
+//
+//    final long currentStart = (long) timeAxis.getLowerBound();
+//    final long currentEnd = (long) timeAxis.getUpperBound();
+//
+//    final long outerLower = (long) outerRange.getLowerBound();
+//    final long outerUpper = (long) outerRange.getUpperBound();
+//
+//    // get the new coverage
+//    final TimePeriod newPeriod =
+//        calculatePanData(backwards, outerLower, outerUpper, currentStart,
+//            currentEnd);
+//
+//    // and update the values
+//    timeAxis.setLowerBound(newPeriod.getStartDTG().getDate().getTime());
+//    timeAxis.setUpperBound(newPeriod.getEndDTG().getDate().getTime());
+//  }
 
   private static Zone periodToCutFor(final List<TimeSeriesDataItem> cutsInZone,
       final long timeOfNearestCut, final ColorProvider colorProvider)
@@ -1541,10 +1542,10 @@ public class ZoneChart extends Composite
 
   private final Image autoDelete24 = CorePlugin.getImageDescriptor(
       "/icons/24/auto_delete.png").createImage();
-  private final Image panLeft24 = CorePlugin.getImageDescriptor(
-      "/icons/24/media_rewind.png").createImage();
-  private final Image panRight24 = CorePlugin.getImageDescriptor(
-      "/icons/24/media_fast_forward.png").createImage();
+  private final Image clearZones24 = CorePlugin.getImageDescriptor(
+      "/icons/24/Binocular.png").createImage();
+//  private final Image panRight24 = CorePlugin.getImageDescriptor(
+//      "/icons/24/media_fast_forward.png").createImage();
   private final Cursor handCursor = new Cursor(Display.getDefault(), handImg16
       .getImageData(), 0, 0);
 
@@ -1603,7 +1604,7 @@ public class ZoneChart extends Composite
   private final Runnable deleteEvent;
 
   private final Runnable resolveAmbiguityEvent;
-
+  
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
@@ -1718,34 +1719,41 @@ public class ZoneChart extends Composite
                 chartComposite.fitToData();
               }
             });
-    @SuppressWarnings("unused")
-    final Button calculate =
-        createButton(col1, SWT.PUSH, autoSlice24, "Slice",
-            "Automatically slice zones", new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                if (zoneSlicer == null)
-                {
-                  CorePlugin.showMessage("Manage legs", "Slicing happens here");
-                }
-                else
-                {
-                  final Runnable wrappedItem = new Runnable()
-                  {
 
-                    @Override
-                    public void run()
-                    {
-                      // ok, do the slicing
-                      performSlicing();
-                    }
-                  };
-                  BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
+    
+
+
+    final int MAX_LEGS =
+        TrackShiftActivator.getDefault().getPreferenceStore().getInt(
+            PreferenceConstants.OS_TURN_MAX_LEGS);
+    final String btnName = "Slice next " + MAX_LEGS;
+    @SuppressWarnings("unused")
+    final Button sliceBtn = createButton(col1, SWT.PUSH, autoSlice24, btnName,
+        "Automatically slice zones", new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            if (zoneSlicer == null)
+            {
+              CorePlugin.showMessage("Manage legs", "Slicing happens here");
+            }
+            else
+            {
+              final Runnable wrappedItem = new Runnable()
+              {
+
+                @Override
+                public void run()
+                {
+                  // ok, do the slicing
+                  performSlicing(false);
                 }
-              }
-            });
+              };
+              BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
+            }
+          }
+        });
 
     if (deleteEvent != null)
     {
@@ -1762,31 +1770,50 @@ public class ZoneChart extends Composite
           createButton(col1, SWT.PUSH, autoResolve24, "Resolve",
               "Resolve Ambiguity", resolveAmbiguityEvent);
     }
+    
+    @SuppressWarnings("unused")
+    Button sliceAllBtn = createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
+        "Automatically slice zones", new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            if (zoneSlicer == null)
+            {
+              CorePlugin.showMessage("Manage legs", "Slicing happens here");
+            }
+            else
+            {
+              final Runnable wrappedItem = new Runnable()
+              {
+
+                @Override
+                public void run()
+                {
+                  // ditch any existing zones
+                  clearZones();
+                  
+                  // ok, do the slicing
+                  performSlicing(true);
+                }
+              };
+              BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
+            }
+          }
+        });
 
     // ok, now the left/right buttons
     @SuppressWarnings("unused")
     final Button panLeft =
-        createButton(col1, SWT.PUSH, panLeft24, "Pan Left", "Reveal all zones",
+        createButton(col1, SWT.PUSH, clearZones24, "Clear", "Clear zones",
             new Runnable()
             {
               @Override
               public void run()
               {
-                panViewport(chart, true);
+                clearZones();
               }
             });
-    @SuppressWarnings("unused")
-    final Button panRight =
-        createButton(col1, SWT.PUSH, panRight24, "Pan Right",
-            "Reveal all zones", new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                panViewport(chart, false);
-              }
-            });
-
   }
 
   @Override
@@ -1821,8 +1848,8 @@ public class ZoneChart extends Composite
     autoSlice24.dispose();
     autoResolve24.dispose();
     autoDelete24.dispose();
-    panLeft24.dispose();
-    panRight24.dispose();
+    clearZones24.dispose();
+//    panRight24.dispose();
 
     super.dispose();
   }
@@ -1858,7 +1885,7 @@ public class ZoneChart extends Composite
       listener.resized(zone);
     }
   }
- 
+
   /**
    * get the time period covered by the data in this zone chart
    * 
@@ -1898,9 +1925,10 @@ public class ZoneChart extends Composite
 
   /**
    * called from the UI button
+   * @param wholePeriod 
    * 
    */
-  private void performSlicing()
+  private void performSlicing(boolean wholePeriod)
   {
     final ReversibleOperation reversOp = new ReversibleOperation("Slice legs");
 
@@ -1993,7 +2021,7 @@ public class ZoneChart extends Composite
       }
     }
     // ok, do the slicing
-    final List<Zone> newZones = zoneSlicer.performSlicing();
+    final List<Zone> newZones = zoneSlicer.performSlicing(wholePeriod);
     final List<Zone> undoZones = new ArrayList<>(zones);
     final Map<Zone, IntervalMarker> undozoneMarkers =
         new HashMap<ZoneChart.Zone, IntervalMarker>(zoneMarkers);
