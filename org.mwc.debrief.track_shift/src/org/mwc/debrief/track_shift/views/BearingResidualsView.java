@@ -122,26 +122,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     {
       // hmm, see if we have ambiguous data
       final TrackWrapper primary = _myHelper.getPrimaryTrack();
-      boolean hasAmbiguous = false;
-      final Enumeration<Editable> sEnum = primary.getSensors().elements();
-      while (sEnum.hasMoreElements() && !hasAmbiguous)
-      {
-        final SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
-        if (sensor.size() > 0)
-        {
-          final Enumeration<Editable> elements = sensor.elements();
-          while (elements.hasMoreElements() && !hasAmbiguous)
-          {
-            final SensorContactWrapper contact =
-                (SensorContactWrapper) elements.nextElement();
+      final boolean hasAmbiguous = hasAmbiguousCuts(primary);
 
-            // change we check if the ambig is NaN
-            hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
-          }
-        }
-      }
-
-      final ArrayList<Zone> zones;
+      final ArrayList<Zone> slicedZones;
       if (hasAmbiguous)
       {
         // ok, we'll use our fancy slicer that relies on ambiguity
@@ -178,68 +161,37 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final TimePeriod trackPeriod =
             _myHelper.getPrimaryTrack().getVisiblePeriod();
 
-        // ok, we may be walking along. see if we have ones
-        final List<Zone> existingZones = ownshipZoneChart.getZones();
-        final TimePeriod interPeriod;
-        if (!wholePeriod && existingZones != null && !existingZones.isEmpty())
-        {
-          // ok, we've got some zones. Let's start with the last zone
-          final Zone lastZone = existingZones.get(existingZones.size() - 1);
-          final HiResDate lastZoneStart = new HiResDate(lastZone.getStart());
-          final HiResDate lastZoneEnd = new HiResDate(lastZone.getEnd());
-          final TimePeriod sensorDataCoverage =
-              timePeriodFor(_myHelper.getPrimaryTrack());
-          // HiResDate trackEnd = trackPeriod.getEndDTG();
-
-          // have we reached the end of the data?
-          if (lastZoneEnd.equals(sensorDataCoverage.getEndDTG()))
-          {
-            // ok, we're at the end. Just use the whole period
-            interPeriod = sensorDataCoverage.intersects(trackPeriod);
-          }
-          else
-          {
-            // we're not at the end - let the algorithm run to the end
-            final TimePeriod visiblePeriod =
-                new TimePeriod.BaseTimePeriod(lastZoneStart, sensorDataCoverage
-                    .getEndDTG());
-            interPeriod = visiblePeriod.intersects(trackPeriod);
-          }
-        }
-        else
-        {
-          // we don't have any zones
-          final TimePeriod visiblePeriod = ownshipZoneChart.getVisiblePeriod();
-          interPeriod = visiblePeriod.intersects(trackPeriod);
-        }
+        // ok, we may be walking along. see if we have some zones assigned
+        final TimePeriod analysisPeriod =
+            getAnalysisPeriod(wholePeriod, trackPeriod, ownshipZoneChart.getZones());
 
         _ambiguousResolverLegsAndCuts =
             resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
                 .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger,
                 ambigScores, OS_TURN_MIN_COURSE_CHANGE,
-                OS_TURN_MIN_TIME_INTERVAL, interPeriod, MAX_LEGS);
+                OS_TURN_MIN_TIME_INTERVAL, analysisPeriod, MAX_LEGS);
 
-        zones = new ArrayList<Zone>();
+        slicedZones = new ArrayList<Zone>();
         for (final LegOfCuts leg : _ambiguousResolverLegsAndCuts.getLegs())
         {
           final Zone thisZone =
               new Zone(leg.get(0).getDTG().getDate().getTime(), leg.get(
                   leg.size() - 1).getDTG().getDate().getTime(), _blueProv
                   .getZoneColor());
-          zones.add(thisZone);
+          slicedZones.add(thisZone);
 
-          if (MAX_LEGS != null && zones.size() >= MAX_LEGS)
+          if (MAX_LEGS != null && slicedZones.size() >= MAX_LEGS)
           {
             break;
           }
         }
 
         // ok, now we have to trim the visible period to these legs
-        if (!zones.isEmpty())
+        if (!slicedZones.isEmpty())
         {
           final TimePeriod period =
-              new TimePeriod.BaseTimePeriod(new HiResDate(zones.get(0)
-                  .getStart()), new HiResDate(zones.get(zones.size() - 1)
+              new TimePeriod.BaseTimePeriod(new HiResDate(slicedZones.get(0)
+                  .getStart()), new HiResDate(slicedZones.get(slicedZones.size() - 1)
                   .getEnd()));
 
           ownshipZoneChart.setPeriod(period);
@@ -248,10 +200,70 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       }
       else
       {
-        zones = StackedDotHelper.sliceOwnship(ownshipCourseSeries, _blueProv);
+        slicedZones = StackedDotHelper.sliceOwnship(ownshipCourseSeries, _blueProv);
       }
 
-      return zones;
+      return slicedZones;
+    }
+
+    private TimePeriod getAnalysisPeriod(final boolean wholePeriod,
+        final TimePeriod trackPeriod, final List<Zone> existingZones)
+    {
+      final TimePeriod interPeriod;
+      if (!wholePeriod && existingZones != null && !existingZones.isEmpty())
+      {
+        // ok, we've got some zones. Let's start with the last zone
+        final Zone lastZone = existingZones.get(existingZones.size() - 1);
+        final HiResDate lastZoneStart = new HiResDate(lastZone.getStart());
+        final HiResDate lastZoneEnd = new HiResDate(lastZone.getEnd());
+        final TimePeriod sensorDataCoverage =
+            timePeriodFor(_myHelper.getPrimaryTrack());
+
+        // have we reached the end of the data?
+        if (lastZoneEnd.equals(sensorDataCoverage.getEndDTG()))
+        {
+          // ok, we're at the end. Just use the whole period
+          interPeriod = sensorDataCoverage.intersects(trackPeriod);
+        }
+        else
+        {
+          // we're not at the end - let the algorithm run to the end
+          final TimePeriod visiblePeriod =
+              new TimePeriod.BaseTimePeriod(lastZoneStart, sensorDataCoverage
+                  .getEndDTG());
+          interPeriod = visiblePeriod.intersects(trackPeriod);
+        }
+      }
+      else
+      {
+        // we don't have any zones
+        final TimePeriod visiblePeriod = ownshipZoneChart.getVisiblePeriod();
+        interPeriod = visiblePeriod.intersects(trackPeriod);
+      }
+      return interPeriod;
+    }
+
+    private boolean hasAmbiguousCuts(final TrackWrapper primary)
+    {
+      boolean hasAmbiguous = false;
+      final Enumeration<Editable> sEnum = primary.getSensors().elements();
+      while (sEnum.hasMoreElements() && !hasAmbiguous)
+      {
+        final SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
+        if (sensor.size() > 0)
+        {
+          final Enumeration<Editable> elements = sensor.elements();
+          while (elements.hasMoreElements() && !hasAmbiguous)
+          {
+            final SensorContactWrapper contact =
+                (SensorContactWrapper) elements.nextElement();
+
+            // change we check if the ambig is NaN
+            hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
+          }
+        }
+      }
+      return hasAmbiguous;
     }
 
     @Override
