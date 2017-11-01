@@ -517,6 +517,91 @@ public class AmbiguityResolver
       curve = leg4.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
       assertEquals("correct value", -60, valueAt(240, curve), 0.01);
     }
+    
+    public void testMaxLegsUnspecified() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensors", 1, track.getSensors().size());
+
+      final Enumeration<Editable> sensorList = track.getSensors().elements();
+      
+      // make the sensor visible
+      final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
+      sensor.setVisible(true);
+      TimePeriod timePeriod =
+          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
+              .getEndDTG());
+
+      // check we have the correct sensor
+      assertEquals("correct name", "TA", sensor.getName());
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      final Logger logger = Logger.getLogger("Logger");
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res =
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
+              timePeriod, null);
+      final List<LegOfCuts> legs = res.legs;
+      final LegOfCuts zigs = res.zigCuts;
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 12, legs.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 22, zigs.size());
+    }
+
+    
+    public void testMaxLegs() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensors", 1, track.getSensors().size());
+
+      final Enumeration<Editable> sensorList = track.getSensors().elements();
+      
+      // make the sensor visible
+      final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
+      sensor.setVisible(true);
+      TimePeriod timePeriod =
+          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
+              .getEndDTG());
+
+      // check we have the correct sensor
+      assertEquals("correct name", "TA", sensor.getName());
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      final Logger logger = Logger.getLogger("Logger");
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res =
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
+              timePeriod, 4);
+      final List<LegOfCuts> legs = res.legs;
+      final LegOfCuts zigs = res.zigCuts;
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 4, legs.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 8, zigs.size());
+      
+      // ok, simulate moving along. Now delete the cuts
+      
+      
+      
+    }
+
 
     public void testHandleWiggle() throws FileNotFoundException
     {
@@ -1518,6 +1603,13 @@ public class AmbiguityResolver
       possLeg.clear();
 
       legs.add(thisLeg);
+    }
+    
+    // just check we haven't gone over our allowance. We don't mind doing this,
+    // since it lets use ensure we've got all of the previous leg
+    if(allowedLegs != null && legs.size() > allowedLegs)
+    {
+      legs.remove(legs.get(legs.size()-1));
     }
 
     return new LegsAndZigs(legs, zigs);
