@@ -256,8 +256,19 @@ public class BearingResidualsView extends BaseStackedDotsView implements
                   .getStart()), new HiResDate(slicedZones.get(
                   slicedZones.size() - 1).getEnd()));
 
+          // what about the zigs? Extend the time period to include any trailing cuts
+          final LegOfCuts zigs = legsAndCuts.getZigs();
+          if (!zigs.isEmpty())
+          {
+            period.extend(zigs.getEndDTG());
+          }
+
           ownshipZoneChart.setPeriod(period);
           targetZoneChart.setPeriod(period);
+
+          // we may also need to resize the range coverage
+          ownshipZoneChart.resetRangeCoverage();
+
         }
       }
       else
