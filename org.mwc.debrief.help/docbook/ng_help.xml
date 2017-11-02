@@ -777,7 +777,7 @@ Naval Undersea Warfare Center (NUWC)
             welcome guidance. On the <guilabel>Tutorials</guilabel> page one tutorial in particular
             will help new Debrief-adopters.</para>
         </sect2>
-        <sect2>
+        <sect2 xml:id="debrief_walkthrough">
           <title>A Debrief Walkthrough</title>
           <para>It's a good idea to let Debrief itself lead you through your first session</para>
           <para>Starting any of the tutorials will shrink the Welcome guidance to a smaller pane
@@ -2078,7 +2078,7 @@ and so on....</programlisting></para>
               </screenshot>
             </figure></para>
         </sect2>
-        <sect2>
+        <sect2 xml:id="ChartLibrary">
           <title xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="chartlibrary">Chart
             Library</title>
           <para>Debrief also allows you to load 3rd-party chart libraries. This is covered in <xref
@@ -2108,7 +2108,7 @@ and so on....</programlisting></para>
               </screenshot>
             </figure></para>
         </sect2>
-        <sect2>
+        <sect2 xml:id="NaturalEarth_title">
           <title xml:id="NaturalEarth">Natural Earth</title>
           <para>In the same manner that we loaded the <xref linkend="chartlibrary"/>, we do exactly
             the same thing with Natural Earth.<figure>
@@ -3989,7 +3989,7 @@ and so on....</programlisting></para>
             the Tote changes.</para>
         </sect2>
 
-        <sect2>
+        <sect2 xml:id="AnalyseTime_Zero">
           <title>Analysing time-zero data in time-variable plot</title>
 
           <para>By default the <indexterm>
@@ -5558,7 +5558,7 @@ and so on....</programlisting></para>
 
     <chapter xml:id="ChartBackdrops">
       <title>Using chart backdrops</title>
-      <sect1>
+      <sect1 xml:id="ChartIntro">
         <title>Introduction</title>
         <para linkend="external_datasets">VPF and ETOPO (see <xref linkend="external_datasets"/>)
           can only add so much context to the analysis of a dataset<indexterm>
@@ -5577,7 +5577,7 @@ and so on....</programlisting></para>
               </mediaobject>
             </screenshot>
           </figure></para>
-        <sect2>
+        <sect2 xml:id="ChartFileTypes">
           <title>File types</title>
           <para>Debrief supports the following types of chart data:<variablelist>
               <varlistentry>
@@ -5742,7 +5742,7 @@ and so on....</programlisting></para>
                 quietly slip in.</para>
             </note></para>
         </sect2>
-        <sect2>
+        <sect2 xml:id="SensorTimePeriod">
           <title>Viewing Sensor Data Time Period</title>
           <para>When viewing the properties view, you will see a Start/Stop DTG for the current
             sensor data time period. This entry is read only, but provides an at a glance method of
@@ -7208,7 +7208,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           data remains visible. The second icon opens the Console view (to keep track of messages
           returned by the launched simulator - see more at <xref linkend="dis_console"/>), and the final one accesses the help for
           Debrief&apos;s DIS integration. </para>
-        <sect2>
+        <sect2 xml:id="LocalSimulator">
           <title>Running a local simulator</title>
           <para> If you have specified the path to an executable in the <guimenu>Server
               preferences</guimenu> (see <xref linkend="dis_exe_config"/>), then you can use the
@@ -7229,7 +7229,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 workspace.</para>
             </tip></para>
         </sect2>
-        <sect2>
+        <sect2 xml:id="DisInteration">
           <title>Interacting with a DIS simulation</title>
           <para>The large listen button is used to toggle whether Debrief is listening for DIS
             messages.</para>
@@ -7239,7 +7239,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             new DIS messages received will be put into a new plot (existing data will be wiped).
           </para>
         </sect2>
-        <sect2>
+        <sect2 xml:id="OtherSettings">
           <title>Other settings</title>
           <para> Two other minor options are provided. If <guibutton>New plot per
               replication</guibutton> is ticked, when Debrief recognises that data for an new
@@ -7269,7 +7269,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
              the <guilabel>Scenario Complete</guilabel> popup dialog includes a reminder that logging
              is active, when relevant.</para>
         </sect2>
-        <sect2><title>Performance graph</title>
+        <sect2 xml:id="PerfGraph"><title>Performance graph</title>
           <para>
             At the foot of the <guibutton>DIS Listener View</guibutton> is a performance graph.  When
             a simulation is being listened to, this graph updates once per second. It shows two lines. One is the 
@@ -7288,7 +7288,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <primary>DIS</primary>
           <secondary>Tips &amp; Tricks</secondary>
         </indexterm>
-        <sect2><title>Specifying format parameters in advance</title>
+        <sect2 xml:id="FormatParameters"><title>Specifying format parameters in advance</title>
               <para>
                 In early 2016 Debrief received the ability to provide format instructions in a REP file, as in the
                 following example. 
@@ -7302,7 +7302,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 Use of these instructions will save effort re-applying formatting to each new model run.
               </para>
         </sect2>
-        <sect2><title>Running Debrief&apos;s DIS simulator</title>
+        <sect2 xml:id="RunningDis"><title>Running Debrief&apos;s DIS simulator</title>
           <para>
             To aid development of the new DIS integration capability, a very simple simulator
             was developed that was capable of sending out messages in DIS format.  This tool 
@@ -7383,11 +7383,11 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         <para>It&apos;s easy to keep up to date with what&apos;s happening in Debrief.  You can find out about
           new bugs, software changes, and formal software releases using one of these
           methods:</para>
-        <sect2>
+        <sect2 xml:id="Twitter">
           <title>Twitter</title>
           <para>Twitter fans just have to follow the <link xlink:href="https://twitter.com/debrieftool">@debrieftool</link> account.</para>
         </sect2>
-        <sect2>
+        <sect2 xml:id="Email">
           <title>Email</title>
           <para>Alternatively, you can navigate to Debrief&apos;s <glossterm linkend="g_github">GitHub</glossterm> site (<link xlink:href="https://github.com/debrief/debrief">https://github.com/debrief/debrief</link> ), and then either
               <emphasis>Star</emphasis> the page to hear high level announcements, or
@@ -8973,8 +8973,9 @@ and entry type can be multi-word if surrounded by quotes (").
 ;; data from module sensors, in depth/heading pairs
 ;; date-time, platform, sensor, two pairs of depth (m) &amp; heading (degs) data.
 
-;TA_MODULES: YYMMDD HHMMSS AAAAAA BBBBBB [DD.D HH.H] ... [DD.D HH.H]
+;TA_MODULES: YYMMDD HHMMSS AAAAAA BBBBBB DD.D HH.H ... DD.D HH.H
 ;; 12 sets of depth/heading data from module sensors. Either first 4, or last 8 will be populated
+;; the other pairs should have zero values
 ;; date-time, platform, sensor, pairs of depth &amp; heading data, to the end of line.
 
 ;TA_COG_ABS: YYMMDD HHMMSS AAAAAA BBBBBB LAT.Y LONG.X DD.D
@@ -9570,7 +9571,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
         </indexterm><indexterm>
           <primary>File Format</primary>
           <secondary>S2087</secondary>
-        </indexterm>        <sect2>
+        </indexterm>        <sect2 xml:id="Intro2087">
           <title>Introduction</title>
           <para>
             The S2087 system is able to provide ownship track. On occasions when the
@@ -9596,7 +9597,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
           </para>
                         
         </sect2>
-        <sect2>
+        <sect2 xml:id="Fileformat2087">
           <title>File format</title>
           <para>Here is a sample of the expected format (line-breaks inserted to aid
             legibility).<screen>SYS_INTERNAL_TIME,SYS_ORDINAL_TIME,SHIP_ORDINAL_TIME,LATITUDE,LONGITUDE,SPEED_MADE_GOOD,
@@ -9622,7 +9623,7 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
     </chapter>
     <chapter xml:id="GeoToolsRef">
       <title>GeoTools in Debrief</title>
-      <sect1>
+      <sect1 xml:id="GeoToolsIntro">
         <title>Introduction</title>
         <para>The display of chart data in Debrief is all down to the <link xlink:href="http://geotools.org/"><citetitle>GeoTools</citetitle></link> library.
           Recently the SWT module was added to this library. The SWT module incorporates the
@@ -9982,7 +9983,7 @@ departure / d.lat = tan (course)</markup>
 
       <sect1 xml:id="RemoveJumpsRef">
         <title>Remove Jumps</title>
-        <sect2><title>Background</title>
+        <sect2 xml:id="RemoveJumpsBack"><title>Background</title>
           <indexterm>
             <primary>Track sections</primary>            
             <secondary>Remove jumps (algorithm)</secondary>
@@ -10010,7 +10011,7 @@ departure / d.lat = tan (course)</markup>
           Using F&apos;-F as the offset vector gives the correct result.          
         </para>
         </sect2>
-        <sect2><title>Algorithm</title>
+        <sect2 xml:id="RemoveJumpsAlg"><title>Algorithm</title>
           <para>
             <orderedlist>
               <listitem><para>Analyst selects period of data.</para></listitem>
@@ -11801,13 +11802,13 @@ end</screen>
         <primary>DIS</primary>
         <secondary>System documentation</secondary>
       </indexterm>
-      <sect1>
+      <sect1 xml:id="DisIntro">
         <title>Introduction</title>  
         <para>Debrief is able to integrate with network simulators that adhere to the DIS protocol.  Debrief
         is able to receive a set of DIS messages (see <xref linkend="dis_messages"></xref>).  Debrief
           is also able to send StartResume and StopFreeze messages along the link. User support is 
         provided both in the form of a Debrief tutorial, and here in the user guide (see <xref linkend="dis_support"/>).</para>
-        <sect2>
+        <sect2 xml:id="DisStandard">
           <title>DIS Standard</title>
           <indexterm>
             <primary>DIS</primary>
@@ -11820,7 +11821,7 @@ end</screen>
           <para>In practice, the version of OpenDis used will be updated to the most recent release each
             time the code in Debrief&apos; DIS plugin receives maintenance attention.</para>
         </sect2>
-        <sect2><title>Adding support for further DIS message types</title>
+        <sect2 xml:id="FurtherDIS"><title>Adding support for further DIS message types</title>
           <indexterm>
             <primary>DIS</primary>
             <secondary>Supporting new message types</secondary>
