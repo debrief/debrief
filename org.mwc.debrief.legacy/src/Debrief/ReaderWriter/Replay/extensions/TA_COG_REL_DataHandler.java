@@ -45,19 +45,19 @@ public class TA_COG_REL_DataHandler extends Core_TA_Handler
     sensor_name = AbstractPlainLineImporter.checkForQuotedName(st).trim();
 
     // extract the measuremetns
-    final String dLatStr = st.nextToken();
-    final String dLongStr = st.nextToken();
+    final String xStr = st.nextToken();
+    final String yStr = st.nextToken();
     final String dDepthStr = st.nextToken();
 
-    if (isNull(dLatStr) || isNull(dLongStr) || isNull(dDepthStr))
+    if (isNull(xStr) || isNull(yStr) || isNull(dDepthStr))
     {
       // ok, skip this one. We haven't got the data
     }
     else
     {
       // extract the measuremetns
-      final double x = Double.valueOf(dLatStr);
-      final double y = Double.valueOf(dLongStr);
+      final double x = Double.valueOf(xStr);
+      final double y = Double.valueOf(yStr);
       final double depth = Double.valueOf(dDepthStr);
 
       // ok, try to store the measurement

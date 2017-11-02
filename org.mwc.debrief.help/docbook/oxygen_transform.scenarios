@@ -12,7 +12,7 @@
 						<String>webhelp</String>
 					</field>
 					<field name="buildFilePath">
-						<String>${frameworksDir}/docbook/xsl/com.oxygenxml.webhelp/build_docbook.xml</String>
+						<String>${frameworksDir}/docbook/xsl/com.oxygenxml.webhelp.classic/build_docbook.xml</String>
 					</field>
 					<field name="ditaParams">
 						<list>
@@ -166,7 +166,7 @@
 									<String>annotation.graphic.close</String>
 								</field>
 								<field name="description">
-									<String>Image for identifying a link that closes an annotation popup. This image is used on popup annotations as the "x" that the user can click to dismiss the popup. This image is used on popup annotations as the “x” that the user can click to dismiss the popup. It may be replaced by a user provided graphic. The size should be approximately 10x10 pixels.</String>
+									<String>Image for identifying a link that closes an annotation popup. This image is used on popup annotations as the "x" that the user can click to dismiss the popup. This image is used on popup annotations as the â€œxâ€� that the user can click to dismiss the popup. It may be replaced by a user provided graphic. The size should be approximately 10x10 pixels.</String>
 								</field>
 								<field name="value">
 									<null/>
@@ -1474,7 +1474,7 @@
 									<String>footnote.number.symbols</String>
 								</field>
 								<field name="description">
-									<String>If footnote.number.symbols is not the empty string, footnotes will use the characters it contains as footnote symbols. For example, *&amp;#x2020;&amp;#x2021;&amp;#x25CA;&amp;#x2720; will identify footnotes with *, †, ‡,◊, and ✠. If there are more footnotes than symbols, the stylesheets will fall back to numbered footnotes using footnote.number.format. The use of symbols for footnotes depends on the ability of your processor (or browser) to render the symbols you select. Not all systems are capable of displaying the full range of Unicode characters. If the quoted characters in the preceding paragraph are not displayed properly, that's a good indicator that you may have trouble using those symbols for footnotes.</String>
+									<String>If footnote.number.symbols is not the empty string, footnotes will use the characters it contains as footnote symbols. For example, *&amp;#x2020;&amp;#x2021;&amp;#x25CA;&amp;#x2720; will identify footnotes with *, â€ , â€¡,â—Š, and âœ . If there are more footnotes than symbols, the stylesheets will fall back to numbered footnotes using footnote.number.format. The use of symbols for footnotes depends on the ability of your processor (or browser) to render the symbols you select. Not all systems are capable of displaying the full range of Unicode characters. If the quoted characters in the preceding paragraph are not displayed properly, that's a good indicator that you may have trouble using those symbols for footnotes.</String>
 								</field>
 								<field name="value">
 									<null/>
@@ -2159,7 +2159,7 @@
 									<String>html.head.legalnotice.link.multiple</String>
 								</field>
 								<field name="description">
-									<String>If html.head.legalnotice.link.multiple is non-zero and the value of html.head.legalnotice.link.types contains multiple link types, then the stylesheet generates (in the head section of the HTML source) one link element for each link type specified. For example, if the value of html.head.legalnotice.link.types is “copyright license”: &lt;link rel="copyright" href="ln-id2524073.html" title="Legal Notice"> &lt;link rel="license" href="ln-id2524073.html" title="Legal Notice"> Otherwise, the stylesheet generates generates a single link instance; for example: &lt;link rel="copyright license" href="ln-id2524073.html" title="Legal Notice"> Default value: 1</String>
+									<String>If html.head.legalnotice.link.multiple is non-zero and the value of html.head.legalnotice.link.types contains multiple link types, then the stylesheet generates (in the head section of the HTML source) one link element for each link type specified. For example, if the value of html.head.legalnotice.link.types is â€œcopyright licenseâ€�: &lt;link rel="copyright" href="ln-id2524073.html" title="Legal Notice"> &lt;link rel="license" href="ln-id2524073.html" title="Legal Notice"> Otherwise, the stylesheet generates generates a single link instance; for example: &lt;link rel="copyright license" href="ln-id2524073.html" title="Legal Notice"> Default value: 1</String>
 								</field>
 								<field name="value">
 									<null/>
@@ -2399,7 +2399,7 @@
 									<String>index.method</String>
 								</field>
 								<field name="description">
-									<String>This parameter lets you select which method to use for sorting and grouping index entries in an index. Indexes in Latin-based languages that have accented characters typically sort together accented words and unaccented words. Thus Á (U+00C1 LATIN CAPITAL LETTER A WITH ACUTE) would sort together with A (U+0041 LATIN CAPITAL LETTER A), so both would appear in the A section of the index. Languages using other alphabets (such as Russian, which is written in the Cyrillic alphabet) and languages using ideographic chararacters (such as Japanese) require grouping specific to the languages and alphabets. The default indexing method is limited. It can group accented characters in Latin-based languages only. It cannot handle non-Latin alphabets or ideographic languages. The other indexing methods require extensions of one type or another, and do not work with all XSLT processors, which is why they are not used by default. The three choices for indexing method are: basic (default) Sort and groups words based only on the Latin alphabet. Words with accented Latin letters will group and sort with their respective primary letter, but words in non-Latin alphabets will be put in the Symbols section of the index. kosek This method sorts and groups words based on letter groups configured in the DocBook locale file for the given language. See, for example, the French locale file common/fr.xml. This method requires that the XSLT processor supports the EXSLT extensions (most do). It also requires support for using user-defined functions in xsl:key (xsltproc does not). This method is suitable for any language for which you can list all the individual characters that should appear in each letter group in an index. It is probably not practical to use it for ideographic languages such as Chinese that have hundreds or thousands of characters. To use the kosek method, you must: Use a processor that supports its extensions, such as Saxon 6 or Xalan (xsltproc and Saxon 8 do not). Set the index.method parameter's value to kosek. Import the appropriate index extensions stylesheet module fo/autoidx-kosek.xsl or html/autoidx-kosek.xsl into your customization. kimber This method uses extensions to the Saxon processor to implement sophisticated indexing processes. It uses its own configuration file, which can include information for any number of languages. Each language's configuration can group words using one of two processes. In the enumerated process similar to that used in the kosek method, you indicate the groupings character-by-character. In the between-key process, you specify the break-points in the sort order that should start a new group. The latter configuration is useful for ideographic languages such as Chinese, Japanese, and Korean. You can also define your own collation algorithms and how you want mixed Latin-alphabet words sorted. For a whitepaper describing the extensions, see: http://www.innodata-isogen.com/knowledge_center/white_papers/back_of_book_for_xsl_fo.pdf. To download the extension library, see http://www.innodata-isogen.com/knowledge_center/tools_downloads/i18nsupport. To use the kimber method, you must: Use Saxon (version 6 or 8) as your XSLT processor. Install and configure the Innodata Isogen library, using the documentation that comes with it. Set the index.method parameter's value to kimber. Import the appropriate index extensions stylesheet module fo/autoidx-kimber.xsl or html/autoidx-kimber.xsl into your customization. Default value: basic</String>
+									<String>This parameter lets you select which method to use for sorting and grouping index entries in an index. Indexes in Latin-based languages that have accented characters typically sort together accented words and unaccented words. Thus Ã� (U+00C1 LATIN CAPITAL LETTER A WITH ACUTE) would sort together with A (U+0041 LATIN CAPITAL LETTER A), so both would appear in the A section of the index. Languages using other alphabets (such as Russian, which is written in the Cyrillic alphabet) and languages using ideographic chararacters (such as Japanese) require grouping specific to the languages and alphabets. The default indexing method is limited. It can group accented characters in Latin-based languages only. It cannot handle non-Latin alphabets or ideographic languages. The other indexing methods require extensions of one type or another, and do not work with all XSLT processors, which is why they are not used by default. The three choices for indexing method are: basic (default) Sort and groups words based only on the Latin alphabet. Words with accented Latin letters will group and sort with their respective primary letter, but words in non-Latin alphabets will be put in the Symbols section of the index. kosek This method sorts and groups words based on letter groups configured in the DocBook locale file for the given language. See, for example, the French locale file common/fr.xml. This method requires that the XSLT processor supports the EXSLT extensions (most do). It also requires support for using user-defined functions in xsl:key (xsltproc does not). This method is suitable for any language for which you can list all the individual characters that should appear in each letter group in an index. It is probably not practical to use it for ideographic languages such as Chinese that have hundreds or thousands of characters. To use the kosek method, you must: Use a processor that supports its extensions, such as Saxon 6 or Xalan (xsltproc and Saxon 8 do not). Set the index.method parameter's value to kosek. Import the appropriate index extensions stylesheet module fo/autoidx-kosek.xsl or html/autoidx-kosek.xsl into your customization. kimber This method uses extensions to the Saxon processor to implement sophisticated indexing processes. It uses its own configuration file, which can include information for any number of languages. Each language's configuration can group words using one of two processes. In the enumerated process similar to that used in the kosek method, you indicate the groupings character-by-character. In the between-key process, you specify the break-points in the sort order that should start a new group. The latter configuration is useful for ideographic languages such as Chinese, Japanese, and Korean. You can also define your own collation algorithms and how you want mixed Latin-alphabet words sorted. For a whitepaper describing the extensions, see: http://www.innodata-isogen.com/knowledge_center/white_papers/back_of_book_for_xsl_fo.pdf. To download the extension library, see http://www.innodata-isogen.com/knowledge_center/tools_downloads/i18nsupport. To use the kimber method, you must: Use Saxon (version 6 or 8) as your XSLT processor. Install and configure the Innodata Isogen library, using the documentation that comes with it. Set the index.method parameter's value to kimber. Import the appropriate index extensions stylesheet module fo/autoidx-kimber.xsl or html/autoidx-kimber.xsl into your customization. Default value: basic</String>
 								</field>
 								<field name="value">
 									<null/>
@@ -2679,7 +2679,7 @@
 									<String>label.from.part</String>
 								</field>
 								<field name="description">
-									<String>If label.from.part is non-zero, then numbering of components ” preface, chapter, appendix, and reference (when reference occurs at the component level) ” is re-started within each part. If label.from.part is zero (the default), numbering of components is not re-started within each part; instead, components are numbered sequentially throughout each book, regardless of whether or not they occur within part instances.</String>
+									<String>If label.from.part is non-zero, then numbering of components â€� preface, chapter, appendix, and reference (when reference occurs at the component level) â€� is re-started within each part. If label.from.part is zero (the default), numbering of components is not re-started within each part; instead, components are numbered sequentially throughout each book, regardless of whether or not they occur within part instances.</String>
 								</field>
 								<field name="value">
 									<null/>
@@ -2962,10 +2962,10 @@
 									<String>Separator used to connect items of a menuchoice with guimenuitem or guisubmenu. Other elements are linked with menuchoice.separator. The default value is &amp;#x2192;, which is the &amp;rarr; (right arrow) character entity. The current FOP (0.20.5) requires setting the font-family explicitly. The default value also includes spaces around the arrow, which will allow a line to break. Replace the spaces with &amp;#xA0; (nonbreaking space) if you don't want those spaces to break.</String>
 								</field>
 								<field name="value">
-									<String>→</String>
+									<String>â†’</String>
 								</field>
 								<field name="defaultValue">
-									<String>→</String>
+									<String>â†’</String>
 								</field>
 								<field name="type">
 									<Integer>2</Integer>
@@ -4587,7 +4587,7 @@
 									<String>table.footnote.number.symbols</String>
 								</field>
 								<field name="description">
-									<String>If table.footnote.number.symbols is not the empty string, table footnotes will use the characters it contains as footnote symbols. For example, *&amp;#x2020;&amp;#x2021;&amp;#x25CA;&amp;#x2720; will identify footnotes with *, †, ‡,◊, and ✠ . If there are more footnotes than symbols, the stylesheets will fall back to numbered footnotes using table.footnote.number.format. The use of symbols for footnotes depends on the ability of your processor (or browser) to render the symbols you select. Not all systems are capable of displaying the full range of Unicode characters. If the quoted characters in the preceding paragraph are not displayed properly, that's a good indicator that you may have trouble using those symbols for footnotes.</String>
+									<String>If table.footnote.number.symbols is not the empty string, table footnotes will use the characters it contains as footnote symbols. For example, *&amp;#x2020;&amp;#x2021;&amp;#x25CA;&amp;#x2720; will identify footnotes with *, â€ , â€¡,â—Š, and âœ Â . If there are more footnotes than symbols, the stylesheets will fall back to numbered footnotes using table.footnote.number.format. The use of symbols for footnotes depends on the ability of your processor (or browser) to render the symbols you select. Not all systems are capable of displaying the full range of Unicode characters. If the quoted characters in the preceding paragraph are not displayed properly, that's a good indicator that you may have trouble using those symbols for footnotes.</String>
 								</field>
 								<field name="value">
 									<null/>
@@ -4807,7 +4807,7 @@
 									<String>textinsert.extension</String>
 								</field>
 								<field name="description">
-									<String>The textinsert extension element inserts the contents of a file into the result tree (as text). To use the textinsert extension element, you must use either Saxon or Xalan as your XSLT processor (it doesn’t work with xsltproc), along with either the DocBook Saxon extensions or DocBook Xalan extensions (for more information about those extensions, see DocBook Saxon Extensions and DocBook Xalan Extensions), and you must set both the use.extensions and textinsert.extension parameters to 1. As an alternative to using the textinsert element, consider using an Xinclude element with the parse="text" attribute and value specified, as detailed in Using XInclude for text inclusions. See Also You can also use the dbhtml-include href processing instruction to insert external files — both files containing plain text and files with markup content (including HTML content). More information For how-to documentation on inserting contents of external code files and other text files into output, see External code files. For guidelines on inserting contents of HTML files into output, see Inserting external HTML code. Default value: 1</String>
+									<String>The textinsert extension element inserts the contents of a file into the result tree (as text). To use the textinsert extension element, you must use either Saxon or Xalan as your XSLT processor (it doesnâ€™t work with xsltproc), along with either the DocBook Saxon extensions or DocBook Xalan extensions (for more information about those extensions, see DocBook Saxon Extensions and DocBook Xalan Extensions), and you must set both the use.extensions and textinsert.extension parameters to 1. As an alternative to using the textinsert element, consider using an Xinclude element with the parse="text" attribute and value specified, as detailed in Using XInclude for text inclusions. See Also You can also use the dbhtml-includeÂ href processing instruction to insert external files â€” both files containing plain text and files with markup content (including HTML content). More information For how-to documentation on inserting contents of external code files and other text files into output, see External code files. For guidelines on inserting contents of HTML files into output, see Inserting external HTML code. Default value: 1</String>
 								</field>
 								<field name="value">
 									<null/>
@@ -5218,7 +5218,7 @@
 									<String>The file path of a small image with the company logo that will be added to the title in the header area.</String>
 								</field>
 								<field name="value">
-									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/figures/icon.png</String>
+									<String>figures/icon.png</String>
 								</field>
 								<field name="defaultValue">
 									<String></String>
@@ -5258,7 +5258,7 @@
 									<String>The skin CSS parameter is the file path of a CSS that sets the style theme in the output Webhelp pages. It can be one of the predefined skin CSSs from directory: OXYGEN_INSTALL_DIR\frameworks\docbook\xsl\com.oxygenxml.webhelp\predefined-skins, or it can be a custom skin CSS generated with the Oxygen Skin Builder web application.</String>
 								</field>
 								<field name="value">
-									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/webhelp_skin.css</String>
+									<String>webhelp_skin.css</String>
 								</field>
 								<field name="defaultValue">
 									<String></String>
@@ -5497,12 +5497,7 @@
 					<field name="extensionURLs">
 						<String-array>
 							<String>${oxygenHome}/classes/</String>
-							<String>${oxygenHome}/lib/oxygen.jar</String>
-							<String>${oxygenHome}/lib/oxygenAuthor.jar</String>
-							<String>${oxygenHome}/lib/oxygenDeveloper.jar</String>
-							<String>${oxygenHome}/lib/oxygenEclipse.jar</String>
-							<String>${oxygenHome}/lib/oxygenAuthorEclipse.jar</String>
-							<String>${oxygenHome}/lib/oxygenDeveloperEclipse.jar</String>
+							<String>${oxygenHome}/lib/oxygen*.jar</String>
 							<String>${oxygenHome}/lib/resolver.jar</String>
 							<String>${oxygenHome}/lib/jing.jar</String>
 							<String>${oxygenHome}/lib/xercesImpl.jar</String>
@@ -5512,10 +5507,9 @@
 							<String>${oxygenHome}/lib/xml-apis-ext.jar</String>
 							<String>${oxygenHome}/lib/log4j.jar</String>
 							<String>${frameworks}/docbook/xsl/extensions/saxon65.jar</String>
-							<String>${frameworks}/docbook/xsl/extensions/xslthl-2.0.1.jar</String>
-							<String>${oxygenHome}/lib/lucene-analyzers-common-4.0.0.jar</String>
-							<String>${oxygenHome}/lib/lucene-core-4.0.0.jar</String>
-							<String>${frameworks}/docbook/xsl/com.oxygenxml.webhelp/lib/xhtml-indexer.jar</String>
+							<String>${frameworks}/docbook/xsl/extensions/xslthl*.jar</String>
+							<String>${oxygenHome}/lib/lucene-*.jar</String>
+							<String>${frameworks}/docbook/xsl/com.oxygenxml.webhelp.classic/lib/xhtml-indexer.jar</String>
 						</String-array>
 					</field>
 				</antScenario>
