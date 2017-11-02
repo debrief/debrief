@@ -457,7 +457,7 @@ public class ZoneChart extends Composite
                 merge_1 = zone;
                 break;
               }
-              else if (merge_1 != zone)
+              else if (!merge_1.equals(zone))
               {
                 merge_2 = zone;
                 break;
@@ -696,7 +696,6 @@ public class ZoneChart extends Composite
       // vars on completion
       try
       {
-
         switch (mode)
         {
           case SWITCH:
@@ -716,12 +715,6 @@ public class ZoneChart extends Composite
                 break;
               }
             }
-          }
-          case ZOOM:
-          {
-            // we fire super.mouseUp at the end of the method, we don't
-            // need to do it here
-            break;
           }
           case EDIT:
           {
@@ -766,7 +759,7 @@ public class ZoneChart extends Composite
           }
           case MERGE:
           {
-            if (merge_1 != null && merge_2 != null && merge_1 != merge_2)
+            if (merge_1 != null && merge_2 != null && !merge_1.equals(merge_2))
             {
               final Zone resize =
                   merge_1.start < merge_2.start ? merge_1 : merge_2;
@@ -820,6 +813,13 @@ public class ZoneChart extends Composite
               undoRedoProvider.execute(mergeOp);
             }
 
+            break;
+          }
+          default:
+          case ZOOM:
+          {
+            // we fire super.mouseUp at the end of the method, we don't
+            // need to do it here
             break;
           }
         }
@@ -1580,9 +1580,9 @@ public class ZoneChart extends Composite
 
   private Zone dragZone;
 
-  long dragZoneStartBefore = -1;
+  private long dragZoneStartBefore = -1;
 
-  long dragZoneEndBefore = -1;
+  private long dragZoneEndBefore = -1;
 
   private double dragStartX = -1;
 
@@ -1715,9 +1715,7 @@ public class ZoneChart extends Composite
       final Label placeHolder = new Label(col1, SWT.NONE);
     }
 
-    @SuppressWarnings("unused")
-    final Button revealBtn =
-        createButton(col1, SWT.PUSH, fitToWin24, "Reveal", "Reveal all data",
+    createButton(col1, SWT.PUSH, fitToWin24, "Reveal", "Reveal all data",
             new Runnable()
             {
               @Override
@@ -1728,9 +1726,7 @@ public class ZoneChart extends Composite
             });
 
     // ok, now the clear buttons
-    @SuppressWarnings("unused")
-    final Button clearZones =
-        createButton(col1, SWT.PUSH, clearZones24, "Clear zones",
+    createButton(col1, SWT.PUSH, clearZones24, "Clear zones",
             "Clear zone markings", new Runnable()
             {
               @Override
@@ -1744,83 +1740,51 @@ public class ZoneChart extends Composite
         TrackShiftActivator.getDefault().getPreferenceStore().getInt(
             PreferenceConstants.OS_TURN_MAX_LEGS);
     final String btnName = "Slice next " + MAX_LEGS;
-    @SuppressWarnings("unused")
-    final Button sliceBtn =
-        createButton(col1, SWT.PUSH, autoSlice24, btnName,
-            "Automatically slice zones", new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                if (zoneSlicer == null)
-                {
-                  CorePlugin.showMessage("Manage legs", "Slicing happens here");
-                }
-                else
-                {
-                  final Runnable wrappedItem = new Runnable()
-                  {
-
-                    @Override
-                    public void run()
-                    {
-                      // ok, do the slicing
-                      performSlicing(false);
-                    }
-                  };
-                  BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
-                }
-              }
-            });
-
-    @SuppressWarnings("unused")
-    final Button sliceAllBtn =
-        createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
-            "Automatically slice zones", new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                if (zoneSlicer == null)
-                {
-                  CorePlugin.showMessage("Manage legs", "Slicing happens here");
-                }
-                else
-                {
-                  final Runnable wrappedItem = new Runnable()
-                  {
-
-                    @Override
-                    public void run()
-                    {
-                      // ditch any existing zones
-                      clearZones();
-
-                      // ok, do the slicing
-                      performSlicing(true);
-                    }
-                  };
-                  BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
-                }
-              }
-            });
+    createButton(col1, SWT.PUSH, autoSlice24, btnName,
+            "Automatically slice zones", getSliceOp(false));
+    createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
+            "Automatically slice zones", getSliceOp(true));
 
     if (deleteEvent != null)
     {
-      @SuppressWarnings("unused")
-      final Button delete =
-          createButton(col1, SWT.PUSH, autoDelete24, "Delete",
+      createButton(col1, SWT.PUSH, autoDelete24, "Delete",
               "Delete cuts not in a leg", deleteEvent);
-
     }
     if (resolveAmbiguityEvent != null)
     {
-      final Button resolve =
-          createButton(col1, SWT.PUSH, autoResolve24, "Resolve",
-              "Resolve Ambiguity", resolveAmbiguityEvent);
-      ambigControls.add(resolve);
+      ambigControls.add(createButton(col1, SWT.PUSH, autoResolve24, "Resolve",
+          "Resolve Ambiguity", resolveAmbiguityEvent));
     }
 
+  }
+
+  private Runnable getSliceOp(final boolean doAll)
+  {
+    return new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        if (zoneSlicer == null)
+        {
+          CorePlugin.showMessage("Manage legs", "Slicing happens here");
+        }
+        else
+        {
+          final Runnable wrappedItem = new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              // ok, do the slicing
+              performSlicing(doAll);
+            }
+          };
+          BusyIndicator.showWhile(Display.getCurrent(), wrappedItem);
+        }
+      }
+    };
   }
 
   @Override

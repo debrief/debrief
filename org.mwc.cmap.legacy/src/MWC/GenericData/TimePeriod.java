@@ -188,10 +188,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
       if (obj == this)
         return true;
       TimePeriod tp = (TimePeriod) obj;
-      if(tp.getStartDTG().equals(this.getStartDTG()) && tp.getEndDTG().equals(this.getEndDTG()))
-        return true;
-      else
-        return false;
+      return (tp.getStartDTG().equals(this.getStartDTG()) && tp.getEndDTG().equals(this.getEndDTG()));
     }
 
 

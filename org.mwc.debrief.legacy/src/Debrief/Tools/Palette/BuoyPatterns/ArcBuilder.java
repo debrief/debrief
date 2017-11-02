@@ -158,7 +158,7 @@ public final class ArcBuilder extends PatternBuilderType
     {
 
       // create the location for this buoy, starting with the correct orientation
-      final WorldVector thisStep = new MWC.GenericData.WorldVector(currentAngle, radius_degs, 0.0);
+      final WorldVector thisStep = new WorldVector(currentAngle, radius_degs, 0.0);
       final WorldLocation thisLoc = centre.add(thisStep);
 
       // create the new symbol
