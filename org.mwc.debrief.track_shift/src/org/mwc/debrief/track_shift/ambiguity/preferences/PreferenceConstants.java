@@ -37,5 +37,10 @@ public class PreferenceConstants
    * (since the cuts in the turn have been deleted).
    */
   public static final String OS_TURN_MIN_TIME_INTERVAL = "OSTurnMintimeInterval";
+
+  /** maximum number of legs we let the algorithm process at once
+   * 
+   */
+  public static final String OS_TURN_MAX_LEGS = "OSTurnMaxLegs";
   
 }

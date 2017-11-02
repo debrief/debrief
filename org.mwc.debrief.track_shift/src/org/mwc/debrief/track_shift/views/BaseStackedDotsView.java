@@ -335,10 +335,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
   final protected TimeSeries measuredValues = new TimeSeries("Measured");
-  final protected TimeSeries ambigValues = new TimeSeries(
-      "Measured (Ambiguous)");
+  final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
+
+  final public static String AMBIG_NAME = "Measured (Ambiguous)";
 
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
@@ -803,6 +804,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
             ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
             ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
+    ownshipZoneChart.updateControls();
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
     {});
@@ -826,7 +828,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ZoneSlicer targetLegSlicer = new ZoneSlicer()
     {
       @Override
-      public List<Zone> performSlicing()
+      public List<Zone> performSlicing(final boolean wholePeriod)
       {
         // hmm, the above set of bearings only covers windows where we have
         // target track defined. But, in order to consider the actual extent
@@ -1469,7 +1471,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       private void fireUpdates()
       {
         // collate the current list of legs
-        final Zone[] zones = targetZoneChart.getZones();
+        final List<Zone> zones = targetZoneChart.getZones();
 
         final ISecondaryTrack secTrack = _myHelper.getSecondaryTrack();
         final TrackWrapper priTrack = _myHelper.getPrimaryTrack();
@@ -1479,9 +1481,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
 
           // fire the finished event
-          for (int i = 0; i < zones.length; i++)
+          for (Zone zone : zones)
           {
-            final Zone zone = zones[i];
             setLeg(priTrack, secTrack, zone);
           }
 
@@ -2263,14 +2264,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /**
    * slice the target bearings according to these zones
    * 
-   * @param ownshipLegs
+   * @param ownshipZones
    * @param randomProv
    * @param slicePrecision
    * @param secondaryTrack
    * @param targetBearingSeries2
    * @return
    */
-  protected List<Zone> sliceTarget(final Zone[] ownshipLegs,
+  protected List<Zone> sliceTarget(final List<Zone> ownshipZones,
       final List<SensorContactWrapper> cuts, final ColorProvider randomProv,
       final ISecondaryTrack tgtTrack, final Precision slicePrecision)
   {
@@ -2285,7 +2286,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       return null;
     }
 
-    if (ownshipLegs == null || ownshipLegs.length == 0)
+    if (ownshipZones == null || ownshipZones.isEmpty())
     {
       Application.logError2(ToolParent.ERROR, "List of ownship legs is empty",
           null);
@@ -2321,19 +2322,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     final double optimiseTolerance = 0.000001;
-    final double RMS_ZIG_RATIO;
-    switch (slicePrecision)
-    {
-      case LOW:
-        RMS_ZIG_RATIO = 20;
-        break;
-      case MEDIUM:
-      default:
-        RMS_ZIG_RATIO = 10d;
-        break;
-      case HIGH:
-        RMS_ZIG_RATIO = 5;
-    }
+    final double RMS_ZIG_RATIO = getPrecision(slicePrecision);
 
     // get a logger to use
     final ILog log;
@@ -2347,21 +2336,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
 
     // ok, loop through the ownship legs
-    for (final Zone thisZ : ownshipLegs)
+    for (final Zone thisZ : ownshipZones)
     {
-      final long wholeStart = thisZ.getStart();
-      final long wholeEnd = thisZ.getEnd();
-
-      // get the bearings in this leg
-      final List<Long> thisLegTimes = new ArrayList<Long>();
-      final List<Double> thisLegBearings = new ArrayList<Double>();
-      getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes,
-          thisLegBearings);
-
-      // slice the leg
-      slicer.sliceThis(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
-          wholeStart, wholeEnd, legStorer, zigStorer, RMS_ZIG_RATIO,
-          optimiseTolerance, thisLegTimes, thisLegBearings);
+      sliceThisLeg(cuts, slicer, zigStorer, legStorer, optimiseTolerance,
+          RMS_ZIG_RATIO, log, thisZ);
     }
 
     // special case: if we've manually deleted the target legs, and have to re-create them
@@ -2382,21 +2360,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     }
 
-    // if (hasData)
-    // {
-    // // we can retrieve the start/end time
-    // startTime = tgtTrack.getStartDTG().getDate().getTime();
-    // endTime = tgtTrack.getEndDTG().getDate().getTime();
-    // }
-    // else
-    // {
-    // // we've got to regenerate the points from the cuts
-    // startTime = cuts.get(0).getDTG().getDate().getTime();
-    // endTime = cuts.get(cuts.size() - 1).getDTG().getDate().getTime();
-    // }
     // get the start/end from the ownship legs
-    startTime = ownshipLegs[0].getStart();
-    endTime = ownshipLegs[ownshipLegs.length - 1].getEnd();
+    startTime = ownshipZones.get(0).getStart();
+    endTime = ownshipZones.get(ownshipZones.size() - 1).getEnd();
 
     // ok, we've got to turn the zigs into legs
     final List<Zone> oldLegs =
@@ -2421,6 +2387,44 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // ok, done.
     return oldLegs;
+  }
+
+  private void sliceThisLeg(final List<SensorContactWrapper> cuts,
+      final ZigDetector slicer, final IZigStorer zigStorer,
+      final ILegStorer legStorer, final double optimiseTolerance,
+      final double RMS_ZIG_RATIO, final ILog log, final Zone thisZ)
+  {
+    final long wholeStart = thisZ.getStart();
+    final long wholeEnd = thisZ.getEnd();
+
+    // get the bearings in this leg
+    final List<Long> thisLegTimes = new ArrayList<Long>();
+    final List<Double> thisLegBearings = new ArrayList<Double>();
+    getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes,
+        thisLegBearings);
+
+    // slice the leg
+    slicer.sliceThis(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
+        wholeStart, wholeEnd, legStorer, zigStorer, RMS_ZIG_RATIO,
+        optimiseTolerance, thisLegTimes, thisLegBearings);
+  }
+
+  private double getPrecision(final Precision slicePrecision)
+  {
+    final double RMS_ZIG_RATIO;
+    switch (slicePrecision)
+    {
+      case LOW:
+        RMS_ZIG_RATIO = 20;
+        break;
+      case MEDIUM:
+      default:
+        RMS_ZIG_RATIO = 10d;
+        break;
+      case HIGH:
+        RMS_ZIG_RATIO = 5;
+    }
+    return RMS_ZIG_RATIO;
   }
 
   abstract protected void updateData(boolean updateDoublets);

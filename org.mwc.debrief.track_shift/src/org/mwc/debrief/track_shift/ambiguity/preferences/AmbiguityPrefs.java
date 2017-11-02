@@ -65,6 +65,8 @@ public class AmbiguityPrefs extends FieldEditorPreferencePage implements
         "Minimum number of degrees where we treat missing cuts as a course change, such as 10 (degs)", getFieldEditorParent()));
     addField(new StringFieldEditor(PreferenceConstants.OS_TURN_MIN_TIME_INTERVAL,
         "Minimum time period before we treat missing cuts as a course change, such as 120 (secs)", getFieldEditorParent()));
+    addField(new StringFieldEditor(PreferenceConstants.OS_TURN_MAX_LEGS,
+        "Maximum number of legs we let the ambiguous legs processor slice at once", getFieldEditorParent()));
   }
 
 }

@@ -91,6 +91,13 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
    */
   public HiResDate getStartDTG();
 
+  /** identify the intersecting period between
+   * us and this new period
+   * @param thisP
+   * @return
+   */
+  TimePeriod intersects(TimePeriod thisP);
+
   /**
    * get the end of this time period
    */
@@ -181,10 +188,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
       if (obj == this)
         return true;
       TimePeriod tp = (TimePeriod) obj;
-      if(tp.getStartDTG().equals(this.getStartDTG()) && tp.getEndDTG().equals(this.getEndDTG()))
-        return true;
-      else
-        return false;
+      return (tp.getStartDTG().equals(this.getStartDTG()) && tp.getEndDTG().equals(this.getEndDTG()));
     }
 
 
@@ -228,9 +232,9 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     public final void extend(final HiResDate val)
     {
       // are we using duff values
-      if (_startDTG == INVALID_DATE)
+      if (_startDTG.equals(INVALID_DATE))
         _startDTG = val;
-      if (_endDTG == INVALID_DATE)
+      if (_endDTG.equals(INVALID_DATE))
         _endDTG = val;
 
       if (_startDTG.greaterThan(val))
@@ -252,7 +256,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     {
       boolean res = false;
 
-      if (_startDTG == INVALID_DATE && _endDTG == INVALID_DATE)
+      if (_startDTG.equals(INVALID_DATE) && _endDTG.equals(INVALID_DATE))
       {
         res = true;
       }
@@ -272,9 +276,9 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
       boolean res = false;
 
       // check we have data
-      if (_startDTG != INVALID_DATE)
+      if (!_startDTG.equals(INVALID_DATE))
       {
-        if (_endDTG != INVALID_DATE)
+        if (!_endDTG.equals(INVALID_DATE))
         {
           // we have both times. check if we overlap
           if ((_startDTG.lessThan(end)) && (_endDTG.greaterThan(start)))
@@ -318,12 +322,13 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
       return res;
     }
 
-    public BaseTimePeriod intersects(BaseTimePeriod thisP)
+    @Override
+    public TimePeriod intersects(TimePeriod thisP)
     {
       // sort out the overlap
       long startP = Math.max(this.getStartDTG().getMicros(), thisP.getStartDTG().getMicros());
       long endP = Math.min(this.getEndDTG().getMicros(), thisP.getEndDTG().getMicros());
-      BaseTimePeriod result = new BaseTimePeriod(new HiResDate(0, startP), new HiResDate(0, endP));
+      TimePeriod result = new BaseTimePeriod(new HiResDate(0, startP), new HiResDate(0, endP));
       return result;
     }
 
@@ -343,7 +348,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
       
       BaseTimePeriod p1 = new BaseTimePeriod(t1,  t4);
       BaseTimePeriod p2 = new BaseTimePeriod(t2, t3);
-      BaseTimePeriod overlap = p1.intersects(p2);
+      TimePeriod overlap = p1.intersects(p2);
       assertEquals("inner period", overlap.getStartDTG(), t2);
       assertEquals("inner period", overlap.getEndDTG(), t3);
 

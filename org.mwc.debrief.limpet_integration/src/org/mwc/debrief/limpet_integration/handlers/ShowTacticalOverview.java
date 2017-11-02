@@ -547,7 +547,7 @@ public class ShowTacticalOverview extends AbstractHandler
         new ArrayList<WatchableList>(Arrays.asList(secs));
     list.add(pri);
 
-    BaseTimePeriod period = null;
+    TimePeriod period = null;
     for (final WatchableList item : list)
     {
       // check it's not a singleton

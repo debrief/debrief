@@ -26,6 +26,7 @@ public class AmbiguityPrefsInitializer extends AbstractPreferenceInitializer
     store.setDefault(PreferenceConstants.MIN_LEG_LENGTH, 240d);
     store.setDefault(PreferenceConstants.OS_TURN_MIN_COURSE_CHANGE, 12d);
     store.setDefault(PreferenceConstants.OS_TURN_MIN_TIME_INTERVAL, 180L);    
+    store.setDefault(PreferenceConstants.OS_TURN_MAX_LEGS, 8);    
 	}
 
 }

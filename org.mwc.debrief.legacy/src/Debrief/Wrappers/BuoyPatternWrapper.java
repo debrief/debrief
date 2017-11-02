@@ -171,20 +171,21 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
  * the BuoyPatternWrapper is a Layer containing a buoypattern
  */
-public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
-		MWC.GenericData.WatchableList, 
-		MWC.GUI.Layer, TimePeriod, Editable.DoNotHighlightMe
+public final class BuoyPatternWrapper extends PlainWrapper implements
+    WatchableList, Layer, Editable.DoNotHighlightMe
 {
 
 	// //////////////////////////////////////
@@ -891,7 +892,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 		while (buoyWrappers.hasNext())
 		{
 			final LabelWrapper fw = (LabelWrapper) buoyWrappers.next();
-			final TimePeriod tp = new BaseTimePeriod(fw.getStartDTG(), fw.getEndDTG());
+			final TimePeriod tp = new TimePeriod.BaseTimePeriod(fw.getStartDTG(), fw.getEndDTG());
 			fw.setVisible(tp.overlaps(start, end));
 			// long dtg = fw.getTime();
 			// if((dtg >= start) &&
@@ -1383,7 +1384,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 		 */
 		public final void testPeriod()
 		{
-			final BaseTimePeriod btp = new BaseTimePeriod(new HiResDate(500),
+			final TimePeriod btp = new TimePeriod.BaseTimePeriod(new HiResDate(500),
 					new HiResDate(600));
 			assertEquals("contains valid time", btp.contains(new HiResDate(550)), true);
 			assertEquals("doesn't contain invalid time", btp.contains(new HiResDate(450)),

@@ -138,7 +138,7 @@ public final class BarrierBuilder extends PatternBuilderType
     WorldLocation lastPoint = getKingpin();
     final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
     final double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
-    final WorldVector step = new MWC.GenericData.WorldVector(orient_rads, spacing_degs, 0);
+    final WorldVector step = new WorldVector(orient_rads, spacing_degs, 0);
 
     boolean first_buoy = true;
 
@@ -229,7 +229,7 @@ public final class BarrierBuilder extends PatternBuilderType
     public final void updatesComplete()
     {
       // get the builder to build itself
-      Create();
+      create();
 
       // inform the parent
       super.updatesComplete();

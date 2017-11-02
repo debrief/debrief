@@ -325,7 +325,7 @@ public final class WedgeBuilder extends PatternBuilderType
     public final void updatesComplete()
     {
       // get the builder to build itself
-      Create();
+      create();
 
       // inform the parent
       super.updatesComplete();
