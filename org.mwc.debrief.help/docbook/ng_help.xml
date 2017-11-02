@@ -427,7 +427,7 @@
                       <imagedata fileref="figures/DeepBlueC.png" width="100"/>
                     </imageobject>
                   </inlinemediaobject></entry>
-                <entry>Debrief Project Manager.
+                <entry><para>Debrief Project Manager.</para>
                   <address>
 <personname>Mr Ian Mayo</personname>
 <otheraddr>Deep Blue C Technology Ltd</otheraddr>
@@ -3701,7 +3701,8 @@ and so on....</programlisting></para>
         <title>Measuring range and bearing</title>
 
         <sect2 xml:id="more_range">
-
+          <title>Range bearing tool</title>
+ 
           <para>It&apos;s worth reminding you at this point about the Range Bearing measuring tool <guiicon><inlinemediaobject>
                 <imageobject>
                   <imagedata fileref="figures/RngBrg.png"/>
@@ -4014,7 +4015,7 @@ and so on....</programlisting></para>
         <title>Exporting images</title>
 
         <sect2 xml:id="more_export_images">
-
+          <title>Exporting to WMF</title>
           <para>In addition to <indexterm>
             <primary>Export</primary>
             <secondary>Images</secondary>
@@ -4058,6 +4059,7 @@ and so on....</programlisting></para>
       <title>Symbol sets</title>
 
       <sect1 xml:id="more_sym_sets">
+        <title>Introduction</title>
         <para>A set of symbols is provided within <application>Debrief</application>. The symbols <indexterm>
             <primary>Symbol Sets</primary>
           </indexterm> can either be attached to a text label, or used to highlight a current vessel
@@ -4132,6 +4134,7 @@ and so on....</programlisting></para>
       <sect1 xml:id="natural_earth">
         <title>Natural Earth data</title>
         <sect2 xml:id="ne_intro">
+          <title>Introduction</title>          
           <para><indexterm>
               <primary>Natural Earth Data</primary>
               <secondary>Introduction</secondary>
@@ -5961,7 +5964,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                     <imagedata fileref="figures/LotsOfTracks.png" width="100%"/>
                   </imageobject>
 
-                  <caption>Cumbersome sensor data</caption>
+                  <caption><para>Cumbersome sensor data</para></caption>
                 </mediaobject>
               </screenshot></para>
 
@@ -6118,7 +6121,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                     <imagedata fileref="figures/TrimmedTracks.png" width="100%"/>
                   </imageobject>
 
-                  <caption>Trimmed sensor data</caption>
+                  <caption><para>Trimmed sensor data</para></caption>
                 </mediaobject>
               </screenshot></para>
           </sect3>
@@ -6140,7 +6143,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                   <imagedata fileref="figures/ViewSensorPlot.png" width="100%" align="center"/>
                 </imageobject>
 
-                <caption>Popup menu with a track plus multiple sensor selected</caption>
+                <caption><para>Popup menu with a track plus multiple sensor selected</para></caption>
               </mediaobject>
             </screenshot></para>
 
@@ -6331,7 +6334,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                     <imagedata fileref="figures/multi_length_alg.png" width="212" align="center"/>
                   </imageobject>
 
-                  <caption>Algorithm used to determine indirect path length</caption>
+                  <caption><para>Algorithm used to determine indirect path length</para></caption>
                 </mediaobject>
               </screenshot>Where: <variablelist>
                 <varlistentry>
@@ -6396,7 +6399,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                     <imagedata fileref="figures/multi_lengths.png" width="284" align="center"/>
                   </imageobject>
 
-                  <caption>Comparison of acoustic paths</caption>
+                  <caption><para>Comparison of acoustic paths</para></caption>
                 </mediaobject>
               </screenshot>Finally the path lengths are divided by the respective sounds speeds to
               obtain the path travel times, and this the overall time delay:<screenshot>
@@ -6404,8 +6407,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                   <imageobject>
                     <imagedata fileref="figures/multi_delay.png" width="233" align="center"/>
                   </imageobject>
-
-                  <caption>Calculation of time delay</caption>
+                  <caption><para>Calculation of time delay</para></caption>
                 </mediaobject>
               </screenshot></para>
           </sect3>
@@ -6423,42 +6425,31 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
 
             <para>Sound Speed Profile:</para>
 
-            <informaltable border="1" class="MsoNormalTable" style="border-collapse:collapse;border:none;mso-border-alt:solid windowtext .5pt;  mso-yfti-tbllook:1184;mso-padding-alt:0cm 5.4pt 0cm 5.4pt;mso-border-insideh:  .5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
-              <tgroup cols="2">
+            <informaltable border="1">
                 <thead>
-                  <row>
-                    <entry valign="top">Depth (m)</entry>
-
-                    <entry valign="top">Speed (m/s)</entry>
-                  </row>
+                  <tr>
+                    <td valign="top">Depth (m)</td>
+                    <td valign="top">Speed (m/s)</td>
+                  </tr>
                 </thead>
-
                 <tbody>
-                  <row>
-                    <entry valign="top">0</entry>
-
-                    <entry valign="top">1500</entry>
-                  </row>
-
-                  <row>
-                    <entry valign="top">30</entry>
-
-                    <entry valign="top">1505</entry>
-                  </row>
-
-                  <row>
-                    <entry valign="top">40</entry>
-
-                    <entry valign="top">1510</entry>
-                  </row>
-
-                  <row>
-                    <entry valign="top">60</entry>
-
-                    <entry valign="top">1515</entry>
-                  </row>
+                  <tr>
+                    <td valign="top">0</td>
+                    <td valign="top">1500</td>
+                  </tr>
+                  <tr>
+                    <td valign="top">30</td>
+                    <td valign="top">1505</td>
+                  </tr>
+                  <tr>
+                    <td valign="top">40</td>
+                    <td valign="top">1510</td>
+                  </tr>
+                  <tr>
+                    <td valign="top">60</td>
+                    <td valign="top">1515</td>
+                  </tr>
                 </tbody>
-              </tgroup>
             </informaltable>
 
             <para>Average sound speed between 0 m and 30 m can be ignored as the sound never goes
@@ -6487,7 +6478,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                     <imagedata fileref="figures/multi_empty.png" scalefit="1" width="100%"/>
                   </imageobject>
 
-                  <caption>Initial view of multipath analysis view</caption>
+                  <caption><para>Initial view of multipath analysis view</para></caption>
                 </mediaobject>
               </screenshot>As you&apos;ll see from the above screenshot, the panel is laid out with a
               series of controls above an xy plot. The controls at the top of the view indicate the
@@ -6511,7 +6502,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                     <imagedata fileref="figures/multi_working.png" scalefit="1" width="100%"/>
                   </imageobject>
 
-                  <caption>Multipath analysis view with data loaded</caption>
+                  <caption><para>Multipath analysis view with data loaded</para></caption>
                 </mediaobject>
               </screenshot></para>
 
@@ -6864,7 +6855,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <imageobject>
                   <imagedata fileref="figures/SATC_sequence.png" width="100%"/>
                 </imageobject>
-                <caption>SATC Sequence</caption>
+                <caption><para>SATC Sequence</para></caption>
               </mediaobject>
             </screenshot><variablelist>
               <varlistentry>
@@ -6931,7 +6922,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <imageobject>
                   <imagedata fileref="figures/SATC_Process.png" width="100%"/>
                 </imageobject>
-                <caption>SATC Process</caption>
+                <caption><para>SATC Process</para></caption>
               </mediaobject>
             </screenshot></para>
           <para>The following screenshot shows a TMA scenario using simulated data.  The ownship
@@ -6946,7 +6937,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <imageobject>
                   <imagedata fileref="figures/SATC_solution.png" width="100%"/>
                 </imageobject>
-                <caption>Sample solution</caption>
+                <caption><para>Sample solution</para></caption>
               </mediaobject>
             </screenshot></para>
         </sect2>
@@ -6960,7 +6951,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <imageobject>
                   <imagedata fileref="figures/MaintainContributions.png" width="100%"/>
                 </imageobject>
-                <caption>Maintain Contributions View</caption>
+                <caption><para>Maintain Contributions View</para></caption>
               </mediaobject>
             </screenshot>The following sections describe the three parts of the <guilabel>Maintain
               Contributions</guilabel> View</para>
@@ -10272,7 +10263,7 @@ departure / d.lat = tan (course)</markup>
                   <imagedata fileref="figures/contour_6.gif" align="center"/>
                 </imageobject>
 
-                <caption>Contouring algorithm</caption>
+                <caption><para>Contouring algorithm</para></caption>
               </mediaobject>
             </figure>The sample contour plot itself</para>
         </sect2>
@@ -10621,7 +10612,7 @@ departure / d.lat = tan (course)</markup>
                     <imageobject>
                       <imagedata fileref="figures/NoSuppress.png" align="center" width="100%"/>
                     </imageobject>                    
-                    <caption>A solution showing all bounded states</caption>
+                    <caption><para>A solution showing all bounded states</para></caption>
                   </mediaobject>
                 </figure>
                 <figure xml:id="cuts_suppressed">
@@ -10630,7 +10621,7 @@ departure / d.lat = tan (course)</markup>
                     <imageobject>
                       <imagedata fileref="figures/CutsSuppressed.png" align="center" width="100%"/>
                     </imageobject>                    
-                    <caption>A solution showing Low Precision cut suppression</caption>
+                    <caption><para>A solution showing Low Precision cut suppression</para></caption>
                   </mediaobject>
                 </figure>
               </para>              
