@@ -32,7 +32,7 @@
       </affiliation>
     </author>
     <edition>Documentation for Debrief NG</edition>
-    <pubdate>Autumn 2015</pubdate>
+    <pubdate>Autumn 2017</pubdate>
     <abstract>
       <title>Contact details</title>
       <para>Should you wish to learn more about <application>Debrief</application> please make contact
@@ -160,7 +160,7 @@
       </revision>
     </revhistory>
     <copyright>
-      <year>2000-2015</year>
+      <year>2000-2017</year>
       <holder>This library is free software; you can redistribute it and/or
         modify it under the terms of the Eclipse Public License v1.0
         (http://www.eclipse.org/legal/epl-v10.html)
@@ -8973,28 +8973,27 @@ and entry type can be multi-word if surrounded by quotes (").
         <sect2 xml:id="towed_array_annotations">
           <title>Towed Array Extensions</title>
           <para><indexterm>
-            <primary>Annotation Data</primary>
-            <secondary>Towed Array Extensions</secondary>
-          </indexterm>In Spring 2017 additional annotations were introduced to
-            support more complex Towed Array datasets
+              <primary>Annotation Data</primary>
+              <secondary>Towed Array Extensions</secondary>
+            </indexterm>In Spring 2017 additional annotations were introduced to support more
+            complex Towed Array datasets
             <screen width="70"><markup>
 
-;TA_FORE_AFT: YYMMDD HHMMSS AAAAAA BBBBBB [DD.D HH.H] [DD.D HH.H]
-;; data from pair of module sensors 
+;TA_FORE_AFT: 090722 041522 NONSUCH SENSOR_A_1 44.2 260.2 45.4 262.3
+;; data from module sensors, in depth/heading pairs
 ;; date-time, platform, sensor, two pairs of depth (m) &amp; heading (degs) data.
 
 ;TA_MODULES: YYMMDD HHMMSS AAAAAA BBBBBB [DD.D HH.H] ... [DD.D HH.H]
-;; data from long series of module sensors 
+;; 12 sets of depth/heading data from module sensors. Either first 4, or last 8 will be populated
 ;; date-time, platform, sensor, pairs of depth &amp; heading data, to the end of line.
-
 
 ;TA_COG_ABS: YYMMDD HHMMSS AAAAAA BBBBBB LAT.Y LONG.X DD.D
 ;; absolute measurement of towed array aperture Centre of Gravity
-;; date-time, platform, sensor, lat/long (Degrees) depth (m)
+;; date-time, platform, sensor, lat/long (Degrees) depth (m). Lat/Lon/D may be null.
 
 ;TA_COG_REL: YYMMDD HHMMSS AAAAAA BBBBBB XX.X YY.Y DD.D
 ;; relative measurement of towed array aperture Centre of Gravity
-;; date-time, platform, sensor, x/y/depth(m)
+;; date-time, platform, sensor, x/y/depth(m). X/Y/D may be null
 
             </markup>   </screen>
           </para>
