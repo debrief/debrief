@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V5//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
-<!-- ********************************************************************** -->
-<book version="5.0" xmlns="http://docbook.org/ns/docbook">
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<book xmlns="http://docbook.org/ns/docbook"
+  xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
   <info>
     <keywordset>
       <keyword>Maritime Analysis</keyword>
@@ -4274,8 +4275,6 @@ and so on....</programlisting></para>
                     <colspec colname="c1"/>
 
                     <colspec colname="c2"/>
-
-                    <colspec colname="c3"/>
 
                     <tbody>
                       <row>
