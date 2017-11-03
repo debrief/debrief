@@ -56,7 +56,6 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
-import org.mwc.debrief.track_shift.views.BaseStackedDotsView;
 import org.mwc.debrief.track_shift.views.WrappingResidualRenderer;
 
 import Debrief.Wrappers.FixWrapper;
@@ -1165,6 +1164,13 @@ public class ZoneChart extends Composite
      * 
      */
     void switchAmbiguousCuts(Zone zone);
+    
+    /** whether the current sensor data includes ambiguous cuts
+     * 
+     * @return
+     */
+    boolean ambigDataPresent();
+    
   }
 
   private static void addZoneMarker(final XYPlot plot, final Zone zone,
@@ -2152,25 +2158,20 @@ public class ZoneChart extends Composite
   public void updateControls()
   {
     // ok, check if we have ambiguous data to play with
-    final XYPlot plot = this.chart.getXYPlot();
-    final TimeSeriesCollection data = (TimeSeriesCollection) plot.getDataset();
-    @SuppressWarnings("unchecked")
-    final List<TimeSeries> list = data.getSeries();
-    boolean hasAmbig = false;
-    for (final TimeSeries t : list)
+    final boolean ambigDataPresent;
+    if(zoneSlicer != null)
     {
-      final String name = (String) t.getKey();
-      if (name.equals(BaseStackedDotsView.AMBIG_NAME) && !t.isEmpty())
-      {
-        hasAmbig = true;
-        break;
-      }
+      ambigDataPresent = zoneSlicer.ambigDataPresent();
     }
-
-    // ok, now we show/hide the relevant controls
+    else
+    {
+      ambigDataPresent = false;
+    }
+    
+    // ok, now hide/reveal the controls
     for (final Button t : ambigControls)
     {
-      t.setVisible(hasAmbig);
+      t.setVisible(ambigDataPresent);
     }
   }
 }
