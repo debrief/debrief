@@ -899,16 +899,9 @@ public final class StackedDotHelper
               new FixedMillisecond(currentTime.getDate().getTime());
 
           final boolean hasAmbiguous = !Double.isNaN(ambigBearing);
-          final boolean bearingToPort;
-          if (hasAmbiguous)
-          {
-            // ok, we need to make the color darker if it's starboard
-            bearingToPort = thisD.getSensorCut().isBearingToPort();
-          }
-          else
-          {
-            bearingToPort = true;
-          }
+
+          // ok, we need to make the color darker if it's starboard
+          final boolean bearingToPort = thisD.getSensorCut().isBearingToPort();
 
           // make the color darker, if it's to stbg
           final Color bearingColor;
