@@ -1730,6 +1730,7 @@ public class ZoneChart extends Composite
           public void run()
           {
             chartComposite.fitToData();
+            resetRangeCoverage();
           }
         });
 
