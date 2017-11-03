@@ -1164,13 +1164,14 @@ public class ZoneChart extends Composite
      * 
      */
     void switchAmbiguousCuts(Zone zone);
-    
-    /** whether the current sensor data includes ambiguous cuts
+
+    /**
+     * whether the current sensor data includes ambiguous cuts
      * 
      * @return
      */
     boolean ambigDataPresent();
-    
+
   }
 
   private static void addZoneMarker(final XYPlot plot, final Zone zone,
@@ -1615,6 +1616,7 @@ public class ZoneChart extends Composite
   private final Runnable resolveAmbiguityEvent;
 
   private final List<Button> ambigControls = new ArrayList<Button>();
+  private Button sliceSome;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
@@ -1722,39 +1724,40 @@ public class ZoneChart extends Composite
     }
 
     createButton(col1, SWT.PUSH, fitToWin24, "Reveal", "Reveal all data",
-            new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                chartComposite.fitToData();
-              }
-            });
+        new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            chartComposite.fitToData();
+          }
+        });
 
     // ok, now the clear buttons
     createButton(col1, SWT.PUSH, clearZones24, "Clear zones",
-            "Clear zone markings", new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                clearZones();
-              }
-            });
+        "Clear zone markings", new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            clearZones();
+          }
+        });
 
-    final int MAX_LEGS =
-        TrackShiftActivator.getDefault().getPreferenceStore().getInt(
-            PreferenceConstants.OS_TURN_MAX_LEGS);
-    final String btnName = "Slice next " + MAX_LEGS;
-    createButton(col1, SWT.PUSH, autoSlice24, btnName,
+    sliceSome =
+        createButton(col1, SWT.PUSH, autoSlice24, "Slice some",
             "Automatically slice zones", getSliceOp(false));
+
+    // and update the label
+    updateSliceLabel();
+
     createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
-            "Automatically slice zones", getSliceOp(true));
+        "Automatically slice zones", getSliceOp(true));
 
     if (deleteEvent != null)
     {
       createButton(col1, SWT.PUSH, autoDelete24, "Delete",
-              "Delete cuts not in a leg", deleteEvent);
+          "Delete cuts not in a leg", deleteEvent);
     }
     if (resolveAmbiguityEvent != null)
     {
@@ -1762,6 +1765,18 @@ public class ZoneChart extends Composite
           "Resolve Ambiguity", resolveAmbiguityEvent));
     }
 
+  }
+
+  private void updateSliceLabel()
+  {
+    if (sliceSome != null && !sliceSome.isDisposed())
+    {
+      final int MAX_LEGS =
+          TrackShiftActivator.getDefault().getPreferenceStore().getInt(
+              PreferenceConstants.OS_TURN_MAX_LEGS);
+      final String btnName = "Slice next " + MAX_LEGS;
+      sliceSome.setText(btnName);
+    }
   }
 
   private Runnable getSliceOp(final boolean doAll)
@@ -2159,7 +2174,7 @@ public class ZoneChart extends Composite
   {
     // ok, check if we have ambiguous data to play with
     final boolean ambigDataPresent;
-    if(zoneSlicer != null)
+    if (zoneSlicer != null)
     {
       ambigDataPresent = zoneSlicer.ambigDataPresent();
     }
@@ -2167,11 +2182,14 @@ public class ZoneChart extends Composite
     {
       ambigDataPresent = false;
     }
-    
+
     // ok, now hide/reveal the controls
     for (final Button t : ambigControls)
     {
       t.setVisible(ambigDataPresent);
     }
+
+    // hey, for good measure, let's update the slice label
+    updateSliceLabel();
   }
 }
