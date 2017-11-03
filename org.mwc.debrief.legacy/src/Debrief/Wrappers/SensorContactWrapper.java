@@ -818,7 +818,7 @@ public final class SensorContactWrapper extends
     }
 
     // aah, we've switched hte bearings, clear the cached port flag
-    _cachedPortBearing = null;
+    clearCachedPortBearing();
 
     // remember we're morally ambiguous
     setHasAmbiguousBearing(false);
@@ -1539,6 +1539,9 @@ public final class SensorContactWrapper extends
   public final void setAmbiguousBearing(final double valDegs)
   {
     _bearingAmbig = valDegs;
+    
+    // also clear the cached value
+    clearCachedPortBearing();
   }
 
   /**
@@ -1548,6 +1551,9 @@ public final class SensorContactWrapper extends
   {
     _bearing = degs;
     _hasBearing = true;
+    
+    // also clear the cached value
+    clearCachedPortBearing();
   }
 
   /**
@@ -1572,7 +1578,7 @@ public final class SensorContactWrapper extends
     _hasAmbiguous = val;
 
     // and clear the cached value
-    _cachedPortBearing = null;
+    clearCachedPortBearing();
   }
 
   public final void setHasBearing(final boolean val)
@@ -1649,13 +1655,6 @@ public final class SensorContactWrapper extends
     _mySensor = sensor;
   }
 
-  // ////////////////////////////////////////////////////
-  // nested class
-  // /////////////////////////////////////////////////////
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-
   /**
    * toString
    * 
@@ -1665,5 +1664,13 @@ public final class SensorContactWrapper extends
   public final String toString()
   {
     return getName();
+  }
+
+  /** we cache whether the bearing is to Port or Stbd
+   * Occasionally we need to clear this value
+   */
+  private void clearCachedPortBearing()
+  {
+    _cachedPortBearing = null;
   }
 }

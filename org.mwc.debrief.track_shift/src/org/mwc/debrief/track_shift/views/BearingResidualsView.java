@@ -157,20 +157,23 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     private boolean hasAmbiguousCuts(final TrackWrapper primary)
     {
       boolean hasAmbiguous = false;
-      final Enumeration<Editable> sEnum = primary.getSensors().elements();
-      while (sEnum.hasMoreElements() && !hasAmbiguous)
+      if (primary != null)
       {
-        final SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
-        if (sensor.size() > 0)
+        final Enumeration<Editable> sEnum = primary.getSensors().elements();
+        while (sEnum.hasMoreElements() && !hasAmbiguous)
         {
-          final Enumeration<Editable> elements = sensor.elements();
-          while (elements.hasMoreElements() && !hasAmbiguous)
+          final SensorWrapper sensor = (SensorWrapper) sEnum.nextElement();
+          if (sensor.size() > 0)
           {
-            final SensorContactWrapper contact =
-                (SensorContactWrapper) elements.nextElement();
+            final Enumeration<Editable> elements = sensor.elements();
+            while (elements.hasMoreElements() && !hasAmbiguous)
+            {
+              final SensorContactWrapper contact =
+                  (SensorContactWrapper) elements.nextElement();
 
-            // change we check if the ambig is NaN
-            hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
+              // change we check if the ambig is NaN
+              hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
+            }
           }
         }
       }
@@ -382,6 +385,14 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         }
       }
       return res;
+    }
+
+    @Override
+    public boolean ambigDataPresent()
+    {
+      // hmm, see if we have ambiguous data
+      final TrackWrapper primary = _myHelper.getPrimaryTrack();
+      return hasAmbiguousCuts(primary);
     }
   }
 

@@ -866,6 +866,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         System.err
             .println("Should not be trying to switch cuts on a target track");
       }
+
+      @Override
+      public boolean ambigDataPresent()
+      {
+        // don't worry. we shouldn't be doing this for this zone
+        System.err
+            .println("Should not be trying to check ambig cuts on target track");
+        
+        return false;
+      }
     };
 
     final ZoneChartConfig tZoneConfig =
