@@ -1174,20 +1174,16 @@ public class AmbiguityResolver
       }
 
       // if we had a previous leg, was if resolved as AMBIGUOUS?
-      if (lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
+      if ((lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
+          && (lastPerm.ambigSlopeLate != null))
       {
-        // did the previous one have ambig data?
-        if (lastPerm.ambigSlopeLate != null)
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+            thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE), finishedPerms);
+        if (thisPerm.ambigSlopeEarly != null)
         {
           walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-              thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE),
+              thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS),
               finishedPerms);
-          if (thisPerm.ambigSlopeEarly != null)
-          {
-            walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-                thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS),
-                finishedPerms);
-          }
         }
       }
     }
