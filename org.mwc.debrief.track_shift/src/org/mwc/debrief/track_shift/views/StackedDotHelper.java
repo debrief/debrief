@@ -931,7 +931,7 @@ public final class StackedDotHelper
 
           final ColouredDataItem mBearing =
               new ColouredDataItem(thisMilli, measuredBearing, bearingColor,
-                  false, null, true, parentIsNotDynamic);
+                  false, null, true, parentIsNotDynamic, thisD.getSensorCut());
 
           // and add them to the series
           measuredValues.addOrUpdate(mBearing);
@@ -962,7 +962,7 @@ public final class StackedDotHelper
 
             final ColouredDataItem amBearing =
                 new ColouredDataItem(thisMilli, ambigBearing, ambigColor,
-                    false, null, true, parentIsNotDynamic);
+                    false, null, true, parentIsNotDynamic, thisD.getSensorCut());
             ambigValues.addOrUpdate(amBearing);
           }
 
@@ -1010,7 +1010,7 @@ public final class StackedDotHelper
 
               final ColouredDataItem cBearing =
                   new ColouredDataItem(thisMilli, calculatedBearing, brgColor,
-                      true, null, true, parentIsNotDynamic);
+                      true, null, true, parentIsNotDynamic, thisD.getTarget());
 
               errorValues.addOrUpdate(newTrueError);
               calculatedValues.addOrUpdate(cBearing);
