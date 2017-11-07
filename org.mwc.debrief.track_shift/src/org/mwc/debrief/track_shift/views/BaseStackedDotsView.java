@@ -832,6 +832,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ZoneSlicer targetLegSlicer = new ZoneSlicer()
     {
       @Override
+      public boolean ambigDataPresent()
+      {
+        // don't worry. we shouldn't be doing this for this zone
+        System.err
+            .println("Should not be trying to check ambig cuts on target track");
+
+        return false;
+      }
+
+      @Override
       public List<Zone> performSlicing(final boolean wholePeriod)
       {
         // hmm, the above set of bearings only covers windows where we have
@@ -869,16 +879,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // don't worry. we shouldn't be doing this for this zone
         System.err
             .println("Should not be trying to switch cuts on a target track");
-      }
-
-      @Override
-      public boolean ambigDataPresent()
-      {
-        // don't worry. we shouldn't be doing this for this zone
-        System.err
-            .println("Should not be trying to check ambig cuts on target track");
-
-        return false;
       }
     };
 
@@ -1135,19 +1135,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           _itemSelectedPending = false;
 
           // hmm, has sensor or fix been selected
-          double bearing = _linePlot.getRangeCrosshairValue();
+          final double bearing = _linePlot.getRangeCrosshairValue();
 
-          TimeSeriesCollection tsc =
+          final TimeSeriesCollection tsc =
               (TimeSeriesCollection) _linePlot.getDataset();
           @SuppressWarnings("unchecked")
-          List<TimeSeries> sets = tsc.getSeries();
-          for (TimeSeries t : sets)
+          final List<TimeSeries> sets = tsc.getSeries();
+          for (final TimeSeries t : sets)
           {
-            TimeSeriesDataItem nearest =
+            final TimeSeriesDataItem nearest =
                 t.getDataItem(new FixedMillisecond(newDate.getTime()));
 
             // ok, check the value
-            double value = (Double) nearest.getValue();
+            final double value = (Double) nearest.getValue();
 
             if (value == bearing)
             {
@@ -1159,8 +1159,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               final Layers layers = (Layers) editor.getAdapter(Layers.class);
               if (layers != null)
               {
-                ColouredDataItem item = (ColouredDataItem) nearest;
-                Editable payload = item.getPayload();
+                final ColouredDataItem item = (ColouredDataItem) nearest;
+                final Editable payload = item.getPayload();
                 if (payload != null)
                 {
                   if (payload instanceof SensorContactWrapper)
@@ -1211,56 +1211,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _combined.remove(_targetOverviewPlot);
     }
-  }
-
-  private void showThisCut(final SensorContactWrapper cut,
-      final Layers layers, final IEditorPart editor)
-  {
-    SensorWrapper sensor = cut.getSensor();
-    TrackWrapper secTrack = sensor.getHost();
-
-    // done.
-    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
-
-    // hmm, don't know if we have one or more legs
-    final EditableWrapper sensors =
-        new EditableWrapper(secTrack.getSensors(), parentP, layers);
-    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
-
-    final EditableWrapper subject = new EditableWrapper(cut, leg, layers);
-
-    // and show it
-    showThisSelectionInOutline(subject, editor);
-  }
-
-  private void showThisFix(final FixWrapper fix, final Layers layers,
-      final IEditorPart editor)
-  {
-    TrackSegment seg = fix.getSegment();
-    TrackWrapper secTrack = seg.getWrapper();
-
-    // done.
-    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
-
-    // hmm, don't know if we have one or more legs
-    final EditableWrapper leg;
-    if (secTrack.getSegments().size() > 1)
-    {
-      // ok, we need the in-between item
-      final EditableWrapper segments =
-          new EditableWrapper(secTrack.getSegments(), parentP, layers);
-      leg = new EditableWrapper(seg, segments, layers);
-    }
-    else
-    {
-      leg = new EditableWrapper(seg, parentP, layers);
-
-    }
-
-    final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
-
-    // and show it
-    showThisSelectionInOutline(subject, editor);
   }
 
   /**
@@ -1508,6 +1458,24 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   abstract protected ZoneSlicer getOwnshipZoneSlicer(
       final ColorProvider blueProv);
 
+  private double getPrecision(final Precision slicePrecision)
+  {
+    final double RMS_ZIG_RATIO;
+    switch (slicePrecision)
+    {
+      case LOW:
+        RMS_ZIG_RATIO = 20;
+        break;
+      case MEDIUM:
+      default:
+        RMS_ZIG_RATIO = 10d;
+        break;
+      case HIGH:
+        RMS_ZIG_RATIO = 5;
+    }
+    return RMS_ZIG_RATIO;
+  }
+
   /**
    * provide an operation that gets run when the user wants to resolve ambiguity
    * 
@@ -1588,7 +1556,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
 
           // fire the finished event
-          for (Zone zone : zones)
+          for (final Zone zone : zones)
           {
             setLeg(priTrack, secTrack, zone);
           }
@@ -2292,6 +2260,56 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     updateTargetZones();
   }
 
+  private void showThisCut(final SensorContactWrapper cut, final Layers layers,
+      final IEditorPart editor)
+  {
+    final SensorWrapper sensor = cut.getSensor();
+    final TrackWrapper secTrack = sensor.getHost();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper sensors =
+        new EditableWrapper(secTrack.getSensors(), parentP, layers);
+    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
+
+    final EditableWrapper subject = new EditableWrapper(cut, leg, layers);
+
+    // and show it
+    showThisSelectionInOutline(subject, editor);
+  }
+
+  private void showThisFix(final FixWrapper fix, final Layers layers,
+      final IEditorPart editor)
+  {
+    final TrackSegment seg = fix.getSegment();
+    final TrackWrapper secTrack = seg.getWrapper();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper leg;
+    if (secTrack.getSegments().size() > 1)
+    {
+      // ok, we need the in-between item
+      final EditableWrapper segments =
+          new EditableWrapper(secTrack.getSegments(), parentP, layers);
+      leg = new EditableWrapper(seg, segments, layers);
+    }
+    else
+    {
+      leg = new EditableWrapper(seg, parentP, layers);
+
+    }
+
+    final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
+
+    // and show it
+    showThisSelectionInOutline(subject, editor);
+  }
+
   private void showThisSelectionInOutline(final EditableWrapper subject,
       final IEditorPart editor)
   {
@@ -2458,24 +2476,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     slicer.sliceThis(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
         wholeStart, wholeEnd, legStorer, zigStorer, RMS_ZIG_RATIO,
         optimiseTolerance, thisLegTimes, thisLegBearings);
-  }
-
-  private double getPrecision(final Precision slicePrecision)
-  {
-    final double RMS_ZIG_RATIO;
-    switch (slicePrecision)
-    {
-      case LOW:
-        RMS_ZIG_RATIO = 20;
-        break;
-      case MEDIUM:
-      default:
-        RMS_ZIG_RATIO = 10d;
-        break;
-      case HIGH:
-        RMS_ZIG_RATIO = 5;
-    }
-    return RMS_ZIG_RATIO;
   }
 
   abstract protected void updateData(boolean updateDoublets);

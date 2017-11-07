@@ -33,6 +33,18 @@ import MWC.GUI.Editable;
 public class ColouredDataItem extends TimeSeriesDataItem implements
     AttractiveDataItem
 {
+  public static interface OffsetProvider
+  {
+    /**
+     * offset the provided time by the desired amount
+     * 
+     * @param val
+     *          the actual time value
+     * @return the processed time value
+     */
+    public long offsetTimeFor(long val);
+  }
+
   /**
 	 * 
 	 */
@@ -60,10 +72,10 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
    */
   private final boolean _parentSymVisible;
 
-  private boolean _isFilled;
+  private final boolean _isFilled;
 
-  /** (optionally) store the Debrief item that is being
-   * represented by this chart point
+  /**
+   * (optionally) store the Debrief item that is being represented by this chart point
    */
   private final Editable _payload;
 
@@ -133,13 +145,53 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
   }
 
   /**
-   * whether we wish this shape to be filled
+   * whether to connect this data point to the previous one
+   * 
+   * @return yes/no to connect
+   */
+  @Override
+  public boolean connectToPrevious()
+  {
+    return _connectToPrevious;
+  }
+
+  /**
+   * get the color for this point
+   * 
+   * @return the color
+   */
+  @Override
+  public final Color getColor()
+  {
+    return _myColor;
+  }
+
+  /**
+   * the data item that we're rendering
    * 
    * @return
    */
-  public boolean isShapeFilled()
+  public Editable getPayload()
   {
-    return _isFilled;
+    return _payload;
+  }
+
+  /**
+   * Returns the time period.
+   * 
+   * @return the time period.
+   */
+  @Override
+  public RegularTimePeriod getPeriod()
+  {
+    RegularTimePeriod res = super.getPeriod();
+    if (_provider != null)
+    {
+      res =
+          new FixedMillisecond(_provider.offsetTimeFor(res
+              .getMiddleMillisecond()));
+    }
+    return res;
   }
 
   /**
@@ -153,60 +205,12 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
   }
 
   /**
-   * get the color for this point
-   * 
-   * @return the color
-   */
-  public final Color getColor()
-  {
-    return _myColor;
-  }
-
-  /** the data item that we're rendering
+   * whether we wish this shape to be filled
    * 
    * @return
    */
-  public Editable getPayload()
+  public boolean isShapeFilled()
   {
-    return _payload;
-  }
-  
-  /**
-   * whether to connect this data point to the previous one
-   * 
-   * @return yes/no to connect
-   */
-  public boolean connectToPrevious()
-  {
-    return _connectToPrevious;
-  }
-
-  /**
-   * Returns the time period.
-   * 
-   * @return the time period.
-   */
-  public RegularTimePeriod getPeriod()
-  {
-    RegularTimePeriod res = super.getPeriod();
-    if (_provider != null)
-    {
-      res =
-          new FixedMillisecond(_provider.offsetTimeFor(res
-              .getMiddleMillisecond()));
-    }
-    return res;
-  }
-
-  public static interface OffsetProvider
-  {
-    /**
-     * offset the provided time by the desired amount
-     * 
-     * @param val
-     *          the actual time value
-     * @return the processed time value
-     */
-    public long offsetTimeFor(long val);
+    return _isFilled;
   }
 }
