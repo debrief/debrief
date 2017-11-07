@@ -416,8 +416,9 @@ public class RightClickCutCopyAdaptor
                   // is deleted
                   if (res instanceof DynamicInfillSegment)
                   {
-                    final DynamicInfillSegment fill = (DynamicInfillSegment) res;
-                    res = fill.getBeforeSegment();                    
+                    final DynamicInfillSegment fill =
+                        (DynamicInfillSegment) res;
+                    res = fill.getBeforeSegment();
                   }
 
                   // ok, we have a previous, and this matches
