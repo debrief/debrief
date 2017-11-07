@@ -1948,7 +1948,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         .getImageDescriptor("icons/24/reveal.png"));
 
     _selectOnClick =
-        new Action("Select TMA Fix in outline when clicked",
+        new Action("Select TMA position or Sensor Cut under crosshair",
             IAction.AS_CHECK_BOX)
         {
         };
