@@ -347,6 +347,19 @@ public class DynamicInfillSegment extends TrackSegment implements
     return res;
   }
 
+  /**
+   * accessor, used for file storage
+   * 
+   * @return
+   */
+  public TrackSegment getBeforeSegment()
+  {
+    // use the actual segment name, if we know it
+    final TrackSegment res = _before != null ? _before : null;
+
+    return res;
+  }
+
   @Override
   public String getName()
   {
