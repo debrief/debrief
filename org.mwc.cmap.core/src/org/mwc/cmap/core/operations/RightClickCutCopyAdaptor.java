@@ -54,6 +54,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
@@ -409,6 +410,16 @@ public class RightClickCutCopyAdaptor
               {
                 if (res != null)
                 {
+                  // SPECIAL HANDLING, if previous was an infill, we need to
+                  // move back one more step - since the infill
+                  // will get deleted when its "after" segment
+                  // is deleted
+                  if (res instanceof DynamicInfillSegment)
+                  {
+                    final DynamicInfillSegment fill = (DynamicInfillSegment) res;
+                    res = fill.getBeforeSegment();                    
+                  }
+
                   // ok, we have a previous, and this matches
                   break;
                 }
