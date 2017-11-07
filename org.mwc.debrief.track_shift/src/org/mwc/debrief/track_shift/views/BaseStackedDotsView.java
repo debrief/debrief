@@ -873,7 +873,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // don't worry. we shouldn't be doing this for this zone
         System.err
             .println("Should not be trying to check ambig cuts on target track");
-        
+
         return false;
       }
     };
@@ -1127,6 +1127,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // ok, do we also have a selection event pending
         if (_itemSelectedPending && _selectOnClick.isChecked())
         {
+          // hmm, has sensor or fix been selected
+         // double bearing = _linePlot.getRangeCrosshairValue();
+
+          // ok, loop through the datasets, and find the entry
+          // at newDate, then see if the value matches
+          // the sensor or TUA data
+
           _itemSelectedPending = false;
           showFixAtThisTime(newDate);
         }
@@ -2241,7 +2248,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // done.
               final EditableWrapper parentP =
                   new EditableWrapper(secTrack, null, layers);
-              subject = new EditableWrapper(fix, parentP, null);
+
+              // hmm, don't know if we have one or more legs
+              final EditableWrapper leg;
+              if (secTrack.getSegments().size() > 1)
+              {
+                // ok, we need the in-between item
+                final EditableWrapper segments =
+                    new EditableWrapper(secTrack.getSegments(), parentP, layers);
+                leg = new EditableWrapper(fix.getSegment(), segments, layers);
+              }
+              else
+              {
+                leg = new EditableWrapper(fix.getSegment(), parentP, layers);
+
+              }
+
+              subject = new EditableWrapper(fix, leg, layers);
               break;
             }
           }
@@ -2410,8 +2433,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // get the bearings in this leg
     final List<Long> thisLegTimes = new ArrayList<Long>();
     final List<Double> thisLegBearings = new ArrayList<Double>();
-    getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes,
-        thisLegBearings);
+    getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes, thisLegBearings);
 
     // slice the leg
     slicer.sliceThis(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
