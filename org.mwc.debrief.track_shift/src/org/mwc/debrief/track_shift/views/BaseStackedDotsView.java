@@ -93,8 +93,10 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -118,6 +120,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -134,6 +137,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.DraggableItem;
@@ -828,6 +832,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ZoneSlicer targetLegSlicer = new ZoneSlicer()
     {
       @Override
+      public boolean ambigDataPresent()
+      {
+        // don't worry. we shouldn't be doing this for this zone
+        System.err
+            .println("Should not be trying to check ambig cuts on target track");
+
+        return false;
+      }
+
+      @Override
       public List<Zone> performSlicing(final boolean wholePeriod)
       {
         // hmm, the above set of bearings only covers windows where we have
@@ -865,16 +879,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // don't worry. we shouldn't be doing this for this zone
         System.err
             .println("Should not be trying to switch cuts on a target track");
-      }
-
-      @Override
-      public boolean ambigDataPresent()
-      {
-        // don't worry. we shouldn't be doing this for this zone
-        System.err
-            .println("Should not be trying to check ambig cuts on target track");
-        
-        return false;
       }
     };
 
@@ -1127,8 +1131,51 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // ok, do we also have a selection event pending
         if (_itemSelectedPending && _selectOnClick.isChecked())
         {
+          // ok, we're done
           _itemSelectedPending = false;
-          showFixAtThisTime(newDate);
+
+          // hmm, has sensor or fix been selected
+          final double bearing = _linePlot.getRangeCrosshairValue();
+
+          final TimeSeriesCollection tsc =
+              (TimeSeriesCollection) _linePlot.getDataset();
+          @SuppressWarnings("unchecked")
+          final List<TimeSeries> sets = tsc.getSeries();
+          for (final TimeSeries t : sets)
+          {
+            final TimeSeriesDataItem nearest =
+                t.getDataItem(new FixedMillisecond(newDate.getTime()));
+
+            // ok, check the value
+            final double value = (Double) nearest.getValue();
+
+            if (value == bearing)
+            {
+              // ok, get the editor
+              final IWorkbench wb = PlatformUI.getWorkbench();
+              final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+              final IWorkbenchPage page = win.getActivePage();
+              final IEditorPart editor = page.getActiveEditor();
+              final Layers layers = (Layers) editor.getAdapter(Layers.class);
+              if (layers != null)
+              {
+                final ColouredDataItem item = (ColouredDataItem) nearest;
+                final Editable payload = item.getPayload();
+                if (payload != null)
+                {
+                  if (payload instanceof SensorContactWrapper)
+                  {
+                    showThisCut((SensorContactWrapper) payload, layers, editor);
+                  }
+                  else if (payload instanceof FixWrapper)
+                  {
+                    showThisFix((FixWrapper) payload, layers, editor);
+                  }
+                }
+              }
+              break;
+            }
+          }
         }
       }
     });
@@ -1411,6 +1458,24 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   abstract protected ZoneSlicer getOwnshipZoneSlicer(
       final ColorProvider blueProv);
 
+  private double getPrecision(final Precision slicePrecision)
+  {
+    final double RMS_ZIG_RATIO;
+    switch (slicePrecision)
+    {
+      case LOW:
+        RMS_ZIG_RATIO = 20;
+        break;
+      case MEDIUM:
+      default:
+        RMS_ZIG_RATIO = 10d;
+        break;
+      case HIGH:
+        RMS_ZIG_RATIO = 5;
+    }
+    return RMS_ZIG_RATIO;
+  }
+
   /**
    * provide an operation that gets run when the user wants to resolve ambiguity
    * 
@@ -1491,7 +1556,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
 
           // fire the finished event
-          for (Zone zone : zones)
+          for (final Zone zone : zones)
           {
             setLeg(priTrack, secTrack, zone);
           }
@@ -1883,7 +1948,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         .getImageDescriptor("icons/24/reveal.png"));
 
     _selectOnClick =
-        new Action("Select TMA Fix in outline when clicked",
+        new Action("Select TMA position or Sensor Cut under crosshair",
             IAction.AS_CHECK_BOX)
         {
         };
@@ -2195,78 +2260,73 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     updateTargetZones();
   }
 
-  private void showFixAtThisTime(final Date newDate)
+  private void showThisCut(final SensorContactWrapper cut, final Layers layers,
+      final IEditorPart editor)
   {
-    if (_myTrackDataProvider != null)
+    final SensorWrapper sensor = cut.getSensor();
+    final TrackWrapper secTrack = sensor.getHost();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper sensors =
+        new EditableWrapper(secTrack.getSensors(), parentP, layers);
+    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
+
+    final EditableWrapper subject = new EditableWrapper(cut, leg, layers);
+
+    // and show it
+    showThisSelectionInOutline(subject, editor);
+  }
+
+  private void showThisFix(final FixWrapper fix, final Layers layers,
+      final IEditorPart editor)
+  {
+    final TrackSegment seg = fix.getSegment();
+    final TrackWrapper secTrack = seg.getWrapper();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper leg;
+    if (secTrack.getSegments().size() > 1)
     {
-      if (_myTrackDataProvider.getSecondaryTracks().length != 1)
+      // ok, we need the in-between item
+      final EditableWrapper segments =
+          new EditableWrapper(secTrack.getSegments(), parentP, layers);
+      leg = new EditableWrapper(seg, segments, layers);
+    }
+    else
+    {
+      leg = new EditableWrapper(seg, parentP, layers);
+
+    }
+
+    final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
+
+    // and show it
+    showThisSelectionInOutline(subject, editor);
+  }
+
+  private void showThisSelectionInOutline(final EditableWrapper subject,
+      final IEditorPart editor)
+  {
+    final IStructuredSelection selection = new StructuredSelection(subject);
+    final IContentOutlinePage outline =
+        (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+    // did we find an outline?
+    if (outline != null)
+    {
+      // now set the selection
+      outline.setSelection(selection);
+
+      // see uf we can expand the selection
+      if (outline instanceof PlotOutlinePage)
       {
-        return;
-      }
-
-      final HiResDate theDate = new HiResDate(newDate);
-      EditableWrapper subject = null;
-
-      // ok, get the editor
-      final IWorkbench wb = PlatformUI.getWorkbench();
-      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-      final IWorkbenchPage page = win.getActivePage();
-      final IEditorPart editor = page.getActiveEditor();
-
-      final Layers layers = (Layers) editor.getAdapter(Layers.class);
-
-      // did we find the layers
-      if (layers == null)
-      {
-        return;
-      }
-
-      final TrackWrapper secTrack =
-          (TrackWrapper) _myTrackDataProvider.getSecondaryTracks()[0];
-      final SegmentList segs = secTrack.getSegments();
-      final Enumeration<Editable> sIter = segs.elements();
-      while (sIter.hasMoreElements())
-      {
-        final TrackSegment thisSeg = (TrackSegment) sIter.nextElement();
-        if (thisSeg.startDTG().lessThanOrEqualTo(theDate)
-            && thisSeg.endDTG().greaterThanOrEqualTo(theDate))
-        {
-          // ok, loop through them
-          final Enumeration<Editable> pts = thisSeg.elements();
-          while (pts.hasMoreElements())
-          {
-            final FixWrapper fix = (FixWrapper) pts.nextElement();
-            if (fix.getDTG().equals(theDate))
-            {
-              // done.
-              final EditableWrapper parentP =
-                  new EditableWrapper(secTrack, null, layers);
-              subject = new EditableWrapper(fix, parentP, null);
-              break;
-            }
-          }
-        }
-      }
-
-      if (subject != null)
-      {
-        final IStructuredSelection selection = new StructuredSelection(subject);
-
-        final IContentOutlinePage outline =
-            (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
-        // did we find an outline?
-        if (outline != null)
-        {
-          // now set the selection
-          outline.setSelection(selection);
-
-          // see uf we can expand the selection
-          if (outline instanceof PlotOutlinePage)
-          {
-            final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
-            plotOutline.editableSelected(selection, subject);
-          }
-        }
+        final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
+        plotOutline.editableSelected(selection, subject);
       }
     }
   }
@@ -2410,31 +2470,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // get the bearings in this leg
     final List<Long> thisLegTimes = new ArrayList<Long>();
     final List<Double> thisLegBearings = new ArrayList<Double>();
-    getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes,
-        thisLegBearings);
+    getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes, thisLegBearings);
 
     // slice the leg
     slicer.sliceThis(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
         wholeStart, wholeEnd, legStorer, zigStorer, RMS_ZIG_RATIO,
         optimiseTolerance, thisLegTimes, thisLegBearings);
-  }
-
-  private double getPrecision(final Precision slicePrecision)
-  {
-    final double RMS_ZIG_RATIO;
-    switch (slicePrecision)
-    {
-      case LOW:
-        RMS_ZIG_RATIO = 20;
-        break;
-      case MEDIUM:
-      default:
-        RMS_ZIG_RATIO = 10d;
-        break;
-      case HIGH:
-        RMS_ZIG_RATIO = 5;
-    }
-    return RMS_ZIG_RATIO;
   }
 
   abstract protected void updateData(boolean updateDoublets);

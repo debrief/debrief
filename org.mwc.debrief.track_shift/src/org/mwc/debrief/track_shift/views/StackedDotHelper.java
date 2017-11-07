@@ -73,41 +73,13 @@ import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
-  /**
-   * the maximum number of items we plot as symbols. Above this we just use a line
-   */
-  private final int MAX_ITEMS_TO_PLOT = 1000;
+  private static class TargetDoublet
+  {
 
-  /**
-   * the track being dragged
-   */
-  private TrackWrapper _primaryTrack;
+    public TrackSegment targetParent;
+    public FixWrapper targetFix;
 
-  /**
-   * the secondary track we're monitoring
-   */
-  private ISecondaryTrack _secondaryTrack;
-
-  /**
-   * the set of points to watch on the primary track. This is stored as a sorted set because if we
-   * have multiple sensors they may be suppled in chronological order, or they may represent
-   * overlapping time periods
-   */
-  private TreeSet<Doublet> _primaryDoublets;
-
-  // ////////////////////////////////////////////////
-  // CONSTRUCTOR
-  // ////////////////////////////////////////////////
-
-  // ////////////////////////////////////////////////
-  // MEMBER METHODS
-  // ////////////////////////////////////////////////
-
-  private static Enumeration<Editable> _cachedIterator;
-
-  private static FixWrapper _cachedValue;
-  private static HiResDate _cachedTime;
-  private static TrackWrapper _cachedTrack;
+  }
 
   public static class TestSlicing extends junit.framework.TestCase
   {
@@ -203,6 +175,12 @@ public final class StackedDotHelper
       final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
       {
         @Override
+        protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
+        {
+          return null;
+        }
+
+        @Override
         protected String getType()
         {
           return null;
@@ -218,12 +196,6 @@ public final class StackedDotHelper
         protected void updateData(final boolean updateDoublets)
         {
           // no, nothing to do.
-        }
-
-        @Override
-        protected ZoneSlicer getOwnshipZoneSlicer(ColorProvider blueProv)
-        {
-          return null;
         }
       };
 
@@ -242,14 +214,6 @@ public final class StackedDotHelper
       view.setLeg(host, target, trimmedPeriod);
 
     }
-  }
-
-  private static class TargetDoublet
-  {
-
-    public TrackSegment targetParent;
-    public FixWrapper targetFix;
-
   }
 
   /**
@@ -315,7 +279,8 @@ public final class StackedDotHelper
                 }
               }
 
-              TargetDoublet doublet = getTargetDoublet(index, theSegments, scw);
+              final TargetDoublet doublet =
+                  getTargetDoublet(index, theSegments, scw);
 
               final Doublet thisDub;
               final FixWrapper hostFix;
@@ -384,40 +349,6 @@ public final class StackedDotHelper
     return res;
   }
 
-  private static TargetDoublet getTargetDoublet(final FixWrapper index,
-      final Vector<TrackSegment> theSegments, final SensorContactWrapper scw)
-  {
-    final TargetDoublet doublet = new TargetDoublet();
-    if (theSegments != null && !theSegments.isEmpty())
-    {
-      final Iterator<TrackSegment> iter = theSegments.iterator();
-      while (iter.hasNext())
-      {
-        final TrackSegment ts = iter.next();
-
-        final TimePeriod validPeriod =
-            new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
-        if (validPeriod.contains(scw.getDTG()))
-        {
-          // sorted. here we go
-          doublet.targetParent = ts;
-
-          // create an object with the right time
-          index.getFix().setTime(scw.getDTG());
-
-          // and find any matching items
-          final SortedSet<Editable> items = ts.tailSet(index);
-          if (!items.isEmpty())
-          {
-            doublet.targetFix = (FixWrapper) items.first();
-          }
-        }
-      }
-    }
-
-    return doublet;
-  }
-
   private static FixWrapper getNearestPositionOnHostTrack(
       final TrackWrapper host, final HiResDate dtg)
   {
@@ -482,6 +413,48 @@ public final class StackedDotHelper
     return res;
   }
 
+  // ////////////////////////////////////////////////
+  // CONSTRUCTOR
+  // ////////////////////////////////////////////////
+
+  // ////////////////////////////////////////////////
+  // MEMBER METHODS
+  // ////////////////////////////////////////////////
+
+  private static TargetDoublet getTargetDoublet(final FixWrapper index,
+      final Vector<TrackSegment> theSegments, final SensorContactWrapper scw)
+  {
+    final TargetDoublet doublet = new TargetDoublet();
+    if (theSegments != null && !theSegments.isEmpty())
+    {
+      final Iterator<TrackSegment> iter = theSegments.iterator();
+      while (iter.hasNext())
+      {
+        final TrackSegment ts = iter.next();
+
+        final TimePeriod validPeriod =
+            new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
+        if (validPeriod.contains(scw.getDTG()))
+        {
+          // sorted. here we go
+          doublet.targetParent = ts;
+
+          // create an object with the right time
+          index.getFix().setTime(scw.getDTG());
+
+          // and find any matching items
+          final SortedSet<Editable> items = ts.tailSet(index);
+          if (!items.isEmpty())
+          {
+            doublet.targetFix = (FixWrapper) items.first();
+          }
+        }
+      }
+    }
+
+    return doublet;
+  }
+
   private static Vector<TrackSegment> getTargetLegs(
       final ISecondaryTrack targetTrack)
   {
@@ -520,6 +493,127 @@ public final class StackedDotHelper
     _cachedValue = null;
     _cachedTime = null;
     _cachedTrack = null;
+  }
+
+  /**
+   * the maximum number of items we plot as symbols. Above this we just use a line
+   */
+  private final int MAX_ITEMS_TO_PLOT = 1000;
+
+  /**
+   * the track being dragged
+   */
+  private TrackWrapper _primaryTrack;
+
+  /**
+   * the secondary track we're monitoring
+   */
+  private ISecondaryTrack _secondaryTrack;
+
+  /**
+   * the set of points to watch on the primary track. This is stored as a sorted set because if we
+   * have multiple sensors they may be suppled in chronological order, or they may represent
+   * overlapping time periods
+   */
+  private TreeSet<Doublet> _primaryDoublets;
+
+  private static Enumeration<Editable> _cachedIterator;
+
+  private static FixWrapper _cachedValue;
+
+  private static HiResDate _cachedTime;
+
+  private static TrackWrapper _cachedTrack;
+
+  /**
+   * determine if this time series contains many identical values - this is an indicator for data
+   * coming from a simulator, for which turns can't be determined by our peak tracking algorithm.
+   * 
+   * @param dataset
+   * @return
+   */
+  private static boolean containsIdenticalValues(final TimeSeries dataset,
+      final Integer NumMatches)
+  {
+    final int num = dataset.getItemCount();
+
+    final int numMatches;
+    if (NumMatches != null)
+    {
+      numMatches = NumMatches;
+    }
+    else
+    {
+      final double MATCH_PROPORTION = 0.1;
+      numMatches = (int) (num * MATCH_PROPORTION);
+    }
+
+    double lastCourse = 0d;
+    int matchCount = 0;
+
+    for (int ctr = 0; ctr < num; ctr++)
+    {
+      final TimeSeriesDataItem thisItem = dataset.getDataItem(ctr);
+      final double thisCourse = (Double) thisItem.getValue();
+      if (thisCourse == lastCourse)
+      {
+        // ok, count the duplicates
+        matchCount++;
+
+        if (matchCount >= numMatches)
+        {
+          return true;
+        }
+      }
+      else
+      {
+        matchCount = 0;
+      }
+      lastCourse = thisCourse;
+    }
+
+    return false;
+  }
+
+  public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
+      final ZoneChart.ColorProvider colorProvider)
+  {
+    // make a decision on which ownship slicer to use
+    final IOwnshipLegDetector detector;
+    if (containsIdenticalValues(osCourse, null))
+    {
+      detector = new ArtificalLegDetector();
+    }
+    else
+    {
+      detector = new PeakTrackingOwnshipLegDetector();
+    }
+
+    final int num = osCourse.getItemCount();
+    final long[] times = new long[num];
+    final double[] speeds = new double[num];
+    final double[] courses = new double[num];
+
+    for (int ctr = 0; ctr < num; ctr++)
+    {
+      final TimeSeriesDataItem thisItem = osCourse.getDataItem(ctr);
+      final FixedMillisecond thisM = (FixedMillisecond) thisItem.getPeriod();
+      times[ctr] = thisM.getMiddleMillisecond();
+      speeds[ctr] = 0;
+      courses[ctr] = (Double) thisItem.getValue();
+    }
+    final List<LegOfData> legs =
+        detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
+    final ArrayList<Zone> res = new ArrayList<Zone>();
+
+    for (final LegOfData leg : legs)
+    {
+      final Zone newZone =
+          new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
+      res.add(newZone);
+    }
+
+    return res;
   }
 
   /**
@@ -931,7 +1025,7 @@ public final class StackedDotHelper
 
           final ColouredDataItem mBearing =
               new ColouredDataItem(thisMilli, measuredBearing, bearingColor,
-                  false, null, true, parentIsNotDynamic);
+                  false, null, true, parentIsNotDynamic, thisD.getSensorCut());
 
           // and add them to the series
           measuredValues.addOrUpdate(mBearing);
@@ -962,7 +1056,7 @@ public final class StackedDotHelper
 
             final ColouredDataItem amBearing =
                 new ColouredDataItem(thisMilli, ambigBearing, ambigColor,
-                    false, null, true, parentIsNotDynamic);
+                    false, null, true, parentIsNotDynamic, thisD.getSensorCut());
             ambigValues.addOrUpdate(amBearing);
           }
 
@@ -1010,7 +1104,7 @@ public final class StackedDotHelper
 
               final ColouredDataItem cBearing =
                   new ColouredDataItem(thisMilli, calculatedBearing, brgColor,
-                      true, null, true, parentIsNotDynamic);
+                      true, null, true, parentIsNotDynamic, thisD.getTarget());
 
               errorValues.addOrUpdate(newTrueError);
               calculatedValues.addOrUpdate(cBearing);
@@ -1624,96 +1718,5 @@ public final class StackedDotHelper
 
     dotPlot.setDataset(errorSeries);
     linePlot.setDataset(actualSeries);
-  }
-
-  /**
-   * determine if this time series contains many identical values - this is an indicator for data
-   * coming from a simulator, for which turns can't be determined by our peak tracking algorithm.
-   * 
-   * @param dataset
-   * @return
-   */
-  private static boolean containsIdenticalValues(final TimeSeries dataset,
-      final Integer NumMatches)
-  {
-    final int num = dataset.getItemCount();
-
-    final int numMatches;
-    if (NumMatches != null)
-    {
-      numMatches = NumMatches;
-    }
-    else
-    {
-      final double MATCH_PROPORTION = 0.1;
-      numMatches = (int) (num * MATCH_PROPORTION);
-    }
-
-    double lastCourse = 0d;
-    int matchCount = 0;
-
-    for (int ctr = 0; ctr < num; ctr++)
-    {
-      final TimeSeriesDataItem thisItem = dataset.getDataItem(ctr);
-      final double thisCourse = (Double) thisItem.getValue();
-      if (thisCourse == lastCourse)
-      {
-        // ok, count the duplicates
-        matchCount++;
-
-        if (matchCount >= numMatches)
-        {
-          return true;
-        }
-      }
-      else
-      {
-        matchCount = 0;
-      }
-      lastCourse = thisCourse;
-    }
-
-    return false;
-  }
-
-  public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
-      final ZoneChart.ColorProvider colorProvider)
-  {
-    // make a decision on which ownship slicer to use
-    final IOwnshipLegDetector detector;
-    if (containsIdenticalValues(osCourse, null))
-    {
-      detector = new ArtificalLegDetector();
-    }
-    else
-    {
-      detector = new PeakTrackingOwnshipLegDetector();
-    }
-
-    final int num = osCourse.getItemCount();
-    final long[] times = new long[num];
-    final double[] speeds = new double[num];
-    final double[] courses = new double[num];
-
-    for (int ctr = 0; ctr < num; ctr++)
-    {
-      final TimeSeriesDataItem thisItem = osCourse.getDataItem(ctr);
-      final FixedMillisecond thisM = (FixedMillisecond) thisItem.getPeriod();
-      times[ctr] = thisM.getMiddleMillisecond();
-      speeds[ctr] = 0;
-      courses[ctr] = (Double) thisItem.getValue();
-    }
-    final List<LegOfData> legs =
-        detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
-    final ArrayList<Zone> res = new ArrayList<Zone>();
-
-    for (final LegOfData leg : legs)
-    {
-      final Zone newZone =
-          new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
-      res.add(newZone);
-    }
-
-    return res;
   }
 }
