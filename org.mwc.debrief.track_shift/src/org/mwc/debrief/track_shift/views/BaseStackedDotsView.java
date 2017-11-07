@@ -93,8 +93,10 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
@@ -118,6 +120,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -134,6 +137,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.DraggableItem;
@@ -1127,15 +1131,51 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // ok, do we also have a selection event pending
         if (_itemSelectedPending && _selectOnClick.isChecked())
         {
-          // hmm, has sensor or fix been selected
-         // double bearing = _linePlot.getRangeCrosshairValue();
-
-          // ok, loop through the datasets, and find the entry
-          // at newDate, then see if the value matches
-          // the sensor or TUA data
-
+          // ok, we're done
           _itemSelectedPending = false;
-          showFixAtThisTime(newDate);
+
+          // hmm, has sensor or fix been selected
+          double bearing = _linePlot.getRangeCrosshairValue();
+
+          TimeSeriesCollection tsc =
+              (TimeSeriesCollection) _linePlot.getDataset();
+          @SuppressWarnings("unchecked")
+          List<TimeSeries> sets = tsc.getSeries();
+          for (TimeSeries t : sets)
+          {
+            TimeSeriesDataItem nearest =
+                t.getDataItem(new FixedMillisecond(newDate.getTime()));
+
+            // ok, check the value
+            double value = (Double) nearest.getValue();
+
+            if (value == bearing)
+            {
+              // ok, get the editor
+              final IWorkbench wb = PlatformUI.getWorkbench();
+              final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+              final IWorkbenchPage page = win.getActivePage();
+              final IEditorPart editor = page.getActiveEditor();
+              final Layers layers = (Layers) editor.getAdapter(Layers.class);
+              if (layers != null)
+              {
+                ColouredDataItem item = (ColouredDataItem) nearest;
+                Editable payload = item.getPayload();
+                if (payload != null)
+                {
+                  if (payload instanceof SensorContactWrapper)
+                  {
+                    showThisCut((SensorContactWrapper) payload, layers, editor);
+                  }
+                  else if (payload instanceof FixWrapper)
+                  {
+                    showThisFix((FixWrapper) payload, layers, editor);
+                  }
+                }
+              }
+              break;
+            }
+          }
         }
       }
     });
@@ -1171,6 +1211,56 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _combined.remove(_targetOverviewPlot);
     }
+  }
+
+  private void showThisCut(final SensorContactWrapper cut,
+      final Layers layers, final IEditorPart editor)
+  {
+    SensorWrapper sensor = cut.getSensor();
+    TrackWrapper secTrack = sensor.getHost();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper sensors =
+        new EditableWrapper(secTrack.getSensors(), parentP, layers);
+    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
+
+    final EditableWrapper subject = new EditableWrapper(cut, leg, layers);
+
+    // and show it
+    showThisSelectionInOutline(subject, editor);
+  }
+
+  private void showThisFix(final FixWrapper fix, final Layers layers,
+      final IEditorPart editor)
+  {
+    TrackSegment seg = fix.getSegment();
+    TrackWrapper secTrack = seg.getWrapper();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper leg;
+    if (secTrack.getSegments().size() > 1)
+    {
+      // ok, we need the in-between item
+      final EditableWrapper segments =
+          new EditableWrapper(secTrack.getSegments(), parentP, layers);
+      leg = new EditableWrapper(seg, segments, layers);
+    }
+    else
+    {
+      leg = new EditableWrapper(seg, parentP, layers);
+
+    }
+
+    final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
+
+    // and show it
+    showThisSelectionInOutline(subject, editor);
   }
 
   /**
@@ -2202,94 +2292,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     updateTargetZones();
   }
 
-  private void showFixAtThisTime(final Date newDate)
+  private void showThisSelectionInOutline(final EditableWrapper subject,
+      final IEditorPart editor)
   {
-    if (_myTrackDataProvider != null)
+    final IStructuredSelection selection = new StructuredSelection(subject);
+    final IContentOutlinePage outline =
+        (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+    // did we find an outline?
+    if (outline != null)
     {
-      if (_myTrackDataProvider.getSecondaryTracks().length != 1)
+      // now set the selection
+      outline.setSelection(selection);
+
+      // see uf we can expand the selection
+      if (outline instanceof PlotOutlinePage)
       {
-        return;
-      }
-
-      final HiResDate theDate = new HiResDate(newDate);
-      EditableWrapper subject = null;
-
-      // ok, get the editor
-      final IWorkbench wb = PlatformUI.getWorkbench();
-      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-      final IWorkbenchPage page = win.getActivePage();
-      final IEditorPart editor = page.getActiveEditor();
-
-      final Layers layers = (Layers) editor.getAdapter(Layers.class);
-
-      // did we find the layers
-      if (layers == null)
-      {
-        return;
-      }
-
-      final TrackWrapper secTrack =
-          (TrackWrapper) _myTrackDataProvider.getSecondaryTracks()[0];
-      final SegmentList segs = secTrack.getSegments();
-      final Enumeration<Editable> sIter = segs.elements();
-      while (sIter.hasMoreElements())
-      {
-        final TrackSegment thisSeg = (TrackSegment) sIter.nextElement();
-        if (thisSeg.startDTG().lessThanOrEqualTo(theDate)
-            && thisSeg.endDTG().greaterThanOrEqualTo(theDate))
-        {
-          // ok, loop through them
-          final Enumeration<Editable> pts = thisSeg.elements();
-          while (pts.hasMoreElements())
-          {
-            final FixWrapper fix = (FixWrapper) pts.nextElement();
-            if (fix.getDTG().equals(theDate))
-            {
-              // done.
-              final EditableWrapper parentP =
-                  new EditableWrapper(secTrack, null, layers);
-
-              // hmm, don't know if we have one or more legs
-              final EditableWrapper leg;
-              if (secTrack.getSegments().size() > 1)
-              {
-                // ok, we need the in-between item
-                final EditableWrapper segments =
-                    new EditableWrapper(secTrack.getSegments(), parentP, layers);
-                leg = new EditableWrapper(fix.getSegment(), segments, layers);
-              }
-              else
-              {
-                leg = new EditableWrapper(fix.getSegment(), parentP, layers);
-
-              }
-
-              subject = new EditableWrapper(fix, leg, layers);
-              break;
-            }
-          }
-        }
-      }
-
-      if (subject != null)
-      {
-        final IStructuredSelection selection = new StructuredSelection(subject);
-
-        final IContentOutlinePage outline =
-            (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
-        // did we find an outline?
-        if (outline != null)
-        {
-          // now set the selection
-          outline.setSelection(selection);
-
-          // see uf we can expand the selection
-          if (outline instanceof PlotOutlinePage)
-          {
-            final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
-            plotOutline.editableSelected(selection, subject);
-          }
-        }
+        final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
+        plotOutline.editableSelected(selection, subject);
       }
     }
   }
