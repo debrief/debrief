@@ -25,9 +25,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.swt.graphics.RGB;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.core.preferences.PrefsPage;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
@@ -132,11 +135,25 @@ public class MergeTracks implements RightClickContextItemGenerator
       final String safeTargetTrackName =
           theLayers.createUniqueLayerName(targetTrackName);
 
-      final Color newTrackColor = DebriefColors.MAGENTA;
-      final Color infillColor = DebriefColors.ORANGE;
-      
+      // ok, check the property
+      RGB infillColRGB =
+          PreferenceConverter.getColor(CorePlugin.getDefault()
+              .getPreferenceStore(),
+              PrefsPage.PreferenceConstants.MERGED_INFILL_COLOR);
+      RGB mergedTrackColRGB =
+          PreferenceConverter.getColor(CorePlugin.getDefault()
+              .getPreferenceStore(),
+              PrefsPage.PreferenceConstants.MERGED_TRACK_COLOR);
+
+      // ok, get the color from the RGB
+      final Color newTrackColor =
+          mergedTrackColRGB == null ? DebriefColors.MAGENTA
+              : colorFrom(mergedTrackColRGB);
+      final Color infillColor =
+          infillColRGB == null ? DebriefColors.ORANGE : colorFrom(infillColRGB);
+
       // see if we can get color prefs
-      
+
       // ok, we need a title for the action
       final String titleSingle =
           "Merge track segments - into new track (single shade): "
@@ -243,6 +260,17 @@ public class MergeTracks implements RightClickContextItemGenerator
     }
   }
 
+  /**
+   * produce a java color from the RGB item
+   * 
+   * @param col
+   * @return
+   */
+  private static Color colorFrom(RGB col)
+  {
+    return new Color(col.red, col.green, col.blue);
+  }
+
   private static class MergeTracksOperation extends CMAPOperation
   {
 
@@ -259,8 +287,8 @@ public class MergeTracks implements RightClickContextItemGenerator
 
     public MergeTracksOperation(final String title, final Editable target,
         final String trackName, final Layers theLayers,
-        final Layer[] parentLayers, final Editable[] subjects, final Color newTrackColor,
-        final Color singleShade)
+        final Layer[] parentLayers, final Editable[] subjects,
+        final Color newTrackColor, final Color singleShade)
     {
       super(title);
       _target = target;
@@ -280,9 +308,9 @@ public class MergeTracks implements RightClickContextItemGenerator
       {
         TrackWrapper target = new TrackWrapper();
         target.setName(_trackName);
-        
+
         // set default color, if we have one
-        if(_newTrackColor != null)
+        if (_newTrackColor != null)
         {
           target.setColor(_newTrackColor);
         }
