@@ -31,6 +31,7 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
@@ -46,6 +47,8 @@ import Debrief.Wrappers.Track.TrackColorModeHelper.TrackColorMode;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
+import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GenericData.Duration;
@@ -603,8 +606,23 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
       _myTrack.setSymbolWidth(_symWidth);
 
     // our layer is complete, add it to the parent!
+
+    // ok, check we don't already have a track with this name
+    final Layer existing = _theLayers.findLayer(_myTrack.getName());
+
+    if (existing != null)
+    {
+      Application.logError2(ErrorLogger.WARNING, "Renaming track:"
+          + _myTrack.getName() + ",  name already in use", null);
+
+      // ok, we need to rename it
+      _myTrack.setName(_theLayers.createUniqueLayerName(_myTrack.getName()));
+    }
+
+    // great, now we know we can add it
     _theLayers.addThisLayer(_myTrack);
 
+    // ok, clear settings
     _myTrack = null;
     _symWidth = null;
     _symLength = null;
