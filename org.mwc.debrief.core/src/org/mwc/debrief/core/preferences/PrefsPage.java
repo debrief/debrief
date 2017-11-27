@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -69,7 +70,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     addField(new BooleanFieldEditor(PreferenceConstants.ASK_ABOUT_PROJECT,
         "Invite user to create Debrief project if none present",
         getFieldEditorParent()));
-    addField(new BooleanFieldEditor(PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
+    addField(new BooleanFieldEditor(
+        PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
         "Show the wizard when importing sensor data from REP",
         getFieldEditorParent()));
 
@@ -77,6 +79,19 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     Label label =
         new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
     label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+
+    addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
+        "Use sensor cut colors for new TMA leg positions",
+        getFieldEditorParent()));
+
+    addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
+        "Cut-off value for acceptable bearing errors in stacked dots (degs)",
+        getFieldEditorParent()));
+
+    // insert a separator
+    Label label2 =
+        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    label2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
     // initialise the import choice tags, if we have to
     String[][] _trackModeTags = new String[3][2];
@@ -91,13 +106,10 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         PreferenceConstants.INFILL_COLOR_STRATEGY,
         "Policy for dynamic infill colors:", 1, _trackModeTags,
         getFieldEditorParent()));
-
-    addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
-        "Use sensor cut colors for new TMA leg positions",
-        getFieldEditorParent()));
-
-    addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
-        "Cut-off value for acceptable bearing errors in stacked dots (degs)", getFieldEditorParent()));
+    addField(new ColorFieldEditor(PreferenceConstants.MERGED_TRACK_COLOR,
+        "Default color for merged track:", getFieldEditorParent()));
+    addField(new ColorFieldEditor(PreferenceConstants.MERGED_INFILL_COLOR,
+        "Color for infill segments in merged track:", getFieldEditorParent()));
 
   }
 
@@ -124,6 +136,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String ASK_ABOUT_PROJECT = "createProject";
     public static final String INFILL_COLOR_STRATEGY =
         DynamicInfillSegment.INFILL_COLOR_STRATEGY;
+    public static final String MERGED_INFILL_COLOR = "MERGED_INFILL_COLOR";
+    public static final String MERGED_TRACK_COLOR = "MERGED_TRACK_COLOR";
     public static final String CUT_OFF_VALUE_DEGS =
         RelativeTMASegment.CUT_OFF_VALUE_DEGS;
     public static final String USE_CUT_COLOR =

@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import java.awt.Color;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
@@ -23,9 +25,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.swt.graphics.RGB;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.core.preferences.PrefsPage;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
@@ -34,6 +39,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.DebriefColors;
 
 /**
  * @author ian.mayo
@@ -129,23 +135,59 @@ public class MergeTracks implements RightClickContextItemGenerator
       final String safeTargetTrackName =
           theLayers.createUniqueLayerName(targetTrackName);
 
+      // ok, check the property
+      RGB infillColRGB =
+          PreferenceConverter.getColor(CorePlugin.getDefault()
+              .getPreferenceStore(),
+              PrefsPage.PreferenceConstants.MERGED_INFILL_COLOR);
+      RGB mergedTrackColRGB =
+          PreferenceConverter.getColor(CorePlugin.getDefault()
+              .getPreferenceStore(),
+              PrefsPage.PreferenceConstants.MERGED_TRACK_COLOR);
+
+      // ok, get the color from the RGB
+      final Color newTrackColor =
+          mergedTrackColRGB == null ? DebriefColors.MAGENTA
+              : colorFrom(mergedTrackColRGB);
+      final Color infillColor =
+          infillColRGB == null ? DebriefColors.ORANGE : colorFrom(infillColRGB);
+
+      // see if we can get color prefs
+
       // ok, we need a title for the action
-      final String title =
-          "Merge track segments - into new track: " + safeTargetTrackName;
+      final String titleSingle =
+          "Merge track segments - into new track (single shade): "
+              + safeTargetTrackName;
 
       // create this operation
-      final Action doMerge = new Action(title)
+      final Action doMergeSingleColor = new Action(titleSingle)
       {
         public void run()
         {
           final IUndoableOperation theAction =
-              new MergeTracksOperation(title, null, safeTargetTrackName, theLayers,
-                  parentLayers, subjects);
+              new MergeTracksOperation(titleSingle, null, safeTargetTrackName,
+                  theLayers, parentLayers, subjects, newTrackColor, null);
 
           CorePlugin.run(theAction);
         }
       };
-      parent.add(doMerge);
+      parent.add(doMergeSingleColor);
+
+      final String titleMulti =
+          "Merge track segments - into new track (highlight infills): "
+              + safeTargetTrackName;
+      final Action doMergeMultiColor = new Action(titleMulti)
+      {
+        public void run()
+        {
+          final IUndoableOperation theAction =
+              new MergeTracksOperation(titleMulti, null, safeTargetTrackName,
+                  theLayers, parentLayers, subjects, newTrackColor, infillColor);
+
+          CorePlugin.run(theAction);
+        }
+      };
+      parent.add(doMergeMultiColor);
 
     }
     else
@@ -166,10 +208,12 @@ public class MergeTracks implements RightClickContextItemGenerator
           if (segs.size() == 1)
           {
             final TrackSegment thisSeg = (TrackSegment) segs.first();
-            
+
             // is it a TMA segment?
-            seg = thisSeg instanceof CoreTMASegment ? (CoreTMASegment) thisSeg : null; 
-            
+            seg =
+                thisSeg instanceof CoreTMASegment ? (CoreTMASegment) thisSeg
+                    : null;
+
             // only one segment, so use the track name
             segmentName = tw.getName();
           }
@@ -216,6 +260,17 @@ public class MergeTracks implements RightClickContextItemGenerator
     }
   }
 
+  /**
+   * produce a java color from the RGB item
+   * 
+   * @param col
+   * @return
+   */
+  private static Color colorFrom(RGB col)
+  {
+    return new Color(col.red, col.green, col.blue);
+  }
+
   private static class MergeTracksOperation extends CMAPOperation
   {
 
@@ -227,10 +282,13 @@ public class MergeTracks implements RightClickContextItemGenerator
     protected final Editable[] _subjects;
     protected Editable _target;
     private final String _trackName;
+    private final Color _infillShade;
+    private final Color _newTrackColor;
 
     public MergeTracksOperation(final String title, final Editable target,
-        final String trackName, final Layers theLayers, final Layer[] parentLayers,
-        final Editable[] subjects)
+        final String trackName, final Layers theLayers,
+        final Layer[] parentLayers, final Editable[] subjects,
+        final Color newTrackColor, final Color singleShade)
     {
       super(title);
       _target = target;
@@ -238,22 +296,31 @@ public class MergeTracks implements RightClickContextItemGenerator
       _layers = theLayers;
       _parents = parentLayers;
       _subjects = subjects;
+      _infillShade = singleShade;
+      _newTrackColor = newTrackColor;
     }
 
     public IStatus
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-      if(_target == null)
+      if (_target == null)
       {
         TrackWrapper target = new TrackWrapper();
         target.setName(_trackName);
-        
+
+        // set default color, if we have one
+        if (_newTrackColor != null)
+        {
+          target.setColor(_newTrackColor);
+        }
+
         _target = target;
       }
-      
+
       final int res =
-          TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects);
+          TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects,
+              _infillShade);
 
       // ok, we can also hide the parent
 
@@ -303,7 +370,7 @@ public class MergeTracks implements RightClickContextItemGenerator
         final Editable target, final Layers theLayers,
         final Layer[] parentLayers, final Editable[] subjects)
     {
-      super(title, target, null, theLayers, parentLayers, subjects);
+      super(title, target, null, theLayers, parentLayers, subjects, null, null);
     }
 
     public IStatus
