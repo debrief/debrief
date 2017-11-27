@@ -2143,7 +2143,7 @@ public class TrackWrapper_Test extends TestCase
     final TrackWrapper newTarget = new TrackWrapper();
     newTarget.setName("Merged");
 
-    TrackWrapper.mergeTracks(newTarget, theLayers, subjects, true);
+    TrackWrapper.mergeTracks(newTarget, theLayers, subjects, null);
 
     // have a look at the results
     assertEquals("new track got created", 3, theLayers.size());
@@ -2185,7 +2185,7 @@ public class TrackWrapper_Test extends TestCase
     // do a merge
     final Editable[] subjects = new Editable[]
     {_tw, ts2};
-    TrackWrapper.mergeTracks(_tw, theLayers, subjects, true);
+    TrackWrapper.mergeTracks(_tw, theLayers, subjects, null);
 
     // have a look at the results
     assertEquals("track is longer", 17, _tw.numFixes());
@@ -2219,7 +2219,7 @@ public class TrackWrapper_Test extends TestCase
     // do a merge
     final Editable[] subjects = new Editable[]
     {_tw, ts2};
-    TrackWrapper.mergeTracks(_tw, theLayers, subjects, true);
+    TrackWrapper.mergeTracks(_tw, theLayers, subjects, null);
 
     // have a look at the results
     assertEquals("track starts correctly", 6, trackLength());
@@ -2276,7 +2276,7 @@ public class TrackWrapper_Test extends TestCase
     newTrack.setName("Merged");
     Layers theLayers = new Layers();
 
-    TrackWrapper.mergeTracks(newTrack, theLayers, items, true);
+    TrackWrapper.mergeTracks(newTrack, theLayers, items, null);
     // do the merge
 
     assertEquals("has all fixes", 15, newTrack.numFixes());
@@ -2314,7 +2314,7 @@ public class TrackWrapper_Test extends TestCase
     TrackWrapper result = new TrackWrapper();
     result.setName("Merged");
 
-    TrackWrapper.mergeTracks(result, theLayers, subjects, true);
+    TrackWrapper.mergeTracks(result, theLayers, subjects, null);
 
     // have a look at the results
     assertEquals("track 3 is longer", 11, result.numFixes());

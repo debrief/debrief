@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import java.awt.Color;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
@@ -130,6 +132,11 @@ public class MergeTracks implements RightClickContextItemGenerator
       final String safeTargetTrackName =
           theLayers.createUniqueLayerName(targetTrackName);
 
+      final Color newTrackColor = DebriefColors.MAGENTA;
+      final Color infillColor = DebriefColors.ORANGE;
+      
+      // see if we can get color prefs
+      
       // ok, we need a title for the action
       final String titleSingle =
           "Merge track segments - into new track (single shade): "
@@ -142,7 +149,7 @@ public class MergeTracks implements RightClickContextItemGenerator
         {
           final IUndoableOperation theAction =
               new MergeTracksOperation(titleSingle, null, safeTargetTrackName,
-                  theLayers, parentLayers, subjects, true);
+                  theLayers, parentLayers, subjects, newTrackColor, null);
 
           CorePlugin.run(theAction);
         }
@@ -158,7 +165,7 @@ public class MergeTracks implements RightClickContextItemGenerator
         {
           final IUndoableOperation theAction =
               new MergeTracksOperation(titleMulti, null, safeTargetTrackName,
-                  theLayers, parentLayers, subjects, false);
+                  theLayers, parentLayers, subjects, newTrackColor, infillColor);
 
           CorePlugin.run(theAction);
         }
@@ -247,12 +254,13 @@ public class MergeTracks implements RightClickContextItemGenerator
     protected final Editable[] _subjects;
     protected Editable _target;
     private final String _trackName;
-    private final boolean _singleShade;
+    private final Color _infillShade;
+    private final Color _newTrackColor;
 
     public MergeTracksOperation(final String title, final Editable target,
         final String trackName, final Layers theLayers,
-        final Layer[] parentLayers, final Editable[] subjects,
-        final boolean singleShade)
+        final Layer[] parentLayers, final Editable[] subjects, final Color newTrackColor,
+        final Color singleShade)
     {
       super(title);
       _target = target;
@@ -260,7 +268,8 @@ public class MergeTracks implements RightClickContextItemGenerator
       _layers = theLayers;
       _parents = parentLayers;
       _subjects = subjects;
-      _singleShade = singleShade;
+      _infillShade = singleShade;
+      _newTrackColor = newTrackColor;
     }
 
     public IStatus
@@ -272,15 +281,18 @@ public class MergeTracks implements RightClickContextItemGenerator
         TrackWrapper target = new TrackWrapper();
         target.setName(_trackName);
         
-        // set default color
-        target.setColor(DebriefColors.ORANGE);
+        // set default color, if we have one
+        if(_newTrackColor != null)
+        {
+          target.setColor(_newTrackColor);
+        }
 
         _target = target;
       }
 
       final int res =
           TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects,
-              _singleShade);
+              _infillShade);
 
       // ok, we can also hide the parent
 
@@ -330,7 +342,7 @@ public class MergeTracks implements RightClickContextItemGenerator
         final Editable target, final Layers theLayers,
         final Layer[] parentLayers, final Editable[] subjects)
     {
-      super(title, target, null, theLayers, parentLayers, subjects, true);
+      super(title, target, null, theLayers, parentLayers, subjects, null, null);
     }
 
     public IStatus
