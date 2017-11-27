@@ -34,6 +34,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.DebriefColors;
 
 /**
  * @author ian.mayo
@@ -270,6 +271,9 @@ public class MergeTracks implements RightClickContextItemGenerator
       {
         TrackWrapper target = new TrackWrapper();
         target.setName(_trackName);
+        
+        // set default color
+        target.setColor(DebriefColors.ORANGE);
 
         _target = target;
       }
