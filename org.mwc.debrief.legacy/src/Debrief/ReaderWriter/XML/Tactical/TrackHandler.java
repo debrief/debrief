@@ -77,14 +77,39 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   private static final String CUSTOM_VECTOR_STRETCH = "CustomVectorStretch";
   private static final String COLOR_MODE = "ColorMode";
 
-  final MWC.GUI.Layers _theLayers;
+  private static void exportThisTrackSegment(final org.w3c.dom.Document doc,
+      final Element trk, final TrackSegment segment)
+  {
+    // right, sort out what type it is
+    if (segment instanceof RelativeTMASegment)
+    {
+      RelativeTMASegmentHandler.exportThisTMASegment(doc, trk,
+          (RelativeTMASegment) segment);
+    }
+    else if (segment instanceof AbsoluteTMASegment)
+    {
+      AbsoluteTMASegmentHandler.exportThisTMASegment(doc, trk,
+          (AbsoluteTMASegment) segment);
+    }
+    else if (segment instanceof DynamicInfillSegment)
+    {
+      DynamicInfillSegmentHandler.exportThisSegment(doc, trk,
+          (DynamicInfillSegment) segment);
+    }
+    else
+    {
+      TrackSegmentHandler.exportThisSegment(doc, trk, segment);
+    }
+  }
 
   // private MWC.GUI.Layer _myLayer;
 
+  final MWC.GUI.Layers _theLayers;
   // our "working" track
   Debrief.Wrappers.TrackWrapper _myTrack;
   protected WorldDistance _symWidth;
   protected WorldDistance _symLength;
+
   protected Color _symCol;
 
   /**
@@ -146,7 +171,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     ColourHandler.exportColour(track.getSymbolColor(), trk, doc, SYMBOL_COLOR);
 
     // and the worm in the hole indicator?
-    TrackColorMode mode = track.getTrackColorMode();
+    final TrackColorMode mode = track.getTrackColorMode();
     trk.setAttribute(COLOR_MODE, mode.asString());
 
     // and the font
@@ -165,11 +190,15 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
     // and the symbol
     if (track.getSymbolLength() != null)
+    {
       WorldDistanceHandler.exportDistance(SYMBOL_LENGTH, track
           .getSymbolLength(), trk, doc);
+    }
     if (track.getSymbolWidth() != null)
+    {
       WorldDistanceHandler.exportDistance(SYMBOL_WIDTH, track.getSymbolWidth(),
           trk, doc);
+    }
 
     // first output any sensor data
     final Enumeration<Editable> sensors = track.getSensors().elements();
@@ -238,30 +267,6 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     }
   }
 
-  private static void exportThisTrackSegment(final org.w3c.dom.Document doc,
-      final Element trk, final TrackSegment segment)
-  {
-    // right, sort out what type it is
-    if (segment instanceof RelativeTMASegment)
-    {
-      RelativeTMASegmentHandler.exportThisTMASegment(doc, trk,
-          (RelativeTMASegment) segment);
-    }
-    else if (segment instanceof AbsoluteTMASegment)
-    {
-      AbsoluteTMASegmentHandler.exportThisTMASegment(doc, trk,
-          (AbsoluteTMASegment) segment);
-    }
-    else if (segment instanceof DynamicInfillSegment)
-    {
-      DynamicInfillSegmentHandler.exportThisSegment(doc, trk,
-          (DynamicInfillSegment) segment);
-    }
-    else
-
-      TrackSegmentHandler.exportThisSegment(doc, trk, (TrackSegment) segment);
-  }
-
   public TrackHandler(final MWC.GUI.Layers theLayers)
   {
     this(theLayers, TRACK);
@@ -287,7 +292,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     addHandler(new DynamicTrackShapeSetHandler()
     {
       @Override
-      public void addDynamicTrackShapes(DynamicTrackShapeSetWrapper data)
+      public void addDynamicTrackShapes(final DynamicTrackShapeSetWrapper data)
       {
         addThis(data);
       }
@@ -304,6 +309,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
     addHandler(new RelativeTMASegmentHandler(_theLayers)
     {
+      @Override
       public void addSegment(final TrackSegment segment)
       {
         addThis(segment);
@@ -312,6 +318,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
     addHandler(new PlanningSegmentHandler()
     {
+      @Override
       public void addSegment(final TrackSegment segment)
       {
         addThis(segment);
@@ -320,6 +327,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     addHandler(new PlanningSegmentHandler(
         PlanningSegmentHandler.CLOSING_SEGMENT)
     {
+      @Override
       public void addSegment(final TrackSegment segment)
       {
         // store the parent
@@ -329,6 +337,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
     addHandler(new AbsoluteTMASegmentHandler()
     {
+      @Override
       public void addSegment(final TrackSegment segment)
       {
         addThis(segment);
@@ -337,6 +346,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
     addHandler(new DynamicInfillSegmentHandler()
     {
+      @Override
       public void addSegment(final TrackSegment segment)
       {
         addThis(segment);
@@ -379,7 +389,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     addHandler(new DurationHandler(CUSTOM_TRAIL_LENGTH)
     {
       @Override
-      public void setDuration(Duration res)
+      public void setDuration(final Duration res)
       {
         _myTrack.setCustomTrailLength(res);
       }
@@ -586,12 +596,12 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
   }
 
-  void addThis(final Plottable val)
+  void addFix(final FixWrapper val)
   {
     _myTrack.add(val);
   }
 
-  void addFix(final FixWrapper val)
+  void addThis(final Plottable val)
   {
     _myTrack.add(val);
   }
@@ -601,9 +611,13 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   {
     // ok, the symbol should be sorted, do the lengths
     if (_symLength != null)
+    {
       _myTrack.setSymbolLength(_symLength);
+    }
     if (_symWidth != null)
+    {
       _myTrack.setSymbolWidth(_symWidth);
+    }
 
     // our layer is complete, add it to the parent!
 
@@ -629,6 +643,11 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     _symCol = null;
   }
 
+  protected TrackWrapper getWrapper()
+  {
+    return new TrackWrapper();
+  }
+
   // this is one of ours, so get on with it!
   @Override
   protected final void handleOurselves(final String name,
@@ -639,11 +658,6 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
     // marry them together
     super.handleOurselves(name, attributes);
-  }
-
-  protected TrackWrapper getWrapper()
-  {
-    return new TrackWrapper();
   }
 
 }
