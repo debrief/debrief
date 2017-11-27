@@ -130,22 +130,39 @@ public class MergeTracks implements RightClickContextItemGenerator
           theLayers.createUniqueLayerName(targetTrackName);
 
       // ok, we need a title for the action
-      final String title =
-          "Merge track segments - into new track: " + safeTargetTrackName;
+      final String titleSingle =
+          "Merge track segments - into new track (single shade): "
+              + safeTargetTrackName;
 
       // create this operation
-      final Action doMerge = new Action(title)
+      final Action doMergeSingleColor = new Action(titleSingle)
       {
         public void run()
         {
           final IUndoableOperation theAction =
-              new MergeTracksOperation(title, null, safeTargetTrackName, theLayers,
-                  parentLayers, subjects);
+              new MergeTracksOperation(titleSingle, null, safeTargetTrackName,
+                  theLayers, parentLayers, subjects, true);
 
           CorePlugin.run(theAction);
         }
       };
-      parent.add(doMerge);
+      parent.add(doMergeSingleColor);
+
+      final String titleMulti =
+          "Merge track segments - into new track (highlight infills): "
+              + safeTargetTrackName;
+      final Action doMergeMultiColor = new Action(titleMulti)
+      {
+        public void run()
+        {
+          final IUndoableOperation theAction =
+              new MergeTracksOperation(titleMulti, null, safeTargetTrackName,
+                  theLayers, parentLayers, subjects, false);
+
+          CorePlugin.run(theAction);
+        }
+      };
+      parent.add(doMergeMultiColor);
 
     }
     else
@@ -166,10 +183,12 @@ public class MergeTracks implements RightClickContextItemGenerator
           if (segs.size() == 1)
           {
             final TrackSegment thisSeg = (TrackSegment) segs.first();
-            
+
             // is it a TMA segment?
-            seg = thisSeg instanceof CoreTMASegment ? (CoreTMASegment) thisSeg : null; 
-            
+            seg =
+                thisSeg instanceof CoreTMASegment ? (CoreTMASegment) thisSeg
+                    : null;
+
             // only one segment, so use the track name
             segmentName = tw.getName();
           }
@@ -227,10 +246,12 @@ public class MergeTracks implements RightClickContextItemGenerator
     protected final Editable[] _subjects;
     protected Editable _target;
     private final String _trackName;
+    private final boolean _singleShade;
 
     public MergeTracksOperation(final String title, final Editable target,
-        final String trackName, final Layers theLayers, final Layer[] parentLayers,
-        final Editable[] subjects)
+        final String trackName, final Layers theLayers,
+        final Layer[] parentLayers, final Editable[] subjects,
+        final boolean singleShade)
     {
       super(title);
       _target = target;
@@ -238,22 +259,24 @@ public class MergeTracks implements RightClickContextItemGenerator
       _layers = theLayers;
       _parents = parentLayers;
       _subjects = subjects;
+      _singleShade = singleShade;
     }
 
     public IStatus
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
-      if(_target == null)
+      if (_target == null)
       {
         TrackWrapper target = new TrackWrapper();
         target.setName(_trackName);
-        
+
         _target = target;
       }
-      
+
       final int res =
-          TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects);
+          TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects,
+              _singleShade);
 
       // ok, we can also hide the parent
 
@@ -303,7 +326,7 @@ public class MergeTracks implements RightClickContextItemGenerator
         final Editable target, final Layers theLayers,
         final Layer[] parentLayers, final Editable[] subjects)
     {
-      super(title, target, null, theLayers, parentLayers, subjects);
+      super(title, target, null, theLayers, parentLayers, subjects, true);
     }
 
     public IStatus

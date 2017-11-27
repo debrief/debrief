@@ -70,6 +70,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.FractionPropertyEditor;
 import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
@@ -440,7 +441,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   private static void duplicateFixes(final SegmentList sl,
-      final TrackSegment target)
+      final TrackSegment target, final boolean singleShade)
   {
     final Enumeration<Editable> segs = sl.elements();
     while (segs.hasMoreElements())
@@ -451,18 +452,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       {
         final CoreTMASegment ct = (CoreTMASegment) segment;
         final TrackSegment newSeg = new TrackSegment(ct);
-        duplicateFixes(newSeg, target);
+        duplicateFixes(newSeg, target, singleShade);
       }
       else
       {
-        duplicateFixes(segment, target);
+        duplicateFixes(segment, target, singleShade);
       }
     }
   }
 
   private static void duplicateFixes(final TrackSegment source,
-      final TrackSegment target)
+      final TrackSegment target, final boolean singleShade)
   {
+    // are we an infill?
+    final boolean isInfill = source instanceof DynamicInfillSegment;
+
     // ok, retrieve the points in the track segment
     final Enumeration<Editable> tsPts = source.elements();
     while (tsPts.hasMoreElements())
@@ -471,6 +475,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final Fix existingFix = existingFW.getFix();
       final Fix newFix = existingFix.makeCopy();
       final FixWrapper newF = new FixWrapper(newFix);
+
+      if (!singleShade && isInfill)
+      {
+        newF.setColor(DebriefColors.MAGENTA);
+      }
 
       // also duplicate the label
       newF.setLabel(existingFW.getLabel());
@@ -591,7 +600,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    * @return sufficient information to undo the merge
    */
   public static int mergeTracks(final TrackWrapper newTrack,
-      final Layers theLayers, final Editable[] subjects)
+      final Layers theLayers, final Editable[] subjects,
+      final boolean singleShade)
   {
     // check that the legs don't overlap
     final String failedMsg = checkTheyAreNotOverlapping(subjects);
@@ -630,7 +640,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           {
             final SegmentList sl = (SegmentList) obj;
             final TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
-            duplicateFixes(sl, newT);
+            duplicateFixes(sl, newT, singleShade);
             newTrack.add(newT);
           }
           else if (obj instanceof TrackSegment)
@@ -639,7 +649,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
             // ok, duplicate the fixes in this segment
             final TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
-            duplicateFixes(ts, newT);
+            duplicateFixes(ts, newT, singleShade);
 
             // and add it to the new track
             newTrack.append(newT);
@@ -652,7 +662,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
         // ok, duplicate the fixes in this segment
         final TrackSegment newT = new TrackSegment(ts.getPlotRelative());
-        duplicateFixes(ts, newT);
+        duplicateFixes(ts, newT, singleShade);
 
         // and add it to the new track
         newTrack.append(newT);
@@ -680,7 +690,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         final TrackSegment newT = new TrackSegment(TrackSegment.ABSOLUTE);
 
         // ok, duplicate the fixes in this segment
-        duplicateFixes(sl, newT);
+        duplicateFixes(sl, newT, singleShade);
 
         // and add it to the new track
         newTrack.append(newT);

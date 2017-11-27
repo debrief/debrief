@@ -77,17 +77,18 @@ public class TrackWrapper_Test extends TestCase
   private static FixWrapper getFix(long dtg, double course, double speed)
   {
     Fix theFix =
-        new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, MWC.Algorithms.Conversions.Kts2Yps(speed));
+        new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course,
+            MWC.Algorithms.Conversions.Kts2Yps(speed));
     FixWrapper res = new FixWrapper(theFix);
 
     return res;
   }
-  
+
   public void testCacheIterators()
   {
     TrackWrapper track = new TrackWrapper();
     track.setName("track");
-    
+
     track.addFix(getFix(1000, 10, 10));
     track.addFix(getFix(2000, 10, 20));
     track.addFix(getFix(3000, 10, 30));
@@ -97,7 +98,7 @@ public class TrackWrapper_Test extends TestCase
     track.addFix(getFix(7000, 10, 70));
 
     assertNull("iterator not cached yet", track.getCachedIterator());
-    
+
     Watchable[] resArr = track.getNearestTo(new HiResDate(500));
     assertEquals("Should not get anything", 0, resArr.length);
     assertNull("iterator still not cached yet", track.getCachedIterator());
@@ -107,13 +108,11 @@ public class TrackWrapper_Test extends TestCase
     assertNull("iterator still not cached yet", track.getCachedIterator());
     assertEquals(res.getSpeed(), 10d, 0.001);
 
-    
     res = track.getNearestTo(new HiResDate(1200))[0];
     assertNotNull(res);
     assertNotNull("iterator should be there", track.getCachedIterator());
     assertEquals(res.getSpeed(), 20d, 0.001);
 
-    
     res = track.getNearestTo(new HiResDate(2100))[0];
     assertNotNull(res);
     assertNotNull("iterator should be there", track.getCachedIterator());
@@ -125,8 +124,8 @@ public class TrackWrapper_Test extends TestCase
     assertNotNull(res);
     assertNull("iterator gone", track.getCachedIterator());
     assertEquals(res.getSpeed(), 70d, 0.001);
-    
-  //  ALSO CHECK WHEN WE ONLY MOVE FORWARD VERY SLIGHTLY
+
+    // ALSO CHECK WHEN WE ONLY MOVE FORWARD VERY SLIGHTLY
 
     resArr = track.getNearestTo(new HiResDate(8100));
     assertEquals("Empty array", 0, resArr.length);
@@ -138,22 +137,23 @@ public class TrackWrapper_Test extends TestCase
     assertEquals(res.getSpeed(), 30d, 0.001);
 
     assertTrue("should be new iterator", theIter != track.getCachedIterator());
-    
+
     // switch on interpolation, and check speeds
     track.setInterpolatePoints(true);
     res = track.getNearestTo(new HiResDate(2200))[0];
     assertNotNull(res);
     assertNotNull("iterator should be there", track.getCachedIterator());
     assertEquals(res.getSpeed(), 22d, 0.001);
-    
+
     res = track.getNearestTo(new HiResDate(5600))[0];
     assertNotNull(res);
     assertNotNull("iterator should be there", track.getCachedIterator());
     assertEquals(res.getSpeed(), 56d, 0.001);
-    
+
     res = track.getNearestTo(new HiResDate(6600))[0];
     assertNotNull(res);
-    assertNull("iterator cleared, since we have no more elements", track.getCachedIterator());
+    assertNull("iterator cleared, since we have no more elements", track
+        .getCachedIterator());
     assertEquals(res.getSpeed(), 66d, 0.001);
 
     res = track.getNearestTo(new HiResDate(1600))[0];
@@ -187,15 +187,16 @@ public class TrackWrapper_Test extends TestCase
 
     // ok, check before freq
     assertEquals("with syms", 640, countDecorations(parent, false, false, true));
-    
+
     // ok, now another rate
     parent.setLabelFrequency(new HiResDate(31111));
 
     // ok, check before freq
-    assertEquals("with syms", 1029, countDecorations(parent, false, false, true));
-    
-    // ok, now set the original frequency. This will effectively 
-    // check that we're resetting the labels before we decide which 
+    assertEquals("with syms", 1029,
+        countDecorations(parent, false, false, true));
+
+    // ok, now set the original frequency. This will effectively
+    // check that we're resetting the labels before we decide which
     // ones we do want to display
     parent.setLabelFrequency(new HiResDate(50000));
 
@@ -203,9 +204,7 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("with syms", 640, countDecorations(parent, false, false, true));
 
   }
-  
 
-  
   public void testSetSymbolFrequency()
   {
     TrackWrapper parent = new TrackWrapper();
@@ -235,7 +234,6 @@ public class TrackWrapper_Test extends TestCase
     // ok, check before freq
     assertEquals("with syms", 640, countDecorations(parent, true, false, false));
   }
-  
 
   public void testSetArrowFrequency()
   {
@@ -267,8 +265,9 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("with syms", 1, countDecorations(parent, false, true, false));
   }
 
-  private static int countDecorations(TrackWrapper parent, final boolean countSyms,
-      final boolean countArrows, final boolean countLabels)
+  private static int countDecorations(TrackWrapper parent,
+      final boolean countSyms, final boolean countArrows,
+      final boolean countLabels)
   {
     Enumeration<Editable> iter = parent.getPositionIterator();
     int ctr = 0;
@@ -823,7 +822,7 @@ public class TrackWrapper_Test extends TestCase
     // check it's got the segs
     assertEquals("has segments", "Track segments (3 items)", sl.toString());
     assertEquals("has all fixes", 15, tw.numFixes());
-    
+
     // what's the area before
     assertEquals("correct wid", 5.8372d, tw.getBounds().getWidth(), 0.001);
     assertEquals("correct ht", 11d, tw.getBounds().getHeight(), 0.001);
@@ -834,17 +833,17 @@ public class TrackWrapper_Test extends TestCase
     // what's the area before
     assertEquals("still correct wid", 5.032d, tw.getBounds().getWidth(), 0.001);
     assertEquals("still correct ht", 10d, tw.getBounds().getHeight(), 0.001);
-    
+
     // check labels present
     Enumeration<Editable> pIter = tw.getPositionIterator();
-    while(pIter.hasMoreElements())
+    while (pIter.hasMoreElements())
     {
       FixWrapper fix = (FixWrapper) pIter.nextElement();
       String label = fix.getLabel();
       assertNotNull("label is present", label);
       assertTrue("label has contents", label.length() > 0);
     }
-    
+
     // insert delay, to overcome cacheing
     Thread.sleep(550);
 
@@ -861,11 +860,12 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("has segments", "Track segments (3 items)", sl.toString());
     // assertEquals("has all fixes", 49, tw.numFixes());
   }
-  
-  public void testDecimateRelative() throws InterruptedException, ParseException
+
+  public void testDecimateRelative() throws InterruptedException,
+      ParseException
   {
     SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
-    
+
     final TrackSegment ts1 = new TrackSegment(TrackSegment.RELATIVE);
     ts1.addFix(createFix(sdf.parse("13:00:14").getTime(), 0.0, 0.0, 0, 5));
     ts1.addFix(createFix(sdf.parse("13:01:14").getTime(), 0.5, 0.0, 0, 5));
@@ -881,7 +881,7 @@ public class TrackWrapper_Test extends TestCase
     tw.add(ts1);
 
     Enumeration<Editable> pI = tw.getPositionIterator();
-    while(pI.hasMoreElements())
+    while (pI.hasMoreElements())
     {
       FixWrapper fix = (FixWrapper) pI.nextElement();
       System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
@@ -889,12 +889,12 @@ public class TrackWrapper_Test extends TestCase
 
     // GO FOR ULTIMATE DECIMATION
     tw.setResampleDataAt(new HiResDate(60 * 1000L));
- //   ts1.decimate(new HiResDate(60 * 1000L), tw, sdf.parse("13:01:00").getTime());
-    
+    // ts1.decimate(new HiResDate(60 * 1000L), tw, sdf.parse("13:01:00").getTime());
+
     assertEquals("have correct fixes", 7, ts1.size());
 
     pI = tw.getPositionIterator();
-    while(pI.hasMoreElements())
+    while (pI.hasMoreElements())
     {
       FixWrapper fix = (FixWrapper) pI.nextElement();
       System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
@@ -1883,7 +1883,7 @@ public class TrackWrapper_Test extends TestCase
 
     // attach the sensor to the host
     tw.add(sw);
-    
+
     final SensorContactWrapper[] items = new SensorContactWrapper[7];
 
     items[0] = createSensorItem(tw, sw, 110000);
@@ -2143,7 +2143,7 @@ public class TrackWrapper_Test extends TestCase
     final TrackWrapper newTarget = new TrackWrapper();
     newTarget.setName("Merged");
 
-    TrackWrapper.mergeTracks(newTarget, theLayers, subjects);
+    TrackWrapper.mergeTracks(newTarget, theLayers, subjects, true);
 
     // have a look at the results
     assertEquals("new track got created", 3, theLayers.size());
@@ -2185,7 +2185,7 @@ public class TrackWrapper_Test extends TestCase
     // do a merge
     final Editable[] subjects = new Editable[]
     {_tw, ts2};
-    TrackWrapper.mergeTracks(_tw, theLayers, subjects);
+    TrackWrapper.mergeTracks(_tw, theLayers, subjects, true);
 
     // have a look at the results
     assertEquals("track is longer", 17, _tw.numFixes());
@@ -2219,7 +2219,7 @@ public class TrackWrapper_Test extends TestCase
     // do a merge
     final Editable[] subjects = new Editable[]
     {_tw, ts2};
-    TrackWrapper.mergeTracks(_tw, theLayers, subjects);
+    TrackWrapper.mergeTracks(_tw, theLayers, subjects, true);
 
     // have a look at the results
     assertEquals("track starts correctly", 6, trackLength());
@@ -2276,7 +2276,7 @@ public class TrackWrapper_Test extends TestCase
     newTrack.setName("Merged");
     Layers theLayers = new Layers();
 
-    TrackWrapper.mergeTracks(newTrack, theLayers, items);
+    TrackWrapper.mergeTracks(newTrack, theLayers, items, true);
     // do the merge
 
     assertEquals("has all fixes", 15, newTrack.numFixes());
@@ -2314,7 +2314,7 @@ public class TrackWrapper_Test extends TestCase
     TrackWrapper result = new TrackWrapper();
     result.setName("Merged");
 
-    TrackWrapper.mergeTracks(result, theLayers, subjects);
+    TrackWrapper.mergeTracks(result, theLayers, subjects, true);
 
     // have a look at the results
     assertEquals("track 3 is longer", 11, result.numFixes());
