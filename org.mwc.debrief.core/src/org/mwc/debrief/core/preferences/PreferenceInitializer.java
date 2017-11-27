@@ -42,6 +42,10 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
     store.setDefault(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT, true);
     store.setDefault(PrefsPage.PreferenceConstants.INFILL_COLOR_STRATEGY,
         DynamicInfillSegment.RANDOM_INFILL);
+    store.setDefault(PrefsPage.PreferenceConstants.MERGED_INFILL_COLOR,
+        "255, 150, 0");
+    store.setDefault(PrefsPage.PreferenceConstants.MERGED_TRACK_COLOR,
+        "255, 77, 255");
     store.setDefault(PrefsPage.PreferenceConstants.USE_CUT_COLOR, true);
     store.setDefault(PrefsPage.PreferenceConstants.CUT_OFF_VALUE_DEGS, 3);
     

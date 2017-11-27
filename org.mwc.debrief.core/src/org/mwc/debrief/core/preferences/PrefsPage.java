@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -78,6 +79,18 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
     label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
+    addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
+        "Use sensor cut colors for new TMA leg positions",
+        getFieldEditorParent()));
+
+    addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
+        "Cut-off value for acceptable bearing errors in stacked dots (degs)", getFieldEditorParent()));
+
+    // insert a separator
+    Label label2 =
+        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    label2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+    
     // initialise the import choice tags, if we have to
     String[][] _trackModeTags = new String[3][2];
     _trackModeTags[0][0] = "Darker version of previous leg color";
@@ -91,13 +104,15 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         PreferenceConstants.INFILL_COLOR_STRATEGY,
         "Policy for dynamic infill colors:", 1, _trackModeTags,
         getFieldEditorParent()));
-
-    addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
-        "Use sensor cut colors for new TMA leg positions",
+    
+    addField(new ColorFieldEditor(
+        PreferenceConstants.MERGED_TRACK_COLOR,
+        "Default color for merged track:", 
         getFieldEditorParent()));
-
-    addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
-        "Cut-off value for acceptable bearing errors in stacked dots (degs)", getFieldEditorParent()));
+    addField(new ColorFieldEditor(
+        PreferenceConstants.MERGED_INFILL_COLOR,
+        "Default color for merged infill segments:", 
+        getFieldEditorParent()));
 
   }
 
@@ -124,6 +139,10 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String ASK_ABOUT_PROJECT = "createProject";
     public static final String INFILL_COLOR_STRATEGY =
         DynamicInfillSegment.INFILL_COLOR_STRATEGY;
+    public static final String MERGED_INFILL_COLOR =
+        "MERGED_INFILL_COLOR";
+    public static final String MERGED_TRACK_COLOR =
+        "MERGED_TRACK_COLOR";
     public static final String CUT_OFF_VALUE_DEGS =
         RelativeTMASegment.CUT_OFF_VALUE_DEGS;
     public static final String USE_CUT_COLOR =
