@@ -78,7 +78,7 @@ public class TrackWrapper_Test extends TestCase
   {
     Fix theFix =
         new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course,
-            MWC.Algorithms.Conversions.Kts2Yps(speed));
+            Conversions.Kts2Yps(speed));
     FixWrapper res = new FixWrapper(theFix);
 
     return res;
