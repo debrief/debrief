@@ -1011,11 +1011,23 @@
         </perspectiveExtension>
     </extension>
 
+    <extension point="org.eclipse.ui.keywords">
+  		<keyword label="merge" id="org.mwc.debrief.core.merge"/>
+  		<keyword label="infill" id="org.mwc.debrief.core.infill"/>
+	</extension> 
     <extension point="org.eclipse.ui.preferencePages">
-        <page class="org.mwc.debrief.core.preferences.PrefsPage"
-            id="org.mwc.debrief.core.preferences.PrefsPage"
-            category="org.mwc.cmap.core.preferences.CMAPPrefsPage" name="Debrief-specific settings"
-        />
+        <page
+              category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+              class="org.mwc.debrief.core.preferences.PrefsPage"
+              id="org.mwc.debrief.core.preferences.PrefsPage"
+              name="Debrief-specific settings">
+           <keywordReference
+                 id="org.mwc.debrief.core.merge">
+           </keywordReference>
+           <keywordReference
+                 id="org.mwc.debrief.core.infill">
+           </keywordReference>
+        </page>
     </extension>
     <extension point="org.eclipse.core.runtime.preferences">
         <initializer class="org.mwc.debrief.core.preferences.PreferenceInitializer"/>
