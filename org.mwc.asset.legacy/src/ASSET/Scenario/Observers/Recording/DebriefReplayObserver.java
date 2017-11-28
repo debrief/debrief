@@ -490,8 +490,9 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     // if (!haveOutputPositions)
     // return;
 
-    String locStr =
-        MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+    // use NULL as the location, so it's calculated from parent
+    String locStr = "NULL";
+    
     String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
 
