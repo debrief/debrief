@@ -26,7 +26,7 @@
 			</SubjectToTrack>
 		</DebriefReplayObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="LONG_TA_MODULES" DEFAULT_DEPTH="28"
+			Active="false" file_name="LONG_TA_MODULES" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_MODULES" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="800, 1000, 1200, 1400, 1600, 1800, 2000, 2200" SENSOR_NAME="LONG_TA">
 			<SubjectToTrack>
@@ -42,7 +42,7 @@
 			</SubjectToTrack>
 		</TowedArrayLocationObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="TA_COG_ABS" DEFAULT_DEPTH="28"
+			Active="false" file_name="TA_COG_ABS" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_COG_ABS" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="1300" SENSOR_NAME="TA_ARRAY">
 			<SubjectToTrack>
@@ -50,7 +50,7 @@
 			</SubjectToTrack>
 		</TowedArrayLocationObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="TA_COG_REL" DEFAULT_DEPTH="28"
+			Active="false" file_name="TA_COG_REL" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_COG_REL" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="1300" SENSOR_NAME="TA_ARRAY">
 			<SubjectToTrack>
