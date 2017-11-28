@@ -107,14 +107,9 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
     // if that's its destiny
     next = next.trim();
 
-    // find out if it's our null value
-    if (next.startsWith("N"))
+    // find out if it's not null value
+    if (!next.startsWith("N"))
     {
-      // ditch it,
-    }
-    else
-    {
-
       // get the deg out of this value
       latDeg = Double.valueOf(next);
 
@@ -267,11 +262,6 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
     public testMe(final String val)
     {
       super(val);
-    }
-
-    public void testDummy()
-    {
-
     }
 
     public final void testImport()
