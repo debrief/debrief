@@ -232,9 +232,9 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     public final void extend(final HiResDate val)
     {
       // are we using duff values
-      if (_startDTG.equals(INVALID_DATE))
+      if (_startDTG == INVALID_DATE)
         _startDTG = val;
-      if (_endDTG.equals(INVALID_DATE))
+      if (_endDTG == INVALID_DATE)
         _endDTG = val;
 
       if (_startDTG.greaterThan(val))
