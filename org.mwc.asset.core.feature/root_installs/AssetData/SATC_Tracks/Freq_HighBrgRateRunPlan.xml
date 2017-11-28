@@ -13,8 +13,18 @@
 				<Type Name="RED" />
 			</SubjectToTrack>
 		</DebriefReplayObserver>
-		<DebriefReplayObserver Name="Freq_BlueSensor" record_detections="true"
-			record_positions="false" Active="true" record_decisions="false" file_name="Freq_BlueSensor">
+		<DebriefReplayObserver Name="Freq_BlueSensorBrg"
+			record_detections="true" record_positions="false" Active="true"
+			record_decisions="false" file_name="Freq_BlueSensorBrg"
+			SubjectSensor="NB_BRG">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</DebriefReplayObserver>
+		<DebriefReplayObserver Name="Freq_BlueSensorFreq"
+			record_detections="true" record_positions="false" Active="true"
+			record_decisions="false" file_name="Freq_BlueSensorFreq"
+			SubjectSensor="NB_FREQ">
 			<SubjectToTrack>
 				<Type Name="BLUE" />
 			</SubjectToTrack>
@@ -34,7 +44,7 @@
 			</SubjectToTrack>
 		</TowedArrayLocationObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="TA_FORE_AFT" DEFAULT_DEPTH="28"
+			Active="false" file_name="TA_FORE_AFT" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_FORE_AFT" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="800, 1800" SENSOR_NAME="TA_ARRAY">
 			<SubjectToTrack>
