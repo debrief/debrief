@@ -68,14 +68,20 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
     String theSymbology;
     String theTrack;
     String sensorName;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
+    double latDeg;
+    double longDeg;
+    double latMin; 
+    double longMin;
+    char latHem;
+    char longHem;
+    double latSec; 
+    double longSec;
     WorldLocation origin = null;
     HiResDate theDtg = null;
     Double brg = null;
     WorldDistance rng = null;
-    Double brg2 = null, freq = null;
+    Double brg2 = null;
+    Double freq = null;
     java.awt.Color theColor;
 
     // skip the comment identifier
@@ -99,7 +105,7 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
 
     // let's trim this string aswell, just so we're sure N is the first letter
     // if that's its destiny
-    next.trim();
+    next = next.trim();
 
     // find out if it's our null value
     if (next.startsWith("N"))
