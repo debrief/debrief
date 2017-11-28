@@ -13,8 +13,18 @@
 				<Type Name="RED" />
 			</SubjectToTrack>
 		</DebriefReplayObserver>
-		<DebriefReplayObserver Name="Freq_BlueSensor" record_detections="true"
-			record_positions="false" Active="true" record_decisions="false" file_name="Freq_BlueSensor">
+		<DebriefReplayObserver Name="Freq_BlueSensorBrg"
+			record_detections="true" record_positions="false" Active="true"
+			record_decisions="false" file_name="Freq_BlueSensorBrg"
+			SubjectSensor="NB_BRG">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</DebriefReplayObserver>
+		<DebriefReplayObserver Name="Freq_BlueSensorFreq"
+			record_detections="true" record_positions="false" Active="true"
+			record_decisions="false" file_name="Freq_BlueSensorFreq"
+			SubjectSensor="NB_FREQ">
 			<SubjectToTrack>
 				<Type Name="BLUE" />
 			</SubjectToTrack>
@@ -26,7 +36,7 @@
 			</SubjectToTrack>
 		</DebriefReplayObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="LONG_TA_MODULES" DEFAULT_DEPTH="28"
+			Active="false" file_name="LONG_TA_MODULES" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_MODULES" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="800, 1000, 1200, 1400, 1600, 1800, 2000, 2200" SENSOR_NAME="LONG_TA">
 			<SubjectToTrack>
@@ -34,7 +44,7 @@
 			</SubjectToTrack>
 		</TowedArrayLocationObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="TA_FORE_AFT" DEFAULT_DEPTH="28"
+			Active="false" file_name="TA_FORE_AFT" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_FORE_AFT" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="800, 1800" SENSOR_NAME="TA_ARRAY">
 			<SubjectToTrack>
@@ -42,7 +52,7 @@
 			</SubjectToTrack>
 		</TowedArrayLocationObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="TA_COG_ABS" DEFAULT_DEPTH="28"
+			Active="false" file_name="TA_COG_ABS" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_COG_ABS" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="1300" SENSOR_NAME="TA_ARRAY">
 			<SubjectToTrack>
@@ -50,7 +60,7 @@
 			</SubjectToTrack>
 		</TowedArrayLocationObserver>
 		<TowedArrayLocationObserver Name="Towed Array Observer"
-			Active="true" file_name="TA_COG_REL" DEFAULT_DEPTH="28"
+			Active="false" file_name="TA_COG_REL" DEFAULT_DEPTH="28"
 			MESSAGE_NAME="TA_COG_REL" RECORDER_TYPE="HDG_BRG"
 			OFFSETS="1300" SENSOR_NAME="TA_ARRAY">
 			<SubjectToTrack>

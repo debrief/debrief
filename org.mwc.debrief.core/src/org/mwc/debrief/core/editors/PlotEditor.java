@@ -732,7 +732,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 final Vector<SensorWrapper> sensors = ir.getPendingSensors();
 
                 // see if there are any sensors awaiting a host
-                if (sensors.size() > 1)
+                if (sensors.size() >= 1)
                 {
                   Iterator<SensorWrapper> sIter = sensors.iterator();
                   while (sIter.hasNext())
@@ -758,7 +758,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                     }
                   }
                 }
-                else if (sensors.size() == 1)
+                if (sensors.size() == 1)
                 {
                   // see if there are any sensors awaiting a color
                   final SensorWrapper thisS = sensors.firstElement();

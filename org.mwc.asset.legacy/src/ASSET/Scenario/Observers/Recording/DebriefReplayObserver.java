@@ -52,7 +52,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 
   private final List<String> _formatHelpers;
 
-  /** the (optional) type of sensor we listen to
+  /**
+   * the (optional) type of sensor we listen to
    * 
    */
   private String _subjectSensor;
@@ -102,8 +103,6 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    * ************************************************************ member methods
    * *************************************************************
    */
-  
-  
 
   static public String writeDetailsToBuffer(
       final MWC.GenericData.WorldLocation loc,
@@ -338,10 +337,10 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    */
   protected String getMySuffix()
   {
-    // hey, if we're just recording sensor data, we should be a 
+    // hey, if we're just recording sensor data, we should be a
     // DSF file.
     final String suffix;
-    if(getRecordDetections() && !getRecordDecisions() && !getRecordPositions())
+    if (getRecordDetections() && !getRecordDecisions() && !getRecordPositions())
     {
       suffix = "dsf";
     }
@@ -349,7 +348,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     {
       suffix = "rep";
     }
-    
+
     return suffix;
   }
 
@@ -490,8 +489,9 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     // if (!haveOutputPositions)
     // return;
 
-    String locStr =
-        MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+    // use NULL as the location, so it's calculated from parent
+    String locStr = "NULL";
+
     String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
 
@@ -572,12 +572,6 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
       Category hostCategory, Float bearing, Float ambigBearing,
       WorldDistance range, String sensor_name, String label, Float freq)
   {
-    // first see if we have output any positions yet -
-    // since Debrief wants to know the position of any tracks before it writes
-    // to file
-    // if (!haveOutputPositions)
-    // return;
-
     String locStr = "NULL";
     String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
@@ -635,11 +629,36 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
               .formatOneDecimalPlace(range.getValueIn(WorldDistance.YARDS));
     }
 
-    String msg =
-        ";SENSOR2: " + dateStr + " " + wrapName(hostName) + " " + col + " "
-            + locStr + " " + brgTxt + " " + ambigTxt + " " + freqTxt + " "
-            + rangeTxt + " " + sensor_name + " " + label
-            + System.getProperty("line.separator");
+
+    // do we have an ambig bearing? if we do, use Sensor2, else
+    // use Sensor3
+    final String msg;
+    if ("NULL".equals(ambigTxt))
+    {
+      // use 3
+
+      // ;SENSOR3: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C
+      // FFF.F GGG.G RRRR yy..yy xx..xx
+      // ;; date, ownship name, symbology, sensor lat/long (or the single word NULL),
+      // bearing (degs) [or the single word NULL], bearing accuracy (degs)
+      // [or the single word NULL], frequency(Hz) [or the single word NULL],
+      // frequency accuracy (Hz) [or the single word NULL], range(yds)
+      // [or the single word NULL], sensor name, label (to end of line)
+      msg =
+          ";SENSOR3: " + dateStr + " " + wrapName(hostName) + " " + col + " "
+              + locStr + " " + brgTxt + " NULL  " + freqTxt + " NULL "
+              + rangeTxt + " " + sensor_name + " " + label
+              + System.getProperty("line.separator");
+    }
+    else
+    {
+      // use 2
+      msg =
+          ";SENSOR2: " + dateStr + " " + wrapName(hostName) + " " + col + " "
+              + locStr + " " + brgTxt + " " + ambigTxt + " " + freqTxt + " "
+              + rangeTxt + " " + sensor_name + " " + label
+              + System.getProperty("line.separator");
+    }
 
     try
     {

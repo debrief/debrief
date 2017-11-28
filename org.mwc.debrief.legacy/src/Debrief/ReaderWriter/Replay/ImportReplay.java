@@ -1668,7 +1668,7 @@ public class ImportReplay extends PlainImporterBase
 
     // so, we've found a track - see if it holds this sensor
     // SPECIAL HANDLING: it may actually still be a null. This is ok,
-    // because post-load the invite the user to select
+    // because post-load we invite the user to select
     // the parent track for these "null" tracks.
     final TrackWrapper theTrack = (TrackWrapper) val;
 
