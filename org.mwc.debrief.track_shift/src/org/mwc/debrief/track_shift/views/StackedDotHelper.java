@@ -623,7 +623,7 @@ public final class StackedDotHelper
    * @param errorSeries
    * @return
    */
-  private Paint calculateErrorShadeFor(final TimeSeriesCollection errorSeries)
+  private static Paint calculateErrorShadeFor(final TimeSeriesCollection errorSeries, final double cutOffValue)
   {
     final Paint col;
     double maxError = 0d;
@@ -649,20 +649,7 @@ public final class StackedDotHelper
         maxError = Math.max(maxError, Math.abs(thisE));
       }
     }
-
-    // retrieve the cut-off value
-    final String prefValue =
-        Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_DEGS);
-    final double cutOffValue;
-    if (prefValue != null && prefValue.length() > 0
-        && Double.valueOf(prefValue) != null)
-    {
-      cutOffValue = Double.valueOf(prefValue);
-    }
-    else
-    {
-      cutOffValue = 3d;
-    }
+   
 
     if (maxError > cutOffValue)
     {
@@ -1531,7 +1518,22 @@ public final class StackedDotHelper
       // find the color for maximum value in the error series, if we have error data
       if (errorSeries.getSeriesCount() > 0)
       {
-        final Paint errorColor = calculateErrorShadeFor(errorSeries);
+        // retrieve the cut-off value
+        final double cutOffValue;
+        final String prefValue =
+            Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_DEGS);
+        if (prefValue != null && prefValue.length() > 0
+            && Double.valueOf(prefValue) != null)
+        {
+          cutOffValue = Double.valueOf(prefValue);
+        }
+        else
+        {
+          cutOffValue = 3d;
+        }
+
+        
+        final Paint errorColor = calculateErrorShadeFor(errorSeries, cutOffValue);
         dotPlot.setBackgroundPaint(errorColor);
       }
 
@@ -1709,6 +1711,28 @@ public final class StackedDotHelper
     if (errorValues.getItemCount() > 0)
     {
       errorSeries.addSeries(errorValues);
+    }
+    
+    // find the color for maximum value in the error series, if we have error data
+    if (errorSeries.getSeriesCount() > 0)
+    {
+      final double cutOffValue;
+      
+      // retrieve the cut-off value
+      final String prefValue =
+          Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_HZ);
+      if (prefValue != null && prefValue.length() > 0
+          && Double.valueOf(prefValue) != null)
+      {
+        cutOffValue = Double.valueOf(prefValue) / 100d;
+      }
+      else
+      {
+        cutOffValue = 1d;
+      }
+
+      final Paint errorColor = calculateErrorShadeFor(errorSeries, cutOffValue);
+      dotPlot.setBackgroundPaint(errorColor);
     }
 
     actualSeries.addSeries(measuredValues);

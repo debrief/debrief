@@ -141,6 +141,12 @@ public class RelativeTMASegment extends CoreTMASegment implements
   public static final String CUT_OFF_VALUE_DEGS = "SHADING_CUT_OFF_VALUE_DEGS";
 
   /**
+   * preference name for the cut-off value for shading error plot (when REL TMA is being dragged)
+   * 
+   */
+  public static final String CUT_OFF_VALUE_HZ = "SHADING_CUT_OFF_VALUE_HZ";
+
+  /**
 	 * 
 	 */
   private static final long serialVersionUID = 1L;
