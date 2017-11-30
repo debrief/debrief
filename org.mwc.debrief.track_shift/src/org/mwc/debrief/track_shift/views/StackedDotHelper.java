@@ -623,7 +623,7 @@ public final class StackedDotHelper
    * @param errorSeries
    * @return
    */
-  private Paint calculateErrorShadeFor(final TimeSeriesCollection errorSeries)
+  private Paint calculateErrorShadeFor(final TimeSeriesCollection errorSeries, final Double cutOffValueOverride)
   {
     final Paint col;
     double maxError = 0d;
@@ -650,19 +650,29 @@ public final class StackedDotHelper
       }
     }
 
-    // retrieve the cut-off value
-    final String prefValue =
-        Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_DEGS);
+
     final double cutOffValue;
-    if (prefValue != null && prefValue.length() > 0
-        && Double.valueOf(prefValue) != null)
+
+    if(cutOffValueOverride != null)
     {
-      cutOffValue = Double.valueOf(prefValue);
+      cutOffValue = cutOffValueOverride;
     }
     else
     {
-      cutOffValue = 3d;
+      // retrieve the cut-off value
+      final String prefValue =
+          Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_DEGS);
+      if (prefValue != null && prefValue.length() > 0
+          && Double.valueOf(prefValue) != null)
+      {
+        cutOffValue = Double.valueOf(prefValue);
+      }
+      else
+      {
+        cutOffValue = 3d;
+      }
     }
+    
 
     if (maxError > cutOffValue)
     {
@@ -1531,7 +1541,7 @@ public final class StackedDotHelper
       // find the color for maximum value in the error series, if we have error data
       if (errorSeries.getSeriesCount() > 0)
       {
-        final Paint errorColor = calculateErrorShadeFor(errorSeries);
+        final Paint errorColor = calculateErrorShadeFor(errorSeries, null);
         dotPlot.setBackgroundPaint(errorColor);
       }
 
@@ -1709,6 +1719,13 @@ public final class StackedDotHelper
     if (errorValues.getItemCount() > 0)
     {
       errorSeries.addSeries(errorValues);
+    }
+    
+    // find the color for maximum value in the error series, if we have error data
+    if (errorSeries.getSeriesCount() > 0)
+    {
+      final Paint errorColor = calculateErrorShadeFor(errorSeries, 0.1);
+      dotPlot.setBackgroundPaint(errorColor);
     }
 
     actualSeries.addSeries(measuredValues);
