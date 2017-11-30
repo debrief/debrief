@@ -14,37 +14,50 @@
  */
 package org.mwc.debrief.track_shift.views;
 
-import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Paint;
+import java.awt.Stroke;
+
+import org.jfree.chart.plot.ValueMarker;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
-	public FrequencyResidualsView()
-	{
-		super(false, true);
-	}
+  private ValueMarker fZeroMarker;
 
-	protected String getUnits()
-	{
-		return "Hz";
-	}
-	
-	protected String getType()
-	{
-		return "Frequency";
-	}
-	
-	protected void updateData(final boolean updateDoublets)
-	{
-		// update the current datasets
-		_myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
-				_onlyVisible.isChecked(), _holder, this, updateDoublets);		
-		
-		// hide the line for the base freq dataset
-		final DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot.getRenderer();
-		lineRend.setSeriesShapesVisible(3, false);
-	}
+  public FrequencyResidualsView()
+  {
+    super(false, true);
+  }
+
+  protected String getUnits()
+  {
+    return "Hz";
+  }
+
+  protected String getType()
+  {
+    return "Frequency";
+  }
+
+  protected void updateData(final boolean updateDoublets)
+  {
+    // do we need our fZero marker?
+    if (fZeroMarker == null)
+    {
+      // now try to do add a zero marker on the error bar
+      final Paint thePaint = Color.DARK_GRAY;
+      final Stroke theStroke = new BasicStroke(3);
+      fZeroMarker = new ValueMarker(151.0, thePaint, theStroke);
+      _linePlot.addRangeMarker(fZeroMarker);
+    }
+
+    // update the current datasets
+    _myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
+        _onlyVisible.isChecked(), _holder, this, updateDoublets, fZeroMarker);
+  }
 
   @Override
   protected ZoneSlicer getOwnshipZoneSlicer(ColorProvider blueProv)

@@ -146,15 +146,7 @@ public final class Doublet implements Comparable<Doublet>
 	 */
 	public double calculateFreqError(final double measuredValue, final double calcValue)
 	{
-		double theError = measuredValue - calcValue;
-
-		while (theError > 180)
-			theError -= 360.0;
-
-		while (theError < -180)
-			theError += 360.0;
-
-		return theError;
+		return measuredValue - calcValue;
 	}
 
 	@Override
