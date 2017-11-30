@@ -21,16 +21,8 @@ import java.awt.Stroke;
 
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
-import org.jfree.data.time.FixedMillisecond;
-import org.jfree.data.time.RegularTimePeriod;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
-
-import Debrief.Wrappers.Track.ITimeVariableProvider;
-import MWC.GenericData.HiResDate;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
@@ -66,11 +58,6 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     // update the current datasets
     _myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
         _onlyVisible.isChecked(), _holder, this, updateDoublets, fZeroMarker);
-
-    // hide the line for the base freq dataset
-    final DefaultXYItemRenderer lineRend =
-        (DefaultXYItemRenderer) super._linePlot.getRenderer();
-    lineRend.setSeriesShapesVisible(3, false);
   }
 
   @Override
