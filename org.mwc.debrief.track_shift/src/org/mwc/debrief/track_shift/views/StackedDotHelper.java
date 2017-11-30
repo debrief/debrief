@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
@@ -1580,6 +1581,7 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    * @param logger
+   * @param fZeroMarker 
    * 
    * @param currentOffset
    *          how far the current track has been dragged
@@ -1587,7 +1589,7 @@ public final class StackedDotHelper
   public void updateFrequencyData(final XYPlot dotPlot, final XYPlot linePlot,
       final TrackDataProvider tracks, final boolean onlyVis,
       final Composite holder, final ErrorLogger logger,
-      final boolean updateDoublets)
+      final boolean updateDoublets, final ValueMarker fZeroMarker)
   {
 
     // do we have anything?
@@ -1631,6 +1633,8 @@ public final class StackedDotHelper
     final TimeSeries predictedValues = new TimeSeries("Predicted");
     final TimeSeries baseValues = new TimeSeries("Base");
 
+    boolean fZeroUpdated = false;
+    
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
     while (iter.hasNext())
@@ -1647,7 +1651,7 @@ public final class StackedDotHelper
 
         final ColouredDataItem mFreq =
             new ColouredDataItem(thisMilli, measuredFreq, thisColor, false,
-                null, true, true);
+                null, true, true, thisD.getSensorCut());
 
         // final ColouredDataItem corrFreq = new ColouredDataItem(
         // new FixedMillisecond(currentTime.getDate().getTime()),
@@ -1660,6 +1664,12 @@ public final class StackedDotHelper
           final double correctedFreq = thisD.getCorrectedFrequency();
           final double baseFreq = thisD.getBaseFrequency();
           final Color calcColor = thisD.getTarget().getColor();
+          
+          if(!fZeroUpdated)
+          {
+            fZeroMarker.setValue(baseFreq);
+            fZeroUpdated = true;
+          }
 
           final ColouredDataItem corrFreq =
               new ColouredDataItem(thisMilli, correctedFreq, thisColor, true,
@@ -1672,16 +1682,12 @@ public final class StackedDotHelper
             final double predictedFreq = thisD.getPredictedFrequency();
             final double thisError =
                 thisD.calculateFreqError(measuredFreq, predictedFreq);
-            final ColouredDataItem bFreq =
-                new ColouredDataItem(thisMilli, baseFreq, thisColor, true,
-                    null, true, true);
             final ColouredDataItem pFreq =
                 new ColouredDataItem(thisMilli, predictedFreq, calcColor,
-                    false, null, true, true);
+                    false, null, true, true, thisD.getTarget());
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
                     null, true, true);
-            baseValues.addOrUpdate(bFreq);
             predictedValues.addOrUpdate(pFreq);
             errorValues.addOrUpdate(eFreq);
           }
