@@ -1673,7 +1673,7 @@ public final class StackedDotHelper
           }
 
           final ColouredDataItem corrFreq =
-              new ColouredDataItem(thisMilli, correctedFreq, thisColor, true,
+              new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
                   null, true, true);
 
           // did we get a base frequency? We may have a track
@@ -1685,7 +1685,7 @@ public final class StackedDotHelper
                 thisD.calculateFreqError(measuredFreq, predictedFreq);
             final ColouredDataItem pFreq =
                 new ColouredDataItem(thisMilli, predictedFreq, calcColor,
-                    false, null, true, true, thisD.getTarget());
+                    true, null, true, true, thisD.getTarget());
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
                     null, true, true);
