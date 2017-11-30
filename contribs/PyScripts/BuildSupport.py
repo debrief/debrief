@@ -23,6 +23,22 @@ def get_exitcode_stdout_stderr(cmd):
     #
     return exitcode, out, err
 
+def updatePlugin(plugin):
+	print "Updating:" + plugin
+	
+	# read in the file as lines
+	
+	# find the line with Bundle-version
+	
+	# find the last id
+	
+	# increment the number
+	
+	# replace the string
+	
+	# write the lines back to file
+	
+
 
 url = "https://api.github.com/repos/debrief/debrief/releases/latest"
 data = urllib.urlopen(url).read()
@@ -58,7 +74,7 @@ paths = out.split("\n")
 for path in paths:
     # do we have a path
     if path:
-        print path
+       # print path
         # extract the first bit
         items = path.split("/")
         plugins.add(items[0])
@@ -68,11 +84,13 @@ for path in paths:
         if("org.mwc.debrief" in path):
             features.add("org.mwc.debrief.combined.feature")
 
-print plugins
-print features
+# print plugins
+# print features
 
 # ok, now increment the plugins
-
+for plugin_id in plugins:
+	updatePlugin(plugin_id)
+	
 # and the features
 
 # lastly the product version
