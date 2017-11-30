@@ -20,7 +20,6 @@ import java.awt.Paint;
 import java.awt.Stroke;
 
 import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 
