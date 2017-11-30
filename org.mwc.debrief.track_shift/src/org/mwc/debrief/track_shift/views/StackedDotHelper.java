@@ -1629,7 +1629,7 @@ public final class StackedDotHelper
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
 
     final TimeSeries measuredValues = new TimeSeries("Measured");
-    final TimeSeries correctedValues = new TimeSeries("Corrected");
+//    final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeries predictedValues = new TimeSeries("Predicted");
     final TimeSeries baseValues = new TimeSeries("Base");
 
@@ -1661,7 +1661,7 @@ public final class StackedDotHelper
         // do we have target data?
         if (thisD.getTarget() != null)
         {
-          final double correctedFreq = thisD.getCorrectedFrequency();
+//          final double correctedFreq = thisD.getCorrectedFrequency();
           final double baseFreq = thisD.getBaseFrequency();
           final Color calcColor = thisD.getTarget().getColor();
           
@@ -1672,9 +1672,9 @@ public final class StackedDotHelper
             fZeroUpdated = true;
           }
 
-          final ColouredDataItem corrFreq =
-              new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
-                  null, true, true);
+//          final ColouredDataItem corrFreq =
+//              new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
+//                  null, true, true);
 
           // did we get a base frequency? We may have a track
           // with a section of data that doesn't have frequency, you see.
@@ -1693,7 +1693,7 @@ public final class StackedDotHelper
             errorValues.addOrUpdate(eFreq);
           }
 
-          correctedValues.addOrUpdate(corrFreq);
+//          correctedValues.addOrUpdate(corrFreq);
         }
 
       }
@@ -1712,7 +1712,7 @@ public final class StackedDotHelper
     }
 
     actualSeries.addSeries(measuredValues);
-    actualSeries.addSeries(correctedValues);
+//    actualSeries.addSeries(correctedValues);
 
     if (predictedValues.getItemCount() > 0)
     {
