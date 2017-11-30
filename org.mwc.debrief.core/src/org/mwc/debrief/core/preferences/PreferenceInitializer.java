@@ -48,6 +48,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
         "255, 77, 255");
     store.setDefault(PrefsPage.PreferenceConstants.USE_CUT_COLOR, true);
     store.setDefault(PrefsPage.PreferenceConstants.CUT_OFF_VALUE_DEGS, 3);
+    store.setDefault(PrefsPage.PreferenceConstants.CUT_OFF_VALUE_HZ, 0.2);
     
   }
 

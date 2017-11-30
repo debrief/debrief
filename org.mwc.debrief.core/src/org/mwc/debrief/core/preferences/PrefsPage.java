@@ -19,7 +19,10 @@ import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.preference.ScaleFieldEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
@@ -43,6 +46,9 @@ import Debrief.Wrappers.Track.RelativeTMASegment;
 public class PrefsPage extends FieldEditorPreferencePage implements
     IWorkbenchPreferencePage
 {
+
+  private SelectionListener freqListener;
+  private ScaleFieldEditor freqEdit;
 
   public PrefsPage()
   {
@@ -87,6 +93,33 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
         "Cut-off value for acceptable bearing errors in stacked dots (degs)",
         getFieldEditorParent()));
+    
+    final String freqLabelStr = "Cut-off value for acceptable frequency errors in stacked dots";
+    freqEdit = new ScaleFieldEditor(PreferenceConstants.CUT_OFF_VALUE_HZ, "Cut-off", getFieldEditorParent());
+    freqEdit.setMinimum(0);
+    freqEdit.setMaximum(100);
+    freqEdit.setIncrement(5);
+    freqEdit.setLabelText(freqLabelStr + " (x.xx Hz) ");
+    freqListener = new SelectionListener()
+    {
+
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+        int curInt = freqEdit.getScaleControl().getSelection();
+        double curVal = (double)curInt / 100d;
+        freqEdit.setLabelText(freqLabelStr + " (" + curVal + " Hz)");
+      }
+
+      @Override
+      public void widgetDefaultSelected(SelectionEvent e)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+    };
+    freqEdit.getScaleControl().addSelectionListener(freqListener);
+    addField(freqEdit);
 
     // insert a separator
     Label label2 =
@@ -111,6 +144,18 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     addField(new ColorFieldEditor(PreferenceConstants.MERGED_INFILL_COLOR,
         "Color for infill segments in merged track:", getFieldEditorParent()));
 
+  }
+  
+  
+
+  @Override
+  public void dispose()
+  {
+    // drop the manually generated listener
+    freqEdit.getScaleControl().removeSelectionListener(freqListener);
+
+    // let the parent carry on ditching
+    super.dispose();
   }
 
   /*
@@ -140,6 +185,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String MERGED_TRACK_COLOR = "MERGED_TRACK_COLOR";
     public static final String CUT_OFF_VALUE_DEGS =
         RelativeTMASegment.CUT_OFF_VALUE_DEGS;
+    public static final String CUT_OFF_VALUE_HZ =
+        RelativeTMASegment.CUT_OFF_VALUE_HZ;
     public static final String USE_CUT_COLOR =
         GenerateTMASegmentFromCuts.USE_CUT_COLOR;
   }
