@@ -7,7 +7,7 @@ Created on 29 Nov 2017
 if __name__ == '__main__':
     pass
 
-import json,urllib,shlex, os
+import json,urllib,shlex, os, string
 from subprocess import Popen, PIPE
 from sets import Set
 
@@ -23,21 +23,51 @@ def get_exitcode_stdout_stderr(cmd):
     #
     return exitcode, out, err
 
-def updatePlugin(plugin):
-	print "Updating:" + plugin
-	
-	# read in the file as lines
-	
-	# find the line with Bundle-version
-	
-	# find the last id
-	
-	# increment the number
-	
-	# replace the string
-	
-	# write the lines back to file
-	
+def updateFeature(featureId):
+    # read file into xml
+    print "Updating " + featureId
+
+def updatePlugin(plugin, filePath, fieldName):
+    # print "Updating:" + plugin
+
+    # read in the file as lines
+    x = []
+    filePath = plugin + filePath
+    if os.path.exists(filePath): 
+        with open(filePath) as inFile:
+            for l in inFile:
+                x.append(l)  
+
+        index = 0;
+        for thisLine in x:
+            if thisLine.startswith(fieldName):
+                # find the last "." item
+                dotIndex = thisLine.rfind(".")
+                
+                # get the suffix
+                numberStr = thisLine[dotIndex+1:]
+                numberVal = int(numberStr)
+
+                # generate the new value                
+                newNumberStr = str(numberVal+1)
+                newLine = string.replace(thisLine, numberStr, newNumberStr)
+                
+                # replace the string in the list
+                x[index] = newLine + "\n"
+                
+                print "Updated:" + plugin + " from " + numberStr.strip() + " to " + newNumberStr
+
+            # remember the line number
+            index = index + 1;
+                
+        # lastly, write the strings to file
+        fh = open(filePath, "w")
+        
+        fh.writelines(x)
+        #for item in x:
+        #    fh.write("%s" % item)
+        
+        fh.close()
 
 
 url = "https://api.github.com/repos/debrief/debrief/releases/latest"
@@ -74,7 +104,7 @@ paths = out.split("\n")
 for path in paths:
     # do we have a path
     if path:
-       # print path
+        # print path
         # extract the first bit
         items = path.split("/")
         plugins.add(items[0])
@@ -89,8 +119,10 @@ for path in paths:
 
 # ok, now increment the plugins
 for plugin_id in plugins:
-	updatePlugin(plugin_id)
-	
+    updatePlugin(plugin_id,"/META-INF/MANIFEST.MF", 'Bundle-Version')
+
 # and the features
+for feature_id in features:
+    updateFeature(feature_id)
 
 # lastly the product version
