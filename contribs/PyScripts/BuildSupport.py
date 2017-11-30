@@ -37,7 +37,7 @@ tag = jData['tag_name']
 ## here's a working version of the command:
 ## git diff --name-only 20171107_3_0_414..HEAD
 
-os.chdir("c:\git\debrief")
+os.chdir("../../")
 
 cmd = "git diff --name-only " + tag + "..HEAD" 
 exitcode, out, err = get_exitcode_stdout_stderr(cmd)
