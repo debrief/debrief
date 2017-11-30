@@ -1668,6 +1668,7 @@ public final class StackedDotHelper
           if(!fZeroUpdated)
           {
             fZeroMarker.setValue(baseFreq);
+            fZeroMarker.setPaint(calcColor);
             fZeroUpdated = true;
           }
 
