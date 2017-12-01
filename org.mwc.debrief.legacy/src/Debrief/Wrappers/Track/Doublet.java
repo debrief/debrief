@@ -317,29 +317,23 @@ public final class Doublet implements Comparable<Doublet>
 
 		if (_targetTrack instanceof CoreTMASegment)
 		{
-			final CoreTMASegment rt = (CoreTMASegment) _targetTrack;
-			final double theBearingDegs = getCalculatedBearing(null, null);
-			final double theBearingRads = MWC.Algorithms.Conversions
-					.Degs2Rads(theBearingDegs);
-			final double myCourseRads = _hostFix.getCourse();
+      final CoreTMASegment rt = (CoreTMASegment) _targetTrack;
+
+      final double baseFreq = rt.getBaseFrequency();
+      final double speedOfSoundKts = 2591;
+      
+      final double theBearingDegs = getCalculatedBearing(null, null);
+
+      final double myCourseDegs =  _hostFix.getCourseDegs();
+      final double hisCourseDegs = _targetFix.getCourseDegs();
 
 			final double mySpeedKts = _hostFix.getSpeed();
-			final double baseFreq = rt.getBaseFrequency();
-			final double myDopplerComponent = FrequencyCalcs.calcDopplerComponent(theBearingRads,
-					myCourseRads, mySpeedKts, baseFreq);
-
-			final double hisCourseRads = _targetFix.getCourse();
 			final double hisSpeedKts = _targetFix.getSpeed();
 
-			final double hisDopplerComponent = FrequencyCalcs.calcDopplerComponent(Math.PI
-					+ theBearingRads, hisCourseRads, hisSpeedKts, baseFreq);
-
-			// note, we've changed the sign of how we add the two components to the
-			// base freq
-			// - this wasn't based on theoretical evidence, but on empirical
-			// observations
-			// by users
-			predictedFreq = baseFreq - (myDopplerComponent + hisDopplerComponent);
+      predictedFreq =
+          FrequencyCalcs.getPredictedFreq(baseFreq, speedOfSoundKts,
+              mySpeedKts, myCourseDegs, hisSpeedKts, hisCourseDegs,
+              theBearingDegs);
 		}
 		return predictedFreq;
 	}

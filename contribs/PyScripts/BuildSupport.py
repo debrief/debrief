@@ -7,7 +7,7 @@ Created on 29 Nov 2017
 if __name__ == '__main__':
     pass
 
-import json,urllib,shlex, os
+import json,urllib,shlex, os, string
 from subprocess import Popen, PIPE
 from sets import Set
 
@@ -23,6 +23,52 @@ def get_exitcode_stdout_stderr(cmd):
     #
     return exitcode, out, err
 
+def updateFeature(featureId):
+    # read file into xml
+    print "Updating " + featureId
+
+def updatePlugin(plugin, filePath, fieldName):
+    # print "Updating:" + plugin
+
+    # read in the file as lines
+    x = []
+    filePath = plugin + filePath
+    if os.path.exists(filePath): 
+        with open(filePath) as inFile:
+            for l in inFile:
+                x.append(l)  
+
+        index = 0;
+        for thisLine in x:
+            if thisLine.startswith(fieldName):
+                # find the last "." item
+                dotIndex = thisLine.rfind(".")
+                
+                # get the suffix
+                numberStr = thisLine[dotIndex+1:]
+                numberVal = int(numberStr)
+
+                # generate the new value                
+                newNumberStr = str(numberVal+1)
+                newLine = string.replace(thisLine, numberStr, newNumberStr)
+                
+                # replace the string in the list
+                x[index] = newLine + "\n"
+                
+                print "Updated:" + plugin + " from " + numberStr.strip() + " to " + newNumberStr
+
+            # remember the line number
+            index = index + 1;
+                
+        # lastly, write the strings to file
+        fh = open(filePath, "w")
+        
+        fh.writelines(x)
+        #for item in x:
+        #    fh.write("%s" % item)
+        
+        fh.close()
+
 
 url = "https://api.github.com/repos/debrief/debrief/releases/latest"
 data = urllib.urlopen(url).read()
@@ -37,7 +83,7 @@ tag = jData['tag_name']
 ## here's a working version of the command:
 ## git diff --name-only 20171107_3_0_414..HEAD
 
-os.chdir("c:\git\debrief")
+os.chdir("../../")
 
 cmd = "git diff --name-only " + tag + "..HEAD" 
 exitcode, out, err = get_exitcode_stdout_stderr(cmd)
@@ -58,7 +104,7 @@ paths = out.split("\n")
 for path in paths:
     # do we have a path
     if path:
-        print path
+        # print path
         # extract the first bit
         items = path.split("/")
         plugins.add(items[0])
@@ -68,11 +114,15 @@ for path in paths:
         if("org.mwc.debrief" in path):
             features.add("org.mwc.debrief.combined.feature")
 
-print plugins
-print features
+# print plugins
+# print features
 
 # ok, now increment the plugins
+for plugin_id in plugins:
+    updatePlugin(plugin_id,"/META-INF/MANIFEST.MF", 'Bundle-Version')
 
 # and the features
+for feature_id in features:
+    updateFeature(feature_id)
 
 # lastly the product version

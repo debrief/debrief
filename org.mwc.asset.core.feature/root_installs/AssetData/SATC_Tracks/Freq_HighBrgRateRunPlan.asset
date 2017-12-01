@@ -32,16 +32,16 @@
 			<SensorFit></SensorFit>
 			<Status Course="320" Fuel="100">
 				<Location>
-					<shortLocation Lat="60" Long="0"></shortLocation>
+					<shortLocation Lat="60.1" Long="0.25"></shortLocation>
 				</Location>
 				<Speed Value="9" Units="kts" />
 			</Status>
 			<Waterfall Name="subject route">
 				<Move Name="leg one" Course="320">
-					<Vector Value="5.7" Units="nm" /></Move>
+					<Vector Value="6" Units="nm" ></Vector></Move>
 				<Move Name="leg two" Course="350">
-					<Vector Value="9.75" Units="nm" /></Move>
-				<Move Name="leg three" Course="310">
+					<Vector Value="6" Units="nm" /></Move>
+				<Move Name="leg three" Course="220">
 					<Vector Value="4" Units="nm" /></Move>
 			</Waterfall>
 			<RadiatedCharacteristics>
@@ -72,7 +72,7 @@
 					<SteadyTime Value="0.0" Units="millis" />
 				</NarrowbandSensor>
 			</SensorFit>
-			<Status Course="40" Fuel="100">
+			<Status Course="200" Fuel="100">
 				<Location>
 					<shortLocation Lat="60.2" Long="0.2"></shortLocation>
 				</Location>
