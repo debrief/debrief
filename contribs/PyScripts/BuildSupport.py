@@ -181,6 +181,8 @@ for path in paths:
         items = path.split("/")
         plugins.add(items[0])
         
+        if("org.mwc.asset" in path):
+            features.add("org.mwc.asset.core.feature")
         if("org.mwc.cmap" in path):
             features.add("org.mwc.cmap.combined.feature")
         if("org.mwc.debrief" in path):
