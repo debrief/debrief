@@ -959,7 +959,7 @@ public final class StackedDotHelper
       // clear the existing target datasets
       targetCourseSeries.removeAllSeries();
       targetSpeedSeries.removeAllSeries();
-      
+
       // create the color for resolved ambig data
       final Color grayShade = new Color(155, 155, 155, 50);
 
@@ -1050,11 +1050,10 @@ public final class StackedDotHelper
             final boolean showSymbol = true;
             final Color color =
                 thisD.getHasBeenResolved() ? grayShade : ambigColor;
-            
+
             final ColouredDataItem amBearing =
-                new ColouredDataItem(thisMilli, ambigBearing, color,
-                    false, null, showSymbol, parentIsNotDynamic, thisD
-                        .getSensorCut());
+                new ColouredDataItem(thisMilli, ambigBearing, color, false,
+                    null, showSymbol, parentIsNotDynamic, thisD.getSensorCut());
             ambigValues.addOrUpdate(amBearing);
           }
 
