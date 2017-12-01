@@ -10,6 +10,7 @@ if __name__ == '__main__':
 import json,urllib,shlex, os, string, xml.etree.ElementTree as ET
 from subprocess import Popen, PIPE
 from sets import Set
+from datetime import datetime
 
 def get_exitcode_stdout_stderr(cmd):
     """
@@ -92,6 +93,52 @@ def updatePlugin(plugin, filePath, fieldName):
         #    fh.write("%s" % item)
         
         fh.close()
+        
+# increment the mappings file
+def updateMappings(filePath):
+	print "Updating " + filePath
+	# read in the file as lines
+	x = []
+	if os.path.exists(filePath): 
+		# read the file into a list of strings
+		with open(filePath) as inFile:
+		    for l in inFile:
+		        x.append(l)  
+		
+		# remember the current row index
+		index = 0;
+		
+		# loop through the strings
+		for thisLine in x:
+			# is it a comment?
+			if(not thisLine.startswith("#")):			
+				# no, so we can process it
+				
+				# which row is it?
+				lineNum = int(thisLine[0])
+				if lineNum == 0:
+					newVer = incrVersion(thisLine) + "\n"
+				elif lineNum == 1:
+					# generate date
+					dt = datetime.now()
+					strg = dt.strftime('%Y%m%d')
+					newVer = "1=" + strg + "\n"
+				elif lineNum == 2:
+					# generate date
+					dt = datetime.now()
+					strg = dt.strftime('%Y-%m-%d')
+					newVer = "2=" + strg
+		
+				# replace the string with this new one
+				x[index] = newVer
+		
+			# increment the row counter
+			index = index + 1
+        		
+        # lastly, write the strings to file
+        fh = open(filePath, "w")
+        fh.writelines(x)
+        fh.close()        
 
 
 url = "https://api.github.com/repos/debrief/debrief/releases/latest"
@@ -151,3 +198,6 @@ for feature_id in features:
 
 # lastly the product version
 updateFeature("org.mwc.debrief.product/debriefng.product")
+
+# and the mappings
+updateMappings("org.mwc.debrief.core/about.mappings")
