@@ -29,6 +29,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 
 import MWC.GUI.JFreeChart.AttractiveDataItem;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 
 // ////////////////////////////////////////////////
 // custom renderer, which uses the specified color for the data series
@@ -122,15 +123,34 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
         }
       }
     }
-
     return res;
+  }
+
+  @Override
+  public boolean getItemLineVisible(int row, int column)
+  {
+    final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
+    // get the data series
+    final TimeSeries bts = tsc.getSeries(row);
+    final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+    final boolean connect;
+    if (tsdp instanceof ColouredDataItem)
+    {
+      final ColouredDataItem cdi = (ColouredDataItem) tsdp;
+      connect = cdi.connectToPrevious();
+    }
+    else
+    {
+      connect = super.getItemLineVisible(row, column);
+    }
+    return connect;
   }
 
   @Override
   public Paint getItemPaint(final int row, final int column)
   {
     final Paint theColor;
-    
+
     final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
     // get the data series
     final TimeSeries bts = tsc.getSeries(row);

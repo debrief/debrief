@@ -196,11 +196,12 @@ public final class Doublet implements Comparable<Doublet>
 
 	public double getAmbiguousMeasuredBearing()
 	{
-		double res = INVALID_BASE_FREQUENCY;
-		if (_sensor.getHasAmbiguousBearing())
-			res = _sensor.getAmbiguousBearing();
-
-		return res;
+		return _sensor.getAmbiguousBearing();
+	}
+	
+	public boolean getHasBeenResolved()
+	{
+	  return !_sensor.getHasAmbiguousBearing();
 	}
 
 	/**
