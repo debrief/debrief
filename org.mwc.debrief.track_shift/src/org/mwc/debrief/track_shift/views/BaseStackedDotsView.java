@@ -1783,6 +1783,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     CorePlugin.logError(status, text, null, true);
   }
 
+  /** if we aren't showing any of the top 3 plots, hide the panel,
+   * to make the space available for zone charts
+   */
+  private void checkSubPlots()
+  {
+    int subPlots = _combined.getSubplots().size();
+    _holder.setVisible(subPlots > 0);
+    _holder.getParent().layout();
+  }
+  
   protected void makeActions()
   {
     _autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
@@ -1839,24 +1849,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void run()
       {
         super.run();
+        super.run();
         if (_showLinePlot.isChecked())
         {
-          _combined.remove(_linePlot);
-          _combined.remove(_dotPlot);
-
           _combined.add(_linePlot);
-          if (_showDotPlot.isChecked())
-          {
-            _combined.add(_dotPlot);
-          }
         }
         else
         {
-          if (_combined.getSubplots().size() > 1)
-          {
-            _combined.remove(_linePlot);
-          }
-        }
+          _combined.remove(_linePlot);
+        }        
+        checkSubPlots();
       }
     };
     _showLinePlot.setChecked(true);
@@ -1872,22 +1874,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         super.run();
         if (_showDotPlot.isChecked())
         {
-          _combined.remove(_linePlot);
-          _combined.remove(_dotPlot);
-
-          if (_showLinePlot.isChecked())
-          {
-            _combined.add(_linePlot);
-          }
           _combined.add(_dotPlot);
         }
         else
         {
-          if (_combined.getSubplots().size() > 1)
-          {
-            _combined.remove(_dotPlot);
-          }
-        }
+          _combined.remove(_dotPlot);
+        }        
+        checkSubPlots();
       }
     };
     _showDotPlot.setChecked(true);
@@ -1909,6 +1902,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
           _combined.remove(_targetOverviewPlot);
         }
+        checkSubPlots();
       }
     };
     _showTargetOverview.setChecked(true);
