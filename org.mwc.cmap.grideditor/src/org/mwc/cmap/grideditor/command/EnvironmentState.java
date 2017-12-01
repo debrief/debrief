@@ -73,9 +73,9 @@ public interface EnvironmentState {
 
 		public ItemAtKnownPosition(final OperationEnvironment environment, final int expectedPosition) throws ExecutionException {
 			this(environment.getSeries().getItems().get(expectedPosition), expectedPosition);
-			if (myItem != environment.getSubject()) {
-				throw new ExecutionException("Can't find subject element at position: " + myActualPosition);
-			}
+//			if (!myItem.equals(environment.getSubject())) {
+//				throw new ExecutionException("Can't find subject element at position: " + myActualPosition);
+//			}
 		}
 
 		public ItemAtKnownPosition(final OperationEnvironment environment) {

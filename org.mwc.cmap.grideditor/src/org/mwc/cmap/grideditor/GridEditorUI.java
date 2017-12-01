@@ -221,8 +221,7 @@ public class GridEditorUI extends Composite
 			}
 			if (GriddableSeries.PROPERTY_DELETED.equals(evt.getPropertyName()))
 			{
-				myChartInput.handleItemDeleted((Integer) evt.getOldValue(),
-						(TimeStampedDataItem) evt.getNewValue());
+				myChartInput.handleItemDeleted((TimeStampedDataItem) evt.getNewValue());
 			}
 			else if (GriddableSeries.PROPERTY_CHANGED.equals(evt.getPropertyName()))
 			{

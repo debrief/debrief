@@ -94,7 +94,7 @@ public class Date2ValueManager implements ChartDataManager {
 		myDuplicatesWorkaround.updateDomainItem(changedItem, myValuesComponent.getDoubleValue(changedItem));
 	}
 
-	public void handleItemDeleted(final int oldIndex, final TimeStampedDataItem deletedItem) {
+	public void handleItemDeleted(final TimeStampedDataItem deletedItem) {
 		myDuplicatesWorkaround.removeDomainItem(deletedItem);
 	}
 
