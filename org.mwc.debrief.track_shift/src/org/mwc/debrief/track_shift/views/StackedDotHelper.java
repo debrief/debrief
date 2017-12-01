@@ -623,7 +623,8 @@ public final class StackedDotHelper
    * @param errorSeries
    * @return
    */
-  private static Paint calculateErrorShadeFor(final TimeSeriesCollection errorSeries, final double cutOffValue)
+  private static Paint calculateErrorShadeFor(
+      final TimeSeriesCollection errorSeries, final double cutOffValue)
   {
     final Paint col;
     double maxError = 0d;
@@ -649,7 +650,6 @@ public final class StackedDotHelper
         maxError = Math.max(maxError, Math.abs(thisE));
       }
     }
-   
 
     if (maxError > cutOffValue)
     {
@@ -959,6 +959,9 @@ public final class StackedDotHelper
       // clear the existing target datasets
       targetCourseSeries.removeAllSeries();
       targetSpeedSeries.removeAllSeries();
+      
+      // create the color for resolved ambig data
+      final Color grayShade = new Color(155, 155, 155, 50);
 
       // ok, run through the points on the primary track
       final Iterator<Doublet> iter = _primaryDoublets.iterator();
@@ -1042,9 +1045,16 @@ public final class StackedDotHelper
               ambigColor = thisColor;
             }
 
+            // if this cut has been resolved, we don't show a symbol
+            // for the ambiguous cut
+            final boolean showSymbol = true;
+            final Color color =
+                thisD.getHasBeenResolved() ? grayShade : ambigColor;
+            
             final ColouredDataItem amBearing =
-                new ColouredDataItem(thisMilli, ambigBearing, ambigColor,
-                    false, null, true, parentIsNotDynamic, thisD.getSensorCut());
+                new ColouredDataItem(thisMilli, ambigBearing, color,
+                    false, null, showSymbol, parentIsNotDynamic, thisD
+                        .getSensorCut());
             ambigValues.addOrUpdate(amBearing);
           }
 
@@ -1532,8 +1542,8 @@ public final class StackedDotHelper
           cutOffValue = 3d;
         }
 
-        
-        final Paint errorColor = calculateErrorShadeFor(errorSeries, cutOffValue);
+        final Paint errorColor =
+            calculateErrorShadeFor(errorSeries, cutOffValue);
         dotPlot.setBackgroundPaint(errorColor);
       }
 
@@ -1583,7 +1593,7 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    * @param logger
-   * @param fZeroMarker 
+   * @param fZeroMarker
    * 
    * @param currentOffset
    *          how far the current track has been dragged
@@ -1631,12 +1641,12 @@ public final class StackedDotHelper
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
 
     final TimeSeries measuredValues = new TimeSeries("Measured");
-//    final TimeSeries correctedValues = new TimeSeries("Corrected");
+    // final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeries predictedValues = new TimeSeries("Predicted");
     final TimeSeries baseValues = new TimeSeries("Base");
 
     boolean fZeroUpdated = false;
-    
+
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
     while (iter.hasNext())
@@ -1663,20 +1673,20 @@ public final class StackedDotHelper
         // do we have target data?
         if (thisD.getTarget() != null)
         {
-//          final double correctedFreq = thisD.getCorrectedFrequency();
+          // final double correctedFreq = thisD.getCorrectedFrequency();
           final double baseFreq = thisD.getBaseFrequency();
           final Color calcColor = thisD.getTarget().getColor();
-          
-          if(!fZeroUpdated)
+
+          if (!fZeroUpdated)
           {
             fZeroMarker.setValue(baseFreq);
             fZeroMarker.setPaint(calcColor);
             fZeroUpdated = true;
           }
 
-//          final ColouredDataItem corrFreq =
-//              new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
-//                  null, true, true);
+          // final ColouredDataItem corrFreq =
+          // new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
+          // null, true, true);
 
           // did we get a base frequency? We may have a track
           // with a section of data that doesn't have frequency, you see.
@@ -1686,8 +1696,8 @@ public final class StackedDotHelper
             final double thisError =
                 thisD.calculateFreqError(measuredFreq, predictedFreq);
             final ColouredDataItem pFreq =
-                new ColouredDataItem(thisMilli, predictedFreq, calcColor,
-                    true, null, true, true, thisD.getTarget());
+                new ColouredDataItem(thisMilli, predictedFreq, calcColor, true,
+                    null, true, true, thisD.getTarget());
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
                     null, true, true);
@@ -1695,7 +1705,7 @@ public final class StackedDotHelper
             errorValues.addOrUpdate(eFreq);
           }
 
-//          correctedValues.addOrUpdate(corrFreq);
+          // correctedValues.addOrUpdate(corrFreq);
         }
 
       }
@@ -1712,12 +1722,12 @@ public final class StackedDotHelper
     {
       errorSeries.addSeries(errorValues);
     }
-    
+
     // find the color for maximum value in the error series, if we have error data
     if (errorSeries.getSeriesCount() > 0)
     {
       final double cutOffValue;
-      
+
       // retrieve the cut-off value
       final String prefValue =
           Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_HZ);
@@ -1736,7 +1746,7 @@ public final class StackedDotHelper
     }
 
     actualSeries.addSeries(measuredValues);
-//    actualSeries.addSeries(correctedValues);
+    // actualSeries.addSeries(correctedValues);
 
     if (predictedValues.getItemCount() > 0)
     {
