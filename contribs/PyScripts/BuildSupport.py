@@ -7,7 +7,7 @@ Created on 29 Nov 2017
 if __name__ == '__main__':
     pass
 
-import json,urllib,shlex, os, string
+import json,urllib,shlex, os, string, xml.etree.ElementTree as ET
 from subprocess import Popen, PIPE
 from sets import Set
 
@@ -23,10 +23,42 @@ def get_exitcode_stdout_stderr(cmd):
     #
     return exitcode, out, err
 
-def updateFeature(featureId):
-    # read file into xml
-    print "Updating " + featureId
+# for the given string, find the last "." separate number, 
+# increment it, and return it
+def incrVersion(versionString):
+	# find the last "." item
+	dotIndex = versionString.rfind(".")
+	
+	# get the suffix
+	numberStr = versionString[dotIndex+1:]
+	numberVal = int(numberStr)
+	
+	# generate the new value                
+	newNumberStr = str(numberVal+1)
+	
+	return string.replace(versionString, numberStr, newNumberStr)
 
+# increment the version in the supplied feature
+def updateFeature(featurePath):
+    # read file into xml
+	print "Updating " + featurePath
+
+	tree = ET.parse(featurePath)
+	root = tree.getroot()
+	curVer = root.attrib["version"]
+	
+	newVer = incrVersion(curVer)
+	
+	# ok, we're not going to write via the XML API, since it reformats
+	# the text.  Instaed, read in the file into one string
+	inFile = open(featurePath)
+	contents = inFile.read()
+	contents = string.replace(contents, curVer, str(newVer))
+	
+	outFile = open(featurePath,"w")
+	outFile.write(contents)	
+	
+# increment the version in the supplied plugin
 def updatePlugin(plugin, filePath, fieldName):
     # print "Updating:" + plugin
 
@@ -41,21 +73,13 @@ def updatePlugin(plugin, filePath, fieldName):
         index = 0;
         for thisLine in x:
             if thisLine.startswith(fieldName):
-                # find the last "." item
-                dotIndex = thisLine.rfind(".")
-                
-                # get the suffix
-                numberStr = thisLine[dotIndex+1:]
-                numberVal = int(numberStr)
-
-                # generate the new value                
-                newNumberStr = str(numberVal+1)
-                newLine = string.replace(thisLine, numberStr, newNumberStr)
+            	
+            	newLine = incrVersion(thisLine) 
                 
                 # replace the string in the list
                 x[index] = newLine + "\n"
                 
-                print "Updated:" + plugin + " from " + numberStr.strip() + " to " + newNumberStr
+                print "Updated:" + plugin + " from " + thisLine.strip() + " to " + newLine
 
             # remember the line number
             index = index + 1;
@@ -123,6 +147,7 @@ for plugin_id in plugins:
 
 # and the features
 for feature_id in features:
-    updateFeature(feature_id)
+    updateFeature(feature_id + "/feature.xml")
 
 # lastly the product version
+updateFeature("org.mwc.debrief.product/debriefng.product")
