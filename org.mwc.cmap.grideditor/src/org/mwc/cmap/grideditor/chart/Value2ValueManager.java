@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.grideditor.chart;
 
+import java.util.List;
+
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.data.xy.XYDataset;
@@ -101,13 +103,29 @@ public class Value2ValueManager implements ChartDataManager {
 		if (currentXValue == chartItem.getXValue()) {
 			mySeries.updateByIndex(index, myYComponent.getDoubleValue(changedItem));
 		} else {
-			handleItemDeleted(index, changedItem);
+			handleItemDeleted(changedItem);
 			handleItemAdded(index, changedItem);
 		}
 	}
 
-	public void handleItemDeleted(final int oldIndex, final TimeStampedDataItem deletedItem) {
-		mySeries.remove(oldIndex);
+	public void handleItemDeleted(final TimeStampedDataItem deletedItem) {
+	  // Note: we used to get the index of the deleted item. We don't any more.  So,
+	  // we've got to find the item ourselves
+	  
+	  final List<?> items = mySeries.getItems();
+	  int ctr = 0;
+	  for(final Object item: items)
+	  {
+	    final BackedXYDataItem data = (BackedXYDataItem) item;
+	    // does the stored item match ours?
+	    if(data.getDomainItem().equals(deletedItem))
+	    {
+	      mySeries.remove(ctr);
+	      break;
+	    }
+	    ctr++;
+	  }
+	  
 	}
 
 	public void setInput(final GriddableSeries input) {

@@ -39,7 +39,7 @@ public interface ChartDataManager {
 
 	public void handleItemChanged(TimeStampedDataItem changedItem);
 
-	public void handleItemDeleted(int oldIndex, TimeStampedDataItem deletedItem);
+	public void handleItemDeleted(TimeStampedDataItem deletedItem);
 	
 	public void attach(JFreeChartComposite chartPanel);
 	
