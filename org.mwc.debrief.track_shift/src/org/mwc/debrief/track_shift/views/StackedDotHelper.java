@@ -1106,8 +1106,8 @@ public final class StackedDotHelper
               errorValues.addOrUpdate(newTrueError);
               calculatedValues.addOrUpdate(cBearing);
 
-              // and the ambiguous error
-              if (hasAmbiguous)
+              // and the ambiguous error, if it hasn't been resolved
+              if (!thisD.getHasBeenResolved())
               {
                 if (flipAxes)
                 {
