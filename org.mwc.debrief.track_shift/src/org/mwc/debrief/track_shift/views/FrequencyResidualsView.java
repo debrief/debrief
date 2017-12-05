@@ -65,4 +65,12 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     // don't bother, it's for bearing data
     return null;
   }
+  
+  @Override
+  protected String formatValue(double value)
+  {
+    return MWC.Utilities.TextFormatting.GeneralFormat
+        .formatTwoDecimalPlaces(value);
+  }
+
 }

@@ -198,6 +198,12 @@ public final class StackedDotHelper
         {
           // no, nothing to do.
         }
+
+        @Override
+        protected String formatValue(double value)
+        {
+          return "" + value;
+        }
       };
 
       // try to set a zone on the track
@@ -1636,6 +1642,10 @@ public final class StackedDotHelper
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
 
+    
+    if(_primaryTrack == null)
+      return;
+    
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
 

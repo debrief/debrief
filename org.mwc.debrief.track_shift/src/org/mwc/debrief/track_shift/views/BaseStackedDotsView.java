@@ -1108,9 +1108,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           annotChanged = true;
         }
         // and write the text
-        final String numA =
-            MWC.Utilities.TextFormatting.GeneralFormat
-                .formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
+        final String numA = formatValue(_linePlot.getRangeCrosshairValue());
         final Date newDate =
             new Date((long) _linePlot.getDomainCrosshairValue());
         final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
@@ -1554,9 +1552,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // we need a secondary track to do this, so only fire if we have a secondary
         if (secTrack != null)
         {
+          // take a copy of the zones, so we don't get co-modification
+          List<Zone> safeZones = new ArrayList<Zone>(zones);
 
           // fire the finished event
-          for (final Zone zone : zones)
+          for (final Zone zone : safeZones)
           {
             setLeg(priTrack, secTrack, zone);
           }
@@ -1656,6 +1656,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   abstract protected String getType();
 
   abstract protected String getUnits();
+  
+  /** format the value in a suitable way for
+   * marking the current value of the cursor
+   * @param current data value at cursor
+   * @return suitably formatted version
+   */
+  abstract protected String formatValue(final double value);
 
   @Override
   public void init(final IViewSite site, final IMemento memento)
