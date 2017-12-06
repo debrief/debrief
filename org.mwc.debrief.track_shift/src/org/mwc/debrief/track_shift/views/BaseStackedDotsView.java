@@ -2266,12 +2266,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             new RelativeTMASegment(observations, offset, speed, courseDegs,
                 theLayers, override);
 
-        // and copy the previous base frequency.
-        if (otherSegment != null)
-        {
-          newLeg.setBaseFrequency(otherSegment.getBaseFrequency());
-        }
-
         // ok, now add the leg to the secondary track
         final TrackWrapper secondary = (TrackWrapper) secTrack;
         secondary.add(newLeg);

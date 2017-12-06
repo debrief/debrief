@@ -4828,10 +4828,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       final RelativeTMASegment tr2 =
           new RelativeTMASegment(theTMA, p2, secondOffset);
 
-      // update the freq's
-      tr1.setBaseFrequency(theTMA.getBaseFrequency());
-      tr2.setBaseFrequency(theTMA.getBaseFrequency());
-
       // and store them
       ts1 = tr1;
       ts2 = tr2;
@@ -4857,12 +4853,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           new AbsoluteTMASegment(theTMA, p1, t1Start.getLocation(), null, null);
       final AbsoluteTMASegment tr2 =
           new AbsoluteTMASegment(theTMA, p2, origin, null, null);
-
-      // update the freq's
-      tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
-          .getBaseFrequency());
-      tr2.setBaseFrequency(((CoreTMASegment) relevantSegment)
-          .getBaseFrequency());
 
       // and store them
       ts1 = tr1;

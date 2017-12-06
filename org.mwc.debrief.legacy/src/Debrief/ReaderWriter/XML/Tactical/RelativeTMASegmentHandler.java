@@ -90,7 +90,6 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 
 		final RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed,
 				_offset, _theLayers, _host, _sensor);
-		res.setBaseFrequency(_baseFrequency);
 		
 		// clear the working values
 		_host = null;

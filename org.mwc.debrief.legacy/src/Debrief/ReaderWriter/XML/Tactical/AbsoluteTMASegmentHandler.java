@@ -59,7 +59,6 @@ abstract public class AbsoluteTMASegmentHandler extends CoreTMASegmentHandler
 	protected TrackSegment createTrack()
 	{
 		final AbsoluteTMASegment res = new AbsoluteTMASegment(_courseDegs, _speed, _origin, null, null);
-		res.setBaseFrequency(_baseFrequency);
 		return res;
 	}
 

@@ -64,11 +64,6 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	 * 
 	 */
 	protected WorldSpeed _speed;
-	/**
-	 * the base frequency (f0) for this tma segment
-	 * 
-	 */
-	private double _baseFreq = 0;
 
 	/**
 	 * message that we plot 1/2 way along segment when it's being stretched or
@@ -109,11 +104,6 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 		newFix.resetName();
 		newFix.setLabelFormat("HHmm.ss");
 		return newFix;
-	}
-
-	public double getBaseFrequency()
-	{
-		return _baseFreq;
 	}
 
 	/**
@@ -269,11 +259,6 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	protected void fireAdjusted()
 	{
 		super.firePropertyChange(ADJUSTED, null, System.currentTimeMillis());
-	}
-
-	public void setBaseFrequency(final double baseFrequency)
-	{
-		_baseFreq = baseFrequency;
 	}
 
 	/**
