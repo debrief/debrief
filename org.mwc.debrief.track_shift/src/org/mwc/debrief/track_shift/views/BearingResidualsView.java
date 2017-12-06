@@ -1257,4 +1257,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     return MWC.Utilities.TextFormatting.GeneralFormat
         .formatOneDecimalPlace(value);
   }
+  
+
+  @Override
+  protected boolean allowDisplayOfTargetOverview()
+  {
+    return true;
+  }
+
+  @Override
+  protected boolean allowDisplayOfZoneChart()
+  {
+    return true;
+  }
+
 }

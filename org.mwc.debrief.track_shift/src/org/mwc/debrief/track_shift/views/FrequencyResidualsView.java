@@ -14,11 +14,6 @@
  */
 package org.mwc.debrief.track_shift.views;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Stroke;
-
 import org.jfree.chart.plot.ValueMarker;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
@@ -47,11 +42,11 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     // do we need our fZero marker?
     if (fZeroMarker == null)
     {
-      // now try to do add a zero marker on the error bar
-      final Paint thePaint = Color.DARK_GRAY;
-      final Stroke theStroke = new BasicStroke(3);
-      fZeroMarker = new ValueMarker(151.0, thePaint, theStroke);
-      _linePlot.addRangeMarker(fZeroMarker);
+//      // now try to do add a zero marker on the error bar
+//      final Paint thePaint = Color.DARK_GRAY;
+//      final Stroke theStroke = new BasicStroke(3);
+//      fZeroMarker = new ValueMarker(151.0, thePaint, theStroke);
+//      _linePlot.addRangeMarker(fZeroMarker);
     }
 
     // update the current datasets
@@ -71,6 +66,18 @@ public class FrequencyResidualsView extends BaseStackedDotsView
   {
     return MWC.Utilities.TextFormatting.GeneralFormat
         .formatTwoDecimalPlaces(value);
+  }
+
+  @Override
+  protected boolean allowDisplayOfTargetOverview()
+  {
+    return false;
+  }
+
+  @Override
+  protected boolean allowDisplayOfZoneChart()
+  {
+    return false;
   }
 
 }
