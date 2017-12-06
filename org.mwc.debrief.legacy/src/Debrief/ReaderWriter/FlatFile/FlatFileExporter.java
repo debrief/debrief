@@ -526,8 +526,7 @@ public class FlatFileExporter
     {
       body =
           this.getBody2(pTrack, secTrack, period, sensor1Type, sensor2Type,
-              fileVersion, sensor1, sensor2, s1fwd, s1aft, s2fwd, s2aft,
-              speedOfSoundMS);
+              sensor1, sensor2, s1fwd, s1aft, s2fwd, s2aft, speedOfSoundMS);
     }
 
     // count how many items we found
@@ -950,26 +949,24 @@ public class FlatFileExporter
    * @param primaryTrack
    * @param msdTrack
    * @param period
-   * @param sensorType
-   * @param fileVersion
-   *          : which SAM file to support
-   * @param sensor2
-   *          the first sensor to export
    * @param sensor1
    *          the second sensro to export
+   * @param sensor2
+   *          the first sensor to export
    * @param s1fwd
    * @param s1aft
    * @param s2fwd
    * @param s2aft
    * @param speedOfSoundMS
+   * @param sensorType
    * @return
    */
   private String getBody2(final TrackWrapper primaryTrack,
       final TrackWrapper msdTrack, final TimePeriod period,
       final String sensorType1, final String sensorType2,
-      final String fileVersion, final SensorWrapper sensor1,
-      final SensorWrapper sensor2, final Double s1fwd, final Double s1aft,
-      final Double s2fwd, final Double s2aft, final Double speedOfSoundMS)
+      final SensorWrapper sensor1, final SensorWrapper sensor2,
+      final Double s1fwd, final Double s1aft, final Double s2fwd,
+      final Double s2aft, final Double speedOfSoundMS)
   {
     final StringBuffer buffer = new StringBuffer();
 
