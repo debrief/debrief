@@ -72,8 +72,6 @@ public class AbsoluteTMASegment extends CoreTMASegment
                 displayExpertProp("DTG_End", "End time",
                     "End time for this TMA Solution", SOLUTION),
                 expertProp("Course", "Course of this TMA Solution", SOLUTION),
-                displayExpertProp("BaseFrequency", "Base frequency",
-                    "The base frequency of this TMA segment", SOLUTION),
                 expertProp("Speed", "Speed of this TMA Solution", SOLUTION)};
         mine = res;
       }

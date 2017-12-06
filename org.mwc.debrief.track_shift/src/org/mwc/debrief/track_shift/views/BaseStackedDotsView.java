@@ -1108,9 +1108,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           annotChanged = true;
         }
         // and write the text
-        final String numA =
-            MWC.Utilities.TextFormatting.GeneralFormat
-                .formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
+        final String numA = formatValue(_linePlot.getRangeCrosshairValue());
         final Date newDate =
             new Date((long) _linePlot.getDomainCrosshairValue());
         final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
@@ -1396,8 +1394,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     toolBarManager.add(_showCrossHairs);
     toolBarManager.add(_showLinePlot);
     toolBarManager.add(_showDotPlot);
-    toolBarManager.add(_showTargetOverview);
-    toolBarManager.add(_showZones);
+    if (allowDisplayOfTargetOverview())
+    {
+      toolBarManager.add(_showTargetOverview);
+    }
+    else
+    {
+      _showTargetOverview.setChecked(false);
+    }
+    
+    if (allowDisplayOfZoneChart())
+    {
+      toolBarManager.add(_showZones);
+    }
+    else
+    {
+      _showZones.setChecked(false);
+    }
 
     addExtras(toolBarManager);
 
@@ -1554,9 +1567,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // we need a secondary track to do this, so only fire if we have a secondary
         if (secTrack != null)
         {
+          // take a copy of the zones, so we don't get co-modification
+          List<Zone> safeZones = new ArrayList<Zone>(zones);
 
           // fire the finished event
-          for (final Zone zone : zones)
+          for (final Zone zone : safeZones)
           {
             setLeg(priTrack, secTrack, zone);
           }
@@ -1657,6 +1672,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   abstract protected String getUnits();
 
+  /**
+   * format the value in a suitable way for marking the current value of the cursor
+   * 
+   * @param current
+   *          data value at cursor
+   * @return suitably formatted version
+   */
+  abstract protected String formatValue(final double value);
+
   @Override
   public void init(final IViewSite site, final IMemento memento)
       throws PartInitException
@@ -1679,7 +1703,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         _showDotPlot.setChecked(showDotVal);
       }
-      if (showZones != null)
+      if (showZones != null && _showZones != null)
       {
         _showZones.setChecked(showZones);
       }
@@ -1691,7 +1715,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         _onlyVisible.setChecked(showOnlyVis);
       }
-      if (showOverview != null)
+      if (showOverview != null && _showTargetOverview != null)
       {
         _showTargetOverview.setChecked(showOverview);
       }
@@ -1783,8 +1807,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     CorePlugin.logError(status, text, null, true);
   }
 
-  /** if we aren't showing any of the top 3 plots, hide the panel,
-   * to make the space available for zone charts
+  /**
+   * if we aren't showing any of the top 3 plots, hide the panel, to make the space available for
+   * zone charts
    */
   private void checkSubPlots()
   {
@@ -1792,7 +1817,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _holder.setVisible(subPlots > 0);
     _holder.getParent().layout();
   }
-  
+
   protected void makeActions()
   {
     _autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
@@ -1838,10 +1863,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       }
     };
-    _showZones.setChecked(false);
-    _showZones.setToolTipText("Show the slicing graphs");
-    _showZones.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/GanttBars.png"));
+      _showZones.setChecked(false);
+      _showZones.setToolTipText("Show the slicing graphs");
+      _showZones.setImageDescriptor(CorePlugin
+          .getImageDescriptor("icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {
@@ -1857,7 +1882,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         else
         {
           _combined.remove(_linePlot);
-        }        
+        }
         checkSubPlots();
       }
     };
@@ -1879,7 +1904,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         else
         {
           _combined.remove(_dotPlot);
-        }        
+        }
         checkSubPlots();
       }
     };
@@ -1905,10 +1930,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         checkSubPlots();
       }
     };
-    _showTargetOverview.setChecked(true);
+    _showTargetOverview.setChecked(allowDisplayOfTargetOverview());
     _showTargetOverview.setToolTipText("Show the overview plot");
     _showTargetOverview.setImageDescriptor(TrackShiftActivator
-        .getImageDescriptor("icons/24/tgt_overview.png"));
+          .getImageDescriptor("icons/24/tgt_overview.png"));
 
     // get an error logger
     final ErrorLogger logger = this;
@@ -1983,6 +2008,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         .getImageDescriptor("icons/24/fix.png"));
 
   }
+
+  /** whether it's possible to display the target overview plot
+   * 
+   * @return
+   */
+  protected abstract boolean allowDisplayOfTargetOverview();
+
+  /** whether it's possible to display the zone chart
+   * 
+   * @return
+   */
+  protected abstract boolean allowDisplayOfZoneChart();
 
   @Override
   public void saveState(final IMemento memento)
@@ -2228,12 +2265,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final RelativeTMASegment newLeg =
             new RelativeTMASegment(observations, offset, speed, courseDegs,
                 theLayers, override);
-        
-        // and copy the previous base frequency.
-        if(otherSegment != null)
-        {
-          newLeg.setBaseFrequency(otherSegment.getBaseFrequency());
-        }
 
         // ok, now add the leg to the secondary track
         final TrackWrapper secondary = (TrackWrapper) secTrack;
@@ -2328,6 +2359,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
         plotOutline.editableSelected(selection, subject);
       }
+
+      // ok, also try to give focus to teh outline view
+      Display.getCurrent().asyncExec(new Runnable(){
+        @Override
+        public void run()
+        {
+          // workaround, sometimes it
+          // doesn't select the outline focus.
+          // So, first, let's briefly put the focus on the editor
+          editor.setFocus();
+          
+          // now, see if we can select the outline view
+          outline.setFocus();
+        }});
     }
   }
 

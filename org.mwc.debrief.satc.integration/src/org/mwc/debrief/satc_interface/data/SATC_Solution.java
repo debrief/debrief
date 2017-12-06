@@ -83,7 +83,6 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
@@ -641,25 +640,25 @@ public class SATC_Solution extends BaseLayer implements
 						// remember this leg
 						lastLeg = abs;
 
-						// quick check to see if we have some frequency data
-						IContributions conts = _mySolver.getContributions();
-						Iterator<BaseContribution> iter = conts.iterator();
-						while (iter.hasNext())
-						{
-							BaseContribution cont = (BaseContribution) iter.next();
-							if (cont instanceof Range1959ForecastContribution)
-							{
-								// ok, does it overlap this leg?
-								if (cont.getStartDate().before(straight.getEndTime())
-										&& cont.getFinishDate().after(straight.getStartTime()))
-								{
-									// ok, retrieve the frequency
-									Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
-									double freq = freqC.getfNought();
-									abs.setBaseFrequency(freq);
-								}
-							}
-						}
+//						// quick check to see if we have some frequency data
+//						IContributions conts = _mySolver.getContributions();
+//						Iterator<BaseContribution> iter = conts.iterator();
+//						while (iter.hasNext())
+//						{
+//							BaseContribution cont = (BaseContribution) iter.next();
+//							if (cont instanceof Range1959ForecastContribution)
+//							{
+//								// ok, does it overlap this leg?
+//								if (cont.getStartDate().before(straight.getEndTime())
+//										&& cont.getFinishDate().after(straight.getStartTime()))
+//								{
+//									// ok, retrieve the frequency
+//									Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
+//									double freq = freqC.getfNought();
+//									abs.setBaseFrequency(freq);
+//								}
+//							}
+//						}
 
 						// ok, do we have a pending alteartion?
 						if(pendingAlteration != null)
@@ -1456,25 +1455,25 @@ public class SATC_Solution extends BaseLayer implements
 					final AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs,
 							speed, origin, startTime, endTime);
 
-					// quick check to see if we have some frequency data
-					IContributions conts = _mySolver.getContributions();
-					Iterator<BaseContribution> iter = conts.iterator();
-					while (iter.hasNext())
-					{
-						BaseContribution cont = (BaseContribution) iter.next();
-						if (cont instanceof Range1959ForecastContribution)
-						{
-							// ok, does it overlap this leg?
-							if (cont.getStartDate().before(straight.getEndTime())
-									&& cont.getFinishDate().after(straight.getStartTime()))
-							{
-								// ok, retrieve the frequency
-								Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
-								double freq = freqC.getfNought();
-								abs.setBaseFrequency(freq);
-							}
-						}
-					}
+//					// quick check to see if we have some frequency data
+//					IContributions conts = _mySolver.getContributions();
+//					Iterator<BaseContribution> iter = conts.iterator();
+//					while (iter.hasNext())
+//					{
+//						BaseContribution cont = (BaseContribution) iter.next();
+//						if (cont instanceof Range1959ForecastContribution)
+//						{
+//							// ok, does it overlap this leg?
+//							if (cont.getStartDate().before(straight.getEndTime())
+//									&& cont.getFinishDate().after(straight.getStartTime()))
+//							{
+//								// ok, retrieve the frequency
+//								Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
+//								double freq = freqC.getfNought();
+//								abs.setBaseFrequency(freq);
+//							}
+//						}
+//					}
 
 					abs.setName(straight.getName());
 					ts = abs;

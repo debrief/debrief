@@ -33,12 +33,9 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 {
 	public static final String COURSE_DEGS = "CourseDegs";
 	public static final String SPEED= "Speed";
-	public static final String BASE_FREQ="BaseFrequency";
-	
 
 	protected double _courseDegs = 0d;
 	protected  WorldSpeed _speed;
-	protected double _baseFrequency;
 	
 	public CoreTMASegmentHandler(final String myName)
 	{
@@ -53,16 +50,7 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 			{
 				_courseDegs = val;
 			}
-		});
-		addAttributeHandler(new HandleDoubleAttribute(BASE_FREQ)
-		{
-			@Override
-			public void setValue(final String name, final double val)
-			{
-				_baseFrequency = val;
-			}
-		});
-		
+		});		
 		addHandler(new WorldSpeedHandler(SPEED){
 			@Override
 			public void setSpeed(final WorldSpeed res)
@@ -76,7 +64,6 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 	{
 		// sort out the remaining attributes
 		theElement.setAttribute(COURSE_DEGS, writeThis(theSegment.getCourse()));
-		theElement.setAttribute(BASE_FREQ, writeThis(theSegment.getBaseFrequency()));
 		WorldSpeedHandler.exportSpeed(SPEED, theSegment.getSpeed(), theElement, doc);
 	}
 

@@ -1250,4 +1250,25 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       ownshipZoneChart.updateControls();
     }
   }
+
+  @Override
+  protected String formatValue(double value)
+  {
+    return MWC.Utilities.TextFormatting.GeneralFormat
+        .formatOneDecimalPlace(value);
+  }
+  
+
+  @Override
+  protected boolean allowDisplayOfTargetOverview()
+  {
+    return true;
+  }
+
+  @Override
+  protected boolean allowDisplayOfZoneChart()
+  {
+    return true;
+  }
+
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScenarioController OutputDirectory="root_installs/AssetData/SATC_Tracks/Output"  xmlns="http://www.mwc.org/asset" >
+<ScenarioController OutputDirectory="SATC_Tracks/Output"  xmlns="http://www.mwc.org/asset" >
 		<ScenarioGenerator></ScenarioGenerator>
 	
 	<ObserverList>
@@ -25,6 +25,14 @@
 			record_detections="true" record_positions="false" Active="true"
 			record_decisions="false" file_name="Freq_BlueSensorFreq"
 			SubjectSensor="NB_FREQ">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</DebriefReplayObserver>
+		<DebriefReplayObserver Name="Freq_BlueSensorFreq2"
+			record_detections="true" record_positions="false" Active="true"
+			record_decisions="false" file_name="Freq_BlueSensorFreq2"
+			SubjectSensor="NB_FREQ2">
 			<SubjectToTrack>
 				<Type Name="BLUE" />
 			</SubjectToTrack>

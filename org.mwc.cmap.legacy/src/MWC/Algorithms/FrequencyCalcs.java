@@ -109,7 +109,8 @@ public class FrequencyCalcs
 		
 		// note - contrary to some publications TSL uses the
 		// angle along the bearing, not the angle back down the bearing (ATB).
-		final double AngleOffTheOtherB = tgtHeadingRads - bearing;
+		final double hisBearing = Math.PI + bearing;
+		final double AngleOffTheOtherB = hisBearing - tgtHeadingRads;
 
 		final double OSL = Math.cos(relB) * osSpeed;
 		final double TSL = Math.cos(AngleOffTheOtherB) * tgtSpeed;

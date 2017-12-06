@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
@@ -35,6 +35,7 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.util.ShapeUtilities;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
@@ -60,6 +61,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
+import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -197,6 +199,24 @@ public final class StackedDotHelper
         protected void updateData(final boolean updateDoublets)
         {
           // no, nothing to do.
+        }
+
+        @Override
+        protected String formatValue(double value)
+        {
+          return "" + value;
+        }
+
+        @Override
+        protected boolean allowDisplayOfTargetOverview()
+        {
+          return false;
+        }
+
+        @Override
+        protected boolean allowDisplayOfZoneChart()
+        {
+          return false;
         }
       };
 
@@ -1600,7 +1620,7 @@ public final class StackedDotHelper
   public void updateFrequencyData(final XYPlot dotPlot, final XYPlot linePlot,
       final TrackDataProvider tracks, final boolean onlyVis,
       final Composite holder, final ErrorLogger logger,
-      final boolean updateDoublets, final ValueMarker fZeroMarker)
+      final boolean updateDoublets)
   {
 
     // do we have anything?
@@ -1636,6 +1656,9 @@ public final class StackedDotHelper
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
 
+    if (_primaryTrack == null)
+      return;
+
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
 
@@ -1644,10 +1667,9 @@ public final class StackedDotHelper
     final TimeSeries predictedValues = new TimeSeries("Predicted");
     final TimeSeries baseValues = new TimeSeries("Base");
 
-    boolean fZeroUpdated = false;
-
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
+    SensorWrapper lastSensor = null;
     while (iter.hasNext())
     {
       final Doublet thisD = iter.next();
@@ -1669,44 +1691,48 @@ public final class StackedDotHelper
         // correctedFreq, thisColor, false, null);
         measuredValues.addOrUpdate(mFreq);
 
-        // do we have target data?
-        if (thisD.getTarget() != null)
+        final double baseFreq = thisD.getBaseFrequency();
+        if (!Double.isNaN(baseFreq))
         {
-          // final double correctedFreq = thisD.getCorrectedFrequency();
-          final double baseFreq = thisD.getBaseFrequency();
-          final Color calcColor = thisD.getTarget().getColor();
-
-          if (!fZeroUpdated)
+          // have we changed sensor?
+          SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
+          final boolean newSensor;
+          if (thisSensor != null && !thisSensor.equals(lastSensor))
           {
-            fZeroMarker.setValue(baseFreq);
-            fZeroMarker.setPaint(calcColor);
-            fZeroUpdated = true;
+            newSensor = true;
+            lastSensor = thisSensor;
+          }
+          else
+          {
+            newSensor = false;
           }
 
-          // final ColouredDataItem corrFreq =
-          // new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
-          // null, true, true);
+          final ColouredDataItem bFreq =
+              new ColouredDataItem(thisMilli, baseFreq, thisColor, !newSensor,
+                  null, true, true);
+          baseValues.addOrUpdate(bFreq);
 
-          // did we get a base frequency? We may have a track
-          // with a section of data that doesn't have frequency, you see.
-          if (!Double.isNaN(baseFreq))
+          // do we have target data?
+          if (thisD.getTarget() != null)
           {
+            final Color calcColor = thisD.getTarget().getColor();
+
+            // did we get a base frequency? We may have a track
+            // with a section of data that doesn't have frequency, you see.
             final double predictedFreq = thisD.getPredictedFrequency();
             final double thisError =
                 thisD.calculateFreqError(measuredFreq, predictedFreq);
             final ColouredDataItem pFreq =
                 new ColouredDataItem(thisMilli, predictedFreq, calcColor, true,
                     null, true, true, thisD.getTarget());
+
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
                     null, true, true);
             predictedValues.addOrUpdate(pFreq);
             errorValues.addOrUpdate(eFreq);
-          }
-
-          // correctedValues.addOrUpdate(corrFreq);
-        }
-
+          } // if we have a target
+        } // if we have a base frequency
       }
       catch (final SeriesException e)
       {
@@ -1754,6 +1780,17 @@ public final class StackedDotHelper
     if (baseValues.getItemCount() > 0)
     {
       actualSeries.addSeries(baseValues);
+
+      // sort out the rendering for the BaseFrequencies.
+      // we want to show a solid line, with no markers
+      final int BaseFreqSeries = 2;
+      ColourStandardXYItemRenderer lineRend =
+          (ColourStandardXYItemRenderer) linePlot.getRenderer();
+      lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities
+          .createDiamond(0.2f));
+      lineRend.setSeriesStroke(BaseFreqSeries, new BasicStroke(4));
+      lineRend.setSeriesShapesVisible(BaseFreqSeries, false);
+      lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
     }
 
     dotPlot.setDataset(errorSeries);

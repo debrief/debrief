@@ -623,11 +623,12 @@
 	</xs:complexType>
 	<xs:complexType name="NarrowbandSensorType">
 		<xs:annotation>
-			<xs:documentation>Typical narrowband (towed-array) sensor
+			<xs:documentation>
+				Typical narrowband (towed-array) sensor
 			</xs:documentation>
-			<xs:documentation source="http://asset.info/ui">Visible: inherited, steady
-				time
-				Editable: inherited, steady time
+			<xs:documentation source="http://asset.info/ui">
+				Visible: inherited, steady time Editable: inherited,
+				steady time
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
@@ -635,14 +636,27 @@
 				<xs:sequence>
 					<xs:element name="SteadyTime" type="DurationType">
 						<xs:annotation>
-							<xs:documentation>Time taken for the array to steady post-turn
+							<xs:documentation>
+								Time taken for the array to steady
+								post-turn
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="HasBearing" type="xs:boolean" use="optional">
+				<xs:attribute name="HasBearing" type="xs:boolean"
+					use="optional">
 					<xs:annotation>
-						<xs:documentation>Whether this sensor can record bearing data
+						<xs:documentation>
+							Whether this sensor can record bearing data
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="SecondHarmonic" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>
+							Whether this sensor tracks the second harmonic
+							- this is a workaround to create sensor cuts
+							on two target tonals
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>

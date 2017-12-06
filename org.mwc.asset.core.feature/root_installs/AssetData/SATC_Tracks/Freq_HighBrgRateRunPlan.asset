@@ -2,7 +2,7 @@
 <Scenario Name="Narrowband Tracking Scenario (High_BRate)" xmlns="http://www.mwc.org/asset"
 	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
 	ShowActivity="false" ShowStatus="true">
-	<StepTime Units="seconds" Value="50"></StepTime>
+	<StepTime Units="seconds" Value="20"></StepTime>
 	<Environment Name="token" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
 		<VisualLookupEnvironment Name="Easy to see">
@@ -71,24 +71,27 @@
 					HasBearing="false">
 					<SteadyTime Value="0.0" Units="millis" />
 				</NarrowbandSensor>
+				<NarrowbandSensor Name="NB_FREQ2" Working="true" SecondHarmonic="true"
+					HasBearing="false">
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
 			</SensorFit>
 			<Status Course="200" Fuel="100">
 				<Location>
-					<shortLocation Lat="60.2" Long="0.2"></shortLocation>
+					<shortLocation Lat="60.18" Long="0.2"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
 				<Move Name="leg one" Course="200">
-					<Vector Value="5" Units="nm" /></Move>
+					<Vector Value="6" Units="nm" /></Move>
 				<Move Name="leg two" Course="310">
 					<Vector Value="6" Units="nm" /></Move>
 				<Move Name="leg three" Course="60">
+					<Vector Value="2" Units="nm" /></Move>
+				<Move Name="leg three" Course="350">
 					<Vector Value="10" Units="nm" /></Move>
 			</Waterfall>
-
-
-
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
 				<MinSpeed Value="0" Units="kts" />

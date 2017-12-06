@@ -187,6 +187,7 @@ import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
@@ -347,7 +348,17 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
   public void setBaseFrequency(double baseFrequency)
   {
+    final double oldFreq = _baseFrequency;
+
     _baseFrequency = baseFrequency;
+
+    // hmm, can we fire an update?
+    TrackWrapper hostTrack = this.getHost();
+    if (hostTrack != null)
+    {
+      hostTrack.firePropertyChange(SupportsPropertyListeners.FORMAT, oldFreq,
+          _baseFrequency);
+    }
   }
 
   /**
@@ -914,15 +925,15 @@ public class SensorWrapper extends TacticalDataWrapper implements
       List<ArrayCentreMode> modes = sw.getAdditionalArrayCentreModes();
 
       ArrayCentreMode plainMode = modes.get(2);
-      
+
       // check we found it
       assertNotNull(plainMode);
-      
+
       // check we've got the right mode
-      assertTrue("check we have the correct mode", plainMode instanceof MeasuredDatasetArrayMode);
-            
-      MeasuredDatasetArrayMode arrayMode =
-          (MeasuredDatasetArrayMode) plainMode; 
+      assertTrue("check we have the correct mode",
+          plainMode instanceof MeasuredDatasetArrayMode);
+
+      MeasuredDatasetArrayMode arrayMode = (MeasuredDatasetArrayMode) plainMode;
 
       // force interpolation off
       arrayMode.setInterpolatePositions(false);
@@ -963,7 +974,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
           " 06\u00B030'00.00\"N 007\u00B030\'00.00\"E ", loc.toString());
 
       // try before the start
-      
+
     }
 
     public final void testValues()
@@ -1499,7 +1510,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
     final int index = dataset.getIndexNearestTo(time.getDate().getTime());
 
     final WorldLocation res;
-    
+
     if (index == TimeSeriesDatasetDouble2.INVALID_INDEX)
     {
       // ok, failed
