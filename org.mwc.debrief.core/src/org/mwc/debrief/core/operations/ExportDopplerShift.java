@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Enumeration;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -32,6 +33,10 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.FlatFile.DopplerShift.DopplerShiftExporter;
 import Debrief.ReaderWriter.FlatFile.DopplerShift.DopplerShiftExporter.ExportException;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 
@@ -59,12 +64,36 @@ public class ExportDopplerShift extends TimeControllerOperation
 	public void executeExport(final WatchableList primaryTrack,
 			final WatchableList[] secondaryTracks, final TimePeriod period)
 	{
-
+	  
 		final DopplerShiftExporter ff = new DopplerShiftExporter();
 		String theData = null;
 		try
 		{
-			theData = ff.export(primaryTrack, secondaryTracks, period);
+		  // sort out the base frequency
+	    double baseFreq = -1;
+	    
+	    TrackWrapper prim = (TrackWrapper) primaryTrack;
+	    BaseLayer sensors = prim.getSensors();
+	    Enumeration<Editable> numer = sensors.elements();
+	    while (numer.hasMoreElements())
+	    {
+	      SensorWrapper sensor = (SensorWrapper) numer.nextElement();
+	      if(sensor.getVisible())
+	      {
+	        double hisBase = sensor.getBaseFrequency();
+	        if(baseFreq == -1 && hisBase != -1)
+	        {
+            baseFreq = hisBase;
+	        }
+	        else if(baseFreq != -1 && hisBase != -1)
+	        {
+            throw new ExportException(
+                "Target track has multiple recorded base frequencies");
+	        }
+	      }
+	    }
+		  
+			theData = ff.export(primaryTrack, secondaryTracks, period, baseFreq);
 		}
 		catch (final ExportException e1)
 		{

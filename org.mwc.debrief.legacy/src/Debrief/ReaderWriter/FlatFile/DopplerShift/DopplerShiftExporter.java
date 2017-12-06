@@ -28,9 +28,9 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GenericData.TimePeriod;
@@ -77,12 +77,13 @@ public class DopplerShiftExporter
 	 *          sec tracks = presumed to be just one
 	 * @param period
 	 *          the time period to export
+	 * @param baseFreq 
 	 * @param sensorType
 	 *          what sensor type was specified
 	 * @return
 	 */
 	public String export(final WatchableList primaryTrack,
-			final WatchableList[] secondaryTracks, final TimePeriod period)
+			final WatchableList[] secondaryTracks, final TimePeriod period, final double baseFreq)
 			throws ExportException
 	{
 
@@ -94,9 +95,6 @@ public class DopplerShiftExporter
 
 		// store the frequency doublets
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
-
-		// and the base freuqency
-		double baseFreq = -1;
 
 		// friendly fix-wrapper to save us repeatedly creating it
 		final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
@@ -186,26 +184,6 @@ public class DopplerShiftExporter
 											// and find any matching items
 											final SortedSet<Editable> items = ts.tailSet(index);
 											targetFix = (FixWrapper) items.first();
-
-											// do we have base freq?
-											if (targetParent instanceof CoreTMASegment)
-											{
-												final CoreTMASegment tmaSeg = (CoreTMASegment) targetParent;
-
-												final double thisFreq = tmaSeg.getBaseFrequency();
-
-												if (baseFreq == -1)
-												{
-													baseFreq = thisFreq;
-												}
-												else
-												{
-													if (baseFreq != thisFreq)
-														throw new ExportException(
-																"Target track has multiple recorded base frequencies");
-												}
-
-											}
 										}
 									}
 								}
@@ -214,13 +192,11 @@ public class DopplerShiftExporter
 							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG(), false);
 							if ((matches != null) && (matches.length > 0))
 							{
-
-								// we used to use the platform position, let's use the sensor position 
-								// FixWrapper hostFix = (FixWrapper) matches[0];
-
-								// put the sensor location into the
-								final FixWrapper hostFix = sensorHost.getBacktraceTo(scw.getDTG(), wrapper.getSensorOffset(),wrapper.getWormInHole());
-								
+                // put the sensor location into the
+                final FixWrapper hostFix =
+                    sensorHost.getBacktraceTo(scw.getDTG(), wrapper
+                        .getSensorOffset(), wrapper.getArrayCentreMode()
+                        .equals(LegacyArrayOffsetModes.WORM));
 								
 								final Doublet thisDub = new Doublet(scw, targetFix,
 										targetParent, hostFix);
