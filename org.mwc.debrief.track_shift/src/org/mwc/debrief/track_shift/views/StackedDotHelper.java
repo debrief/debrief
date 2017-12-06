@@ -28,7 +28,6 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
@@ -1621,7 +1620,7 @@ public final class StackedDotHelper
   public void updateFrequencyData(final XYPlot dotPlot, final XYPlot linePlot,
       final TrackDataProvider tracks, final boolean onlyVis,
       final Composite holder, final ErrorLogger logger,
-      final boolean updateDoublets, final ValueMarker fZeroMarker)
+      final boolean updateDoublets)
   {
 
     // do we have anything?
@@ -1698,7 +1697,7 @@ public final class StackedDotHelper
           // have we changed sensor?
           SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
           final boolean newSensor;
-          if (thisSensor != lastSensor)
+          if (thisSensor != null && !thisSensor.equals(lastSensor))
           {
             newSensor = true;
             lastSensor = thisSensor;
