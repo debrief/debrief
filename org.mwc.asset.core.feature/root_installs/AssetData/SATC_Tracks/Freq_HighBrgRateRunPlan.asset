@@ -2,7 +2,7 @@
 <Scenario Name="Narrowband Tracking Scenario (High_BRate)" xmlns="http://www.mwc.org/asset"
 	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
 	ShowActivity="false" ShowStatus="true">
-	<StepTime Units="seconds" Value="4"></StepTime>
+	<StepTime Units="seconds" Value="20"></StepTime>
 	<Environment Name="token" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
 		<VisualLookupEnvironment Name="Easy to see">
@@ -68,6 +68,10 @@
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 				<NarrowbandSensor Name="NB_FREQ" Working="true"
+					HasBearing="false">
+					<SteadyTime Value="0.0" Units="millis" />
+				</NarrowbandSensor>
+				<NarrowbandSensor Name="NB_FREQ2" Working="true" SecondHarmonic="true"
 					HasBearing="false">
 					<SteadyTime Value="0.0" Units="millis" />
 				</NarrowbandSensor>
