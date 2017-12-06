@@ -1671,6 +1671,7 @@ public final class StackedDotHelper
 
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
+    SensorWrapper lastSensor = null;
     while (iter.hasNext())
     {
       final Doublet thisD = iter.next();
@@ -1713,8 +1714,23 @@ public final class StackedDotHelper
             final ColouredDataItem pFreq =
                 new ColouredDataItem(thisMilli, predictedFreq, calcColor, true,
                     null, true, true, thisD.getTarget());
+            
+            // have we changed sensor?
+            SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
+            final boolean newSensor;
+            if(thisSensor != lastSensor)
+            {
+              newSensor = true;
+              lastSensor = thisSensor;
+            }
+            else
+            {
+              newSensor = false;
+            }
+            
+            
             final ColouredDataItem bFreq =
-                new ColouredDataItem(thisMilli, baseFreq, thisColor, true,
+                new ColouredDataItem(thisMilli, baseFreq, thisColor, !newSensor,
                     null, true, true);            
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
