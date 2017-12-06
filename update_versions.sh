@@ -1,2 +1,2 @@
 #!/bin/bash
-python contribs/PyScripts/BuildSupport.py
+python3  contribs/PyScripts/BuildSupport.py
