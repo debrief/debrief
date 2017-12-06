@@ -137,8 +137,8 @@ public class MeasuredDataInStackedChartsAdapter implements
     return res;
   }
 
-  private static void DoDataset(TimeSeriesDatasetDouble cd, ProcessHelper helper,
-      StackedchartsFactory factory)
+  private static void DoDataset(TimeSeriesDatasetDouble cd,
+      ProcessHelper helper, StackedchartsFactory factory)
   {
     // sort out a name
     final String name;
@@ -361,38 +361,41 @@ public class MeasuredDataInStackedChartsAdapter implements
     final IWorkbenchPage page = window.getActivePage();
     final IEditorPart editor = page.getActiveEditor();
 
-    // see if we have a time provider
-    final TimeProvider timeProv =
-        (TimeProvider) editor.getAdapter(TimeProvider.class);
-    if (timeProv != null)
+    if (editor != null)
     {
-      final PropertyChangeListener evt = new PropertyChangeListener()
+      // see if we have a time provider
+      final TimeProvider timeProv =
+          (TimeProvider) editor.getAdapter(TimeProvider.class);
+      if (timeProv != null)
       {
-        @Override
-        public void propertyChange(final PropertyChangeEvent evt)
+        final PropertyChangeListener evt = new PropertyChangeListener()
         {
-          final HiResDate hd = (HiResDate) evt.getNewValue();
-          if (hd != null)
+          @Override
+          public void propertyChange(final PropertyChangeEvent evt)
           {
-            final Date newDate = new Date(hd.getDate().getTime());
-            listener.updateTime(newDate);
+            final HiResDate hd = (HiResDate) evt.getNewValue();
+            if (hd != null)
+            {
+              final Date newDate = new Date(hd.getDate().getTime());
+              listener.updateTime(newDate);
+            }
           }
+        };
+        timeProv.addListener(evt, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+        // get ready to store this permutation (so we can cancel it)
+        TimeDoublet match = new TimeDoublet();
+        match.provider = timeProv;
+        match.event = evt;
+        match.eType = TimeProvider.TIME_CHANGED_PROPERTY_NAME;
+
+        // ok, remember it
+        if (_timeListeners == null)
+        {
+          _timeListeners = new HashMap<IStackedTimeListener, TimeDoublet>();
         }
-      };
-      timeProv.addListener(evt, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-      // get ready to store this permutation (so we can cancel it)
-      TimeDoublet match = new TimeDoublet();
-      match.provider = timeProv;
-      match.event = evt;
-      match.eType = TimeProvider.TIME_CHANGED_PROPERTY_NAME;
-
-      // ok, remember it
-      if (_timeListeners == null)
-      {
-        _timeListeners = new HashMap<IStackedTimeListener, TimeDoublet>();
+        _timeListeners.put(listener, match);
       }
-      _timeListeners.put(listener, match);
     }
   }
 
@@ -537,7 +540,7 @@ public class MeasuredDataInStackedChartsAdapter implements
           return null;
         }
         final IWorkbenchPage page = window.getActivePage();
-        
+
         // produce a name for the view
         DateFormat df = new SimpleDateFormat("hh_mm_ss");
         final String viewId = "Measured Data " + df.format(new Date());
@@ -550,7 +553,8 @@ public class MeasuredDataInStackedChartsAdapter implements
         }
         catch (final PartInitException e)
         {
-          CorePlugin.logError(Status.ERROR, "Failed to open Stacked Charts view", e);
+          CorePlugin.logError(Status.ERROR,
+              "Failed to open Stacked Charts view", e);
           return Status.CANCEL_STATUS;
         }
 
@@ -682,12 +686,15 @@ public class MeasuredDataInStackedChartsAdapter implements
       {
         final IEditorPart editor = page.getActiveEditor();
 
-        // see if we have a time provider
-        final TimeProvider timeProv =
-            (TimeProvider) editor.getAdapter(TimeProvider.class);
-        if (timeProv != null)
+        if (editor != null)
         {
-          canProvideControl = true;
+          // see if we have a time provider
+          final TimeProvider timeProv =
+              (TimeProvider) editor.getAdapter(TimeProvider.class);
+          if (timeProv != null)
+          {
+            canProvideControl = true;
+          }
         }
       }
     }
