@@ -5,24 +5,24 @@ Created on 29 Nov 2017
 '''
 
 if __name__ == '__main__':
-    pass
+	pass
 
 import json,urllib,shlex, os, string, xml.etree.ElementTree as ET
+import urllib.request, base64
 from subprocess import Popen, PIPE
-from sets import Set
 from datetime import datetime
 
 def get_exitcode_stdout_stderr(cmd):
-    """
-    Execute the external command and get its exitcode, stdout and stderr.
-    """
-    args = shlex.split(cmd)
-
-    proc = Popen(args, stdout=PIPE, stderr=PIPE)
-    out, err = proc.communicate()
-    exitcode = proc.returncode
-    #
-    return exitcode, out, err
+	"""
+	Execute the external command and get its exitcode, stdout and stderr.
+	"""
+	args = shlex.split(cmd)
+	
+	proc = Popen(args, stdout=PIPE, stderr=PIPE)
+	out, err = proc.communicate()
+	exitcode = proc.returncode
+	#
+	return exitcode, out, err
 
 # for the given string, find the last "." separate number, 
 # increment it, and return it
@@ -37,7 +37,7 @@ def incrVersion(versionString):
 	# generate the new value                
 	newNumberStr = str(numberVal+1)
 	
-	return string.replace(versionString, numberStr, newNumberStr)
+	return versionString.replace(numberStr, newNumberStr)
 
 # increment the version in the supplied feature
 def updateFeature(featurePath):
@@ -54,7 +54,7 @@ def updateFeature(featurePath):
 	# the text.  Instaed, read in the file into one string
 	inFile = open(featurePath)
 	contents = inFile.read()
-	contents = string.replace(contents, curVer, str(newVer))
+	contents = contents.replace(curVer, str(newVer))
 	
 	outFile = open(featurePath,"w")
 	outFile.write(contents)	
@@ -93,7 +93,7 @@ def updatePlugin(plugin, filePath, fieldName):
 		#    fh.write("%s" % item)
 		
 		fh.close()
-        
+
 # increment the mappings file
 def updateMappings(filePath):
 	print("Updating " + filePath)
@@ -102,8 +102,8 @@ def updateMappings(filePath):
 	if os.path.exists(filePath): 
 		# read the file into a list of strings
 		with open(filePath) as inFile:
-		    for l in inFile:
-		        x.append(l)  
+			for l in inFile:
+				x.append(l)  
 		
 		# remember the current row index
 		index = 0;
@@ -142,8 +142,11 @@ def updateMappings(filePath):
 
 
 url = "https://api.github.com/repos/debrief/debrief/releases/latest"
-data = urllib.urlopen(url).read()
-jData = json.loads(data)
+with urllib.request.urlopen(url) as response:
+#jData = result.read()
+
+	data = response.read().decode("utf8")
+	jData = json.loads(data)
 
 # get the tag
 
@@ -161,8 +164,8 @@ cmd = "git diff --name-only " + tag + "..HEAD"
 exitcode, out, err = get_exitcode_stdout_stderr(cmd)
 
 if err:
-	print("have errors:"(
-	print(err(
+	print("have errors:")
+	print(err)
 	exit
 
 # keep track of the plugins to update
@@ -171,33 +174,32 @@ plugins = set()
 # keep track of the features to update
 features = set()
 
-# ok, now loop through those folders
-paths = out.split("\n")
+paths = out.decode().split('\n')
 for path in paths:
-    # do we have a path
-    if path:
-        # print path
-        # extract the first bit
-        items = path.split("/")
-        plugins.add(items[0])
-        
-        if("org.mwc.asset" in path):
-            features.add("org.mwc.asset.core.feature")
-        if("org.mwc.cmap" in path):
-            features.add("org.mwc.cmap.combined.feature")
-        if("org.mwc.debrief" in path):
-            features.add("org.mwc.debrief.combined.feature")
+	# do we have a path
+	if path:
+	# print path
+	# extract the first bit
+		items = path.split("/")
+		plugins.add(items[0])
+		
+		if("org.mwc.asset" in path):
+			features.add("org.mwc.asset.core.feature")
+		if("org.mwc.cmap" in path):
+			features.add("org.mwc.cmap.combined.feature")
+		if("org.mwc.debrief" in path):
+			features.add("org.mwc.debrief.combined.feature")
 
 # print plugins
 # print features
 
 # ok, now increment the plugins
 for plugin_id in plugins:
-    updatePlugin(plugin_id,"/META-INF/MANIFEST.MF", 'Bundle-Version')
+	updatePlugin(plugin_id,"/META-INF/MANIFEST.MF", 'Bundle-Version')
 
 # and the features
 for feature_id in features:
-    updateFeature(feature_id + "/feature.xml")
+	updateFeature(feature_id + "/feature.xml")
 
 # lastly the product version
 updateFeature("org.mwc.debrief.product/debriefng.product")
