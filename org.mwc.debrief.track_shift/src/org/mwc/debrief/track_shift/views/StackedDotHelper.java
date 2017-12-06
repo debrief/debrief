@@ -1657,10 +1657,9 @@ public final class StackedDotHelper
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
 
-    
-    if(_primaryTrack == null)
+    if (_primaryTrack == null)
       return;
-    
+
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
 
@@ -1693,56 +1692,48 @@ public final class StackedDotHelper
         // correctedFreq, thisColor, false, null);
         measuredValues.addOrUpdate(mFreq);
 
-        // do we have target data?
-        if (thisD.getTarget() != null)
+        final double baseFreq = thisD.getBaseFrequency();
+        if (!Double.isNaN(baseFreq))
         {
-          // final double correctedFreq = thisD.getCorrectedFrequency();
-          final double baseFreq = thisD.getBaseFrequency();
-          final Color calcColor = thisD.getTarget().getColor();
-
-          // final ColouredDataItem corrFreq =
-          // new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
-          // null, true, true);
-
-          // did we get a base frequency? We may have a track
-          // with a section of data that doesn't have frequency, you see.
-          if (!Double.isNaN(baseFreq))
+          // have we changed sensor?
+          SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
+          final boolean newSensor;
+          if (thisSensor != lastSensor)
           {
+            newSensor = true;
+            lastSensor = thisSensor;
+          }
+          else
+          {
+            newSensor = false;
+          }
+
+          final ColouredDataItem bFreq =
+              new ColouredDataItem(thisMilli, baseFreq, thisColor, !newSensor,
+                  null, true, true);
+          baseValues.addOrUpdate(bFreq);
+
+          // do we have target data?
+          if (thisD.getTarget() != null)
+          {
+            final Color calcColor = thisD.getTarget().getColor();
+
+            // did we get a base frequency? We may have a track
+            // with a section of data that doesn't have frequency, you see.
             final double predictedFreq = thisD.getPredictedFrequency();
             final double thisError =
                 thisD.calculateFreqError(measuredFreq, predictedFreq);
             final ColouredDataItem pFreq =
                 new ColouredDataItem(thisMilli, predictedFreq, calcColor, true,
                     null, true, true, thisD.getTarget());
-            
-            // have we changed sensor?
-            SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
-            final boolean newSensor;
-            if(thisSensor != lastSensor)
-            {
-              newSensor = true;
-              lastSensor = thisSensor;
-            }
-            else
-            {
-              newSensor = false;
-            }
-            
-            
-            final ColouredDataItem bFreq =
-                new ColouredDataItem(thisMilli, baseFreq, thisColor, !newSensor,
-                    null, true, true);            
+
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
                     null, true, true);
-            baseValues.addOrUpdate(bFreq);
             predictedValues.addOrUpdate(pFreq);
             errorValues.addOrUpdate(eFreq);
-          }
-
-          // correctedValues.addOrUpdate(corrFreq);
-        }
-
+          } // if we have a target
+        } // if we have a base frequency
       }
       catch (final SeriesException e)
       {
@@ -1790,7 +1781,7 @@ public final class StackedDotHelper
     if (baseValues.getItemCount() > 0)
     {
       actualSeries.addSeries(baseValues);
-      
+
       // sort out the rendering for the BaseFrequencies.
       // we want to show a solid line, with no markers
       final int BaseFreqSeries = 2;
