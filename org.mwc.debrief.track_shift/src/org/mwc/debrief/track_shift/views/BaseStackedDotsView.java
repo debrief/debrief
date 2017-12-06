@@ -2359,6 +2359,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
         plotOutline.editableSelected(selection, subject);
       }
+
+      // ok, also try to give focus to teh outline view
+      Display.getCurrent().asyncExec(new Runnable(){
+        @Override
+        public void run()
+        {
+          // workaround, sometimes it
+          // doesn't select the outline focus.
+          // So, first, let's briefly put the focus on the editor
+          editor.setFocus();
+          
+          // now, see if we can select the outline view
+          outline.setFocus();
+        }});
     }
   }
 
