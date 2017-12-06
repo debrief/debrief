@@ -205,20 +205,13 @@ public final class Doublet implements Comparable<Doublet>
 	}
 
 	/**
-	 * get the base frequency of this track participant, if it has one
+	 * get the base frequency for this measured tonal, if there is one
 	 * 
 	 * @return
 	 */
 	public double getBaseFrequency()
 	{
-		double res = INVALID_BASE_FREQUENCY;
-		if (_targetTrack instanceof CoreTMASegment)
-		{
-			final CoreTMASegment tma = (CoreTMASegment) _targetTrack;
-			res = tma.getBaseFrequency();
-		}
-
-		return res;
+		return _sensor.getSensor().getBaseFrequency();
 	}
 
 	public double getCalculatedBearing(final WorldVector sensorOffset,
@@ -318,9 +311,7 @@ public final class Doublet implements Comparable<Doublet>
 
 		if (_targetTrack instanceof CoreTMASegment)
 		{
-      final CoreTMASegment rt = (CoreTMASegment) _targetTrack;
-
-      final double baseFreq = rt.getBaseFrequency();
+      final double baseFreq = getBaseFrequency();
       final double speedOfSoundKts = 2591;
       
       final double theBearingDegs = getCalculatedBearing(null, null);
