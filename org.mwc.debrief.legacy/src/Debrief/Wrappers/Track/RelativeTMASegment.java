@@ -104,8 +104,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
         final PropertyDescriptor[] res =
             {
                 expertProp("Course", "Course of this TMA Solution", SOLUTION),
-                displayExpertProp("BaseFrequency", "Base frequency",
-                    "The base frequency of this TMA segment", SOLUTION),
                 expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
                 displayExpertProp("OffsetRange", "Offset range",
                     "Distance to start point on host track", OFFSET),

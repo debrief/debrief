@@ -33,9 +33,11 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 	private final static String type = "NarrowbandSensor";
 	protected final static String STEADY_TIME = "SteadyTime";
 	protected final static String HAS_BEARING = "HasBearing";
+  protected final static String SECOND_HARMONIC = "SecondHarmonic";
 
 	protected Duration _mySteadyTime;
 	protected Boolean _hasBearing = false;
+	protected Boolean _secondHarmonic = null;
 
 	public NarrowbandHandler(String myType)
 	{
@@ -50,13 +52,20 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 		});
 		super.addAttributeHandler(new HandleBooleanAttribute(HAS_BEARING)
 		{
-
 			@Override
 			public void setValue(String name, boolean value)
 			{
 				_hasBearing = value;
 			}
 		});
+    super.addAttributeHandler(new HandleBooleanAttribute(SECOND_HARMONIC)
+    {
+      @Override
+      public void setValue(String name, boolean value)
+      {
+        _secondHarmonic = value;
+      }
+    });
 	}
 
 	public NarrowbandHandler()
@@ -79,7 +88,15 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 
 		bb.setSteadyTime(_mySteadyTime);
 		bb.setHasBearing(_hasBearing);
+		if(_secondHarmonic != null)
+		{
+		  bb.setSecondHarmonic(_secondHarmonic.booleanValue());
+		}
 
+		_secondHarmonic = null;
+		_hasBearing = false;
+		_mySteadyTime = null;
+		
 		return bb;
 	}
 

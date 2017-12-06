@@ -73,6 +73,11 @@ public class NarrowbandSensor extends InitialSensor
 	 */
 	private Boolean _hasBearing = true;
 
+	/** whether this sensor tracks the second harmonic
+	 * 
+	 */
+  private boolean _tracksSecondHarmonic = false;
+
 	/**
 	 * constant used to indicate that course has not yet been assigned
 	 */
@@ -213,7 +218,17 @@ public class NarrowbandSensor extends InitialSensor
 										.getCourse()), target);
 					}
 					// get the f-nought
-					double f0 = nbNoise.getFrequency();
+					final double f0;
+					if(_tracksSecondHarmonic)
+					{
+					  // ok, mock tracking a second harmonic
+					  // by doubling the base frequency
+					  f0 = 2 * nbNoise.getFrequency();
+					}
+          else
+          {
+            f0 = nbNoise.getFrequency();
+          }
 
 					final double speedOfSoundKts = 2951;
 
@@ -634,4 +649,9 @@ public class NarrowbandSensor extends InitialSensor
 	{
 		return _hasBearing;
 	}
+
+  public void setSecondHarmonic(final boolean tracksSecond)
+  {
+    _tracksSecondHarmonic = tracksSecond;
+  }
 }
