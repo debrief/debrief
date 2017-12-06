@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.util.ShapeUtilities;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
@@ -60,6 +62,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
+import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -203,6 +206,18 @@ public final class StackedDotHelper
         protected String formatValue(double value)
         {
           return "" + value;
+        }
+
+        @Override
+        protected boolean allowDisplayOfTargetOverview()
+        {
+          return false;
+        }
+
+        @Override
+        protected boolean allowDisplayOfZoneChart()
+        {
+          return false;
         }
       };
 
@@ -1654,8 +1669,6 @@ public final class StackedDotHelper
     final TimeSeries predictedValues = new TimeSeries("Predicted");
     final TimeSeries baseValues = new TimeSeries("Base");
 
-    boolean fZeroUpdated = false;
-
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
     while (iter.hasNext())
@@ -1686,13 +1699,6 @@ public final class StackedDotHelper
           final double baseFreq = thisD.getBaseFrequency();
           final Color calcColor = thisD.getTarget().getColor();
 
-          if (!fZeroUpdated)
-          {
-            fZeroMarker.setValue(baseFreq);
-            fZeroMarker.setPaint(calcColor);
-            fZeroUpdated = true;
-          }
-
           // final ColouredDataItem corrFreq =
           // new ColouredDataItem(thisMilli, correctedFreq, thisColor, false,
           // null, true, true);
@@ -1707,9 +1713,13 @@ public final class StackedDotHelper
             final ColouredDataItem pFreq =
                 new ColouredDataItem(thisMilli, predictedFreq, calcColor, true,
                     null, true, true, thisD.getTarget());
+            final ColouredDataItem bFreq =
+                new ColouredDataItem(thisMilli, baseFreq, thisColor, true,
+                    null, true, true);            
             final ColouredDataItem eFreq =
                 new ColouredDataItem(thisMilli, thisError, thisColor, false,
                     null, true, true);
+            baseValues.addOrUpdate(bFreq);
             predictedValues.addOrUpdate(pFreq);
             errorValues.addOrUpdate(eFreq);
           }
@@ -1764,6 +1774,17 @@ public final class StackedDotHelper
     if (baseValues.getItemCount() > 0)
     {
       actualSeries.addSeries(baseValues);
+      
+      // sort out the rendering for the BaseFrequencies.
+      // we want to show a solid line, with no markers
+      final int BaseFreqSeries = 2;
+      ColourStandardXYItemRenderer lineRend =
+          (ColourStandardXYItemRenderer) linePlot.getRenderer();
+      lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities
+          .createDiamond(0.2f));
+      lineRend.setSeriesStroke(BaseFreqSeries, new BasicStroke(4));
+      lineRend.setSeriesShapesVisible(BaseFreqSeries, false);
+      lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
     }
 
     dotPlot.setDataset(errorSeries);
