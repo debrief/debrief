@@ -41,8 +41,8 @@ def incrVersion(versionString):
 
 # increment the version in the supplied feature
 def updateFeature(featurePath):
-    # read file into xml
-	print "Updating " + featurePath
+	# read file into xml
+	print('Updating ' + featurePath)
 
 	tree = ET.parse(featurePath)
 	root = tree.getroot()
@@ -61,42 +61,42 @@ def updateFeature(featurePath):
 	
 # increment the version in the supplied plugin
 def updatePlugin(plugin, filePath, fieldName):
-    # print "Updating:" + plugin
+	# print "Updating:" + plugin
+	
+	# read in the file as lines
+	x = []
+	filePath = plugin + filePath
+	if os.path.exists(filePath): 
+		with open(filePath) as inFile:
+			for l in inFile:
+				x.append(l)  
+		
+		index = 0;
+		for thisLine in x:
+			if thisLine.startswith(fieldName):
+			
+				newLine = incrVersion(thisLine) 
+				
+				# replace the string in the list
+				x[index] = newLine + "\n"
+				
+				print("Updated:" + plugin + " from " + thisLine.strip() + " to " + newLine)
 
-    # read in the file as lines
-    x = []
-    filePath = plugin + filePath
-    if os.path.exists(filePath): 
-        with open(filePath) as inFile:
-            for l in inFile:
-                x.append(l)  
-
-        index = 0;
-        for thisLine in x:
-            if thisLine.startswith(fieldName):
-            	
-            	newLine = incrVersion(thisLine) 
-                
-                # replace the string in the list
-                x[index] = newLine + "\n"
-                
-                print "Updated:" + plugin + " from " + thisLine.strip() + " to " + newLine
-
-            # remember the line number
-            index = index + 1;
-                
-        # lastly, write the strings to file
-        fh = open(filePath, "w")
-        
-        fh.writelines(x)
-        #for item in x:
-        #    fh.write("%s" % item)
-        
-        fh.close()
+			# remember the line number
+			index = index + 1;
+			
+		# lastly, write the strings to file
+		fh = open(filePath, "w")
+		
+		fh.writelines(x)
+		#for item in x:
+		#    fh.write("%s" % item)
+		
+		fh.close()
         
 # increment the mappings file
 def updateMappings(filePath):
-	print "Updating " + filePath
+	print("Updating " + filePath)
 	# read in the file as lines
 	x = []
 	if os.path.exists(filePath): 
@@ -134,11 +134,11 @@ def updateMappings(filePath):
 		
 			# increment the row counter
 			index = index + 1
-        		
-        # lastly, write the strings to file
-        fh = open(filePath, "w")
-        fh.writelines(x)
-        fh.close()        
+
+		# lastly, write the strings to file
+		fh = open(filePath, "w")
+		fh.writelines(x)
+		fh.close()        
 
 
 url = "https://api.github.com/repos/debrief/debrief/releases/latest"
@@ -161,15 +161,15 @@ cmd = "git diff --name-only " + tag + "..HEAD"
 exitcode, out, err = get_exitcode_stdout_stderr(cmd)
 
 if err:
-    print "have errors:"
-    print err
-    exit
-    
-# keep track of the plugins to update    
-plugins = Set()
+	print("have errors:"(
+	print(err(
+	exit
+
+# keep track of the plugins to update
+plugins = set()
 
 # keep track of the features to update
-features = Set()
+features = set()
 
 # ok, now loop through those folders
 paths = out.split("\n")
