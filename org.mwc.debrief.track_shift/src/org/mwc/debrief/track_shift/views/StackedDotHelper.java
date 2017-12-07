@@ -1325,7 +1325,9 @@ public final class StackedDotHelper
           else
           {
             segList = new SegmentList();
-            segList.setWrapper((TrackWrapper) _secondaryTrack);
+            // note: we've commented out this next line, so 
+            // we can plot SATC on stacked dots.
+            // segList.setWrapper((TrackWrapper) _secondaryTrack);
             segList.addSegment((TrackSegment) nextE);
           }
 
