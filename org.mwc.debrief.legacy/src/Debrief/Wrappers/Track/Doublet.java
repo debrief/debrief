@@ -312,7 +312,7 @@ public final class Doublet implements Comparable<Doublet>
 		if (_targetTrack instanceof CoreTMASegment)
 		{
       final double baseFreq = getBaseFrequency();
-      final double speedOfSoundKts = 2591;
+      final double speedOfSoundKts = FrequencyCalcs.SpeedOfSoundKts;
       
       final double theBearingDegs = getCalculatedBearing(null, null);
 
