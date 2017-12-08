@@ -1325,9 +1325,14 @@ public final class StackedDotHelper
           else
           {
             segList = new SegmentList();
-            // note: we've commented out this next line, so 
-            // we can plot SATC on stacked dots.
-            // segList.setWrapper((TrackWrapper) _secondaryTrack);
+            // note: we can only set the wrapper
+            // if we're looking at a real TMA solution
+            if(_secondaryTrack instanceof TrackWrapper)
+            {
+              segList.setWrapper((TrackWrapper) _secondaryTrack);
+            }
+            
+            // ok, add this segment to the list
             segList.addSegment((TrackSegment) nextE);
           }
 
