@@ -230,7 +230,7 @@ public class NarrowbandSensor extends InitialSensor
             f0 = nbNoise.getFrequency();
           }
 
-					final double speedOfSoundKts = 2951;
+					final double speedOfSoundKts = FrequencyCalcs.SpeedOfSoundKts;
 
 					// start preparing the data
 					Status hS = host.getStatus();

@@ -18,6 +18,8 @@ import MWC.GenericData.WorldSpeed;
 
 public class FrequencyCalcs
 {
+  
+  final public static double SpeedOfSoundKts = 2951;
 
   /**
    * calculate the doppler component of the observed frequency
