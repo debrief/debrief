@@ -76,7 +76,7 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
     addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
         "Use sensor cut colors for new TMA leg positions",
         getFieldEditorParent()));
-    
+
     // insert a separator
     Label label1 =
         new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -165,13 +165,9 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
     super.dispose();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-   */
+  @Override
   public void init(IWorkbench workbench)
   {
+    // default implementation
   }
-
 }
