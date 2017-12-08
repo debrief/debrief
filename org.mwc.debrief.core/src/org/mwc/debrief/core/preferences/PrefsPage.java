@@ -15,23 +15,10 @@
 package org.mwc.debrief.core.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.IntegerFieldEditor;
-import org.eclipse.jface.preference.RadioGroupFieldEditor;
-import org.eclipse.jface.preference.ScaleFieldEditor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts;
-
-import Debrief.Wrappers.Track.DynamicInfillSegment;
-import Debrief.Wrappers.Track.RelativeTMASegment;
 
 /**
  * This class represents a preference page that is contributed to the Preferences dialog. By
@@ -47,8 +34,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     IWorkbenchPreferencePage
 {
 
-  private SelectionListener freqListener;
-  private ScaleFieldEditor freqEdit;
+
 
   public PrefsPage()
   {
@@ -80,84 +66,9 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
         "Show the wizard when importing sensor data from REP",
         getFieldEditorParent()));
-
-    // insert a separator
-    Label label =
-        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
-    label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
-
-    addField(new BooleanFieldEditor(PreferenceConstants.USE_CUT_COLOR,
-        "Use sensor cut colors for new TMA leg positions",
-        getFieldEditorParent()));
-
-    addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
-        "Cut-off value for acceptable bearing errors in stacked dots (degs)",
-        getFieldEditorParent()));
-    
-    final String freqLabelStr = "Cut-off value for acceptable frequency errors in stacked dots";
-    freqEdit = new ScaleFieldEditor(PreferenceConstants.CUT_OFF_VALUE_HZ, "Cut-off", getFieldEditorParent());
-    freqEdit.setMinimum(0);
-    freqEdit.setMaximum(100);
-    freqEdit.setIncrement(5);
-    freqEdit.setLabelText(freqLabelStr + " (x.xx Hz) ");
-    freqListener = new SelectionListener()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        int curInt = freqEdit.getScaleControl().getSelection();
-        double curVal = (double)curInt / 100d;
-        freqEdit.setLabelText(freqLabelStr + " (" + curVal + " Hz)");
-      }
-
-      @Override
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-    };
-    freqEdit.getScaleControl().addSelectionListener(freqListener);
-    addField(freqEdit);
-
-    // insert a separator
-    Label label2 =
-        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
-    label2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
-
-    // initialise the import choice tags, if we have to
-    String[][] _trackModeTags = new String[3][2];
-    _trackModeTags[0][0] = "Darker version of previous leg color";
-    _trackModeTags[0][1] = DynamicInfillSegment.DARKER_INFILL;
-    _trackModeTags[1][0] = "Random color";
-    _trackModeTags[1][1] = DynamicInfillSegment.RANDOM_INFILL;
-    _trackModeTags[2][0] = "Single shade (green)";
-    _trackModeTags[2][1] = DynamicInfillSegment.GREEN_INFILL;
-
-    addField(new RadioGroupFieldEditor(
-        PreferenceConstants.INFILL_COLOR_STRATEGY,
-        "Policy for dynamic infill colors:", 1, _trackModeTags,
-        getFieldEditorParent()));
-    addField(new ColorFieldEditor(PreferenceConstants.MERGED_TRACK_COLOR,
-        "Default color for merged track:", getFieldEditorParent()));
-    addField(new ColorFieldEditor(PreferenceConstants.MERGED_INFILL_COLOR,
-        "Color for infill segments in merged track:", getFieldEditorParent()));
-
   }
   
   
-
-  @Override
-  public void dispose()
-  {
-    // drop the manually generated listener
-    freqEdit.getScaleControl().removeSelectionListener(freqListener);
-
-    // let the parent carry on ditching
-    super.dispose();
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -179,16 +90,6 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String USE_IMPORT_SENSOR_WIZARD =
         "USE_IMPORT_SENSOR_WIZARD";
     public static final String ASK_ABOUT_PROJECT = "createProject";
-    public static final String INFILL_COLOR_STRATEGY =
-        DynamicInfillSegment.INFILL_COLOR_STRATEGY;
-    public static final String MERGED_INFILL_COLOR = "MERGED_INFILL_COLOR";
-    public static final String MERGED_TRACK_COLOR = "MERGED_TRACK_COLOR";
-    public static final String CUT_OFF_VALUE_DEGS =
-        RelativeTMASegment.CUT_OFF_VALUE_DEGS;
-    public static final String CUT_OFF_VALUE_HZ =
-        RelativeTMASegment.CUT_OFF_VALUE_HZ;
-    public static final String USE_CUT_COLOR =
-        GenerateTMASegmentFromCuts.USE_CUT_COLOR;
   }
 
 }
