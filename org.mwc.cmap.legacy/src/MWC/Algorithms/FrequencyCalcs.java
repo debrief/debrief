@@ -20,7 +20,10 @@ public class FrequencyCalcs
 {
   
   final public static double SpeedOfSoundKts = 2951;
+  
+  final public static String SPEED_OF_SOUND_KTS_PROPERTY = "SpeedOfSound";
 
+  
   /**
    * calculate the doppler component of the observed frequency
    * 

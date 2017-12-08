@@ -30,7 +30,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.debrief.core.preferences.PrefsPage;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
@@ -46,6 +45,16 @@ import MWC.GUI.Properties.DebriefColors;
  */
 public class MergeTracks implements RightClickContextItemGenerator
 {
+
+  /** property name for the merged infill color
+   * 
+   */
+  public static final String MERGED_INFILL_COLOR = "MERGED_INFILL_COLOR";
+  
+  /** property name for the merged track color
+   * 
+   */
+  public static final String MERGED_TRACK_COLOR = "MERGED_TRACK_COLOR";
 
   /**
    * @param parent
@@ -138,12 +147,10 @@ public class MergeTracks implements RightClickContextItemGenerator
       // ok, check the property
       RGB infillColRGB =
           PreferenceConverter.getColor(CorePlugin.getDefault()
-              .getPreferenceStore(),
-              PrefsPage.PreferenceConstants.MERGED_INFILL_COLOR);
+              .getPreferenceStore(), MERGED_INFILL_COLOR);
       RGB mergedTrackColRGB =
           PreferenceConverter.getColor(CorePlugin.getDefault()
-              .getPreferenceStore(),
-              PrefsPage.PreferenceConstants.MERGED_TRACK_COLOR);
+              .getPreferenceStore(), MERGED_TRACK_COLOR);
 
       // ok, get the color from the RGB
       final Color newTrackColor =

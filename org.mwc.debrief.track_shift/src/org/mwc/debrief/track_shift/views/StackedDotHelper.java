@@ -58,6 +58,7 @@ import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
@@ -1670,6 +1671,21 @@ public final class StackedDotHelper
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
     SensorWrapper lastSensor = null;
+
+    // sort out the speed of sound
+    String speedStr =
+        CorePlugin.getDefault().getPreferenceStore().getString(
+            FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
+    final double speedOfSound;
+    if (speedStr != null && speedStr.length() > 0)
+    {
+      speedOfSound = Double.parseDouble(speedStr);
+    }
+    else
+    {
+      speedOfSound = FrequencyCalcs.SpeedOfSoundKts;
+    }
+
     while (iter.hasNext())
     {
       final Doublet thisD = iter.next();
@@ -1719,7 +1735,8 @@ public final class StackedDotHelper
 
             // did we get a base frequency? We may have a track
             // with a section of data that doesn't have frequency, you see.
-            final double predictedFreq = thisD.getPredictedFrequency();
+            final double predictedFreq =
+                thisD.getPredictedFrequency(speedOfSound);
             final double thisError =
                 thisD.calculateFreqError(measuredFreq, predictedFreq);
             final ColouredDataItem pFreq =
