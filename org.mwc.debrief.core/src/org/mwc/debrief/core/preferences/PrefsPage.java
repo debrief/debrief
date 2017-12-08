@@ -15,10 +15,15 @@
 package org.mwc.debrief.core.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 
 /**
  * This class represents a preference page that is contributed to the Preferences dialog. By
@@ -33,9 +38,6 @@ import org.mwc.cmap.core.CorePlugin;
 public class PrefsPage extends FieldEditorPreferencePage implements
     IWorkbenchPreferencePage
 {
-
-
-
   public PrefsPage()
   {
     super("Debrief Preferences", CorePlugin
@@ -66,6 +68,15 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
         "Show the wizard when importing sensor data from REP",
         getFieldEditorParent()));
+    
+    // insert a separator
+    Label label1 =
+        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    label1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+
+    addField(new ColorFieldEditor(PreferenceConstants.DEFAULT_PLOT_COLOR,
+        "Default background color for new plots:", getFieldEditorParent()));
+
   }
   
   
@@ -90,6 +101,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String USE_IMPORT_SENSOR_WIZARD =
         "USE_IMPORT_SENSOR_WIZARD";
     public static final String ASK_ABOUT_PROJECT = "createProject";
+    public static final String DEFAULT_PLOT_COLOR =
+        SWTCanvasAdapter.BACKGROUND_COLOR_PROPERTY;
   }
 
 }

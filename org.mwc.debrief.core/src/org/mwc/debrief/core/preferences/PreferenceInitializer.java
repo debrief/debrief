@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.core.preferences;
 
+import java.awt.Color;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.mwc.cmap.core.CorePlugin;
@@ -37,7 +39,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
         true);
     store.setDefault(PrefsPage.PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
         true);
-    store.setDefault(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT, true);    
+    store.setDefault(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT, true);
+    store.setDefault(PrefsPage.PreferenceConstants.DEFAULT_PLOT_COLOR,
+        Color.white.getRGB());
   }
 
 }
