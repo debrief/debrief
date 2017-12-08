@@ -234,7 +234,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 * and our default background color
 	 * 
 	 */
-	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = DebriefColors.LIGHT_GRAY;
+	@SuppressWarnings("unused")
+  private final java.awt.Color DEFAULT_BACKGROUND_COLOR = DebriefColors.LIGHT_GRAY;
+	
+	public final static String BACKGROUND_COLOR_PROPERTY = "DefaultBackgroundColor";
 
 	private SWTGraphics2D _sg2d;
 
@@ -247,8 +250,12 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 */
 	public SWTCanvasAdapter(final PlainProjection proj)
 	{
+	  // get the background color
+	  int backGroundColor = CorePlugin.getDefault().getPreferenceStore().getInt(BACKGROUND_COLOR_PROPERTY);
+	  final java.awt.Color defaultColor = new java.awt.Color(backGroundColor);
+	  
 		// start with our background colour
-		setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+		setBackgroundColor(defaultColor);
 
 		// initialisation
 		_thePainters = new Vector<PaintListener>(0, 1);
