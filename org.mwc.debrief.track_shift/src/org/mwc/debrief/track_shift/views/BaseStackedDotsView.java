@@ -2324,29 +2324,33 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
     final TrackSegment seg = fix.getSegment();
     final TrackWrapper secTrack = seg.getWrapper();
-
-    // done.
-    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
-
-    // hmm, don't know if we have one or more legs
-    final EditableWrapper leg;
-    if (secTrack.getSegments().size() > 1)
+    
+    // check we know the secondary track (we may not, if it's an SATC track)
+    if (secTrack != null)
     {
-      // ok, we need the in-between item
-      final EditableWrapper segments =
-          new EditableWrapper(secTrack.getSegments(), parentP, layers);
-      leg = new EditableWrapper(seg, segments, layers);
+      final EditableWrapper parentP =
+          new EditableWrapper(secTrack, null, layers);
+
+      // hmm, don't know if we have one or more legs
+      final EditableWrapper leg;
+      if (secTrack.getSegments().size() > 1)
+      {
+        // ok, we need the in-between item
+        final EditableWrapper segments =
+            new EditableWrapper(secTrack.getSegments(), parentP, layers);
+        leg = new EditableWrapper(seg, segments, layers);
+      }
+      else
+      {
+        leg = new EditableWrapper(seg, parentP, layers);
+
+      }
+
+      final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
+
+      // and show it
+      showThisSelectionInOutline(subject, editor);
     }
-    else
-    {
-      leg = new EditableWrapper(seg, parentP, layers);
-
-    }
-
-    final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
-
-    // and show it
-    showThisSelectionInOutline(subject, editor);
   }
 
   private void showThisSelectionInOutline(final EditableWrapper subject,
