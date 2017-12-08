@@ -32,11 +32,20 @@
              id="org.mwc.debrief.track_shift.ambiguity.preferences.AmbiguityPrefs"
              name="Resolve Bearing Ambiguity">
        </page>
+       <page
+             category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+             class="org.mwc.debrief.track_shift.preferences.tma.TMAPreferencePage"
+             id="org.mwc.debrief.track_shift.preferences.tma.TMAPreferencePage"
+             name="Target Motion Analysis (TMA)">
+       </page>
     </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="org.mwc.debrief.track_shift.ambiguity.preferences.AmbiguityPrefsInitializer">
+      </initializer>
+      <initializer
+            class="org.mwc.debrief.track_shift.preferences.tma.TMAPreferenceInitializer">
       </initializer>
    </extension>
 </plugin>
