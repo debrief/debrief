@@ -70,13 +70,13 @@
 			</SensorFit>
 			<Status Course="320" Fuel="100">
 				<Location>
-					<shortLocation Lat="59.94" Long="0.1"></shortLocation>
+					<shortLocation Lat="60" Long="0"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
 				<Move Name="leg one" Course="320">
-					<Vector Value="29300" Units="yds" /></Move>
+					<Vector Value="2300" Units="yds" /></Move>
 				<Move Name="leg two" Course="020">
 					<Vector Value="6" Units="nm" /></Move>
 			</Waterfall>
