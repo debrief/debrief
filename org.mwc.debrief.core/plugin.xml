@@ -299,7 +299,7 @@
         </menuContribution>
 
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.prefs?before=additions">
-            <command commandId="org.mwc.debrief.core.OpenPrefs" icon="icons/24/search.png"
+            <command commandId="org.mwc.debrief.core.OpenPrefs" icon="icons/24/gears.png"
                 style="push" id="org.mwc.debrief.core.OpenPrefs">
             </command>
         </menuContribution>
