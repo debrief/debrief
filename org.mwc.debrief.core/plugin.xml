@@ -174,6 +174,11 @@
                 <separator name="sep3" visible="true"/>
                 <separator name="additions" visible="true"/>
             </toolbar>
+            <toolbar id="org.mwc.debrief.core.prefs" label="Preferences">
+                <separator name="features" visible="true"/>
+                <separator name="sep3" visible="true"/>
+                <separator name="additions" visible="true"/>
+            </toolbar>
             <toolbar
                   id="org.mwc.debrief.core.undoRedo"
                   label="Undo Redo">
@@ -290,6 +295,13 @@
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.save?before=additions">
             <command commandId="org.eclipse.ui.file.save" icon="icons/24/save.png" label="Save"
                 tooltip="Save" style="push" id="org.mwc.debrief.core.save"> </command>
+                
+        </menuContribution>
+
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.prefs?before=additions">
+            <command commandId="org.mwc.debrief.core.OpenPrefs" icon="icons/24/search.png"
+                style="push" id="org.mwc.debrief.core.OpenPrefs">
+            </command>
         </menuContribution>
 
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.createProject?before=additions">
@@ -394,7 +406,7 @@
                     <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
                 </visibleWhen>
             </command>
-
+            
         </menuContribution>
 
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=view">
@@ -807,6 +819,10 @@
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.Redraw"
             id="org.mwc.debrief.core.Redraw" name="&amp;Redraw"> </command>
+
+        <command defaultHandler="org.mwc.debrief.core.actions.OpenPrefs"
+            id="org.mwc.debrief.core.OpenPrefs" name="&amp;Open Prefs"> </command>
+
 
         <command defaultHandler="org.mwc.debrief.core.actions.RadioHandler"
             id="org.mwc.debrief.core.RadioHandler" name="Radio">
