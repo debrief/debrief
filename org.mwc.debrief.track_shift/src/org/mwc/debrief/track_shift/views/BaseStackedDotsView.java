@@ -1622,8 +1622,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           _myTrackDataProvider.getSecondaryTracks();
       if (secTracks != null && secTracks.length == 1)
       {
-        final TrackWrapper sw = (TrackWrapper) secTracks[0];
-        final Enumeration<Editable> iter = sw.getSegments().elements();
+        final ISecondaryTrack sw = (ISecondaryTrack) secTracks[0];
+        final Enumeration<Editable> iter = sw.segments();
         while (iter.hasMoreElements())
         {
           final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
@@ -1778,8 +1778,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   public void logError(final int statusCode, final String string,
       final Exception object)
   {
-    // somehow, put the message into the UI
-    _myChart.setTitle(string);
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        // somehow, put the message into the UI
+        _myChart.setTitle(string);
+      }
+    });
 
     // is it a fail status
     if (statusCode != IStatus.OK)
