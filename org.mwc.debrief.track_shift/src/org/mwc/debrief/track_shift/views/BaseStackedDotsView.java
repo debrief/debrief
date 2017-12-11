@@ -86,6 +86,8 @@ import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.PlotEntity;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -1109,8 +1111,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
         // and write the text
         final String numA = formatValue(_linePlot.getRangeCrosshairValue());
-        final Date newDate =
-            new Date((long) _linePlot.getDomainCrosshairValue());
+
+        long crossDate = (long) _linePlot.getDomainCrosshairValue();
+        final Date newDate = new Date(crossDate);
         final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
         _df.setTimeZone(TimeZone.getTimeZone("GMT"));
         final String dateVal = _df.format(newDate);
@@ -1144,34 +1147,38 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final TimeSeriesDataItem nearest =
                 t.getDataItem(new FixedMillisecond(newDate.getTime()));
 
-            // ok, check the value
-            final double value = (Double) nearest.getValue();
-
-            if (value == bearing)
+            if (nearest != null)
             {
-              // ok, get the editor
-              final IWorkbench wb = PlatformUI.getWorkbench();
-              final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-              final IWorkbenchPage page = win.getActivePage();
-              final IEditorPart editor = page.getActiveEditor();
-              final Layers layers = (Layers) editor.getAdapter(Layers.class);
-              if (layers != null)
+              // ok, check the value
+              final double value = (Double) nearest.getValue();
+
+              if (value == bearing)
               {
-                final ColouredDataItem item = (ColouredDataItem) nearest;
-                final Editable payload = item.getPayload();
-                if (payload != null)
+                // ok, get the editor
+                final IWorkbench wb = PlatformUI.getWorkbench();
+                final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+                final IWorkbenchPage page = win.getActivePage();
+                final IEditorPart editor = page.getActiveEditor();
+                final Layers layers = (Layers) editor.getAdapter(Layers.class);
+                if (layers != null)
                 {
-                  if (payload instanceof SensorContactWrapper)
+                  final ColouredDataItem item = (ColouredDataItem) nearest;
+                  final Editable payload = item.getPayload();
+                  if (payload != null)
                   {
-                    showThisCut((SensorContactWrapper) payload, layers, editor);
-                  }
-                  else if (payload instanceof FixWrapper)
-                  {
-                    showThisFix((FixWrapper) payload, layers, editor);
+                    if (payload instanceof SensorContactWrapper)
+                    {
+                      showThisCut((SensorContactWrapper) payload, layers,
+                          editor);
+                    }
+                    else if (payload instanceof FixWrapper)
+                    {
+                      showThisFix((FixWrapper) payload, layers, editor);
+                    }
                   }
                 }
+                break;
               }
-              break;
             }
           }
         }
@@ -1185,9 +1192,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
-      {
-        // ok, remember it was clicked
-        _itemSelectedPending = true;
+      {        
+        // check we've clicked on the line plot
+        ChartEntity entity = arg0.getEntity();
+        if(entity instanceof PlotEntity)
+        {
+          PlotEntity plot = (PlotEntity) entity;
+          if(plot.getPlot() == _linePlot)
+          {
+            // ok, remember it was clicked
+            _itemSelectedPending = true;
+          }
+        }
       }
 
       @Override
@@ -1402,7 +1418,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _showTargetOverview.setChecked(false);
     }
-    
+
     if (allowDisplayOfZoneChart())
     {
       toolBarManager.add(_showZones);
@@ -1863,10 +1879,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       }
     };
-      _showZones.setChecked(false);
-      _showZones.setToolTipText("Show the slicing graphs");
-      _showZones.setImageDescriptor(CorePlugin
-          .getImageDescriptor("icons/24/GanttBars.png"));
+    _showZones.setChecked(false);
+    _showZones.setToolTipText("Show the slicing graphs");
+    _showZones.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {
@@ -1933,7 +1949,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showTargetOverview.setChecked(allowDisplayOfTargetOverview());
     _showTargetOverview.setToolTipText("Show the overview plot");
     _showTargetOverview.setImageDescriptor(TrackShiftActivator
-          .getImageDescriptor("icons/24/tgt_overview.png"));
+        .getImageDescriptor("icons/24/tgt_overview.png"));
 
     // get an error logger
     final ErrorLogger logger = this;
@@ -2009,13 +2025,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
-  /** whether it's possible to display the target overview plot
+  /**
+   * whether it's possible to display the target overview plot
    * 
    * @return
    */
   protected abstract boolean allowDisplayOfTargetOverview();
 
-  /** whether it's possible to display the zone chart
+  /**
+   * whether it's possible to display the zone chart
    * 
    * @return
    */
@@ -2361,7 +2379,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       // ok, also try to give focus to teh outline view
-      Display.getCurrent().asyncExec(new Runnable(){
+      Display.getCurrent().asyncExec(new Runnable()
+      {
         @Override
         public void run()
         {
@@ -2369,10 +2388,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // doesn't select the outline focus.
           // So, first, let's briefly put the focus on the editor
           editor.setFocus();
-          
+
           // now, see if we can select the outline view
           outline.setFocus();
-        }});
+        }
+      });
     }
   }
 
