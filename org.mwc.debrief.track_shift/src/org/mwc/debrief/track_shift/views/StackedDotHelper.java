@@ -458,17 +458,22 @@ public final class StackedDotHelper
             new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
         if (validPeriod.contains(scw.getDTG()))
         {
-          // sorted. here we go
-          doublet.targetParent = ts;
-
-          // create an object with the right time
-          index.getFix().setTime(scw.getDTG());
-
-          // and find any matching items
-          final SortedSet<Editable> items = ts.tailSet(index);
-          if (!items.isEmpty())
+          // ok, check we have a TMA fix at this time
+          Enumeration<Editable> fixes = ts.elements();
+          while (fixes.hasMoreElements())
           {
-            doublet.targetFix = (FixWrapper) items.first();
+            FixWrapper thisF = (FixWrapper) fixes.nextElement();
+
+            if (thisF.getDTG().equals(scw.getDTG()))
+            {
+              // sorted. here we go
+              doublet.targetParent = ts;
+
+              doublet.targetFix = thisF;
+
+              // ok, done.
+              break;
+            }
           }
         }
       }
