@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
@@ -453,6 +454,14 @@ public final class StackedDotHelper
       while (iter.hasNext())
       {
         final TrackSegment ts = iter.next();
+        
+        if(ts.endDTG() == null || ts.startDTG() == null)
+        {
+          // ok, move onto the next segment
+          CorePlugin.logError(Status.WARNING,
+              "Warning, segment is missing data:" + ts, null);
+          continue;
+        }
 
         final TimePeriod validPeriod =
             new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
