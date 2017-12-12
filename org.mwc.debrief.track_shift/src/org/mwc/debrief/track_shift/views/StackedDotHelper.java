@@ -240,22 +240,6 @@ public final class StackedDotHelper
 
   public static final String CALCULATED_VALUES = "Calculated";
 
-  private static Enumeration<Editable> _cachedIterator;
-
-  private static FixWrapper _cachedValue;
-
-  // ////////////////////////////////////////////////
-  // CONSTRUCTOR
-  // ////////////////////////////////////////////////
-
-  // ////////////////////////////////////////////////
-  // MEMBER METHODS
-  // ////////////////////////////////////////////////
-
-  private static HiResDate _cachedTime;
-
-  private static TrackWrapper _cachedTrack;
-
   /**
    * produce a color shade, according to whether the max error is inside 3 degrees or not.
    * 
@@ -388,9 +372,6 @@ public final class StackedDotHelper
         {
           final Enumeration<Editable> cuts = wrapper.elements();
 
-          // we're walking through ownship track again, so reset the cache
-          resetCache();
-
           while (cuts.hasMoreElements())
           {
             final SensorContactWrapper scw =
@@ -422,27 +403,14 @@ public final class StackedDotHelper
               final Doublet thisDub;
               final FixWrapper hostFix;
 
-              final boolean newWay = false;
-              if (newWay)
+              final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+              if (matches != null && matches.length == 1)
               {
-                // we no longer need to do it our own way,
-                // TrackWrapper processing has been optimised to
-                // cache the iterator
-                hostFix =
-                    getNearestPositionOnHostTrack(sensorHost, scw.getDTG());
+                hostFix = (FixWrapper) matches[0];
               }
               else
               {
-                final Watchable[] matches =
-                    sensorHost.getNearestTo(scw.getDTG());
-                if (matches != null && matches.length == 1)
-                {
-                  hostFix = (FixWrapper) matches[0];
-                }
-                else
-                {
-                  hostFix = null;
-                }
+                hostFix = null;
               }
 
               if (doublet.targetFix != null && hostFix != null)
@@ -483,70 +451,6 @@ public final class StackedDotHelper
         } // if sensor is visible
       } // loop through sensors
     }// if there are sensors
-    return res;
-  }
-
-  private static FixWrapper getNearestPositionOnHostTrack(
-      final TrackWrapper host, final HiResDate dtg)
-  {
-    final FixWrapper res;
-
-    // check we're in the period for the track
-    if (dtg.greaterThanOrEqualTo(host.getStartDTG())
-        && dtg.lessThanOrEqualTo(host.getEndDTG()))
-    {
-      // ok, worth trying
-      boolean needReset = false;
-      if (host != _cachedTrack)
-      {
-        needReset = true;
-      }
-
-      if (_cachedTime != null && dtg.lessThan(_cachedTime))
-      {
-        needReset = true;
-      }
-
-      if (needReset)
-      {
-        _cachedValue = null;
-        _cachedTrack = host;
-        _cachedIterator = null;
-      }
-
-      if (_cachedIterator == null)
-      {
-        _cachedIterator = _cachedTrack.getPositionIterator();
-      }
-
-      if (_cachedValue != null
-          && _cachedValue.getDTG().greaterThanOrEqualTo(dtg))
-      {
-        _cachedTime = dtg;
-        return _cachedValue;
-      }
-      else
-      {
-        // carry on walking forward
-        while (_cachedIterator.hasMoreElements())
-        {
-          _cachedTime = dtg;
-          _cachedValue = (FixWrapper) _cachedIterator.nextElement();
-          if (_cachedValue.getDateTimeGroup().greaterThanOrEqualTo(dtg))
-          {
-            return _cachedValue;
-          }
-        }
-      }
-      // failed to find it
-      res = null;
-    }
-    else
-    {
-      // out of period
-      res = null;
-    }
-
     return res;
   }
 
@@ -655,14 +559,6 @@ public final class StackedDotHelper
       }
     }
     return _theSegments;
-  }
-
-  private static void resetCache()
-  {
-    _cachedIterator = null;
-    _cachedValue = null;
-    _cachedTime = null;
-    _cachedTrack = null;
   }
 
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
