@@ -77,6 +77,8 @@ import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
+  public static final String CALCULATED_VALUES = "Calculated";
+
   private static class TargetDoublet
   {
 
@@ -951,7 +953,7 @@ public final class StackedDotHelper
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
-    final TimeSeries calculatedValues = new TimeSeries("Calculated");
+    final TimeSeries calculatedValues = new TimeSeries(CALCULATED_VALUES);
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
