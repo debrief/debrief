@@ -18,8 +18,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -86,12 +89,16 @@ import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.PlotEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
@@ -100,6 +107,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -1202,6 +1210,41 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           {
             // ok, remember it was clicked
             _itemSelectedPending = true;
+          }
+        }
+        else 
+        {
+          // get the chart object
+          JFreeChart chart = arg0.getChart();
+          Plot plot = chart.getPlot();          
+          if(plot instanceof CombinedDomainXYPlot)
+          {
+            CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) plot;
+            Point source = arg0.getTrigger().getPoint();
+            PlotRenderingInfo plotInfo = _holder.getChartRenderingInfo().getPlotInfo();
+            XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
+            if(subPlot == _linePlot)
+            {
+              _itemSelectedPending = true;
+              System.out.println("line plot");
+            }
+            else if(subPlot == _dotPlot)
+            {
+              // ok, try to select the sensor cut at this time
+              Point2D p = _holder.translateScreenToJava2D(arg0.getTrigger().getPoint());
+              
+              // what's the y value at this time?
+              System.out.println("looking for sensor cut near position:" + p.getY());
+             // dPlot.get
+              final ValueAxis range = dPlot.getDomainAxis();
+              
+              
+              final org.eclipse.swt.graphics.Rectangle area = _holder.getScreenDataArea();
+              final Rectangle jRect = new Rectangle(area.width, area.height);
+              double dataVal = range.lengthToJava2D(p.getY(), jRect, RectangleEdge.LEFT);
+              System.out.println("data val:" + dataVal + " - " + new HiResDate((long)dataVal));
+              
+            }
           }
         }
       }
