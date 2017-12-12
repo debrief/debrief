@@ -92,7 +92,6 @@ import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.PlotEntity;
-import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -1200,53 +1199,135 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
-      {        
+      {
         // check we've clicked on the line plot
+        final boolean errorClicked;
+
         ChartEntity entity = arg0.getEntity();
-        if(entity instanceof PlotEntity)
+        
+//        final String TMA = "Calculated";
+//        final String SENSOR = "Measured";
+//        
+//        final seriesName;
+        
+
+        if (entity instanceof PlotEntity)
         {
           PlotEntity plot = (PlotEntity) entity;
-          if(plot.getPlot() == _linePlot)
+          if (plot.getPlot() == _linePlot)
           {
             // ok, remember it was clicked
             _itemSelectedPending = true;
+
+            errorClicked = false;
+          }
+          else if (plot.getPlot() == _dotPlot)
+          {
+            errorClicked = true;
+          }
+          else
+          {
+            errorClicked = false;
           }
         }
-        else 
+        else
         {
           // get the chart object
           JFreeChart chart = arg0.getChart();
-          Plot plot = chart.getPlot();          
-          if(plot instanceof CombinedDomainXYPlot)
+          Plot plot = chart.getPlot();
+          if (plot instanceof CombinedDomainXYPlot)
           {
-            CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) plot;
-            Point source = arg0.getTrigger().getPoint();
-            PlotRenderingInfo plotInfo = _holder.getChartRenderingInfo().getPlotInfo();
+            final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) plot;
+            final Point source = arg0.getTrigger().getPoint();
+            final PlotRenderingInfo plotInfo =
+                _holder.getChartRenderingInfo().getPlotInfo();
             XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
-            if(subPlot == _linePlot)
+            if (subPlot == _linePlot)
             {
               _itemSelectedPending = true;
-              System.out.println("line plot");
+              errorClicked = false;
             }
-            else if(subPlot == _dotPlot)
+            else if (subPlot == _dotPlot)
             {
-              // ok, try to select the sensor cut at this time
-              Point2D p = _holder.translateScreenToJava2D(arg0.getTrigger().getPoint());
-              
-              // what's the y value at this time?
-              System.out.println("looking for sensor cut near position:" + p.getY());
-             // dPlot.get
-              final ValueAxis range = dPlot.getDomainAxis();
-              
-              
-              final org.eclipse.swt.graphics.Rectangle area = _holder.getScreenDataArea();
-              final Rectangle jRect = new Rectangle(area.width, area.height);
-              double dataVal = range.lengthToJava2D(p.getY(), jRect, RectangleEdge.LEFT);
-              System.out.println("data val:" + dataVal + " - " + new HiResDate((long)dataVal));
-              
+              _itemSelectedPending = false;
+
+              errorClicked = true;
+            }
+            else
+            {
+              errorClicked = false;
             }
           }
+          else
+          {
+            errorClicked = false;
+          }
         }
+
+        if (errorClicked)
+        {
+          // ok, try to select the sensor cut at this time
+          Point2D p =
+              _holder.translateScreenToJava2D(arg0.getTrigger().getPoint());
+
+          // what's the y value at this time?
+          System.out
+              .println("looking for sensor cut near position:" + p.getY());
+          final CombinedDomainXYPlot dPlot =
+              (CombinedDomainXYPlot) arg0.getChart().getPlot();
+          final ValueAxis range = dPlot.getDomainAxis();
+
+          final org.eclipse.swt.graphics.Rectangle area =
+              _holder.getScreenDataArea();
+          final Rectangle jRect = new Rectangle(area.width, area.height);
+          jRect.setLocation(area.x, area.y);
+          double dataVal =
+              range.java2DToValue(p.getY(), jRect, RectangleEdge.LEFT);
+          long dateMillis = (long) dataVal;
+
+          // ok, select the sensor data item nearest this time.
+
+          // and try to put cross-hairs on sensor
+          highlightDataItemNearest(dateMillis, "Measured");
+
+        }
+      }
+
+      private void highlightDataItemNearest(long dateMillis, String seriesName)
+      {
+        final TimeSeriesCollection tsc =
+            (TimeSeriesCollection) _linePlot.getDataset();
+        final TimeSeries t = tsc.getSeries(seriesName);
+        
+        // work through, to find the nearest item
+        List<?> list = t.getItems();
+        TimeSeriesDataItem nearest = null;
+        for(Object item: list)
+        {
+          TimeSeriesDataItem thisI  = (TimeSeriesDataItem) item;
+          if(nearest == null)
+          {
+            nearest = thisI;
+          }
+          else
+          {
+            long myDelta = Math.abs(nearest.getPeriod().getMiddleMillisecond() - dateMillis);
+            long hisDelta =  Math.abs(thisI.getPeriod().getMiddleMillisecond() - dateMillis);
+            
+            nearest = myDelta < hisDelta ? nearest : thisI;
+          }
+        }
+        
+        if(nearest != null)
+        {
+          // get the value
+          double value = (Double) nearest.getValue();
+          
+          _linePlot.setRangeCrosshairValue(value);
+          _linePlot.setDomainCrosshairValue(nearest.getPeriod().getMiddleMillisecond());
+          
+          _itemSelectedPending = true;
+        }        
       }
 
       @Override
