@@ -169,6 +169,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
 
+  private static final String MEASURED_VALUES = "Measured";
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
@@ -347,17 +348,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
-  final protected TimeSeries measuredValues = new TimeSeries("Measured");
+  final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
   final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
-
+  
   final public static String AMBIG_NAME = "Measured (Ambiguous)";
 
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
   private Action _precisionTwo;
 
+  private Double _rangeValueToLookup;
+  
   private Action _precisionThree;
   private final PropertyChangeListener _infillListener;
   /**
@@ -1138,7 +1141,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           _itemSelectedPending = false;
 
           // hmm, has sensor or fix been selected
-          final double bearing = _linePlot.getRangeCrosshairValue();
+
+          // note: we were using the
+          // _linePlot.getRangeCrosshairValue() value,
+          // but, we want to force which data item gets 
+          // selected.  TMA for line plot, Cut for sensor plot
+          final double bearing = _rangeValueToLookup;
 
           final TimeSeriesCollection tsc =
               (TimeSeriesCollection) _linePlot.getDataset();
@@ -1201,34 +1209,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
       {
-        // check we've clicked on the line plot
-        final boolean errorClicked;
+        final ChartEntity entity = arg0.getEntity();
 
-        ChartEntity entity = arg0.getEntity();
-        
-//        final String TMA = "Calculated";
-//        final String SENSOR = "Measured";
-//        
-//        final seriesName;
-        
+        final String TMA = StackedDotHelper.CALCULATED_VALUES;
+        final String SENSOR = MEASURED_VALUES;
+
+        final String seriesName;
 
         if (entity instanceof PlotEntity)
         {
           PlotEntity plot = (PlotEntity) entity;
           if (plot.getPlot() == _linePlot)
           {
-            // ok, remember it was clicked
-            _itemSelectedPending = true;
-
-            errorClicked = false;
+            seriesName = TMA;
           }
           else if (plot.getPlot() == _dotPlot)
           {
-            errorClicked = true;
+            seriesName = SENSOR;
           }
           else
           {
-            errorClicked = false;
+            seriesName = null;
           }
         }
         else
@@ -1245,35 +1246,30 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
             if (subPlot == _linePlot)
             {
-              _itemSelectedPending = true;
-              errorClicked = false;
+              seriesName = TMA;
             }
             else if (subPlot == _dotPlot)
             {
-              _itemSelectedPending = false;
-
-              errorClicked = true;
+              seriesName = SENSOR;
             }
             else
             {
-              errorClicked = false;
+              seriesName = null;
             }
           }
           else
           {
-            errorClicked = false;
+            seriesName = null;
           }
         }
 
-        if (errorClicked)
+        if (seriesName != null)
         {
           // ok, try to select the sensor cut at this time
           Point2D p =
               _holder.translateScreenToJava2D(arg0.getTrigger().getPoint());
 
           // what's the y value at this time?
-          System.out
-              .println("looking for sensor cut near position:" + p.getY());
           final CombinedDomainXYPlot dPlot =
               (CombinedDomainXYPlot) arg0.getChart().getPlot();
           final ValueAxis range = dPlot.getDomainAxis();
@@ -1286,11 +1282,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               range.java2DToValue(p.getY(), jRect, RectangleEdge.LEFT);
           long dateMillis = (long) dataVal;
 
-          // ok, select the sensor data item nearest this time.
-
           // and try to put cross-hairs on sensor
-          highlightDataItemNearest(dateMillis, "Measured");
-
+          highlightDataItemNearest(dateMillis, seriesName);
         }
       }
 
@@ -1299,36 +1292,51 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final TimeSeriesCollection tsc =
             (TimeSeriesCollection) _linePlot.getDataset();
         final TimeSeries t = tsc.getSeries(seriesName);
-        
+
         // work through, to find the nearest item
         List<?> list = t.getItems();
         TimeSeriesDataItem nearest = null;
-        for(Object item: list)
+        for (Object item : list)
         {
-          TimeSeriesDataItem thisI  = (TimeSeriesDataItem) item;
-          if(nearest == null)
+          TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+          if (nearest == null)
           {
             nearest = thisI;
           }
           else
           {
-            long myDelta = Math.abs(nearest.getPeriod().getMiddleMillisecond() - dateMillis);
-            long hisDelta =  Math.abs(thisI.getPeriod().getMiddleMillisecond() - dateMillis);
-            
+            long myDelta =
+                Math.abs(nearest.getPeriod().getMiddleMillisecond()
+                    - dateMillis);
+            long hisDelta =
+                Math.abs(thisI.getPeriod().getMiddleMillisecond() - dateMillis);
+
             nearest = myDelta < hisDelta ? nearest : thisI;
           }
         }
-        
-        if(nearest != null)
+
+        if (nearest != null)
         {
           // get the value
-          double value = (Double) nearest.getValue();
+          final double value = (Double) nearest.getValue();
+          final TimeSeriesDataItem fItem = nearest;
           
-          _linePlot.setRangeCrosshairValue(value);
-          _linePlot.setDomainCrosshairValue(nearest.getPeriod().getMiddleMillisecond());
-          
-          _itemSelectedPending = true;
-        }        
+          Display.getDefault().asyncExec(new Runnable(){
+
+            @Override
+            public void run()
+            {
+              _linePlot.setDomainCrosshairValue(fItem.getPeriod()
+                  .getMiddleMillisecond());
+              _linePlot.setRangeCrosshairValue(value);
+              
+              _rangeValueToLookup = value;
+
+              // remember we need to select a new item
+              _itemSelectedPending = true;
+            }});
+
+        }
       }
 
       @Override
@@ -2677,10 +2685,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected void updateLinePlotRanges()
   {
     // NOTE: we no longer process this update.
-    // we wish to retain the zoom level as the 
+    // we wish to retain the zoom level as the
     // analyst deletes points
-    
-    
+
     // have a look at the auto resize
     // if (_autoResize.isChecked())
     // {
