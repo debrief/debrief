@@ -22,11 +22,11 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
@@ -179,6 +179,24 @@ public final class StackedDotHelper
       final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
       {
         @Override
+        protected boolean allowDisplayOfTargetOverview()
+        {
+          return false;
+        }
+
+        @Override
+        protected boolean allowDisplayOfZoneChart()
+        {
+          return false;
+        }
+
+        @Override
+        protected String formatValue(final double value)
+        {
+          return "" + value;
+        }
+
+        @Override
         protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
         {
           return null;
@@ -201,24 +219,6 @@ public final class StackedDotHelper
         {
           // no, nothing to do.
         }
-
-        @Override
-        protected String formatValue(double value)
-        {
-          return "" + value;
-        }
-
-        @Override
-        protected boolean allowDisplayOfTargetOverview()
-        {
-          return false;
-        }
-
-        @Override
-        protected boolean allowDisplayOfZoneChart()
-        {
-          return false;
-        }
       };
 
       // try to set a zone on the track
@@ -238,333 +238,54 @@ public final class StackedDotHelper
     }
   }
 
+  public static final String CALCULATED_VALUES = "Calculated";
+
   /**
-   * sort out data of interest
+   * produce a color shade, according to whether the max error is inside 3 degrees or not.
    * 
+   * @param errorSeries
+   * @return
    */
-  public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
-      final ISecondaryTrack targetTrack, final boolean onlyVis,
-      final boolean needBearing, final boolean needFrequency)
+  private static Paint calculateErrorShadeFor(
+      final TimeSeriesCollection errorSeries, final double cutOffValue)
   {
-    final TreeSet<Doublet> res = new TreeSet<Doublet>();
-
-    // friendly fix-wrapper to save us repeatedly creating it
-    final FixWrapper index =
-        new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0), 0.0, 0.0));
-
-    final Vector<TrackSegment> theSegments;
-    if (targetTrack != null)
+    final Paint col;
+    double maxError = 0d;
+    final TimeSeries ts = errorSeries.getSeries(0);
+    final List<?> items = ts.getItems();
+    for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
     {
-      theSegments = getTargetLegs(targetTrack);
-    }
-    else
-    {
-      theSegments = null;
-    }
-
-    // loop through our sensor data
-    final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
-    if (sensors != null)
-    {
-      while (sensors.hasMoreElements())
+      final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
+      final boolean useMe;
+      // check this isn't infill
+      if (item instanceof ColouredDataItem)
       {
-        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
-        if (!onlyVis || (onlyVis && wrapper.getVisible()))
-        {
-          final Enumeration<Editable> cuts = wrapper.elements();
-
-          // we're walking through ownship track again, so reset the cache
-          resetCache();
-
-          while (cuts.hasMoreElements())
-          {
-            final SensorContactWrapper scw =
-                (SensorContactWrapper) cuts.nextElement();
-
-            if (!onlyVis || (onlyVis && scw.getVisible()))
-            {
-              // is this cut suitable for what we're looking for?
-              if (needBearing)
-              {
-                if (!scw.getHasBearing())
-                {
-                  continue;
-                }
-              }
-
-              // aaah, but does it meet the frequency requirement?
-              if (needFrequency)
-              {
-                if (!scw.getHasFrequency())
-                {
-                  continue;
-                }
-              }
-
-              final TargetDoublet doublet =
-                  getTargetDoublet(index, theSegments, scw);
-
-              final Doublet thisDub;
-              final FixWrapper hostFix;
-
-              final boolean newWay = false;
-              if (newWay)
-              {
-                // we no longer need to do it our own way,
-                // TrackWrapper processing has been optimised to
-                // cache the iterator
-                hostFix =
-                    getNearestPositionOnHostTrack(sensorHost, scw.getDTG());
-              }
-              else
-              {
-                final Watchable[] matches =
-                    sensorHost.getNearestTo(scw.getDTG());
-                if (matches != null && matches.length == 1)
-                {
-                  hostFix = (FixWrapper) matches[0];
-                }
-                else
-                {
-                  hostFix = null;
-                }
-              }
-
-              if (doublet.targetFix != null && hostFix != null)
-              {
-                thisDub =
-                    new Doublet(scw, doublet.targetFix, doublet.targetParent,
-                        hostFix);
-
-                // if we've no target track add all the points
-                if (targetTrack == null)
-                {
-                  // store our data
-                  res.add(thisDub);
-                }
-                else
-                {
-                  // if we've got a target track we only add points
-                  // for which we
-                  // have
-                  // a target location
-                  if (doublet.targetFix != null)
-                  {
-                    // store our data
-                    res.add(thisDub);
-                  }
-                } // if we know the track
-                // if there are any matching items
-
-              } // if we find a match
-              else if (targetTrack == null && hostFix != null)
-              {
-                // no target data, just use ownship sensor data
-                thisDub = new Doublet(scw, null, null, hostFix);
-                res.add(thisDub);
-              }
-            } // if cut is visible
-          } // loop through cuts
-        } // if sensor is visible
-      } // loop through sensors
-    }// if there are sensors
-    return res;
-  }
-
-  private static FixWrapper getNearestPositionOnHostTrack(
-      final TrackWrapper host, final HiResDate dtg)
-  {
-    final FixWrapper res;
-
-    // check we're in the period for the track
-    if (dtg.greaterThanOrEqualTo(host.getStartDTG())
-        && dtg.lessThanOrEqualTo(host.getEndDTG()))
-    {
-      // ok, worth trying
-      boolean needReset = false;
-      if (host != _cachedTrack)
-      {
-        needReset = true;
-      }
-
-      if (_cachedTime != null && dtg.lessThan(_cachedTime))
-      {
-        needReset = true;
-      }
-
-      if (needReset)
-      {
-        _cachedValue = null;
-        _cachedTrack = host;
-        _cachedIterator = null;
-      }
-
-      if (_cachedIterator == null)
-      {
-        _cachedIterator = _cachedTrack.getPositionIterator();
-      }
-
-      if (_cachedValue != null
-          && _cachedValue.getDTG().greaterThanOrEqualTo(dtg))
-      {
-        _cachedTime = dtg;
-        return _cachedValue;
+        final ColouredDataItem cd = (ColouredDataItem) item;
+        useMe = cd.isShapeFilled();
       }
       else
       {
-        // carry on walking forward
-        while (_cachedIterator.hasMoreElements())
-        {
-          _cachedTime = dtg;
-          _cachedValue = (FixWrapper) _cachedIterator.nextElement();
-          if (_cachedValue.getDateTimeGroup().greaterThanOrEqualTo(dtg))
-          {
-            return _cachedValue;
-          }
-        }
+        useMe = true;
       }
-      // failed to find it
-      res = null;
+      if (useMe)
+      {
+        final double thisE = (Double) item.getValue();
+        maxError = Math.max(maxError, Math.abs(thisE));
+      }
+    }
+
+    if (maxError > cutOffValue)
+    {
+      col = new Color(1f, 0f, 0f, 0.05f);
     }
     else
     {
-      // out of period
-      res = null;
+      final float shade = (float) (0.03f + (cutOffValue - maxError) * 0.02f);
+      col = new Color(0f, 1f, 0f, shade);
     }
 
-    return res;
+    return col;
   }
-
-  // ////////////////////////////////////////////////
-  // CONSTRUCTOR
-  // ////////////////////////////////////////////////
-
-  // ////////////////////////////////////////////////
-  // MEMBER METHODS
-  // ////////////////////////////////////////////////
-
-  private static TargetDoublet getTargetDoublet(final FixWrapper index,
-      final Vector<TrackSegment> theSegments, final SensorContactWrapper scw)
-  {
-    final TargetDoublet doublet = new TargetDoublet();
-    if (theSegments != null && !theSegments.isEmpty())
-    {
-      final Iterator<TrackSegment> iter = theSegments.iterator();
-      while (iter.hasNext())
-      {
-        final TrackSegment ts = iter.next();
-        
-        if(ts.endDTG() == null || ts.startDTG() == null)
-        {
-          // ok, move onto the next segment
-          CorePlugin.logError(Status.WARNING,
-              "Warning, segment is missing data:" + ts, null);
-          continue;
-        }
-
-        final TimePeriod validPeriod =
-            new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
-        if (validPeriod.contains(scw.getDTG()))
-        {
-          // ok, check we have a TMA fix at this time
-          Enumeration<Editable> fixes = ts.elements();
-          while (fixes.hasMoreElements())
-          {
-            FixWrapper thisF = (FixWrapper) fixes.nextElement();
-
-            // note: workaround. When we've merged the track,
-            // the new legs are actually one millisecond later.
-            // workaround this.
-            long timeDiffMicros =
-                Math.abs(thisF.getDTG().getMicros() - scw.getDTG().getMicros());
-
-            if (timeDiffMicros <= 1000)
-            {
-              // sorted. here we go
-              doublet.targetParent = ts;
-
-              doublet.targetFix = thisF;
-
-              // ok, done.
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    return doublet;
-  }
-
-  private static Vector<TrackSegment> getTargetLegs(
-      final ISecondaryTrack targetTrack)
-  {
-    final Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
-    final Enumeration<Editable> trkData = targetTrack.segments();
-
-    while (trkData.hasMoreElements())
-    {
-      final Editable thisI = trkData.nextElement();
-      if (thisI instanceof SegmentList)
-      {
-        final SegmentList thisList = (SegmentList) thisI;
-        final Enumeration<Editable> theElements = thisList.elements();
-        while (theElements.hasMoreElements())
-        {
-          final TrackSegment ts = (TrackSegment) theElements.nextElement();
-          if (ts.getVisible())
-          {
-            _theSegments.add(ts);
-          }
-        }
-
-      }
-      else if (thisI instanceof TrackSegment)
-      {
-        final TrackSegment ts = (TrackSegment) thisI;
-        _theSegments.add(ts);
-      }
-    }
-    return _theSegments;
-  }
-
-  private static void resetCache()
-  {
-    _cachedIterator = null;
-    _cachedValue = null;
-    _cachedTime = null;
-    _cachedTrack = null;
-  }
-
-  /**
-   * the maximum number of items we plot as symbols. Above this we just use a line
-   */
-  private final int MAX_ITEMS_TO_PLOT = 1000;
-
-  /**
-   * the track being dragged
-   */
-  private TrackWrapper _primaryTrack;
-
-  /**
-   * the secondary track we're monitoring
-   */
-  private ISecondaryTrack _secondaryTrack;
-
-  /**
-   * the set of points to watch on the primary track. This is stored as a sorted set because if we
-   * have multiple sensors they may be suppled in chronological order, or they may represent
-   * overlapping time periods
-   */
-  private TreeSet<Doublet> _primaryDoublets;
-
-  private static Enumeration<Editable> _cachedIterator;
-
-  private static FixWrapper _cachedValue;
-
-  private static HiResDate _cachedTime;
-
-  private static TrackWrapper _cachedTrack;
 
   /**
    * determine if this time series contains many identical values - this is an indicator for data
@@ -616,6 +337,230 @@ public final class StackedDotHelper
     return false;
   }
 
+  /**
+   * sort out data of interest
+   * 
+   */
+  public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
+      final ISecondaryTrack targetTrack, final boolean onlyVis,
+      final boolean needBearing, final boolean needFrequency)
+  {
+    final TreeSet<Doublet> res = new TreeSet<Doublet>();
+
+    // friendly fix-wrapper to save us repeatedly creating it
+    final FixWrapper index =
+        new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0), 0.0, 0.0));
+
+    final Vector<TrackSegment> theSegments;
+    if (targetTrack != null)
+    {
+      theSegments = getTargetLegs(targetTrack);
+    }
+    else
+    {
+      theSegments = null;
+    }
+
+    // loop through our sensor data
+    final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
+    if (sensors != null)
+    {
+      while (sensors.hasMoreElements())
+      {
+        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
+        if (!onlyVis || (onlyVis && wrapper.getVisible()))
+        {
+          final Enumeration<Editable> cuts = wrapper.elements();
+
+          while (cuts.hasMoreElements())
+          {
+            final SensorContactWrapper scw =
+                (SensorContactWrapper) cuts.nextElement();
+
+            if (!onlyVis || (onlyVis && scw.getVisible()))
+            {
+              // is this cut suitable for what we're looking for?
+              if (needBearing)
+              {
+                if (!scw.getHasBearing())
+                {
+                  continue;
+                }
+              }
+
+              // aaah, but does it meet the frequency requirement?
+              if (needFrequency)
+              {
+                if (!scw.getHasFrequency())
+                {
+                  continue;
+                }
+              }
+
+              final TargetDoublet doublet =
+                  getTargetDoublet(index, theSegments, scw);
+
+              final Doublet thisDub;
+              final FixWrapper hostFix;
+
+              final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+              if (matches != null && matches.length == 1)
+              {
+                hostFix = (FixWrapper) matches[0];
+              }
+              else
+              {
+                hostFix = null;
+              }
+
+              if (doublet.targetFix != null && hostFix != null)
+              {
+                thisDub =
+                    new Doublet(scw, doublet.targetFix, doublet.targetParent,
+                        hostFix);
+
+                // if we've no target track add all the points
+                if (targetTrack == null)
+                {
+                  // store our data
+                  res.add(thisDub);
+                }
+                else
+                {
+                  // if we've got a target track we only add points
+                  // for which we
+                  // have
+                  // a target location
+                  if (doublet.targetFix != null)
+                  {
+                    // store our data
+                    res.add(thisDub);
+                  }
+                } // if we know the track
+                // if there are any matching items
+
+              } // if we find a match
+              else if (targetTrack == null && hostFix != null)
+              {
+                // no target data, just use ownship sensor data
+                thisDub = new Doublet(scw, null, null, hostFix);
+                res.add(thisDub);
+              }
+            } // if cut is visible
+          } // loop through cuts
+        } // if sensor is visible
+      } // loop through sensors
+    }// if there are sensors
+    return res;
+  }
+
+  private static TargetDoublet getTargetDoublet(final FixWrapper index,
+      final Vector<TrackSegment> theSegments, final SensorContactWrapper scw)
+  {
+    final TargetDoublet doublet = new TargetDoublet();
+    if (theSegments != null && !theSegments.isEmpty())
+    {
+      final Iterator<TrackSegment> iter = theSegments.iterator();
+      while (iter.hasNext())
+      {
+        final TrackSegment ts = iter.next();
+
+        if (ts.endDTG() == null || ts.startDTG() == null)
+        {
+          // ok, move onto the next segment
+          CorePlugin.logError(IStatus.WARNING,
+              "Warning, segment is missing data:" + ts, null);
+          continue;
+        }
+
+        final TimePeriod validPeriod =
+            new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
+        if (validPeriod.contains(scw.getDTG()))
+        {
+
+          // if this is an infill, then we're relaxed about the errors
+          if (ts instanceof DynamicInfillSegment)
+          {
+            // sorted. here we go
+            doublet.targetParent = ts;
+
+            // create an object with the right time
+            index.getFix().setTime(scw.getDTG());
+
+            // and find any matching items
+            final SortedSet<Editable> items = ts.tailSet(index);
+            if (!items.isEmpty())
+            {
+              doublet.targetFix = (FixWrapper) items.first();
+            }
+          }
+          else
+          {
+            // ok, check we have a TMA fix almost exactly at this time
+            final Enumeration<Editable> fixes = ts.elements();
+            while (fixes.hasMoreElements())
+            {
+              final FixWrapper thisF = (FixWrapper) fixes.nextElement();
+
+              // note: workaround. When we've merged the track,
+              // the new legs are actually one millisecond later.
+              // workaround this.
+              final long timeDiffMicros =
+                  Math.abs(thisF.getDTG().getMicros()
+                      - scw.getDTG().getMicros());
+
+              if (timeDiffMicros <= 1000)
+              {
+                // sorted. here we go
+                doublet.targetParent = ts;
+
+                doublet.targetFix = thisF;
+
+                // ok, done.
+                break;
+              }
+            }
+          }
+
+        }
+      }
+    }
+
+    return doublet;
+  }
+
+  private static Vector<TrackSegment> getTargetLegs(
+      final ISecondaryTrack targetTrack)
+  {
+    final Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
+    final Enumeration<Editable> trkData = targetTrack.segments();
+
+    while (trkData.hasMoreElements())
+    {
+      final Editable thisI = trkData.nextElement();
+      if (thisI instanceof SegmentList)
+      {
+        final SegmentList thisList = (SegmentList) thisI;
+        final Enumeration<Editable> theElements = thisList.elements();
+        while (theElements.hasMoreElements())
+        {
+          final TrackSegment ts = (TrackSegment) theElements.nextElement();
+          if (ts.getVisible())
+          {
+            _theSegments.add(ts);
+          }
+        }
+
+      }
+      else if (thisI instanceof TrackSegment)
+      {
+        final TrackSegment ts = (TrackSegment) thisI;
+        _theSegments.add(ts);
+      }
+    }
+    return _theSegments;
+  }
+
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
       final ZoneChart.ColorProvider colorProvider)
   {
@@ -658,51 +603,26 @@ public final class StackedDotHelper
   }
 
   /**
-   * produce a color shade, according to whether the max error is inside 3 degrees or not.
-   * 
-   * @param errorSeries
-   * @return
+   * the maximum number of items we plot as symbols. Above this we just use a line
    */
-  private static Paint calculateErrorShadeFor(
-      final TimeSeriesCollection errorSeries, final double cutOffValue)
-  {
-    final Paint col;
-    double maxError = 0d;
-    final TimeSeries ts = errorSeries.getSeries(0);
-    final List<?> items = ts.getItems();
-    for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
-    {
-      final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
-      final boolean useMe;
-      // check this isn't infill
-      if (item instanceof ColouredDataItem)
-      {
-        final ColouredDataItem cd = (ColouredDataItem) item;
-        useMe = cd.isShapeFilled();
-      }
-      else
-      {
-        useMe = true;
-      }
-      if (useMe)
-      {
-        final double thisE = (Double) item.getValue();
-        maxError = Math.max(maxError, Math.abs(thisE));
-      }
-    }
+  private final int MAX_ITEMS_TO_PLOT = 1000;
 
-    if (maxError > cutOffValue)
-    {
-      col = new Color(1f, 0f, 0f, 0.05f);
-    }
-    else
-    {
-      final float shade = (float) (0.03f + (cutOffValue - maxError) * 0.02f);
-      col = new Color(0f, 1f, 0f, shade);
-    }
+  /**
+   * the track being dragged
+   */
+  private TrackWrapper _primaryTrack;
 
-    return col;
-  }
+  /**
+   * the secondary track we're monitoring
+   */
+  private ISecondaryTrack _secondaryTrack;
+
+  /**
+   * the set of points to watch on the primary track. This is stored as a sorted set because if we
+   * have multiple sensors they may be suppled in chronological order, or they may represent
+   * overlapping time periods
+   */
+  private TreeSet<Doublet> _primaryDoublets;
 
   public List<SensorContactWrapper> getBearings(
       final TrackWrapper primaryTrack, final boolean onlyVis,
@@ -951,7 +871,7 @@ public final class StackedDotHelper
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
-    final TimeSeries calculatedValues = new TimeSeries("Calculated");
+    final TimeSeries calculatedValues = new TimeSeries(CALCULATED_VALUES);
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
@@ -1677,7 +1597,9 @@ public final class StackedDotHelper
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
 
     if (_primaryTrack == null)
+    {
       return;
+    }
 
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
@@ -1692,7 +1614,7 @@ public final class StackedDotHelper
     SensorWrapper lastSensor = null;
 
     // sort out the speed of sound
-    String speedStr =
+    final String speedStr =
         CorePlugin.getDefault().getPreferenceStore().getString(
             FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
     final double speedOfSound;
@@ -1730,7 +1652,7 @@ public final class StackedDotHelper
         if (!Double.isNaN(baseFreq))
         {
           // have we changed sensor?
-          SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
+          final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
           final boolean newSensor;
           if (thisSensor != null && !thisSensor.equals(lastSensor))
           {
@@ -1820,7 +1742,7 @@ public final class StackedDotHelper
       // sort out the rendering for the BaseFrequencies.
       // we want to show a solid line, with no markers
       final int BaseFreqSeries = 2;
-      ColourStandardXYItemRenderer lineRend =
+      final ColourStandardXYItemRenderer lineRend =
           (ColourStandardXYItemRenderer) linePlot.getRenderer();
       lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities
           .createDiamond(0.2f));
