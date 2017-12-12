@@ -22,11 +22,11 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
@@ -77,8 +77,6 @@ import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
-  public static final String CALCULATED_VALUES = "Calculated";
-
   private static class TargetDoublet
   {
 
@@ -181,6 +179,24 @@ public final class StackedDotHelper
       final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
       {
         @Override
+        protected boolean allowDisplayOfTargetOverview()
+        {
+          return false;
+        }
+
+        @Override
+        protected boolean allowDisplayOfZoneChart()
+        {
+          return false;
+        }
+
+        @Override
+        protected String formatValue(final double value)
+        {
+          return "" + value;
+        }
+
+        @Override
         protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
         {
           return null;
@@ -203,24 +219,6 @@ public final class StackedDotHelper
         {
           // no, nothing to do.
         }
-
-        @Override
-        protected String formatValue(double value)
-        {
-          return "" + value;
-        }
-
-        @Override
-        protected boolean allowDisplayOfTargetOverview()
-        {
-          return false;
-        }
-
-        @Override
-        protected boolean allowDisplayOfZoneChart()
-        {
-          return false;
-        }
       };
 
       // try to set a zone on the track
@@ -238,6 +236,121 @@ public final class StackedDotHelper
       view.setLeg(host, target, trimmedPeriod);
 
     }
+  }
+
+  public static final String CALCULATED_VALUES = "Calculated";
+
+  private static Enumeration<Editable> _cachedIterator;
+
+  private static FixWrapper _cachedValue;
+
+  // ////////////////////////////////////////////////
+  // CONSTRUCTOR
+  // ////////////////////////////////////////////////
+
+  // ////////////////////////////////////////////////
+  // MEMBER METHODS
+  // ////////////////////////////////////////////////
+
+  private static HiResDate _cachedTime;
+
+  private static TrackWrapper _cachedTrack;
+
+  /**
+   * produce a color shade, according to whether the max error is inside 3 degrees or not.
+   * 
+   * @param errorSeries
+   * @return
+   */
+  private static Paint calculateErrorShadeFor(
+      final TimeSeriesCollection errorSeries, final double cutOffValue)
+  {
+    final Paint col;
+    double maxError = 0d;
+    final TimeSeries ts = errorSeries.getSeries(0);
+    final List<?> items = ts.getItems();
+    for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
+    {
+      final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
+      final boolean useMe;
+      // check this isn't infill
+      if (item instanceof ColouredDataItem)
+      {
+        final ColouredDataItem cd = (ColouredDataItem) item;
+        useMe = cd.isShapeFilled();
+      }
+      else
+      {
+        useMe = true;
+      }
+      if (useMe)
+      {
+        final double thisE = (Double) item.getValue();
+        maxError = Math.max(maxError, Math.abs(thisE));
+      }
+    }
+
+    if (maxError > cutOffValue)
+    {
+      col = new Color(1f, 0f, 0f, 0.05f);
+    }
+    else
+    {
+      final float shade = (float) (0.03f + (cutOffValue - maxError) * 0.02f);
+      col = new Color(0f, 1f, 0f, shade);
+    }
+
+    return col;
+  }
+
+  /**
+   * determine if this time series contains many identical values - this is an indicator for data
+   * coming from a simulator, for which turns can't be determined by our peak tracking algorithm.
+   * 
+   * @param dataset
+   * @return
+   */
+  private static boolean containsIdenticalValues(final TimeSeries dataset,
+      final Integer NumMatches)
+  {
+    final int num = dataset.getItemCount();
+
+    final int numMatches;
+    if (NumMatches != null)
+    {
+      numMatches = NumMatches;
+    }
+    else
+    {
+      final double MATCH_PROPORTION = 0.1;
+      numMatches = (int) (num * MATCH_PROPORTION);
+    }
+
+    double lastCourse = 0d;
+    int matchCount = 0;
+
+    for (int ctr = 0; ctr < num; ctr++)
+    {
+      final TimeSeriesDataItem thisItem = dataset.getDataItem(ctr);
+      final double thisCourse = (Double) thisItem.getValue();
+      if (thisCourse == lastCourse)
+      {
+        // ok, count the duplicates
+        matchCount++;
+
+        if (matchCount >= numMatches)
+        {
+          return true;
+        }
+      }
+      else
+      {
+        matchCount = 0;
+      }
+      lastCourse = thisCourse;
+    }
+
+    return false;
   }
 
   /**
@@ -437,14 +550,6 @@ public final class StackedDotHelper
     return res;
   }
 
-  // ////////////////////////////////////////////////
-  // CONSTRUCTOR
-  // ////////////////////////////////////////////////
-
-  // ////////////////////////////////////////////////
-  // MEMBER METHODS
-  // ////////////////////////////////////////////////
-
   private static TargetDoublet getTargetDoublet(final FixWrapper index,
       final Vector<TrackSegment> theSegments, final SensorContactWrapper scw)
   {
@@ -455,11 +560,11 @@ public final class StackedDotHelper
       while (iter.hasNext())
       {
         final TrackSegment ts = iter.next();
-        
-        if(ts.endDTG() == null || ts.startDTG() == null)
+
+        if (ts.endDTG() == null || ts.startDTG() == null)
         {
           // ok, move onto the next segment
-          CorePlugin.logError(Status.WARNING,
+          CorePlugin.logError(IStatus.WARNING,
               "Warning, segment is missing data:" + ts, null);
           continue;
         }
@@ -468,29 +573,51 @@ public final class StackedDotHelper
             new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
         if (validPeriod.contains(scw.getDTG()))
         {
-          // ok, check we have a TMA fix at this time
-          Enumeration<Editable> fixes = ts.elements();
-          while (fixes.hasMoreElements())
+
+          // if this is an infill, then we're relaxed about the errors
+          if (ts instanceof DynamicInfillSegment)
           {
-            FixWrapper thisF = (FixWrapper) fixes.nextElement();
+            // sorted. here we go
+            doublet.targetParent = ts;
 
-            // note: workaround. When we've merged the track,
-            // the new legs are actually one millisecond later.
-            // workaround this.
-            long timeDiffMicros =
-                Math.abs(thisF.getDTG().getMicros() - scw.getDTG().getMicros());
+            // create an object with the right time
+            index.getFix().setTime(scw.getDTG());
 
-            if (timeDiffMicros <= 1000)
+            // and find any matching items
+            final SortedSet<Editable> items = ts.tailSet(index);
+            if (!items.isEmpty())
             {
-              // sorted. here we go
-              doublet.targetParent = ts;
-
-              doublet.targetFix = thisF;
-
-              // ok, done.
-              break;
+              doublet.targetFix = (FixWrapper) items.first();
             }
           }
+          else
+          {
+            // ok, check we have a TMA fix almost exactly at this time
+            final Enumeration<Editable> fixes = ts.elements();
+            while (fixes.hasMoreElements())
+            {
+              final FixWrapper thisF = (FixWrapper) fixes.nextElement();
+
+              // note: workaround. When we've merged the track,
+              // the new legs are actually one millisecond later.
+              // workaround this.
+              final long timeDiffMicros =
+                  Math.abs(thisF.getDTG().getMicros()
+                      - scw.getDTG().getMicros());
+
+              if (timeDiffMicros <= 1000)
+              {
+                // sorted. here we go
+                doublet.targetParent = ts;
+
+                doublet.targetFix = thisF;
+
+                // ok, done.
+                break;
+              }
+            }
+          }
+
         }
       }
     }
@@ -538,86 +665,6 @@ public final class StackedDotHelper
     _cachedTrack = null;
   }
 
-  /**
-   * the maximum number of items we plot as symbols. Above this we just use a line
-   */
-  private final int MAX_ITEMS_TO_PLOT = 1000;
-
-  /**
-   * the track being dragged
-   */
-  private TrackWrapper _primaryTrack;
-
-  /**
-   * the secondary track we're monitoring
-   */
-  private ISecondaryTrack _secondaryTrack;
-
-  /**
-   * the set of points to watch on the primary track. This is stored as a sorted set because if we
-   * have multiple sensors they may be suppled in chronological order, or they may represent
-   * overlapping time periods
-   */
-  private TreeSet<Doublet> _primaryDoublets;
-
-  private static Enumeration<Editable> _cachedIterator;
-
-  private static FixWrapper _cachedValue;
-
-  private static HiResDate _cachedTime;
-
-  private static TrackWrapper _cachedTrack;
-
-  /**
-   * determine if this time series contains many identical values - this is an indicator for data
-   * coming from a simulator, for which turns can't be determined by our peak tracking algorithm.
-   * 
-   * @param dataset
-   * @return
-   */
-  private static boolean containsIdenticalValues(final TimeSeries dataset,
-      final Integer NumMatches)
-  {
-    final int num = dataset.getItemCount();
-
-    final int numMatches;
-    if (NumMatches != null)
-    {
-      numMatches = NumMatches;
-    }
-    else
-    {
-      final double MATCH_PROPORTION = 0.1;
-      numMatches = (int) (num * MATCH_PROPORTION);
-    }
-
-    double lastCourse = 0d;
-    int matchCount = 0;
-
-    for (int ctr = 0; ctr < num; ctr++)
-    {
-      final TimeSeriesDataItem thisItem = dataset.getDataItem(ctr);
-      final double thisCourse = (Double) thisItem.getValue();
-      if (thisCourse == lastCourse)
-      {
-        // ok, count the duplicates
-        matchCount++;
-
-        if (matchCount >= numMatches)
-        {
-          return true;
-        }
-      }
-      else
-      {
-        matchCount = 0;
-      }
-      lastCourse = thisCourse;
-    }
-
-    return false;
-  }
-
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
       final ZoneChart.ColorProvider colorProvider)
   {
@@ -660,51 +707,26 @@ public final class StackedDotHelper
   }
 
   /**
-   * produce a color shade, according to whether the max error is inside 3 degrees or not.
-   * 
-   * @param errorSeries
-   * @return
+   * the maximum number of items we plot as symbols. Above this we just use a line
    */
-  private static Paint calculateErrorShadeFor(
-      final TimeSeriesCollection errorSeries, final double cutOffValue)
-  {
-    final Paint col;
-    double maxError = 0d;
-    final TimeSeries ts = errorSeries.getSeries(0);
-    final List<?> items = ts.getItems();
-    for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
-    {
-      final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
-      final boolean useMe;
-      // check this isn't infill
-      if (item instanceof ColouredDataItem)
-      {
-        final ColouredDataItem cd = (ColouredDataItem) item;
-        useMe = cd.isShapeFilled();
-      }
-      else
-      {
-        useMe = true;
-      }
-      if (useMe)
-      {
-        final double thisE = (Double) item.getValue();
-        maxError = Math.max(maxError, Math.abs(thisE));
-      }
-    }
+  private final int MAX_ITEMS_TO_PLOT = 1000;
 
-    if (maxError > cutOffValue)
-    {
-      col = new Color(1f, 0f, 0f, 0.05f);
-    }
-    else
-    {
-      final float shade = (float) (0.03f + (cutOffValue - maxError) * 0.02f);
-      col = new Color(0f, 1f, 0f, shade);
-    }
+  /**
+   * the track being dragged
+   */
+  private TrackWrapper _primaryTrack;
 
-    return col;
-  }
+  /**
+   * the secondary track we're monitoring
+   */
+  private ISecondaryTrack _secondaryTrack;
+
+  /**
+   * the set of points to watch on the primary track. This is stored as a sorted set because if we
+   * have multiple sensors they may be suppled in chronological order, or they may represent
+   * overlapping time periods
+   */
+  private TreeSet<Doublet> _primaryDoublets;
 
   public List<SensorContactWrapper> getBearings(
       final TrackWrapper primaryTrack, final boolean onlyVis,
@@ -1679,7 +1701,9 @@ public final class StackedDotHelper
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
 
     if (_primaryTrack == null)
+    {
       return;
+    }
 
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
@@ -1694,7 +1718,7 @@ public final class StackedDotHelper
     SensorWrapper lastSensor = null;
 
     // sort out the speed of sound
-    String speedStr =
+    final String speedStr =
         CorePlugin.getDefault().getPreferenceStore().getString(
             FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
     final double speedOfSound;
@@ -1732,7 +1756,7 @@ public final class StackedDotHelper
         if (!Double.isNaN(baseFreq))
         {
           // have we changed sensor?
-          SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
+          final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
           final boolean newSensor;
           if (thisSensor != null && !thisSensor.equals(lastSensor))
           {
@@ -1822,7 +1846,7 @@ public final class StackedDotHelper
       // sort out the rendering for the BaseFrequencies.
       // we want to show a solid line, with no markers
       final int BaseFreqSeries = 2;
-      ColourStandardXYItemRenderer lineRend =
+      final ColourStandardXYItemRenderer lineRend =
           (ColourStandardXYItemRenderer) linePlot.getRenderer();
       lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities
           .createDiamond(0.2f));
