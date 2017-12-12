@@ -430,11 +430,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
         // initialise the zones
         updateTargetZones();
-        // List<Zone> zones = getTargetZones();
-        // if (targetZoneChart != null)
-        // {
-        // targetZoneChart.setZones(zones);
-        // }
       }
     };
 
@@ -1140,44 +1135,50 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           final TimeSeriesCollection tsc =
               (TimeSeriesCollection) _linePlot.getDataset();
-          @SuppressWarnings("unchecked")
-          final List<TimeSeries> sets = tsc.getSeries();
-          for (final TimeSeries t : sets)
+
+          // do we have data on the line plot?
+          if (tsc != null)
           {
-            final TimeSeriesDataItem nearest =
-                t.getDataItem(new FixedMillisecond(newDate.getTime()));
-
-            if (nearest != null)
+            @SuppressWarnings("unchecked")
+            final List<TimeSeries> sets = tsc.getSeries();
+            for (final TimeSeries t : sets)
             {
-              // ok, check the value
-              final double value = (Double) nearest.getValue();
+              final TimeSeriesDataItem nearest =
+                  t.getDataItem(new FixedMillisecond(newDate.getTime()));
 
-              if (value == bearing)
+              if (nearest != null)
               {
-                // ok, get the editor
-                final IWorkbench wb = PlatformUI.getWorkbench();
-                final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-                final IWorkbenchPage page = win.getActivePage();
-                final IEditorPart editor = page.getActiveEditor();
-                final Layers layers = (Layers) editor.getAdapter(Layers.class);
-                if (layers != null)
+                // ok, check the value
+                final double value = (Double) nearest.getValue();
+
+                if (value == bearing)
                 {
-                  final ColouredDataItem item = (ColouredDataItem) nearest;
-                  final Editable payload = item.getPayload();
-                  if (payload != null)
+                  // ok, get the editor
+                  final IWorkbench wb = PlatformUI.getWorkbench();
+                  final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+                  final IWorkbenchPage page = win.getActivePage();
+                  final IEditorPart editor = page.getActiveEditor();
+                  final Layers layers =
+                      (Layers) editor.getAdapter(Layers.class);
+                  if (layers != null)
                   {
-                    if (payload instanceof SensorContactWrapper)
+                    final ColouredDataItem item = (ColouredDataItem) nearest;
+                    final Editable payload = item.getPayload();
+                    if (payload != null)
                     {
-                      showThisCut((SensorContactWrapper) payload, layers,
-                          editor);
-                    }
-                    else if (payload instanceof FixWrapper)
-                    {
-                      showThisFix((FixWrapper) payload, layers, editor);
+                      if (payload instanceof SensorContactWrapper)
+                      {
+                        showThisCut((SensorContactWrapper) payload, layers,
+                            editor);
+                      }
+                      else if (payload instanceof FixWrapper)
+                      {
+                        showThisFix((FixWrapper) payload, layers, editor);
+                      }
                     }
                   }
+                  break;
                 }
-                break;
               }
             }
           }
@@ -1192,13 +1193,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
-      {        
+      {
         // check we've clicked on the line plot
         ChartEntity entity = arg0.getEntity();
-        if(entity instanceof PlotEntity)
+        if (entity instanceof PlotEntity)
         {
           PlotEntity plot = (PlotEntity) entity;
-          if(plot.getPlot() == _linePlot)
+          if (plot.getPlot() == _linePlot)
           {
             // ok, remember it was clicked
             _itemSelectedPending = true;
@@ -2551,17 +2552,22 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   protected void updateLinePlotRanges()
   {
+    // NOTE: we no longer process this update.
+    // we wish to retain the zoom level as the 
+    // analyst deletes points
+    
+    
     // have a look at the auto resize
-    if (_autoResize.isChecked())
-    {
-      if (_showLinePlot.isChecked())
-      {
-        _linePlot.getRangeAxis().setAutoRange(false);
-        _linePlot.getDomainAxis().setAutoRange(false);
-        _linePlot.getRangeAxis().setAutoRange(true);
-        _linePlot.getDomainAxis().setAutoRange(true);
-      }
-    }
+    // if (_autoResize.isChecked())
+    // {
+    // if (_showLinePlot.isChecked())
+    // {
+    // _linePlot.getRangeAxis().setAutoRange(false);
+    // _linePlot.getDomainAxis().setAutoRange(false);
+    // _linePlot.getRangeAxis().setAutoRange(true);
+    // _linePlot.getDomainAxis().setAutoRange(true);
+    // }
+    // }
   }
 
   /**
@@ -2911,24 +2917,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           (CachedTickDateAxis) _combined.getDomainAxis();
       date.clearTicks();
 
-      if (_showDotPlot.isChecked())
-      {
-        _dotPlot.getDomainAxis().setAutoRange(false);
-        _dotPlot.getDomainAxis().setAutoRange(true);
-        _dotPlot.getDomainAxis().setAutoRange(false);
-      }
-      if (_showLinePlot.isChecked())
-      {
-        _linePlot.getDomainAxis().setAutoRange(false);
-        _linePlot.getDomainAxis().setAutoRange(true);
-        _linePlot.getDomainAxis().setAutoRange(false);
-      }
-      if (_showTargetOverview.isChecked())
-      {
-        _targetOverviewPlot.getDomainAxis().setAutoRange(false);
-        _targetOverviewPlot.getDomainAxis().setAutoRange(true);
-        _targetOverviewPlot.getDomainAxis().setAutoRange(false);
-      }
+      // Note: we no longer resize the domain axes - we just do this
+      // when the data has been extended.
+      // if (_showDotPlot.isChecked())
+      // {
+      // _dotPlot.getDomainAxis().setAutoRange(false);
+      // _dotPlot.getDomainAxis().setAutoRange(true);
+      // _dotPlot.getDomainAxis().setAutoRange(false);
+      // }
+      // if (_showLinePlot.isChecked())
+      // {
+      // _linePlot.getDomainAxis().setAutoRange(false);
+      // _linePlot.getDomainAxis().setAutoRange(true);
+      // _linePlot.getDomainAxis().setAutoRange(false);
+      // }
+      // if (_showTargetOverview.isChecked())
+      // {
+      // _targetOverviewPlot.getDomainAxis().setAutoRange(false);
+      // _targetOverviewPlot.getDomainAxis().setAutoRange(true);
+      // _targetOverviewPlot.getDomainAxis().setAutoRange(false);
+      // }
     }
 
     // right, are we updating the range data?
@@ -2941,8 +2949,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
       if (_showLinePlot.isChecked())
       {
-        _linePlot.getRangeAxis().setAutoRange(false);
-        _linePlot.getRangeAxis().setAutoRange(true);
+        // no - don't change the zoom. We wish to retain the zoom
+        // _linePlot.getRangeAxis().setAutoRange(false);
+        // _linePlot.getRangeAxis().setAutoRange(true);
       }
       if (_showTargetOverview.isChecked())
       {
