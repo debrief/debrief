@@ -22,7 +22,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -473,7 +472,13 @@ public final class StackedDotHelper
           {
             FixWrapper thisF = (FixWrapper) fixes.nextElement();
 
-            if (thisF.getDTG().equals(scw.getDTG()))
+            // note: workaround. When we've merged the track,
+            // the new legs are actually one millisecond later.
+            // workaround this.
+            long timeDiffMicros =
+                Math.abs(thisF.getDTG().getMicros() - scw.getDTG().getMicros());
+
+            if (timeDiffMicros <= 1000)
             {
               // sorted. here we go
               doublet.targetParent = ts;
