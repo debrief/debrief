@@ -152,6 +152,7 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
 import junit.framework.Assert;
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
@@ -1575,10 +1576,21 @@ public final class SensorContactWrapper extends
 
   public final void setHasAmbiguousBearing(final boolean val)
   {
-    _hasAmbiguous = val;
+    // just double-check that we have some ambiguous data
+    if(Double.isNaN(_bearingAmbig))
+    {
+      // ignore the call, we don't have an ambig
+      // bearing anyway
+      Application.logError2(Application.WARNING,
+          "User tried to set un-ambig bearing as ambiguous, ignoring", null);
+    }
+    else
+    {
+      _hasAmbiguous = val;
 
-    // and clear the cached value
-    clearCachedPortBearing();
+      // and clear the cached value
+      clearCachedPortBearing();
+    }
   }
 
   public final void setHasBearing(final boolean val)
