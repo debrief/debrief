@@ -339,7 +339,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected ISelectionChangedListener _mySelListener;
   protected Vector<DraggableItem> _draggableSelection;
-  protected boolean _itemSelectedPending = false;
   protected ZoneChart ownshipZoneChart;
   protected ZoneChart targetZoneChart;
   final protected TimeSeries ownshipCourseSeries = new TimeSeries(
@@ -1160,17 +1159,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
 
         // ok, do we also have a selection event pending
-        if (_itemSelectedPending && _selectOnClick.isChecked()
+        if (_selectOnClick.isChecked()
             && _rangeValueToLookup != null)
         {
-          // ok, we're done
-          _itemSelectedPending = false;
-
           // note: we were using the
           // _linePlot.getRangeCrosshairValue() value,
           // but, we want to force which data item gets
           // selected. TMA for line plot, Cut for sensor plot
           final double targetValue = _rangeValueToLookup;
+          
+          // clear the flag
+          _rangeValueToLookup = null;
 
           final TimeSeriesCollection tsc =
               (TimeSeriesCollection) _linePlot.getDataset();
@@ -1382,10 +1381,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   .getMiddleMillisecond());
               _linePlot.setRangeCrosshairValue(value);
 
-              _rangeValueToLookup = value;
-
               // remember we need to select a new item
-              _itemSelectedPending = true;
+              _rangeValueToLookup = value;
             }
           }
         }
