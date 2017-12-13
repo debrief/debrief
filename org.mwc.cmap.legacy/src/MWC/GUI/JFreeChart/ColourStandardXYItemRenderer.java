@@ -60,7 +60,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
    * 
    */
   private XYPlot _myPlot;
-  
+
   private double _symbolSize = 6;
 
   /**
@@ -96,88 +96,102 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
   {
     _symbolSize = size;
   }
-  
+
   public double getSymbolSize()
   {
     return _symbolSize;
   }
-  
-  
+
   @Override
   public Shape getSeriesShape(int series)
   {
     Shape theShape = super.getSeriesShape(series);
     final double defaultScale = 6;
-    
+
     final Shape newShape;
-    if(theShape instanceof Rectangle2D)
+    if (theShape instanceof Rectangle2D)
     {
       Rectangle2D rect = (Rectangle2D) theShape;
       double ht = rect.getHeight() / defaultScale * _symbolSize;
       double wid = rect.getWidth() / defaultScale * _symbolSize;
-      newShape = new Rectangle2D.Double( -wid/2, -ht/2, wid, ht);
+      newShape = new Rectangle2D.Double(-wid / 2, -ht / 2, wid, ht);
     }
-    else if(theShape instanceof Ellipse2D)
+    else if (theShape instanceof Ellipse2D)
     {
       Ellipse2D ell = (Ellipse2D) theShape;
       double ht = ell.getHeight() / defaultScale * _symbolSize;
       double wid = ell.getWidth() / defaultScale * _symbolSize;
-      newShape = new Ellipse2D.Double(-wid/2,  -ht/2, wid, ht);
+      newShape = new Ellipse2D.Double(-wid / 2, -ht / 2, wid, ht);
     }
-    else if(theShape instanceof Polygon)
+    else if (theShape instanceof Polygon)
     {
       Polygon helloPoly = (Polygon) theShape;
-      
+
       // retrieve the points
       int[] xp = helloPoly.xpoints;
       int[] yp = helloPoly.ypoints;
       int np = helloPoly.npoints;
-      
+
       // create a new array, to store the data
       int[] newX = new int[np];
       int[] newY = new int[np];
-      
-      for(int i=0;i<np;i++)
+
+      for (int i = 0; i < np; i++)
       {
-        newX[i] = (int) (((double)xp[i]) / defaultScale * _symbolSize);
-        newY[i] = (int) (((double)yp[i]) / defaultScale * _symbolSize);
+        newX[i] = (int) (((double) xp[i]) / defaultScale * _symbolSize);
+        newY[i] = (int) (((double) yp[i]) / defaultScale * _symbolSize);
       }
-      
+
       newShape = new Polygon(newX, newY, np);
     }
     else
     {
       newShape = theShape;
     }
-    
+
     // ok, scale this shape;
     return newShape;
   }
-  
-  
 
   @Override
   public boolean getItemShapeFilled(int row, int column)
   {
     final XYDataset data = _myPlot.getDataset();
 
-    boolean res = super.getItemShapeVisible(row, column);
+    boolean defaultRes = super.getItemShapeVisible(row, column);
+    final boolean res;
 
     if (data instanceof TimeSeriesCollection)
     {
       final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
       // get the data series
       final TimeSeries bts = tsc.getSeries(row);
-      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-      if (tsdp instanceof ColouredDataItem)
+
+      if (bts.getItemCount() > 0)
       {
-        final ColouredDataItem cdi = (ColouredDataItem) tsdp;
-        // is the base renderer set to show all
-        if (this.getBaseShapesVisible() && cdi.isShapeFilled())
-          res = true;
+        final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+        if (tsdp instanceof ColouredDataItem)
+        {
+          final ColouredDataItem cdi = (ColouredDataItem) tsdp;
+          // is the base renderer set to show all
+          if (this.getBaseShapesVisible() && cdi.isShapeFilled())
+            res = true;
+          else
+            res = false;
+        }
         else
-          res = false;
+        {
+          res = defaultRes;
+        }
       }
+      else
+      {
+        res = defaultRes;
+      }
+    }
+    else
+    {
+      res = defaultRes;
     }
 
     return res;
@@ -188,23 +202,41 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
   {
     final XYDataset data = _myPlot.getDataset();
 
-    boolean res = super.getItemShapeVisible(row, column);
+    boolean defaultRes = super.getItemShapeVisible(row, column);
+    final boolean res;
 
     if (data instanceof TimeSeriesCollection)
     {
       final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
       // get the data series
       final TimeSeries bts = tsc.getSeries(row);
-      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-      if (tsdp instanceof ColouredDataItem)
+
+      // check it has some data
+      if (bts.getItemCount() > 0)
       {
-        final ColouredDataItem cdi = (ColouredDataItem) tsdp;
-        // is the base renderer set to show all
-        if (this.getBaseShapesVisible() && cdi.isParentSymVisible())
-          res = true;
+        final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+        if (tsdp instanceof ColouredDataItem)
+        {
+          final ColouredDataItem cdi = (ColouredDataItem) tsdp;
+          // is the base renderer set to show all
+          if (this.getBaseShapesVisible() && cdi.isParentSymVisible())
+            res = true;
+          else
+            res = false;
+        }
         else
-          res = false;
+        {
+          res = defaultRes;
+        }
       }
+      else
+      {
+        res = defaultRes;
+      }
+    }
+    else
+    {
+      res = defaultRes;
     }
 
     return res;
