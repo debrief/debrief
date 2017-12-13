@@ -1378,22 +1378,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               final double value = (Double) nearest.getValue();
               final TimeSeriesDataItem fItem = nearest;
 
-              Display.getDefault().asyncExec(new Runnable()
-              {
+              _linePlot.setDomainCrosshairValue(fItem.getPeriod()
+                  .getMiddleMillisecond());
+              _linePlot.setRangeCrosshairValue(value);
 
-                @Override
-                public void run()
-                {
-                  _linePlot.setDomainCrosshairValue(fItem.getPeriod()
-                      .getMiddleMillisecond());
-                  _linePlot.setRangeCrosshairValue(value);
+              _rangeValueToLookup = value;
 
-                  _rangeValueToLookup = value;
-
-                  // remember we need to select a new item
-                  _itemSelectedPending = true;
-                }
-              });
+              // remember we need to select a new item
+              _itemSelectedPending = true;
             }
           }
         }
