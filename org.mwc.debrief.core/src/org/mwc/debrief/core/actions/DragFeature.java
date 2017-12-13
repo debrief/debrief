@@ -205,18 +205,22 @@ public class DragFeature extends CoreDragAction
         final int JITTER, final Layers theLayers, final SWTCanvas theCanvas)
     {
       // if the chart's editor is not active
-      IWorkbenchPart activePart = CorePlugin.getActivePart();
+      final IWorkbenchPart activePart = CorePlugin.getActivePart();
       if (activePart instanceof IChartBasedEditor
           && !activePart.equals(_myEditor))
       {
         setActiveEditor(null, (IEditorPart) activePart);
       }
       if (!CorePlugin.isActivePart((IWorkbenchPart) _myEditor))
+      {
         return;
+      }
 
       // do we have something selected?
       if (_hoverTarget == null)
+      {
         return;
+      }
 
       if (_startPoint != null)
       {
@@ -224,7 +228,7 @@ public class DragFeature extends CoreDragAction
 
         // This is the same as a !XOR
         gc.setXORMode(true);
-        org.eclipse.swt.graphics.Color fc =
+        final org.eclipse.swt.graphics.Color fc =
             new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 0,
                 155);
 
@@ -241,7 +245,7 @@ public class DragFeature extends CoreDragAction
             {
               Thread.sleep(150);
             }
-            catch (InterruptedException e)
+            catch (final InterruptedException e)
             {
               // ignore
             }
@@ -301,7 +305,9 @@ public class DragFeature extends CoreDragAction
 
       // check we're not currently dragging something
       if (_lastPoint != null)
+      {
         return;
+      }
 
       // clear our bits
       _hoverTarget = null;
@@ -374,7 +380,9 @@ public class DragFeature extends CoreDragAction
         final int keyState)
     {
       if (_hoverTarget == null)
+      {
         return;
+      }
 
       if (_myCanvas == null)
       {
@@ -444,22 +452,6 @@ public class DragFeature extends CoreDragAction
 
     }
 
-    private ITimeVariableProvider getErrorProvider()
-    {
-      ITimeVariableProvider ret = null;
-      IWorkbenchPage page =
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-      if (page != null)
-      {
-        IViewPart view = page.findView(CorePlugin.STACKED_DOTS);
-        if (view instanceof ITimeVariableProvider)
-        {
-          ret = (ITimeVariableProvider) view;
-        }
-      }
-      return ret;
-    }
-
     /**
      * dragging happening. Either draw (or erase) the previous point
      * 
@@ -518,7 +510,7 @@ public class DragFeature extends CoreDragAction
 
             };
         // change the color by hand
-        org.eclipse.swt.graphics.Color fc =
+        final org.eclipse.swt.graphics.Color fc =
             new org.eclipse.swt.graphics.Color(Display.getDefault(), 155, 155,
                 155);
         graphics.setForeground(fc);
@@ -532,15 +524,15 @@ public class DragFeature extends CoreDragAction
         boolean painted = false;
         if (_hoverTarget instanceof CoreDragOperation)
         {
-          ITimeVariableProvider errorProvider = getErrorProvider();
+          final ITimeVariableProvider errorProvider = getErrorProvider();
 
-          CoreDragOperation cdo = (CoreDragOperation) _hoverTarget;
-          TrackSegment segment = cdo.getSegment();
+          final CoreDragOperation cdo = (CoreDragOperation) _hoverTarget;
+          final TrackSegment segment = cdo.getSegment();
           if (segment instanceof CoreTMASegment)
           {
             if (errorProvider != null)
             {
-              CoreTMASegment coreSeg = (CoreTMASegment) segment;
+              final CoreTMASegment coreSeg = (CoreTMASegment) segment;
               coreSeg.paint(ca, errorProvider);
               painted = true;
             }
@@ -555,6 +547,22 @@ public class DragFeature extends CoreDragAction
         fc.dispose();
       }
 
+    }
+
+    private ITimeVariableProvider getErrorProvider()
+    {
+      ITimeVariableProvider ret = null;
+      final IWorkbenchPage page =
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+      if (page != null)
+      {
+        final IViewPart view = page.findView(CorePlugin.STACKED_DOTS);
+        if (view instanceof ITimeVariableProvider)
+        {
+          ret = (ITimeVariableProvider) view;
+        }
+      }
+      return ret;
     }
 
     @Override
@@ -619,9 +627,13 @@ public class DragFeature extends CoreDragAction
     //
     Layer thisParentLayer;
     if (parentLayer == null)
+    {
       thisParentLayer = thisLayer;
+    }
     else
+    {
       thisParentLayer = parentLayer;
+    }
 
     // so, step through this layer
     if (thisLayer.getVisible())
