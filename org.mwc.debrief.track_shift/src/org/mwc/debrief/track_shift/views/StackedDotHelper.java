@@ -826,6 +826,11 @@ public final class StackedDotHelper
     // do we even have a primary track
     if (_primaryTrack == null)
     {
+      // ok, clear the data
+      linePlot.setDataset(null);
+      dotPlot.setDataset(null);
+      targetPlot.setDataset(null);
+      targetSpeedSeries.removeAllSeries();
       return;
     }
 
