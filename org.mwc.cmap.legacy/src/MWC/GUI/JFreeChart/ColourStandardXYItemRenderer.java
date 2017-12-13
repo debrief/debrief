@@ -86,217 +86,6 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
     _myPlot = plot;
   }
 
-  public void setPlot(final XYPlot thePlot)
-  {
-    super.setPlot(thePlot);
-    _myPlot = thePlot;
-  }
-
-  public void setSymbolSize(double size)
-  {
-    _symbolSize = size;
-  }
-
-  public double getSymbolSize()
-  {
-    return _symbolSize;
-  }
-
-  @Override
-  public Shape getSeriesShape(int series)
-  {
-    Shape theShape = super.getSeriesShape(series);
-    final double defaultScale = 6;
-
-    final Shape newShape;
-    if (theShape instanceof Rectangle2D)
-    {
-      Rectangle2D rect = (Rectangle2D) theShape;
-      double ht = rect.getHeight() / defaultScale * _symbolSize;
-      double wid = rect.getWidth() / defaultScale * _symbolSize;
-      newShape = new Rectangle2D.Double(-wid / 2, -ht / 2, wid, ht);
-    }
-    else if (theShape instanceof Ellipse2D)
-    {
-      Ellipse2D ell = (Ellipse2D) theShape;
-      double ht = ell.getHeight() / defaultScale * _symbolSize;
-      double wid = ell.getWidth() / defaultScale * _symbolSize;
-      newShape = new Ellipse2D.Double(-wid / 2, -ht / 2, wid, ht);
-    }
-    else if (theShape instanceof Polygon)
-    {
-      Polygon helloPoly = (Polygon) theShape;
-
-      // retrieve the points
-      int[] xp = helloPoly.xpoints;
-      int[] yp = helloPoly.ypoints;
-      int np = helloPoly.npoints;
-
-      // create a new array, to store the data
-      int[] newX = new int[np];
-      int[] newY = new int[np];
-
-      for (int i = 0; i < np; i++)
-      {
-        newX[i] = (int) (((double) xp[i]) / defaultScale * _symbolSize);
-        newY[i] = (int) (((double) yp[i]) / defaultScale * _symbolSize);
-      }
-
-      newShape = new Polygon(newX, newY, np);
-    }
-    else
-    {
-      newShape = theShape;
-    }
-
-    // ok, scale this shape;
-    return newShape;
-  }
-
-  @Override
-  public boolean getItemShapeFilled(int row, int column)
-  {
-    final XYDataset data = _myPlot.getDataset();
-
-    boolean defaultRes = super.getItemShapeVisible(row, column);
-    final boolean res;
-
-    if (data instanceof TimeSeriesCollection)
-    {
-      final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
-      // get the data series
-      final TimeSeries bts = tsc.getSeries(row);
-
-      if (bts.getItemCount() > 0)
-      {
-        final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-        if (tsdp instanceof ColouredDataItem)
-        {
-          final ColouredDataItem cdi = (ColouredDataItem) tsdp;
-          // is the base renderer set to show all
-          if (this.getBaseShapesVisible() && cdi.isShapeFilled())
-            res = true;
-          else
-            res = false;
-        }
-        else
-        {
-          res = defaultRes;
-        }
-      }
-      else
-      {
-        res = defaultRes;
-      }
-    }
-    else
-    {
-      res = defaultRes;
-    }
-
-    return res;
-  }
-
-  @Override
-  public boolean getItemShapeVisible(int row, int column)
-  {
-    final XYDataset data = _myPlot.getDataset();
-
-    boolean defaultRes = super.getItemShapeVisible(row, column);
-    final boolean res;
-
-    if (data instanceof TimeSeriesCollection)
-    {
-      final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
-      // get the data series
-      final TimeSeries bts = tsc.getSeries(row);
-
-      // check it has some data
-      if (bts.getItemCount() > 0)
-      {
-        final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-        if (tsdp instanceof ColouredDataItem)
-        {
-          final ColouredDataItem cdi = (ColouredDataItem) tsdp;
-          // is the base renderer set to show all
-          if (this.getBaseShapesVisible() && cdi.isParentSymVisible())
-            res = true;
-          else
-            res = false;
-        }
-        else
-        {
-          res = defaultRes;
-        }
-      }
-      else
-      {
-        res = defaultRes;
-      }
-    }
-    else
-    {
-      res = defaultRes;
-    }
-
-    return res;
-  }
-
-  @Override
-  public Paint getItemPaint(final int row, final int column)
-  {
-    Color theColor = null;
-
-    final XYDataset data = _myPlot.getDataset();
-
-    Paint res = null;
-
-    if (data instanceof TimeSeriesCollection)
-    {
-      final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
-      // get the data series
-      final TimeSeries bts = tsc.getSeries(row);
-      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-      if (tsdp instanceof AttractiveDataItem)
-      {
-        final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
-        theColor = cdi.getColor();
-      }
-    }
-
-    if (theColor != null)
-      res = theColor;
-    else
-      res = super.getItemPaint(row, column);
-
-    return res;
-  }
-
-  /**
-   * Returns a legend item for a series.
-   * 
-   * @param series
-   *          the series (zero-based index).
-   * 
-   * @return a legend item for the series.
-   */
-  public LegendItem getLegendItem(final int series)
-  {
-
-    final XYPlot plot = this.getPlot();
-
-    final XYDataset dataset = plot.getDataset();
-    final String label = (String) dataset.getSeriesKey(series);
-    final String description = label;
-    final Shape shape = null;
-    final Paint paint = this.getSeriesPaint(series);
-    final Paint outlinePaint = paint;
-    final Stroke stroke = plot.getRenderer().getSeriesStroke(series);
-
-    return new LegendItem(label, description, null, null, shape, paint, stroke,
-        outlinePaint);
-  }
-
   /**
    * accessor method to find out if we should connect this point to the previous one
    * 
@@ -376,6 +165,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
    * @param pass
    *          the pass index.
    */
+  @Override
   public void drawItem(final Graphics2D g2, final XYItemRendererState state,
       final Rectangle2D dataArea, final PlotRenderingInfo info,
       final XYPlot plot, final ValueAxis domainAxis, final ValueAxis rangeAxis,
@@ -422,6 +212,230 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
       drawSecondaryPass(g2, plot, dataset, pass, series, item, domainAxis,
           dataArea, rangeAxis, crosshairState, entities);
     }
+  }
+
+  @Override
+  public Paint getItemPaint(final int row, final int column)
+  {
+    Color theColor = null;
+
+    final XYDataset data = _myPlot.getDataset();
+
+    Paint res = null;
+
+    if (data instanceof TimeSeriesCollection)
+    {
+      final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
+      // get the data series
+      final TimeSeries bts = tsc.getSeries(row);
+      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+      if (tsdp instanceof AttractiveDataItem)
+      {
+        final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
+        theColor = cdi.getColor();
+      }
+    }
+
+    if (theColor != null)
+    {
+      res = theColor;
+    }
+    else
+    {
+      res = super.getItemPaint(row, column);
+    }
+
+    return res;
+  }
+
+  @Override
+  public boolean getItemShapeFilled(final int row, final int column)
+  {
+    final XYDataset data = _myPlot.getDataset();
+
+    final boolean defaultRes = super.getItemShapeVisible(row, column);
+    final boolean res;
+
+    if (data instanceof TimeSeriesCollection)
+    {
+      final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
+      // get the data series
+      final TimeSeries bts = tsc.getSeries(row);
+
+      if (bts.getItemCount() > 0)
+      {
+        final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+        if (tsdp instanceof ColouredDataItem)
+        {
+          final ColouredDataItem cdi = (ColouredDataItem) tsdp;
+          // is the base renderer set to show all
+          if (this.getBaseShapesVisible() && cdi.isShapeFilled())
+          {
+            res = true;
+          }
+          else
+          {
+            res = false;
+          }
+        }
+        else
+        {
+          res = defaultRes;
+        }
+      }
+      else
+      {
+        res = defaultRes;
+      }
+    }
+    else
+    {
+      res = defaultRes;
+    }
+
+    return res;
+  }
+
+  @Override
+  public boolean getItemShapeVisible(final int row, final int column)
+  {
+    final XYDataset data = _myPlot.getDataset();
+
+    final boolean defaultRes = super.getItemShapeVisible(row, column);
+    final boolean res;
+
+    if (data instanceof TimeSeriesCollection)
+    {
+      final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
+      // get the data series
+      final TimeSeries bts = tsc.getSeries(row);
+
+      // check it has some data
+      if (bts.getItemCount() > 0)
+      {
+        final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+        if (tsdp instanceof ColouredDataItem)
+        {
+          final ColouredDataItem cdi = (ColouredDataItem) tsdp;
+          // is the base renderer set to show all
+          if (this.getBaseShapesVisible() && cdi.isParentSymVisible())
+          {
+            res = true;
+          }
+          else
+          {
+            res = false;
+          }
+        }
+        else
+        {
+          res = defaultRes;
+        }
+      }
+      else
+      {
+        res = defaultRes;
+      }
+    }
+    else
+    {
+      res = defaultRes;
+    }
+
+    return res;
+  }
+
+  /**
+   * Returns a legend item for a series.
+   * 
+   * @param series
+   *          the series (zero-based index).
+   * 
+   * @return a legend item for the series.
+   */
+  public LegendItem getLegendItem(final int series)
+  {
+
+    final XYPlot plot = this.getPlot();
+
+    final XYDataset dataset = plot.getDataset();
+    final String label = (String) dataset.getSeriesKey(series);
+    final String description = label;
+    final Shape shape = null;
+    final Paint paint = this.getSeriesPaint(series);
+    final Paint outlinePaint = paint;
+    final Stroke stroke = plot.getRenderer().getSeriesStroke(series);
+
+    return new LegendItem(label, description, null, null, shape, paint, stroke,
+        outlinePaint);
+  }
+
+  @Override
+  public Shape getSeriesShape(final int series)
+  {
+    final Shape theShape = super.getSeriesShape(series);
+    final double defaultScale = 6;
+
+    final Shape newShape;
+    if (theShape instanceof Rectangle2D)
+    {
+      final Rectangle2D rect = (Rectangle2D) theShape;
+      final double ht = rect.getHeight() / defaultScale * _symbolSize;
+      final double wid = rect.getWidth() / defaultScale * _symbolSize;
+      newShape = new Rectangle2D.Double(-wid / 2, -ht / 2, wid, ht);
+    }
+    else if (theShape instanceof Ellipse2D)
+    {
+      final Ellipse2D ell = (Ellipse2D) theShape;
+      final double ht = ell.getHeight() / defaultScale * _symbolSize;
+      final double wid = ell.getWidth() / defaultScale * _symbolSize;
+      newShape = new Ellipse2D.Double(-wid / 2, -ht / 2, wid, ht);
+    }
+    else if (theShape instanceof Polygon)
+    {
+      final Polygon helloPoly = (Polygon) theShape;
+
+      // retrieve the points
+      final int[] xp = helloPoly.xpoints;
+      final int[] yp = helloPoly.ypoints;
+      final int np = helloPoly.npoints;
+
+      // create a new array, to store the data
+      final int[] newX = new int[np];
+      final int[] newY = new int[np];
+
+      for (int i = 0; i < np; i++)
+      {
+        newX[i] = (int) ((xp[i]) / defaultScale * _symbolSize);
+        newY[i] = (int) ((yp[i]) / defaultScale * _symbolSize);
+      }
+
+      newShape = new Polygon(newX, newY, np);
+    }
+    else
+    {
+      newShape = theShape;
+    }
+
+    // ok, scale this shape;
+    return newShape;
+  }
+
+  public double getSymbolSize()
+  {
+    return _symbolSize;
+  }
+
+  @Override
+  public void setPlot(final XYPlot thePlot)
+  {
+    super.setPlot(thePlot);
+    _myPlot = thePlot;
+  }
+
+  public void setSymbolSize(final double size)
+  {
+    _symbolSize = size;
   }
 
   /**
