@@ -390,17 +390,14 @@ public class DragFeature extends CoreDragAction
         return;
       }
 
-      // Erase existing rectangle
-      if (_lastPoint != null)
+      // Erase existing rectangle. hmm, we've finished plotting. see if the ctrl button is
+      // down
+
+      if (_lastPoint != null && (keyState & SWT.CTRL) == 0)
       {
-        // hmm, we've finished plotting. see if the ctrl button is
-        // down
-        if ((keyState & SWT.CTRL) == 0)
-        {
-          // drawHere(gc, null);
-          _myCanvas.getCanvas().redraw();
-          Display.getCurrent().update();
-        }
+        // drawHere(gc, null);
+        _myCanvas.getCanvas().redraw();
+        Display.getCurrent().update();
       }
 
       // generate the reverse vector
@@ -620,8 +617,8 @@ public class DragFeature extends CoreDragAction
   }
 
   public void findNearest(final Layer thisLayer,
-      final MWC.GenericData.WorldLocation cursorLoc,
-      final java.awt.Point cursorPos, final LocationConstruct currentNearest,
+      final WorldLocation cursorLoc,
+      final Point cursorPos, final LocationConstruct currentNearest,
       final Layer parentLayer, final Layers theData)
   {
     //
