@@ -47,6 +47,7 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -61,7 +62,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -738,7 +738,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             1800, true, true, true, true, true, true)
         {
           @Override
-          public void mouseUp(final MouseEvent event)
+          public void mouseUp(final org.eclipse.swt.events.MouseEvent event)
           {
             super.mouseUp(event);
             final JFreeChart c = getChart();
@@ -1160,7 +1160,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
 
         // ok, do we also have a selection event pending
-        if (_itemSelectedPending && _selectOnClick.isChecked() && _rangeValueToLookup != null)
+        if (_itemSelectedPending && _selectOnClick.isChecked()
+            && _rangeValueToLookup != null)
         {
           // ok, we're done
           _itemSelectedPending = false;
@@ -1232,59 +1233,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
       {
-        final ChartEntity entity = arg0.getEntity();
-
-        final String TMA = StackedDotHelper.CALCULATED_VALUES;
-        final String SENSOR = MEASURED_VALUES;
-
-        final String seriesName;
-
-        if (entity instanceof PlotEntity)
-        {
-          final PlotEntity plot = (PlotEntity) entity;
-          if (plot.getPlot() == _linePlot)
-          {
-            seriesName = TMA;
-          }
-          else if (plot.getPlot() == _dotPlot)
-          {
-            seriesName = SENSOR;
-          }
-          else
-          {
-            seriesName = null;
-          }
-        }
-        else
-        {
-          // get the chart object
-          final JFreeChart chart = arg0.getChart();
-          final Plot plot = chart.getPlot();
-          if (plot instanceof CombinedDomainXYPlot)
-          {
-            final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) plot;
-            final Point source = arg0.getTrigger().getPoint();
-            final PlotRenderingInfo plotInfo =
-                _holder.getChartRenderingInfo().getPlotInfo();
-            final XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
-            if (subPlot == _linePlot)
-            {
-              seriesName = TMA;
-            }
-            else if (subPlot == _dotPlot)
-            {
-              seriesName = SENSOR;
-            }
-            else
-            {
-              seriesName = null;
-            }
-          }
-          else
-          {
-            seriesName = null;
-          }
-        }
+        final String seriesName =
+            getSeriesToSelect(arg0.getChart(), arg0.getTrigger(), arg0
+                .getEntity());
 
         if (seriesName != null)
         {
@@ -1310,6 +1261,63 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       }
 
+      private String getSeriesToSelect(final JFreeChart chart,
+          final java.awt.event.MouseEvent trigger, final ChartEntity entity)
+      {
+        final String TMA = StackedDotHelper.CALCULATED_VALUES;
+        final String SENSOR = MEASURED_VALUES;
+
+        final String seriesName;
+
+        if (entity instanceof PlotEntity)
+        {
+          // ok, the click was in the empty area of the plot
+          final PlotEntity plot = (PlotEntity) entity;
+          if (plot.getPlot() == _linePlot)
+          {
+            seriesName = TMA;
+          }
+          else if (plot.getPlot() == _dotPlot)
+          {
+            seriesName = SENSOR;
+          }
+          else
+          {
+            seriesName = null;
+          }
+        }
+        else
+        {
+          // get the chart object
+          final Plot plot = chart.getPlot();
+          if (plot instanceof CombinedDomainXYPlot)
+          {
+            final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) plot;
+            final Point source = trigger.getPoint();
+            final PlotRenderingInfo plotInfo =
+                _holder.getChartRenderingInfo().getPlotInfo();
+            final XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
+            if (subPlot == _linePlot)
+            {
+              seriesName = TMA;
+            }
+            else if (subPlot == _dotPlot)
+            {
+              seriesName = SENSOR;
+            }
+            else
+            {
+              seriesName = null;
+            }
+          }
+          else
+          {
+            seriesName = null;
+          }
+        }
+        return seriesName;
+      }
+
       @Override
       public void chartMouseMoved(final ChartMouseEvent arg0)
       {
@@ -1320,53 +1328,74 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         final TimeSeriesCollection tsc =
             (TimeSeriesCollection) _linePlot.getDataset();
-        final TimeSeries t = tsc.getSeries(seriesName);
 
-        // work through, to find the nearest item
-        final List<?> list = t.getItems();
-        TimeSeriesDataItem nearest = null;
-        for (final Object item : list)
+        if (tsc == null)
         {
-          final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
-          if (nearest == null)
+          CorePlugin.logError(Status.ERROR,
+              "Trying to select item. Can't find line plot data", null);
+        }
+        else
+        {
+          final TimeSeries t = tsc.getSeries(seriesName);
+
+          if (t == null)
           {
-            nearest = thisI;
+            CorePlugin
+                .logError(Status.ERROR,
+                    "Trying to select item. Can't find series titled:"
+                        + seriesName, null);
           }
           else
           {
-            final long myDelta =
-                Math.abs(nearest.getPeriod().getMiddleMillisecond()
-                    - dateMillis);
-            final long hisDelta =
-                Math.abs(thisI.getPeriod().getMiddleMillisecond() - dateMillis);
 
-            nearest = myDelta < hisDelta ? nearest : thisI;
-          }
-        }
-
-        if (nearest != null)
-        {
-          // get the value
-          final double value = (Double) nearest.getValue();
-          final TimeSeriesDataItem fItem = nearest;
-
-          Display.getDefault().asyncExec(new Runnable()
-          {
-
-            @Override
-            public void run()
+            // work through, to find the nearest item
+            final List<?> list = t.getItems();
+            TimeSeriesDataItem nearest = null;
+            for (final Object item : list)
             {
-              _linePlot.setDomainCrosshairValue(fItem.getPeriod()
-                  .getMiddleMillisecond());
-              _linePlot.setRangeCrosshairValue(value);
+              final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+              if (nearest == null)
+              {
+                nearest = thisI;
+              }
+              else
+              {
+                final long myDelta =
+                    Math.abs(nearest.getPeriod().getMiddleMillisecond()
+                        - dateMillis);
+                final long hisDelta =
+                    Math.abs(thisI.getPeriod().getMiddleMillisecond()
+                        - dateMillis);
 
-              _rangeValueToLookup = value;
-
-              // remember we need to select a new item
-              _itemSelectedPending = true;
+                // ok, take the nearest one
+                nearest = myDelta < hisDelta ? nearest : thisI;
+              }
             }
-          });
 
+            if (nearest != null)
+            {
+              // get the value
+              final double value = (Double) nearest.getValue();
+              final TimeSeriesDataItem fItem = nearest;
+
+              Display.getDefault().asyncExec(new Runnable()
+              {
+
+                @Override
+                public void run()
+                {
+                  _linePlot.setDomainCrosshairValue(fItem.getPeriod()
+                      .getMiddleMillisecond());
+                  _linePlot.setRangeCrosshairValue(value);
+
+                  _rangeValueToLookup = value;
+
+                  // remember we need to select a new item
+                  _itemSelectedPending = true;
+                }
+              });
+            }
+          }
         }
       }
     });
