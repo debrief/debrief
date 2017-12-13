@@ -1159,15 +1159,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
 
         // ok, do we also have a selection event pending
-        if (_selectOnClick.isChecked()
-            && _rangeValueToLookup != null)
+        if (_selectOnClick.isChecked() && _rangeValueToLookup != null)
         {
           // note: we were using the
           // _linePlot.getRangeCrosshairValue() value,
           // but, we want to force which data item gets
           // selected. TMA for line plot, Cut for sensor plot
           final double targetValue = _rangeValueToLookup;
-          
+
           // clear the flag
           _rangeValueToLookup = null;
 
@@ -1296,11 +1295,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final PlotRenderingInfo plotInfo =
                 _holder.getChartRenderingInfo().getPlotInfo();
             final XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
-            if (subPlot == _linePlot)
+            if (subPlot != null && subPlot.equals(_linePlot))
             {
               seriesName = TMA;
             }
-            else if (subPlot == _dotPlot)
+            else if (subPlot != null && subPlot.equals(_dotPlot))
             {
               seriesName = SENSOR;
             }
