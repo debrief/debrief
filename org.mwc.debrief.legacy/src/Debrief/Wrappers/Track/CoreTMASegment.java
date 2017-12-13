@@ -225,39 +225,44 @@ abstract public class CoreTMASegment extends TrackSegment implements
     // ok, plot the 1/2 way message
     if (_dragMsg != null)
     {
-      final Point pt = dest.toScreen(firstEnd);
+      writeMessage(dest, firstEnd);
+    }
+  }
 
-      // project this point out past the actual start point
-      pt.translate((int) (30d * Math.cos(MWC.Algorithms.Conversions
-          .Degs2Rads(getCourse()))), (int) (30d * Math
-          .sin(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))));
+  private void writeMessage(final CanvasType dest, WorldLocation firstEnd)
+  {
+    final Point pt = dest.toScreen(firstEnd);
 
-      // try to make it bold
-      final Font newFont = new Font("Arial", Font.BOLD, 12);
+    // project this point out past the actual start point
+    pt.translate((int) (30d * Math.cos(MWC.Algorithms.Conversions
+        .Degs2Rads(getCourse()))), (int) (30d * Math
+        .sin(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))));
 
-      // put the text in a solid backdrop
-      boolean xorMode = false;
-      final Color color = dest.getBackgroundColor();
-      if (dest instanceof ExtendedCanvasType)
-      {
-        // NOTE: this is a workaround, to overcome an occasional
-        // SWT rendering problem - where the XOR text
-        // wasn't being displayed
-        xorMode = ((ExtendedCanvasType) dest).getXORMode();
-        ((ExtendedCanvasType) dest).setXORMode(false);
-      }
-      final int ht = dest.getStringHeight(newFont) + 8;
-      final int wid = dest.getStringWidth(newFont, _dragMsg);
-      dest.setColor(Color.WHITE);
-      dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5, ht);
-      // and draw the text
-      dest.setColor(MWC.GUI.Properties.DebriefColors.BLACK);
-      dest.drawText(_dragMsg, pt.x, pt.y + 15);
-      if (dest instanceof ExtendedCanvasType)
-      {
-        ((ExtendedCanvasType) dest).setXORMode(xorMode);
-        dest.setColor(color);
-      }
+    // try to make it bold
+    final Font newFont = new Font("Arial", Font.BOLD, 12);
+
+    // put the text in a solid backdrop
+    boolean xorMode = false;
+    final Color color = dest.getBackgroundColor();
+    if (dest instanceof ExtendedCanvasType)
+    {
+      // NOTE: this is a workaround, to overcome an occasional
+      // SWT rendering problem - where the XOR text
+      // wasn't being displayed
+      xorMode = ((ExtendedCanvasType) dest).getXORMode();
+      ((ExtendedCanvasType) dest).setXORMode(false);
+    }
+    final int ht = dest.getStringHeight(newFont) + 8;
+    final int wid = dest.getStringWidth(newFont, _dragMsg);
+    dest.setColor(Color.WHITE);
+    dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5, ht);
+    // and draw the text
+    dest.setColor(MWC.GUI.Properties.DebriefColors.BLACK);
+    dest.drawText(_dragMsg, pt.x, pt.y + 15);
+    if (dest instanceof ExtendedCanvasType)
+    {
+      ((ExtendedCanvasType) dest).setXORMode(xorMode);
+      dest.setColor(color);
     }
   }
 
