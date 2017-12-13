@@ -31,324 +31,332 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
 /**
- * the core elements of a TMA Segment - relative plotting, plus the fact that
- * the segment is actually defined by a course and speed, not a collection of
- * data points
+ * the core elements of a TMA Segment - relative plotting, plus the fact that the segment is
+ * actually defined by a course and speed, not a collection of data points
  * 
  * @author ianmayo
  * 
  */
-abstract public class CoreTMASegment extends TrackSegment implements CanBePlottedWithTimeVariable
+abstract public class CoreTMASegment extends TrackSegment implements
+    CanBePlottedWithTimeVariable
 {
 
-	private static final int MAX_HEIGHT = 8;
+  private static final int MAX_HEIGHT = 8;
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * event name for when track is dragged
-	 * 
-	 */
-	public static final String ADJUSTED = "Adjusted";
+  /**
+   * event name for when track is dragged
+   * 
+   */
+  public static final String ADJUSTED = "Adjusted";
 
-	/**
-	 * steady course (Degs)
-	 * 
-	 */
-	protected double _courseDegs;
-	/**
-	 * steady speed
-	 * 
-	 */
-	protected WorldSpeed _speed;
+  /**
+   * steady course (Degs)
+   * 
+   */
+  protected double _courseDegs;
+  /**
+   * steady speed
+   * 
+   */
+  protected WorldSpeed _speed;
 
-	/**
-	 * message that we plot 1/2 way along segment when it's being stretched or
-	 * rotated
-	 * 
-	 */
-	protected String _dragMsg;
+  /**
+   * message that we plot 1/2 way along segment when it's being stretched or rotated
+   * 
+   */
+  protected String _dragMsg;
 
-	/**
-	 * base constructor - sorts out the obvious
-	 * 
-	 * @param courseDegs
-	 * @param speed
-	 * @param plotRelative 
-	 * @param offset
-	 * @param theLayers
-	 */
-	public CoreTMASegment(final double courseDegs, final WorldSpeed speed, final boolean plotRelative)
-	{
-	  super(plotRelative);
-		_courseDegs = courseDegs;
-		_speed = speed;
-	}
+  /**
+   * base constructor - sorts out the obvious
+   * 
+   * @param courseDegs
+   * @param speed
+   * @param plotRelative
+   * @param offset
+   * @param theLayers
+   */
+  public CoreTMASegment(final double courseDegs, final WorldSpeed speed,
+      final boolean plotRelative)
+  {
+    super(plotRelative);
+    _courseDegs = courseDegs;
+    _speed = speed;
+  }
 
-	/**
-	 * create a nice shiny fix at the indicated time
-	 * 
-	 * @param theTime
-	 * @return the new fix, with valid course and speed
-	 */
-	protected FixWrapper createFixAt(final long theTime)
-	{
-		final Fix fix = new Fix(new HiResDate(theTime), new WorldLocation(0, 0, 0),
-				MWC.Algorithms.Conversions.Degs2Rads(_courseDegs),
-				_speed.getValueIn(WorldSpeed.ft_sec) / 3);
+  /**
+   * create a nice shiny fix at the indicated time
+   * 
+   * @param theTime
+   * @return the new fix, with valid course and speed
+   */
+  protected FixWrapper createFixAt(final long theTime)
+  {
+    final Fix fix =
+        new Fix(new HiResDate(theTime), new WorldLocation(0, 0, 0),
+            MWC.Algorithms.Conversions.Degs2Rads(_courseDegs), _speed
+                .getValueIn(WorldSpeed.ft_sec) / 3);
 
-		final FixWrapper newFix = new FixWrapper(fix);
-		newFix.resetName();
-		newFix.setLabelFormat("HHmm.ss");
-		return newFix;
-	}
+    final FixWrapper newFix = new FixWrapper(fix);
+    newFix.resetName();
+    newFix.setLabelFormat("HHmm.ss");
+    return newFix;
+  }
 
-	/**
-	 * get the current course of this leg
-	 * 
-	 * @return course (degs)
-	 */
-	public double getCourse()
-	{
-		return _courseDegs;
-	}
+  protected void fireAdjusted()
+  {
+    super.firePropertyChange(ADJUSTED, null, System.currentTimeMillis());
+  }
 
-	/**
-	 * the constant speed of this segment
-	 * 
-	 * @return the current speed
-	 */
-	public WorldSpeed getSpeed()
-	{
-		return _speed;
-	}
+  /**
+   * get the current course of this leg
+   * 
+   * @return course (degs)
+   */
+  public double getCourse()
+  {
+    return _courseDegs;
+  }
 
-	@Override
-	abstract public WorldLocation getTrackStart();
+  public String getDragTextMessage()
+  {
+    return _dragMsg;
+  }
 
-	@Override
-	public void paint(final CanvasType dest)
-	{
-		paint(dest, null);
-	}
+  /**
+   * the constant speed of this segment
+   * 
+   * @return the current speed
+   */
+  public WorldSpeed getSpeed()
+  {
+    return _speed;
+  }
 
-	@Override
-	public void paint(final CanvasType dest, final ITimeVariableProvider errorProvider)
-	{
-		final Collection<Editable> items = getData();
+  @Override
+  abstract public WorldLocation getTrackStart();
 
-		// ok - draw that line!
-		Point lastPoint = null;
-		WorldLocation tmaLastLoc = null;
-		long tmaLastDTG = 0;
+  @Override
+  public void paint(final CanvasType dest)
+  {
+    paint(dest, null);
+  }
 
-		// try to create a dotted line
-		dest.setLineStyle(CanvasType.DOTTED);
+  @Override
+  public void paint(final CanvasType dest,
+      final ITimeVariableProvider errorProvider)
+  {
+    final Collection<Editable> items = getData();
 
-		// remember the ends, so we can plot a point 1/2 way along them
-		WorldLocation firstEnd = null;
-		// WorldLocation lastEnd = null;
+    // ok - draw that line!
+    Point lastPoint = null;
+    WorldLocation tmaLastLoc = null;
+    long tmaLastDTG = 0;
 
-		for (final Iterator<Editable> iterator = items.iterator(); iterator
-				.hasNext();)
-		{
-			final FixWrapper thisF = (FixWrapper) iterator.next();
+    // try to create a dotted line
+    dest.setLineStyle(CanvasType.SOLID);
 
-			final long thisTime = thisF.getDateTimeGroup().getDate().getTime();
+    // remember the ends, so we can plot a point 1/2 way along them
+    WorldLocation firstEnd = null;
+    // WorldLocation lastEnd = null;
 
-			// ok, is this our first location?
-			if (tmaLastLoc == null)
-			{
-				tmaLastLoc = new WorldLocation(getTrackStart());
-				firstEnd = new WorldLocation(tmaLastLoc);
-			}
-			else
-			{
-				// calculate a new vector
-				final long timeDelta = thisTime - tmaLastDTG;
-				final WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(),
-						thisF.getCourse());
-				tmaLastLoc.addToMe(thisVec);
+    for (final Iterator<Editable> iterator = items.iterator(); iterator
+        .hasNext();)
+    {
+      final FixWrapper thisF = (FixWrapper) iterator.next();
 
-				// lastEnd = new WorldLocation(tmaLastLoc);
-			}
+      final long thisTime = thisF.getDateTimeGroup().getDate().getTime();
 
-			// dump the location into the fix
-			thisF.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+      // ok, is this our first location?
+      if (tmaLastLoc == null)
+      {
+        tmaLastLoc = new WorldLocation(getTrackStart());
+        firstEnd = new WorldLocation(tmaLastLoc);
+      }
+      else
+      {
+        // calculate a new vector
+        final long timeDelta = thisTime - tmaLastDTG;
+        final WorldVector thisVec =
+            vectorFor(timeDelta, thisF.getSpeed(), thisF.getCourse());
+        tmaLastLoc.addToMe(thisVec);
 
-			// cool, remember the time.
-			tmaLastDTG = thisTime;
+        // lastEnd = new WorldLocation(tmaLastLoc);
+      }
 
-			final Point thisPoint = dest.toScreen(thisF.getFixLocation());
+      // dump the location into the fix
+      thisF.setFixLocationSilent(new WorldLocation(tmaLastLoc));
 
-			// do we have enough for a line?
-			if (lastPoint != null)
-			{
-				// draw that line
-				dest.drawLine(lastPoint.x, lastPoint.y, thisPoint.x, thisPoint.y);
-			}
+      // cool, remember the time.
+      tmaLastDTG = thisTime;
 
-			lastPoint = new Point(thisPoint);
+      final Point thisPoint = dest.toScreen(thisF.getFixLocation());
 
-			// also draw in a marker for this point
-			final int height;
-			if (errorProvider != null && errorProvider.applyStyling())
-			{
-				long thisH = Math.abs(errorProvider.getValueAt(thisF.getDateTimeGroup()));
-				int h = (int) (Math.min(thisH, MAX_HEIGHT) * 2);
-				height = h == 0 ? 4 : h;
-			}
-			else
-			{
-				height = 4;
-			}
-			dest.fillOval(lastPoint.x - (int) (height / 2), lastPoint.y
-					- (int) (height / 2), (int) height, (int) height);
-		}
+      // do we have enough for a line?
+      if (lastPoint != null)
+      {
+        // draw that line
+        dest.drawLine(lastPoint.x, lastPoint.y, thisPoint.x, thisPoint.y);
+      }
 
-		// ok, plot the 1/2 way message
-		if (_dragMsg != null)
-		{
-			final Point pt = dest.toScreen(firstEnd);
+      lastPoint = new Point(thisPoint);
 
-			// project this point out past the actual start point
-			pt.translate((int) (30d * Math.cos(MWC.Algorithms.Conversions
-					.Degs2Rads(getCourse()))), (int) (30d * Math
-					.sin(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))));
+      // also draw in a marker for this point
+      final int height;
+      if (errorProvider != null && errorProvider.applyStyling())
+      {
+        final long thisH =
+            Math.abs(errorProvider.getValueAt(thisF.getDateTimeGroup()));
+        final int h = (int) (Math.min(thisH, MAX_HEIGHT) * 2);
+        height = h == 0 ? 4 : h;
+      }
+      else
+      {
+        height = 6;
+      }
+      dest.fillOval(lastPoint.x - height / 2, lastPoint.y - height / 2, height,
+          height);
+    }
 
-			// try to make it bold
-			final Font newFont = new Font("Arial", Font.BOLD, 12);
+    // ok, plot the 1/2 way message
+    if (_dragMsg != null)
+    {
+      writeMessage(dest, firstEnd);
+    }
+  }
 
-			// put the text in a solid backdrop
-			boolean xorMode = false;
-			Color color = dest.getBackgroundColor();
-			if (dest instanceof ExtendedCanvasType)
-			{
-				// NOTE: this is a workaround, to overcome an occasional
-				// SWT rendering problem - where the XOR text
-				// wasn't being displayed
-				xorMode = ((ExtendedCanvasType) dest).getXORMode();
-				((ExtendedCanvasType) dest).setXORMode(false);
-			}
-			final int ht = dest.getStringHeight(newFont) + 8;
-			final int wid = dest.getStringWidth(newFont, _dragMsg);
-			dest.setColor(Color.WHITE);
-			dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5, ht);
-			// and draw the text
-			dest.setColor( MWC.GUI.Properties.DebriefColors.BLACK);
-			dest.drawText(_dragMsg, pt.x, pt.y + 15);
-			if (dest instanceof ExtendedCanvasType)
-			{
-				((ExtendedCanvasType) dest).setXORMode(xorMode);
-				dest.setColor(color);
-			}
-		}
-	}
+  private void writeMessage(final CanvasType dest, WorldLocation firstEnd)
+  {
+    final Point pt = dest.toScreen(firstEnd);
 
-	public String getDragTextMessage()
-	{
-		return _dragMsg;
-	}
+    // project this point out past the actual start point
+    pt.translate((int) (30d * Math.cos(MWC.Algorithms.Conversions
+        .Degs2Rads(getCourse()))), (int) (30d * Math
+        .sin(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))));
 
-	@Override
-	abstract public void rotate(double brg, final WorldLocation origin);
+    // try to make it bold
+    final Font newFont = new Font("Arial", Font.BOLD, 12);
 
-	protected void fireAdjusted()
-	{
-		super.firePropertyChange(ADJUSTED, null, System.currentTimeMillis());
-	}
+    // put the text in a solid backdrop
+    boolean xorMode = false;
+    final Color color = dest.getBackgroundColor();
+    if (dest instanceof ExtendedCanvasType)
+    {
+      // NOTE: this is a workaround, to overcome an occasional
+      // SWT rendering problem - where the XOR text
+      // wasn't being displayed
+      xorMode = ((ExtendedCanvasType) dest).getXORMode();
+      ((ExtendedCanvasType) dest).setXORMode(false);
+    }
+    final int ht = dest.getStringHeight(newFont) + 8;
+    final int wid = dest.getStringWidth(newFont, _dragMsg);
+    dest.setColor(Color.WHITE);
+    dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5, ht);
+    // and draw the text
+    dest.setColor(MWC.GUI.Properties.DebriefColors.BLACK);
+    dest.drawText(_dragMsg, pt.x, pt.y + 15);
+    if (dest instanceof ExtendedCanvasType)
+    {
+      ((ExtendedCanvasType) dest).setXORMode(xorMode);
+      dest.setColor(color);
+    }
+  }
 
-	/**
-	 * the current course (degs)
-	 * 
-	 * @param course
-	 *          (degs)
-	 */
-	public void setCourse(final double course)
-	{
-	  // ensure course is in +ve domain
-	  final double happyCourse;
-	  if(course > 0)
-	  {
-	    // all is fine
+  @Override
+  abstract public void rotate(double brg, final WorldLocation origin);
+
+  /**
+   * the current course (degs)
+   * 
+   * @param course
+   *          (degs)
+   */
+  public void setCourse(final double course)
+  {
+    // ensure course is in +ve domain
+    final double happyCourse;
+    if (course > 0)
+    {
+      // all is fine
       happyCourse = course;
-	  }
-	  else if(course < -0.00000000001)
-	  {
-	    // check if we're a significant negative number
-	    happyCourse = course + 360;
-	  }
-	  else
-	  {
+    }
+    else if (course < -0.00000000001)
+    {
+      // check if we're a significant negative number
+      happyCourse = course + 360;
+    }
+    else
+    {
       // special case. Sometimes it's a really small
       // negative number, so we're better off making it zero
-	    happyCourse = 0;
-	  }
-	  
-	  // ok, store the satisfactory course
-		_courseDegs = happyCourse;
+      happyCourse = 0;
+    }
 
-		final double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
-		final Collection<Editable> data = getData();
-		for (final Iterator<Editable> iterator = data.iterator(); iterator
-				.hasNext();)
-		{
-			final FixWrapper fix = (FixWrapper) iterator.next();
-			fix.getFix().setCourse(crseRads);
-		}
+    // ok, store the satisfactory course
+    _courseDegs = happyCourse;
 
-		// ditch our temp vector, we've got to recalc it
-		_vecTempLastDTG = -2;
-	}
+    final double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
+    final Collection<Editable> data = getData();
+    for (final Iterator<Editable> iterator = data.iterator(); iterator
+        .hasNext();)
+    {
+      final FixWrapper fix = (FixWrapper) iterator.next();
+      fix.getFix().setCourse(crseRads);
+    }
 
-	/**
-	 * set the constant speed of this segment
-	 * 
-	 * @param speed
-	 *          the new speed
-	 */
-	public void setSpeed(final WorldSpeed speed)
-	{
-		_speed = speed;
+    // ditch our temp vector, we've got to recalc it
+    _vecTempLastDTG = -2;
+  }
 
-		final double spdYps = speed.getValueIn(WorldSpeed.ft_sec) / 3;
-		final Collection<Editable> data = getData();
-		for (final Iterator<Editable> iterator = data.iterator(); iterator
-				.hasNext();)
-		{
-			final FixWrapper fix = (FixWrapper) iterator.next();
-			fix.getFix().setSpeed(spdYps);
-		}
+  /**
+   * set the constant speed of this segment
+   * 
+   * @param speed
+   *          the new speed
+   */
+  public void setSpeed(final WorldSpeed speed)
+  {
+    _speed = speed;
 
-		// ditch our temp vector, we've got to recalc it
-		_vecTempLastDTG = -2;
+    final double spdYps = speed.getValueIn(WorldSpeed.ft_sec) / 3;
+    final Collection<Editable> data = getData();
+    for (final Iterator<Editable> iterator = data.iterator(); iterator
+        .hasNext();)
+    {
+      final FixWrapper fix = (FixWrapper) iterator.next();
+      fix.getFix().setSpeed(spdYps);
+    }
 
-	}
+    // ditch our temp vector, we've got to recalc it
+    _vecTempLastDTG = -2;
 
-	/**
-	 * shear this whole track to the supplied destination
-	 * 
-	 * @param cursor
-	 *          where the user's hovering
-	 * @param origin
-	 *          origin of stretch, probably one end of the track
-	 */
-	abstract public void shear(WorldLocation cursor, final WorldLocation origin);
+  }
 
-	@Override
-	abstract public void shift(WorldVector vector);
+  /**
+   * shear this whole track to the supplied destination
+   * 
+   * @param cursor
+   *          where the user's hovering
+   * @param origin
+   *          origin of stretch, probably one end of the track
+   */
+  abstract public void shear(WorldLocation cursor, final WorldLocation origin);
 
-	/**
-	 * stretch this whole track to the supplied distance
-	 * 
-	 * @param rngDegs
-	 *          distance to stretch through (degs)
-	 * @param origin
-	 *          origin of stretch, probably one end of the track
-	 */
-	abstract public void stretch(double rngDegs, final WorldLocation origin);
+  @Override
+  abstract public void shift(WorldVector vector);
+
+  /**
+   * stretch this whole track to the supplied distance
+   * 
+   * @param rngDegs
+   *          distance to stretch through (degs)
+   * @param origin
+   *          origin of stretch, probably one end of the track
+   */
+  abstract public void stretch(double rngDegs, final WorldLocation origin);
 
 }
