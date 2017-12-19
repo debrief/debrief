@@ -1242,9 +1242,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
       if (secs != null && secs.length == 1)
       {
-        final TrackWrapper secT = (TrackWrapper) secs[0];
-        secT.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-            _infillListener);
+        WatchableList firstSec = secs[0];
+        if (firstSec instanceof TrackWrapper)
+        {
+          final TrackWrapper secT = (TrackWrapper) firstSec;
+          secT.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+              _infillListener);
+        }
       }
     }
 
@@ -1780,26 +1784,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
     Display.getDefault().asyncExec(new Runnable()
     {
-      
       @Override
       public void run()
       {
         // somehow, put the message into the UI
         _myChart.setTitle(string);
+
+        // is it a fail status
+        if (statusCode != IStatus.OK)
+        {
+          // and store the problem into the log
+          CorePlugin.logError(statusCode, string, object);
+        }
+
       }
     });
-
-    // is it a fail status
-    if (statusCode != IStatus.OK)
-    {
-      // and store the problem into the log
-      CorePlugin.logError(statusCode, string, object);
-
-      // also ditch the data in the plots - to blank them out
-      // No, don't. We re-use clearPlots() to clear some calculated
-      // data in BearingResidualsView
-      // clearPlots();
-    }
   }
 
   @Override
