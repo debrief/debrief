@@ -397,8 +397,18 @@ public final class StackedDotHelper
                 }
               }
 
+              /**
+               * note: if this is frequency data then we accept an interpolated fix. This is based
+               * upon the working practice that initially legs of target track are created from
+               * bearing data.
+               * 
+               * Plus, there is greater variance in bearing angle - so it's more important to get
+               * the right data item.
+               */
+              boolean interpFix = needFrequency;
+
               final TargetDoublet doublet =
-                  getTargetDoublet(index, theSegments, scw);
+                  getTargetDoublet(index, theSegments, scw.getDTG(), interpFix);
 
               final Doublet thisDub;
               final FixWrapper hostFix;
@@ -454,8 +464,22 @@ public final class StackedDotHelper
     return res;
   }
 
-  private static TargetDoublet getTargetDoublet(final FixWrapper index,
-      final Vector<TrackSegment> theSegments, final SensorContactWrapper scw)
+  /**
+   * 
+   * @param workingFix
+   *          pre-existing fix object, to stop us repeatedly creating it
+   * @param theSegments
+   *          the segment within this track
+   * @param requiredTime
+   *          the time we need data for
+   * @param interpFix
+   *          whether to only accept a target fix within 1 second of the target time, or to
+   *          interpolate the nearest one
+   * @return a Doublet containing the relevant data
+   */
+  private static TargetDoublet getTargetDoublet(final FixWrapper workingFix,
+      final Vector<TrackSegment> theSegments, final HiResDate requiredTime,
+      final boolean interpFix)
   {
     final TargetDoublet doublet = new TargetDoublet();
     if (theSegments != null && !theSegments.isEmpty())
@@ -475,58 +499,103 @@ public final class StackedDotHelper
 
         final TimePeriod validPeriod =
             new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
-        if (validPeriod.contains(scw.getDTG()))
+        if (validPeriod.contains(requiredTime))
         {
 
           // if this is an infill, then we're relaxed about the errors
           if (ts instanceof DynamicInfillSegment)
           {
-            // sorted. here we go
-            doublet.targetParent = ts;
-
-            // create an object with the right time
-            index.getFix().setTime(scw.getDTG());
-
-            // and find any matching items
-            final SortedSet<Editable> items = ts.tailSet(index);
-            if (!items.isEmpty())
-            {
-              doublet.targetFix = (FixWrapper) items.first();
-            }
+            handleDynamicInfill(workingFix, requiredTime, doublet, ts);
           }
           else
           {
-            // ok, check we have a TMA fix almost exactly at this time
-            final Enumeration<Editable> fixes = ts.elements();
-            while (fixes.hasMoreElements())
+            // see if we're allowing an interpolated fix
+            if (interpFix)
             {
-              final FixWrapper thisF = (FixWrapper) fixes.nextElement();
-
-              // note: workaround. When we've merged the track,
-              // the new legs are actually one millisecond later.
-              // workaround this.
-              final long timeDiffMicros =
-                  Math.abs(thisF.getDTG().getMicros()
-                      - scw.getDTG().getMicros());
-
-              if (timeDiffMicros <= 1000)
+              generateInterpolatedDoublet(requiredTime, doublet, ts);
+              break;
+            }
+            else
+            {
+              // ok, check we have a TMA fix almost exactly at this time
+              final Enumeration<Editable> fixes = ts.elements();
+              while (fixes.hasMoreElements())
               {
-                // sorted. here we go
-                doublet.targetParent = ts;
+                final FixWrapper thisF = (FixWrapper) fixes.nextElement();
 
-                doublet.targetFix = thisF;
+                // note: workaround. When we've merged the track,
+                // the new legs are actually one millisecond later.
+                // workaround this.
+                final long timeDiffMicros =
+                    Math.abs(thisF.getDTG().getMicros()
+                        - requiredTime.getMicros());
 
-                // ok, done.
-                break;
+                if (timeDiffMicros <= 1000)
+                {
+                  // sorted. here we go
+                  doublet.targetParent = ts;
+
+                  doublet.targetFix = thisF;
+
+                  // ok, done.
+                  break;
+                }
               }
             }
           }
-
         }
       }
     }
 
     return doublet;
+  }
+
+  private static void generateInterpolatedDoublet(final HiResDate requiredTime,
+      final TargetDoublet doublet, final TrackSegment segment)
+  {
+    // ok, we'll interpolate the nearest value
+    FixWrapper before = null;
+    FixWrapper after = null;
+    final Enumeration<Editable> fixes = segment.elements();
+    while (fixes.hasMoreElements() && after == null)
+    {
+      final FixWrapper thisF = (FixWrapper) fixes.nextElement();
+
+      final HiResDate thisTime = thisF.getDTG();
+
+      if (before == null || thisTime.lessThan(requiredTime))
+      {
+        before = thisF;
+      }
+      else if (thisTime.greaterThanOrEqualTo(requiredTime))
+      {
+        after = thisF;
+      }
+    }
+
+    // ok, we've now boxed the required value
+    final FixWrapper interp =
+        FixWrapper.interpolateFix(before, after, requiredTime);
+    doublet.targetFix = interp;
+    doublet.targetParent = segment;
+  }
+
+  private static void handleDynamicInfill(final FixWrapper workingFix,
+      final HiResDate requiredTime, final TargetDoublet doublet,
+      final TrackSegment segment)
+  {
+    // sorted. here we go
+    doublet.targetParent = segment;
+
+    // create an object with the right time
+    workingFix.getFix().setTime(requiredTime);
+
+    // and find any matching items
+    final SortedSet<Editable> items = segment.tailSet(workingFix);
+    if (!items.isEmpty())
+    {
+      doublet.targetFix = (FixWrapper) items.first();
+    }
   }
 
   private static Vector<TrackSegment> getTargetLegs(
@@ -1587,7 +1656,6 @@ public final class StackedDotHelper
       updateDoublets(onlyVis, false, true);
     }
 
-    // aah - but what if we've ditched our doublets?
     // aah - but what if we've ditched our doublets?
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
     {
