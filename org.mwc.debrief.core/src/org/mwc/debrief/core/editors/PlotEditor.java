@@ -72,6 +72,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -258,30 +259,30 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private PlotOutlinePage _outlinePage;
 
-  private TraverseListener dragModeListener = new TraverseListener()
+  private final TraverseListener dragModeListener = new TraverseListener()
   {
 
     @Override
-    public void keyTraversed(TraverseEvent e)
+    public void keyTraversed(final TraverseEvent e)
     {
       if (getChart() == null)
       {
         return;
       }
-      Control control = getChart().getCanvasControl();
+      final Control control = getChart().getCanvasControl();
       if (control == null || control.isDisposed() || !control.isVisible())
       {
         return;
       }
       if (e.detail == SWT.TRAVERSE_TAB_NEXT)
       {
-        PlotMouseDragger dragMode = getChart().getDragMode();
+        final PlotMouseDragger dragMode = getChart().getDragMode();
         if (dragMode != null)
         {
           try
           {
             String currentState = null;
-            ExecutionEvent executionEvent = new ExecutionEvent();
+            final ExecutionEvent executionEvent = new ExecutionEvent();
             if (dragMode instanceof DragSegmentMode)
             {
               new DragComponent().execute(executionEvent);
@@ -314,15 +315,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
             }
             if (currentState != null)
             {
-              ICommandService service =
+              final ICommandService service =
                   (ICommandService) getSite().getService(ICommandService.class);
-              Command command = service.getCommand(RadioHandler.ID);
+              final Command command = service.getCommand(RadioHandler.ID);
               HandlerUtil.updateRadioState(command, currentState);
             }
           }
-          catch (Exception e1)
+          catch (final Exception e1)
           {
-            CorePlugin.logError(Status.WARNING, "Cannot change drag mode:", e1);
+            CorePlugin
+                .logError(IStatus.WARNING, "Cannot change drag mode:", e1);
           }
         }
       }
@@ -331,759 +333,26 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private PlotPropertySheetPage _propertySheetPage;
 
-  /**
-   * constructor - quite simple really.
-   */
-  public PlotEditor()
+  private static boolean _updatingPlot = false;
+
+  private static TimePeriod
+      extend(final TimePeriod period, final HiResDate date)
   {
-    super();
-
-    // create the track manager to manage the primary & secondary tracks
-    _trackDataProvider = new TrackManager(_myLayers);
-
-    // and listen out form modifications, because we want to mark ourselves
-    // as
-    // dirty once they've updated
-    _trackDataProvider.addTrackDataListener(new TrackDataListener()
+    TimePeriod result = period;
+    // have we received a date?
+    if (date != null)
     {
-      public void tracksUpdated(final WatchableList primary,
-          final WatchableList[] secondaries)
+      if (result == null)
       {
-        fireDirty();
-      }
-    });
-
-    // sort out the time controlleroperations
-    _timeControllerOperations =
-        new org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore();
-    _timeControllerOperations.add(new ExportTimeDataToClipboard());
-    _timeControllerOperations.add(new ExportToFlatFile());
-    _timeControllerOperations.add(new ExportToFlatFile2());
-    _timeControllerOperations.add(new ExportDopplerShift());
-
-    _layerPainterManager = new LayerPainterManager(_trackDataProvider);
-    _layerPainterManager.addPropertyChangeListener(new PropertyChangeListener()
-    {
-      public void propertyChange(final PropertyChangeEvent arg0)
-      {
-        // ok, trigger repaint of plot
-        if (getChart() != null)
-          getChart().update();
-      }
-    });
-
-    // create the time manager. cool
-    _timeManager = new TimeManager();
-    _timeManager.addListener(_timeListener,
-        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-    // and how time is managed
-    _timePreferences = new TimeControlProperties();
-
-    // listen out for when our input changes, since we will change the
-    // editor
-    // window title
-    this.addPropertyListener(new IPropertyListener()
-    {
-
-      @SuppressWarnings(
-      {"synthetic-access"})
-      public void propertyChanged(final Object source, final int propId)
-      {
-        if (propId == PROP_INPUT)
-        {
-          final Object input = getEditorInput();
-          if (input instanceof IFileEditorInput)
-          {
-            final IFileEditorInput inp = (IFileEditorInput) getEditorInput();
-            setPartName(inp.getName());
-          }
-          else if (input instanceof FileStoreEditorInput)
-          {
-            final FileStoreEditorInput fsi = (FileStoreEditorInput) input;
-            final String theName = fsi.getName();
-            setPartName(theName);
-          }
-          else if (input instanceof FileRevisionEditorInput)
-          {
-            setPartName(((FileRevisionEditorInput) input).getName());
-          }
-          else
-          {
-            CorePlugin.logError(Status.WARNING,
-                "data source for PlotEditor not of expected type:" + input,
-                null);
-            setPartName(input.toString());
-          }
-        }
-      }
-    });
-
-    _myOperations = new PlotOperations()
-    {
-      // just provide with our complete set of layers
-      @SuppressWarnings("synthetic-access")
-      public Object[] getTargets()
-      {
-        // ok, return our top level layers as objects
-        final Vector<Layer> res = new Vector<Layer>(0, 1);
-        for (int i = 0; i < _myLayers.size(); i++)
-        {
-          res.add(_myLayers.elementAt(i));
-        }
-        return res.toArray();
-      }
-
-      /**
-       * override performing the operation, since we'll do a screen update on completion
-       */
-      @SuppressWarnings("synthetic-access")
-      public Vector<Layer> performOperation(final AnOperation operationName)
-      {
-        // make the actual change
-        final Vector<Layer> res = super.performOperation(operationName);
-
-        if (res != null)
-        {
-          if (res.size() != 0)
-          {
-            for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
-            {
-              final Layer thisL = (Layer) iter.next();
-              // and update the screen
-              _myLayers.fireReformatted(thisL);
-
-            }
-          }
-        }
-
-        return res;
-
-      }
-    };
-
-    // do we have some time preferences?
-    if (_timePreferences != null)
-    {
-      final HiResDate startDTG = _timePreferences.getSliderStartTime();
-      final HiResDate endDTG = _timePreferences.getSliderEndTime();
-      // and were there any times in it?
-      if ((startDTG != null) && (endDTG != null))
-      {
-        // yup, store the time data.
-        _myOperations
-            .setPeriod(new TimePeriod.BaseTimePeriod(startDTG, endDTG));
-      }
-    }
-
-    // introduce our new item listener that looks after relative TMA segments being dropped into the
-    // layers object
-    _myLayers.addDataExtendedListener(new Layers.DataListener2()
-    {
-
-      @Override
-      public void dataModified(Layers theData, Layer changedLayer)
-      {
-      }
-
-      @Override
-      public void dataExtended(Layers theData)
-      {
-      }
-
-      @Override
-      public void dataReformatted(Layers theData, Layer changedLayer)
-      {
-      }
-
-      @Override
-      public void dataExtended(final Layers theData, final Plottable newItem,
-          final HasEditables parent)
-      {
-        reconnectSegments(newItem, parent);
-      }
-    });
-  }
-
-  @Override
-  public void dispose()
-  {
-    super.dispose();
-
-    // stop listening to the time manager
-    _timeManager.removeListener(_timeListener,
-        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-    _timeManager = null;
-
-    if (_layerPainterManager != null)
-    {
-      _layerPainterManager.close();
-      _layerPainterManager = null;
-    }
-
-    if (_outlinePage != null)
-    {
-      _outlinePage.dispose();
-      _outlinePage = null;
-    }
-  }
-
-  public void init(final IEditorSite site, final IEditorInput input)
-      throws PartInitException
-  {
-    setSite(site);
-    setInputWithNotify(input);
-
-    // ok - declare and load the supplemental plugins which can load
-    // datafiles
-    initialiseFileLoaders();
-
-    // and start the load
-    loadThisFile(input);
-
-    // lastly, set the title (if we have one)
-    this.setPartName(input.getName());
-
-    // hmm, does this input have an icon?
-    ImageDescriptor icon = input.getImageDescriptor();
-    if (icon != null)
-    {
-      this.setTitleImage(icon.createImage());
-    }
-
-    // ok, also sort out that refresh job
-    createRefreshJob();
-  }
-
-  /**
-   * @param input
-   *          the file to insert
-   */
-  private void loadThisFile(IEditorInput input)
-  {
-    InputStream is = null;
-    if (!input.exists())
-    {
-      CorePlugin.logError(Status.ERROR, "File cannot be found:"
-          + input.getName(), null);
-      return;
-    }
-    String name = input.getName();
-    try
-    {
-      final IPersistableElement persist = input.getPersistable();
-      if (input instanceof IFileEditorInput)
-      {
-        final IFileEditorInput ife = (IFileEditorInput) input;
-        final IFile iff = ife.getFile();
-        iff.refreshLocal(IResource.DEPTH_ONE, null);
-        is = iff.getContents();
-        name = getAbsoluteName(iff);
-      }
-      else if (persist instanceof IFileEditorInput)
-      {
-        final IFileEditorInput ifi = (IFileEditorInput) persist;
-        IFile iff = ifi.getFile();
-        is = iff.getContents();
-        name = getAbsoluteName(iff);
-      }
-      else if (input instanceof FileStoreEditorInput)
-      {
-        final FileStoreEditorInput _input = (FileStoreEditorInput) input;
-        final URI _uri = _input.getURI();
-        final Path _p = new Path(_uri.getPath());
-        name = _uri.getPath();
-        final IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
-        is = _ifs.openInputStream(EFS.NONE, null);
-      }
-      else if (input instanceof FileRevisionEditorInput)
-      {
-        final FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
-        IFile file = getFile(frei);
-        if (file != null && file.exists())
-        {
-          name = getAbsoluteName(file);
-          is = frei.getStorage().getContents();
-        }
-      }
-      if (is != null)
-        loadThisStream(is, name);
-      else
-      {
-        CorePlugin.logError(Status.INFO, "Failed to load file from:" + input,
-            null);
-      }
-
-    }
-    catch (final CoreException e)
-    {
-      CorePlugin.logError(Status.ERROR, "Resource out of sync:"
-          + input.getName() + " REFRESH the workspace", null);
-      MessageDialog
-          .openError(
-              Display.getDefault().getActiveShell(),
-              "File out of sync",
-              "This file has been edited or removed:"
-                  + input.getName()
-                  + "\nPlease right-click on your navigator project and press Refresh");
-    }
-  }
-
-  private IFile getFile(FileRevisionEditorInput frei)
-  {
-    IFile file = null;
-    IFileRevision revision = frei.getFileRevision();
-    if (revision instanceof LocalFileRevision)
-    {
-      LocalFileRevision localFileRevision = (LocalFileRevision) revision;
-      if (localFileRevision.getFile() != null)
-      {
-        file = localFileRevision.getFile();
+        result = new TimePeriod.BaseTimePeriod(date, date);
       }
       else
       {
-        IFileState state = localFileRevision.getState();
-        IPath path = state.getFullPath();
-        file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-      }
-    }
-    return file;
-  }
-
-  public String getAbsoluteName(final IFile iff) throws CoreException
-  {
-    String name;
-    URI uri = iff.getLocationURI();
-    if (iff.isLinked())
-    {
-      uri = iff.getRawLocationURI();
-    }
-    File javaFile = EFS.getStore(uri).toLocalFile(0, new NullProgressMonitor());
-    name = javaFile.getAbsolutePath();
-    return name;
-  }
-
-  /**
-   * @param input
-   *          the file to insert
-   */
-  private void loadThisFile(final String filePath)
-  {
-    FileInputStream ifs = null;
-    try
-    {
-      ifs = new FileInputStream(filePath);
-      loadThisStream(ifs, filePath);
-    }
-    catch (final FileNotFoundException e)
-    {
-      CorePlugin.logError(Status.ERROR,
-          "Problem loading data file:" + filePath, e);
-    }
-    finally
-    {
-      if (ifs != null)
-        try
-        {
-          ifs.close();
-        }
-        catch (IOException e)
-        {
-          CorePlugin.logError(Status.ERROR, "Problem closing input stream:"
-              + filePath, e);
-        }
-    }
-  }
-
-  private void loadThisStream(final InputStream is, final String fileName)
-  {
-    // right, see if any of them will do our edit
-    final IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
-    // did we find any?
-    if (loaders.length > 0)
-    {
-      // cool, give them a go...
-      try
-      {
-        for (int i = 0; i < loaders.length; i++)
-        {
-          final IPlotLoader thisLoader = loaders[i];
-
-          // get it to load. Just in case it's an asychronous load
-          // operation, we
-          // rely on it calling us back (loadingComplete)
-          thisLoader.loadFile(this, is, fileName);
-
-          // special handling - popup a dialog to allow sensor name/color to be
-          // set if there's just one sensor
-          if (thisLoader instanceof DeferredPlotLoader)
-          {
-            final DeferredPlotLoader ld = (DeferredPlotLoader) thisLoader;
-            final BaseLoader loader = ld.getLoader();
-            if (loader != null)
-            {
-              if (loader instanceof ReplayLoader)
-              {
-                final ReplayLoader rl = (ReplayLoader) loader;
-                final ImportReplay ir = rl.getReplayLoader();
-                List<TrackWrapper> candidateHosts = null;
-
-                final Vector<SensorWrapper> sensors = ir.getPendingSensors();
-
-                // see if there are any sensors awaiting a host
-                if (sensors.size() >= 1)
-                {
-                  Iterator<SensorWrapper> sIter = sensors.iterator();
-                  while (sIter.hasNext())
-                  {
-                    SensorWrapper sensor = (SensorWrapper) sIter.next();
-                    if (sensor.getHost() == null)
-                    {
-                      // have we sorted out the hosts?
-                      if (candidateHosts == null)
-                      {
-                        candidateHosts = determineCandidateHosts();
-                      }
-
-                      if (candidateHosts.size() == 0)
-                      {
-                        CorePlugin.showMessage("Loading sensor data",
-                            "Sensor data can only be loaded after tracks");
-                        return;
-                      }
-
-                      // ok, let the user choose
-                      chooseHostFor(sensor, candidateHosts);
-                    }
-                  }
-                }
-                if (sensors.size() == 1)
-                {
-                  // see if there are any sensors awaiting a color
-                  final SensorWrapper thisS = sensors.firstElement();
-                  final boolean success = nameThisSensor(thisS);
-
-                  // does user wish to name/format sensor?
-                  if (!success)
-                  {
-                    // nope, cancel the import.
-                    ir.clearPendingSensorList();
-                  }
-                }
-
-                // ok, now we can store the pending sensors in their
-                // parent tracks
-                ir.storePendingSensors();
-              }
-            }
-          }
-        }
-      }
-      catch (final RuntimeException e)
-      {
-        CorePlugin.logError(Status.ERROR, "Problem loading data file:"
-            + fileName, e);
-      }
-    }
-  }
-
-  private List<TrackWrapper> determineCandidateHosts()
-  {
-    List<TrackWrapper> res = new ArrayList<TrackWrapper>();
-
-    Enumeration<Editable> iter = _myLayers.elements();
-    while (iter.hasMoreElements())
-    {
-      Editable editable = (Editable) iter.nextElement();
-      if (editable instanceof TrackWrapper)
-      {
-        res.add((TrackWrapper) editable);
+        result.extend(date);
       }
     }
 
-    return res;
-  }
-
-  private void chooseHostFor(SensorWrapper sensor,
-      List<TrackWrapper> candidateHosts)
-  {
-    // ok, construct the popup
-    Object[] tArr = candidateHosts.toArray();
-
-    // popup the layers in a question dialog
-    final IStructuredContentProvider theVals = new ArrayContentProvider();
-    final ILabelProvider theLabels = new LabelProvider();
-
-    // collate the dialog
-    final ListDialog list =
-        new ListDialog(Display.getCurrent().getActiveShell());
-    list.setContentProvider(theVals);
-    list.setLabelProvider(theLabels);
-    list.setInput(tArr);
-    list.setMessage("Please select the track for sensor titled \""
-        + sensor.getName() + "\"\n(or Cancel to not store it)");
-    list.setTitle("Sensor track not found");
-    list.setHelpAvailable(false);
-
-    // select the first item, so it's valid to press OK immediately
-    list.setInitialSelections(new Object[]
-    {tArr[0]});
-
-    // open it
-    final int selection = list.open();
-
-    // did user say yes?
-    if (selection != ListDialog.CANCEL)
-    {
-      // yup, store it's name
-      final Object[] val = list.getResult();
-
-      // check something got selected
-      if (val.length == 1)
-      {
-        TrackWrapper selected = (TrackWrapper) val[0];
-        sensor.setHost(selected);
-      }
-    }
-  }
-
-  private boolean nameThisSensor(final SensorWrapper thisS)
-  {
-    // right, just have a quick look and see if the sensor has range data -
-    // because
-    // if it doesn't we'll let the user set a default
-    final boolean needsRange = areWeWaitingForRange(thisS);
-
-    // next, just see if this track already contains sensor
-    // data with this name
-    final boolean alreadyLoaded = isThisSensorAlreadyPresent(thisS);
-
-    // inform the user if this sensor name is already in use
-    final String introString;
-    if (alreadyLoaded)
-    {
-      introString =
-          "a one-word title for this block of sensor contacts (e.g. S2046)\n\n"
-              + "Note: [" + thisS.getName() + "] is already in use.";
-    }
-    else
-    {
-      introString =
-          "a one-word title for this block of sensor contacts (e.g. S2046)";
-    }
-
-    SensorImportHelper importHelper =
-        getSensorImportHelperFor(thisS.getName(), thisS.getColor(),
-            introString, needsRange);
-
-    // did it work?
-    if (importHelper.success())
-    {
-      // ok, use the name
-      thisS.setName(importHelper.getName());
-      thisS.setColor(importHelper.getColor());
-      thisS.setVisible(importHelper.getVisiblity());
-
-      // are we doing range?
-      if (needsRange)
-      {
-        final WorldDistance theRange = importHelper.getRange();
-
-        // did a range get entered?
-        if ((theRange != null) && (theRange.getValue() != 0))
-        {
-          final Enumeration<Editable> iter = thisS.elements();
-          while (iter.hasMoreElements())
-          {
-            final SensorContactWrapper cut =
-                (SensorContactWrapper) iter.nextElement();
-            cut.setRange(new WorldDistance(theRange));
-          }
-        }
-      }
-      if (importHelper.applyRainbow())
-      {
-        applyRainbowShadingTo(thisS);
-      }
-    }
-
-    return importHelper.success();
-  }
-
-  private boolean areWeWaitingForRange(final SensorWrapper thisS)
-  {
-    boolean needsRange = false;
-    final Enumeration<Editable> cuts = thisS.elements();
-    if (cuts.hasMoreElements())
-    {
-      final Editable firstCut = cuts.nextElement();
-      final SensorContactWrapper scw = (SensorContactWrapper) firstCut;
-      // do we have bearing?
-      if (scw.getHasBearing())
-      {
-        // yes. now are we waiting for a range?
-        if (scw.getRange() == null)
-        {
-          needsRange = true;
-        }
-      }
-    }
-    return needsRange;
-  }
-
-  private boolean isThisSensorAlreadyPresent(final SensorWrapper thisS)
-  {
-    boolean alreadyLoaded = false;
-    final TrackWrapper trk = thisS.getHost();
-    if (trk != null)
-    {
-      final Enumeration<Editable> enumer = trk.getSensors().elements();
-      while (enumer.hasMoreElements())
-      {
-        final SensorWrapper oldS = (SensorWrapper) enumer.nextElement();
-        if (oldS.getName().equals(thisS.getName()))
-        {
-          alreadyLoaded = true;
-        }
-      }
-    }
-    return alreadyLoaded;
-  }
-
-  private SensorImportHelper getSensorImportHelperFor(String sensorName,
-      Color sensorColor, String introString, boolean needsRange)
-  {
-    // ok, check the property
-    final String showImportWizard =
-        CorePlugin.getToolParent().getProperty(
-            PrefsPage.PreferenceConstants.USE_IMPORT_SENSOR_WIZARD);
-
-    // create the relevant helper
-    final SensorImportHelper helper;
-    if (Boolean.parseBoolean(showImportWizard))
-    {
-      helper =
-          new SensorImportHelper.SensorImportHelperUI(sensorName, sensorColor,
-              introString, needsRange);
-    }
-    else
-    {
-      helper = new SensorImportHelper.SensorImportHelperHeadless(sensorName);
-    }
-
-    return helper;
-  }
-
-  private void applyRainbowShadingTo(final SensorWrapper thisS)
-  {
-    SensorWrapper theSensor = null;
-
-    // are they items we're interested in?
-    HiResDate startDTG = new HiResDate(Long.MAX_VALUE / 1000, 0);
-    HiResDate endDTG = new HiResDate(0);
-    Enumeration<Editable> elements = thisS.elements();
-    ArrayList<Editable> sensors = new ArrayList<Editable>();
-    ArrayList<SensorContactWrapper> list =
-        new ArrayList<SensorContactWrapper>();
-    while (elements.hasMoreElements())
-    {
-      sensors.add(elements.nextElement());
-    }
-    for (Editable thisE : sensors)
-    {
-      if (thisE instanceof SensorWrapper)
-      {
-        // just check that there's only one item selected
-        if (sensors.size() == 1)
-        {
-          theSensor = (SensorWrapper) thisE;
-        }
-      }
-      else if (thisE instanceof SensorContactWrapper)
-      {
-        list.add((SensorContactWrapper) thisE);
-        if (startDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) > 0)
-        {
-          startDTG = ((SensorContactWrapper) thisE).getDTG();
-        }
-        if (endDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) < 0)
-        {
-          endDTG = ((SensorContactWrapper) thisE).getDTG();
-        }
-      }
-    }
-
-    // ok, do we have a single sensor?
-    if (theSensor != null)
-    {
-      startDTG = theSensor.getStartDTG();
-      endDTG = theSensor.getEndDTG();
-      Collection<Editable> editables =
-          theSensor.getItemsBetween(theSensor.getStartDTG(), theSensor
-              .getEndDTG());
-      for (Editable editable : editables)
-      {
-        if (editable instanceof SensorContactWrapper)
-        {
-          list.add((SensorContactWrapper) editable);
-        }
-      }
-    }
-    final HiResDate start = startDTG;
-    final HiResDate end = endDTG;
-    // create this operation
-    final String title1 = "Shade in rainbow colors";
-    Layer parentLayer = null;
-
-    Layers parentLayers = _myLayers;
-    if (parentLayers != null)
-    {
-      if (parentLayers.size() == 1)
-      {
-        parentLayer = parentLayers.elementAt(0);
-      }
-    }
-
-    final IUndoableOperation theAction =
-        new ShadeCutsOperation(title1, parentLayers, parentLayer, list
-            .toArray(new SensorContactWrapper[0]), start, end,
-            ShadeOperation.RAINBOW_SHADE);
-    CorePlugin.run(theAction);
-  }
-
-  /**
-	 * 
-	 */
-  private void initialiseFileLoaders()
-  {
-    // hey - sort out our plot readers
-    _loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
-    {
-
-      public INamedItem createInstance(
-          final IConfigurationElement configElement, final String label)
-      {
-        // get the attributes
-        final String theLabel =
-            configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
-        final String icon =
-            configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
-        final String fileTypes =
-            configElement.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
-        final String firstLine =
-            configElement.getAttribute(EXTENSION_TAG_FIRST_LINE_ATTRIB);
-
-        // create the instance
-        final INamedItem res =
-            new IPlotLoader.DeferredPlotLoader(configElement, theLabel, icon,
-                fileTypes, firstLine);
-
-        // and return it.
-        return res;
-      }
-
-    };
+    return result;
   }
 
   private static TimePeriod getPeriodFor(final Layers theData)
@@ -1123,7 +392,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 final WatchableList wl = (WatchableList) wrapped;
                 final HiResDate endD = wl.getEndDTG();
                 if (endD != null)
+                {
                   res = extend(res, endD);
+                }
               }
             }
           }
@@ -1134,199 +405,327 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return res;
   }
 
-  private static TimePeriod
-      extend(final TimePeriod period, final HiResDate date)
-  {
-    TimePeriod result = period;
-    // have we received a date?
-    if (date != null)
-    {
-      if (result == null)
-      {
-        result = new TimePeriod.BaseTimePeriod(date, date);
-      }
-      else
-        result.extend(date);
-    }
-
-    return result;
-  }
-
   /**
-   * method called when a helper object has completed a plot-load operation
-   * 
-   * @param source
+   * constructor - quite simple really.
    */
-  public void loadingComplete(final Object source)
+  public PlotEditor()
   {
+    super();
 
-    // ok, stop listening for dirty calls - since there will be so many and
-    // we
-    // don't want
-    // to start off with a dirty plot
-    startIgnoringDirtyCalls();
+    // create the track manager to manage the primary & secondary tracks
+    _trackDataProvider = new TrackManager(_myLayers);
 
-    DebriefPlugin.logError(Status.INFO, "File loading complete received", null);
-
-    // and update the time management bits
-    final TimePeriod timePeriod = getPeriodFor(_myLayers);
-
-    if (timePeriod != null)
+    // and listen out form modifications, because we want to mark ourselves
+    // as
+    // dirty once they've updated
+    _trackDataProvider.addTrackDataListener(new TrackDataListener()
     {
-      _timeManager.setPeriod(this, timePeriod);
-
-      // also give it a current DTG (if it doesn't have one)
-      if (_timeManager.getTime() == null)
-        _timeManager.setTime(this, timePeriod.getStartDTG(), false);
-    }
-
-    // done - now we can process dirty calls again
-    stopIgnoringDirtyCalls();
-
-  }
-
-  protected void filesDropped(final String[] fileNames)
-  {
-    super.filesDropped(fileNames);
-
-    // ok, iterate through the files
-    for (int i = 0; i < fileNames.length; i++)
-    {
-      final String thisFilename = fileNames[i];
-      loadThisFile(thisFilename);
-    }
-
-    // ok, we're probably done - fire the update
-    this._myLayers.fireExtended();
-
-    // and resize to make sure we're showing all the data
-    this._myChart.rescale();
-
-    // hmm, we may have loaded more track data - but we don't track
-    // loading of individual tracks - just fire a "modified" flag
-    _trackDataProvider.fireTracksChanged();
-
-  }
-
-  private static boolean _updatingPlot = false;
-
-  @Override
-  public void selectPlottable(Plottable tgt, Layer parentLayer)
-  {
-    // handle some special cases.
-    if (tgt instanceof FixWrapper)
-    {
-      CorePlugin.logError(Status.INFO,
-          "Double-click processed, fixing parent levels for:" + tgt, null);
-
-      // ok, we have to generate the correct object model
-      FixWrapper fix = (FixWrapper) tgt;
-      TrackSegment segment = fix.getSegment();
-      TrackWrapper track = segment.getWrapper();
-      SegmentList segList = track.getSegments();
-      Layers layers = getChart().getLayers();
-      final ISelection selected =
-          wrapObjects(parentLayer, fix, segment, segList, layers);
-      fireSelectionChanged(selected);
-    }
-    else if (tgt instanceof SensorContactWrapper)
-    {
-      CorePlugin.logError(Status.INFO,
-          "Double-click processed, fixing parent levels for:" + tgt, null);
-      
-      // ok, we have to generate the correct object model
-      SensorContactWrapper cut = (SensorContactWrapper) tgt;
-      SensorWrapper sensor = cut.getSensor();
-      TrackWrapper track = sensor.getHost();
-      BaseLayer sList = track.getSensors();
-      Layers layers = getChart().getLayers();
-      final ISelection selected =
-          wrapObjects(parentLayer, cut, sensor, sList, layers);
-      fireSelectionChanged(selected);
-    }
-    else if (tgt instanceof TMAContactWrapper)
-    {
-      CorePlugin.logError(Status.INFO,
-          "Double-click processed, fixing parent levels for:" + tgt, null);
-      
-      // ok, we have to generate the correct object model
-      TMAContactWrapper cut = (TMAContactWrapper) tgt;
-      TMAWrapper sensor = cut.getTMATrack();
-      TrackWrapper track = sensor.getHost();
-      BaseLayer sList = track.getSolutions();
-      Layers layers = getChart().getLayers();
-      final ISelection selected =
-          wrapObjects(parentLayer, cut, sensor, sList, layers);
-      fireSelectionChanged(selected);
-    }
-    else
-    {
-      super.selectPlottable(tgt, parentLayer);
-    }
-  }
-
-  private ISelection wrapObjects(Layer track, Editable item,
-      Editable itemParent, Editable parentList, Layers layers)
-  {
-    final EditableWrapper parentP =
-        new EditableWrapper(track, null, layers);
-    final EditableWrapper segListW = new EditableWrapper(parentList, parentP, layers);
-    final EditableWrapper segmentW = new EditableWrapper(itemParent, segListW, layers);
-    final EditableWrapper fixW = new EditableWrapper(item, segmentW, layers);
-    final ISelection selected = new StructuredSelection(fixW);
-    return selected;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#timeChanged()
-   */
-  protected void timeChanged(final HiResDate newDTG)
-  {
-    super.timeChanged(newDTG);
-
-    // just check we're ready for plotting.
-    if (getChart() == null)
-      return;
-
-    if (_updatingPlot)
-    {
-      // skip the update - we're already at it
-    }
-    else
-    {
-      _updatingPlot = true;
-
-      try
+      @Override
+      public void tracksUpdated(final WatchableList primary,
+          final WatchableList[] secondaries)
       {
-        // note, we've learn't to use the default display instead of the
-        // current one, we were get a null returned since this thread may not
-        // have a display
-        final Display myDis = Display.getDefault();
-        if (myDis != null)
+        fireDirty();
+      }
+    });
+
+    // sort out the time controlleroperations
+    _timeControllerOperations =
+        new org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore();
+    _timeControllerOperations.add(new ExportTimeDataToClipboard());
+    _timeControllerOperations.add(new ExportToFlatFile());
+    _timeControllerOperations.add(new ExportToFlatFile2());
+    _timeControllerOperations.add(new ExportDopplerShift());
+
+    _layerPainterManager = new LayerPainterManager(_trackDataProvider);
+    _layerPainterManager.addPropertyChangeListener(new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent arg0)
+      {
+        // ok, trigger repaint of plot
+        if (getChart() != null)
         {
-          myDis.asyncExec(new Runnable()
+          getChart().update();
+        }
+      }
+    });
+
+    // create the time manager. cool
+    _timeManager = new TimeManager();
+    _timeManager.addListener(_timeListener,
+        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+    // and how time is managed
+    _timePreferences = new TimeControlProperties();
+
+    // listen out for when our input changes, since we will change the
+    // editor
+    // window title
+    this.addPropertyListener(new IPropertyListener()
+    {
+
+      @Override
+      @SuppressWarnings(
+      {"synthetic-access"})
+      public void propertyChanged(final Object source, final int propId)
+      {
+        if (propId == PROP_INPUT)
+        {
+          final Object input = getEditorInput();
+          if (input instanceof IFileEditorInput)
           {
-            public void run()
+            final IFileEditorInput inp = (IFileEditorInput) getEditorInput();
+            setPartName(inp.getName());
+          }
+          else if (input instanceof FileStoreEditorInput)
+          {
+            final FileStoreEditorInput fsi = (FileStoreEditorInput) input;
+            final String theName = fsi.getName();
+            setPartName(theName);
+          }
+          else if (input instanceof FileRevisionEditorInput)
+          {
+            setPartName(((FileRevisionEditorInput) input).getName());
+          }
+          else
+          {
+            CorePlugin.logError(IStatus.WARNING,
+                "data source for PlotEditor not of expected type:" + input,
+                null);
+            setPartName(input.toString());
+          }
+        }
+      }
+    });
+
+    _myOperations = new PlotOperations()
+    {
+      // just provide with our complete set of layers
+      @Override
+      @SuppressWarnings("synthetic-access")
+      public Object[] getTargets()
+      {
+        // ok, return our top level layers as objects
+        final Vector<Layer> res = new Vector<Layer>(0, 1);
+        for (int i = 0; i < _myLayers.size(); i++)
+        {
+          res.add(_myLayers.elementAt(i));
+        }
+        return res.toArray();
+      }
+
+      /**
+       * override performing the operation, since we'll do a screen update on completion
+       */
+      @Override
+      @SuppressWarnings("synthetic-access")
+      public Vector<Layer> performOperation(final AnOperation operationName)
+      {
+        // make the actual change
+        final Vector<Layer> res = super.performOperation(operationName);
+
+        if (res != null)
+        {
+          if (res.size() != 0)
+          {
+            for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
             {
-              if (getChart() == null || getChart().getCanvas() == null)
-              {
-                return;
-              }
-              // ok - update our painter
-              getChart().getCanvas().updateMe();
+              final Layer thisL = iter.next();
+              // and update the screen
+              _myLayers.fireReformatted(thisL);
+
             }
-          });
+          }
         }
 
+        return res;
+
       }
-      finally
+    };
+
+    // do we have some time preferences?
+    if (_timePreferences != null)
+    {
+      final HiResDate startDTG = _timePreferences.getSliderStartTime();
+      final HiResDate endDTG = _timePreferences.getSliderEndTime();
+      // and were there any times in it?
+      if ((startDTG != null) && (endDTG != null))
       {
-        _updatingPlot = false;
+        // yup, store the time data.
+        _myOperations
+            .setPeriod(new TimePeriod.BaseTimePeriod(startDTG, endDTG));
       }
     }
 
+    // introduce our new item listener that looks after relative TMA segments being dropped into the
+    // layers object
+    _myLayers.addDataExtendedListener(new Layers.DataListener2()
+    {
+
+      @Override
+      public void dataExtended(final Layers theData)
+      {
+      }
+
+      @Override
+      public void dataExtended(final Layers theData, final Plottable newItem,
+          final HasEditables parent)
+      {
+        reconnectSegments(newItem, parent);
+      }
+
+      @Override
+      public void dataModified(final Layers theData, final Layer changedLayer)
+      {
+      }
+
+      @Override
+      public void
+          dataReformatted(final Layers theData, final Layer changedLayer)
+      {
+      }
+    });
+  }
+
+  private void applyRainbowShadingTo(final SensorWrapper thisS)
+  {
+    SensorWrapper theSensor = null;
+
+    // are they items we're interested in?
+    HiResDate startDTG = new HiResDate(Long.MAX_VALUE / 1000, 0);
+    HiResDate endDTG = new HiResDate(0);
+    final Enumeration<Editable> elements = thisS.elements();
+    final ArrayList<Editable> sensors = new ArrayList<Editable>();
+    final ArrayList<SensorContactWrapper> list =
+        new ArrayList<SensorContactWrapper>();
+    while (elements.hasMoreElements())
+    {
+      sensors.add(elements.nextElement());
+    }
+    for (final Editable thisE : sensors)
+    {
+      if (thisE instanceof SensorWrapper)
+      {
+        // just check that there's only one item selected
+        if (sensors.size() == 1)
+        {
+          theSensor = (SensorWrapper) thisE;
+        }
+      }
+      else if (thisE instanceof SensorContactWrapper)
+      {
+        list.add((SensorContactWrapper) thisE);
+        if (startDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) > 0)
+        {
+          startDTG = ((SensorContactWrapper) thisE).getDTG();
+        }
+        if (endDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) < 0)
+        {
+          endDTG = ((SensorContactWrapper) thisE).getDTG();
+        }
+      }
+    }
+
+    // ok, do we have a single sensor?
+    if (theSensor != null)
+    {
+      startDTG = theSensor.getStartDTG();
+      endDTG = theSensor.getEndDTG();
+      final Collection<Editable> editables =
+          theSensor.getItemsBetween(theSensor.getStartDTG(), theSensor
+              .getEndDTG());
+      for (final Editable editable : editables)
+      {
+        if (editable instanceof SensorContactWrapper)
+        {
+          list.add((SensorContactWrapper) editable);
+        }
+      }
+    }
+    final HiResDate start = startDTG;
+    final HiResDate end = endDTG;
+    // create this operation
+    final String title1 = "Shade in rainbow colors";
+    Layer parentLayer = null;
+
+    final Layers parentLayers = _myLayers;
+    if (parentLayers != null)
+    {
+      if (parentLayers.size() == 1)
+      {
+        parentLayer = parentLayers.elementAt(0);
+      }
+    }
+
+    final IUndoableOperation theAction =
+        new ShadeCutsOperation(title1, parentLayers, parentLayer, list
+            .toArray(new SensorContactWrapper[0]), start, end,
+            ShadeOperation.RAINBOW_SHADE);
+    CorePlugin.run(theAction);
+  }
+
+  private boolean areWeWaitingForRange(final SensorWrapper thisS)
+  {
+    boolean needsRange = false;
+    final Enumeration<Editable> cuts = thisS.elements();
+    if (cuts.hasMoreElements())
+    {
+      final Editable firstCut = cuts.nextElement();
+      final SensorContactWrapper scw = (SensorContactWrapper) firstCut;
+      // do we have bearing?
+      if (scw.getHasBearing())
+      {
+        // yes. now are we waiting for a range?
+        if (scw.getRange() == null)
+        {
+          needsRange = true;
+        }
+      }
+    }
+    return needsRange;
+  }
+
+  private void chooseHostFor(final SensorWrapper sensor,
+      final List<TrackWrapper> candidateHosts)
+  {
+    // ok, construct the popup
+    final Object[] tArr = candidateHosts.toArray();
+
+    // popup the layers in a question dialog
+    final IStructuredContentProvider theVals = new ArrayContentProvider();
+    final ILabelProvider theLabels = new LabelProvider();
+
+    // collate the dialog
+    final ListDialog list =
+        new ListDialog(Display.getCurrent().getActiveShell());
+    list.setContentProvider(theVals);
+    list.setLabelProvider(theLabels);
+    list.setInput(tArr);
+    list.setMessage("Please select the track for sensor titled \""
+        + sensor.getName() + "\"\n(or Cancel to not store it)");
+    list.setTitle("Sensor track not found");
+    list.setHelpAvailable(false);
+
+    // select the first item, so it's valid to press OK immediately
+    list.setInitialSelections(new Object[]
+    {tArr[0]});
+
+    // open it
+    final int selection = list.open();
+
+    // did user say yes?
+    if (selection != Window.CANCEL)
+    {
+      // yup, store it's name
+      final Object[] val = list.getResult();
+
+      // check something got selected
+      if (val.length == 1)
+      {
+        final TrackWrapper selected = (TrackWrapper) val[0];
+        sensor.setHost(selected);
+      }
+    }
   }
 
   /**
@@ -1336,197 +735,70 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
    */
   protected PlotOutlinePage createOutlinePage()
   {
-    PlotOutlinePage page = new PlotOutlinePage(this, _myLayers);
+    final PlotOutlinePage page = new PlotOutlinePage(this, _myLayers);
     return page;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Create the refresh job for the receiver.
    * 
-   * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
    */
-  @SuppressWarnings("rawtypes")
-  public Object getAdapter(final Class adapter)
+  private void createRefreshJob()
   {
-    Object res = null;
-
-    if (adapter == Layers.class)
-    {
-      if (_myLayers != null)
-        res = _myLayers;
-    }
-    else if (adapter == TrackManager.class)
-    {
-      res = _trackDataProvider;
-    }
-    else if (adapter == TrackDataProvider.class)
-    {
-      res = _trackDataProvider;
-    }
-    else if (adapter == PlainProjection.class)
-    {
-      res = super.getChart().getCanvas().getProjection();
-    }
-    else if (adapter == TimeControllerOperationStore.class)
-    {
-      res = getTimeControllerOperations();
-    }
-    else if (adapter == LayerPainterManager.class)
-    {
-      res = _layerPainterManager;
-    }
-    else if (adapter == ControllablePeriod.class)
-    {
-      res = _myOperations;
-    }
-    else if (adapter == TimeControlPreferences.class)
-    {
-      res = _timePreferences;
-    }
-    else if (adapter == ControllableTime.class)
-    {
-      res = _timeManager;
-    }
-    else if (adapter == TimeProvider.class)
-    {
-      res = _timeManager;
-    }
-    else if (adapter == IGotoMarker.class)
-    {
-      return new IGotoMarker()
-      {
-        public void gotoMarker(final IMarker marker)
-        {
-          final String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
-          if (lineNum != "na")
+    // Creates a workbench job that will update the UI. But, it can be
+    // cancelled and re-scheduled
+    // may override.
+    _refreshJob = new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
+          @Override
+          public IStatus runInUIThread(final IProgressMonitor monitor)
           {
-            // right, convert to DTG
-            final HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
-            _timeManager.setTime(this, tNow, true);
-          }
-        }
-
-      };
-    }
-
-    else if (adapter == IRollingNarrativeProvider.class)
-    {
-      // so, do we have any narrative data?
-      final Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
-
-      if (narr != null)
-      {
-        // did we find it?
-        // cool, cast to object
-        final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
-
-        res = wrapper;
-      }
-    }
-    else if (adapter == RelativeProjectionParent.class)
-    {
-      if (_myRelativeWrapper == null)
-      {
-        _myRelativeWrapper = new RelativeProjectionParent()
-        {
-
-          public double getHeading()
-          {
-            double res1 = 0.0;
-            final Watchable thePos =
-                getFirstPosition(_trackDataProvider, _timeManager);
-
-            if (thePos != null)
+            Display.getDefault().asyncExec(new Runnable()
             {
-              // yup, get the centre point
-              res1 = thePos.getCourse();
-            }
+              @Override
+              public void run()
+              {
+                // inform our parent
+                PlotEditor.super.layersExtended();
 
-            return res1;
-          }
+                // we should also recalculate the time period we cover
+                final TimePeriod timePeriod = getPeriodFor(_myLayers);
 
-          public WorldLocation getLocation()
-          {
-            MWC.GenericData.WorldLocation res1 = null;
-            final Watchable thePos =
-                getFirstPosition(_trackDataProvider, _timeManager);
+                // and share the good news.
+                _timeManager.setPeriod(this, timePeriod);
 
-            if (thePos != null)
-            {
-              // yup, get the centre point
-              res1 = thePos.getBounds().getCentre();
-            }
-            return res1;
-          }
-
-          private Watchable getFirstPosition(final TrackDataProvider provider,
-              final TimeManager manager)
-          {
-            Watchable res = null;
-
-            // do we have a primary?
-            final WatchableList priTrack = provider.getPrimaryTrack();
-            if (priTrack == null)
-            {
-              CorePlugin.logError(Status.ERROR,
-                  "Can't do relative projection without primary track", null);
-            }
-            else
-            {
-              final Watchable[] list = priTrack.getNearestTo(manager.getTime());
-              if (list != null)
-                if (list.length > 0)
-                  res = list[0];
-            }
-
-            return res;
+                // and tell the track data manager that something's happened. One of
+                // it's
+                // tracks may have been
+                // deleted!
+                _trackDataProvider.fireTracksChanged();
+              }
+            });
+            return Status.OK_STATUS;
           }
         };
-      }
-      res = _myRelativeWrapper;
-    }
-    else if (IContentOutlinePage.class.equals(adapter))
-    {
-      // lazy instantiation of outline page
-      if (_outlinePage == null)
-        _outlinePage = createOutlinePage();
 
-      res = _outlinePage;
-    }
-    else if (IPropertySheetPage.class.equals(adapter))
-    {
-      if (_propertySheetPage == null)
-      {
-        _propertySheetPage = new PlotPropertySheetPage(this);
-      }
-      res = _propertySheetPage;
-    }
-
-    // did we find anything?
-    if (res == null)
-    {
-      // nope, see if the parent can find anything
-      res = super.getAdapter(adapter);
-    }
-
-    // ok, done
-    return res;
-  }
-
-  private
-      org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore
-      getTimeControllerOperations()
-  {
-    return _timeControllerOperations;
+    _refreshJob.setSystem(true);
   }
 
   /**
    * @param parent
    */
+  @Override
   protected SWTChart createTheChart(final Composite parent)
   {
     final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
     {
+
+      /**
+			 * 
+			 */
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void chartFireSelectionChanged(final ISelection sel)
+      {
+        fireSelectionChanged(sel);
+      }
 
       @Override
       public SWTCanvas createCanvas(final Composite parent1,
@@ -1540,11 +812,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					 */
           private static final long serialVersionUID = 1L;
 
-          public void parentFireSelectionChanged(final ISelection selected)
-          {
-            chartFireSelectionChanged(selected);
-          }
-
+          @Override
           public void doSupplementalRightClickProcessing(
               final MenuManager menuManager, final Plottable selected,
               final Layer theParentLayer)
@@ -1561,23 +829,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               {theParentLayer}, getLayers(), true);
             }
           }
+
+          @Override
+          public void parentFireSelectionChanged(final ISelection selected)
+          {
+            chartFireSelectionChanged(selected);
+          }
         };
       }
-
-      public void chartFireSelectionChanged(final ISelection sel)
-      {
-        fireSelectionChanged(sel);
-      }
-
-      /**
-			 * 
-			 */
-      private static final long serialVersionUID = 1L;
 
       /**
        * @param thisLayer
        * @param dest
        */
+      @Override
       protected void
           paintThisLayer(final Layer thisLayer, final CanvasType dest)
       {
@@ -1651,8 +916,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         }
         catch (final Exception e)
         {
-          CorePlugin
-              .logError(Status.ERROR, "Whilst repainting:" + thisLayer, e);
+          CorePlugin.logError(IStatus.ERROR, "Whilst repainting:" + thisLayer,
+              e);
         }
       }
 
@@ -1665,7 +930,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
 
         @Override
-        public void widgetDisposed(DisposeEvent e)
+        public void widgetDisposed(final DisposeEvent e)
         {
           control.removeTraverseListener(dragModeListener);
           control.removeDisposeListener(this);
@@ -1675,9 +940,51 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return res;
   }
 
+  private List<TrackWrapper> determineCandidateHosts()
+  {
+    final List<TrackWrapper> res = new ArrayList<TrackWrapper>();
+
+    final Enumeration<Editable> iter = _myLayers.elements();
+    while (iter.hasMoreElements())
+    {
+      final Editable editable = iter.nextElement();
+      if (editable instanceof TrackWrapper)
+      {
+        res.add((TrackWrapper) editable);
+      }
+    }
+
+    return res;
+  }
+
+  @Override
+  public void dispose()
+  {
+    super.dispose();
+
+    // stop listening to the time manager
+    _timeManager.removeListener(_timeListener,
+        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+    _timeManager = null;
+
+    if (_layerPainterManager != null)
+    {
+      _layerPainterManager.close();
+      _layerPainterManager = null;
+    }
+
+    if (_outlinePage != null)
+    {
+      _outlinePage.dispose();
+      _outlinePage = null;
+    }
+  }
+
   /**
    * @see org.eclipse.ui.IEditorPart#doSave(IProgressMonitor)
    */
+  @Override
   public void doSave(final IProgressMonitor monitor)
   {
     final IEditorInput input = getEditorInput();
@@ -1753,7 +1060,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
           // 1a. record the name of the tmp file in the log
           final String filePath = tmpFile.getAbsolutePath();
-          CorePlugin.logError(Status.INFO, "Created temp save file at:"
+          CorePlugin.logError(IStatus.INFO, "Created temp save file at:"
               + filePath, null);
 
           // 2. open the file as a stream
@@ -1766,11 +1073,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           tmpOS = null;
 
           // sort out the file size
-          CorePlugin.logError(Status.INFO, "Saved file size is:"
+          CorePlugin.logError(IStatus.INFO, "Saved file size is:"
               + tmpFile.length() / 1024 + " Kb", null);
 
           // 4. Check there's something in the temp file
           if (tmpFile.exists())
+          {
             if (tmpFile.length() == 0)
             {
               // save failed throw exception (to be collected shortly
@@ -1787,7 +1095,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               // sort out where we're saving to
               if (input instanceof IFileEditorInput)
               {
-                CorePlugin.logError(Status.INFO,
+                CorePlugin.logError(IStatus.INFO,
                     "Performing IFileEditorInput save", null);
 
                 final IFile file =
@@ -1806,10 +1114,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               }
               else if (input instanceof FileRevisionEditorInput)
               {
-                CorePlugin.logError(Status.INFO,
+                CorePlugin.logError(IStatus.INFO,
                     "Performing FileRevisionEditorInput save", null);
 
-                FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+                final FileRevisionEditorInput frei =
+                    (FileRevisionEditorInput) input;
                 final IFile file = getFile(frei);
 
                 InputStream source = null;
@@ -1817,7 +1126,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 {
                   source = new FileInputStream(tmpFile);
                   file.setContents(source, true, true, monitor);
-                  FileEditorInput newInput = new FileEditorInput(file);
+                  final FileEditorInput newInput = new FileEditorInput(file);
                   setInputWithNotify(newInput);
                 }
                 finally
@@ -1828,7 +1137,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               else if (input instanceof FileStoreEditorInput)
               {
 
-                CorePlugin.logError(Status.INFO,
+                CorePlugin.logError(IStatus.INFO,
                     "Performing FileStoreEditorInput save", null);
 
                 // get the data-file
@@ -1855,32 +1164,35 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 }
               }
             }
+          }
         }
         catch (final CoreException e)
         {
-          CorePlugin.logError(Status.ERROR,
+          CorePlugin.logError(IStatus.ERROR,
               "Failed whilst saving external file", e);
         }
         catch (final FileNotFoundException e)
         {
-          CorePlugin.logError(Status.ERROR,
+          CorePlugin.logError(IStatus.ERROR,
               "Failed to find local file to save to", e);
         }
         catch (final Exception e)
         {
-          CorePlugin.logError(Status.ERROR, "Unknown file-save error occurred",
-              e);
+          CorePlugin.logError(IStatus.ERROR,
+              "Unknown file-save error occurred", e);
         }
         finally
         {
           try
           {
             if (tmpOS != null)
+            {
               tmpOS.close();
+            }
           }
           catch (final IOException e)
           {
-            CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
+            CorePlugin.logError(IStatus.ERROR, "Whilst performing save", e);
           }
           ResourcesPlugin.getWorkspace().addResourceChangeListener(
               resourceChangeListener,
@@ -1891,78 +1203,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
   }
 
-  /**
-   * save our plot to the indicated location
-   * 
-   * @param destination
-   *          where to save plot to
-   * @param monitor
-   *          somebody/something to be informed about progress
-   */
-  private void doSaveTo(final OutputStream os, final IProgressMonitor monitor)
-  {
-    if (os != null)
-    {
-
-      final IProduct prod = Platform.getProduct();
-      final Bundle bund = prod.getDefiningBundle();
-      final String version = "" + new Date(bund.getLastModified());
-
-      try
-      {
-        // ok, now write to the file
-        DebriefEclipseXMLReaderWriter.exportThis(this, os, version);
-
-        // ok, lastly indicate that the save worked (if it did!)
-        _plotIsDirty = false;
-        firePropertyChange(PROP_DIRTY);
-      }
-      catch (final Exception e)
-      {
-        DebriefPlugin.logError(Status.ERROR, "Error exporting plot file", e);
-      }
-
-    }
-    else
-    {
-      DebriefPlugin.logError(Status.ERROR,
-          "Unable to identify source file for plot", null);
-    }
-
-  }
-
+  @Override
   public void doSaveAs()
   {
     doSaveAs("Save as");
-  }
-
-  /**
-   * utility function to extact the root part of this filename
-   * 
-   * @param fileName
-   *          full file path
-   * @return root of file name (before the . marker)
-   */
-  private String fileNamePartOf(final String fileName)
-  {
-    if (fileName == null)
-    {
-      throw new IllegalArgumentException("file name == null");
-    }
-
-    // ok, extract the parent portion
-    final File wholeFile = new File(fileName);
-    final String parentSection = wholeFile.getParent();
-    final int parentLen = parentSection.length() + 1;
-    final int fileLen = fileName.length();
-    final String fileSection = fileName.substring(parentLen, fileLen);
-
-    final int pos = fileSection.lastIndexOf('.');
-    if (pos > 0 && pos < fileSection.length() - 1)
-    {
-      return fileSection.substring(0, pos);
-    }
-    return "";
   }
 
   public void doSaveAs(final String message)
@@ -1992,6 +1236,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
       Display.getCurrent().asyncExec(new Runnable()
       {
+        @Override
         public void run()
         {
           final OpenCheatSheetAction action =
@@ -2034,9 +1279,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     dialog.create();
     if (message != null)
+    {
       dialog.setMessage(message, IMessageProvider.WARNING);
+    }
     else
+    {
       dialog.setMessage("Save file to another location.");
+    }
     dialog.open();
     final IPath path = dialog.getResult();
 
@@ -2048,6 +1297,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
       if (!file.exists())
+      {
         try
         {
           System.out.println("creating:" + file.getName());
@@ -2060,6 +1310,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               "Failed trying to create new file for save-as", e);
           return;
         }
+      }
 
       OutputStream os = null;
       try
@@ -2076,10 +1327,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         final IFile iff = newInput.getFile();
         iff.refreshLocal(IResource.DEPTH_ONE, null);
         // refresh navigator
-        IWorkbenchPage page =
+        final IWorkbenchPage page =
             PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                 .getActivePage();
-        IViewPart view =
+        final IViewPart view =
             page.findView("org.eclipse.ui.views.ResourceNavigator");
         if (view instanceof ResourceNavigator)
         {
@@ -2088,12 +1339,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
       catch (final FileNotFoundException e)
       {
-        CorePlugin
-            .logError(Status.ERROR, "Failed whilst performing Save As", e);
+        CorePlugin.logError(IStatus.ERROR, "Failed whilst performing Save As",
+            e);
       }
       catch (final CoreException e)
       {
-        CorePlugin.logError(Status.ERROR,
+        CorePlugin.logError(IStatus.ERROR,
             "Refresh failed after saving new file", e);
       }
       finally
@@ -2102,11 +1353,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         try
         {
           if (os != null)
+          {
             os.close();
+          }
         }
         catch (final IOException e)
         {
-          CorePlugin.logError(Status.ERROR, "Whilst performaing save-as", e);
+          CorePlugin.logError(IStatus.ERROR, "Whilst performaing save-as", e);
         }
 
       }
@@ -2118,43 +1371,436 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   }
 
   /**
-   * Create the refresh job for the receiver.
+   * save our plot to the indicated location
    * 
+   * @param destination
+   *          where to save plot to
+   * @param monitor
+   *          somebody/something to be informed about progress
    */
-  private void createRefreshJob()
+  private void doSaveTo(final OutputStream os, final IProgressMonitor monitor)
   {
-    // Creates a workbench job that will update the UI. But, it can be
-    // cancelled and re-scheduled
-    // may override.
-    _refreshJob = new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
-          public IStatus runInUIThread(IProgressMonitor monitor)
+    if (os != null)
+    {
+
+      final IProduct prod = Platform.getProduct();
+      final Bundle bund = prod.getDefiningBundle();
+      final String version = "" + new Date(bund.getLastModified());
+
+      try
+      {
+        // ok, now write to the file
+        DebriefEclipseXMLReaderWriter.exportThis(this, os, version);
+
+        // ok, lastly indicate that the save worked (if it did!)
+        _plotIsDirty = false;
+        firePropertyChange(PROP_DIRTY);
+      }
+      catch (final Exception e)
+      {
+        DebriefPlugin.logError(IStatus.ERROR, "Error exporting plot file", e);
+      }
+
+    }
+    else
+    {
+      DebriefPlugin.logError(IStatus.ERROR,
+          "Unable to identify source file for plot", null);
+    }
+
+  }
+
+  /**
+   * utility function to extact the root part of this filename
+   * 
+   * @param fileName
+   *          full file path
+   * @return root of file name (before the . marker)
+   */
+  private String fileNamePartOf(final String fileName)
+  {
+    if (fileName == null)
+    {
+      throw new IllegalArgumentException("file name == null");
+    }
+
+    // ok, extract the parent portion
+    final File wholeFile = new File(fileName);
+    final String parentSection = wholeFile.getParent();
+    final int parentLen = parentSection.length() + 1;
+    final int fileLen = fileName.length();
+    final String fileSection = fileName.substring(parentLen, fileLen);
+
+    final int pos = fileSection.lastIndexOf('.');
+    if (pos > 0 && pos < fileSection.length() - 1)
+    {
+      return fileSection.substring(0, pos);
+    }
+    return "";
+  }
+
+  @Override
+  protected void filesDropped(final String[] fileNames)
+  {
+    super.filesDropped(fileNames);
+
+    // ok, iterate through the files
+    for (int i = 0; i < fileNames.length; i++)
+    {
+      final String thisFilename = fileNames[i];
+      loadThisFile(thisFilename);
+    }
+
+    // ok, we're probably done - fire the update
+    this._myLayers.fireExtended();
+
+    // and resize to make sure we're showing all the data
+    this._myChart.rescale();
+
+    // hmm, we may have loaded more track data - but we don't track
+    // loading of individual tracks - just fire a "modified" flag
+    _trackDataProvider.fireTracksChanged();
+
+  }
+
+  public String getAbsoluteName(final IFile iff) throws CoreException
+  {
+    String name;
+    URI uri = iff.getLocationURI();
+    if (iff.isLinked())
+    {
+      uri = iff.getRawLocationURI();
+    }
+    final File javaFile =
+        EFS.getStore(uri).toLocalFile(0, new NullProgressMonitor());
+    name = javaFile.getAbsolutePath();
+    return name;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
+   */
+  @Override
+  @SuppressWarnings("rawtypes")
+  public Object getAdapter(final Class adapter)
+  {
+    Object res = null;
+
+    if (adapter == Layers.class)
+    {
+      if (_myLayers != null)
+      {
+        res = _myLayers;
+      }
+    }
+    else if (adapter == TrackManager.class)
+    {
+      res = _trackDataProvider;
+    }
+    else if (adapter == TrackDataProvider.class)
+    {
+      res = _trackDataProvider;
+    }
+    else if (adapter == PlainProjection.class)
+    {
+      res = super.getChart().getCanvas().getProjection();
+    }
+    else if (adapter == TimeControllerOperationStore.class)
+    {
+      res = getTimeControllerOperations();
+    }
+    else if (adapter == LayerPainterManager.class)
+    {
+      res = _layerPainterManager;
+    }
+    else if (adapter == ControllablePeriod.class)
+    {
+      res = _myOperations;
+    }
+    else if (adapter == TimeControlPreferences.class)
+    {
+      res = _timePreferences;
+    }
+    else if (adapter == ControllableTime.class)
+    {
+      res = _timeManager;
+    }
+    else if (adapter == TimeProvider.class)
+    {
+      res = _timeManager;
+    }
+    else if (adapter == IGotoMarker.class)
+    {
+      return new IGotoMarker()
+      {
+        @Override
+        public void gotoMarker(final IMarker marker)
+        {
+          final String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
+          if (lineNum != "na")
           {
-            Display.getDefault().asyncExec(new Runnable()
+            // right, convert to DTG
+            final HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
+            _timeManager.setTime(this, tNow, true);
+          }
+        }
+
+      };
+    }
+
+    else if (adapter == IRollingNarrativeProvider.class)
+    {
+      // so, do we have any narrative data?
+      final Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+
+      if (narr != null)
+      {
+        // did we find it?
+        // cool, cast to object
+        final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
+
+        res = wrapper;
+      }
+    }
+    else if (adapter == RelativeProjectionParent.class)
+    {
+      if (_myRelativeWrapper == null)
+      {
+        _myRelativeWrapper = new RelativeProjectionParent()
+        {
+
+          private Watchable getFirstPosition(final TrackDataProvider provider,
+              final TimeManager manager)
+          {
+            Watchable res = null;
+
+            // do we have a primary?
+            final WatchableList priTrack = provider.getPrimaryTrack();
+            if (priTrack == null)
             {
-              @Override
-              public void run()
+              CorePlugin.logError(IStatus.ERROR,
+                  "Can't do relative projection without primary track", null);
+            }
+            else
+            {
+              final Watchable[] list = priTrack.getNearestTo(manager.getTime());
+              if (list != null)
               {
-                // inform our parent
-                PlotEditor.super.layersExtended();
-
-                // we should also recalculate the time period we cover
-                final TimePeriod timePeriod = getPeriodFor(_myLayers);
-
-                // and share the good news.
-                _timeManager.setPeriod(this, timePeriod);
-
-                // and tell the track data manager that something's happened. One of
-                // it's
-                // tracks may have been
-                // deleted!
-                _trackDataProvider.fireTracksChanged();
+                if (list.length > 0)
+                {
+                  res = list[0];
+                }
               }
-            });
-            return Status.OK_STATUS;
+            }
+
+            return res;
+          }
+
+          @Override
+          public double getHeading()
+          {
+            double res1 = 0.0;
+            final Watchable thePos =
+                getFirstPosition(_trackDataProvider, _timeManager);
+
+            if (thePos != null)
+            {
+              // yup, get the centre point
+              res1 = thePos.getCourse();
+            }
+
+            return res1;
+          }
+
+          @Override
+          public WorldLocation getLocation()
+          {
+            MWC.GenericData.WorldLocation res1 = null;
+            final Watchable thePos =
+                getFirstPosition(_trackDataProvider, _timeManager);
+
+            if (thePos != null)
+            {
+              // yup, get the centre point
+              res1 = thePos.getBounds().getCentre();
+            }
+            return res1;
           }
         };
+      }
+      res = _myRelativeWrapper;
+    }
+    else if (IContentOutlinePage.class.equals(adapter))
+    {
+      // lazy instantiation of outline page
+      if (_outlinePage == null)
+      {
+        _outlinePage = createOutlinePage();
+      }
 
-    _refreshJob.setSystem(true);
+      res = _outlinePage;
+    }
+    else if (IPropertySheetPage.class.equals(adapter))
+    {
+      if (_propertySheetPage == null)
+      {
+        _propertySheetPage = new PlotPropertySheetPage(this);
+      }
+      res = _propertySheetPage;
+    }
+
+    // did we find anything?
+    if (res == null)
+    {
+      // nope, see if the parent can find anything
+      res = super.getAdapter(adapter);
+    }
+
+    // ok, done
+    return res;
+  }
+
+  private IFile getFile(final FileRevisionEditorInput frei)
+  {
+    IFile file = null;
+    final IFileRevision revision = frei.getFileRevision();
+    if (revision instanceof LocalFileRevision)
+    {
+      final LocalFileRevision localFileRevision = (LocalFileRevision) revision;
+      if (localFileRevision.getFile() != null)
+      {
+        file = localFileRevision.getFile();
+      }
+      else
+      {
+        final IFileState state = localFileRevision.getState();
+        final IPath path = state.getFullPath();
+        file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+      }
+    }
+    return file;
+  }
+
+  private SensorImportHelper getSensorImportHelperFor(final String sensorName,
+      final Color sensorColor, final String introString,
+      final boolean needsRange)
+  {
+    // ok, check the property
+    final String showImportWizard =
+        CorePlugin.getToolParent().getProperty(
+            PrefsPage.PreferenceConstants.USE_IMPORT_SENSOR_WIZARD);
+
+    // create the relevant helper
+    final SensorImportHelper helper;
+    if (Boolean.parseBoolean(showImportWizard))
+    {
+      helper =
+          new SensorImportHelper.SensorImportHelperUI(sensorName, sensorColor,
+              introString, needsRange);
+    }
+    else
+    {
+      helper = new SensorImportHelper.SensorImportHelperHeadless(sensorName);
+    }
+
+    return helper;
+  }
+
+  private
+      org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore
+      getTimeControllerOperations()
+  {
+    return _timeControllerOperations;
+  }
+
+  @Override
+  public void init(final IEditorSite site, final IEditorInput input)
+      throws PartInitException
+  {
+    setSite(site);
+    setInputWithNotify(input);
+
+    // ok - declare and load the supplemental plugins which can load
+    // datafiles
+    initialiseFileLoaders();
+
+    // and start the load
+    loadThisFile(input);
+
+    // lastly, set the title (if we have one)
+    this.setPartName(input.getName());
+
+    // hmm, does this input have an icon?
+    final ImageDescriptor icon = input.getImageDescriptor();
+    if (icon != null)
+    {
+      this.setTitleImage(icon.createImage());
+    }
+
+    // ok, also sort out that refresh job
+    createRefreshJob();
+  }
+
+  /**
+	 * 
+	 */
+  private void initialiseFileLoaders()
+  {
+    // hey - sort out our plot readers
+    _loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
+    {
+
+      @Override
+      public INamedItem createInstance(
+          final IConfigurationElement configElement, final String label)
+      {
+        // get the attributes
+        final String theLabel =
+            configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+        final String icon =
+            configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
+        final String fileTypes =
+            configElement.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
+        final String firstLine =
+            configElement.getAttribute(EXTENSION_TAG_FIRST_LINE_ATTRIB);
+
+        // create the instance
+        final INamedItem res =
+            new IPlotLoader.DeferredPlotLoader(configElement, theLabel, icon,
+                fileTypes, firstLine);
+
+        // and return it.
+        return res;
+      }
+
+    };
+  }
+
+  @Override
+  public boolean isSaveAsAllowed()
+  {
+    return true;
+  }
+
+  private boolean isThisSensorAlreadyPresent(final SensorWrapper thisS)
+  {
+    boolean alreadyLoaded = false;
+    final TrackWrapper trk = thisS.getHost();
+    if (trk != null)
+    {
+      final Enumeration<Editable> enumer = trk.getSensors().elements();
+      while (enumer.hasMoreElements())
+      {
+        final SensorWrapper oldS = (SensorWrapper) enumer.nextElement();
+        if (oldS.getName().equals(thisS.getName()))
+        {
+          alreadyLoaded = true;
+        }
+      }
+    }
+    return alreadyLoaded;
   }
 
   /**
@@ -2174,42 +1820,330 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     _refreshJob.schedule(200);
   }
 
-  public boolean isSaveAsAllowed()
+  /**
+   * method called when a helper object has completed a plot-load operation
+   * 
+   * @param source
+   */
+  public void loadingComplete(final Object source)
   {
-    return true;
+
+    // ok, stop listening for dirty calls - since there will be so many and
+    // we
+    // don't want
+    // to start off with a dirty plot
+    startIgnoringDirtyCalls();
+
+    DebriefPlugin
+        .logError(IStatus.INFO, "File loading complete received", null);
+
+    // and update the time management bits
+    final TimePeriod timePeriod = getPeriodFor(_myLayers);
+
+    if (timePeriod != null)
+    {
+      _timeManager.setPeriod(this, timePeriod);
+
+      // also give it a current DTG (if it doesn't have one)
+      if (_timeManager.getTime() == null)
+      {
+        _timeManager.setTime(this, timePeriod.getStartDTG(), false);
+      }
+    }
+
+    // done - now we can process dirty calls again
+    stopIgnoringDirtyCalls();
+
+  }
+
+  /**
+   * @param input
+   *          the file to insert
+   */
+  private void loadThisFile(final IEditorInput input)
+  {
+    InputStream is = null;
+    if (!input.exists())
+    {
+      CorePlugin.logError(IStatus.ERROR, "File cannot be found:"
+          + input.getName(), null);
+      return;
+    }
+    String name = input.getName();
+    try
+    {
+      final IPersistableElement persist = input.getPersistable();
+      if (input instanceof IFileEditorInput)
+      {
+        final IFileEditorInput ife = (IFileEditorInput) input;
+        final IFile iff = ife.getFile();
+        iff.refreshLocal(IResource.DEPTH_ONE, null);
+        is = iff.getContents();
+        name = getAbsoluteName(iff);
+      }
+      else if (persist instanceof IFileEditorInput)
+      {
+        final IFileEditorInput ifi = (IFileEditorInput) persist;
+        final IFile iff = ifi.getFile();
+        is = iff.getContents();
+        name = getAbsoluteName(iff);
+      }
+      else if (input instanceof FileStoreEditorInput)
+      {
+        final FileStoreEditorInput _input = (FileStoreEditorInput) input;
+        final URI _uri = _input.getURI();
+        final Path _p = new Path(_uri.getPath());
+        name = _uri.getPath();
+        final IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
+        is = _ifs.openInputStream(EFS.NONE, null);
+      }
+      else if (input instanceof FileRevisionEditorInput)
+      {
+        final FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
+        final IFile file = getFile(frei);
+        if (file != null && file.exists())
+        {
+          name = getAbsoluteName(file);
+          is = frei.getStorage().getContents();
+        }
+      }
+      if (is != null)
+      {
+        loadThisStream(is, name);
+      }
+      else
+      {
+        CorePlugin.logError(IStatus.INFO, "Failed to load file from:" + input,
+            null);
+      }
+
+    }
+    catch (final CoreException e)
+    {
+      CorePlugin.logError(IStatus.ERROR, "Resource out of sync:"
+          + input.getName() + " REFRESH the workspace", null);
+      MessageDialog
+          .openError(
+              Display.getDefault().getActiveShell(),
+              "File out of sync",
+              "This file has been edited or removed:"
+                  + input.getName()
+                  + "\nPlease right-click on your navigator project and press Refresh");
+    }
+  }
+
+  /**
+   * @param input
+   *          the file to insert
+   */
+  private void loadThisFile(final String filePath)
+  {
+    FileInputStream ifs = null;
+    try
+    {
+      ifs = new FileInputStream(filePath);
+      loadThisStream(ifs, filePath);
+    }
+    catch (final FileNotFoundException e)
+    {
+      CorePlugin.logError(IStatus.ERROR, "Problem loading data file:"
+          + filePath, e);
+    }
+    finally
+    {
+      if (ifs != null)
+      {
+        try
+        {
+          ifs.close();
+        }
+        catch (final IOException e)
+        {
+          CorePlugin.logError(IStatus.ERROR, "Problem closing input stream:"
+              + filePath, e);
+        }
+      }
+    }
+  }
+
+  private void loadThisStream(final InputStream is, final String fileName)
+  {
+    // right, see if any of them will do our edit
+    final IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
+    // did we find any?
+    if (loaders.length > 0)
+    {
+      // cool, give them a go...
+      try
+      {
+        for (int i = 0; i < loaders.length; i++)
+        {
+          final IPlotLoader thisLoader = loaders[i];
+
+          // get it to load. Just in case it's an asychronous load
+          // operation, we
+          // rely on it calling us back (loadingComplete)
+          thisLoader.loadFile(this, is, fileName);
+
+          // special handling - popup a dialog to allow sensor name/color to be
+          // set if there's just one sensor
+          if (thisLoader instanceof DeferredPlotLoader)
+          {
+            final DeferredPlotLoader ld = (DeferredPlotLoader) thisLoader;
+            final BaseLoader loader = ld.getLoader();
+            if (loader != null)
+            {
+              if (loader instanceof ReplayLoader)
+              {
+                final ReplayLoader rl = (ReplayLoader) loader;
+                final ImportReplay ir = rl.getReplayLoader();
+                List<TrackWrapper> candidateHosts = null;
+
+                final Vector<SensorWrapper> sensors = ir.getPendingSensors();
+
+                // see if there are any sensors awaiting a host
+                if (sensors.size() >= 1)
+                {
+                  final Iterator<SensorWrapper> sIter = sensors.iterator();
+                  while (sIter.hasNext())
+                  {
+                    final SensorWrapper sensor = sIter.next();
+                    if (sensor.getHost() == null)
+                    {
+                      // have we sorted out the hosts?
+                      if (candidateHosts == null)
+                      {
+                        candidateHosts = determineCandidateHosts();
+                      }
+
+                      if (candidateHosts.size() == 0)
+                      {
+                        CorePlugin.showMessage("Loading sensor data",
+                            "Sensor data can only be loaded after tracks");
+                        return;
+                      }
+
+                      // ok, let the user choose
+                      chooseHostFor(sensor, candidateHosts);
+                    }
+                  }
+                }
+                if (sensors.size() == 1)
+                {
+                  // generate a default sensor name
+                  String defaultName = new File(fileName).getName();
+                  if (defaultName.contains("."))
+                  {
+                    final int index = defaultName.lastIndexOf(".");
+                    defaultName = defaultName.substring(0, index);
+                  }
+
+                  // see if there are any sensors awaiting a color
+                  final SensorWrapper thisS = sensors.firstElement();
+                  final boolean success = nameThisSensor(thisS, defaultName);
+
+                  // does user wish to name/format sensor?
+                  if (!success)
+                  {
+                    // nope, cancel the import.
+                    ir.clearPendingSensorList();
+                  }
+                }
+
+                // ok, now we can store the pending sensors in their
+                // parent tracks
+                ir.storePendingSensors();
+              }
+            }
+          }
+        }
+      }
+      catch (final RuntimeException e)
+      {
+        CorePlugin.logError(IStatus.ERROR, "Problem loading data file:"
+            + fileName, e);
+      }
+    }
+  }
+
+  private boolean nameThisSensor(final SensorWrapper thisS,
+      final String defaultName)
+  {
+    // right, just have a quick look and see if the sensor has range data -
+    // because
+    // if it doesn't we'll let the user set a default
+    final boolean needsRange = areWeWaitingForRange(thisS);
+
+    // next, just see if this track already contains sensor
+    // data with this name
+    final boolean alreadyLoaded = isThisSensorAlreadyPresent(thisS);
+
+    // inform the user if this sensor name is already in use
+    final String introString;
+    if (alreadyLoaded)
+    {
+      introString =
+          "a one-word title for this block of sensor contacts (e.g. S2046)\n\n"
+              + "Note: [" + thisS.getName() + "] is already in use.";
+    }
+    else
+    {
+      introString =
+          "a one-word title for this block of sensor contacts (e.g. S2046)";
+    }
+
+    final String theName;
+    final String currentName = thisS.getName();
+    if (currentName != null && currentName.equalsIgnoreCase("UNKNOWN"))
+    {
+      theName = defaultName;
+    }
+    else
+    {
+      theName = currentName;
+    }
+
+    final SensorImportHelper importHelper =
+        getSensorImportHelperFor(theName, thisS.getColor(), introString,
+            needsRange);
+
+    // did it work?
+    if (importHelper.success())
+    {
+      // ok, use the name
+      thisS.setName(importHelper.getName());
+      thisS.setColor(importHelper.getColor());
+      thisS.setVisible(importHelper.getVisiblity());
+
+      // are we doing range?
+      if (needsRange)
+      {
+        final WorldDistance theRange = importHelper.getRange();
+
+        // did a range get entered?
+        if ((theRange != null) && (theRange.getValue() != 0))
+        {
+          final Enumeration<Editable> iter = thisS.elements();
+          while (iter.hasMoreElements())
+          {
+            final SensorContactWrapper cut =
+                (SensorContactWrapper) iter.nextElement();
+            cut.setRange(new WorldDistance(theRange));
+          }
+        }
+      }
+      if (importHelper.applyRainbow())
+      {
+        applyRainbowShadingTo(thisS);
+      }
+    }
+
+    return importHelper.success();
   }
 
   public void outlinePageClosed()
   {
     _outlinePage = null;
-  }
-
-  @Override
-  public void reload(final IFile file)
-  {
-    closeEditor(false);
-    Display.getDefault().asyncExec(new Runnable()
-    {
-
-      @Override
-      public void run()
-      {
-        IWorkbenchPage page = getSite().getPage();
-        IEditorDescriptor desc =
-            PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(
-                file.getName());
-        try
-        {
-          page.openEditor(new FileEditorInput(file), desc.getId());
-        }
-        catch (PartInitException e)
-        {
-          DebriefPlugin.logError(IStatus.ERROR, "Failed trying to open file: "
-              + file.getName(), e);
-        }
-      }
-    });
-
   }
 
   private void reconnectSegments(final Plottable newItem,
@@ -2218,21 +2152,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // ok, have a look at the pasted track
     if (parent != null && parent instanceof TrackWrapper && newItem == null)
     {
-      TrackWrapper tw = (TrackWrapper) parent;
+      final TrackWrapper tw = (TrackWrapper) parent;
       SegmentList segs = tw.getSegments();
       Enumeration<Editable> iter = segs.elements();
       boolean layersChanged = false;
 
       while (iter.hasMoreElements())
       {
-        Editable editable = (Editable) iter.nextElement();
+        final Editable editable = iter.nextElement();
 
         // RelativeTMASegment implements the correct interface
         // to let us do this common processing
         if (editable instanceof RelativeTMASegment)
         {
-          RelativeTMASegment needer = (RelativeTMASegment) editable;
-          boolean thisChanged = needer.getLayers() != _myLayers;
+          final RelativeTMASegment needer = (RelativeTMASegment) editable;
+          final boolean thisChanged = needer.getLayers() != _myLayers;
           if (thisChanged)
           {
             needer.setLayers(_myLayers);
@@ -2251,21 +2185,175 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
         while (iter.hasMoreElements())
         {
-          Editable editable = (Editable) iter.nextElement();
+          final Editable editable = iter.nextElement();
           if (editable instanceof DynamicInfillSegment)
           {
-            DynamicInfillSegment ds = (DynamicInfillSegment) editable;
+            final DynamicInfillSegment ds = (DynamicInfillSegment) editable;
 
             ds.clear();
 
             //
             @SuppressWarnings("unused")
-            boolean wasted = ds.getVisible();
+            final boolean wasted = ds.getVisible();
           }
         }
 
       }
 
     }
+  }
+
+  @Override
+  public void reload(final IFile file)
+  {
+    closeEditor(false);
+    Display.getDefault().asyncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        final IWorkbenchPage page = getSite().getPage();
+        final IEditorDescriptor desc =
+            PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(
+                file.getName());
+        try
+        {
+          page.openEditor(new FileEditorInput(file), desc.getId());
+        }
+        catch (final PartInitException e)
+        {
+          DebriefPlugin.logError(IStatus.ERROR, "Failed trying to open file: "
+              + file.getName(), e);
+        }
+      }
+    });
+
+  }
+
+  @Override
+  public void selectPlottable(final Plottable tgt, final Layer parentLayer)
+  {
+    // handle some special cases.
+    if (tgt instanceof FixWrapper)
+    {
+      CorePlugin.logError(IStatus.INFO,
+          "Double-click processed, fixing parent levels for:" + tgt, null);
+
+      // ok, we have to generate the correct object model
+      final FixWrapper fix = (FixWrapper) tgt;
+      final TrackSegment segment = fix.getSegment();
+      final TrackWrapper track = segment.getWrapper();
+      final SegmentList segList = track.getSegments();
+      final Layers layers = getChart().getLayers();
+      final ISelection selected =
+          wrapObjects(parentLayer, fix, segment, segList, layers);
+      fireSelectionChanged(selected);
+    }
+    else if (tgt instanceof SensorContactWrapper)
+    {
+      CorePlugin.logError(IStatus.INFO,
+          "Double-click processed, fixing parent levels for:" + tgt, null);
+
+      // ok, we have to generate the correct object model
+      final SensorContactWrapper cut = (SensorContactWrapper) tgt;
+      final SensorWrapper sensor = cut.getSensor();
+      final TrackWrapper track = sensor.getHost();
+      final BaseLayer sList = track.getSensors();
+      final Layers layers = getChart().getLayers();
+      final ISelection selected =
+          wrapObjects(parentLayer, cut, sensor, sList, layers);
+      fireSelectionChanged(selected);
+    }
+    else if (tgt instanceof TMAContactWrapper)
+    {
+      CorePlugin.logError(IStatus.INFO,
+          "Double-click processed, fixing parent levels for:" + tgt, null);
+
+      // ok, we have to generate the correct object model
+      final TMAContactWrapper cut = (TMAContactWrapper) tgt;
+      final TMAWrapper sensor = cut.getTMATrack();
+      final TrackWrapper track = sensor.getHost();
+      final BaseLayer sList = track.getSolutions();
+      final Layers layers = getChart().getLayers();
+      final ISelection selected =
+          wrapObjects(parentLayer, cut, sensor, sList, layers);
+      fireSelectionChanged(selected);
+    }
+    else
+    {
+      super.selectPlottable(tgt, parentLayer);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#timeChanged()
+   */
+  @Override
+  protected void timeChanged(final HiResDate newDTG)
+  {
+    super.timeChanged(newDTG);
+
+    // just check we're ready for plotting.
+    if (getChart() == null)
+    {
+      return;
+    }
+
+    if (_updatingPlot)
+    {
+      // skip the update - we're already at it
+    }
+    else
+    {
+      _updatingPlot = true;
+
+      try
+      {
+        // note, we've learn't to use the default display instead of the
+        // current one, we were get a null returned since this thread may not
+        // have a display
+        final Display myDis = Display.getDefault();
+        if (myDis != null)
+        {
+          myDis.asyncExec(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              if (getChart() == null || getChart().getCanvas() == null)
+              {
+                return;
+              }
+              // ok - update our painter
+              getChart().getCanvas().updateMe();
+            }
+          });
+        }
+
+      }
+      finally
+      {
+        _updatingPlot = false;
+      }
+    }
+
+  }
+
+  private ISelection
+      wrapObjects(final Layer track, final Editable item,
+          final Editable itemParent, final Editable parentList,
+          final Layers layers)
+  {
+    final EditableWrapper parentP = new EditableWrapper(track, null, layers);
+    final EditableWrapper segListW =
+        new EditableWrapper(parentList, parentP, layers);
+    final EditableWrapper segmentW =
+        new EditableWrapper(itemParent, segListW, layers);
+    final EditableWrapper fixW = new EditableWrapper(item, segmentW, layers);
+    final ISelection selected = new StructuredSelection(fixW);
+    return selected;
   }
 }
