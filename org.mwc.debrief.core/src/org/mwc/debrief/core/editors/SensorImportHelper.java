@@ -73,7 +73,7 @@ public interface SensorImportHelper
     private final WizardDialog dialog;
 
     public SensorImportHelperUI(final String sensorName,
-        final Color sensorColor, final String introString, boolean needsRange)
+        final Color sensorColor, final String introString, final boolean needsRange)
     {
       final String imagePath = "images/NameSensor.jpg";
       final String explain = "\nNote: you can prevent this wizard from opening using" +
