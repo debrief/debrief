@@ -760,9 +760,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 }
                 if (sensors.size() == 1)
                 {
+                  // generate a default sensor name
+                  String defaultName = new File(fileName).getName();
+                  if (defaultName.contains("."))
+                  {
+                    int index = defaultName.lastIndexOf(".");
+                    defaultName = defaultName.substring(0, index);
+                  }
+
                   // see if there are any sensors awaiting a color
                   final SensorWrapper thisS = sensors.firstElement();
-                  final boolean success = nameThisSensor(thisS);
+                  final boolean success = nameThisSensor(thisS, defaultName);
 
                   // does user wish to name/format sensor?
                   if (!success)
@@ -848,7 +856,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
   }
 
-  private boolean nameThisSensor(final SensorWrapper thisS)
+  private boolean nameThisSensor(final SensorWrapper thisS,
+      final String defaultName)
   {
     // right, just have a quick look and see if the sensor has range data -
     // because
@@ -873,9 +882,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           "a one-word title for this block of sensor contacts (e.g. S2046)";
     }
 
+    final String theName;
+    final String currentName = thisS.getName();
+    if (currentName != null && currentName.equalsIgnoreCase("UNKNOWN"))
+    {
+      theName = defaultName;
+    }
+    else
+    {
+      theName = currentName;
+    }
+
     SensorImportHelper importHelper =
-        getSensorImportHelperFor(thisS.getName(), thisS.getColor(),
-            introString, needsRange);
+        getSensorImportHelperFor(theName, thisS.getColor(), introString,
+            needsRange);
 
     // did it work?
     if (importHelper.success())
@@ -1233,7 +1253,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       CorePlugin.logError(Status.INFO,
           "Double-click processed, fixing parent levels for:" + tgt, null);
-      
+
       // ok, we have to generate the correct object model
       SensorContactWrapper cut = (SensorContactWrapper) tgt;
       SensorWrapper sensor = cut.getSensor();
@@ -1248,7 +1268,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       CorePlugin.logError(Status.INFO,
           "Double-click processed, fixing parent levels for:" + tgt, null);
-      
+
       // ok, we have to generate the correct object model
       TMAContactWrapper cut = (TMAContactWrapper) tgt;
       TMAWrapper sensor = cut.getTMATrack();
@@ -1268,10 +1288,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   private ISelection wrapObjects(Layer track, Editable item,
       Editable itemParent, Editable parentList, Layers layers)
   {
-    final EditableWrapper parentP =
-        new EditableWrapper(track, null, layers);
-    final EditableWrapper segListW = new EditableWrapper(parentList, parentP, layers);
-    final EditableWrapper segmentW = new EditableWrapper(itemParent, segListW, layers);
+    final EditableWrapper parentP = new EditableWrapper(track, null, layers);
+    final EditableWrapper segListW =
+        new EditableWrapper(parentList, parentP, layers);
+    final EditableWrapper segmentW =
+        new EditableWrapper(itemParent, segListW, layers);
     final EditableWrapper fixW = new EditableWrapper(item, segmentW, layers);
     final ISelection selected = new StructuredSelection(fixW);
     return selected;
