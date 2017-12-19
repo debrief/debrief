@@ -2,6 +2,7 @@ package org.mwc.debrief.core.editors;
 
 import java.awt.Color;
 
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
@@ -17,8 +18,8 @@ public interface SensorImportHelper
 
   public static class SensorImportHelperHeadless implements SensorImportHelper
   {
-    
-    private String _sensorName;
+
+    private final String _sensorName;
 
     public SensorImportHelperHeadless(final String sensorName)
     {
@@ -26,15 +27,9 @@ public interface SensorImportHelper
     }
 
     @Override
-    public boolean success()
+    public boolean applyRainbow()
     {
-      return true;
-    }
-
-    @Override
-    public String getName()
-    {
-      return _sensorName;
+      return false;
     }
 
     @Override
@@ -44,9 +39,9 @@ public interface SensorImportHelper
     }
 
     @Override
-    public boolean getVisiblity()
+    public String getName()
     {
-      return false;
+      return _sensorName;
     }
 
     @Override
@@ -56,9 +51,15 @@ public interface SensorImportHelper
     }
 
     @Override
-    public boolean applyRainbow()
+    public boolean getVisiblity()
     {
       return false;
+    }
+
+    @Override
+    public boolean success()
+    {
+      return true;
     }
 
   }
@@ -73,16 +74,18 @@ public interface SensorImportHelper
     private final WizardDialog dialog;
 
     public SensorImportHelperUI(final String sensorName,
-        final Color sensorColor, final String introString, final boolean needsRange)
+        final Color sensorColor, final String introString,
+        final boolean needsRange)
     {
       final String imagePath = "images/NameSensor.jpg";
-      final String explain = "\nNote: you can prevent this wizard from opening using" +
-      		"\nthe Debrief preference titled:\n" +
-      		"'Show the wizard when importing sensor data from REP'";
+      final String explain =
+          "\nNote: you can prevent this wizard from opening using"
+              + "\nthe Debrief preference titled:\n"
+              + "'Show the wizard when importing sensor data from REP'";
       getName =
           new EnterStringPage(null, sensorName, "Import Sensor data",
-              "Please provide the name for this sensor" + explain, introString, imagePath,
-              null, false, explain);
+              "Please provide the name for this sensor" + explain, introString,
+              imagePath, null, false, explain);
       getColor =
           new SelectColorPage(null, sensorColor, "Import Sensor data",
               "Now format the new sensor",
@@ -110,7 +113,9 @@ public interface SensorImportHelper
       wizard.addWizard(getName);
       wizard.addWizard(getColor);
       if (needsRange)
+      {
         wizard.addWizard(getRange);
+      }
       wizard.addWizard(getVis);
       wizard.addWizard(applyRainbowInRainbowColors);
       dialog = new WizardDialog(Display.getCurrent().getActiveShell(), wizard);
@@ -120,15 +125,9 @@ public interface SensorImportHelper
     }
 
     @Override
-    public boolean success()
+    public boolean applyRainbow()
     {
-      return dialog.getReturnCode() == WizardDialog.OK;
-    }
-
-    @Override
-    public String getName()
-    {
-      return getName.getString();
+      return applyRainbowInRainbowColors.getBoolean();
     }
 
     @Override
@@ -138,9 +137,9 @@ public interface SensorImportHelper
     }
 
     @Override
-    public boolean getVisiblity()
+    public String getName()
     {
-      return getVis.getBoolean();
+      return getName.getString();
     }
 
     @Override
@@ -150,22 +149,28 @@ public interface SensorImportHelper
     }
 
     @Override
-    public boolean applyRainbow()
+    public boolean getVisiblity()
     {
-      return applyRainbowInRainbowColors.getBoolean();
+      return getVis.getBoolean();
+    }
+
+    @Override
+    public boolean success()
+    {
+      return dialog.getReturnCode() == Window.OK;
     }
   }
 
-  boolean success();
-
-  String getName();
+  boolean applyRainbow();
 
   Color getColor();
 
-  boolean getVisiblity();
+  String getName();
 
   WorldDistance getRange();
 
-  boolean applyRainbow();
+  boolean getVisiblity();
+
+  boolean success();
 
 }
