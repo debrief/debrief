@@ -24,6 +24,7 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -32,6 +33,7 @@ import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
@@ -243,25 +245,37 @@ public class DopplerShiftExporter
 		// and the header
 		res2 += "time, measured frequency, predicted frequency";
 		res2 += "\n";
+		
+		// sort out the speed of sound
+		String spdStr = Application.getThisProperty(FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
+		final double speedOfSound;
+		if(spdStr != null && spdStr.length() > 0)
+		{
+		  speedOfSound = Double.parseDouble(spdStr);
+		}
+		else
+		{
+		  speedOfSound = FrequencyCalcs.SpeedOfSoundKts;
+		}
 
 		// now the cuts
 		final Iterator<Doublet> iter = res.iterator();
 		while (iter.hasNext())
 		{
-			res2 += exportThis(iter.next());
+			res2 += exportThis(iter.next(), speedOfSound);
 			res2 += "\n";
 		}
 
 		return res2;
 	}
 
-	private String exportThis(final Doublet doublet)
+	private String exportThis(final Doublet doublet, final double speedOfSound)
 	{
 		String res = formatThis(doublet.getDTG().getDate());
 		res += ",";
 		res += doublet.getMeasuredFrequency();
 		res += ",";
-		res += doublet.getPredictedFrequency();
+		res += doublet.getPredictedFrequency(speedOfSound);
 		return res;
 	}
 

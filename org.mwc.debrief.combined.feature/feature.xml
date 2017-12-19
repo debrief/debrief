@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="%featureName"
-      version="1.0.387"
+      version="1.0.388"
       provider-name="MWC"
       plugin="org.mwc.debrief.core">
 

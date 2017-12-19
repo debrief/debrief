@@ -18,8 +18,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -44,6 +47,7 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -58,7 +62,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -86,10 +89,15 @@ import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.PlotEntity;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
@@ -98,6 +106,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -160,6 +169,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
 
+  private static final String MEASURED_VALUES = "Measured";
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
@@ -329,7 +339,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected ISelectionChangedListener _mySelListener;
   protected Vector<DraggableItem> _draggableSelection;
-  protected boolean _itemSelectedPending = false;
   protected ZoneChart ownshipZoneChart;
   protected ZoneChart targetZoneChart;
   final protected TimeSeries ownshipCourseSeries = new TimeSeries(
@@ -338,7 +347,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
-  final protected TimeSeries measuredValues = new TimeSeries("Measured");
+  final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
   final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
@@ -348,6 +357,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
   private Action _precisionTwo;
+
+  private Double _rangeValueToLookup = null;
 
   private Action _precisionThree;
   private final PropertyChangeListener _infillListener;
@@ -428,11 +439,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
         // initialise the zones
         updateTargetZones();
-        // List<Zone> zones = getTargetZones();
-        // if (targetZoneChart != null)
-        // {
-        // targetZoneChart.setZones(zones);
-        // }
       }
     };
 
@@ -457,6 +463,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   protected void addExtras(final IToolBarManager toolBarManager)
   {
+  }
+
+  /**
+   * whether it's possible to display the target overview plot
+   * 
+   * @return
+   */
+  protected abstract boolean allowDisplayOfTargetOverview();
+
+  /**
+   * whether it's possible to display the zone chart
+   * 
+   * @return
+   */
+  protected abstract boolean allowDisplayOfZoneChart();
+
+  /**
+   * if we aren't showing any of the top 3 plots, hide the panel, to make the space available for
+   * zone charts
+   */
+  private void checkSubPlots()
+  {
+    final int subPlots = _combined.getSubplots().size();
+    _holder.setVisible(subPlots > 0);
+    _holder.getParent().layout();
   }
 
   /**
@@ -706,7 +737,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             1800, true, true, true, true, true, true)
         {
           @Override
-          public void mouseUp(final MouseEvent event)
+          public void mouseUp(final org.eclipse.swt.events.MouseEvent event)
           {
             super.mouseUp(event);
             final JFreeChart c = getChart();
@@ -1109,8 +1140,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
         // and write the text
         final String numA = formatValue(_linePlot.getRangeCrosshairValue());
-        final Date newDate =
-            new Date((long) _linePlot.getDomainCrosshairValue());
+
+        final long crossDate = (long) _linePlot.getDomainCrosshairValue();
+        final Date newDate = new Date(crossDate);
         final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
         _df.setTimeZone(TimeZone.getTimeZone("GMT"));
         final String dateVal = _df.format(newDate);
@@ -1127,51 +1159,64 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
 
         // ok, do we also have a selection event pending
-        if (_itemSelectedPending && _selectOnClick.isChecked())
+        if (_selectOnClick.isChecked() && _rangeValueToLookup != null)
         {
-          // ok, we're done
-          _itemSelectedPending = false;
+          // note: we were using the
+          // _linePlot.getRangeCrosshairValue() value,
+          // but, we want to force which data item gets
+          // selected. TMA for line plot, Cut for sensor plot
+          final double targetValue = _rangeValueToLookup;
 
-          // hmm, has sensor or fix been selected
-          final double bearing = _linePlot.getRangeCrosshairValue();
+          // clear the flag
+          _rangeValueToLookup = null;
 
           final TimeSeriesCollection tsc =
               (TimeSeriesCollection) _linePlot.getDataset();
-          @SuppressWarnings("unchecked")
-          final List<TimeSeries> sets = tsc.getSeries();
-          for (final TimeSeries t : sets)
+
+          // do we have data on the line plot?
+          if (tsc != null)
           {
-            final TimeSeriesDataItem nearest =
-                t.getDataItem(new FixedMillisecond(newDate.getTime()));
-
-            // ok, check the value
-            final double value = (Double) nearest.getValue();
-
-            if (value == bearing)
+            @SuppressWarnings("unchecked")
+            final List<TimeSeries> sets = tsc.getSeries();
+            for (final TimeSeries t : sets)
             {
-              // ok, get the editor
-              final IWorkbench wb = PlatformUI.getWorkbench();
-              final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-              final IWorkbenchPage page = win.getActivePage();
-              final IEditorPart editor = page.getActiveEditor();
-              final Layers layers = (Layers) editor.getAdapter(Layers.class);
-              if (layers != null)
+              final TimeSeriesDataItem nearest =
+                  t.getDataItem(new FixedMillisecond(newDate.getTime()));
+
+              if (nearest != null)
               {
-                final ColouredDataItem item = (ColouredDataItem) nearest;
-                final Editable payload = item.getPayload();
-                if (payload != null)
+                // ok, check the value
+                final double value = (Double) nearest.getValue();
+
+                if (value == targetValue)
                 {
-                  if (payload instanceof SensorContactWrapper)
+                  // ok, get the editor
+                  final IWorkbench wb = PlatformUI.getWorkbench();
+                  final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+                  final IWorkbenchPage page = win.getActivePage();
+                  final IEditorPart editor = page.getActiveEditor();
+                  final Layers layers =
+                      (Layers) editor.getAdapter(Layers.class);
+                  if (layers != null)
                   {
-                    showThisCut((SensorContactWrapper) payload, layers, editor);
+                    final ColouredDataItem item = (ColouredDataItem) nearest;
+                    final Editable payload = item.getPayload();
+                    if (payload != null)
+                    {
+                      if (payload instanceof SensorContactWrapper)
+                      {
+                        showThisCut((SensorContactWrapper) payload, layers,
+                            editor);
+                      }
+                      else if (payload instanceof FixWrapper)
+                      {
+                        showThisFix((FixWrapper) payload, layers, editor);
+                      }
+                    }
                   }
-                  else if (payload instanceof FixWrapper)
-                  {
-                    showThisFix((FixWrapper) payload, layers, editor);
-                  }
+                  break;
                 }
               }
-              break;
             }
           }
         }
@@ -1186,13 +1231,160 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
       {
-        // ok, remember it was clicked
-        _itemSelectedPending = true;
+        final String seriesName =
+            getSeriesToSelect(arg0.getChart(), arg0.getTrigger(), arg0
+                .getEntity());
+
+        if (seriesName != null)
+        {
+          // ok, try to select the sensor cut at this time
+          final Point2D p =
+              _holder.translateScreenToJava2D(arg0.getTrigger().getPoint());
+
+          // what's the y value at this time?
+          final CombinedDomainXYPlot dPlot =
+              (CombinedDomainXYPlot) arg0.getChart().getPlot();
+          final ValueAxis range = dPlot.getDomainAxis();
+
+          final org.eclipse.swt.graphics.Rectangle area =
+              _holder.getScreenDataArea();
+          final Rectangle jRect = new Rectangle(area.width, area.height);
+          jRect.setLocation(area.x, area.y);
+          final double dataVal =
+              range.java2DToValue(p.getY(), jRect, RectangleEdge.LEFT);
+          final long dateMillis = (long) dataVal;
+
+          // and try to put cross-hairs on sensor
+          highlightDataItemNearest(dateMillis, seriesName);
+        }
+      }
+
+      private String getSeriesToSelect(final JFreeChart chart,
+          final java.awt.event.MouseEvent trigger, final ChartEntity entity)
+      {
+        final String TMA = StackedDotHelper.CALCULATED_VALUES;
+        final String SENSOR = MEASURED_VALUES;
+
+        final String seriesName;
+
+        if (entity instanceof PlotEntity)
+        {
+          // ok, the click was in the empty area of the plot
+          final PlotEntity plot = (PlotEntity) entity;
+          if (plot.getPlot() == _linePlot)
+          {
+            seriesName = TMA;
+          }
+          else if (plot.getPlot() == _dotPlot)
+          {
+            seriesName = SENSOR;
+          }
+          else
+          {
+            seriesName = null;
+          }
+        }
+        else
+        {
+          // get the chart object
+          final Plot plot = chart.getPlot();
+          if (plot instanceof CombinedDomainXYPlot)
+          {
+            final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) plot;
+            final Point source = trigger.getPoint();
+            final PlotRenderingInfo plotInfo =
+                _holder.getChartRenderingInfo().getPlotInfo();
+            final XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
+            if (subPlot != null && subPlot.equals(_linePlot))
+            {
+              seriesName = TMA;
+            }
+            else if (subPlot != null && subPlot.equals(_dotPlot))
+            {
+              seriesName = SENSOR;
+            }
+            else
+            {
+              seriesName = null;
+            }
+          }
+          else
+          {
+            seriesName = null;
+          }
+        }
+        return seriesName;
       }
 
       @Override
       public void chartMouseMoved(final ChartMouseEvent arg0)
       {
+      }
+
+      private void highlightDataItemNearest(final long dateMillis,
+          final String seriesName)
+      {
+        final TimeSeriesCollection tsc =
+            (TimeSeriesCollection) _linePlot.getDataset();
+
+        if (tsc == null)
+        {
+          CorePlugin.logError(Status.ERROR,
+              "Trying to select item. Can't find line plot data", null);
+        }
+        else
+        {
+          final TimeSeries t = tsc.getSeries(seriesName);
+
+          if (t == null)
+          {
+            CorePlugin
+                .logError(Status.ERROR,
+                    "Trying to select item. Can't find series titled:"
+                        + seriesName, null);
+          }
+          else
+          {
+
+            // work through, to find the nearest item
+            final List<?> list = t.getItems();
+            TimeSeriesDataItem nearest = null;
+            for (final Object item : list)
+            {
+              final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+              if (nearest == null)
+              {
+                nearest = thisI;
+              }
+              else
+              {
+                final long myDelta =
+                    Math.abs(nearest.getPeriod().getMiddleMillisecond()
+                        - dateMillis);
+                final long hisDelta =
+                    Math.abs(thisI.getPeriod().getMiddleMillisecond()
+                        - dateMillis);
+
+                // ok, take the nearest one
+                nearest = myDelta < hisDelta ? nearest : thisI;
+              }
+            }
+
+            if (nearest != null)
+            {
+              // get the value
+              final double value = (Double) nearest.getValue();
+              final TimeSeriesDataItem fItem = nearest;
+
+              _linePlot.setDomainCrosshairValue(fItem.getPeriod()
+                  .getMiddleMillisecond());
+              _linePlot.setRangeCrosshairValue(value);
+
+              // remember we need to select a new item
+              _rangeValueToLookup = value;
+            }
+          }
+        }
       }
     });
 
@@ -1406,7 +1598,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _showTargetOverview.setChecked(false);
     }
-    
+
     if (allowDisplayOfZoneChart())
     {
       toolBarManager.add(_showZones);
@@ -1429,6 +1621,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       toolBarManager.add(action);
     }
   }
+
+  /**
+   * format the value in a suitable way for marking the current value of the cursor
+   * 
+   * @param current
+   *          data value at cursor
+   * @return suitably formatted version
+   */
+  abstract protected String formatValue(final double value);
 
   private TimeSeries[] getAmbiguousCutData()
   {
@@ -1572,7 +1773,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (secTrack != null)
         {
           // take a copy of the zones, so we don't get co-modification
-          List<Zone> safeZones = new ArrayList<Zone>(zones);
+          final List<Zone> safeZones = new ArrayList<Zone>(zones);
 
           // fire the finished event
           for (final Zone zone : safeZones)
@@ -1675,15 +1876,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   abstract protected String getType();
 
   abstract protected String getUnits();
-
-  /**
-   * format the value in a suitable way for marking the current value of the cursor
-   * 
-   * @param current
-   *          data value at cursor
-   * @return suitably formatted version
-   */
-  abstract protected String formatValue(final double value);
 
   @Override
   public void init(final IViewSite site, final IMemento memento)
@@ -1814,17 +2006,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     CorePlugin.logError(status, text, null, true);
   }
 
-  /**
-   * if we aren't showing any of the top 3 plots, hide the panel, to make the space available for
-   * zone charts
-   */
-  private void checkSubPlots()
-  {
-    int subPlots = _combined.getSubplots().size();
-    _holder.setVisible(subPlots > 0);
-    _holder.getParent().layout();
-  }
-
   protected void makeActions()
   {
     _autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
@@ -1870,10 +2051,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       }
     };
-      _showZones.setChecked(false);
-      _showZones.setToolTipText("Show the slicing graphs");
-      _showZones.setImageDescriptor(CorePlugin
-          .getImageDescriptor("icons/24/GanttBars.png"));
+    _showZones.setChecked(false);
+    _showZones.setToolTipText("Show the slicing graphs");
+    _showZones.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {
@@ -1940,7 +2121,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showTargetOverview.setChecked(allowDisplayOfTargetOverview());
     _showTargetOverview.setToolTipText("Show the overview plot");
     _showTargetOverview.setImageDescriptor(TrackShiftActivator
-          .getImageDescriptor("icons/24/tgt_overview.png"));
+        .getImageDescriptor("icons/24/tgt_overview.png"));
 
     // get an error logger
     final ErrorLogger logger = this;
@@ -2015,18 +2196,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         .getImageDescriptor("icons/24/fix.png"));
 
   }
-
-  /** whether it's possible to display the target overview plot
-   * 
-   * @return
-   */
-  protected abstract boolean allowDisplayOfTargetOverview();
-
-  /** whether it's possible to display the zone chart
-   * 
-   * @return
-   */
-  protected abstract boolean allowDisplayOfZoneChart();
 
   @Override
   public void saveState(final IMemento memento)
@@ -2372,7 +2541,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       // ok, also try to give focus to teh outline view
-      Display.getCurrent().asyncExec(new Runnable(){
+      Display.getCurrent().asyncExec(new Runnable()
+      {
         @Override
         public void run()
         {
@@ -2380,10 +2550,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // doesn't select the outline focus.
           // So, first, let's briefly put the focus on the editor
           editor.setFocus();
-          
+
           // now, see if we can select the outline view
           outline.setFocus();
-        }});
+        }
+      });
     }
   }
 
@@ -2542,17 +2713,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   protected void updateLinePlotRanges()
   {
+    // NOTE: we no longer process this update.
+    // we wish to retain the zoom level as the
+    // analyst deletes points
+
     // have a look at the auto resize
-    if (_autoResize.isChecked())
-    {
-      if (_showLinePlot.isChecked())
-      {
-        _linePlot.getRangeAxis().setAutoRange(false);
-        _linePlot.getDomainAxis().setAutoRange(false);
-        _linePlot.getRangeAxis().setAutoRange(true);
-        _linePlot.getDomainAxis().setAutoRange(true);
-      }
-    }
+    // if (_autoResize.isChecked())
+    // {
+    // if (_showLinePlot.isChecked())
+    // {
+    // _linePlot.getRangeAxis().setAutoRange(false);
+    // _linePlot.getDomainAxis().setAutoRange(false);
+    // _linePlot.getRangeAxis().setAutoRange(true);
+    // _linePlot.getDomainAxis().setAutoRange(true);
+    // }
+    // }
   }
 
   /**
@@ -2902,24 +3077,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           (CachedTickDateAxis) _combined.getDomainAxis();
       date.clearTicks();
 
-      if (_showDotPlot.isChecked())
-      {
-        _dotPlot.getDomainAxis().setAutoRange(false);
-        _dotPlot.getDomainAxis().setAutoRange(true);
-        _dotPlot.getDomainAxis().setAutoRange(false);
-      }
-      if (_showLinePlot.isChecked())
-      {
-        _linePlot.getDomainAxis().setAutoRange(false);
-        _linePlot.getDomainAxis().setAutoRange(true);
-        _linePlot.getDomainAxis().setAutoRange(false);
-      }
-      if (_showTargetOverview.isChecked())
-      {
-        _targetOverviewPlot.getDomainAxis().setAutoRange(false);
-        _targetOverviewPlot.getDomainAxis().setAutoRange(true);
-        _targetOverviewPlot.getDomainAxis().setAutoRange(false);
-      }
+      // Note: we no longer resize the domain axes - we just do this
+      // when the data has been extended.
+      // if (_showDotPlot.isChecked())
+      // {
+      // _dotPlot.getDomainAxis().setAutoRange(false);
+      // _dotPlot.getDomainAxis().setAutoRange(true);
+      // _dotPlot.getDomainAxis().setAutoRange(false);
+      // }
+      // if (_showLinePlot.isChecked())
+      // {
+      // _linePlot.getDomainAxis().setAutoRange(false);
+      // _linePlot.getDomainAxis().setAutoRange(true);
+      // _linePlot.getDomainAxis().setAutoRange(false);
+      // }
+      // if (_showTargetOverview.isChecked())
+      // {
+      // _targetOverviewPlot.getDomainAxis().setAutoRange(false);
+      // _targetOverviewPlot.getDomainAxis().setAutoRange(true);
+      // _targetOverviewPlot.getDomainAxis().setAutoRange(false);
+      // }
     }
 
     // right, are we updating the range data?
@@ -2932,8 +3109,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
       if (_showLinePlot.isChecked())
       {
-        _linePlot.getRangeAxis().setAutoRange(false);
-        _linePlot.getRangeAxis().setAutoRange(true);
+        // no - don't change the zoom. We wish to retain the zoom
+        // _linePlot.getRangeAxis().setAutoRange(false);
+        // _linePlot.getRangeAxis().setAutoRange(true);
       }
       if (_showTargetOverview.isChecked())
       {

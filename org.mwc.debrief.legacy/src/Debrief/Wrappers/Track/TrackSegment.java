@@ -588,31 +588,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     // hey, our relative process actually works for absolute, too.
     decimatePointsTrack(theVal, parentTrack, startTime, newItems, false);
-
-    // // right - sort out what time period we're working through
-    // for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow +=
-    // theVal.getMicros())
-    // {
-    // // store the new position
-    // final Watchable[] matches =
-    // parentTrack.getNearestTo(new HiResDate(0, tNow));
-    // if (matches.length > 0)
-    // {
-    // final FixWrapper newF = (FixWrapper) matches[0];
-    //
-    // // do we correct the name?
-    // if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
-    // {
-    // // reset the name
-    // newF.resetName();
-    // }
-    //
-    // newF.setSymbolShowing(true);
-    //
-    // // add to our working list
-    // newItems.add(newF);
-    // }
-    // }
   }
 
   private void decimatePointsTrack(final HiResDate theVal,
@@ -664,6 +639,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
             newPos =
                 FixWrapper.interpolateFix(previousPosition, currentPosition,
                     new HiResDate(requiredTime));
+          }
+
+          // store the color for this item
+          final Color hisColor = currentPosition.getActualColor();
+          if (hisColor != null)
+          {
+            newPos.setColor(hisColor);
           }
 
           // do we need to fix the track to ensure a DR reconstruction

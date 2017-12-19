@@ -305,14 +305,13 @@ public final class Doublet implements Comparable<Doublet>
 	 * 
 	 * @return
 	 */
-	public double getPredictedFrequency()
+	public double getPredictedFrequency(final double speedOfSoundKts)
 	{
 		double predictedFreq = 0;
 
 		if (_targetTrack instanceof CoreTMASegment)
 		{
       final double baseFreq = getBaseFrequency();
-      final double speedOfSoundKts = 2591;
       
       final double theBearingDegs = getCalculatedBearing(null, null);
 

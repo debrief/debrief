@@ -36,9 +36,17 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
   protected void updateData(final boolean updateDoublets)
   {
+    // note: we now ignore the parent doublets value.
+    // this is because we need to regenerate the target fix each time.
+    // For frequency data the target fix is interpolated - this means
+    // it doesn't update as we drag the solution.  We need to 
+    // regenerate the interpolated fix, to ensure we're using up-to-date
+    // values
+    boolean updateDoubletsVal = true;
+    
     // update the current datasets
     _myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
-        _onlyVisible.isChecked(), _holder, this, updateDoublets);
+        _onlyVisible.isChecked(), _holder, this, updateDoubletsVal);
   }
 
   @Override
