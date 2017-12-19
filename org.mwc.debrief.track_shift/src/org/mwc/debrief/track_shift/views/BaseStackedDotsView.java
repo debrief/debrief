@@ -1828,7 +1828,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       if (secTracks != null && secTracks.length == 1)
       {
         final ISecondaryTrack sw = (ISecondaryTrack) secTracks[0];
-        final Enumeration<Editable> iter = sw.segments();
+        Enumeration<Editable> iter = sw.segments();
+
+        // have a peak, to check if we've actually got a segment list
+        if (iter.hasMoreElements())
+        {
+          Editable first = iter.nextElement();
+          if (first instanceof SegmentList)
+          {
+            SegmentList segs = (SegmentList) first;
+            iter = segs.elements();
+          }
+        }
+
         while (iter.hasMoreElements())
         {
           final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
@@ -1853,17 +1865,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     .getDTG_End().getDate().getTime(), color);
             zones.add(newZ);
           }
-          else if (thisSeg instanceof AbsoluteTMASegment)
+          else if (thisSeg instanceof TrackSegment)
           {
-            final AbsoluteTMASegment seg = (AbsoluteTMASegment) thisSeg;
+            final TrackSegment seg = (TrackSegment) thisSeg;
             if (!thisSeg.isEmpty())
             {
               final FixWrapper firstE =
                   (FixWrapper) thisSeg.elements().nextElement();
               final Color color = firstE.getColor();
               final Zone newZ =
-                  new Zone(seg.getDTG_Start().getDate().getTime(), seg
-                      .getDTG_End().getDate().getTime(), color);
+                  new Zone(seg.startDTG().getDate().getTime(), seg.endDTG()
+                      .getDate().getTime(), color);
               zones.add(newZ);
             }
           }
@@ -2492,7 +2504,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   {
     final TrackSegment seg = fix.getSegment();
     final TrackWrapper secTrack = seg.getWrapper();
-    
+
     // check we know the secondary track (we may not, if it's an SATC track)
     if (secTrack != null)
     {
@@ -2868,9 +2880,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     _myTrackDataProvider.getSecondaryTracks();
                 if (secs != null && secs.length == 1)
                 {
-                  final TrackWrapper secT = (TrackWrapper) secs[0];
-                  secT.removePropertyChangeListener(
-                      PlainWrapper.LOCATION_CHANGED, _infillListener);
+                  final WatchableList firstSec = secs[0];
+                  if (firstSec instanceof TrackWrapper)
+                  {
+                    final TrackWrapper secT = (TrackWrapper) firstSec;
+                    secT.removePropertyChangeListener(
+                        PlainWrapper.LOCATION_CHANGED, _infillListener);
+                  }
                 }
               }
 
@@ -2886,9 +2902,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   _myTrackDataProvider.getSecondaryTracks();
               if (secs != null && secs.length == 1)
               {
-                final TrackWrapper secT = (TrackWrapper) secs[0];
-                secT.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-                    _infillListener);
+                final WatchableList firstSec = secs[0];
+                if (firstSec instanceof TrackWrapper)
+                {
+                  final TrackWrapper secT = (TrackWrapper) firstSec;
+                  secT.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+                      _infillListener);
+                }
               }
 
               // hey, new plot. clear the zone charts
@@ -2937,9 +2957,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   _myTrackDataProvider.getSecondaryTracks();
               if (secs != null && secs.length == 1)
               {
-                final TrackWrapper secT = (TrackWrapper) secs[0];
-                secT.removePropertyChangeListener(
-                    PlainWrapper.LOCATION_CHANGED, _infillListener);
+                WatchableList firstSec = secs[0];
+                if (firstSec instanceof TrackWrapper)
+                {
+                  final TrackWrapper secT = (TrackWrapper) firstSec;
+                  secT.removePropertyChangeListener(
+                      PlainWrapper.LOCATION_CHANGED, _infillListener);
+                }
               }
 
               _myTrackDataProvider = null;
