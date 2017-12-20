@@ -307,7 +307,7 @@ public final class Doublet implements Comparable<Doublet>
 	 */
 	public double getPredictedFrequency(final double speedOfSoundKts)
 	{
-		double predictedFreq = 0;
+		double predictedFreq = Double.NaN;
 
 		if (_targetTrack instanceof CoreTMASegment)
 		{
