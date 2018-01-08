@@ -405,10 +405,17 @@ public final class StackedDotHelper
                * Plus, there is greater variance in bearing angle - so it's more important to get
                * the right data item.
                */
-              boolean interpFix = needFrequency;
+              final boolean interpFix = needFrequency;
+
+              /**
+               * for frequency data we don't generate a double for dynamic infills, since we have
+               * low confidence in the target course/speed
+               */
+              final boolean allowInfill = !needFrequency;
 
               final TargetDoublet doublet =
-                  getTargetDoublet(index, theSegments, scw.getDTG(), interpFix);
+                  getTargetDoublet(index, theSegments, scw.getDTG(), interpFix,
+                      allowInfill);
 
               final Doublet thisDub;
               final FixWrapper hostFix;
@@ -475,11 +482,13 @@ public final class StackedDotHelper
    * @param interpFix
    *          whether to only accept a target fix within 1 second of the target time, or to
    *          interpolate the nearest one
+   * @param allowInfill
+   *          whether we generate a doublet for dynamic infill segments
    * @return a Doublet containing the relevant data
    */
   private static TargetDoublet getTargetDoublet(final FixWrapper workingFix,
       final Vector<TrackSegment> theSegments, final HiResDate requiredTime,
-      final boolean interpFix)
+      final boolean interpFix, final boolean allowInfill)
   {
     final TargetDoublet doublet = new TargetDoublet();
     if (theSegments != null && !theSegments.isEmpty())
@@ -505,7 +514,11 @@ public final class StackedDotHelper
           // if this is an infill, then we're relaxed about the errors
           if (ts instanceof DynamicInfillSegment)
           {
-            handleDynamicInfill(workingFix, requiredTime, doublet, ts);
+            // aaah, but are we interested in infill segments?
+            if (allowInfill)
+            {
+              handleDynamicInfill(workingFix, requiredTime, doublet, ts);
+            }
           }
           else
           {
