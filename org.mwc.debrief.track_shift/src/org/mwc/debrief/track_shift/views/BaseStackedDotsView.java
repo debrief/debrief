@@ -449,7 +449,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         if (evt.getNewValue() instanceof DynamicInfillSegment)
         {
-          updateStackedDots(false);
+          // if the infill has moved, we need to re-generate
+          // the doublets, to capture the new location.
+          updateStackedDots(true);
         }
       }
     };
