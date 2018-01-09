@@ -130,25 +130,36 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
       // hmm, depth or heading value?
       final boolean isDepth = (ctr % 2) == 0;
 
-      // extract the double
-      final double thisVal = Double.valueOf(str.trim());
+      final String nextStr = str.trim();
 
-      if (isLong && ctr > 7 || !isLong && ctr < 8)
+      if (isNull(nextStr))
+      {
+        // ok, skip this one. We haven't got the data
+        continue;
+      }
+      else
       {
 
-        // sort out if we're fore or aft
-        final String datasetName = nameForRow(ctr, isLong);
+        // extract the double
+        final double thisVal = Double.valueOf(nextStr);
 
-        // ok, try to store the measurement
-        if (isDepth)
+        if (isLong && ctr > 7 || !isLong && ctr < 8)
         {
-          storeMeasurement(platform_name, sensor_name, _datasetName + " / "
-              + datasetName, "Depth", "m", theDate, thisVal);
-        }
-        else
-        {
-          storeMeasurement(platform_name, sensor_name, _datasetName + " / "
-              + datasetName, "Heading", "\u00b0", theDate, thisVal);
+
+          // sort out if we're fore or aft
+          final String datasetName = nameForRow(ctr, isLong);
+
+          // ok, try to store the measurement
+          if (isDepth)
+          {
+            storeMeasurement(platform_name, sensor_name, _datasetName + " / "
+                + datasetName, "Depth", "m", theDate, thisVal);
+          }
+          else
+          {
+            storeMeasurement(platform_name, sensor_name, _datasetName + " / "
+                + datasetName, "Heading", "\u00b0", theDate, thisVal);
+          }
         }
       }
 
