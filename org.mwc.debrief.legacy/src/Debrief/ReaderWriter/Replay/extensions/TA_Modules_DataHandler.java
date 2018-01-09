@@ -103,11 +103,20 @@ public class TA_Modules_DataHandler extends TA_ForeAft_DataHandler
     boolean res = true;
     for (int i = 0; i < 8; i++)
     {
-      final double val = Double.valueOf(tokens[i]);
-      if (val != 0d)
+      final String nextT = tokens[i];
+      if (isNull(nextT))
       {
         res = false;
         break;
+      }
+      else
+      {
+        final double val = Double.valueOf(tokens[i]);
+        if (val != 0d)
+        {
+          res = false;
+          break;
+        }
       }
     }
     return res;
