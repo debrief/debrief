@@ -208,6 +208,57 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct error message",
           GenerateInfillOperation.OVERLAPPING, messages.get(0));
     }
+    
+
+    @SuppressWarnings("deprecation")
+    public void testValid()
+    {
+      Layers theLayers = new Layers();
+      IMenuManager parent = new MenuManager();
+      TrackWrapper track = new TrackWrapper();
+      Layer[] parentLayers = new Layer[]
+      {track, track};
+
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 15, 0));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+      gener.generate(parent, theLayers, parentLayers, subjects);
+      IContributionItem[] newItems = parent.getItems();
+
+      assertEquals("newItems", 3, newItems.length);
+
+      ActionContributionItem first = (ActionContributionItem) newItems[1];
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
+      
+      // check the before len
+      assertEquals("Correct before len", 46, legTwo.getData().size());
+      final int beforeLen = legTwo.getData().size();
+      
+      first.getAction().run();
+
+      assertEquals("got error message", 0, messages.size());
+      
+      // check the len still valid
+      assertEquals("Correct before len", beforeLen, legTwo.getData().size());
+
+    }
   }
 
   private static class GenerateInfillOperation extends CMAPOperation
