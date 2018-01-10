@@ -58,6 +58,8 @@ import MWC.GenericData.WorldSpeed;
 public class GenerateInfillSegment implements RightClickContextItemGenerator
 {
 
+  private static final String DELETE_SUFFIX = " (Delete from 2nd track if necessary)";
+
   public static class TestGenInfill extends TestCase
   {
     final private ArrayList<String> messages = new ArrayList<String>();
@@ -143,18 +145,25 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct error message",
           GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
       
+      assertEquals("correct before len", 60, legTwo.getData().size());
+      
       messages.clear();
       first = (ActionContributionItem) newItems[2];
-      assertEquals("right name", "Generate infill segment", first.getAction()
+      assertEquals("right name", "Generate infill segment (Delete from 2nd track if necessary)", first.getAction()
           .getText());
       first.getAction().run();
 
       assertEquals("got no error message", 0, messages.size());
+               
+      // check how many entries get deleted
+      assertEquals("correct after len", 58, legTwo.getData().size());
       
-      // TODO - check how many entries get deleted
       // TODO - test undo processing, check second leg same as original length
+//      first.getAction().
       
       // TODO - test deleting fails if the second leg is too short
+      
+      // TODO - test with relative TMA segment
     }
 
     @SuppressWarnings("deprecation")
@@ -496,13 +505,14 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                 CorePlugin.run(theAction);
               }
             };
-            final Action doMergeAllowDelete = new Action(title)
+            final String secondTitle = finalTitle + DELETE_SUFFIX;
+            final Action doMergeAllowDelete = new Action(secondTitle)
             {
               @Override
               public void run()
               {
                 final IUndoableOperation theAction =
-                    new GenerateInfillOperation(finalTitle + " (Delete from 2nd track if necessary)", subjects,
+                    new GenerateInfillOperation(secondTitle, subjects,
                         theLayers, parentTrack, logger, true);
 
                 CorePlugin.run(theAction);
