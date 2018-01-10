@@ -58,8 +58,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
   public static class TestGenInfill extends TestCase
   {
-    final ArrayList<String> messages = new ArrayList<String>();
-    GenerateInfillSegment gener = new GenerateInfillSegment()
+    final private ArrayList<String> messages = new ArrayList<String>();
+    final private GenerateInfillSegment gener = new GenerateInfillSegment()
     {
 
       @Override
