@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -57,58 +58,134 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
   public static class TestGenInfill extends TestCase
   {
-    public void testOverlap()
+    final ArrayList<String> messages = new ArrayList<String>();
+    GenerateInfillSegment gener = new GenerateInfillSegment()
     {
-      final ArrayList<String> messages = new ArrayList<String>();
-      GenerateInfillSegment gener = new GenerateInfillSegment(){
 
-        @Override
-        protected ErrorLogger getLogger()
+      @Override
+      protected ErrorLogger getLogger()
+      {
+        return new ErrorLogger()
         {
-          return new ErrorLogger(){
 
-            @Override
-            public void logError(int status, String text, Exception e)
-            {
-              messages.add(text);
-            }
+          @Override
+          public void logError(int status, String text, Exception e)
+          {
+            messages.add(text);
+          }
 
-            @Override
-            public void logError(int status, String text, Exception e,
-                boolean revealLog)
-            {
-              logError(status, text, null);
-            }
+          @Override
+          public void logError(int status, String text, Exception e,
+              boolean revealLog)
+          {
+            logError(status, text, null);
+          }
 
-            @Override
-            public void logStack(int status, String text)
-            {
-              logError(status, text, null);
-            }};
-        }};
-      Layers theLayers = new Layers();
+          @Override
+          public void logStack(int status, String text)
+          {
+            logError(status, text, null);
+          }
+        };
+      }
+    };
+
+    
+    
+    @Override
+    protected void setUp() throws Exception
+    {
+      super.setUp();
       
+      // clear any messages
+      messages.clear();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testTooSmall()
+    {
+      Layers theLayers = new Layers();
       IMenuManager parent = new MenuManager();
       TrackWrapper track = new TrackWrapper();
-      Layer[] parentLayers = new Layer[]{track, track};
+      Layer[] parentLayers = new Layer[]
+      {track, track};
+      
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
       WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts), origin, new HiResDate(100), new HiResDate(100000));
-      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts), origin, new HiResDate(90000), new HiResDate(200000));
-      Editable[] subjects = new Editable[]{legOne, legTwo};
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+      
+      track.add(legOne);
+      track.add(legTwo);
+      
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
       gener.generate(parent, theLayers, parentLayers, subjects);
       IContributionItem[] newItems = parent.getItems();
-      
+
       assertEquals("newItems", 2, newItems.length);
-      
+
       ActionContributionItem first = (ActionContributionItem) newItems[1];
-      assertEquals("right name", "Generate infill segment", first.getAction().getText());
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
       first.getAction().run();
-      
-      
+
       assertEquals("got error message", 1, messages.size());
+      assertEquals("correct error message", GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testOverlap()
+    {
+      Layers theLayers = new Layers();
+      IMenuManager parent = new MenuManager();
+      TrackWrapper track = new TrackWrapper();
+      Layer[] parentLayers = new Layer[]
+      {track, track};
+      
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 11, 55, 0));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+      
+      track.add(legOne);
+      track.add(legTwo);
+      
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+      gener.generate(parent, theLayers, parentLayers, subjects);
+      IContributionItem[] newItems = parent.getItems();
+
+      assertEquals("newItems", 2, newItems.length);
+
+      ActionContributionItem first = (ActionContributionItem) newItems[1];
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
+      first.getAction().run();
+
+      assertEquals("got error message", 1, messages.size());
+      assertEquals("correct error message", GenerateInfillOperation.OVERLAPPING, messages.get(0));
     }
   }
-  
+
   private static class GenerateInfillOperation extends CMAPOperation
   {
 
