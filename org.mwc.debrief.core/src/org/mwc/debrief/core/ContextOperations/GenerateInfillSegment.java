@@ -16,6 +16,7 @@ package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -38,6 +39,7 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.DebriefPlugin;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -90,13 +92,11 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       }
     };
 
-    
-    
     @Override
     protected void setUp() throws Exception
     {
       super.setUp();
-      
+
       // clear any messages
       messages.clear();
     }
@@ -109,7 +109,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       TrackWrapper track = new TrackWrapper();
       Layer[] parentLayers = new Layer[]
       {track, track};
-      
+
       HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
       HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
 
@@ -123,16 +123,16 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       AbsoluteTMASegment legTwo =
           new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
               origin, l2_start, l2_end);
-      
+
       track.add(legOne);
       track.add(legTwo);
-      
+
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
       gener.generate(parent, theLayers, parentLayers, subjects);
       IContributionItem[] newItems = parent.getItems();
 
-      assertEquals("newItems", 2, newItems.length);
+      assertEquals("newItems", 3, newItems.length);
 
       ActionContributionItem first = (ActionContributionItem) newItems[1];
       assertEquals("right name", "Generate infill segment", first.getAction()
@@ -140,7 +140,21 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       first.getAction().run();
 
       assertEquals("got error message", 1, messages.size());
-      assertEquals("correct error message", GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
+      assertEquals("correct error message",
+          GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
+      
+      messages.clear();
+      first = (ActionContributionItem) newItems[2];
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
+      first.getAction().run();
+
+      assertEquals("got no error message", 0, messages.size());
+      
+      // TODO - check how many entries get deleted
+      // TODO - test undo processing, check second leg same as original length
+      
+      // TODO - test deleting fails if the second leg is too short
     }
 
     @SuppressWarnings("deprecation")
@@ -151,7 +165,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       TrackWrapper track = new TrackWrapper();
       Layer[] parentLayers = new Layer[]
       {track, track};
-      
+
       HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
       HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
 
@@ -165,16 +179,16 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       AbsoluteTMASegment legTwo =
           new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
               origin, l2_start, l2_end);
-      
+
       track.add(legOne);
       track.add(legTwo);
-      
+
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
       gener.generate(parent, theLayers, parentLayers, subjects);
       IContributionItem[] newItems = parent.getItems();
 
-      assertEquals("newItems", 2, newItems.length);
+      assertEquals("newItems", 3, newItems.length);
 
       ActionContributionItem first = (ActionContributionItem) newItems[1];
       assertEquals("right name", "Generate infill segment", first.getAction()
@@ -182,7 +196,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       first.getAction().run();
 
       assertEquals("got error message", 1, messages.size());
-      assertEquals("correct error message", GenerateInfillOperation.OVERLAPPING, messages.get(0));
+      assertEquals("correct error message",
+          GenerateInfillOperation.OVERLAPPING, messages.get(0));
     }
   }
 
@@ -193,6 +208,9 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         "Insufficient time to insert data. Please try deleting some points.";
     public static final String OVERLAPPING =
         "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again";
+    public static final String CANT_DELETE =
+        "We can't delete points from the following track, there are too few.\nYou must manally delete them from the previous track";
+
     /**
      * the parent to update on completion
      */
@@ -203,10 +221,28 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
     int segCtr = 1;
     private final ErrorLogger _logger;
+    private final boolean _canDelete;
+    private HashMap<TrackSegment, ArrayList<FixWrapper>> _deletedFixes = null;
 
+    /**
+     * 
+     * @param title
+     *          What to call this operation
+     * @param segments
+     *          the list of segments to join
+     * @param theLayers
+     *          the parent layers object
+     * @param parentTrack
+     *          the parent track
+     * @param logger
+     *          error logger
+     * @param canDelete
+     *          whether we allow the alg to delete points
+     */
     public GenerateInfillOperation(final String title,
         final Editable[] segments, final Layers theLayers,
-        final Layer parentTrack, final ErrorLogger logger)
+        final Layer parentTrack, final ErrorLogger logger,
+        final boolean canDelete)
     {
       super(title);
       _segments = segments;
@@ -214,6 +250,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       _parentTrack = parentTrack;
       _infills = new Vector<TrackSegment>();
       _logger = logger;
+      _canDelete = canDelete;
     }
 
     @Override
@@ -248,11 +285,43 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         // did it work?
         if (res != null)
         {
-          // output the message
-          _logger.logError(res.getSeverity(), res.getMessage(), null);
+          // ok, see what the problem was
+          if (_canDelete && INSUFFICIENT_TIME.equals(res.getMessage()))
+          {
+            while(res != null && INSUFFICIENT_TIME.equals(res.getMessage()))
+            {
+              // ok, delete a point from the second leg
+              FixWrapper firstPoint = (FixWrapper) trackTwo.getData().iterator().next();
+              
+              if(_deletedFixes == null)
+              {
+                _deletedFixes = new HashMap<TrackSegment, ArrayList<FixWrapper>>();
+              }
+              
+              // remember this item
+              ArrayList<FixWrapper> fixes = _deletedFixes.get(trackTwo);
+              
+              if(fixes == null)
+              {
+                fixes = new ArrayList<FixWrapper>();
+                _deletedFixes .put(trackTwo,fixes);
+              }
+              
+              fixes.add(firstPoint);
+              
+              trackTwo.removeElement(firstPoint);
+              
+              res = fillSegments(trackOne, trackTwo);
+            }
+          }
+          else
+          {
+            // output the message
+            _logger.logError(res.getSeverity(), res.getMessage(), null);
 
-          // stop processing further infills
-          break;
+            // stop processing further infills
+            break;
+          }
         }
       }
 
@@ -337,6 +406,19 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       // and clera the infills
       _infills.clear();
+      
+      // and reinstore deleted fixes
+      if(_deletedFixes != null)
+      {
+        for(TrackSegment t: _deletedFixes.keySet())
+        {
+          ArrayList<FixWrapper> fixes = _deletedFixes.get(t);
+          for(FixWrapper f: fixes)
+          {
+            t.add(f);
+          }
+        }
+      }      
 
       // cool, tell everyone
       _layers.fireExtended(null, _parentTrack);
@@ -409,13 +491,26 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               {
                 final IUndoableOperation theAction =
                     new GenerateInfillOperation(finalTitle, subjects,
-                        theLayers, parentTrack, logger);
+                        theLayers, parentTrack, logger, false);
+
+                CorePlugin.run(theAction);
+              }
+            };
+            final Action doMergeAllowDelete = new Action(title)
+            {
+              @Override
+              public void run()
+              {
+                final IUndoableOperation theAction =
+                    new GenerateInfillOperation(finalTitle + " (Delete from 2nd track if necessary)", subjects,
+                        theLayers, parentTrack, logger, true);
 
                 CorePlugin.run(theAction);
               }
             };
             parent.add(new Separator());
             parent.add(doMerge);
+            parent.add(doMergeAllowDelete);
           }
         }
       }
