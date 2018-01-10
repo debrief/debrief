@@ -138,6 +138,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
   private static class GenerateInfillOperation extends CMAPOperation
   {
 
+    private static final String INSUFFICIENT_TIME = "Insufficient time to insert data. Please try deleting some points.";
+    private static final String OVERLAPPING = "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again";
     /**
      * the parent to update on completion
      */
@@ -216,7 +218,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         // fail, they overlap
         res =
             new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
-                "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again", null);
+                OVERLAPPING, null);
       }
       else
       {
@@ -234,7 +236,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         {
           res =
               new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
-                  "Insufficient time to insert data. Please try deleting some points.", null);
+                  INSUFFICIENT_TIME, null);
 
         }
       }
