@@ -8971,12 +8971,13 @@ and entry type can be multi-word if surrounded by quotes (").
 
 ;TA_FORE_AFT: 090722 041522 NONSUCH SENSOR_A_1 44.2 260.2 45.4 262.3
 ;; data from module sensors, in depth/heading pairs
-;; date-time, platform, sensor, two pairs of depth (m) &amp; heading (degs) data.
+;; date-time, platform, sensor, two pairs of depth (m) &amp; heading (degs) data.  Or replace the pairs with four NULL values.
 
 ;TA_MODULES: YYMMDD HHMMSS AAAAAA BBBBBB DD.D HH.H ... DD.D HH.H
 ;; 12 sets of depth/heading data from module sensors. Either first 4, or last 8 will be populated
 ;; the other pairs should have zero values
 ;; date-time, platform, sensor, pairs of depth &amp; heading data, to the end of line.
+;; But, if you're not interested in the spec at all, you could just include four NULL values.
 
 ;TA_COG_ABS: YYMMDD HHMMSS AAAAAA BBBBBB LAT.Y LONG.X DD.D
 ;; absolute measurement of towed array aperture Centre of Gravity
