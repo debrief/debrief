@@ -35,6 +35,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
@@ -91,6 +92,28 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
             final String finalTitle = title;
 
+            final ErrorLogger logger = new ErrorLogger(){
+
+              @Override
+              public void logError(int status, String text, Exception e)
+              {
+                CorePlugin.showMessage("Generate infill", text);
+              }
+
+              @Override
+              public void logError(int status, String text, Exception e,
+                  boolean revealLog)
+              {
+                logError(status, text, e);
+              }
+
+              @Override
+              public void logStack(int status, String text)
+              {
+                logError(status, text, null);
+              }};
+
+            
             // create this operation
             final Action doMerge = new Action(title)
             {
@@ -98,7 +121,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               {
                 final IUndoableOperation theAction =
                     new GenerateInfillOperation(finalTitle, subjects,
-                        theLayers, parentTrack);
+                        theLayers, parentTrack, logger);
 
                 CorePlugin.run(theAction);
               }
@@ -124,16 +147,18 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
     private final Editable[] _segments;
 
     int segCtr = 1;
+    private final ErrorLogger _logger;
 
     public GenerateInfillOperation(final String title,
         final Editable[] segments, final Layers theLayers,
-        final Layer parentTrack)
+        final Layer parentTrack, final ErrorLogger logger)
     {
       super(title);
       _segments = segments;
       _layers = theLayers;
       _parentTrack = parentTrack;
       _infills = new Vector<TrackSegment>();
+      _logger = logger;
     }
 
     public IStatus
@@ -154,7 +179,13 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
         // did it work?
         if (res != null)
+        {
+          // output the message
+          _logger.logError(res.getSeverity(), res.getMessage(), null);
+          
+          // stop processing further infills
           break;
+        }
       }
 
       _layers.fireExtended(null, _parentTrack);
@@ -183,13 +214,9 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       if (trackOne.endDTG().greaterThan(trackTwo.startDTG()))
       {
         // fail, they overlap
-        CorePlugin
-            .showMessage(
-                "Generate infill segment",
-                "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again");
         res =
             new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
-                "Overlapping data points", null);
+                "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again", null);
       }
       else
       {
@@ -202,6 +229,13 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         if (!newSeg.getData().isEmpty())
         {
           storeSegment(newSeg);
+        }
+        else
+        {
+          res =
+              new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
+                  "Insufficient time to insert data. Please try deleting some points.", null);
+
         }
       }
 
