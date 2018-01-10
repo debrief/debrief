@@ -14,8 +14,11 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
+
+import junit.framework.TestCase;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -24,7 +27,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
@@ -32,12 +38,16 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 
 /**
  * @author ian.mayo
@@ -45,101 +55,67 @@ import MWC.GUI.Layers;
 public class GenerateInfillSegment implements RightClickContextItemGenerator
 {
 
-  /**
-   * @param parent
-   * @param theLayers
-   * @param parentLayers
-   * @param subjects
-   */
-  public void generate(final IMenuManager parent, final Layers theLayers,
-      final Layer[] parentLayers, final Editable[] subjects)
+  public static class TestGenInfill extends TestCase
   {
-    // we're only going to work with two or more items
-    if (subjects.length > 1)
+    public void testOverlap()
     {
-      // track the parents
-      final Layer firstParent = parentLayers[0];
+      final ArrayList<String> messages = new ArrayList<String>();
+      GenerateInfillSegment gener = new GenerateInfillSegment(){
 
-      // is it a track?
-      if (firstParent instanceof TrackWrapper)
-      {
-        final TrackWrapper parentTrack = (TrackWrapper) firstParent;
-
-        // do they have the same parent layer?
-        if (parentLayers[1] == parentLayers[0])
+        @Override
+        protected ErrorLogger getLogger()
         {
-          // check what's selected, see if they are suitable
-          boolean canDo = true;
-          for (int i = 0; i < subjects.length; i++)
-          {
-            final Editable editable = subjects[i];
-            if (!(editable instanceof TrackSegment))
+          return new ErrorLogger(){
+
+            @Override
+            public void logError(int status, String text, Exception e)
             {
-              canDo = false;
+              messages.add(text);
             }
-          }
 
-          // ok, is it worth going for?
-          if (canDo)
-          {
-            String title;
-
-            // see if there are more than one segment to be generated
-            if (subjects.length > 2)
-              title = "Generate infill segments";
-            else
-              title = "Generate infill segment";
-
-            final String finalTitle = title;
-
-            final ErrorLogger logger = new ErrorLogger(){
-
-              @Override
-              public void logError(int status, String text, Exception e)
-              {
-                CorePlugin.showMessage("Generate infill", text);
-              }
-
-              @Override
-              public void logError(int status, String text, Exception e,
-                  boolean revealLog)
-              {
-                logError(status, text, e);
-              }
-
-              @Override
-              public void logStack(int status, String text)
-              {
-                logError(status, text, null);
-              }};
-
-            
-            // create this operation
-            final Action doMerge = new Action(title)
+            @Override
+            public void logError(int status, String text, Exception e,
+                boolean revealLog)
             {
-              public void run()
-              {
-                final IUndoableOperation theAction =
-                    new GenerateInfillOperation(finalTitle, subjects,
-                        theLayers, parentTrack, logger);
+              logError(status, text, null);
+            }
 
-                CorePlugin.run(theAction);
-              }
-            };
-            parent.add(new Separator());
-            parent.add(doMerge);
-          }
-        }
-      }
+            @Override
+            public void logStack(int status, String text)
+            {
+              logError(status, text, null);
+            }};
+        }};
+      Layers theLayers = new Layers();
+      
+      IMenuManager parent = new MenuManager();
+      TrackWrapper track = new TrackWrapper();
+      Layer[] parentLayers = new Layer[]{track, track};
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts), origin, new HiResDate(100), new HiResDate(100000));
+      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts), origin, new HiResDate(90000), new HiResDate(200000));
+      Editable[] subjects = new Editable[]{legOne, legTwo};
+      gener.generate(parent, theLayers, parentLayers, subjects);
+      IContributionItem[] newItems = parent.getItems();
+      
+      assertEquals("newItems", 2, newItems.length);
+      
+      ActionContributionItem first = (ActionContributionItem) newItems[1];
+      assertEquals("right name", "Generate infill segment", first.getAction().getText());
+      first.getAction().run();
+      
+      
+      assertEquals("got error message", 1, messages.size());
     }
-
   }
-
+  
   private static class GenerateInfillOperation extends CMAPOperation
   {
 
-    private static final String INSUFFICIENT_TIME = "Insufficient time to insert data. Please try deleting some points.";
-    private static final String OVERLAPPING = "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again";
+    public static final String INSUFFICIENT_TIME =
+        "Insufficient time to insert data. Please try deleting some points.";
+    public static final String OVERLAPPING =
+        "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again";
     /**
      * the parent to update on completion
      */
@@ -163,6 +139,19 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       _logger = logger;
     }
 
+    @Override
+    public boolean canRedo()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return true;
+    }
+
+    @Override
     public IStatus
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
@@ -184,7 +173,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         {
           // output the message
           _logger.logError(res.getSeverity(), res.getMessage(), null);
-          
+
           // stop processing further infills
           break;
         }
@@ -217,8 +206,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       {
         // fail, they overlap
         res =
-            new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
-                OVERLAPPING, null);
+            new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, OVERLAPPING,
+                null);
       }
       else
       {
@@ -257,18 +246,6 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
     }
 
     @Override
-    public boolean canRedo()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean canUndo()
-    {
-      return true;
-    }
-
-    @Override
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
@@ -291,5 +268,113 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       return new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
           "ditch infill successful", null);
     }
+  }
+
+  /**
+   * @param parent
+   * @param theLayers
+   * @param parentLayers
+   * @param subjects
+   */
+  @Override
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    // we're only going to work with two or more items
+    if (subjects.length > 1)
+    {
+      // track the parents
+      final Layer firstParent = parentLayers[0];
+
+      // is it a track?
+      if (firstParent instanceof TrackWrapper)
+      {
+        final TrackWrapper parentTrack = (TrackWrapper) firstParent;
+
+        // do they have the same parent layer?
+        if (parentLayers[1] == parentLayers[0])
+        {
+          // check what's selected, see if they are suitable
+          boolean canDo = true;
+          for (int i = 0; i < subjects.length; i++)
+          {
+            final Editable editable = subjects[i];
+            if (!(editable instanceof TrackSegment))
+            {
+              canDo = false;
+            }
+          }
+
+          // ok, is it worth going for?
+          if (canDo)
+          {
+            String title;
+
+            // see if there are more than one segment to be generated
+            if (subjects.length > 2)
+            {
+              title = "Generate infill segments";
+            }
+            else
+            {
+              title = "Generate infill segment";
+            }
+
+            final String finalTitle = title;
+
+            final ErrorLogger logger = getLogger();
+
+            // create this operation
+            final Action doMerge = new Action(title)
+            {
+              @Override
+              public void run()
+              {
+                final IUndoableOperation theAction =
+                    new GenerateInfillOperation(finalTitle, subjects,
+                        theLayers, parentTrack, logger);
+
+                CorePlugin.run(theAction);
+              }
+            };
+            parent.add(new Separator());
+            parent.add(doMerge);
+          }
+        }
+      }
+    }
+
+  }
+
+  /**
+   * provide an error logger
+   * 
+   * @return
+   */
+  protected ErrorLogger getLogger()
+  {
+    return new ErrorLogger()
+    {
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e)
+      {
+        CorePlugin.showMessage("Generate infill", text);
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e, final boolean revealLog)
+      {
+        logError(status, text, e);
+      }
+
+      @Override
+      public void logStack(final int status, final String text)
+      {
+        logError(status, text, null);
+      }
+    };
   }
 }
