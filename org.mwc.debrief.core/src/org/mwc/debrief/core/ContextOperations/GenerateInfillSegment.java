@@ -212,7 +212,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("got no error message", 0, messages.size());
 
       // check how many entries get deleted
-      assertEquals("correct after len", 58, legTwo.getData().size());
+      assertEquals("correct after len", 57, legTwo.getData().size());
     }
 
     @SuppressWarnings("deprecation")
@@ -283,7 +283,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 3, tmaTrack.getSegments().size());
 
       // check how many entries get deleted
-      assertEquals("correct after len", 8, legTwo.getData().size());
+      assertEquals("correct after len", 7, legTwo.getData().size());
 
       // TODO - test undo processing, check second leg same as original length
       operation.undo(null, null);
@@ -407,7 +407,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 3, track.getSegments().size());
 
       // check how many entries get deleted
-      assertEquals("correct after len", 58, legTwo.getData().size());
+      assertEquals("correct after len", 57, legTwo.getData().size());
 
       // TODO - test undo processing, check second leg same as original length
       operation.undo(null, null);
