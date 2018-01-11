@@ -69,30 +69,36 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       @Override
       protected ErrorLogger getLogger()
       {
-        return new ErrorLogger()
-        {
-
-          @Override
-          public void logError(int status, String text, Exception e)
-          {
-            messages.add(text);
-          }
-
-          @Override
-          public void logError(int status, String text, Exception e,
-              boolean revealLog)
-          {
-            logError(status, text, null);
-          }
-
-          @Override
-          public void logStack(int status, String text)
-          {
-            logError(status, text, null);
-          }
-        };
+        return getMyLogger();
       }
     };
+    
+    protected ErrorLogger getMyLogger()
+    {
+      return new ErrorLogger()
+      {
+
+        @Override
+        public void logError(int status, String text, Exception e)
+        {
+          messages.add(text);
+        }
+
+        @Override
+        public void logError(int status, String text, Exception e,
+            boolean revealLog)
+        {
+          logError(status, text, null);
+        }
+
+        @Override
+        public void logStack(int status, String text)
+        {
+          logError(status, text, null);
+        }
+      };
+      
+    }
 
     @Override
     protected void setUp() throws Exception
@@ -102,9 +108,9 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       // clear any messages
       messages.clear();
     }
-
+    
     @SuppressWarnings("deprecation")
-    public void testTooSmall()
+    public void testTooSmall() throws ExecutionException
     {
       Layers theLayers = new Layers();
       IMenuManager parent = new MenuManager();
@@ -157,13 +163,53 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                
       // check how many entries get deleted
       assertEquals("correct after len", 58, legTwo.getData().size());
+    }
+
+
+    @SuppressWarnings("deprecation")
+    public void testUndo() throws ExecutionException
+    {
+      Layers theLayers = new Layers();
+      TrackWrapper track = new TrackWrapper();
+
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+      
+      GenerateInfillOperation operation  = new GenerateInfillOperation("title", subjects, theLayers, track,getMyLogger() , true);
+
+      assertEquals("correct before len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+      
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+               
+      // check how many entries get deleted
+      assertEquals("correct after len", 58, legTwo.getData().size());
       
       // TODO - test undo processing, check second leg same as original length
-//      first.getAction().
-      
-      // TODO - test deleting fails if the second leg is too short
-      
-      // TODO - test with relative TMA segment
+      operation.undo(null, null);
+      assertEquals("correct after len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
     }
 
     @SuppressWarnings("deprecation")
