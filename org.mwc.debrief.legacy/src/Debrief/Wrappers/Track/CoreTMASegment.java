@@ -107,6 +107,20 @@ abstract public class CoreTMASegment extends TrackSegment implements
     return newFix;
   }
 
+  
+  
+  @Override
+  public void removeElement(Editable p)
+  {
+    // let the parent do the remove
+    super.removeElement(p);
+    
+    // now fire the adjusted call, so if we have a 
+    // dynamic infill, it will know to re-generate itself
+    // to fill in the missing data
+    fireAdjusted();
+  }
+
   protected void fireAdjusted()
   {
     super.firePropertyChange(ADJUSTED, null, System.currentTimeMillis());

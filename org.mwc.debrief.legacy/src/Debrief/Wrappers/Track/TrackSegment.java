@@ -997,6 +997,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     // and let the list do its stuff
     super.removeElement(p);
+    
+    // override the name, just in case we've deleted the first point
+    sortOutDateLabel(null);
   }
 
   @Override

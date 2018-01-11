@@ -16,6 +16,7 @@ package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -38,9 +39,15 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.DebriefPlugin;
 
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
+import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
@@ -49,12 +56,16 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author ian.mayo
  */
 public class GenerateInfillSegment implements RightClickContextItemGenerator
 {
+
+  private static final String DELETE_SUFFIX =
+      " (Delete from 2nd track if necessary)";
 
   public static class TestGenInfill extends TestCase
   {
@@ -65,51 +76,97 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       @Override
       protected ErrorLogger getLogger()
       {
-        return new ErrorLogger()
-        {
-
-          @Override
-          public void logError(int status, String text, Exception e)
-          {
-            messages.add(text);
-          }
-
-          @Override
-          public void logError(int status, String text, Exception e,
-              boolean revealLog)
-          {
-            logError(status, text, null);
-          }
-
-          @Override
-          public void logStack(int status, String text)
-          {
-            logError(status, text, null);
-          }
-        };
+        return getMyLogger();
       }
     };
 
-    
-    
+    protected ErrorLogger getMyLogger()
+    {
+      return new ErrorLogger()
+      {
+
+        @Override
+        public void logError(int status, String text, Exception e)
+        {
+          messages.add(text);
+        }
+
+        @Override
+        public void logError(int status, String text, Exception e,
+            boolean revealLog)
+        {
+          logError(status, text, null);
+        }
+
+        @Override
+        public void logStack(int status, String text)
+        {
+          logError(status, text, null);
+        }
+      };
+
+    }
+
     @Override
     protected void setUp() throws Exception
     {
       super.setUp();
-      
+
       // clear any messages
       messages.clear();
     }
 
     @SuppressWarnings("deprecation")
-    public void testTooSmall()
+    public void testTooSmallSecondTooShort() throws ExecutionException
+    {
+      Layers theLayers = new Layers();
+      TrackWrapper track = new TrackWrapper();
+
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 12, 2, 0));
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      GenerateInfillOperation operation =
+          new GenerateInfillOperation("title", subjects, theLayers, track,
+              getMyLogger(), true);
+
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 1, messages.size());
+      assertEquals("correct message", GenerateInfillOperation.CANT_DELETE,
+          messages.get(0));
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 2, legTwo.getData().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testTooSmall() throws ExecutionException
     {
       Layers theLayers = new Layers();
       IMenuManager parent = new MenuManager();
       TrackWrapper track = new TrackWrapper();
       Layer[] parentLayers = new Layer[]
       {track, track};
-      
+
       HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
       HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
 
@@ -123,16 +180,16 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       AbsoluteTMASegment legTwo =
           new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
               origin, l2_start, l2_end);
-      
+
       track.add(legOne);
       track.add(legTwo);
-      
+
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
       gener.generate(parent, theLayers, parentLayers, subjects);
       IContributionItem[] newItems = parent.getItems();
 
-      assertEquals("newItems", 2, newItems.length);
+      assertEquals("newItems", 3, newItems.length);
 
       ActionContributionItem first = (ActionContributionItem) newItems[1];
       assertEquals("right name", "Generate infill segment", first.getAction()
@@ -140,7 +197,222 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       first.getAction().run();
 
       assertEquals("got error message", 1, messages.size());
-      assertEquals("correct error message", GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
+      assertEquals("correct error message",
+          GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
+
+      assertEquals("correct before len", 60, legTwo.getData().size());
+
+      messages.clear();
+      first = (ActionContributionItem) newItems[2];
+      assertEquals("right name",
+          "Generate infill segment (Delete from 2nd track if necessary)", first
+              .getAction().getText());
+      first.getAction().run();
+
+      assertEquals("got no error message", 0, messages.size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 57, legTwo.getData().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testUndoRelative2() throws ExecutionException
+    {
+      Layers theLayers = new Layers();
+      TrackWrapper tmaTrack = new TrackWrapper();
+      TrackWrapper hostTrack = new TrackWrapper();
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      WorldVector _offset = new WorldVector(12, 0.1, 0);
+
+      SensorWrapper sensor1 = new SensorWrapper("sensor 1");
+      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor1);
+      SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i, 0));
+        SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setBearing(i);
+        contact.setOrigin(origin);
+        sensor1.add(contact);
+        cuts1[i] = contact;
+      }
+
+      SensorWrapper sensor2 = new SensorWrapper("sensor 2");
+      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor2);
+      SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 10 + i, 30));
+        SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setOrigin(origin);
+        contact.setBearing(i);
+        sensor2.add(contact);
+        cuts2[i] = contact;
+      }
+
+      CoreTMASegment legOne =
+          new RelativeTMASegment(cuts1, _offset, new WorldSpeed(13,
+              WorldSpeed.Kts), 12, theLayers, null);
+
+      CoreTMASegment legTwo =
+          new RelativeTMASegment(cuts2, _offset, new WorldSpeed(13,
+              WorldSpeed.Kts), 12, theLayers, null);
+
+      tmaTrack.add(legOne);
+      tmaTrack.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      GenerateInfillOperation operation =
+          new GenerateInfillOperation("title", subjects, theLayers, tmaTrack,
+              getMyLogger(), true);
+
+      assertEquals("correct before len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 7, legTwo.getData().size());
+
+      // TODO - test undo processing, check second leg same as original length
+      operation.undo(null, null);
+      assertEquals("correct after len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testUndoRelative() throws ExecutionException
+    {
+      Layers theLayers = new Layers();
+      TrackWrapper tmaTrack = new TrackWrapper();
+      TrackWrapper hostTrack = new TrackWrapper();
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      WorldVector _offset = new WorldVector(12, 0.1, 0);
+
+      SensorWrapper sensor1 = new SensorWrapper("sensor 1");
+      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor1);
+      SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i, 0));
+        SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setBearing(i);
+        contact.setOrigin(origin);
+        sensor1.add(contact);
+        cuts1[i] = contact;
+      }
+
+      SensorWrapper sensor2 = new SensorWrapper("sensor 2");
+      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor2);
+      SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 21 + i, 0));
+        SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setOrigin(origin);
+        contact.setBearing(i);
+        sensor2.add(contact);
+        cuts2[i] = contact;
+      }
+
+      CoreTMASegment legOne =
+          new RelativeTMASegment(cuts1, _offset, new WorldSpeed(13,
+              WorldSpeed.Kts), 12, theLayers, null);
+
+      CoreTMASegment legTwo =
+          new RelativeTMASegment(cuts2, _offset, new WorldSpeed(13,
+              WorldSpeed.Kts), 12, theLayers, null);
+
+      tmaTrack.add(legOne);
+      tmaTrack.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      GenerateInfillOperation operation =
+          new GenerateInfillOperation("title", subjects, theLayers, tmaTrack,
+              getMyLogger(), true);
+
+      assertEquals("correct before len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 10, legTwo.getData().size());
+
+      // TODO - test undo processing, check second leg same as original length
+      operation.undo(null, null);
+      assertEquals("correct after len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testUndo() throws ExecutionException
+    {
+      Layers theLayers = new Layers();
+      TrackWrapper track = new TrackWrapper();
+
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      GenerateInfillOperation operation =
+          new GenerateInfillOperation("title", subjects, theLayers, track,
+              getMyLogger(), true);
+
+      assertEquals("correct before len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 57, legTwo.getData().size());
+
+      // TODO - test undo processing, check second leg same as original length
+      operation.undo(null, null);
+      assertEquals("correct after len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
     }
 
     @SuppressWarnings("deprecation")
@@ -151,7 +423,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       TrackWrapper track = new TrackWrapper();
       Layer[] parentLayers = new Layer[]
       {track, track};
-      
+
       HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
       HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
 
@@ -165,16 +437,16 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       AbsoluteTMASegment legTwo =
           new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
               origin, l2_start, l2_end);
-      
+
       track.add(legOne);
       track.add(legTwo);
-      
+
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
       gener.generate(parent, theLayers, parentLayers, subjects);
       IContributionItem[] newItems = parent.getItems();
 
-      assertEquals("newItems", 2, newItems.length);
+      assertEquals("newItems", 3, newItems.length);
 
       ActionContributionItem first = (ActionContributionItem) newItems[1];
       assertEquals("right name", "Generate infill segment", first.getAction()
@@ -182,7 +454,58 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       first.getAction().run();
 
       assertEquals("got error message", 1, messages.size());
-      assertEquals("correct error message", GenerateInfillOperation.OVERLAPPING, messages.get(0));
+      assertEquals("correct error message",
+          GenerateInfillOperation.OVERLAPPING, messages.get(0));
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testValid()
+    {
+      Layers theLayers = new Layers();
+      IMenuManager parent = new MenuManager();
+      TrackWrapper track = new TrackWrapper();
+      Layer[] parentLayers = new Layer[]
+      {track, track};
+
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 15, 0));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+      gener.generate(parent, theLayers, parentLayers, subjects);
+      IContributionItem[] newItems = parent.getItems();
+
+      assertEquals("newItems", 3, newItems.length);
+
+      ActionContributionItem first = (ActionContributionItem) newItems[1];
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
+
+      // check the before len
+      assertEquals("Correct before len", 46, legTwo.getData().size());
+      final int beforeLen = legTwo.getData().size();
+
+      first.getAction().run();
+
+      assertEquals("got error message", 0, messages.size());
+
+      // check the len still valid
+      assertEquals("Correct before len", beforeLen, legTwo.getData().size());
+
     }
   }
 
@@ -193,6 +516,9 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         "Insufficient time to insert data. Please try deleting some points.";
     public static final String OVERLAPPING =
         "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again";
+    public static final String CANT_DELETE =
+        "We can't delete points from the following track, there are too few.\nYou must manally delete them from the previous track";
+
     /**
      * the parent to update on completion
      */
@@ -203,10 +529,28 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
     int segCtr = 1;
     private final ErrorLogger _logger;
+    private final boolean _canDelete;
+    private HashMap<TrackSegment, ArrayList<FixWrapper>> _deletedFixes = null;
 
+    /**
+     * 
+     * @param title
+     *          What to call this operation
+     * @param segments
+     *          the list of segments to join
+     * @param theLayers
+     *          the parent layers object
+     * @param parentTrack
+     *          the parent track
+     * @param logger
+     *          error logger
+     * @param canDelete
+     *          whether we allow the alg to delete points
+     */
     public GenerateInfillOperation(final String title,
         final Editable[] segments, final Layers theLayers,
-        final Layer parentTrack, final ErrorLogger logger)
+        final Layer parentTrack, final ErrorLogger logger,
+        final boolean canDelete)
     {
       super(title);
       _segments = segments;
@@ -214,6 +558,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       _parentTrack = parentTrack;
       _infills = new Vector<TrackSegment>();
       _logger = logger;
+      _canDelete = canDelete;
     }
 
     @Override
@@ -248,11 +593,79 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         // did it work?
         if (res != null)
         {
-          // output the message
-          _logger.logError(res.getSeverity(), res.getMessage(), null);
+          // ok, see what the problem was
+          if (_canDelete && INSUFFICIENT_TIME.equals(res.getMessage()))
+          {
+            while (res != null && INSUFFICIENT_TIME.equals(res.getMessage()))
+            {
+              // hmm, check the second track has enough points
+              if (trackTwo.size() <= 2)
+              {
+                // ok, drop out. we can't delete any more
 
-          // stop processing further infills
-          break;
+                // can we restore deleted fixes?
+                if (_deletedFixes != null)
+                {
+                  ArrayList<FixWrapper> thesefixes =
+                      _deletedFixes.get(trackTwo);
+                  if (thesefixes != null)
+                  {
+                    for (FixWrapper t : thesefixes)
+                    {
+                      trackTwo.add(t);
+                    }
+
+                    // ok, remove this from the undo operation
+                    _deletedFixes.remove(thesefixes);
+                  }
+                }
+
+                // ok, sort out failure state
+                res =
+                    new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
+                        CANT_DELETE, null);
+
+                // output the message
+                _logger.logError(res.getSeverity(), res.getMessage(), null);
+
+              }
+              else
+              {
+                // ok, delete a point from the second leg
+                FixWrapper firstPoint =
+                    (FixWrapper) trackTwo.getData().iterator().next();
+
+                if (_deletedFixes == null)
+                {
+                  _deletedFixes =
+                      new HashMap<TrackSegment, ArrayList<FixWrapper>>();
+                }
+
+                // remember this item
+                ArrayList<FixWrapper> fixes = _deletedFixes.get(trackTwo);
+
+                if (fixes == null)
+                {
+                  fixes = new ArrayList<FixWrapper>();
+                  _deletedFixes.put(trackTwo, fixes);
+                }
+
+                fixes.add(firstPoint);
+
+                trackTwo.removeElement(firstPoint);
+
+                res = fillSegments(trackOne, trackTwo);
+              }
+            }
+          }
+          else
+          {
+            // output the message
+            _logger.logError(res.getSeverity(), res.getMessage(), null);
+
+            // stop processing further infills
+            break;
+          }
         }
       }
 
@@ -338,6 +751,19 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       // and clera the infills
       _infills.clear();
 
+      // and reinstore deleted fixes
+      if (_deletedFixes != null)
+      {
+        for (TrackSegment t : _deletedFixes.keySet())
+        {
+          ArrayList<FixWrapper> fixes = _deletedFixes.get(t);
+          for (FixWrapper f : fixes)
+          {
+            t.add(f);
+          }
+        }
+      }
+
       // cool, tell everyone
       _layers.fireExtended(null, _parentTrack);
 
@@ -409,13 +835,27 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               {
                 final IUndoableOperation theAction =
                     new GenerateInfillOperation(finalTitle, subjects,
-                        theLayers, parentTrack, logger);
+                        theLayers, parentTrack, logger, false);
+
+                CorePlugin.run(theAction);
+              }
+            };
+            final String secondTitle = finalTitle + DELETE_SUFFIX;
+            final Action doMergeAllowDelete = new Action(secondTitle)
+            {
+              @Override
+              public void run()
+              {
+                final IUndoableOperation theAction =
+                    new GenerateInfillOperation(secondTitle, subjects,
+                        theLayers, parentTrack, logger, true);
 
                 CorePlugin.run(theAction);
               }
             };
             parent.add(new Separator());
             parent.add(doMerge);
+            parent.add(doMergeAllowDelete);
           }
         }
       }
