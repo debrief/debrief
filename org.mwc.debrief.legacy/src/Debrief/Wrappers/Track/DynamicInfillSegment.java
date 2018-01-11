@@ -635,6 +635,13 @@ public class DynamicInfillSegment extends TrackSegment implements
           "infill_" + FormatRNDateTime.toShortString(new Date().getTime());
       this.setName(name);
     }
+    
+    // hmm, if we only have one point - don't bother. This
+    // effectively forces the infill to have at least two points
+    if(this.size() == 1)
+    {
+      this.getData().clear();
+    }
 
     // also make it dotted, since it's artificially generated
     this.setLineStyle(CanvasType.DOTTED);
