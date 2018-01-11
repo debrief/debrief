@@ -266,8 +266,18 @@ public class DynamicInfillSegment extends TrackSegment implements
    * @param before
    * @param after
    */
-  private void configure(final TrackSegment before, final TrackSegment after)
+  public void configure(final TrackSegment before, final TrackSegment after)
   {
+    // clear existing legs, if we have to
+    if(_before != null)
+    {
+      stopWatching(_before);
+    }
+    if(_after != null)
+    {
+      stopWatching(_after);
+    }
+    
     // ok, remember the tracks
     _before = before;
     _after = after;
@@ -330,6 +340,19 @@ public class DynamicInfillSegment extends TrackSegment implements
   {
     // use the actual segment name, if we know it
     final String res = _after != null ? _after.getName() : _afterName;
+
+    return res;
+  }
+  
+  /**
+   * accessor, used for file storage
+   * 
+   * @return
+   */
+  public TrackSegment getAfterSegment()
+  {
+    // use the actual segment name, if we know it
+    final TrackSegment res = _after != null ? _after : null;
 
     return res;
   }

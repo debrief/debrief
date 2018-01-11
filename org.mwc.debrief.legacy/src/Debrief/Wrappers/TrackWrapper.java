@@ -598,9 +598,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
    *          name to give to the merged object
    * @return sufficient information to undo the merge
    */
-  public static int mergeTracks(final TrackWrapper newTrack,
-      final Layers theLayers, final Editable[] subjects,
-      final Color infillShade)
+  public static int
+      mergeTracks(final TrackWrapper newTrack, final Layers theLayers,
+          final Editable[] subjects, final Color infillShade)
   {
     // check that the legs don't overlap
     final String failedMsg = checkTheyAreNotOverlapping(subjects);
@@ -4866,6 +4866,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       ts2 = new TrackSegment(p2);
     }
 
+    // ok. removing the host segment will delete any infills. So, be sure to re-attach them
+    reconnectInfills(relevantSegment, ts1, ts2);
+
     // now clear the positions
     removeElement(relevantSegment);
 
@@ -4879,6 +4882,42 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
     res.add(ts2);
 
     return res;
+  }
+
+  /**
+   * if a track segment is going to be split (and then deleted), re-attach any infills to one of the
+   * new segments
+   * 
+   * @param toBeDeleted
+   *          the segment that will be split
+   * @param newBefore
+   *          the new first-half of the segment
+   * @param newAfter
+   *          the new second-half of the segment
+   */
+  private void reconnectInfills(TrackSegment toBeDeleted,
+      TrackSegment newBefore, TrackSegment newAfter)
+  {
+    // ok, loop through our legs
+    final Enumeration<Editable> lIter = getSegments().elements();
+    while (lIter.hasMoreElements())
+    {
+      final TrackSegment thisLeg = (TrackSegment) lIter.nextElement();
+      if (thisLeg instanceof DynamicInfillSegment)
+      {
+        final DynamicInfillSegment infill = (DynamicInfillSegment) thisLeg;
+        if (toBeDeleted.equals(infill.getBeforeSegment()))
+        {
+          // connect to new after
+          infill.configure(newAfter, infill.getAfterSegment());
+        }
+        else if (toBeDeleted.equals(infill.getAfterSegment()))
+        {
+          // connect to new before
+          infill.configure(infill.getBeforeSegment(), newAfter);
+        }
+      }
+    }
   }
 
   /**

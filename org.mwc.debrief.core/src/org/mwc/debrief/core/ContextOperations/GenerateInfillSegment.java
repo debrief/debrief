@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -409,7 +410,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       // check how many entries get deleted
       assertEquals("correct after len", 57, legTwo.getData().size());
 
-      // TODO - test undo processing, check second leg same as original length
+      // test undo processing, check second leg same as original length
       operation.undo(null, null);
       assertEquals("correct after len", 60, legTwo.getData().size());
       assertEquals("correct legs", 2, track.getSegments().size());
@@ -502,9 +503,29 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       first.getAction().run();
 
       assertEquals("got error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
 
       // check the len still valid
       assertEquals("Correct before len", beforeLen, legTwo.getData().size());
+      
+      // ok, check that if we split the second, we don't lose the infill
+      
+      // get a point in the second leg
+      FixWrapper target = null;
+      Collection<Editable> secondCuts = legTwo.getData();
+      Iterator<Editable> iter = secondCuts.iterator();
+      for(int i=0;i<6;i++)
+      {
+        target = (FixWrapper) iter.next();
+      }
+      
+      assertNotNull("found it", target);
+      
+      track.splitTrack(target, false);
+      
+      // check we now have 4 legs
+      assertEquals("correct legs", 4, track.getSegments().size());
+      
 
     }
   }
