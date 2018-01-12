@@ -1753,7 +1753,7 @@ public final class StackedDotHelper
           }
 
           final ColouredDataItem bFreq =
-              new ColouredDataItem(thisMilli, baseFreq, thisColor, !newSensor,
+              new ColouredDataItem(thisMilli, baseFreq, thisColor.darker(), !newSensor,
                   null, true, true);
           baseValues.addOrUpdate(bFreq);
 
