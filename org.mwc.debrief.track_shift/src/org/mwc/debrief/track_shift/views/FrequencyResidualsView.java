@@ -14,11 +14,18 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IToolBarManager;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
+  private Action calcBaseFreq;
+
   public FrequencyResidualsView()
   {
     super(false, true);
@@ -47,6 +54,42 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     // update the current datasets
     _myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
         _onlyVisible.isChecked(), _holder, this, updateDoubletsVal);
+  }
+
+
+  @Override
+  protected void addExtras(final IToolBarManager toolBarManager)
+  {
+    super.addExtras(toolBarManager);
+    toolBarManager.add(calcBaseFreq);
+  }
+  
+  @Override
+  protected void makeActions()
+  {
+    super.makeActions();
+    
+    // now frequency calculator
+    calcBaseFreq = new Action("Calculate base frequency", IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+
+        calculateBaseFreq();
+      }
+    };
+    calcBaseFreq.setChecked(true);
+    calcBaseFreq.setToolTipText("Calculate the base frequency of the visible frequency cuts");
+    calcBaseFreq.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/calculator.png"));
+  }
+
+  protected void calculateBaseFreq()
+  {
+    // TODO Auto-generated method stub
+    
   }
 
   @Override
