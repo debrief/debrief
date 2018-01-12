@@ -21,6 +21,8 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.jfree.data.Range;
 import org.jfree.data.time.DateRange;
 import org.jfree.data.time.FixedMillisecond;
@@ -140,14 +142,13 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         if (curve.hasInflection())
         {
           // yes, update the sensor
-          CorePlugin.showMessage("Calculate f-nought",
-              "F=Nought is:" + curve.inflectionFreq());
-
+          showMessage("Calculate f-nought", "F=Nought is:"
+              + curve.inflectionFreq());
         }
         else
         {
           // no, display warning
-          CorePlugin.showMessage("Calculate f-nought",
+          showMessage("Calculate f-nought",
               "Sorry, an inflection point cannot be found in the data");
         }
 
@@ -155,6 +156,18 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         lineData.removeSeries(calculatedData);
       }
     }
+  }
+
+  public void showMessage(final String title, final String message)
+  {
+    Display.getDefault().syncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        MessageDialog.openInformation(null, title, message);
+      }
+    });
   }
 
   private TimeSeries calcSeries(DopplerCurve curve, DateRange curRange)
