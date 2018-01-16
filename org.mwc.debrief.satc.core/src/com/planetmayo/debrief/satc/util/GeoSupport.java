@@ -38,6 +38,9 @@ public class GeoSupport
 {
 	private static volatile GeoCalculatorType _calculatorType = GeoCalculatorType.FAST;
 	
+	/** relax the precision model down from 16 sig places, since we were getting
+	 * "found non-noded intersection" issues while doing a JTS intersection
+	 */
 	private static final GeometryFactory _factory = new GeometryFactory(new PrecisionModel(1000000));
 //  private static final GeometryFactory _factory = new GeometryFactory();
 
