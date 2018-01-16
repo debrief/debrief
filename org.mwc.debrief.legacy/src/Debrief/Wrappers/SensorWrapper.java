@@ -832,8 +832,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
                 displayExpertLongProp("ResampleDataAt", "Resample data at",
                     "the sensor cut sample rate", TEMPORAL,
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                displayProp("Comment", "Comment", "Commend for this entry",
-                    OPTIONAL),
                 displayExpertLongProp("ArrayCentreMode", "Array Centre Mode",
                     "the method used to calculate the array centre", SPATIAL,
                     ArrayCentreModePropertyEditor.class)};
