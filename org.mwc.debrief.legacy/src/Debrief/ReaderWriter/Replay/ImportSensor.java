@@ -158,13 +158,8 @@ final class ImportSensor extends AbstractPlainLineImporter
     try
     {
       // find out if it's our null value
-      if (next.startsWith("N"))
+      if (!next.startsWith("N"))
       {
-        // ditch it,
-      }
-      else
-      {
-
         // get the deg out of this value
         latDeg = MWCXMLReader.readThisDouble(next);
 

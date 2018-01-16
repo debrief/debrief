@@ -1257,7 +1257,7 @@ public class ImportReplay extends PlainImporterBase
    */
   @Override
   public final void
-      importThis(final String fName, final java.io.InputStream is)
+      importThis(final String fName, final InputStream is)
   {
     // declare linecounter
     int lineCounter = 0;

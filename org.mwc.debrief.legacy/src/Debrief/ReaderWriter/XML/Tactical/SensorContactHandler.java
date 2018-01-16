@@ -61,18 +61,18 @@ abstract public class SensorContactHandler extends
 
   private static final String RANGE = "Range";
 
-  Debrief.Wrappers.SensorContactWrapper _theContact;
+  private Debrief.Wrappers.SensorContactWrapper _theContact;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static final MWC.GUI.Properties.LocationPropertyEditor lp =
+  private static final MWC.GUI.Properties.LocationPropertyEditor lp =
       new MWC.GUI.Properties.LocationPropertyEditor();
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static final MWC.GUI.Properties.LineLocationPropertyEditor ll =
+  private static final MWC.GUI.Properties.LineLocationPropertyEditor ll =
       new MWC.GUI.Properties.LineLocationPropertyEditor();
 
   /**

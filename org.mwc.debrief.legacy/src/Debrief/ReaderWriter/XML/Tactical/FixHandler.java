@@ -23,11 +23,16 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import Debrief.Wrappers.FixWrapper;
+import MWC.GUI.Plottable;
+import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
@@ -35,14 +40,14 @@ abstract public class FixHandler extends
     MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  MWC.TacticalData.Fix _theFix;
-  Debrief.Wrappers.FixWrapper _theFixWrapper;
+  private MWC.TacticalData.Fix _theFix;
+  private Debrief.Wrappers.FixWrapper _theFixWrapper;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static final MWC.GUI.Properties.LocationPropertyEditor lp =
-      new MWC.GUI.Properties.LocationPropertyEditor();
+  private static final LocationPropertyEditor lp =
+      new LocationPropertyEditor();
 
   public FixHandler()
   {
@@ -206,10 +211,10 @@ abstract public class FixHandler extends
     _theFixWrapper = null;
   }
 
-  abstract public void addPlottable(MWC.GUI.Plottable plottable);
+  abstract public void addPlottable(Plottable plottable);
 
-  public static void exportFix(final Debrief.Wrappers.FixWrapper fix,
-      final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+  public static void exportFix(final FixWrapper fix,
+      final Element parent, final Document doc)
   {
     /*
      * <!ELEMENT fix (colour?, centre)> <!ATTLIST fix course CDATA #REQUIRED speed CDATA #REQUIRED
@@ -248,7 +253,7 @@ abstract public class FixHandler extends
       }
       else
       {
-        MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(fCol,
+        ColourHandler.exportColour(fCol,
             eFix, doc);
       }
 
@@ -270,7 +275,7 @@ abstract public class FixHandler extends
     }
 
     // and now the centre item,
-    MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(fix
+    LocationHandler.exportLocation(fix
         .getLocation(), "centre", eFix, doc);
 
     parent.appendChild(eFix);
