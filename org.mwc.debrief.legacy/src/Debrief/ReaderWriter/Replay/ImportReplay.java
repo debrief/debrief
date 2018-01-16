@@ -430,28 +430,31 @@ public class ImportReplay extends PlainImporterBase
     public void testTrailingComment()
     {
       ImportReplay imp = new ImportReplay();
-      final String test1 =
-          " LABEL // COMMENT";
+      final String test1 = " LABEL // COMMENT";
       assertEquals("LABEL", imp.getLabel(test1));
       assertEquals("COMMENT", imp.getComment(test1));
 
-      final String test2 =
-          " LABEL";
+      final String test2 = " LABEL";
       assertEquals("LABEL", imp.getLabel(test2));
       assertEquals(null, imp.getComment(test2));
 
-      final String test3 =
-          " LABEL//";
+      final String test3 = " LABEL//";
       assertEquals("LABEL", imp.getLabel(test3));
       assertEquals(null, imp.getComment(test3));
 
-      final String test4 =
-          "//COMMENT";
+      final String test4 = "//COMMENT";
       assertEquals(null, imp.getLabel(test4));
       assertEquals("COMMENT", imp.getComment(test4));
 
+      final String test5 = "";
+      assertEquals(null, imp.getLabel(test5));
+      assertEquals(null, imp.getComment(test5));
+
+      final String test6 = null;
+      assertEquals(null, imp.getLabel(test6));
+      assertEquals(null, imp.getComment(test6));
     }
-    
+
     public final void testParseSymbology()
     {
       final String test =
@@ -1102,46 +1105,61 @@ public class ImportReplay extends PlainImporterBase
     }
     return res;
   }
-  
-  /** utility method to extract a label from a composite end of line block
-   * that optionally includes a comment
-   * ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
+
+  /**
+   * utility method to extract a label from a composite end of line block that optionally includes a
+   * comment ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
    */
   final protected String getLabel(final String content)
   {
     final String res;
-    if(content.contains("//"))
+    if (content != null)
     {
-      String[] strings = content.trim().split("//");
-      String first = strings[0].trim();
-      if(first.length() > 0)
+      if (content.contains("//"))
       {
-        res = first;
+        final String[] strings = content.trim().split("//");
+        final String first = strings[0].trim();
+        if (first.length() > 0)
+        {
+          res = first;
+        }
+        else
+        {
+          res = null;
+        }
       }
       else
       {
-        res = null;
+        final String txt = content.trim();
+        if (txt.length() > 0)
+        {
+          res = txt;
+        }
+        else
+        {
+          res = null;
+        }
       }
     }
     else
     {
-      res = content.trim();
+      res = null;
     }
-    
+
     return res;
   }
 
-  /** utility method to extract a label from a composite end of line block
-   * that optionally includes a comment
-   * ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
+  /**
+   * utility method to extract a label from a composite end of line block that optionally includes a
+   * comment ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
    */
   final protected String getComment(final String content)
   {
     final String res;
-    if(content.contains("//"))
+    if (content != null && content.contains("//"))
     {
       String[] strings = content.trim().split("//");
-      if(strings.length > 1)
+      if (strings.length > 1)
       {
         res = strings[1].trim();
       }
@@ -1154,7 +1172,7 @@ public class ImportReplay extends PlainImporterBase
     {
       res = null;
     }
-    
+
     return res;
   }
 
