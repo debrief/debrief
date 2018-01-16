@@ -8197,7 +8197,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>16</entry>
                     <entry>Text label (optional). Any text appearing after the depth value is used
                       as a label for that position. If no label is supplied a time-related label is
-                      generated.</entry>
+                      generated. <emphasis>Note: since Jan 2018 it has been possible to also
+                      provide a comment. See <xref linkend="entry_comments"/></emphasis></entry>
                   </row>
                 </tbody>
               </tgroup>
@@ -8921,14 +8922,16 @@ minima (yards), label
 ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H 
 BBB.B RRRR yy..yy xx..xx 
 ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
-bearing (degs), range(yds) [or the single world NULL], sensor name, label (to end of line)
+bearing (degs), range(yds) [or the single world NULL], sensor name, label (to end of line),
+, optional comment - see <xref linkend="entry_comments"/>
 
 ;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C 
 FFF.F RRRR yy..yy xx..xx
 ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
 bearing (degs) [or the single word NULL], ambigous bearing (degs) [or the 
 single word NULL], frequency(Hz) [or the single word NULL],  range(yds) 
-[or the single word NULL], sensor name, label (to end of line)
+[or the single word NULL], sensor name, label (to end of line), optional
+comment - see <xref linkend="entry_comments"/>
 
 ;SENSOR3: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B  CCC.C 
 FFF.F GGG.G RRRR yy..yy xx..xx
@@ -8936,7 +8939,8 @@ FFF.F GGG.G RRRR yy..yy xx..xx
 bearing (degs) [or the single word NULL], bearing accuracy (degs) 
 [or the single word NULL], frequency(Hz) [or the single word NULL], 
 frequency accuracy (Hz) [or the single word NULL], range(yds) 
-[or the single word NULL], sensor name, label (to end of line)
+[or the single word NULL], sensor name, label (to end of line), optional
+comment - see <xref linkend="entry_comments"/>
 
 ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H 
 TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx 
@@ -8960,6 +8964,30 @@ and entry type can be multi-word if surrounded by quotes (").
             </markup>   </screen>
             </para>
           </sect2>
+        <sect2 xml:id="entry_comments">
+          <title>Entry comments</title>
+          <para><indexterm>
+            <primary>Replay File Format</primary><secondary>Entry comment</secondary></indexterm>
+            Note: some entry types allow a non-plotted comment to be appended to the end of an entry. 
+            The comment follows  a <emphasis>//</emphasis> separator.</para>
+          <screen width="70"><markup>
+951212 050100.000 NONSUCH   @A@00   22 12 10.51 N 21 32 14.81 W 269.9   2.0      0
+;; label is normal DTG value, comment is empty (legacy behaviour)
+
+951212 050200.000 NONSUCH   @A@00   22 12 10.51 N 21 32 14.81 W 269.9   2.0      0 Standard label
+;; label is "Standard label", comment is empty (legacy behaviour)
+
+951212 050300.000 NONSUCH   @A@00   22 12 10.51 N 21 32 27.27 W 268.7   2.0      0 Standard label // Custom comment
+;; label is "Standard label", comment is "Custom comment"
+
+951212 050400.000 NONSUCH   @BA10   22 12 10.28 N 21 32 40.33 W 270.6   2.0      0 // Custom comment
+;; label is normal DTG value, comment is "Custom comment"
+
+;SENSOR2: 951212 051600.000 NEL_STYLE2 @B NULL 59.3 300.8 49.96 NULL SENSOR LABEL // COMMENT
+;; label is "SENSOR LABEL", comment is "COMMENT"
+          </markup>
+          </screen>
+        </sect2>
         <sect2 xml:id="towed_array_annotations">
           <title>Towed Array Extensions</title>
           <para><indexterm>
