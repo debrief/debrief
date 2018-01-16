@@ -16,14 +16,12 @@ package org.mwc.debrief.track_shift.views;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.jfree.data.Range;
 import org.jfree.data.time.DateRange;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
@@ -138,19 +136,10 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         TimeSeries calculatedData = calcSeries(curve, curRange);
         lineData.addSeries(calculatedData);
 
-        // does it contain an inflection ponit?
-        if (curve.hasInflection())
-        {
-          // yes, update the sensor
-          showMessage("Calculate f-nought", "F=Nought is:"
-              + curve.inflectionFreq());
-        }
-        else
-        {
-          // no, display warning
-          showMessage("Calculate f-nought",
-              "Sorry, an inflection point cannot be found in the data");
-        }
+        showMessage("Calculate f-nought", "F=Nought is:"
+            + curve.inflectionFreq());
+
+        // TODO: update the sensor
 
         // and remove the curve
         lineData.removeSeries(calculatedData);
