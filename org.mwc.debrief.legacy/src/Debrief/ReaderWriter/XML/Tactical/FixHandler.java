@@ -27,6 +27,8 @@ import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
@@ -36,12 +38,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-abstract public class FixHandler extends
-    MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract public class FixHandler extends MWCXMLReader
 {
 
-  private MWC.TacticalData.Fix _theFix;
-  private Debrief.Wrappers.FixWrapper _theFixWrapper;
+  private Fix _theFix;
+  private FixWrapper _theFixWrapper;
 
   /**
    * class which contains list of textual representations of label locations

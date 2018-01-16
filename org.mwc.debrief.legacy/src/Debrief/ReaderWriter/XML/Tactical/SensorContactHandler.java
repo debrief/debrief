@@ -26,6 +26,9 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import MWC.GUI.Properties.LineLocationPropertyEditor;
+import MWC.GUI.Properties.LineStylePropertyEditor;
+import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.*;
 
@@ -66,20 +69,20 @@ abstract public class SensorContactHandler extends
   /**
    * class which contains list of textual representations of label locations
    */
-  private static final MWC.GUI.Properties.LocationPropertyEditor lp =
-      new MWC.GUI.Properties.LocationPropertyEditor();
+  private static final LocationPropertyEditor lp =
+      new LocationPropertyEditor();
 
   /**
    * class which contains list of textual representations of label locations
    */
-  private static final MWC.GUI.Properties.LineLocationPropertyEditor ll =
-      new MWC.GUI.Properties.LineLocationPropertyEditor();
+  private static final LineLocationPropertyEditor ll =
+      new LineLocationPropertyEditor();
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static final MWC.GUI.Properties.LineStylePropertyEditor ls =
-      new MWC.GUI.Properties.LineStylePropertyEditor();
+  private static final LineStylePropertyEditor ls =
+      new LineStylePropertyEditor();
 
   private WorldDistance _myRange = null;
 
