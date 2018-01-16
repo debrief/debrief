@@ -128,9 +128,6 @@ final class ImportSensor extends AbstractPlainLineImporter
     // declare local variables
     String theTrack;
     String sensorName;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
     WorldLocation origin = null;
     HiResDate theDtg = null;
     double brg, rng;
@@ -161,17 +158,19 @@ final class ImportSensor extends AbstractPlainLineImporter
       if (!next.startsWith("N"))
       {
         // get the deg out of this value
-        latDeg = MWCXMLReader.readThisDouble(next);
+        final double latDeg = MWCXMLReader.readThisDouble(next);
 
         // ok, this is valid data, persevere with it
-        latMin = MWCXMLReader.readThisDouble(st.nextToken());
-        latSec = MWCXMLReader.readThisDouble(st.nextToken());
+        final double latMin = MWCXMLReader.readThisDouble(st.nextToken());
+        final double latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
         /**
          * now, we may have trouble here, since there may not be a space between the hemisphere
          * character and a 3-digit latitude value - so BE CAREFUL
          */
         final String vDiff = st.nextToken();
+        final double longDeg;
+        final char latHem;
         if (vDiff.length() > 3)
         {
           // hmm, they are combined
@@ -186,9 +185,9 @@ final class ImportSensor extends AbstractPlainLineImporter
           longDeg = MWCXMLReader.readThisDouble(st.nextToken());
         }
 
-        longMin = MWCXMLReader.readThisDouble(st.nextToken());
-        longSec = MWCXMLReader.readThisDouble(st.nextToken());
-        longHem = st.nextToken().charAt(0);
+        final double longMin = MWCXMLReader.readThisDouble(st.nextToken());
+        final double longSec = MWCXMLReader.readThisDouble(st.nextToken());
+        final char longHem = st.nextToken().charAt(0);
 
         // create the origin
         origin =
