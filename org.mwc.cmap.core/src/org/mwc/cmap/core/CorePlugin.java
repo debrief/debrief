@@ -402,7 +402,11 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     }
     else
     {
-      Display.getDefault().syncExec(runnable);
+      // see if the workbench is running yet
+      if(PlatformUI.isWorkbenchRunning())
+      {
+        Display.getDefault().syncExec(runnable);
+      }
     }
     return contexts[0];
   }

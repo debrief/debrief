@@ -205,6 +205,12 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     static final long serialVersionUID = 1;
 
     private java.awt.Color _theColor = Color.yellow;
+    
+
+    /** (optional) comment field
+     * 
+     */
+    private String _theComment;
 
     /**
      * whether this shape is visible
@@ -320,6 +326,16 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     public java.awt.Color getColor()
     {
         return _theColor;
+    }
+    
+    public void setComment(String comment)
+    {
+      _theComment = comment;
+    }
+    
+    public String getComment()
+    {
+      return _theComment;
     }
 
     /**

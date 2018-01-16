@@ -266,8 +266,18 @@ public class DynamicInfillSegment extends TrackSegment implements
    * @param before
    * @param after
    */
-  private void configure(final TrackSegment before, final TrackSegment after)
+  public void configure(final TrackSegment before, final TrackSegment after)
   {
+    // clear existing legs, if we have to
+    if(_before != null)
+    {
+      stopWatching(_before);
+    }
+    if(_after != null)
+    {
+      stopWatching(_after);
+    }
+    
     // ok, remember the tracks
     _before = before;
     _after = after;
@@ -330,6 +340,19 @@ public class DynamicInfillSegment extends TrackSegment implements
   {
     // use the actual segment name, if we know it
     final String res = _after != null ? _after.getName() : _afterName;
+
+    return res;
+  }
+  
+  /**
+   * accessor, used for file storage
+   * 
+   * @return
+   */
+  public TrackSegment getAfterSegment()
+  {
+    // use the actual segment name, if we know it
+    final TrackSegment res = _after != null ? _after : null;
 
     return res;
   }
@@ -634,6 +657,13 @@ public class DynamicInfillSegment extends TrackSegment implements
       final String name =
           "infill_" + FormatRNDateTime.toShortString(new Date().getTime());
       this.setName(name);
+    }
+    
+    // hmm, if we only have one point - don't bother. This
+    // effectively forces the infill to have at least two points
+    if(this.size() == 1)
+    {
+      this.getData().clear();
     }
 
     // also make it dotted, since it's artificially generated

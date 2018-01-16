@@ -160,6 +160,7 @@ import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
@@ -289,7 +290,8 @@ public final class SensorContactWrapper extends
       // just add the reset color field first
       final Class<SensorContactWrapper> c = SensorContactWrapper.class;
       final MethodDescriptor[] mds =
-      {method(c, "resetColor", null, "Reset Color")};
+          {method(c, "resetColor", null, "Reset Color"),
+              method(c, "clearOrigin", null, "Clear Origin")};
       return mds;
     }
 
@@ -342,6 +344,8 @@ public final class SensorContactWrapper extends
                     "style to use to plot the line",
                     MWC.GUI.Properties.LineStylePropertyEditor.class),
                 prop("Range", "range to centre of solution", SPATIAL),
+                displayProp("Comment", "Comment", "Comment for this entry",
+                    OPTIONAL),
                 prop("Bearing", "bearing to centre of solution", SPATIAL)
 
             };
@@ -642,10 +646,9 @@ public final class SensorContactWrapper extends
   private boolean _hasFreq = false;
 
   private double _freq;
-  
 
   /**
-   *  cache the date string
+   * cache the date string
    */
   private transient String _cachedName = null;
 
@@ -1149,14 +1152,14 @@ public final class SensorContactWrapper extends
     return "Sensor:" + getSensorName() + "\nDTG:" + getName() + "\nTrack:"
         + getLabel();
   }
-  
+
   /**
    * get the name of this entry, using the formatted DTG
    */
   @Override
   public final String getName()
   {
-    if(_cachedName == null)
+    if (_cachedName == null)
     {
       _cachedName = DebriefFormatDateTime.toStringHiRes(_DTG);
     }
@@ -1330,117 +1333,114 @@ public final class SensorContactWrapper extends
     // do we need an origin
     final WorldLocation origin = getCalculatedOrigin(track);
 
-    // final TimePeriod trackPeriod =
-    // new TimePeriod.BaseTimePeriod(track.getStartDTG(), track.getEndDTG());
-    // if (!trackPeriod.contains(this.getTime()))
-    // {
-    // // don't bother trying to plot it, we're outside the parent period
-    // return;
-    // }
-
-    // ok, we have the start - convert it to a point
-    final Point pt = new Point(dest.toScreen(origin));
-
-    // check we have at least a bearing
-    if (this.getHasBearing())
+    // check we've managed to determine an origin
+    if (origin != null)
     {
 
-      // see if we have ambiguous data
-      final boolean hasAmbig = !Double.isNaN(_bearingAmbig);
+      // ok, we have the start - convert it to a point
+      final Point pt = new Point(dest.toScreen(origin));
 
-      // and convert to screen coords
-      final WorldLocation theFarEnd =
-          getFarEnd(dest.getProjection().getDataArea());
-      final Point farEnd = dest.toScreen(theFarEnd);
-
-      final Color baseColor = getColor();
-
-      final Color bearingOneColor;
-      final Color bearingTwoColor;
-      if (hasAmbig && getHasAmbiguousBearing())
+      // check we have at least a bearing
+      if (this.getHasBearing())
       {
-        if (isBearingToPort())
+
+        // see if we have ambiguous data
+        final boolean hasAmbig = !Double.isNaN(_bearingAmbig);
+
+        // and convert to screen coords
+        final WorldLocation theFarEnd =
+            getFarEnd(dest.getProjection().getDataArea());
+        final Point farEnd = dest.toScreen(theFarEnd);
+
+        final Color baseColor = getColor();
+
+        final Color bearingOneColor;
+        final Color bearingTwoColor;
+        if (hasAmbig && getHasAmbiguousBearing())
         {
-          bearingOneColor = baseColor;
-          bearingTwoColor = baseColor.darker();
+          if (isBearingToPort())
+          {
+            bearingOneColor = baseColor;
+            bearingTwoColor = baseColor.darker();
+          }
+          else
+          {
+            bearingOneColor = baseColor.darker();
+            bearingTwoColor = baseColor;
+          }
         }
         else
         {
-          bearingOneColor = baseColor.darker();
-          bearingTwoColor = baseColor;
+          bearingOneColor = baseColor;
+          bearingTwoColor = null;
         }
-      }
-      else
-      {
-        bearingOneColor = baseColor;
-        bearingTwoColor = null;
-      }
 
-      // set the colour
-      dest.setColor(bearingOneColor);
+        // set the colour
+        dest.setColor(bearingOneColor);
 
-      // only use line styles if we are allowed to (it is a particular problem
-      // when in snail mode)
-      if (!keep_simple)
-      {
-        // set the line style
-        dest.setLineStyle(_myLineStyle);
-      }
+        // only use line styles if we are allowed to (it is a particular problem
+        // when in snail mode)
+        if (!keep_simple)
+        {
+          // set the line style
+          dest.setLineStyle(_myLineStyle);
+        }
 
-      // draw the line
-      if (farEnd != null)
-      {
-        dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
-      }
-
-      // do we have an ambiguous bearing?
-      if (this.getHasAmbiguousBearing())
-      {
-        dest.setColor(bearingTwoColor);
-
-        final WorldLocation theOtherFarEnd =
-            getAmbiguousFarEnd(dest.getProjection().getDataArea());
-
-        final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
         // draw the line
-        dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
-      }
+        if (farEnd != null)
+        {
+          dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+        }
 
-      // only plot the label if we don't want it simple
-      if (!keep_simple && getLabelVisible())
-      {
+        // do we have an ambiguous bearing?
+        if (this.getHasAmbiguousBearing())
+        {
+          dest.setColor(bearingTwoColor);
+
+          final WorldLocation theOtherFarEnd =
+              getAmbiguousFarEnd(dest.getProjection().getDataArea());
+
+          final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
+          // draw the line
+          dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
+        }
+
+        // only plot the label if we don't want it simple
+        if (!keep_simple && getLabelVisible())
+        {
+          // restore the solid line style, for the next poor bugger
+          dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
+
+          // now draw the label
+          WorldLocation labelPos = null;
+
+          // sort out where to plot it
+          if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
+          {
+            // use the start
+            labelPos = origin;
+          }
+          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
+          {
+            // put it at the end
+            labelPos = theFarEnd;
+          }
+          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
+          {
+            // calculate the centre point
+            final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
+            labelPos = tmpArea.getCentre();
+          }
+
+          // update it's location
+          _theLabel.setLocation(labelPos);
+          _theLabel.setColor(getColor());
+          _theLabel.paint(dest);
+
+        }
         // restore the solid line style, for the next poor bugger
         dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
-
-        // now draw the label
-        WorldLocation labelPos = null;
-
-        // sort out where to plot it
-        if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
-        {
-          // use the start
-          labelPos = origin;
-        }
-        else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
-        {
-          // put it at the end
-          labelPos = theFarEnd;
-        }
-        else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-        {
-          // calculate the centre point
-          final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
-          labelPos = tmpArea.getCentre();
-        }
-
-        // update it's location
-        _theLabel.setLocation(labelPos);
-        _theLabel.setColor(getColor());
-        _theLabel.paint(dest);
-
       }
-      // restore the solid line style, for the next poor bugger
-      dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
     }
   }
 
@@ -1503,9 +1503,9 @@ public final class SensorContactWrapper extends
         final WorldDistance dist = other.rangeFrom(_calculatedOrigin, farEnd);
         res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
       }
-      
+
       // we should also do this for an ambiguous cut
-      if(getHasAmbiguousBearing())
+      if (getHasAmbiguousBearing())
       {
         // we can only do the far end if we have the range of the sensor contact
         final WorldLocation farEndAmbig = getAmbiguousFarEnd(outerEnvelope);
@@ -1519,9 +1519,10 @@ public final class SensorContactWrapper extends
         // lastly determine the range from the nearest point on the track
         if ((_calculatedOrigin != null) && (farEndAmbig != null))
         {
-          final WorldDistance dist = other.rangeFrom(_calculatedOrigin, farEndAmbig);
+          final WorldDistance dist =
+              other.rangeFrom(_calculatedOrigin, farEndAmbig);
           res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
-        }        
+        }
       }
     }
 
@@ -1537,10 +1538,19 @@ public final class SensorContactWrapper extends
     setColor(null);
   }
 
+  /**
+   * method to reset the colour, so that we take that of our parent
+   */
+  @FireExtended
+  public final void clearOrigin()
+  {
+    setOrigin(null);
+  }
+
   public final void setAmbiguousBearing(final double valDegs)
   {
     _bearingAmbig = valDegs;
-    
+
     // also clear the cached value
     clearCachedPortBearing();
   }
@@ -1552,7 +1562,7 @@ public final class SensorContactWrapper extends
   {
     _bearing = degs;
     _hasBearing = true;
-    
+
     // also clear the cached value
     clearCachedPortBearing();
   }
@@ -1564,7 +1574,7 @@ public final class SensorContactWrapper extends
   public final void setDTG(final HiResDate val)
   {
     _DTG = val;
-    
+
     // also clear the cached name
     _cachedName = null;
   }
@@ -1577,7 +1587,7 @@ public final class SensorContactWrapper extends
   public final void setHasAmbiguousBearing(final boolean val)
   {
     // just double-check that we have some ambiguous data
-    if(Double.isNaN(_bearingAmbig))
+    if (Double.isNaN(_bearingAmbig))
     {
       // ignore the call, we don't have an ambig
       // bearing anyway
@@ -1678,8 +1688,8 @@ public final class SensorContactWrapper extends
     return getName();
   }
 
-  /** we cache whether the bearing is to Port or Stbd
-   * Occasionally we need to clear this value
+  /**
+   * we cache whether the bearing is to Port or Stbd Occasionally we need to clear this value
    */
   private void clearCachedPortBearing()
   {

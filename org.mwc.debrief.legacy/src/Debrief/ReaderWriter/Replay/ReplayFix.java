@@ -75,6 +75,10 @@ public final class ReplayFix
    * 
    */
 	public String label;
+	/** the (optional) comment
+	 * 
+	 */
+  public String comment;
   
   //////////////////////////////////////////////////
   // constructor

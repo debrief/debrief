@@ -279,7 +279,10 @@ public final class ImportFix extends AbstractPlainLineImporter
 			rf.theTrackName = theTrackName;
 			rf.theSymbology = symbology;
 			if ((txtLabel != null) && (txtLabel.length() > 0))
-				rf.label = txtLabel;
+			{
+				rf.label = ImportReplay.getLabel(txtLabel);
+				rf.comment = ImportReplay.getComment(txtLabel);
+			}
 	
 			return rf;
 		}

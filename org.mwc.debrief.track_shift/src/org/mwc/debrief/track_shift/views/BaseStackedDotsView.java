@@ -449,7 +449,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         if (evt.getNewValue() instanceof DynamicInfillSegment)
         {
-          updateStackedDots(false);
+          // if the infill has moved, we need to re-generate
+          // the doublets, to capture the new location.
+          updateStackedDots(true);
         }
       }
     };
@@ -893,9 +895,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           final List<SensorContactWrapper> bearings =
               _myHelper.getBearings(_myHelper.getPrimaryTrack(), _onlyVisible
                   .isChecked(), period);
-          res =
-              sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
-                  secondary, _slicePrecision);
+
+          // note: the slicer depends upon bearing. check we have bearing
+          if (bearings.size() > 0 && !Double.isNaN(bearings.get(0).getBearing()))
+          {
+            res =
+                sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
+                    secondary, _slicePrecision);
+          }
+          else
+          {
+            res = null;
+          }
         }
         else
         {

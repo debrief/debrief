@@ -23,26 +23,32 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import Debrief.Wrappers.FixWrapper;
+import MWC.GUI.Plottable;
+import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-
-abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract public class FixHandler extends MWCXMLReader
 {
 
-  MWC.TacticalData.Fix _theFix;
-  Debrief.Wrappers.FixWrapper _theFixWrapper;
+  private Fix _theFix;
+  private FixWrapper _theFixWrapper;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static final MWC.GUI.Properties.LocationPropertyEditor lp
-    = new MWC.GUI.Properties.LocationPropertyEditor();
+  private static final LocationPropertyEditor lp =
+      new LocationPropertyEditor();
 
   public FixHandler()
   {
@@ -54,6 +60,13 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       public void setValue(final String name, final String value)
       {
         _theFixWrapper.setLabel(fromXML(value));
+      }
+    });
+    addAttributeHandler(new HandleAttribute("Comment")
+    {
+      public void setValue(final String name, final String value)
+      {
+        _theFixWrapper.setComment(fromXML(value));
       }
     });
     addHandler(new FontHandler()
@@ -70,7 +83,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
         try
         {
           double courseVal = readThisDouble(value);
-          if(courseVal < 0)
+          if (courseVal < 0)
           {
             // trim it back to positive domain
             courseVal += 360;
@@ -79,11 +92,11 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
         }
         catch (final java.text.ParseException pe)
         {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
+          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
+              + " value is:" + value);
         }
       }
     });
-
 
     addAttributeHandler(new HandleAttribute("Speed")
     {
@@ -91,11 +104,13 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       {
         try
         {
-          _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(readThisDouble(value)));
+          _theFix.setSpeed(MWC.Algorithms.Conversions
+              .Kts2Yps(readThisDouble(value)));
         }
         catch (final java.text.ParseException pe)
         {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
+          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
+              + " value is:" + value);
         }
 
       }
@@ -181,8 +196,8 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
   public final void handleOurselves(final String name, final Attributes atts)
   {
     // create the new items
-    _theFix = new MWC.TacticalData.Fix();
-    _theFixWrapper = new Debrief.Wrappers.FixWrapper(_theFix);
+    _theFix = new Fix();
+    _theFixWrapper = new FixWrapper(_theFix);
     lp.setValue(null);
 
     super.handleOurselves(name, atts);
@@ -197,28 +212,28 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     _theFixWrapper = null;
   }
 
-  abstract public void addPlottable(MWC.GUI.Plottable plottable);
+  abstract public void addPlottable(Plottable plottable);
 
-  public static void exportFix(final Debrief.Wrappers.FixWrapper fix, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+  public static void exportFix(final FixWrapper fix,
+      final Element parent, final Document doc)
   {
     /*
-<!ELEMENT fix (colour?, centre)>
-<!ATTLIST fix
-  course CDATA #REQUIRED
-  speed CDATA #REQUIRED
-  dtg CDATA #REQUIRED
-  visible (TRUE|FALSE) "TRUE"
-  label CDATA #IMPLIED
-  LabelShowing (TRUE|FALSE) #IMPLIED
-  SymbolShowing (TRUE|FALSE) "TRUE"
-  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
-    */
+     * <!ELEMENT fix (colour?, centre)> <!ATTLIST fix course CDATA #REQUIRED speed CDATA #REQUIRED
+     * dtg CDATA #REQUIRED visible (TRUE|FALSE) "TRUE" label CDATA #IMPLIED LabelShowing
+     * (TRUE|FALSE) #IMPLIED SymbolShowing (TRUE|FALSE) "TRUE" LabelLocation
+     * (Top|Left|Bottom|Centre|Right) "Left"
+     */
     final Element eFix = doc.createElement("fix");
-    eFix.setAttribute("Course", "" + writeThis(MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse())));
+    eFix.setAttribute("Course", ""
+        + writeThis(MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse())));
     eFix.setAttribute("Speed", "" + writeThis(fix.getSpeed()));
     eFix.setAttribute("Dtg", writeThis(fix.getTime()));
     eFix.setAttribute("Visible", writeThis(fix.getVisible()));
     eFix.setAttribute("Label", toXML(fix.getLabel()));
+    if (fix.getComment() != null)
+    {
+      eFix.setAttribute("Comment", toXML(fix.getComment()));
+    }
     eFix.setAttribute("LabelShowing", writeThis(fix.getLabelShowing()));
     eFix.setAttribute("LineShowing", writeThis(fix.getLineShowing()));
     eFix.setAttribute("SymbolShowing", writeThis(fix.getSymbolShowing()));
@@ -239,7 +254,8 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       }
       else
       {
-        MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(fCol, eFix, doc);
+        ColourHandler.exportColour(fCol,
+            eFix, doc);
       }
 
     }
@@ -249,7 +265,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     if (theFont != null)
     {
       // ok, compare the font to the parent
-      if(theFont.equals(fix.getTrackWrapper().getTrackFont()))
+      if (theFont.equals(fix.getTrackWrapper().getTrackFont()))
       {
         // don't bother outputting the font - it's the same as the parent anyway
       }
@@ -260,11 +276,11 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     }
 
     // and now the centre item,
-    MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(fix.getLocation(), "centre", eFix, doc);
+    LocationHandler.exportLocation(fix
+        .getLocation(), "centre", eFix, doc);
 
     parent.appendChild(eFix);
 
   }
-
 
 }
