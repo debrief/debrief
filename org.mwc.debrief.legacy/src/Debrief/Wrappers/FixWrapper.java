@@ -403,6 +403,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
                       "the location of the fix", SPATIAL),
                   prop("Visible", "whether the whole fix is visible",
                       VISIBILITY),
+                  displayProp("Comment", "Comment",
+                          "Commend for this entry", OPTIONAL),
                   displayProp("LabelShowing", "Label showing",
                       "whether the label is showing", VISIBILITY),
                   displayLongProp("LabelFormat", "Label format",
@@ -723,7 +725,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * flag for whether to show the label
    */
   private boolean _showLabel;
-
+  
   /**
    * the font to draw this track in.
    */
@@ -1462,6 +1464,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       _theLocationWrapper.setColor(getColor());
     }
   }
+
 
   /**
    * set the course for this observation
