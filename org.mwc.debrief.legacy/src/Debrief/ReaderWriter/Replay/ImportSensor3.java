@@ -64,17 +64,16 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
     StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
-    String theText;
     String theSymbology;
     String theTrack;
     String sensorName;
     double latDeg;
     double longDeg;
-    double latMin; 
+    double latMin;
     double longMin;
     char latHem;
     char longHem;
-    double latSec; 
+    double latSec;
     double longSec;
     WorldLocation origin = null;
     HiResDate theDtg = null;
@@ -185,7 +184,7 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
     sensorName = sensorName.trim();
 
     // and lastly read in the message
-    theText = st.nextToken("\r").trim();
+    final String labelTxt = st.nextToken("\r").trim();
 
     theColor = ImportReplay.replayColorFor(theSymbology);
 
@@ -202,7 +201,11 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
     // create the contact object
     SensorContactWrapper data =
         new SensorContactWrapper(theTrack, theDtg, rng, brg, brg2, freq,
-            origin, theColor, theText, theStyle, sensorName);
+            origin, theColor, null, theStyle, sensorName);
+
+    // sort out the (optional) comment
+    data.setLabel(ImportReplay.getLabel(labelTxt));
+    data.setComment(ImportReplay.getComment(labelTxt));
 
     return data;
   }
