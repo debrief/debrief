@@ -108,7 +108,8 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 /**
  * class to parse a label from a line of text
  */
-public final class ImportSensor2 extends AbstractPlainLineImporter {
+public final class ImportSensor2 extends AbstractPlainLineImporter
+{
   /**
    * the type for this string
    */
@@ -117,17 +118,20 @@ public final class ImportSensor2 extends AbstractPlainLineImporter {
   /**
    * read in this string and return a Label
    */
-  public final Object readThisLine(final String theLine) {
+  public final Object readThisLine(final String theLine)
+  {
 
-    //;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
-    //;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs), ambigous bearing (degs) 
-  	 //[or the single word NULL], frequency(Hz),  range(yds), sensor name, label (to end of line)</markup>
+    // ;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR
+    // yy..yy xx..xx
+    // ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs),
+    // ambigous bearing (degs)
+    // [or the single word NULL], frequency(Hz), range(yds), sensor name, label (to end of
+    // line)</markup>
 
     // get a stream from the string
     final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
-    String theText;
     String theTrack;
     String sensorName;
     double latDeg, longDeg, latMin, longMin;
@@ -136,19 +140,19 @@ public final class ImportSensor2 extends AbstractPlainLineImporter {
     WorldLocation origin = null;
     HiResDate theDtg = null;
     Double brg = null;
-    WorldDistance rng=null;
-    Double brg2=null, freq=null;
+    WorldDistance rng = null;
+    Double brg2 = null, freq = null;
     java.awt.Color theColor;
 
     // skip the comment identifier
     st.nextToken();
 
-		// combine the date, a space, and the time
-		final String dateToken = st.nextToken();
-		final String timeToken = st.nextToken();
+    // combine the date, a space, and the time
+    final String dateToken = st.nextToken();
+    final String timeToken = st.nextToken();
 
-		// and extract the date
-		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+    // and extract the date
+    theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // get the (possibly multi-word) track name
     theTrack = ImportFix.checkForQuotedName(st);
@@ -161,129 +165,132 @@ public final class ImportSensor2 extends AbstractPlainLineImporter {
 
     try
     {
-	    // find out if it's our null value
-	    if (next.startsWith("N")) {
-	      // ditch it,
-	    } else {
+      // find out if it's our null value
+      if (next.startsWith("N"))
+      {
+        // ditch it,
+      }
+      else
+      {
 
-	      // get the deg out of this value
-	      latDeg = MWCXMLReader.readThisDouble(next);
+        // get the deg out of this value
+        latDeg = MWCXMLReader.readThisDouble(next);
 
-	      // ok, this is valid data, persevere with it
-	      latMin = MWCXMLReader.readThisDouble(st.nextToken());
-	      latSec = MWCXMLReader.readThisDouble(st.nextToken());
+        // ok, this is valid data, persevere with it
+        latMin = MWCXMLReader.readThisDouble(st.nextToken());
+        latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
-	      /** now, we may have trouble here, since there may not be
-	       * a space between the hemisphere character and a 3-digit
-	       * latitude value - so BE CAREFUL
-	       */
-	      final String vDiff = st.nextToken();
-	      if (vDiff.length() > 3) {
-	        // hmm, they are combined
-	        latHem = vDiff.charAt(0);
-	        final String secondPart = vDiff.substring(1, vDiff.length());
-	        longDeg = MWCXMLReader.readThisDouble(secondPart);
-	      } else {
-	        // they are separate, so only the hem is in this one
-	        latHem = vDiff.charAt(0);
-	        longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-	      }
-	
-	      longMin = MWCXMLReader.readThisDouble(st.nextToken());
-	      longSec = MWCXMLReader.readThisDouble(st.nextToken());
-	      longHem = st.nextToken().charAt(0);
+        /**
+         * now, we may have trouble here, since there may not be a space between the hemisphere
+         * character and a 3-digit latitude value - so BE CAREFUL
+         */
+        final String vDiff = st.nextToken();
+        if (vDiff.length() > 3)
+        {
+          // hmm, they are combined
+          latHem = vDiff.charAt(0);
+          final String secondPart = vDiff.substring(1, vDiff.length());
+          longDeg = MWCXMLReader.readThisDouble(secondPart);
+        }
+        else
+        {
+          // they are separate, so only the hem is in this one
+          latHem = vDiff.charAt(0);
+          longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+        }
 
-	      // create the origin
-	      origin = new WorldLocation(latDeg, latMin, latSec, latHem,
-	          longDeg, longMin, longSec, longHem,
-	          0);
-	    } // whether the duff origin data was entered
+        longMin = MWCXMLReader.readThisDouble(st.nextToken());
+        longSec = MWCXMLReader.readThisDouble(st.nextToken());
+        longHem = st.nextToken().charAt(0);
 
-	    // get the bearing
-	    final String brgStr = st.nextToken();
-	    if(!brgStr.startsWith("N"))
-	    {
-	    	// cool, we have data
-	    	brg = new Double(MWCXMLReader.readThisDouble(brgStr));    	
-	    }
-    
-	    // and now get the ambiguous bearing
-	    String tmp = st.nextToken();
-	    if(!tmp.startsWith("N"))
-	    {
-	    	// cool, we have data
-	    	brg2 = new Double(MWCXMLReader.readThisDouble(tmp));    	
-	    }
+        // create the origin
+        origin =
+            new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin,
+                longSec, longHem, 0);
+      } // whether the duff origin data was entered
 
-	    // and the frequency
-	    tmp = st.nextToken();
-	    if(!tmp.startsWith("N"))
-	    {
-	    	// cool, we have data
-	    	freq = new Double(MWCXMLReader.readThisDouble(tmp));    	
-	    }
+      // get the bearing
+      final String brgStr = st.nextToken();
+      if (!brgStr.startsWith("N"))
+      {
+        // cool, we have data
+        brg = new Double(MWCXMLReader.readThisDouble(brgStr));
+      }
 
-	    // and the range
-	    tmp = st.nextToken();
-	    if(!tmp.startsWith("N"))
-	    {
-	    	// cool, we have data
-	    	rng = new WorldDistance(new Double(MWCXMLReader.readThisDouble(tmp)), WorldDistance.YARDS);    	
-	    }
+      // and now get the ambiguous bearing
+      String tmp = st.nextToken();
+      if (!tmp.startsWith("N"))
+      {
+        // cool, we have data
+        brg2 = new Double(MWCXMLReader.readThisDouble(tmp));
+      }
 
-	    // get the (possibly multi-word) track name
-	    sensorName = ImportFix.checkForQuotedName(st);
-	
-	    // trim the sensor name
-	    sensorName = sensorName.trim();
-	
-	    // and lastly read in the message (to the end of the line)
-	    String labelTxt =st.nextToken("\r");
-	    
-	    // did we find anything
-	    if(labelTxt != null)
-	    {
-	    	theText = labelTxt.trim();
-	    }
-	    else
-	    {
-	    	// nothing found, use empty string
-	    	theText = "";
-	    }
-	
-	    theColor = ImportReplay.replayColorFor(symbology);
-	
-	    final int theStyle = ImportReplay.replayLineStyleFor(symbology);
+      // and the frequency
+      tmp = st.nextToken();
+      if (!tmp.startsWith("N"))
+      {
+        // cool, we have data
+        freq = new Double(MWCXMLReader.readThisDouble(tmp));
+      }
 
+      // and the range
+      tmp = st.nextToken();
+      if (!tmp.startsWith("N"))
+      {
+        // cool, we have data
+        rng =
+            new WorldDistance(new Double(MWCXMLReader.readThisDouble(tmp)),
+                WorldDistance.YARDS);
+      }
 
-	    // create the contact object
-	    final SensorContactWrapper data =
-	        new SensorContactWrapper(theTrack, theDtg, rng, brg, brg2, freq, origin, theColor, theText, theStyle, sensorName);
-	
-	    return data;
+      // get the (possibly multi-word) track name
+      sensorName = ImportFix.checkForQuotedName(st);
+
+      // trim the sensor name
+      sensorName = sensorName.trim();
+
+      // and lastly read in the message (to the end of the line)
+      final String labelTxt = st.nextToken("\r");
+
+      theColor = ImportReplay.replayColorFor(symbology);
+
+      final int theStyle = ImportReplay.replayLineStyleFor(symbology);
+
+      // create the contact object
+      final SensorContactWrapper data =
+          new SensorContactWrapper(theTrack, theDtg, rng, brg, brg2, freq,
+              origin, theColor, null, theStyle, sensorName);
+
+      // sort out the (optional) comment
+      data.setLabel(ImportReplay.getLabel(labelTxt));
+      data.setComment(ImportReplay.getComment(labelTxt));
+
+      return data;
     }
-    catch(final ParseException pe)
+    catch (final ParseException pe)
     {
-    	MWC.Utilities.Errors.Trace.trace(pe,
-				"Whilst import sensor2");
-		return null;
+      MWC.Utilities.Errors.Trace.trace(pe, "Whilst import sensor2");
+      return null;
     }
   }
 
   /**
    * determine the identifier returning this type of annotation
    */
-  public final String getYourType() {
+  public final String getYourType()
+  {
     return _myType;
   }
 
   /**
    * export the specified shape as a string
-   *
-   * @param theWrapper the thing we are going to export
+   * 
+   * @param theWrapper
+   *          the thing we are going to export
    * @return the shape in String form
    */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
+  {
     // result value
     final String line = ";; Export of sensor data not implemented";
     return line;
@@ -292,54 +299,65 @@ public final class ImportSensor2 extends AbstractPlainLineImporter {
 
   /**
    * indicate if you can export this type of object
-   *
-   * @param val the object to test
+   * 
+   * @param val
+   *          the object to test
    * @return boolean saying whether you can do it
    */
-  public final boolean canExportThis(final Object val) {
+  public final boolean canExportThis(final Object val)
+  {
     boolean res = false;
 
-    if (val instanceof SensorWrapper) {
+    if (val instanceof SensorWrapper)
+    {
       res = true;
     }
 
     return res;
 
   }
-  
-//  ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+  // ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414
 
-		public testMe(final String val)
-		{
-			super(val);
-		}
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public final void testImport()
-		{
-			final String lineA = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
-			final String lineB = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
-			final String lineTabs = ";SENSOR2:	20090722	041434.000	NONSUCH	@B	NULL	59.3	300.8	49.96	NULL	\"Contact bearings\"	0414";
-			final String lineD = ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 NULL NULL NULL \"Contact bearings\" 0414";
-			
-			final ImportSensor2 is2 = new ImportSensor2();
-			final SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
-			Assert.assertEquals("lineA failed", "Contact_bearings", resA.getSensorName());
-			Assert.assertEquals("lineA failed", "0414", resA.getLabel());
-			final SensorContactWrapper resB = (SensorContactWrapper) is2.readThisLine(lineB);
-			Assert.assertEquals("lineB failed", "0414", resB.getLabel());
-			final SensorContactWrapper resC = (SensorContactWrapper) is2.readThisLine(lineTabs);
-			Assert.assertEquals("lineTabs failed", "0414", resC.getLabel());
-			final SensorContactWrapper resD = (SensorContactWrapper) is2.readThisLine(lineD);
-			Assert.assertEquals("lineD failed", "0414", resD.getLabel());
-		}
-	}
+    public testMe(final String val)
+    {
+      super(val);
+    }
 
-  
+    public final void testImport()
+    {
+      final String lineA =
+          ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
+      final String lineB =
+          ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
+      final String lineTabs =
+          ";SENSOR2:	20090722	041434.000	NONSUCH	@B	NULL	59.3	300.8	49.96	NULL	\"Contact bearings\"	0414";
+      final String lineD =
+          ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 NULL NULL NULL \"Contact bearings\" 0414";
+
+      final ImportSensor2 is2 = new ImportSensor2();
+      final SensorContactWrapper resA =
+          (SensorContactWrapper) is2.readThisLine(lineA);
+      Assert.assertEquals("lineA failed", "Contact_bearings", resA
+          .getSensorName());
+      Assert.assertEquals("lineA failed", "0414", resA.getLabel());
+      final SensorContactWrapper resB =
+          (SensorContactWrapper) is2.readThisLine(lineB);
+      Assert.assertEquals("lineB failed", "0414", resB.getLabel());
+      final SensorContactWrapper resC =
+          (SensorContactWrapper) is2.readThisLine(lineTabs);
+      Assert.assertEquals("lineTabs failed", "0414", resC.getLabel());
+      final SensorContactWrapper resD =
+          (SensorContactWrapper) is2.readThisLine(lineD);
+      Assert.assertEquals("lineD failed", "0414", resD.getLabel());
+    }
+  }
+
 }
