@@ -427,6 +427,31 @@ public class ImportReplay extends PlainImporterBase
       doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
     }
 
+    public void testTrailingComment()
+    {
+      ImportReplay imp = new ImportReplay();
+      final String test1 =
+          " LABEL // COMMENT";
+      assertEquals("LABEL", imp.getLabel(test1));
+      assertEquals("COMMENT", imp.getComment(test1));
+
+      final String test2 =
+          " LABEL";
+      assertEquals("LABEL", imp.getLabel(test2));
+      assertEquals(null, imp.getComment(test2));
+
+      final String test3 =
+          " LABEL//";
+      assertEquals("LABEL", imp.getLabel(test3));
+      assertEquals(null, imp.getComment(test3));
+
+      final String test4 =
+          "//COMMENT";
+      assertEquals(null, imp.getLabel(test4));
+      assertEquals("COMMENT", imp.getComment(test4));
+
+    }
+    
     public final void testParseSymbology()
     {
       final String test =
@@ -1075,6 +1100,61 @@ public class ImportReplay extends PlainImporterBase
       final TrackWrapper trackWrapper = tIter.next();
       res.addAll(_pendingSensors.get(trackWrapper));
     }
+    return res;
+  }
+  
+  /** utility method to extract a label from a composite end of line block
+   * that optionally includes a comment
+   * ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
+   */
+  final protected String getLabel(final String content)
+  {
+    final String res;
+    if(content.contains("//"))
+    {
+      String[] strings = content.trim().split("//");
+      String first = strings[0].trim();
+      if(first.length() > 0)
+      {
+        res = first;
+      }
+      else
+      {
+        res = null;
+      }
+    }
+    else
+    {
+      res = content.trim();
+    }
+    
+    return res;
+  }
+
+  /** utility method to extract a label from a composite end of line block
+   * that optionally includes a comment
+   * ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
+   */
+  final protected String getComment(final String content)
+  {
+    final String res;
+    if(content.contains("//"))
+    {
+      String[] strings = content.trim().split("//");
+      if(strings.length > 1)
+      {
+        res = strings[1].trim();
+      }
+      else
+      {
+        res = null;
+      }
+    }
+    else
+    {
+      res = null;
+    }
+    
     return res;
   }
 
