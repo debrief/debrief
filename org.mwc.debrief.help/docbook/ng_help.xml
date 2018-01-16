@@ -2079,7 +2079,7 @@ and so on....</programlisting></para>
             </figure></para>
         </sect2>
         <sect2 xml:id="ChartLibrary">
-          <title xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="chartlibrary">Chart
+          <title xml:id="chartlibrary">Chart
             Library</title>
           <para>Debrief also allows you to load 3rd-party chart libraries. This is covered in <xref
               linkend="loadCharts"/><figure>
@@ -2110,7 +2110,7 @@ and so on....</programlisting></para>
         </sect2>
         <sect2 xml:id="NaturalEarth_title">
           <title xml:id="NaturalEarth">Natural Earth</title>
-          <para>In the same manner that we loaded the <xref linkend="chartlibrary"/>, we do exactly
+          <para>In the same manner that we loaded the Chart Library, we do exactly
             the same thing with Natural Earth.<figure>
               <title>Sample of Natural Earth</title>
               <screenshot>
@@ -8971,16 +8971,16 @@ and entry type can be multi-word if surrounded by quotes (").
             Note: some entry types allow a non-plotted comment to be appended to the end of an entry. 
             The comment follows  a <emphasis>//</emphasis> separator.</para>
           <screen width="70"><markup>
-951212 050100.000 NONSUCH   @A@00   22 12 10.51 N 21 32 14.81 W 269.9   2.0      0
+951212 050100.000 NONSUCH @A@00 22 12 10.51 N 21 32 14.81 W 269.9 2.0 0
 ;; label is normal DTG value, comment is empty (legacy behaviour)
 
-951212 050200.000 NONSUCH   @A@00   22 12 10.51 N 21 32 14.81 W 269.9   2.0      0 Standard label
+951212 050200.000 NONSUCH @A@00 22 12 10.51 N 21 32 14.81 W 269.9 2.0 0 Standard label
 ;; label is "Standard label", comment is empty (legacy behaviour)
 
-951212 050300.000 NONSUCH   @A@00   22 12 10.51 N 21 32 27.27 W 268.7   2.0      0 Standard label // Custom comment
+951212 050300.000 NONSUCH @A@00 22 12 10.51 N 21 32 27.27 W 268.7 2.0 0 Standard label // Custom comment
 ;; label is "Standard label", comment is "Custom comment"
 
-951212 050400.000 NONSUCH   @BA10   22 12 10.28 N 21 32 40.33 W 270.6   2.0      0 // Custom comment
+951212 050400.000 NONSUCH @BA10 22 12 10.28 N 21 32 40.33 W 270.6 2.0 0 // Custom comment
 ;; label is normal DTG value, comment is "Custom comment"
 
 ;SENSOR2: 951212 051600.000 NEL_STYLE2 @B NULL 59.3 300.8 49.96 NULL SENSOR LABEL // COMMENT
