@@ -196,8 +196,8 @@ abstract public class FixHandler extends MWCXMLReader
   public final void handleOurselves(final String name, final Attributes atts)
   {
     // create the new items
-    _theFix = new MWC.TacticalData.Fix();
-    _theFixWrapper = new Debrief.Wrappers.FixWrapper(_theFix);
+    _theFix = new Fix();
+    _theFixWrapper = new FixWrapper(_theFix);
     lp.setValue(null);
 
     super.handleOurselves(name, atts);
