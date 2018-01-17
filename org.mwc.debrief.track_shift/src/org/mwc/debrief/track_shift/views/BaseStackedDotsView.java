@@ -897,7 +897,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   .isChecked(), period);
 
           // note: the slicer depends upon bearing. check we have bearing
-          if (bearings.size() > 0 && !Double.isNaN(bearings.get(0).getBearing()))
+          if (bearings.size() > 0
+              && !Double.isNaN(bearings.get(0).getBearing()))
           {
             res =
                 sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
@@ -2002,8 +2003,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void run()
       {
-        // somehow, put the message into the UI
-        _myChart.setTitle(string);
+        // check it's not already the message
+        if (string != null && !string.equals(_myChart.getTitle()))
+        {
+          // somehow, put the message into the UI
+          _myChart.setTitle(string);
+        }
 
         // is it a fail status
         if (statusCode != IStatus.OK)
