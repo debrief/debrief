@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 /**
  * utility class providing geospatial support
@@ -37,7 +38,11 @@ public class GeoSupport
 {
 	private static volatile GeoCalculatorType _calculatorType = GeoCalculatorType.FAST;
 	
-	private static final GeometryFactory _factory = new GeometryFactory();
+	/** relax the precision model down from 16 sig places, since we were getting
+	 * "found non-noded intersection" issues while doing a JTS intersection
+	 */
+	private static final GeometryFactory _factory = new GeometryFactory(new PrecisionModel(1000000));
+//  private static final GeometryFactory _factory = new GeometryFactory();
 
 	public static double[][] getCoordsFor(LocationRange loc)
 	{

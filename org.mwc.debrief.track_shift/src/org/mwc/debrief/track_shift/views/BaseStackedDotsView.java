@@ -1445,9 +1445,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
       if (secs != null && secs.length == 1)
       {
-        final TrackWrapper secT = (TrackWrapper) secs[0];
-        secT.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-            _infillListener);
+        WatchableList firstSec = secs[0];
+        if (firstSec instanceof TrackWrapper)
+        {
+          final TrackWrapper secT = (TrackWrapper) firstSec;
+          secT.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+              _infillListener);
+        }
       }
     }
 
@@ -1834,8 +1838,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           _myTrackDataProvider.getSecondaryTracks();
       if (secTracks != null && secTracks.length == 1)
       {
-        final TrackWrapper sw = (TrackWrapper) secTracks[0];
-        final Enumeration<Editable> iter = sw.getSegments().elements();
+        final ISecondaryTrack sw = (ISecondaryTrack) secTracks[0];
+        Enumeration<Editable> iter = sw.segments();
+
+        // have a peak, to check if we've actually got a segment list
+        if (iter.hasMoreElements())
+        {
+          Editable first = iter.nextElement();
+          if (first instanceof SegmentList)
+          {
+            SegmentList segs = (SegmentList) first;
+            iter = segs.elements();
+          }
+        }
+
         while (iter.hasMoreElements())
         {
           final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
@@ -1860,17 +1876,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     .getDTG_End().getDate().getTime(), color);
             zones.add(newZ);
           }
-          else if (thisSeg instanceof AbsoluteTMASegment)
+          else if (thisSeg instanceof TrackSegment)
           {
-            final AbsoluteTMASegment seg = (AbsoluteTMASegment) thisSeg;
+            final TrackSegment seg = (TrackSegment) thisSeg;
             if (!thisSeg.isEmpty())
             {
               final FixWrapper firstE =
                   (FixWrapper) thisSeg.elements().nextElement();
               final Color color = firstE.getColor();
               final Zone newZ =
-                  new Zone(seg.getDTG_Start().getDate().getTime(), seg
-                      .getDTG_End().getDate().getTime(), color);
+                  new Zone(seg.startDTG().getDate().getTime(), seg.endDTG()
+                      .getDate().getTime(), color);
               zones.add(newZ);
             }
           }
@@ -1981,20 +1997,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   public void logError(final int statusCode, final String string,
       final Exception object)
   {
-    // somehow, put the message into the UI
-    _myChart.setTitle(string);
-
-    // is it a fail status
-    if (statusCode != IStatus.OK)
+    Display.getDefault().asyncExec(new Runnable()
     {
-      // and store the problem into the log
-      CorePlugin.logError(statusCode, string, object);
+      @Override
+      public void run()
+      {
+        // somehow, put the message into the UI
+        _myChart.setTitle(string);
 
-      // also ditch the data in the plots - to blank them out
-      // No, don't. We re-use clearPlots() to clear some calculated
-      // data in BearingResidualsView
-      // clearPlots();
-    }
+        // is it a fail status
+        if (statusCode != IStatus.OK)
+        {
+          // and store the problem into the log
+          CorePlugin.logError(statusCode, string, object);
+        }
+
+      }
+    });
   }
 
   @Override
@@ -2497,28 +2516,32 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final TrackSegment seg = fix.getSegment();
     final TrackWrapper secTrack = seg.getWrapper();
 
-    // done.
-    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
-
-    // hmm, don't know if we have one or more legs
-    final EditableWrapper leg;
-    if (secTrack.getSegments().size() > 1)
+    // check we know the secondary track (we may not, if it's an SATC track)
+    if (secTrack != null)
     {
-      // ok, we need the in-between item
-      final EditableWrapper segments =
-          new EditableWrapper(secTrack.getSegments(), parentP, layers);
-      leg = new EditableWrapper(seg, segments, layers);
+      final EditableWrapper parentP =
+          new EditableWrapper(secTrack, null, layers);
+
+      // hmm, don't know if we have one or more legs
+      final EditableWrapper leg;
+      if (secTrack.getSegments().size() > 1)
+      {
+        // ok, we need the in-between item
+        final EditableWrapper segments =
+            new EditableWrapper(secTrack.getSegments(), parentP, layers);
+        leg = new EditableWrapper(seg, segments, layers);
+      }
+      else
+      {
+        leg = new EditableWrapper(seg, parentP, layers);
+
+      }
+
+      final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
+
+      // and show it
+      showThisSelectionInOutline(subject, editor);
     }
-    else
-    {
-      leg = new EditableWrapper(seg, parentP, layers);
-
-    }
-
-    final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
-
-    // and show it
-    showThisSelectionInOutline(subject, editor);
   }
 
   private void showThisSelectionInOutline(final EditableWrapper subject,
@@ -2868,9 +2891,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     _myTrackDataProvider.getSecondaryTracks();
                 if (secs != null && secs.length == 1)
                 {
-                  final TrackWrapper secT = (TrackWrapper) secs[0];
-                  secT.removePropertyChangeListener(
-                      PlainWrapper.LOCATION_CHANGED, _infillListener);
+                  final WatchableList firstSec = secs[0];
+                  if (firstSec instanceof TrackWrapper)
+                  {
+                    final TrackWrapper secT = (TrackWrapper) firstSec;
+                    secT.removePropertyChangeListener(
+                        PlainWrapper.LOCATION_CHANGED, _infillListener);
+                  }
                 }
               }
 
@@ -2886,9 +2913,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   _myTrackDataProvider.getSecondaryTracks();
               if (secs != null && secs.length == 1)
               {
-                final TrackWrapper secT = (TrackWrapper) secs[0];
-                secT.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-                    _infillListener);
+                final WatchableList firstSec = secs[0];
+                if (firstSec instanceof TrackWrapper)
+                {
+                  final TrackWrapper secT = (TrackWrapper) firstSec;
+                  secT.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+                      _infillListener);
+                }
               }
 
               // hey, new plot. clear the zone charts
@@ -2937,9 +2968,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   _myTrackDataProvider.getSecondaryTracks();
               if (secs != null && secs.length == 1)
               {
-                final TrackWrapper secT = (TrackWrapper) secs[0];
-                secT.removePropertyChangeListener(
-                    PlainWrapper.LOCATION_CHANGED, _infillListener);
+                WatchableList firstSec = secs[0];
+                if (firstSec instanceof TrackWrapper)
+                {
+                  final TrackWrapper secT = (TrackWrapper) firstSec;
+                  secT.removePropertyChangeListener(
+                      PlainWrapper.LOCATION_CHANGED, _infillListener);
+                }
               }
 
               _myTrackDataProvider = null;

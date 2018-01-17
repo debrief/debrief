@@ -109,7 +109,6 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.AttractiveDataItem;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
-import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GUI.JFreeChart.DatedToolTipGenerator;
@@ -1409,7 +1408,17 @@ public class XYPlotView extends ViewPart
         // if we failed in plot creation (maybe a track was empty),
         // then _thePlot may not have been created.
         if (_thePlot != null)
-          _thePlot.setDataset((XYDataset) _dataset);
+        {
+          Display.getDefault().asyncExec(new Runnable()
+          {
+            
+            @Override
+            public void run()
+            {
+              _thePlot.setDataset((XYDataset) _dataset);
+            }
+          });
+        }
       }
     }
   }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Mon Sep 29 16:40:46 GMT 2014" Name="Debrief Plot" PlotId="1369149093378">
-<details Text="Saved with Debrief version dated Thu Sep 25 08:33:52 GMT 2014"/>
+<plot xmlns="http://www.debrief.info/plot" Created="Tue Jan 16 17:17:46 GMT 2018" Name="Debrief Plot" PlotId="1369149093378">
+<details Text="Saved with Debrief version dated Tue Jan 16 16:26:40 GMT 2018"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track ColorMode="Per-fix Shades" EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="Sonar" TrackName="SENSOR" Visible="true" WormInHole="true">
+<sensor ArrayMode="Worm in hole" LineThickness="1" Name="Sonar" TrackName="SENSOR" Visible="true">
 <colour Value="RED"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="2.400" Dtg="100112 121314" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="Cookie&#9;SUBJECT&#9;held&#9;on&#9;Plain&#9;Cookie" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="12000.0000000"/>
@@ -2894,7 +2894,7 @@
 </fix>
 </TrackSegment>
 </track>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SUBJECT" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
+<track ColorMode="Per-fix Shades" EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SUBJECT" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
 <colour Value="RED"/>
 <SymbolColor Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -4106,8 +4106,8 @@
 </fix>
 </TrackSegment>
 </track>
-<satc_solution LiveRunning="false" NAME="121213.14" OnlyPlotEnds="false" ShowBounds="true" ShowSolutions="true">
-<colour Value="GREEN"/><![CDATA[<solution version="1">
+<satc_solution LiveRunning="false" NAME="121213.14" OnlyPlotEnds="false" ShowAlterationBounds="false" ShowBounds="false" ShowSolutions="true">
+<colour CustomBlue="0" CustomGreen="255" CustomRed="0" Value="custom"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
     <minSpeedMS>1.028888888</minSpeedMS>
@@ -4126,737 +4126,2316 @@
       <active>true</active>
       <weight>5</weight>
       <startDate>2010-01-12 12:13:14.0 UTC</startDate>
-      <finishDate>2010-01-12 12:37:59.0 UTC</finishDate>
-      <bearingError>0.05235987755982988</bearingError>
-      <runMDA>false</runMDA>
+      <finishDate>2010-01-12 13:13:14.0 UTC</finishDate>
       <measurements>
-        <bmeasurement bearingAngle="0.041887902047863905" time="2010-01-12 12:13:14.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:13:14.0 UTC" isActive="true" bearingAngle="0.041887902047863905" range="10972.800002824963">
+          <color>
+            <red>255</red>
+            <green>165</green>
+            <blue>0</blue>
+            <alpha>255</alpha>
+          </color>
           <origin lat="-0.0666667" lon="-30.0027778"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:13:29.0 UTC" isActive="true" bearingAngle="0.02617993877991494" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.02617993877991494" time="2010-01-12 12:13:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0659389" lon="-30.0024028"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:13:44.0 UTC" isActive="true" bearingAngle="0.019198621771937624" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.019198621771937624" time="2010-01-12 12:13:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.065125" lon="-30.0025167"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:13:59.0 UTC" isActive="true" bearingAngle="0.019198621771937624" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.019198621771937624" time="2010-01-12 12:13:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0645306" lon="-30.0030806"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:14:14.0 UTC" isActive="true" bearingAngle="0.020943951023931952" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.020943951023931952" time="2010-01-12 12:14:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0038861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:14:29.0 UTC" isActive="true" bearingAngle="0.024434609527920613" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.024434609527920613" time="2010-01-12 12:14:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0047194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:14:44.0 UTC" isActive="true" bearingAngle="0.027925268031909273" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.027925268031909273" time="2010-01-12 12:14:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0055528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:14:59.0 UTC" isActive="true" bearingAngle="0.031415926535897934" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.031415926535897934" time="2010-01-12 12:14:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0063861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:15:14.0 UTC" isActive="true" bearingAngle="0.03490658503988659" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.03490658503988659" time="2010-01-12 12:15:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0072194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:15:29.0 UTC" isActive="true" bearingAngle="0.03839724354387525" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.03839724354387525" time="2010-01-12 12:15:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0080528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:15:44.0 UTC" isActive="true" bearingAngle="0.04014257279586957" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.04014257279586957" time="2010-01-12 12:15:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0088861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:15:59.0 UTC" isActive="true" bearingAngle="0.04363323129985824" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.04363323129985824" time="2010-01-12 12:15:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0097194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:16:14.0 UTC" isActive="true" bearingAngle="0.0471238898038469" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.0471238898038469" time="2010-01-12 12:16:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0105528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:16:29.0 UTC" isActive="true" bearingAngle="0.05061454830783556" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.05061454830783556" time="2010-01-12 12:16:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0113861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:16:44.0 UTC" isActive="true" bearingAngle="0.054105206811824215" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.054105206811824215" time="2010-01-12 12:16:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0122194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:16:59.0 UTC" isActive="true" bearingAngle="0.05759586531581287" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.05759586531581287" time="2010-01-12 12:16:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0130528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:17:14.0 UTC" isActive="true" bearingAngle="0.061086523819801536" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.061086523819801536" time="2010-01-12 12:17:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0138861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:17:29.0 UTC" isActive="true" bearingAngle="0.06283185307179587" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.06283185307179587" time="2010-01-12 12:17:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0147194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:17:44.0 UTC" isActive="true" bearingAngle="0.06632251157578452" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.06632251157578452" time="2010-01-12 12:17:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0155528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:17:59.0 UTC" isActive="true" bearingAngle="0.06981317007977318" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.06981317007977318" time="2010-01-12 12:17:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0163861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:18:14.0 UTC" isActive="true" bearingAngle="0.07330382858376185" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.07330382858376185" time="2010-01-12 12:18:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0643611" lon="-30.0172194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:18:29.0 UTC" isActive="true" bearingAngle="0.07504915783575616" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.07504915783575616" time="2010-01-12 12:18:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0641139" lon="-30.018"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:18:44.0 UTC" isActive="true" bearingAngle="0.07504915783575616" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.07504915783575616" time="2010-01-12 12:18:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0634583" lon="-30.0184917"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:18:59.0 UTC" isActive="true" bearingAngle="0.06806784082777885" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.06806784082777885" time="2010-01-12 12:18:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0626333" lon="-30.0186056"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:19:14.0 UTC" isActive="true" bearingAngle="0.059341194567807204" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.059341194567807204" time="2010-01-12 12:19:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0618056" lon="-30.0186778"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:19:29.0 UTC" isActive="true" bearingAngle="0.05061454830783556" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.05061454830783556" time="2010-01-12 12:19:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.060975" lon="-30.0187528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:19:44.0 UTC" isActive="true" bearingAngle="0.04363323129985824" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.04363323129985824" time="2010-01-12 12:19:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0601444" lon="-30.018825"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:19:59.0 UTC" isActive="true" bearingAngle="0.03490658503988659" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.03490658503988659" time="2010-01-12 12:19:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0593139" lon="-30.0188972"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:20:14.0 UTC" isActive="true" bearingAngle="0.024434609527920613" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.024434609527920613" time="2010-01-12 12:20:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0584833" lon="-30.0189694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:20:29.0 UTC" isActive="true" bearingAngle="0.015707963267948967" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.015707963267948967" time="2010-01-12 12:20:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0576528" lon="-30.0190417"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:20:44.0 UTC" isActive="true" bearingAngle="0.006981317007977318" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="0.006981317007977318" time="2010-01-12 12:20:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0568222" lon="-30.0191139"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:20:59.0 UTC" isActive="true" bearingAngle="6.279694648675598" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.279694648675598" time="2010-01-12 12:20:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0559944" lon="-30.0191889"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:21:14.0 UTC" isActive="true" bearingAngle="6.269222673163632" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.269222673163632" time="2010-01-12 12:21:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0551639" lon="-30.0192611"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:21:29.0 UTC" isActive="true" bearingAngle="6.258750697651665" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.258750697651665" time="2010-01-12 12:21:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0543333" lon="-30.0193333"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:21:44.0 UTC" isActive="true" bearingAngle="6.2482787221397" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.2482787221397" time="2010-01-12 12:21:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0535028" lon="-30.0194056"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:21:59.0 UTC" isActive="true" bearingAngle="6.237806746627734" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.237806746627734" time="2010-01-12 12:21:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0526722" lon="-30.0194778"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:22:14.0 UTC" isActive="true" bearingAngle="6.225589441863773" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.225589441863773" time="2010-01-12 12:22:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0518417" lon="-30.01955"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:22:29.0 UTC" isActive="true" bearingAngle="6.215117466351807" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.215117466351807" time="2010-01-12 12:22:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0510111" lon="-30.0196222"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:22:44.0 UTC" isActive="true" bearingAngle="6.202900161587847" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.202900161587847" time="2010-01-12 12:22:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0501833" lon="-30.0196972"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:22:59.0 UTC" isActive="true" bearingAngle="6.190682856823887" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.190682856823887" time="2010-01-12 12:22:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0493528" lon="-30.0197694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:23:14.0 UTC" isActive="true" bearingAngle="6.1767202228079325" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.1767202228079325" time="2010-01-12 12:23:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0485222" lon="-30.0198417"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:23:29.0 UTC" isActive="true" bearingAngle="6.164502918043972" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.164502918043972" time="2010-01-12 12:23:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0476917" lon="-30.0199139"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:23:44.0 UTC" isActive="true" bearingAngle="6.1505402840280174" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.1505402840280174" time="2010-01-12 12:23:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0468611" lon="-30.0199861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:23:59.0 UTC" isActive="true" bearingAngle="6.136577650012063" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.136577650012063" time="2010-01-12 12:23:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0460306" lon="-30.0200583"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:24:14.0 UTC" isActive="true" bearingAngle="6.120869686744114" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.120869686744114" time="2010-01-12 12:24:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0452" lon="-30.0201306"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:24:29.0 UTC" isActive="true" bearingAngle="6.106907052728159" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.106907052728159" time="2010-01-12 12:24:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0443722" lon="-30.0202056"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:24:44.0 UTC" isActive="true" bearingAngle="6.09119908946021" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.09119908946021" time="2010-01-12 12:24:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0435417" lon="-30.0202778"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:24:59.0 UTC" isActive="true" bearingAngle="6.075491126192261" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.075491126192261" time="2010-01-12 12:24:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0427111" lon="-30.02035"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:25:14.0 UTC" isActive="true" bearingAngle="6.0580378336723175" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.0580378336723175" time="2010-01-12 12:25:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0418806" lon="-30.0204222"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:25:29.0 UTC" isActive="true" bearingAngle="6.040584541152374" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.040584541152374" time="2010-01-12 12:25:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.04105" lon="-30.0204944"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:25:44.0 UTC" isActive="true" bearingAngle="6.023131248632431" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.023131248632431" time="2010-01-12 12:25:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0402194" lon="-30.0205667"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:25:59.0 UTC" isActive="true" bearingAngle="6.005677956112488" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="6.005677956112488" time="2010-01-12 12:25:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0393889" lon="-30.0206389"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:26:14.0 UTC" isActive="true" bearingAngle="5.98647933434055" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.98647933434055" time="2010-01-12 12:26:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0385611" lon="-30.0207139"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:26:29.0 UTC" isActive="true" bearingAngle="5.967280712568613" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.967280712568613" time="2010-01-12 12:26:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0377306" lon="-30.0207861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:26:44.0 UTC" isActive="true" bearingAngle="5.94633676154468" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.94633676154468" time="2010-01-12 12:26:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0369" lon="-30.0208583"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:26:59.0 UTC" isActive="true" bearingAngle="5.927138139772743" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.927138139772743" time="2010-01-12 12:26:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0360694" lon="-30.0209306"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:27:14.0 UTC" isActive="true" bearingAngle="5.904448859496817" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.904448859496817" time="2010-01-12 12:27:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0352389" lon="-30.0210028"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:27:29.0 UTC" isActive="true" bearingAngle="5.883504908472885" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.883504908472885" time="2010-01-12 12:27:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0344083" lon="-30.021075"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:27:44.0 UTC" isActive="true" bearingAngle="5.860815628196958" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.860815628196958" time="2010-01-12 12:27:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0335778" lon="-30.0211472"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:27:59.0 UTC" isActive="true" bearingAngle="5.838126347921032" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.838126347921032" time="2010-01-12 12:27:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.03275" lon="-30.0212222"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:28:14.0 UTC" isActive="true" bearingAngle="5.8136917383931115" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.8136917383931115" time="2010-01-12 12:28:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0319194" lon="-30.0212944"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:28:29.0 UTC" isActive="true" bearingAngle="5.789257128865191" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.789257128865191" time="2010-01-12 12:28:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0310889" lon="-30.0213667"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:28:44.0 UTC" isActive="true" bearingAngle="5.770058507093253" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.770058507093253" time="2010-01-12 12:28:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0303194" lon="-30.0216639"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:28:59.0 UTC" isActive="true" bearingAngle="5.754350543825304" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.754350543825304" time="2010-01-12 12:28:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0295972" lon="-30.0220806"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:29:14.0 UTC" isActive="true" bearingAngle="5.7386425805573555" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.7386425805573555" time="2010-01-12 12:29:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.028875" lon="-30.0224972"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:29:29.0 UTC" isActive="true" bearingAngle="5.7211892880374124" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.7211892880374124" time="2010-01-12 12:29:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0281556" lon="-30.0229139"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:29:44.0 UTC" isActive="true" bearingAngle="5.7037359955174685" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.7037359955174685" time="2010-01-12 12:29:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0274333" lon="-30.0233306"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:29:59.0 UTC" isActive="true" bearingAngle="5.686282702997525" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.686282702997525" time="2010-01-12 12:29:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0267111" lon="-30.0237472"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:30:14.0 UTC" isActive="true" bearingAngle="5.668829410477582" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.668829410477582" time="2010-01-12 12:30:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0259889" lon="-30.0241639"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:30:29.0 UTC" isActive="true" bearingAngle="5.649630788705645" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.649630788705645" time="2010-01-12 12:30:29.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0252667" lon="-30.0245806"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:30:44.0 UTC" isActive="true" bearingAngle="5.630432166933707" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.630432166933707" time="2010-01-12 12:30:44.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0245472" lon="-30.0249972"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:30:59.0 UTC" isActive="true" bearingAngle="5.611233545161769" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.611233545161769" time="2010-01-12 12:30:59.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.023825" lon="-30.0254139"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:31:14.0 UTC" isActive="true" bearingAngle="5.590289594137838" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>165</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.590289594137838" time="2010-01-12 12:31:14.0 UTC" isActive="true" range="10972.800002824963">
           <origin lat="-0.0231028" lon="-30.0258306"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:31:29.0 UTC" isActive="true" bearingAngle="5.5693456431139055" range="10972.800002824963">
           <color>
-            <red>255</red>
-            <green>165</green>
-            <blue>0</blue>
+            <red>224</red>
+            <green>28</green>
+            <blue>62</blue>
             <alpha>255</alpha>
           </color>
+          <origin lat="-0.0223806" lon="-30.0262472"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="5.230751768227005" time="2010-01-12 12:34:14.0 UTC" isActive="true" range="10972.800002824963">
-          <origin lat="-0.0144417" lon="-30.0308306"/>
+        <bmeasurement time="2010-01-12 12:31:44.0 UTC" isActive="true" bearingAngle="5.548401692089973" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0216583" lon="-30.0266639"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:31:59.0 UTC" isActive="true" bearingAngle="5.525712411814047" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0209389" lon="-30.0270806"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:32:14.0 UTC" isActive="true" bearingAngle="5.503023131538121" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0202167" lon="-30.0274972"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:32:29.0 UTC" isActive="true" bearingAngle="5.478588522010201" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0194944" lon="-30.0279139"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:32:44.0 UTC" isActive="true" bearingAngle="5.450663253978291" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0187722" lon="-30.0283306"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:32:59.0 UTC" isActive="true" bearingAngle="5.419247327442393" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.01805" lon="-30.0287472"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:33:14.0 UTC" isActive="true" bearingAngle="5.386086071654501" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0173278" lon="-30.0291639"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:33:29.0 UTC" isActive="true" bearingAngle="5.3511794866146145" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0166083" lon="-30.0295806"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:33:44.0 UTC" isActive="true" bearingAngle="5.312782243070739" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0158861" lon="-30.0299972"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:33:59.0 UTC" isActive="true" bearingAngle="5.272639670274869" range="10972.800002824963">
+          <color reference="../../bmeasurement[74]/color"/>
+          <origin lat="-0.0151639" lon="-30.0304139"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:34:14.0 UTC" isActive="true" bearingAngle="5.230751768227005" range="10972.800002824963">
           <color>
             <red>255</red>
             <green>0</green>
             <blue>255</blue>
             <alpha>255</alpha>
           </color>
+          <origin lat="-0.0144417" lon="-30.0308306"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="5.187118536927147" time="2010-01-12 12:34:29.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:34:29.0 UTC" isActive="true" bearingAngle="5.187118536927147" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0137194" lon="-30.0312472"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="5.141739976375295" time="2010-01-12 12:34:44.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:34:44.0 UTC" isActive="true" bearingAngle="5.141739976375295" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.013" lon="-30.0316639"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="5.092870757319454" time="2010-01-12 12:34:59.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:34:59.0 UTC" isActive="true" bearingAngle="5.092870757319454" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0122778" lon="-30.0320806"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="5.044001538263612" time="2010-01-12 12:35:14.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:35:14.0 UTC" isActive="true" bearingAngle="5.044001538263612" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0115556" lon="-30.0324972"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="5.002113636215748" time="2010-01-12 12:35:29.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:35:29.0 UTC" isActive="true" bearingAngle="5.002113636215748" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0110028" lon="-30.0331028"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.981169685191817" time="2010-01-12 12:35:44.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:35:44.0 UTC" isActive="true" bearingAngle="4.981169685191817" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0339194"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.965461721923868" time="2010-01-12 12:35:59.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:35:59.0 UTC" isActive="true" bearingAngle="4.965461721923868" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0347528"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.949753758655918" time="2010-01-12 12:36:14.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:36:14.0 UTC" isActive="true" bearingAngle="4.949753758655918" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0355861"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.932300466135975" time="2010-01-12 12:36:29.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:36:29.0 UTC" isActive="true" bearingAngle="4.932300466135975" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0364194"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.9131018443640375" time="2010-01-12 12:36:44.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:36:44.0 UTC" isActive="true" bearingAngle="4.9131018443640375" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0372528"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.8939032225921" time="2010-01-12 12:36:59.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:36:59.0 UTC" isActive="true" bearingAngle="4.8939032225921" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0380861"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.872959271568168" time="2010-01-12 12:37:14.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:37:14.0 UTC" isActive="true" bearingAngle="4.872959271568168" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0389194"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.852015320544236" time="2010-01-12 12:37:29.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:37:29.0 UTC" isActive="true" bearingAngle="4.852015320544236" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0397528"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.82932604026831" time="2010-01-12 12:37:44.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:37:44.0 UTC" isActive="true" bearingAngle="4.82932604026831" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0405861"/>
-          <color reference="../../bmeasurement[74]/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.806636759992384" time="2010-01-12 12:37:59.0 UTC" isActive="true" range="10972.800002824963">
+        <bmeasurement time="2010-01-12 12:37:59.0 UTC" isActive="true" bearingAngle="4.806636759992384" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
           <origin lat="-0.0108806" lon="-30.0414194"/>
-          <color reference="../../bmeasurement[74]/color"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:38:14.0 UTC" isActive="true" bearingAngle="4.782202150464463" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0422528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:38:29.0 UTC" isActive="true" bearingAngle="4.754276882432554" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0430861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:38:44.0 UTC" isActive="true" bearingAngle="4.7280969436526386" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0439194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:38:59.0 UTC" isActive="true" bearingAngle="4.698426346368735" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0447528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:39:14.0 UTC" isActive="true" bearingAngle="4.667010419832837" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0455861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:39:29.0 UTC" isActive="true" bearingAngle="4.635594493296939" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0464194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:39:44.0 UTC" isActive="true" bearingAngle="4.600687908257052" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0472528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:39:59.0 UTC" isActive="true" bearingAngle="4.565781323217166" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0480861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:40:14.0 UTC" isActive="true" bearingAngle="4.527384079673291" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0489194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:40:29.0 UTC" isActive="true" bearingAngle="4.488986836129415" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0497528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:40:44.0 UTC" isActive="true" bearingAngle="4.448844263333546" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0505861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:40:59.0 UTC" isActive="true" bearingAngle="4.405211032033687" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0514194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:41:14.0 UTC" isActive="true" bearingAngle="4.36157780073383" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0522528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:41:29.0 UTC" isActive="true" bearingAngle="4.314453910929982" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0530861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:41:44.0 UTC" isActive="true" bearingAngle="4.267330021126135" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0539194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:41:59.0 UTC" isActive="true" bearingAngle="4.218460802070295" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0547528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:42:14.0 UTC" isActive="true" bearingAngle="4.169591583014453" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0555861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:42:29.0 UTC" isActive="true" bearingAngle="4.118977034706617" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0564194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:42:44.0 UTC" isActive="true" bearingAngle="4.066617157146787" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0572528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:42:59.0 UTC" isActive="true" bearingAngle="4.014257279586958" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0580861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:43:14.0 UTC" isActive="true" bearingAngle="3.961897402027128" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0589194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:43:29.0 UTC" isActive="true" bearingAngle="3.9112828537192925" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0597528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:43:44.0 UTC" isActive="true" bearingAngle="3.8589229761594623" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0605861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:43:59.0 UTC" isActive="true" bearingAngle="3.808308427851627" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0614194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:44:14.0 UTC" isActive="true" bearingAngle="3.7576938795437913" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0622528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:44:29.0 UTC" isActive="true" bearingAngle="3.7088246604879505" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0630861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:44:44.0 UTC" isActive="true" bearingAngle="3.6617007706841034" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0639194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:44:59.0 UTC" isActive="true" bearingAngle="3.6163222101322505" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0647528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:45:14.0 UTC" isActive="true" bearingAngle="3.570943649580398" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0655861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:45:29.0 UTC" isActive="true" bearingAngle="3.529055747532534" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0664194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:45:44.0 UTC" isActive="true" bearingAngle="3.4871678454846706" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0672528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:45:59.0 UTC" isActive="true" bearingAngle="3.448770601940795" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0680861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:46:14.0 UTC" isActive="true" bearingAngle="3.41037335839692" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0689194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:46:29.0 UTC" isActive="true" bearingAngle="3.3754667733570334" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0697528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:46:44.0 UTC" isActive="true" bearingAngle="3.3405601883171467" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0705861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:46:59.0 UTC" isActive="true" bearingAngle="3.3073989325292543" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0714194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:47:14.0 UTC" isActive="true" bearingAngle="3.2777283352453512" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0722528"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:47:29.0 UTC" isActive="true" bearingAngle="3.2480577379614473" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0730861"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:47:44.0 UTC" isActive="true" bearingAngle="3.220132469929538" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0108806" lon="-30.0739194"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:47:59.0 UTC" isActive="true" bearingAngle="3.1974431896536113" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0111306" lon="-30.0747"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:48:14.0 UTC" isActive="true" bearingAngle="3.195697860401617" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0117861" lon="-30.0751944"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:48:29.0 UTC" isActive="true" bearingAngle="3.220132469929538" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0126111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:48:44.0 UTC" isActive="true" bearingAngle="3.2498030672134415" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0134444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:48:59.0 UTC" isActive="true" bearingAngle="3.2829643230013335" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0142778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:49:14.0 UTC" isActive="true" bearingAngle="3.3161255787892263" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0151111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:49:29.0 UTC" isActive="true" bearingAngle="3.3510321638291125" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0159444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:49:44.0 UTC" isActive="true" bearingAngle="3.3876840781209934" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0167778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:49:59.0 UTC" isActive="true" bearingAngle="3.426081321664869" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0176111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:50:14.0 UTC" isActive="true" bearingAngle="3.464478565208744" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0184444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:50:29.0 UTC" isActive="true" bearingAngle="3.5046211380046137" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0192778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:50:44.0 UTC" isActive="true" bearingAngle="3.5465090400524772" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0201111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:50:59.0 UTC" isActive="true" bearingAngle="3.5901422713523354" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0209444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:51:14.0 UTC" isActive="true" bearingAngle="3.633775502652194" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0217778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:51:29.0 UTC" isActive="true" bearingAngle="3.679154063204047" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0226111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:51:44.0 UTC" isActive="true" bearingAngle="3.7262779530078936" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0234444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:51:59.0 UTC" isActive="true" bearingAngle="3.771656513559746" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0242778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:52:14.0 UTC" isActive="true" bearingAngle="3.818780403363593" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0251111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:52:29.0 UTC" isActive="true" bearingAngle="3.8659042931674397" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0259444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:52:44.0 UTC" isActive="true" bearingAngle="3.9130281829712867" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0267778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:52:59.0 UTC" isActive="true" bearingAngle="3.960152072775134" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0276111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:53:14.0 UTC" isActive="true" bearingAngle="4.00727596257898" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0284444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:53:29.0 UTC" isActive="true" bearingAngle="4.052654523130833" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0292778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:53:44.0 UTC" isActive="true" bearingAngle="4.098033083682686" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0301111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:53:59.0 UTC" isActive="true" bearingAngle="4.141666314982544" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0309444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:54:14.0 UTC" isActive="true" bearingAngle="4.185299546282402" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0317778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:54:29.0 UTC" isActive="true" bearingAngle="4.227187448330266" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0326111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:54:44.0 UTC" isActive="true" bearingAngle="4.267330021126135" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0334444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:54:59.0 UTC" isActive="true" bearingAngle="4.305727264670011" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0342778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:55:14.0 UTC" isActive="true" bearingAngle="4.344124508213886" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0351111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:55:29.0 UTC" isActive="true" bearingAngle="4.380776422505767" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0359444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:55:44.0 UTC" isActive="true" bearingAngle="4.4156830075456535" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0367778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:55:59.0 UTC" isActive="true" bearingAngle="4.448844263333546" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0376111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:56:14.0 UTC" isActive="true" bearingAngle="4.482005519121438" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0384444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:56:29.0 UTC" isActive="true" bearingAngle="4.511676116405342" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0392778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:56:44.0 UTC" isActive="true" bearingAngle="4.541346713689245" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0401111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:56:59.0 UTC" isActive="true" bearingAngle="4.569271981721155" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0409444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:57:14.0 UTC" isActive="true" bearingAngle="4.59545192050107" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0417778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:57:29.0 UTC" isActive="true" bearingAngle="4.621631859280985" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0426111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:57:44.0 UTC" isActive="true" bearingAngle="4.646066468808906" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0434444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:57:59.0 UTC" isActive="true" bearingAngle="4.6687557490848315" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0442778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:58:14.0 UTC" isActive="true" bearingAngle="4.691445029360757" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0451111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:58:29.0 UTC" isActive="true" bearingAngle="4.71238898038469" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0459444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:58:44.0 UTC" isActive="true" bearingAngle="4.733332931408622" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0467778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:58:59.0 UTC" isActive="true" bearingAngle="4.752531553180559" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0476111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:59:14.0 UTC" isActive="true" bearingAngle="4.7699848457005025" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0484444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:59:29.0 UTC" isActive="true" bearingAngle="4.787438138220446" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0492778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:59:44.0 UTC" isActive="true" bearingAngle="4.804891430740389" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0501111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 12:59:59.0 UTC" isActive="true" bearingAngle="4.8205993940083385" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0509444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:00:14.0 UTC" isActive="true" bearingAngle="4.8363073572762865" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0517778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:00:29.0 UTC" isActive="true" bearingAngle="4.852015320544236" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0526111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:00:44.0 UTC" isActive="true" bearingAngle="4.865977954560191" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0534444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:00:59.0 UTC" isActive="true" bearingAngle="4.878195259324151" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0542778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:01:14.0 UTC" isActive="true" bearingAngle="4.892157893340105" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0551111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:01:29.0 UTC" isActive="true" bearingAngle="4.904375198104066" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0559444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:01:44.0 UTC" isActive="true" bearingAngle="4.916592502868026" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0567778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:01:59.0 UTC" isActive="true" bearingAngle="4.927064478379992" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0576111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:02:14.0 UTC" isActive="true" bearingAngle="4.937536453891958" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0584444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:02:29.0 UTC" isActive="true" bearingAngle="4.949753758655918" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0592778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:02:44.0 UTC" isActive="true" bearingAngle="4.95848040491589" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0601111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:02:59.0 UTC" isActive="true" bearingAngle="4.968952380427856" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0609444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:03:14.0 UTC" isActive="true" bearingAngle="4.977679026687827" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0617778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:03:29.0 UTC" isActive="true" bearingAngle="4.9881510021997935" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0626111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:03:44.0 UTC" isActive="true" bearingAngle="4.9968776484597655" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0634444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:03:59.0 UTC" isActive="true" bearingAngle="5.003858965467742" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0642778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:04:14.0 UTC" isActive="true" bearingAngle="5.012585611727714" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0651111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:04:29.0 UTC" isActive="true" bearingAngle="5.019566928735692" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0659444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:04:44.0 UTC" isActive="true" bearingAngle="5.028293574995663" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0667778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:04:59.0 UTC" isActive="true" bearingAngle="5.035274892003641" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0676111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:05:14.0 UTC" isActive="true" bearingAngle="5.042256209011618" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0684444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:05:29.0 UTC" isActive="true" bearingAngle="5.049237526019596" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0692778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:05:44.0 UTC" isActive="true" bearingAngle="5.0562188430275725" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0701111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:05:59.0 UTC" isActive="true" bearingAngle="5.061454830783555" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0709444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:06:14.0 UTC" isActive="true" bearingAngle="5.068436147791533" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0717778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:06:29.0 UTC" isActive="true" bearingAngle="5.073672135547516" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0726111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:06:44.0 UTC" isActive="true" bearingAngle="5.080653452555493" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0734444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:06:59.0 UTC" isActive="true" bearingAngle="5.085889440311476" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0742778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:07:14.0 UTC" isActive="true" bearingAngle="5.091125428067459" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0751111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:07:29.0 UTC" isActive="true" bearingAngle="5.096361415823442" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0759444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:07:44.0 UTC" isActive="true" bearingAngle="5.101597403579425" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0767778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:07:59.0 UTC" isActive="true" bearingAngle="5.1068333913354085" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0776111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:08:14.0 UTC" isActive="true" bearingAngle="5.112069379091391" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0784444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:08:29.0 UTC" isActive="true" bearingAngle="5.117305366847374" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0792778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:08:44.0 UTC" isActive="true" bearingAngle="5.120796025351362" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0801111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:08:59.0 UTC" isActive="true" bearingAngle="5.126032013107346" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0809444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:09:14.0 UTC" isActive="true" bearingAngle="5.129522671611335" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0817778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:09:29.0 UTC" isActive="true" bearingAngle="5.134758659367318" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0826111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:09:44.0 UTC" isActive="true" bearingAngle="5.138249317871306" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0834444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:09:59.0 UTC" isActive="true" bearingAngle="5.141739976375295" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0842778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:10:14.0 UTC" isActive="true" bearingAngle="5.146975964131277" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0851111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:10:29.0 UTC" isActive="true" bearingAngle="5.150466622635266" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0859444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:10:44.0 UTC" isActive="true" bearingAngle="5.153957281139255" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0867778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:10:59.0 UTC" isActive="true" bearingAngle="5.1574479396432436" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0876111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:11:14.0 UTC" isActive="true" bearingAngle="5.160938598147233" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0884444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:11:29.0 UTC" isActive="true" bearingAngle="5.164429256651221" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0892778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:11:44.0 UTC" isActive="true" bearingAngle="5.16791991515521" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0901111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:11:59.0 UTC" isActive="true" bearingAngle="5.171410573659198" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0909444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:12:14.0 UTC" isActive="true" bearingAngle="5.174901232163187" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0917778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:12:29.0 UTC" isActive="true" bearingAngle="5.176646561415181" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0926111" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:12:44.0 UTC" isActive="true" bearingAngle="5.180137219919169" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0934444" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:12:59.0 UTC" isActive="true" bearingAngle="5.183627878423159" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0942778" lon="-30.0752694"/>
+        </bmeasurement>
+        <bmeasurement time="2010-01-12 13:13:14.0 UTC" isActive="true" bearingAngle="5.187118536927147" range="10972.800002824963">
+          <color reference="../../bmeasurement[85]/color"/>
+          <origin lat="-0.0951111" lon="-30.0752694"/>
         </bmeasurement>
       </measurements>
+      <bearingError>0.05235987755982988</bearingError>
+      <runMDA>false</runMDA>
+      <states>
+        <hostState time="1263298394000" courseDegs="45.0" speedKts="12.0">
+          <dLat>-0.0666667</dLat>
+          <dLong>-30.0027778</dLong>
+        </hostState>
+        <hostState time="1263298409000" courseDegs="9.63" speedKts="12.0">
+          <dLat>-0.0659389</dLat>
+          <dLong>-30.0024028</dLong>
+        </hostState>
+        <hostState time="1263298424000" courseDegs="334.26" speedKts="12.0">
+          <dLat>-0.065125</dLat>
+          <dLong>-30.0025167</dLong>
+        </hostState>
+        <hostState time="1263298439000" courseDegs="298.89" speedKts="12.0">
+          <dLat>-0.0645306</dLat>
+          <dLong>-30.0030806</dLong>
+        </hostState>
+        <hostState time="1263298454000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0038861</dLong>
+        </hostState>
+        <hostState time="1263298469000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0047194</dLong>
+        </hostState>
+        <hostState time="1263298484000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0055528</dLong>
+        </hostState>
+        <hostState time="1263298499000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0063861</dLong>
+        </hostState>
+        <hostState time="1263298514000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0072194</dLong>
+        </hostState>
+        <hostState time="1263298529000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0080528</dLong>
+        </hostState>
+        <hostState time="1263298544000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0088861</dLong>
+        </hostState>
+        <hostState time="1263298559000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0097194</dLong>
+        </hostState>
+        <hostState time="1263298574000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0105528</dLong>
+        </hostState>
+        <hostState time="1263298589000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0113861</dLong>
+        </hostState>
+        <hostState time="1263298604000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0122194</dLong>
+        </hostState>
+        <hostState time="1263298619000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0130528</dLong>
+        </hostState>
+        <hostState time="1263298634000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0138861</dLong>
+        </hostState>
+        <hostState time="1263298649000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0147194</dLong>
+        </hostState>
+        <hostState time="1263298664000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0155528</dLong>
+        </hostState>
+        <hostState time="1263298679000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0163861</dLong>
+        </hostState>
+        <hostState time="1263298694000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0643611</dLat>
+          <dLong>-30.0172194</dLong>
+        </hostState>
+        <hostState time="1263298709000" courseDegs="305.37" speedKts="12.0">
+          <dLat>-0.0641139</dLat>
+          <dLong>-30.018</dLong>
+        </hostState>
+        <hostState time="1263298724000" courseDegs="340.74" speedKts="12.0">
+          <dLat>-0.0634583</dLat>
+          <dLong>-30.0184917</dLong>
+        </hostState>
+        <hostState time="1263298739000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0626333</dLat>
+          <dLong>-30.0186056</dLong>
+        </hostState>
+        <hostState time="1263298754000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0618056</dLat>
+          <dLong>-30.0186778</dLong>
+        </hostState>
+        <hostState time="1263298769000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.060975</dLat>
+          <dLong>-30.0187528</dLong>
+        </hostState>
+        <hostState time="1263298784000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0601444</dLat>
+          <dLong>-30.018825</dLong>
+        </hostState>
+        <hostState time="1263298799000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0593139</dLat>
+          <dLong>-30.0188972</dLong>
+        </hostState>
+        <hostState time="1263298814000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0584833</dLat>
+          <dLong>-30.0189694</dLong>
+        </hostState>
+        <hostState time="1263298829000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0576528</dLat>
+          <dLong>-30.0190417</dLong>
+        </hostState>
+        <hostState time="1263298844000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0568222</dLat>
+          <dLong>-30.0191139</dLong>
+        </hostState>
+        <hostState time="1263298859000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0559944</dLat>
+          <dLong>-30.0191889</dLong>
+        </hostState>
+        <hostState time="1263298874000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0551639</dLat>
+          <dLong>-30.0192611</dLong>
+        </hostState>
+        <hostState time="1263298889000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0543333</dLat>
+          <dLong>-30.0193333</dLong>
+        </hostState>
+        <hostState time="1263298904000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0535028</dLat>
+          <dLong>-30.0194056</dLong>
+        </hostState>
+        <hostState time="1263298919000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0526722</dLat>
+          <dLong>-30.0194778</dLong>
+        </hostState>
+        <hostState time="1263298934000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0518417</dLat>
+          <dLong>-30.01955</dLong>
+        </hostState>
+        <hostState time="1263298949000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0510111</dLat>
+          <dLong>-30.0196222</dLong>
+        </hostState>
+        <hostState time="1263298964000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0501833</dLat>
+          <dLong>-30.0196972</dLong>
+        </hostState>
+        <hostState time="1263298979000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0493528</dLat>
+          <dLong>-30.0197694</dLong>
+        </hostState>
+        <hostState time="1263298994000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0485222</dLat>
+          <dLong>-30.0198417</dLong>
+        </hostState>
+        <hostState time="1263299009000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0476917</dLat>
+          <dLong>-30.0199139</dLong>
+        </hostState>
+        <hostState time="1263299024000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0468611</dLat>
+          <dLong>-30.0199861</dLong>
+        </hostState>
+        <hostState time="1263299039000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0460306</dLat>
+          <dLong>-30.0200583</dLong>
+        </hostState>
+        <hostState time="1263299054000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0452</dLat>
+          <dLong>-30.0201306</dLong>
+        </hostState>
+        <hostState time="1263299069000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0443722</dLat>
+          <dLong>-30.0202056</dLong>
+        </hostState>
+        <hostState time="1263299084000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0435417</dLat>
+          <dLong>-30.0202778</dLong>
+        </hostState>
+        <hostState time="1263299099000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0427111</dLat>
+          <dLong>-30.02035</dLong>
+        </hostState>
+        <hostState time="1263299114000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0418806</dLat>
+          <dLong>-30.0204222</dLong>
+        </hostState>
+        <hostState time="1263299129000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.04105</dLat>
+          <dLong>-30.0204944</dLong>
+        </hostState>
+        <hostState time="1263299144000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0402194</dLat>
+          <dLong>-30.0205667</dLong>
+        </hostState>
+        <hostState time="1263299159000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0393889</dLat>
+          <dLong>-30.0206389</dLong>
+        </hostState>
+        <hostState time="1263299174000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0385611</dLat>
+          <dLong>-30.0207139</dLong>
+        </hostState>
+        <hostState time="1263299189000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0377306</dLat>
+          <dLong>-30.0207861</dLong>
+        </hostState>
+        <hostState time="1263299204000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0369</dLat>
+          <dLong>-30.0208583</dLong>
+        </hostState>
+        <hostState time="1263299219000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0360694</dLat>
+          <dLong>-30.0209306</dLong>
+        </hostState>
+        <hostState time="1263299234000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0352389</dLat>
+          <dLong>-30.0210028</dLong>
+        </hostState>
+        <hostState time="1263299249000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0344083</dLat>
+          <dLong>-30.021075</dLong>
+        </hostState>
+        <hostState time="1263299264000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0335778</dLat>
+          <dLong>-30.0211472</dLong>
+        </hostState>
+        <hostState time="1263299279000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.03275</dLat>
+          <dLong>-30.0212222</dLong>
+        </hostState>
+        <hostState time="1263299294000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0319194</dLat>
+          <dLong>-30.0212944</dLong>
+        </hostState>
+        <hostState time="1263299309000" courseDegs="355.0" speedKts="12.0">
+          <dLat>-0.0310889</dLat>
+          <dLong>-30.0213667</dLong>
+        </hostState>
+        <hostState time="1263299324000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0303194</dLat>
+          <dLong>-30.0216639</dLong>
+        </hostState>
+        <hostState time="1263299339000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0295972</dLat>
+          <dLong>-30.0220806</dLong>
+        </hostState>
+        <hostState time="1263299354000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.028875</dLat>
+          <dLong>-30.0224972</dLong>
+        </hostState>
+        <hostState time="1263299369000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0281556</dLat>
+          <dLong>-30.0229139</dLong>
+        </hostState>
+        <hostState time="1263299384000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0274333</dLat>
+          <dLong>-30.0233306</dLong>
+        </hostState>
+        <hostState time="1263299399000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0267111</dLat>
+          <dLong>-30.0237472</dLong>
+        </hostState>
+        <hostState time="1263299414000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0259889</dLat>
+          <dLong>-30.0241639</dLong>
+        </hostState>
+        <hostState time="1263299429000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0252667</dLat>
+          <dLong>-30.0245806</dLong>
+        </hostState>
+        <hostState time="1263299444000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0245472</dLat>
+          <dLong>-30.0249972</dLong>
+        </hostState>
+        <hostState time="1263299459000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.023825</dLat>
+          <dLong>-30.0254139</dLong>
+        </hostState>
+        <hostState time="1263299474000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0231028</dLat>
+          <dLong>-30.0258306</dLong>
+        </hostState>
+        <hostState time="1263299489000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0223806</dLat>
+          <dLong>-30.0262472</dLong>
+        </hostState>
+        <hostState time="1263299504000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0216583</dLat>
+          <dLong>-30.0266639</dLong>
+        </hostState>
+        <hostState time="1263299519000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0209389</dLat>
+          <dLong>-30.0270806</dLong>
+        </hostState>
+        <hostState time="1263299534000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0202167</dLat>
+          <dLong>-30.0274972</dLong>
+        </hostState>
+        <hostState time="1263299549000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0194944</dLat>
+          <dLong>-30.0279139</dLong>
+        </hostState>
+        <hostState time="1263299564000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0187722</dLat>
+          <dLong>-30.0283306</dLong>
+        </hostState>
+        <hostState time="1263299579000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.01805</dLat>
+          <dLong>-30.0287472</dLong>
+        </hostState>
+        <hostState time="1263299594000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0173278</dLat>
+          <dLong>-30.0291639</dLong>
+        </hostState>
+        <hostState time="1263299609000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0166083</dLat>
+          <dLong>-30.0295806</dLong>
+        </hostState>
+        <hostState time="1263299624000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0158861</dLat>
+          <dLong>-30.0299972</dLong>
+        </hostState>
+        <hostState time="1263299639000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0151639</dLat>
+          <dLong>-30.0304139</dLong>
+        </hostState>
+        <hostState time="1263299654000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0144417</dLat>
+          <dLong>-30.0308306</dLong>
+        </hostState>
+        <hostState time="1263299669000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0137194</dLat>
+          <dLong>-30.0312472</dLong>
+        </hostState>
+        <hostState time="1263299684000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.013</dLat>
+          <dLong>-30.0316639</dLong>
+        </hostState>
+        <hostState time="1263299699000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0122778</dLat>
+          <dLong>-30.0320806</dLong>
+        </hostState>
+        <hostState time="1263299714000" courseDegs="330.0" speedKts="12.0">
+          <dLat>-0.0115556</dLat>
+          <dLong>-30.0324972</dLong>
+        </hostState>
+        <hostState time="1263299729000" courseDegs="294.63" speedKts="12.0">
+          <dLat>-0.0110028</dLat>
+          <dLong>-30.0331028</dLong>
+        </hostState>
+        <hostState time="1263299744000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0339194</dLong>
+        </hostState>
+        <hostState time="1263299759000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0347528</dLong>
+        </hostState>
+        <hostState time="1263299774000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0355861</dLong>
+        </hostState>
+        <hostState time="1263299789000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0364194</dLong>
+        </hostState>
+        <hostState time="1263299804000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0372528</dLong>
+        </hostState>
+        <hostState time="1263299819000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0380861</dLong>
+        </hostState>
+        <hostState time="1263299834000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0389194</dLong>
+        </hostState>
+        <hostState time="1263299849000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0397528</dLong>
+        </hostState>
+        <hostState time="1263299864000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0405861</dLong>
+        </hostState>
+        <hostState time="1263299879000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0414194</dLong>
+        </hostState>
+        <hostState time="1263299894000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0422528</dLong>
+        </hostState>
+        <hostState time="1263299909000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0430861</dLong>
+        </hostState>
+        <hostState time="1263299924000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0439194</dLong>
+        </hostState>
+        <hostState time="1263299939000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0447528</dLong>
+        </hostState>
+        <hostState time="1263299954000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0455861</dLong>
+        </hostState>
+        <hostState time="1263299969000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0464194</dLong>
+        </hostState>
+        <hostState time="1263299984000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0472528</dLong>
+        </hostState>
+        <hostState time="1263299999000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0480861</dLong>
+        </hostState>
+        <hostState time="1263300014000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0489194</dLong>
+        </hostState>
+        <hostState time="1263300029000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0497528</dLong>
+        </hostState>
+        <hostState time="1263300044000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0505861</dLong>
+        </hostState>
+        <hostState time="1263300059000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0514194</dLong>
+        </hostState>
+        <hostState time="1263300074000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0522528</dLong>
+        </hostState>
+        <hostState time="1263300089000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0530861</dLong>
+        </hostState>
+        <hostState time="1263300104000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0539194</dLong>
+        </hostState>
+        <hostState time="1263300119000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0547528</dLong>
+        </hostState>
+        <hostState time="1263300134000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0555861</dLong>
+        </hostState>
+        <hostState time="1263300149000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0564194</dLong>
+        </hostState>
+        <hostState time="1263300164000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0572528</dLong>
+        </hostState>
+        <hostState time="1263300179000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0580861</dLong>
+        </hostState>
+        <hostState time="1263300194000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0589194</dLong>
+        </hostState>
+        <hostState time="1263300209000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0597528</dLong>
+        </hostState>
+        <hostState time="1263300224000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0605861</dLong>
+        </hostState>
+        <hostState time="1263300239000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0614194</dLong>
+        </hostState>
+        <hostState time="1263300254000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0622528</dLong>
+        </hostState>
+        <hostState time="1263300269000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0630861</dLong>
+        </hostState>
+        <hostState time="1263300284000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0639194</dLong>
+        </hostState>
+        <hostState time="1263300299000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0647528</dLong>
+        </hostState>
+        <hostState time="1263300314000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0655861</dLong>
+        </hostState>
+        <hostState time="1263300329000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0664194</dLong>
+        </hostState>
+        <hostState time="1263300344000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0672528</dLong>
+        </hostState>
+        <hostState time="1263300359000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0680861</dLong>
+        </hostState>
+        <hostState time="1263300374000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0689194</dLong>
+        </hostState>
+        <hostState time="1263300389000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0697528</dLong>
+        </hostState>
+        <hostState time="1263300404000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0705861</dLong>
+        </hostState>
+        <hostState time="1263300419000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0714194</dLong>
+        </hostState>
+        <hostState time="1263300434000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0722528</dLong>
+        </hostState>
+        <hostState time="1263300449000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0730861</dLong>
+        </hostState>
+        <hostState time="1263300464000" courseDegs="270.0" speedKts="12.0">
+          <dLat>-0.0108806</dLat>
+          <dLong>-30.0739194</dLong>
+        </hostState>
+        <hostState time="1263300479000" courseDegs="234.63000000000002" speedKts="12.0">
+          <dLat>-0.0111306</dLat>
+          <dLong>-30.0747</dLong>
+        </hostState>
+        <hostState time="1263300494000" courseDegs="199.26" speedKts="12.0">
+          <dLat>-0.0117861</dLat>
+          <dLong>-30.0751944</dLong>
+        </hostState>
+        <hostState time="1263300509000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0126111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300524000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0134444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300539000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0142778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300554000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0151111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300569000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0159444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300584000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0167778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300599000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0176111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300614000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0184444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300629000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0192778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300644000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0201111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300659000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0209444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300674000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0217778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300689000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0226111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300704000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0234444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300719000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0242778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300734000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0251111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300749000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0259444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300764000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0267778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300779000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0276111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300794000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0284444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300809000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0292778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300824000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0301111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300839000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0309444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300854000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0317778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300869000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0326111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300884000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0334444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300899000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0342778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300914000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0351111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300929000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0359444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300944000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0367778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300959000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0376111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300974000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0384444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263300989000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0392778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301004000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0401111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301019000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0409444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301034000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0417778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301049000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0426111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301064000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0434444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301079000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0442778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301094000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0451111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301109000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0459444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301124000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0467778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301139000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0476111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301154000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0484444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301169000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0492778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301184000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0501111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301199000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0509444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301214000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0517778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301229000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0526111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301244000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0534444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301259000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0542778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301274000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0551111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301289000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0559444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301304000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0567778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301319000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0576111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301334000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0584444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301349000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0592778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301364000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0601111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301379000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0609444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301394000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0617778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301409000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0626111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301424000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0634444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301439000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0642778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301454000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0651111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301469000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0659444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301484000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0667778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301499000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0676111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301514000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0684444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301529000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0692778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301544000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0701111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301559000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0709444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301574000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0717778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301589000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0726111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301604000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0734444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301619000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0742778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301634000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0751111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301649000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0759444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301664000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0767778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301679000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0776111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301694000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0784444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301709000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0792778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301724000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0801111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301739000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0809444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301754000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0817778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301769000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0826111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301784000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0834444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301799000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0842778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301814000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0851111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301829000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0859444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301844000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0867778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301859000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0876111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301874000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0884444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301889000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0892778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301904000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0901111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301919000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0909444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301934000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0917778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301949000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0926111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301964000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0934444</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301979000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0942778</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+        <hostState time="1263301994000" courseDegs="180.0" speedKts="12.0">
+          <dLat>-0.0951111</dLat>
+          <dLong>-30.0752694</dLong>
+        </hostState>
+      </states>
     </bearingMeasurementContribution>
     <compositeStraightLegForecastContribution>
       <name>leg one</name>
@@ -4871,14 +6450,14 @@
         <alpha>255</alpha>
       </color>
       <speed>
-        <name>auto_id:1412008123946+_255</name>
+        <name>auto_id:1516122937142+_437</name>
         <active>true</active>
         <weight>5</weight>
         <startDate reference="../../startDate"/>
         <finishDate reference="../../finishDate"/>
       </speed>
       <course>
-        <name>auto_id:1412008123947+_510</name>
+        <name>auto_id:1516122937143+_252</name>
         <active>true</active>
         <weight>5</weight>
         <startDate reference="../../startDate"/>
@@ -4886,11 +6465,11 @@
       </course>
     </compositeStraightLegForecastContribution>
     <compositeStraightLegForecastContribution>
-      <name>leg two</name>
+      <name>Leg two</name>
       <active>true</active>
       <weight>5</weight>
       <startDate>2010-01-12 12:34:14.0 UTC</startDate>
-      <finishDate>2010-01-12 12:37:29.0 UTC</finishDate>
+      <finishDate>2010-01-12 13:13:14.0 UTC</finishDate>
       <color>
         <red>255</red>
         <green>0</green>
@@ -4898,30 +6477,29 @@
         <alpha>255</alpha>
       </color>
       <speed>
-        <name>auto_id:1412008134786+_982</name>
+        <name>auto_id:1516122959089+_981</name>
         <active>true</active>
         <weight>5</weight>
         <startDate reference="../../startDate"/>
         <finishDate reference="../../finishDate"/>
       </speed>
       <course>
-        <name>auto_id:1412008134787+_896</name>
+        <name>auto_id:1516122959089+_863</name>
         <active>true</active>
         <weight>5</weight>
         <startDate reference="../../startDate"/>
         <finishDate reference="../../finishDate"/>
       </course>
     </compositeStraightLegForecastContribution>
-    <courseForecastContribution>
-      <name>overall course</name>
+    <speedForecastContribution>
+      <name>Overall speed</name>
       <active>true</active>
       <weight>5</weight>
       <startDate>2010-01-12 12:13:14.0 UTC</startDate>
-      <finishDate>2010-01-12 12:37:59.0 UTC</finishDate>
-      <minCourse>3.961897402027128</minCourse>
-      <maxCourse>4.9043751981040655</maxCourse>
-      <estimate>0.0</estimate>
-    </courseForecastContribution>
+      <finishDate>2010-01-12 13:13:14.0 UTC</finishDate>
+      <minSpeed>0.0</minSpeed>
+      <maxSpeed>20.57777776</maxSpeed>
+    </speedForecastContribution>
     <courseAnalysisContribution>
       <name>Course Analysis</name>
       <active>true</active>
@@ -4942,14 +6520,16 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="0.0717899" Long="-30.0850381"/>
+<shortLocation Depth="0.000" Lat="0.0230262" Long="-30.0377566"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="-0.0769263" Long="-29.9974946"/>
+<shortLocation Depth="0.000" Lat="-0.0302579" Long="-29.9848292"/>
 </br>
 </projection>
 <gui>
-<tote/>
+<tote>
+<primary Name="SENSOR"/>
+</tote>
 <component Type="Stepper">
 <property Name="GREEN" Value="64"/>
 <property Name="DateFormat" Value="ddHHmm"/>
