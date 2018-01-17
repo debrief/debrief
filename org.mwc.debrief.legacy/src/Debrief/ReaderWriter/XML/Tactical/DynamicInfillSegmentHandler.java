@@ -69,21 +69,30 @@ abstract public class DynamicInfillSegmentHandler extends
   {
     // get the color form the first item
     final Color fixColor;
-    if(super._fixes.isEmpty())
+    if (super._fixes.isEmpty())
     {
       // no fixes in solution.
-      // updated logic means this shouldn't happen. 
+      // updated logic means this shouldn't happen.
       // But, robustly handle it, if it does.
       fixColor = Color.red;
     }
     else
     {
       FixWrapper first = super._fixes.firstElement();
-      fixColor = first.getColor();      
+      fixColor = first.getColor();
     }
 
-    final TrackSegment res =
-        new DynamicInfillSegment(_beforeName, _afterName, fixColor);
+    final TrackSegment res;
+    if (_fixes.size() <= 1)
+    {
+      // ok. We used to allow single point infills,
+      // now we don't.   Skip this infill
+      res = null;
+    }
+    else
+    {
+      res = new DynamicInfillSegment(_beforeName, _afterName, fixColor);
+    }
     return res;
   }
 
