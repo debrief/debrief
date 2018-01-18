@@ -68,18 +68,23 @@ public class TimeBar implements IEventEntry
       if (sensor instanceof TacticalDataWrapper)
       {
         final TacticalDataWrapper item = (TacticalDataWrapper) sensor;
-        _children.add(new TimeBar((TacticalDataWrapper) sensor));
-        final TimePeriod thisP =
-            new TimePeriod.BaseTimePeriod(item.getStartDTG(), item.getEndDTG());
 
-        if (coverage == null)
+        if (item.getStartDTG() != null && item.getEndDTG() != null)
         {
-          coverage = thisP;
-        }
-        else
-        {
-          coverage.extend(thisP.getStartDTG());
-          coverage.extend(thisP.getEndDTG());
+          _children.add(new TimeBar((TacticalDataWrapper) sensor));
+          final TimePeriod thisP =
+              new TimePeriod.BaseTimePeriod(item.getStartDTG(), item
+                  .getEndDTG());
+
+          if (coverage == null)
+          {
+            coverage = thisP;
+          }
+          else
+          {
+            coverage.extend(thisP.getStartDTG());
+            coverage.extend(thisP.getEndDTG());
+          }
         }
       }
     }
@@ -140,6 +145,10 @@ public class TimeBar implements IEventEntry
 
   public TimeBar(final SegmentList segments)
   {
+
+    // do we collapse track segments?
+    boolean collapseSegments = true;
+
     _source = segments;
     _eventName = segments.getName();
     final HiResDate startDate = segments.getWrapper().getStartDTG();
@@ -157,11 +166,15 @@ public class TimeBar implements IEventEntry
     // also work through the segments, if there's more than one
     if (segments.size() > 1)
     {
-      final Enumeration<Editable> elems = segments.elements();
-      while (elems.hasMoreElements())
+      if (!collapseSegments)
       {
-        final TrackSegment thisE = (TrackSegment) elems.nextElement();
-        _children.add(new TimeBar(thisE));
+
+        final Enumeration<Editable> elems = segments.elements();
+        while (elems.hasMoreElements())
+        {
+          final TrackSegment thisE = (TrackSegment) elems.nextElement();
+          _children.add(new TimeBar(thisE));
+        }
       }
     }
   }
