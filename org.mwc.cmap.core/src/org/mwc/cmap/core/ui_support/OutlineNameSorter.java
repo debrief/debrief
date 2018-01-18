@@ -14,44 +14,18 @@ import MWC.GenericData.Watchable;
 public class OutlineNameSorter extends ViewerSorter
 {
 
-  public static interface NameSortHelper
-  {
-    boolean sortByDate();
-  }
-
-  private NameSortHelper _sortHelper;
-
-  public OutlineNameSorter()
-  {
-    this(new NameSortHelper()
-    {
-
-      @Override
-      public boolean sortByDate()
-      {
-        return false;
-      }
-    });
-  }
-
-  public OutlineNameSorter(final NameSortHelper helper)
-  {
-    _sortHelper = helper;
-  }
-
   public static class EditableComparer implements Comparator<Editable>
   {
     @Override
-    public int compare(Editable arg0, Editable arg1)
+    public int compare(final Editable arg0, final Editable arg1)
     {
       return compareEditables(arg0, arg1);
     }
   }
 
-  @Override
-  public int compare(final Viewer viewer, final Object e1, final Object e2)
+  public static interface NameSortHelper
   {
-    return compare(e1, e2);
+    boolean sortByDate();
   }
 
   @SuppressWarnings("unchecked")
@@ -94,6 +68,26 @@ public class OutlineNameSorter extends ViewerSorter
     }
 
     return res;
+  }
+
+  private final NameSortHelper _sortHelper;
+
+  public OutlineNameSorter()
+  {
+    this(new NameSortHelper()
+    {
+
+      @Override
+      public boolean sortByDate()
+      {
+        return false;
+      }
+    });
+  }
+
+  public OutlineNameSorter(final NameSortHelper helper)
+  {
+    _sortHelper = helper;
   }
 
   @SuppressWarnings("unchecked")
@@ -146,7 +140,13 @@ public class OutlineNameSorter extends ViewerSorter
     return res;
   }
 
-  private int compareSensors(SensorWrapper s1, SensorWrapper s2)
+  @Override
+  public int compare(final Viewer viewer, final Object e1, final Object e2)
+  {
+    return compare(e1, e2);
+  }
+
+  private int compareSensors(final SensorWrapper s1, final SensorWrapper s2)
   {
     // hmm, just check we have times
     final HiResDate ha = s1.getStartDTG();
