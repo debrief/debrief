@@ -30,7 +30,10 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.CorePlugin;
@@ -38,6 +41,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.timebar.Activator;
 import org.mwc.debrief.timebar.model.TimeBarPrefs;
 
 import MWC.GUI.Editable;
@@ -76,6 +80,10 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
       }
     }
   }
+
+  private static final String COLLAPSE_SEGMENTS = "COLLAPSE_SEGMENTS";
+
+  private static final String COLLAPSE_SENSORS = "COLLAPSE_SENSORS";
 
   TimeBarViewer _viewer;
 
@@ -117,6 +125,10 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
   private Action _collapseSegments;
 
   private Action _collapseSensors;
+
+  private Boolean _defaultCollapseSegments = null;
+
+  private Boolean _defaultCollapseSensors = null;
 
   /**
    * stop listening to the layer, if necessary
@@ -457,6 +469,21 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
           }
         });
 
+    _myPartMonitor.addPartListener(TimeBarView.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+
+          @Override
+          public void eventTriggered(String type, Object instance,
+              IWorkbenchPart parentPart)
+          {
+            Activator.getDefault().getPreferenceStore().setValue(
+                COLLAPSE_SEGMENTS, _collapseSegments.isChecked());
+            Activator.getDefault().getPreferenceStore().setValue(
+                COLLAPSE_SENSORS, _collapseSensors.isChecked());
+          }
+        });
+
     // ok we're all ready now. just try and see if the current part is valid
     _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
         .getActivePage());
@@ -515,6 +542,10 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _collapseSensors.setText("Collapse sensors");
     _collapseSensors.setImageDescriptor(DebriefPlugin
         .getImageDescriptor("icons/16/sensor.png"));
+    if (_defaultCollapseSensors != null)
+    {
+      _collapseSensors.setChecked(_defaultCollapseSensors);
+    }
 
     _collapseSegments = new Action("Collapse segments", IAction.AS_CHECK_BOX)
     {
@@ -528,6 +559,10 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _collapseSegments.setText("Collapse segments");
     _collapseSegments.setImageDescriptor(DebriefPlugin
         .getImageDescriptor("icons/16/tma_segment.png"));
+    if (_defaultCollapseSegments != null)
+    {
+      _collapseSegments.setChecked(_defaultCollapseSegments);
+    }
 
   }
 
@@ -641,6 +676,44 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
   public void setFocus()
   {
     _viewer.setFocus();
+  }
+
+  /**
+   * @param site
+   * @param memento
+   * @throws PartInitException
+   */
+  public void init(final IViewSite site, final IMemento memento)
+      throws PartInitException
+  {
+    super.init(site, memento);
+
+    if (memento != null)
+    {
+      // try the slider step size
+      _defaultCollapseSegments = memento.getBoolean(COLLAPSE_SEGMENTS);
+      _defaultCollapseSensors = memento.getBoolean(COLLAPSE_SENSORS);
+    }
+    else
+    {
+      // look in the prefs store
+      _defaultCollapseSegments =
+          Activator.getDefault().getPreferenceStore().getBoolean(
+              COLLAPSE_SEGMENTS);
+      _defaultCollapseSensors =
+          Activator.getDefault().getPreferenceStore().getBoolean(
+              COLLAPSE_SENSORS);
+    }
+  }
+
+  @Override
+  public void saveState(IMemento memento)
+  {
+    super.saveState(memento);
+
+    // app closing, store our state
+    memento.putBoolean(COLLAPSE_SEGMENTS, _collapseSegments.isChecked());
+    memento.putBoolean(COLLAPSE_SENSORS, _collapseSensors.isChecked());
   }
 
 }
