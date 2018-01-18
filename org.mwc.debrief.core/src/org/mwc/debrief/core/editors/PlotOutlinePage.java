@@ -34,6 +34,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.SubMenuManager;
 import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -1143,13 +1144,12 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     manager.add(new Separator());
     manager.add(_createLayer);
 
-    manager.add(new Separator());
-    manager.add(_sortSensorsDTG);
-    manager.add(_sortSensorsName);
+    MenuManager sub = new MenuManager("Sort sensors");
+    sub.add(_sortSensorsDTG);
+    sub.add(_sortSensorsName);
 
-    // FIXME
-    // manager.add(CorePlugin.createOpenHelpAction(
-    // "org.mwc.debrief.help.LayerMgr", null, this));
+    manager.add(new Separator());
+    manager.add(sub);
   }
 
   private void fillLocalToolBar(final IActionBars bars)
