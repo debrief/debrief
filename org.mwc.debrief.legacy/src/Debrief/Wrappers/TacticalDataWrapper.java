@@ -480,30 +480,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
       {
         // compare the names
         final TacticalDataWrapper sw = (TacticalDataWrapper) o;
-        final HiResDate myStart = this.getStartDTG();
-        final HiResDate hisStart = sw.getStartDTG();
-        if (myStart != null)
-        {
-          if (hisStart != null)
-          {
-            // ok, compare them
-            res = myStart.compareTo(hisStart);
-          }
-          else
-          {
-            // let me win
-            res = 1;
-          }
-        }
-        else if (hisStart != null)
-        {
-          // let him win
-          res = -1;
-        }
-        else
-        {
-          res = this.getName().compareTo(sw.getName());
-        }
+        res = this.getName().compareTo(sw.getName());
       }
       else
       {
