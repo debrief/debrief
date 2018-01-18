@@ -6,13 +6,39 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
+import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
 public class OutlineNameSorter extends ViewerSorter
 {
-  
+
+  public static interface NameSortHelper
+  {
+    boolean sortByDate();
+  }
+
+  private NameSortHelper _sortHelper;
+
+  public OutlineNameSorter()
+  {
+    this(new NameSortHelper()
+    {
+
+      @Override
+      public boolean sortByDate()
+      {
+        return false;
+      }
+    });
+  }
+
+  public OutlineNameSorter(final NameSortHelper helper)
+  {
+    _sortHelper = helper;
+  }
+
   public static class EditableComparer implements Comparator<Editable>
   {
     @Override
@@ -21,7 +47,7 @@ public class OutlineNameSorter extends ViewerSorter
       return compareEditables(arg0, arg1);
     }
   }
-  
+
   @Override
   public int compare(final Viewer viewer, final Object e1, final Object e2)
   {
@@ -75,12 +101,32 @@ public class OutlineNameSorter extends ViewerSorter
   {
     final int res;
 
-    // just see if we have sorted editables
     if ((e1 instanceof Comparable) && (e2 instanceof Comparable))
     {
-      final Comparable<Object> w1 = (Comparable<Object>) e1;
-      final Comparable<Object> w2 = (Comparable<Object>) e2;
-      res = w1.compareTo(w2);
+      // special case. Just double-check they aren't sensor wrappers
+      if (e1 instanceof EditableWrapper && e2 instanceof EditableWrapper)
+      {
+        final EditableWrapper p1 = (EditableWrapper) e1;
+        final EditableWrapper p2 = (EditableWrapper) e2;
+
+        if (p1.getEditable() instanceof SensorWrapper
+            && p2.getEditable() instanceof SensorWrapper)
+        {
+          return compareSensors((SensorWrapper) p1.getEditable(),
+              (SensorWrapper) p2.getEditable());
+        }
+        else
+        {
+          return compareEditables(p1.getEditable(), p2.getEditable());
+        }
+      }
+      else
+      {
+        // just see if we have sorted editables
+        final Comparable<Object> w1 = (Comparable<Object>) e1;
+        final Comparable<Object> w2 = (Comparable<Object>) e2;
+        res = w1.compareTo(w2);
+      }
     }
     else
     {
@@ -88,12 +134,32 @@ public class OutlineNameSorter extends ViewerSorter
       {
         final EditableWrapper p1 = (EditableWrapper) e1;
         final EditableWrapper p2 = (EditableWrapper) e2;
+
         return compareEditables(p1.getEditable(), p2.getEditable());
       }
       else
       {
         return e1.toString().compareTo(e2.toString());
       }
+    }
+
+    return res;
+  }
+
+  private int compareSensors(SensorWrapper s1, SensorWrapper s2)
+  {
+    // hmm, just check we have times
+    final HiResDate ha = s1.getStartDTG();
+    final HiResDate hb = s2.getStartDTG();
+
+    final int res;
+    if (_sortHelper.sortByDate() && (ha != null) && (hb != null))
+    {
+      res = ha.compareTo(hb);
+    }
+    else
+    {
+      res = s1.getName().compareTo(s2.getName());
     }
 
     return res;
