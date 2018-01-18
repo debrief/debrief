@@ -42,19 +42,20 @@ import MWC.TacticalData.NarrativeEntry;
 public class TimeBar implements IEventEntry
 {
   /** TimeBar start */
-  Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"),
+  private Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"),
       Locale.UK);
   /** TimeBar end */
-  Calendar _end = Calendar
+  private Calendar _end = Calendar
       .getInstance(TimeZone.getTimeZone("GMT+0"), Locale.UK);
   /** TimeBar caption */
-  String _eventName;
-  Color _color = null;
+  private String _eventName;
+  private Color _color = null;
 
-  Object _source;
-  List<IEventEntry> _children = new ArrayList<IEventEntry>();
+  private Object _source;
+  private List<IEventEntry> _children = new ArrayList<IEventEntry>();
 
-  protected TimeBar(final BaseLayer tacticalItems, boolean collapseChildren)
+  protected TimeBar(final BaseLayer tacticalItems,
+      final boolean collapseChildren)
   {
     // _start.setTime(bar.getStartDTG().getDate());
     _eventName = tacticalItems.getName();
@@ -71,7 +72,7 @@ public class TimeBar implements IEventEntry
 
         if (item.getStartDTG() != null && item.getEndDTG() != null)
         {
-          if(!collapseChildren)
+          if (!collapseChildren)
           {
             _children.add(new TimeBar((TacticalDataWrapper) sensor));
           }
@@ -220,9 +221,9 @@ public class TimeBar implements IEventEntry
     }
   }
 
-  public TimeBar(final TrackWrapper track, TimeBarPrefs prefs)
+  public TimeBar(final TrackWrapper track, final TimeBarPrefs prefs)
   {
-    this((WatchableList) track);
+    this(track);
     final SegmentList segments = track.getSegments();
     _children.add(new TimeBar(segments, prefs));
 

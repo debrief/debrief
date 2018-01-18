@@ -18,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
@@ -49,7 +50,35 @@ import MWC.GenericData.HiResDate;
 public class TimeBarView extends ViewPart implements TimeBarPrefs
 {
 
+  protected final class NewTimeListener implements PropertyChangeListener
+  {
+    @Override
+    public void propertyChange(final PropertyChangeEvent event)
+    {
+      // see if it's the time or the period which
+      // has changed
+      if (event.getPropertyName().equals(
+          TimeProvider.TIME_CHANGED_PROPERTY_NAME))
+      {
+        // ok, use the new time
+        final HiResDate newDTG = (HiResDate) event.getNewValue();
+        final HiResDate oldDTG = (HiResDate) event.getOldValue();
+        final Runnable nextEvent = new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            _viewer._painter
+                .drawDebriefTime(oldDTG.getDate(), newDTG.getDate());
+          }
+        };
+        Display.getDefault().syncExec(nextEvent);
+      }
+    }
+  }
+
   TimeBarViewer _viewer;
+
   /**
    * helper application to help track creation/activation of new plots
    */
@@ -59,8 +88,8 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
    * Debrief data
    */
   private Layers _myLayers;
-
   TimeProvider _timeProvider;
+
   /**
    * listen out for new times
    */
@@ -74,20 +103,64 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
    * Provider listening to us
    */
   private ISelectionProvider _selectionProvider;
-
   /**
    * Actions to zoom around the time bars
    */
   private Action _zoomInAction;
   private Action _zoomOutAction;
-  private Action _fitToWindowAction;
 
+  private Action _fitToWindowAction;
   /**
    * visiblity settings
    * 
    */
   private Action _collapseSegments;
+
   private Action _collapseSensors;
+
+  /**
+   * stop listening to the layer, if necessary
+   */
+  void clearLayerListener()
+  {
+    if (_myLayers != null)
+    {
+      // de-register listeners from the layer
+      _myLayers.removeDataExtendedListener(_myLayersListener);
+      _myLayers.removeDataReformattedListener(_myLayersListener);
+      _myLayersListener = null;
+      _myLayers = null;
+    }
+  }
+
+  void clearTimeListener()
+  {
+    if (_timeProvider != null)
+    {
+      _timeProvider.removeListener(_temporalListener,
+          TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+      _temporalListener = null;
+      _timeProvider = null;
+    }
+  }
+
+  @Override
+  public boolean collapseSegments()
+  {
+    return _collapseSegments.isChecked();
+  }
+
+  @Override
+  public boolean collapseSensors()
+  {
+    return _collapseSensors.isChecked();
+  }
+
+  private void contributeToActionBars()
+  {
+    final IActionBars bars = getViewSite().getActionBars();
+    fillLocalToolBar(bars.getToolBarManager());
+  }
 
   @Override
   public void createPartControl(final Composite parent)
@@ -111,7 +184,9 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
       {
         final ISelection sel = event.getSelection();
         if (!(sel instanceof IStructuredSelection))
+        {
           return;
+        }
         final IStructuredSelection ss = (IStructuredSelection) sel;
         final Object o = ss.getFirstElement();
         if (o instanceof EditableWrapper)
@@ -124,188 +199,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _viewer.addSelectionChangedListener(_selectionChangeListener);
   }
 
-  private void contributeToActionBars()
-  {
-    final IActionBars bars = getViewSite().getActionBars();
-    fillLocalToolBar(bars.getToolBarManager());
-  }
-
-  private void fillLocalToolBar(final IToolBarManager manager)
-  {
-    manager.add(_zoomInAction);
-    manager.add(_zoomOutAction);
-    manager.add(_fitToWindowAction);
-    manager.add(new Separator());
-    manager.add(_collapseSegments);
-    manager.add(_collapseSensors);
-  }
-
-  private void makeActions()
-  {
-    _zoomInAction = new Action("Zoom in", Action.AS_PUSH_BUTTON)
-    {
-      public void run()
-      {
-        _viewer.zoomIn();
-      }
-    };
-    _zoomInAction.setText("Zoom in");
-    _zoomInAction.setToolTipText("Zoom in");
-    _zoomInAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/zoomin.png"));
-
-    _zoomOutAction = new Action("Zoom out", Action.AS_PUSH_BUTTON)
-    {
-      public void run()
-      {
-        _viewer.zoomOut();
-      }
-    };
-    _zoomOutAction.setText("Zoom out");
-    _zoomOutAction.setToolTipText("Zoom out");
-    _zoomOutAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/zoomout.png"));
-
-    _fitToWindowAction = new Action("Fit to Window", Action.AS_PUSH_BUTTON)
-    {
-      public void run()
-      {
-        _viewer.fitToWindow();
-      }
-    };
-    _fitToWindowAction.setText("Fit to Window");
-    _fitToWindowAction.setToolTipText("Fit to Window");
-    _fitToWindowAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/fit_to_win.png"));
-
-    _collapseSensors = new Action("Collapse sensors", Action.AS_CHECK_BOX)
-    {
-      public void run()
-      {
-        // force rescan
-        processNewData(_myLayers, null, null);
-      }
-    };
-    _collapseSensors.setText("Collapse sensors");
-    _collapseSensors.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/sensor.png"));
-
-    _collapseSegments = new Action("Collapse segments", Action.AS_CHECK_BOX)
-    {
-      public void run()
-      {
-        // force rescan
-        processNewData(_myLayers, null, null);
-      }
-    };
-    _collapseSegments.setText("Collapse segments");
-    _collapseSegments.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/tma_segment.png"));
-
-  }
-
-  void processNewLayers(final Object part)
-  {
-    // just check we're not already looking at it
-    if (!part.equals(_myLayers))
-    {
-      // de-register current layers before tracking the new one
-      clearLayerListener();
-    }
-    else
-    {
-      return;
-    }
-
-    _myLayers = (Layers) part;
-    if (_myLayersListener == null)
-    {
-      _myLayersListener = new Layers.DataListener2()
-      {
-
-        public void
-            dataModified(final Layers theData, final Layer changedLayer)
-        {
-        }
-
-        public void dataExtended(final Layers theData)
-        {
-          dataExtended(theData, null, null);
-        }
-
-        public void dataReformatted(final Layers theData,
-            final Layer changedLayer)
-        {
-          processReformattedLayer(theData, changedLayer);
-        }
-
-        public void dataExtended(final Layers theData, final Plottable newItem,
-            final HasEditables parentLayer)
-        {
-          processNewData(theData, newItem, parentLayer);
-        }
-      };
-    }
-    // right, listen for data being added
-    _myLayers.addDataExtendedListener(_myLayersListener);
-
-    // and listen for items being reformatted
-    _myLayers.addDataReformattedListener(_myLayersListener);
-
-    // do an initial population.
-    processNewData(_myLayers, null, null);
-  }
-
-  void processReformattedLayer(final Layers theData, final Layer changedLayer)
-  {
-    final TimeBarPrefs prefs = this;
-    Display.getDefault().asyncExec(new Runnable()
-    {
-      public void run()
-      {
-        if (_viewer == null || _viewer.isDisposed())
-          return;
-        _viewer.drawDiagram(theData, prefs);
-      }
-    });
-  }
-
-  void processNewData(final Layers theData, final Editable newItem,
-      final HasEditables parentLayer)
-  {
-    final TimeBarPrefs prefs = this;
-
-    Display.getDefault().asyncExec(new Runnable()
-    {
-      public void run()
-      {
-        if (_viewer == null || _viewer.isDisposed())
-          return;
-        // ok, fire the change in the UI thread
-        _viewer.drawDiagram(theData, true, prefs /* jump to begin */);
-        // hmm, do we know about the new item? If so, better select it
-        if (newItem != null)
-        {
-          // wrap the plottable
-          final EditableWrapper parentWrapper =
-              new EditableWrapper((Editable) parentLayer, null, theData);
-          final EditableWrapper wrapped =
-              new EditableWrapper(newItem, parentWrapper, theData);
-          final ISelection selected = new StructuredSelection(wrapped);
-
-          // and select it
-          editableSelected(selected, wrapped);
-        }
-      }
-    });
-  }
-
   @Override
-  public void setFocus()
-  {
-    _viewer.setFocus();
-  }
-
   public void dispose()
   {
     super.dispose();
@@ -334,30 +228,62 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     }
   }
 
-  /**
-   * stop listening to the layer, if necessary
-   */
-  void clearLayerListener()
+  public void editableSelected(final ISelection sel, final EditableWrapper pw)
   {
-    if (_myLayers != null)
+
+    // ahh, just check if this is a whole new layers object
+    if (pw.getEditable() instanceof Layers)
     {
-      // de-register listeners from the layer
-      _myLayers.removeDataExtendedListener(_myLayersListener);
-      _myLayers.removeDataReformattedListener(_myLayersListener);
-      _myLayersListener = null;
-      _myLayers = null;
+      processNewLayers(pw.getEditable());
+      return;
     }
+
+    // just check that this is something we can work with
+    if (sel instanceof StructuredSelection)
+    {
+      final StructuredSelection str = (StructuredSelection) sel;
+
+      // hey, is there a payload?
+      if (str.getFirstElement() != null)
+      {
+        // sure is. we only support single selections, so get the first
+        // element
+        final Object first = str.getFirstElement();
+        if (first instanceof EditableWrapper)
+        {
+          _viewer.setSelectionToWidget((StructuredSelection) sel);
+        }
+      }
+    }
+
   }
 
-  void clearTimeListener()
+  private void fillLocalToolBar(final IToolBarManager manager)
   {
-    if (_timeProvider != null)
+    manager.add(_zoomInAction);
+    manager.add(_zoomOutAction);
+    manager.add(_fitToWindowAction);
+    manager.add(new Separator());
+    manager.add(_collapseSegments);
+    manager.add(_collapseSensors);
+  }
+
+  @Override
+  @SuppressWarnings("rawtypes")
+  public Object getAdapter(final Class adapter)
+  {
+    Object res = null;
+
+    if (adapter == ISelectionProvider.class)
     {
-      _timeProvider.removeListener(_temporalListener,
-          TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-      _temporalListener = null;
-      _timeProvider = null;
+      res = _viewer;
     }
+    else
+    {
+      res = super.getAdapter(adapter);
+    }
+
+    return res;
   }
 
   private void listenToMyParts()
@@ -366,6 +292,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -375,6 +302,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(Layers.class, PartMonitor.OPENED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -384,6 +312,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -400,15 +329,20 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(TimeController.class, PartMonitor.ACTIVATED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
             final TimeProvider provider =
                 ((TimeController) part).getTimeProvider();
             if (provider != null && provider.equals(_timeProvider))
+            {
               return;
+            }
             if (provider == null)
+            {
               return;
+            }
             _timeProvider = provider;
             _timeProvider.addListener(_temporalListener,
                 TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -417,6 +351,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(TimeController.class, PartMonitor.OPENED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -425,7 +360,9 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
             if (provider != null)
             {
               if (provider.equals(_timeProvider))
+              {
                 return;
+              }
               else
               {
                 _timeProvider = provider;
@@ -439,6 +376,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(TimeController.class, PartMonitor.CLOSED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -456,6 +394,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(ISelectionProvider.class,
         PartMonitor.ACTIVATED, new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -478,6 +417,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(ISelectionProvider.class,
         PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -496,6 +436,7 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
     _myPartMonitor.addPartListener(ISelectionProvider.class,
         PartMonitor.CLOSED, new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -521,86 +462,185 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
         .getActivePage());
   }
 
-  public void editableSelected(final ISelection sel, final EditableWrapper pw)
+  private void makeActions()
   {
-
-    // ahh, just check if this is a whole new layers object
-    if (pw.getEditable() instanceof Layers)
+    _zoomInAction = new Action("Zoom in", IAction.AS_PUSH_BUTTON)
     {
-      processNewLayers(pw.getEditable());
-      return;
-    }
-
-    // just check that this is something we can work with
-    if (sel instanceof StructuredSelection)
-    {
-      final StructuredSelection str = (StructuredSelection) sel;
-
-      // hey, is there a payload?
-      if (str.getFirstElement() != null)
+      @Override
+      public void run()
       {
-        // sure is. we only support single selections, so get the first
-        // element
-        final Object first = str.getFirstElement();
-        if (first instanceof EditableWrapper)
-          _viewer.setSelectionToWidget((StructuredSelection) sel);
+        _viewer.zoomIn();
       }
-    }
+    };
+    _zoomInAction.setText("Zoom in");
+    _zoomInAction.setToolTipText("Zoom in");
+    _zoomInAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/zoomin.png"));
+
+    _zoomOutAction = new Action("Zoom out", IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        _viewer.zoomOut();
+      }
+    };
+    _zoomOutAction.setText("Zoom out");
+    _zoomOutAction.setToolTipText("Zoom out");
+    _zoomOutAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/zoomout.png"));
+
+    _fitToWindowAction = new Action("Fit to Window", IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        _viewer.fitToWindow();
+      }
+    };
+    _fitToWindowAction.setText("Fit to Window");
+    _fitToWindowAction.setToolTipText("Fit to Window");
+    _fitToWindowAction.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/16/fit_to_win.png"));
+
+    _collapseSensors = new Action("Collapse sensors", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        // force rescan
+        processNewData(_myLayers, null, null);
+      }
+    };
+    _collapseSensors.setText("Collapse sensors");
+    _collapseSensors.setImageDescriptor(DebriefPlugin
+        .getImageDescriptor("icons/16/sensor.png"));
+
+    _collapseSegments = new Action("Collapse segments", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        // force rescan
+        processNewData(_myLayers, null, null);
+      }
+    };
+    _collapseSegments.setText("Collapse segments");
+    _collapseSegments.setImageDescriptor(DebriefPlugin
+        .getImageDescriptor("icons/16/tma_segment.png"));
 
   }
 
-  @SuppressWarnings("rawtypes")
-  public Object getAdapter(final Class adapter)
+  void processNewData(final Layers theData, final Editable newItem,
+      final HasEditables parentLayer)
   {
-    Object res = null;
+    final TimeBarPrefs prefs = this;
 
-    if (adapter == ISelectionProvider.class)
+    Display.getDefault().asyncExec(new Runnable()
     {
-      res = _viewer;
+      @Override
+      public void run()
+      {
+        if (_viewer == null || _viewer.isDisposed())
+        {
+          return;
+        }
+        // ok, fire the change in the UI thread
+        _viewer.drawDiagram(theData, true, prefs /* jump to begin */);
+        // hmm, do we know about the new item? If so, better select it
+        if (newItem != null)
+        {
+          // wrap the plottable
+          final EditableWrapper parentWrapper =
+              new EditableWrapper((Editable) parentLayer, null, theData);
+          final EditableWrapper wrapped =
+              new EditableWrapper(newItem, parentWrapper, theData);
+          final ISelection selected = new StructuredSelection(wrapped);
+
+          // and select it
+          editableSelected(selected, wrapped);
+        }
+      }
+    });
+  }
+
+  void processNewLayers(final Object part)
+  {
+    // just check we're not already looking at it
+    if (!part.equals(_myLayers))
+    {
+      // de-register current layers before tracking the new one
+      clearLayerListener();
     }
     else
     {
-      res = super.getAdapter(adapter);
+      return;
     }
 
-    return res;
-  }
-
-  protected final class NewTimeListener implements PropertyChangeListener
-  {
-    public void propertyChange(final PropertyChangeEvent event)
+    _myLayers = (Layers) part;
+    if (_myLayersListener == null)
     {
-      // see if it's the time or the period which
-      // has changed
-      if (event.getPropertyName().equals(
-          TimeProvider.TIME_CHANGED_PROPERTY_NAME))
+      _myLayersListener = new Layers.DataListener2()
       {
-        // ok, use the new time
-        final HiResDate newDTG = (HiResDate) event.getNewValue();
-        final HiResDate oldDTG = (HiResDate) event.getOldValue();
-        final Runnable nextEvent = new Runnable()
+
+        @Override
+        public void dataExtended(final Layers theData)
         {
-          public void run()
-          {
-            _viewer._painter
-                .drawDebriefTime(oldDTG.getDate(), newDTG.getDate());
-          }
-        };
-        Display.getDefault().syncExec(nextEvent);
-      }
+          dataExtended(theData, null, null);
+        }
+
+        @Override
+        public void dataExtended(final Layers theData, final Plottable newItem,
+            final HasEditables parentLayer)
+        {
+          processNewData(theData, newItem, parentLayer);
+        }
+
+        @Override
+        public void
+            dataModified(final Layers theData, final Layer changedLayer)
+        {
+        }
+
+        @Override
+        public void dataReformatted(final Layers theData,
+            final Layer changedLayer)
+        {
+          processReformattedLayer(theData, changedLayer);
+        }
+      };
     }
+    // right, listen for data being added
+    _myLayers.addDataExtendedListener(_myLayersListener);
+
+    // and listen for items being reformatted
+    _myLayers.addDataReformattedListener(_myLayersListener);
+
+    // do an initial population.
+    processNewData(_myLayers, null, null);
+  }
+
+  void processReformattedLayer(final Layers theData, final Layer changedLayer)
+  {
+    final TimeBarPrefs prefs = this;
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        if (_viewer == null || _viewer.isDisposed())
+        {
+          return;
+        }
+        _viewer.drawDiagram(theData, prefs);
+      }
+    });
   }
 
   @Override
-  public boolean collapseSegments()
+  public void setFocus()
   {
-    return _collapseSegments.isChecked();
-  }
-
-  @Override
-  public boolean collapseSensors()
-  {
-    return _collapseSensors.isChecked();
+    _viewer.setFocus();
   }
 
 }

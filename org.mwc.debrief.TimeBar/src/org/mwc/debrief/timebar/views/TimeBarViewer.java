@@ -81,24 +81,34 @@ public class TimeBarViewer implements ISelectionProvider,
     _painter.addListener(this);
   }
 
-  public void setFocus()
+  @Override
+  public void addSelectionChangedListener(
+      final ISelectionChangedListener listener)
   {
-    _painter.setFocus();
+    if (!_listeners.contains(listener))
+    {
+      _listeners.add(listener);
+    }
   }
 
-  public void zoomIn()
+  @Override
+  public void chartDoubleClicked(final Date clickedAt)
   {
-    _painter.zoomIn();
+    final HiResDate newDTG = new HiResDate(clickedAt);
+    final IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
+    if (part != null)
+    {
+      ((TimeController) part).fireNewTime(newDTG);
+    }
   }
 
-  public void zoomOut()
+  protected void dispose()
   {
-    _painter.zoomOut();
-  }
-
-  public void fitToWindow()
-  {
-    _painter.fitToWindow();
+    if (_painter != null)
+    {
+      _painter.removeListener(this);
+      _painter = null;
+    }
   }
 
   /**
@@ -110,7 +120,8 @@ public class TimeBarViewer implements ISelectionProvider,
    * @param theLayers
    *          - Debrief data.
    */
-  public void drawDiagram(final Layers theLayers, final boolean jumpToBegin, final TimeBarPrefs prefs)
+  public void drawDiagram(final Layers theLayers, final boolean jumpToBegin,
+      final TimeBarPrefs prefs)
   {
     _timeBars.clear();
     _timeSpots.clear();
@@ -119,12 +130,47 @@ public class TimeBarViewer implements ISelectionProvider,
 
     walkThrough(theLayers, prefs);
     for (final IEventEntry barEvent : _timeBars)
+    {
       _painter.drawBar(barEvent);
+    }
     for (final IEventEntry spotEvent : _timeSpots)
+    {
       _painter.drawSpot(spotEvent);
+    }
     // move chart start date to the earliest event
     if (jumpToBegin)
+    {
       _painter.jumpToBegin();
+    }
+  }
+
+  public void drawDiagram(final Layers theLayers, final TimeBarPrefs prefs)
+  {
+    this.drawDiagram(theLayers, false, prefs);
+  }
+
+  @Override
+  public void eventDoubleClicked(final Object eventEntry)
+  {
+    CorePlugin.openView(IPageLayout.ID_OUTLINE);
+    CorePlugin.openView(IPageLayout.ID_PROP_SHEET);
+  }
+
+  @Override
+  public void eventSelected(final Object eventEntry)
+  {
+    setSelectionToObject(eventEntry);
+  }
+
+  public void fitToWindow()
+  {
+    _painter.fitToWindow();
+  }
+
+  @Override
+  public ISelection getSelection()
+  {
+    return _theSelection;
   }
 
   public boolean isDisposed()
@@ -132,20 +178,74 @@ public class TimeBarViewer implements ISelectionProvider,
     return _painter == null || _painter.isDisposed();
   }
 
-  public void drawDiagram(final Layers theLayers, TimeBarPrefs prefs)
+  @Override
+  public void removeSelectionChangedListener(
+      final ISelectionChangedListener listener)
   {
-    this.drawDiagram(theLayers, false, prefs);
+    _listeners.remove(listener);
   }
 
-  private void walkThrough(final Object root, TimeBarPrefs prefs)
+  public void setFocus()
+  {
+    _painter.setFocus();
+  }
+
+  @Override
+  public void setSelection(final ISelection selection)
+  {
+    _theSelection = selection;
+    final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
+
+    for (final ISelectionChangedListener l : _listeners)
+    {
+      SafeRunner.run(new SafeRunnable()
+      {
+        @Override
+        public void run()
+        {
+          l.selectionChanged(e);
+        }
+      });
+    }
+  }
+
+  public void setSelectionToObject(final Object modelEntry)
+  {
+    if (modelEntry instanceof Editable)
+    {
+      final Editable ed = (Editable) modelEntry;
+      setSelection(new StructuredSelection(new EditableWrapper(ed, null,
+          _myLayers)));
+    }
+  }
+
+  public void setSelectionToWidget(final StructuredSelection selection)
+  {
+    final Object o = selection.getFirstElement();
+    if (!(o instanceof EditableWrapper))
+    {
+      return;
+    }
+    final EditableWrapper element = (EditableWrapper) o;
+    final Editable selectedItem = element.getEditable();
+    _painter.selectTimeBar(selectedItem);
+  }
+
+  private void walkThrough(final Object root, final TimeBarPrefs prefs)
   {
     Enumeration<Editable> numer;
     if (root instanceof Layer)
+    {
       numer = ((Layer) root).elements();
+    }
     else if (root instanceof Layers)
+    {
       numer = ((Layers) root).elements();
+    }
     else
+    {
       return;
+    }
 
     while (numer.hasMoreElements())
     {
@@ -163,17 +263,23 @@ public class TimeBarViewer implements ISelectionProvider,
               _timeBars.add(new TimeBar((TrackWrapper) next, prefs));
             }
             else
+            {
               _timeBars.add(new TimeBar(wlist));
+            }
           }
           else
+          {
             _timeSpots.add(new TimeSpot(wlist));
+          }
         }
       }
       else if (next instanceof Watchable)
       {
         final Watchable wb = (Watchable) next;
         if (wb.getTime() != null)
+        {
           _timeSpots.add(new TimeSpot(wb));
+        }
       }
       else if (next instanceof NarrativeWrapper)
       {
@@ -181,9 +287,11 @@ public class TimeBarViewer implements ISelectionProvider,
       }
       else if (next instanceof SATC_Solution)
       {
-        SATC_Solution solution = (SATC_Solution) next;
+        final SATC_Solution solution = (SATC_Solution) next;
         if (solution.getStartDTG() != null)
+        {
           _timeBars.add(new TimeBar(solution));
+        }
       }
       else if (!(next instanceof WatchableList))
       {
@@ -192,96 +300,14 @@ public class TimeBarViewer implements ISelectionProvider,
     }
   }
 
-  @Override
-  public void addSelectionChangedListener(
-      final ISelectionChangedListener listener)
+  public void zoomIn()
   {
-    if (!_listeners.contains(listener))
-      _listeners.add(listener);
+    _painter.zoomIn();
   }
 
-  @Override
-  public ISelection getSelection()
+  public void zoomOut()
   {
-    return _theSelection;
-  }
-
-  @Override
-  public void removeSelectionChangedListener(
-      final ISelectionChangedListener listener)
-  {
-    _listeners.remove(listener);
-  }
-
-  public void setSelectionToObject(final Object modelEntry)
-  {
-    if (modelEntry instanceof Editable)
-    {
-      final Editable ed = (Editable) modelEntry;
-      setSelection(new StructuredSelection(new EditableWrapper(ed, null,
-          _myLayers)));
-    }
-  }
-
-  @Override
-  public void setSelection(final ISelection selection)
-  {
-    _theSelection = selection;
-    final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
-
-    for (final ISelectionChangedListener l : _listeners)
-    {
-      SafeRunner.run(new SafeRunnable()
-      {
-        public void run()
-        {
-          l.selectionChanged(e);
-        }
-      });
-    }
-  }
-
-  public void setSelectionToWidget(final StructuredSelection selection)
-  {
-    final Object o = selection.getFirstElement();
-    if (!(o instanceof EditableWrapper))
-      return;
-    final EditableWrapper element = (EditableWrapper) o;
-    final Editable selectedItem = element.getEditable();
-    _painter.selectTimeBar(selectedItem);
-  }
-
-  @Override
-  public void chartDoubleClicked(final Date clickedAt)
-  {
-    final HiResDate newDTG = new HiResDate(clickedAt);
-    final IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
-    if (part != null)
-    {
-      ((TimeController) part).fireNewTime(newDTG);
-    }
-  }
-
-  @Override
-  public void eventDoubleClicked(final Object eventEntry)
-  {
-    CorePlugin.openView(IPageLayout.ID_OUTLINE);
-    CorePlugin.openView(IPageLayout.ID_PROP_SHEET);
-  }
-
-  @Override
-  public void eventSelected(final Object eventEntry)
-  {
-    setSelectionToObject(eventEntry);
-  }
-
-  protected void dispose()
-  {
-    if (_painter != null)
-    {
-      _painter.removeListener(this);
-      _painter = null;
-    }
+    _painter.zoomOut();
   }
 
 }
