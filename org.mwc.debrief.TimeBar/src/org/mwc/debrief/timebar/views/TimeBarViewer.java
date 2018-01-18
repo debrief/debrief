@@ -35,6 +35,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.timebar.model.IEventEntry;
 import org.mwc.debrief.timebar.model.TimeBar;
+import org.mwc.debrief.timebar.model.TimeBarPrefs;
 import org.mwc.debrief.timebar.model.TimeSpot;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainter;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainterListener;
@@ -109,14 +110,14 @@ public class TimeBarViewer implements ISelectionProvider,
    * @param theLayers
    *          - Debrief data.
    */
-  public void drawDiagram(final Layers theLayers, final boolean jumpToBegin)
+  public void drawDiagram(final Layers theLayers, final boolean jumpToBegin, final TimeBarPrefs prefs)
   {
     _timeBars.clear();
     _timeSpots.clear();
 
     _painter.clear();
 
-    walkThrough(theLayers);
+    walkThrough(theLayers, prefs);
     for (final IEventEntry barEvent : _timeBars)
       _painter.drawBar(barEvent);
     for (final IEventEntry spotEvent : _timeSpots)
@@ -131,12 +132,12 @@ public class TimeBarViewer implements ISelectionProvider,
     return _painter == null || _painter.isDisposed();
   }
 
-  public void drawDiagram(final Layers theLayers)
+  public void drawDiagram(final Layers theLayers, TimeBarPrefs prefs)
   {
-    this.drawDiagram(theLayers, false);
+    this.drawDiagram(theLayers, false, prefs);
   }
 
-  private void walkThrough(final Object root)
+  private void walkThrough(final Object root, TimeBarPrefs prefs)
   {
     Enumeration<Editable> numer;
     if (root instanceof Layer)
@@ -159,7 +160,7 @@ public class TimeBarViewer implements ISelectionProvider,
           {
             if (wlist instanceof TrackWrapper)
             {
-              _timeBars.add(new TimeBar((TrackWrapper) next));
+              _timeBars.add(new TimeBar((TrackWrapper) next, prefs));
             }
             else
               _timeBars.add(new TimeBar(wlist));
@@ -186,7 +187,7 @@ public class TimeBarViewer implements ISelectionProvider,
       }
       else if (!(next instanceof WatchableList))
       {
-        walkThrough(next);
+        walkThrough(next, prefs);
       }
     }
   }

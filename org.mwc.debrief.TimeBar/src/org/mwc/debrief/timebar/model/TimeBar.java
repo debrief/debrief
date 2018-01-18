@@ -54,7 +54,7 @@ public class TimeBar implements IEventEntry
   Object _source;
   List<IEventEntry> _children = new ArrayList<IEventEntry>();
 
-  protected TimeBar(final BaseLayer tacticalItems)
+  protected TimeBar(final BaseLayer tacticalItems, boolean collapseChildren)
   {
     // _start.setTime(bar.getStartDTG().getDate());
     _eventName = tacticalItems.getName();
@@ -71,7 +71,10 @@ public class TimeBar implements IEventEntry
 
         if (item.getStartDTG() != null && item.getEndDTG() != null)
         {
-          _children.add(new TimeBar((TacticalDataWrapper) sensor));
+          if(!collapseChildren)
+          {
+            _children.add(new TimeBar((TacticalDataWrapper) sensor));
+          }
           final TimePeriod thisP =
               new TimePeriod.BaseTimePeriod(item.getStartDTG(), item
                   .getEndDTG());
@@ -143,12 +146,8 @@ public class TimeBar implements IEventEntry
     }
   }
 
-  public TimeBar(final SegmentList segments)
+  public TimeBar(final SegmentList segments, final TimeBarPrefs prefs)
   {
-
-    // do we collapse track segments?
-    boolean collapseSegments = true;
-
     _source = segments;
     _eventName = segments.getName();
     final HiResDate startDate = segments.getWrapper().getStartDTG();
@@ -166,9 +165,8 @@ public class TimeBar implements IEventEntry
     // also work through the segments, if there's more than one
     if (segments.size() > 1)
     {
-      if (!collapseSegments)
+      if (!prefs.collapseSegments())
       {
-
         final Enumeration<Editable> elems = segments.elements();
         while (elems.hasMoreElements())
         {
@@ -222,22 +220,22 @@ public class TimeBar implements IEventEntry
     }
   }
 
-  public TimeBar(final TrackWrapper track)
+  public TimeBar(final TrackWrapper track, TimeBarPrefs prefs)
   {
     this((WatchableList) track);
     final SegmentList segments = track.getSegments();
-    _children.add(new TimeBar(segments));
+    _children.add(new TimeBar(segments, prefs));
 
     final BaseLayer theSensors = track.getSensors();
     if (theSensors != null && theSensors.size() > 0)
     {
-      _children.add(new TimeBar(theSensors));
+      _children.add(new TimeBar(theSensors, prefs.collapseSensors()));
     }
 
     final BaseLayer theSolutions = track.getSolutions();
     if (theSolutions != null && theSolutions.size() > 0)
     {
-      _children.add(new TimeBar(theSolutions));
+      _children.add(new TimeBar(theSolutions, false));
     }
   }
 
