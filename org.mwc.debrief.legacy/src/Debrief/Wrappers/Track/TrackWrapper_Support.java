@@ -315,7 +315,7 @@ public class TrackWrapper_Support
 
     public SegmentList()
     {
-      setName("Track segments");
+      setName("Positions");
     }
 
     @Override
@@ -395,6 +395,11 @@ public class TrackWrapper_Support
         final TrackSegment first = (TrackSegment) getData().iterator().next();
         first.setName("Positions");
       }
+    }
+    
+    protected String collectiveName()
+    {
+      return "legs";
     }
 
     @Override
