@@ -42,6 +42,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.internal.resources.ResourceException;
 import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;
@@ -1164,7 +1165,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 }
               }
             }
-          }
+          }         
+
+          // ok, lastly indicate that the save worked (if it did!)
+          _plotIsDirty = false;
+          firePropertyChange(PROP_DIRTY);
+        }
+        catch (final ResourceException e)
+        {
+          CorePlugin.showMessage("File save", e.getMessage());
+          CorePlugin.logError(IStatus.ERROR,
+              "Failed whilst saving external file", e);
         }
         catch (final CoreException e)
         {
@@ -1336,11 +1347,22 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         {
           ((ResourceNavigator) view).getViewer().refresh(iff);
         }
+
+        // ok, lastly indicate that the save worked
+        _plotIsDirty = false;
+        firePropertyChange(PROP_DIRTY);
       }
       catch (final FileNotFoundException e)
       {
+        CorePlugin.showMessage("File save", e.getMessage());
         CorePlugin.logError(IStatus.ERROR, "Failed whilst performing Save As",
             e);
+      }
+      catch (final ResourceException e)
+      {
+        CorePlugin.showMessage("File save", e.getMessage());
+        CorePlugin.logError(IStatus.ERROR,
+            "Failed whilst saving external file", e);
       }
       catch (final CoreException e)
       {
@@ -1361,13 +1383,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         {
           CorePlugin.logError(IStatus.ERROR, "Whilst performaing save-as", e);
         }
-
       }
-
     }
-
-    _plotIsDirty = false;
-    firePropertyChange(PROP_DIRTY);
   }
 
   /**
@@ -1391,10 +1408,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
         // ok, now write to the file
         DebriefEclipseXMLReaderWriter.exportThis(this, os, version);
-
-        // ok, lastly indicate that the save worked (if it did!)
-        _plotIsDirty = false;
-        firePropertyChange(PROP_DIRTY);
       }
       catch (final Exception e)
       {
