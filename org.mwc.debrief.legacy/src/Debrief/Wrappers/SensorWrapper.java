@@ -444,7 +444,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
   public final String toString()
   {
-    return "Sensor:" + getName() + " (" + _myContacts.size() + " items)";
+    return "Sensor:" + getName() + " (" + _myContacts.size() + " cuts)";
   }
 
   /**
