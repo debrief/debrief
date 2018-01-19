@@ -298,6 +298,28 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       currentIter = null;
     }
 
+    /** special class, used when we don't contain any data
+     * 
+     * @author Ian
+     *
+     */
+    private static class EmptyIterator implements Enumeration<Editable>
+    {
+
+      @Override
+      public boolean hasMoreElements()
+      {
+        return false;
+      }
+
+      @Override
+      public Editable nextElement()
+      {
+        return null;
+      }
+    }
+    
+    
     public WrappedIterators(final SegmentList segments)
     {
       final Enumeration<Editable> ele = segments.elements();
@@ -307,7 +329,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         lists.add(seg.elements());
       }
 
-      currentIter = this.lists.get(0);
+      // if we have some data, return the first. Else, return an
+      // empty iterator
+      currentIter = lists.isEmpty() ? new EmptyIterator() : this.lists.get(0); 
     }
 
     public void add(final Enumeration<MWC.GUI.Editable> item)
