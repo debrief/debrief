@@ -344,6 +344,8 @@ public final class SensorContactWrapper extends
                     "style to use to plot the line",
                     MWC.GUI.Properties.LineStylePropertyEditor.class),
                 prop("Range", "range to centre of solution", SPATIAL),
+                displayProp("Comment", "Comment", "Comment for this entry",
+                    OPTIONAL),
                 prop("Bearing", "bearing to centre of solution", SPATIAL)
 
             };

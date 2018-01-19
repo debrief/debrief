@@ -18,7 +18,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -406,6 +408,48 @@ public class ImportReplay extends PlainImporterBase
           (NarrativeWrapper) _theLayers.elementAt(2);
       assertEquals("have read in both narrative entries", 2, narratives.size());
     }
+    
+
+    private final static String shape_file =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
+    
+    public void testReadShapes() throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(shape_file);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(shape_file, bs, tLayers);
+
+      assertEquals("read in track", 11, tLayers.size());
+
+      TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL_STYLE");
+      assertNotNull("found track", track);
+      
+      // get the positions
+      Enumeration<Editable> pIter = track.getPositionIterator();
+      FixWrapper f1 = (FixWrapper) pIter.nextElement();
+      assertNotNull("found item", f1);
+      assertEquals("got label", "120500", f1.getLabel());
+      FixWrapper f2 = (FixWrapper) pIter.nextElement();
+      assertEquals("got label", "Override label 1", f2.getLabel());
+      assertEquals("no comment", null, f2.getComment());
+      FixWrapper f3 = (FixWrapper) pIter.nextElement();
+      assertEquals("got label", "Override label 2", f3.getLabel());
+      assertEquals("no comment", null, f3.getComment());
+      FixWrapper f4 = (FixWrapper) pIter.nextElement();
+      assertEquals("got label", "Override label 3", f4.getLabel());
+      assertEquals("no comment", "comment 3", f4.getComment());      
+      FixWrapper f5 = (FixWrapper) pIter.nextElement();
+      assertEquals("got label", "0504", f5.getLabel());
+      assertEquals("no comment", "comment 4", f5.getComment());
+    }
 
     public final void testDRimport()
     {
@@ -425,6 +469,33 @@ public class ImportReplay extends PlainImporterBase
     public final void testOTGimport3()
     {
       doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
+    }
+
+    public void testTrailingComment()
+    {
+      final String test1 = " LABEL // COMMENT";
+      assertEquals("LABEL", getLabel(test1));
+      assertEquals("COMMENT", getComment(test1));
+
+      final String test2 = " LABEL";
+      assertEquals("LABEL", getLabel(test2));
+      assertEquals(null, getComment(test2));
+
+      final String test3 = " LABEL//";
+      assertEquals("LABEL", getLabel(test3));
+      assertEquals(null, getComment(test3));
+
+      final String test4 = "//COMMENT";
+      assertEquals(null, getLabel(test4));
+      assertEquals("COMMENT", getComment(test4));
+
+      final String test5 = "";
+      assertEquals(null, getLabel(test5));
+      assertEquals(null, getComment(test5));
+
+      final String test6 = null;
+      assertEquals(null, getLabel(test6));
+      assertEquals(null, getComment(test6));
     }
 
     public final void testParseSymbology()
@@ -1079,6 +1150,76 @@ public class ImportReplay extends PlainImporterBase
   }
 
   /**
+   * utility method to extract a label from a composite end of line block that optionally includes a
+   * comment ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
+   */
+  final public static String getLabel(final String content)
+  {
+    final String res;
+    if (content != null)
+    {
+      if (content.contains("//"))
+      {
+        final String[] strings = content.trim().split("//");
+        final String first = strings[0].trim();
+        if (first.length() > 0)
+        {
+          res = first;
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        final String txt = content.trim();
+        if (txt.length() > 0)
+        {
+          res = txt;
+        }
+        else
+        {
+          res = null;
+        }
+      }
+    }
+    else
+    {
+      res = null;
+    }
+
+    return res;
+  }
+
+  /**
+   * utility method to extract a label from a composite end of line block that optionally includes a
+   * comment ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL LABEL // COMMENT
+   */
+  final public static String getComment(final String content)
+  {
+    final String res;
+    if (content != null && content.contains("//"))
+    {
+      String[] strings = content.trim().split("//");
+      if (strings.length > 1)
+      {
+        res = strings[1].trim();
+      }
+      else
+      {
+        res = null;
+      }
+    }
+    else
+    {
+      res = null;
+    }
+
+    return res;
+  }
+
+  /**
    * utility method to extract formatted property values from a symbology line, such as: ;TEXT:
    * CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
    * 
@@ -1116,7 +1257,7 @@ public class ImportReplay extends PlainImporterBase
    */
   @Override
   public final void
-      importThis(final String fName, final java.io.InputStream is)
+      importThis(final String fName, final InputStream is)
   {
     // declare linecounter
     int lineCounter = 0;
@@ -1142,8 +1283,6 @@ public class ImportReplay extends PlainImporterBase
         _lastImportedItem.clear();
 
         thisLine = br.readLine();
-
-        final long start = System.currentTimeMillis();
 
         // loop through the lines
         while (thisLine != null)
@@ -1177,9 +1316,6 @@ public class ImportReplay extends PlainImporterBase
           // tell it that it has changed
           track.sortOutRelativePositions();
         }
-
-        final long end = System.currentTimeMillis();
-        System.out.println(" |Elapsed:" + (end - start) + " ");
 
       }
     }
@@ -1436,6 +1572,10 @@ public class ImportReplay extends PlainImporterBase
     else
     {
       thisFix.resetName();
+    }
+    if(rf.comment != null)
+    {
+      thisFix.setComment(rf.comment);
     }
 
     // keep track of the wrapper for this track

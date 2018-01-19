@@ -457,6 +457,7 @@
 		<xs:attribute name="HasAmbiguousBearing" default="false"
 			type="xs:boolean" />
 		<xs:attribute name="HasFrequency" default="false" type="xs:boolean" />
+		<xs:attribute name="Comment" use="optional" type="xs:string" />
 		<xs:attribute name="Label" use="required" type="xs:string" />
 		<xs:attribute name="LabelLocation" default="Left"
 			type="labelLocationType" />
@@ -476,6 +477,8 @@
 		<xs:attribute name="Course" use="required" type="xs:string" />
 		<xs:attribute name="Dtg" use="required" type="xs:string" />
 		<xs:attribute name="Label" use="required" type="xs:string" />
+		<xs:attribute name="Comment" use="optional" type="xs:string" />
+		<xs:attribute name="DisplayComment" use="optional" type="xs:boolean" />
 		<xs:attribute name="LabelLocation" default="Left"
 			type="labelLocationType" />
 		<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />

@@ -48,6 +48,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -314,6 +315,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
   }
 
+  private static final String SENSOR_SORT_BY_DTG = "SENSOR_SORT_BY_DTG";
+
   public static final String NAME_COLUMN_NAME = "Name";
 
   public static final String VISIBILITY_COLUMN_NAME = "Visibility";
@@ -500,12 +503,27 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
    */
   private Job refreshOnDeleteJob;
 
+  private Action _sortSensorsDTG;
+
+  private Action _sortSensorsName;
+
+  private final ViewerSorter _mySorter;
+
   public PlotOutlinePage(final PlotEditor _plotEditor, final Layers _myLayers)
   {
     this._plotEditor = _plotEditor;
     this._myLayers = _myLayers;
     this._theTrackDataListener =
         (TrackManager) _plotEditor.getAdapter(TrackManager.class);
+    _mySorter = new OutlineNameSorter(new OutlineNameSorter.NameSortHelper()
+    {
+
+      @Override
+      public boolean sortByDate()
+      {
+        return _sortSensorsDTG.isChecked();
+      }
+    });
 
   }
 
@@ -555,6 +573,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         (IStructuredSelection) _treeViewer.getSelection();
     applyOperation(operation, selection, _myLayers);
 
+  }
+
+  private void assignCorrectSortMode()
+  {
+    final Boolean sortByDTGPref =
+        CorePlugin.getDefault().getPreferenceStore().getBoolean(
+            SENSOR_SORT_BY_DTG);
+    final boolean byD = (sortByDTGPref == null || sortByDTGPref.booleanValue());
+    _sortSensorsDTG.setChecked(byD);
+    _sortSensorsName.setChecked(!byD);
   }
 
   /**
@@ -760,7 +788,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     _treeViewer.setContentProvider(new ViewContentProvider());
     _myLabelProvider = new CoreViewLabelProvider();
     _treeViewer.setLabelProvider(_myLabelProvider);
-    _treeViewer.setSorter(new OutlineNameSorter());
+    _treeViewer.setSorter(_mySorter);
     _treeViewer.setInput(_myLayers);
     _treeViewer.setComparer(new IElementComparer()
     {
@@ -1125,9 +1153,12 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     manager.add(new Separator());
     manager.add(_createLayer);
 
-    // FIXME
-    // manager.add(CorePlugin.createOpenHelpAction(
-    // "org.mwc.debrief.help.LayerMgr", null, this));
+    final MenuManager sub = new MenuManager("Sort sensors");
+    sub.add(_sortSensorsDTG);
+    sub.add(_sortSensorsName);
+
+    manager.add(new Separator());
+    manager.add(sub);
   }
 
   private void fillLocalToolBar(final IActionBars bars)
@@ -1744,6 +1775,44 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     _revealAction.setImageDescriptor(DebriefPlugin
         .getImageDescriptor("icons/16/show.png"));
 
+    _sortSensorsDTG = new Action("By DTG", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+
+        // and flip the other item
+        _sortSensorsName.setChecked(!_sortSensorsDTG.isChecked());
+
+        // ok, regenerate the list
+        refreshUI();
+      }
+    };
+    _sortSensorsDTG.setToolTipText("Sort sensors chronologically");
+    _sortSensorsDTG.setChecked(true);
+
+    _sortSensorsName = new Action("By Name", IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+
+        // and flip the other item
+        _sortSensorsDTG.setChecked(!_sortSensorsName.isChecked());
+
+        // ok, regenerate the list
+        refreshUI();
+
+      }
+    };
+    _sortSensorsName.setToolTipText("Sort sensors alphabetically");
+    _sortSensorsName.setChecked(false);
+
+    // assign the correct sensor
+    assignCorrectSortMode();
+
     final IHandlerService handlerService =
         (IHandlerService) getSite().getService(IHandlerService.class);
     handlerService.activateHandler(CollapseAllHandler.COMMAND_ID,
@@ -1933,6 +2002,15 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       _alreadyDeferring = false;
       _pendingLayers.clear();
     }
+  }
+
+  private final void refreshUI()
+  {
+    _treeViewer.refresh(false);
+
+    // and store the preference
+    CorePlugin.getDefault().getPreferenceStore().setValue(SENSOR_SORT_BY_DTG,
+        _sortSensorsDTG.isChecked());
   }
 
   @Override

@@ -472,7 +472,7 @@ public class RightClickSupport
       PropertyDescriptor[] props =
           RightClickSupport.getCommonPropertiesFor(lst);
       assertNotNull("found some data", props);
-      assertEquals("found right matches", 13, props.length);
+      assertEquals("found right matches", 14, props.length);
       props = RightClickSupport.getCommonPropertiesFor(lst2);
       assertNotNull("found some data", props);
       assertEquals("found right matches", 1, props.length);
@@ -484,7 +484,7 @@ public class RightClickSupport
       assertEquals("found right matches", 10, props.length);
       props = RightClickSupport.getCommonPropertiesFor(lst5);
       assertNotNull("found some data", props);
-      assertEquals("found right matches", 13, props.length);
+      assertEquals("found right matches", 14, props.length);
     }
   }
 

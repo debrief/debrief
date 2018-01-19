@@ -35,6 +35,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.timebar.model.IEventEntry;
 import org.mwc.debrief.timebar.model.TimeBar;
+import org.mwc.debrief.timebar.model.TimeBarPrefs;
 import org.mwc.debrief.timebar.model.TimeSpot;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainter;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainterListener;
@@ -80,174 +81,14 @@ public class TimeBarViewer implements ISelectionProvider,
     _painter.addListener(this);
   }
 
-  public void setFocus()
-  {
-    _painter.setFocus();
-  }
-
-  public void zoomIn()
-  {
-    _painter.zoomIn();
-  }
-
-  public void zoomOut()
-  {
-    _painter.zoomOut();
-  }
-
-  public void fitToWindow()
-  {
-    _painter.fitToWindow();
-  }
-
-  /**
-   * Runs through the layers, extracts the required elements: track segments, sensor wrappers for a
-   * track, annotations/shapes with the time. Draw these elements as Gantt Events (time bars) on the
-   * GanttChart control. Extracts narrative entries and annotations/shapes with single time to
-   * display them as point markers.
-   * 
-   * @param theLayers
-   *          - Debrief data.
-   */
-  public void drawDiagram(final Layers theLayers, final boolean jumpToBegin)
-  {
-    _timeBars.clear();
-    _timeSpots.clear();
-
-    _painter.clear();
-
-    walkThrough(theLayers);
-    for (final IEventEntry barEvent : _timeBars)
-      _painter.drawBar(barEvent);
-    for (final IEventEntry spotEvent : _timeSpots)
-      _painter.drawSpot(spotEvent);
-    // move chart start date to the earliest event
-    if (jumpToBegin)
-      _painter.jumpToBegin();
-  }
-
-  public boolean isDisposed()
-  {
-    return _painter == null || _painter.isDisposed();
-  }
-
-  public void drawDiagram(final Layers theLayers)
-  {
-    this.drawDiagram(theLayers, false);
-  }
-
-  private void walkThrough(final Object root)
-  {
-    Enumeration<Editable> numer;
-    if (root instanceof Layer)
-      numer = ((Layer) root).elements();
-    else if (root instanceof Layers)
-      numer = ((Layers) root).elements();
-    else
-      return;
-
-    while (numer.hasMoreElements())
-    {
-      final Editable next = numer.nextElement();
-
-      if (next instanceof WatchableList)
-      {
-        final WatchableList wlist = (WatchableList) next;
-        if (wlist.getStartDTG() != null)
-        {
-          if (wlist.getEndDTG() != null)
-          {
-            if (wlist instanceof TrackWrapper)
-            {
-              _timeBars.add(new TimeBar((TrackWrapper) next));
-            }
-            else
-              _timeBars.add(new TimeBar(wlist));
-          }
-          else
-            _timeSpots.add(new TimeSpot(wlist));
-        }
-      }
-      else if (next instanceof Watchable)
-      {
-        final Watchable wb = (Watchable) next;
-        if (wb.getTime() != null)
-          _timeSpots.add(new TimeSpot(wb));
-      }
-      else if (next instanceof NarrativeWrapper)
-      {
-        _timeBars.add(new TimeBar((NarrativeWrapper) next));
-      }
-      else if (next instanceof SATC_Solution)
-      {
-        SATC_Solution solution = (SATC_Solution) next;
-        if (solution.getStartDTG() != null)
-          _timeBars.add(new TimeBar(solution));
-      }
-      else if (!(next instanceof WatchableList))
-      {
-        walkThrough(next);
-      }
-    }
-  }
-
   @Override
   public void addSelectionChangedListener(
       final ISelectionChangedListener listener)
   {
     if (!_listeners.contains(listener))
+    {
       _listeners.add(listener);
-  }
-
-  @Override
-  public ISelection getSelection()
-  {
-    return _theSelection;
-  }
-
-  @Override
-  public void removeSelectionChangedListener(
-      final ISelectionChangedListener listener)
-  {
-    _listeners.remove(listener);
-  }
-
-  public void setSelectionToObject(final Object modelEntry)
-  {
-    if (modelEntry instanceof Editable)
-    {
-      final Editable ed = (Editable) modelEntry;
-      setSelection(new StructuredSelection(new EditableWrapper(ed, null,
-          _myLayers)));
     }
-  }
-
-  @Override
-  public void setSelection(final ISelection selection)
-  {
-    _theSelection = selection;
-    final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
-
-    for (final ISelectionChangedListener l : _listeners)
-    {
-      SafeRunner.run(new SafeRunnable()
-      {
-        public void run()
-        {
-          l.selectionChanged(e);
-        }
-      });
-    }
-  }
-
-  public void setSelectionToWidget(final StructuredSelection selection)
-  {
-    final Object o = selection.getFirstElement();
-    if (!(o instanceof EditableWrapper))
-      return;
-    final EditableWrapper element = (EditableWrapper) o;
-    final Editable selectedItem = element.getEditable();
-    _painter.selectTimeBar(selectedItem);
   }
 
   @Override
@@ -259,6 +100,53 @@ public class TimeBarViewer implements ISelectionProvider,
     {
       ((TimeController) part).fireNewTime(newDTG);
     }
+  }
+
+  protected void dispose()
+  {
+    if (_painter != null)
+    {
+      _painter.removeListener(this);
+      _painter = null;
+    }
+  }
+
+  /**
+   * Runs through the layers, extracts the required elements: track segments, sensor wrappers for a
+   * track, annotations/shapes with the time. Draw these elements as Gantt Events (time bars) on the
+   * GanttChart control. Extracts narrative entries and annotations/shapes with single time to
+   * display them as point markers.
+   * 
+   * @param theLayers
+   *          - Debrief data.
+   */
+  public void drawDiagram(final Layers theLayers, final boolean jumpToBegin,
+      final TimeBarPrefs prefs)
+  {
+    _timeBars.clear();
+    _timeSpots.clear();
+
+    _painter.clear();
+
+    walkThrough(theLayers, prefs);
+    for (final IEventEntry barEvent : _timeBars)
+    {
+      _painter.drawBar(barEvent);
+    }
+    for (final IEventEntry spotEvent : _timeSpots)
+    {
+      _painter.drawSpot(spotEvent);
+    }
+    // move chart start date to the earliest event
+    if (jumpToBegin)
+    {
+      _painter.jumpToBegin();
+    }
+  }
+
+  public void drawDiagram(final Layers theLayers, final TimeBarPrefs prefs)
+  {
+    this.drawDiagram(theLayers, false, prefs);
   }
 
   @Override
@@ -274,13 +162,152 @@ public class TimeBarViewer implements ISelectionProvider,
     setSelectionToObject(eventEntry);
   }
 
-  protected void dispose()
+  public void fitToWindow()
   {
-    if (_painter != null)
+    _painter.fitToWindow();
+  }
+
+  @Override
+  public ISelection getSelection()
+  {
+    return _theSelection;
+  }
+
+  public boolean isDisposed()
+  {
+    return _painter == null || _painter.isDisposed();
+  }
+
+  @Override
+  public void removeSelectionChangedListener(
+      final ISelectionChangedListener listener)
+  {
+    _listeners.remove(listener);
+  }
+
+  public void setFocus()
+  {
+    _painter.setFocus();
+  }
+
+  @Override
+  public void setSelection(final ISelection selection)
+  {
+    _theSelection = selection;
+    final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
+
+    for (final ISelectionChangedListener l : _listeners)
     {
-      _painter.removeListener(this);
-      _painter = null;
+      SafeRunner.run(new SafeRunnable()
+      {
+        @Override
+        public void run()
+        {
+          l.selectionChanged(e);
+        }
+      });
     }
+  }
+
+  public void setSelectionToObject(final Object modelEntry)
+  {
+    if (modelEntry instanceof Editable)
+    {
+      final Editable ed = (Editable) modelEntry;
+      setSelection(new StructuredSelection(new EditableWrapper(ed, null,
+          _myLayers)));
+    }
+  }
+
+  public void setSelectionToWidget(final StructuredSelection selection)
+  {
+    final Object o = selection.getFirstElement();
+    if (!(o instanceof EditableWrapper))
+    {
+      return;
+    }
+    final EditableWrapper element = (EditableWrapper) o;
+    final Editable selectedItem = element.getEditable();
+    _painter.selectTimeBar(selectedItem);
+  }
+
+  private void walkThrough(final Object root, final TimeBarPrefs prefs)
+  {
+    Enumeration<Editable> numer;
+    if (root instanceof Layer)
+    {
+      numer = ((Layer) root).elements();
+    }
+    else if (root instanceof Layers)
+    {
+      numer = ((Layers) root).elements();
+    }
+    else
+    {
+      return;
+    }
+
+    while (numer.hasMoreElements())
+    {
+      final Editable next = numer.nextElement();
+
+      if (next instanceof WatchableList)
+      {
+        final WatchableList wlist = (WatchableList) next;
+        if (wlist.getStartDTG() != null)
+        {
+          if (wlist.getEndDTG() != null)
+          {
+            if (wlist instanceof TrackWrapper)
+            {
+              _timeBars.add(new TimeBar((TrackWrapper) next, prefs));
+            }
+            else
+            {
+              _timeBars.add(new TimeBar(wlist));
+            }
+          }
+          else
+          {
+            _timeSpots.add(new TimeSpot(wlist));
+          }
+        }
+      }
+      else if (next instanceof Watchable)
+      {
+        final Watchable wb = (Watchable) next;
+        if (wb.getTime() != null)
+        {
+          _timeSpots.add(new TimeSpot(wb));
+        }
+      }
+      else if (next instanceof NarrativeWrapper)
+      {
+        _timeBars.add(new TimeBar((NarrativeWrapper) next));
+      }
+      else if (next instanceof SATC_Solution)
+      {
+        final SATC_Solution solution = (SATC_Solution) next;
+        if (solution.getStartDTG() != null)
+        {
+          _timeBars.add(new TimeBar(solution));
+        }
+      }
+      else if (!(next instanceof WatchableList))
+      {
+        walkThrough(next, prefs);
+      }
+    }
+  }
+
+  public void zoomIn()
+  {
+    _painter.zoomIn();
+  }
+
+  public void zoomOut()
+  {
+    _painter.zoomOut();
   }
 
 }

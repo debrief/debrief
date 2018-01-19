@@ -42,19 +42,20 @@ import MWC.TacticalData.NarrativeEntry;
 public class TimeBar implements IEventEntry
 {
   /** TimeBar start */
-  Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"),
+  private Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"),
       Locale.UK);
   /** TimeBar end */
-  Calendar _end = Calendar
-      .getInstance(TimeZone.getTimeZone("GMT+0"), Locale.UK);
+  private Calendar _end = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"),
+      Locale.UK);
   /** TimeBar caption */
-  String _eventName;
-  Color _color = null;
+  private String _eventName;
+  private Color _color = null;
 
-  Object _source;
-  List<IEventEntry> _children = new ArrayList<IEventEntry>();
+  private Object _source;
+  private List<IEventEntry> _children = new ArrayList<IEventEntry>();
 
-  protected TimeBar(final BaseLayer tacticalItems)
+  protected TimeBar(final BaseLayer tacticalItems,
+      final boolean collapseChildren)
   {
     // _start.setTime(bar.getStartDTG().getDate());
     _eventName = tacticalItems.getName();
@@ -68,18 +69,26 @@ public class TimeBar implements IEventEntry
       if (sensor instanceof TacticalDataWrapper)
       {
         final TacticalDataWrapper item = (TacticalDataWrapper) sensor;
-        _children.add(new TimeBar((TacticalDataWrapper) sensor));
-        final TimePeriod thisP =
-            new TimePeriod.BaseTimePeriod(item.getStartDTG(), item.getEndDTG());
 
-        if (coverage == null)
+        if (item.getStartDTG() != null && item.getEndDTG() != null)
         {
-          coverage = thisP;
-        }
-        else
-        {
-          coverage.extend(thisP.getStartDTG());
-          coverage.extend(thisP.getEndDTG());
+          if (!collapseChildren)
+          {
+            _children.add(new TimeBar((TacticalDataWrapper) sensor));
+          }
+          final TimePeriod thisP =
+              new TimePeriod.BaseTimePeriod(item.getStartDTG(), item
+                  .getEndDTG());
+
+          if (coverage == null)
+          {
+            coverage = thisP;
+          }
+          else
+          {
+            coverage.extend(thisP.getStartDTG());
+            coverage.extend(thisP.getEndDTG());
+          }
         }
       }
     }
@@ -138,7 +147,7 @@ public class TimeBar implements IEventEntry
     }
   }
 
-  public TimeBar(final SegmentList segments)
+  public TimeBar(final SegmentList segments, final TimeBarPrefs prefs)
   {
     _source = segments;
     _eventName = segments.getName();
@@ -155,7 +164,7 @@ public class TimeBar implements IEventEntry
     _color = segments.getWrapper().getColor();
 
     // also work through the segments, if there's more than one
-    if (segments.size() > 1)
+    if (segments.size() > 1 && !prefs.collapseSegments())
     {
       final Enumeration<Editable> elems = segments.elements();
       while (elems.hasMoreElements())
@@ -209,22 +218,22 @@ public class TimeBar implements IEventEntry
     }
   }
 
-  public TimeBar(final TrackWrapper track)
+  public TimeBar(final TrackWrapper track, final TimeBarPrefs prefs)
   {
-    this((WatchableList) track);
+    this(track);
     final SegmentList segments = track.getSegments();
-    _children.add(new TimeBar(segments));
+    _children.add(new TimeBar(segments, prefs));
 
     final BaseLayer theSensors = track.getSensors();
     if (theSensors != null && theSensors.size() > 0)
     {
-      _children.add(new TimeBar(theSensors));
+      _children.add(new TimeBar(theSensors, prefs.collapseSensors()));
     }
 
     final BaseLayer theSolutions = track.getSolutions();
     if (theSolutions != null && theSolutions.size() > 0)
     {
-      _children.add(new TimeBar(theSolutions));
+      _children.add(new TimeBar(theSolutions, false));
     }
   }
 
