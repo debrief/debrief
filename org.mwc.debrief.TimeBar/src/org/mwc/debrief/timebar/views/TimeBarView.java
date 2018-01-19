@@ -434,14 +434,11 @@ public class TimeBarView extends ViewPart implements TimeBarPrefs
               final IWorkbenchPart parentPart)
           {
             // aah, just check it's not is
-            if (part != _viewer)
+            if (part != _viewer && _selectionProvider != null
+                && _selectionChangeListener != null)
             {
-              if (_selectionProvider != null
-                  && _selectionChangeListener != null)
-              {
-                _selectionProvider
-                    .removeSelectionChangedListener(_selectionChangeListener);
-              }
+              _selectionProvider
+                  .removeSelectionChangedListener(_selectionChangeListener);
             }
           }
         });

@@ -45,8 +45,8 @@ public class TimeBar implements IEventEntry
   private Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"),
       Locale.UK);
   /** TimeBar end */
-  private Calendar _end = Calendar
-      .getInstance(TimeZone.getTimeZone("GMT+0"), Locale.UK);
+  private Calendar _end = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"),
+      Locale.UK);
   /** TimeBar caption */
   private String _eventName;
   private Color _color = null;
@@ -164,16 +164,13 @@ public class TimeBar implements IEventEntry
     _color = segments.getWrapper().getColor();
 
     // also work through the segments, if there's more than one
-    if (segments.size() > 1)
+    if (segments.size() > 1 && !prefs.collapseSegments())
     {
-      if (!prefs.collapseSegments())
+      final Enumeration<Editable> elems = segments.elements();
+      while (elems.hasMoreElements())
       {
-        final Enumeration<Editable> elems = segments.elements();
-        while (elems.hasMoreElements())
-        {
-          final TrackSegment thisE = (TrackSegment) elems.nextElement();
-          _children.add(new TimeBar(thisE));
-        }
+        final TrackSegment thisE = (TrackSegment) elems.nextElement();
+        _children.add(new TimeBar(thisE));
       }
     }
   }
