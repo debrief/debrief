@@ -539,6 +539,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
     return res;
   }
+  
+  
+
+  @Override
+  protected String collectiveName()
+  {
+    return "positions";
+  }
 
   /**
    * switch the sample rate of this track to the supplied frequency

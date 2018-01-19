@@ -823,7 +823,7 @@ public class TrackWrapper_Test extends TestCase
     final SegmentList sl = (SegmentList) tw.getSegments();
 
     // check it's got the segs
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     assertEquals("has all fixes", 15, tw.numFixes());
 
     // what's the area before
@@ -851,7 +851,7 @@ public class TrackWrapper_Test extends TestCase
     Thread.sleep(550);
 
     // how was it?
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     // assertEquals("has all fixes", 7, tw.numFixes());
 
     // GO FOR ULTIMATE DECIMATION
@@ -860,7 +860,7 @@ public class TrackWrapper_Test extends TestCase
     Thread.sleep(550);
 
     // how was it?
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     // assertEquals("has all fixes", 49, tw.numFixes());
   }
 
@@ -1027,7 +1027,7 @@ public class TrackWrapper_Test extends TestCase
     }
 
     // check it's got the segs
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     assertEquals("has all fixes", 15, tw.numFixes());
     // check we've got all the sensor data
     assertEquals("has all sensor cuts", 4,
@@ -1042,7 +1042,7 @@ public class TrackWrapper_Test extends TestCase
     Thread.sleep(550);
 
     // how was it?
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
 
     // insert delay, to overcome cacheing
     Thread.sleep(550);

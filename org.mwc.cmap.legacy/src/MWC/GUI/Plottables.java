@@ -411,9 +411,18 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public String toString()
 	{
-		return getName() + " (" + size() + " items)";
+		return getName() + " (" + size() + " " + collectiveName() + ")";
 	}
 
+	/** the collective name for items of this type
+	 * (used when viewing in Outline)
+	 * @return collective name for this type
+	 */
+	protected String collectiveName()
+	{
+	  return "items";
+	}
+	
 	/**
 	 * set the name of the plottable
 	 */
