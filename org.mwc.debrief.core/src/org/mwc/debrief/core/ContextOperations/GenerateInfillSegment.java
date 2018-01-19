@@ -368,6 +368,69 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 2, tmaTrack.getSegments().size());
     }
 
+
+    @SuppressWarnings("deprecation")
+    public void testRepeat() throws ExecutionException
+    {
+      Layers theLayers = new Layers();
+      TrackWrapper track = new TrackWrapper();
+
+      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      AbsoluteTMASegment legOne =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo =
+          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
+              origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      GenerateInfillOperation operation =
+          new GenerateInfillOperation("title", subjects, theLayers, track,
+              getMyLogger(), true);
+
+      assertEquals("correct before len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+      
+      // ok, now try to do it again
+      subjects = new Editable[3];
+      int ctr = 0;
+      Iterator<Editable> iter = track.getSegments().getData().iterator();
+      while(iter.hasNext())
+      {
+        subjects[ctr++] = iter.next();
+      }
+      operation =
+          new GenerateInfillOperation("title", subjects, theLayers, track,
+              getMyLogger(), true);
+
+      assertEquals("correct before len", 57, legTwo.getData().size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+
+    }
+    
     @SuppressWarnings("deprecation")
     public void testUndo() throws ExecutionException
     {
@@ -525,7 +588,6 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       // check we now have 4 legs
       assertEquals("correct legs", 4, track.getSegments().size());
-
     }
   }
 
