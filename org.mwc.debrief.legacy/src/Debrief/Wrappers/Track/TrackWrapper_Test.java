@@ -640,6 +640,9 @@ public class TrackWrapper_Test extends TestCase
     _tw.addFix(createFix(600000, 4, 6));
     _messages = new MessageProvider.TestableMessageProvider();
     MessageProvider.Base.setProvider(_messages);
+    
+    // set the correct earth model
+    WorldLocation.setModel(new MWC.Algorithms.EarthModels.FlatEarth());
   }
 
   /**
