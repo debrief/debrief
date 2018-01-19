@@ -403,8 +403,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
                       "the location of the fix", SPATIAL),
                   prop("Visible", "whether the whole fix is visible",
                       VISIBILITY),
-                  displayProp("Comment", "Comment",
-                          "Comment for this entry", OPTIONAL),
+                  displayProp("Comment", "Comment", "Comment for this entry",
+                      OPTIONAL),
                   displayProp("LabelShowing", "Label showing",
                       "whether the label is showing", VISIBILITY),
                   displayLongProp("LabelFormat", "Label format",
@@ -725,7 +725,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * flag for whether to show the label
    */
   private boolean _showLabel;
-  
+
   /**
    * the font to draw this track in.
    */
@@ -1465,7 +1465,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     }
   }
 
-
   /**
    * set the course for this observation
    * 
@@ -1536,6 +1535,14 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       _myArea.setTopLeft(val);
       _myArea.setBottomRight(val);
     }
+
+    // lastly, if we're using a label format that
+    // includes speed, we've got to update it
+    if (this.getLabelFormat().equals(MyDateFormatPropertyEditor.DTG_SPEED))
+    {
+      this.setLabelFormat(this.getLabelFormat());
+    }
+
   }
 
   public final void setFont(final Font theFont)
@@ -1569,10 +1576,35 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // check it's a legitimate format
     if (!MyDateFormatPropertyEditor.NULL_VALUE.equals(format))
     {
+      boolean includesSpeed =
+          MyDateFormatPropertyEditor.DTG_SPEED.equals(format);
+
+      final String theFormat;
+      final String suffix;
+      if (includesSpeed)
+      {
+        // ok, split it
+        final String[] parts = format.split(" ");
+        theFormat = parts[0].trim();
+        final String speedStr =
+            GeneralFormat.formatOneDecimalPlace(MWC.Algorithms.Conversions
+                .Yps2Kts(this.getFix().getSpeed()));
+        suffix = " " + speedStr + "kt";
+      }
+      else
+      {
+        theFormat = format;
+        suffix = "";
+      }
+
       // ok, reformat the label to this format
-      final java.text.DateFormat df = new java.text.SimpleDateFormat(format);
+      final java.text.DateFormat df = new java.text.SimpleDateFormat(theFormat);
       df.setTimeZone(TimeZone.getTimeZone("GMT"));
-      this.setLabel(df.format(this.getTime().getDate()));
+
+      final String timeStr = df.format(this.getTime().getDate());
+      // special handling. See if it's the special SPEED marker
+
+      this.setLabel(timeStr + suffix);
     }
   }
 
