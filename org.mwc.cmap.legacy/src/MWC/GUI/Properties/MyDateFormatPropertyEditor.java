@@ -16,10 +16,12 @@ package MWC.GUI.Properties;
 public class MyDateFormatPropertyEditor extends
 			MWC.GUI.Properties.DateFormatPropertyEditor
 	{
-		static public final String NULL_VALUE = "N/A";
+		public static final String DTG_SPEED = "HHmm x.xkt";
 
-		static final String[] stringTags =
-		{ NULL_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm.ss",
+    static public final String NULL_VALUE = "N/A";
+
+		static private final String[] stringTags =
+		{ NULL_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", DTG_SPEED, "ddHHmm", "ddHHmm.ss",
 				"yy/MM/dd HH:mm", };
 
 		public final String[] getTags()
