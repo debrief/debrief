@@ -377,6 +377,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     @Override
     public final PropertyDescriptor[] getPropertyDescriptors()
     {
+      PropertyDescriptor[] res;
       try
       {
         if (_coreDescriptors == null)
@@ -414,12 +415,34 @@ public class FixWrapper extends PlainWrapper implements Watchable,
                       "the label location", LocationPropertyEditor.class,
                       FORMAT)};
         }
+        
+        // do we have a comment?
+        FixWrapper fix = (FixWrapper) this.getData();
+        if (fix.getComment() != null)
+        {
+          // ok
+          // yes = better create height/width editors
+          final PropertyDescriptor[] coreDescriptorsWithComment =
+              new PropertyDescriptor[_coreDescriptors.length + 1];
+          System.arraycopy(_coreDescriptors, 0, coreDescriptorsWithComment, 1,
+              _coreDescriptors.length);
+          coreDescriptorsWithComment[0] =
+              displayProp("DisplayComment", "Show Comment instead of label",
+                  "Show comment, instead of label", OPTIONAL);
+          res = coreDescriptorsWithComment;
+        }
+        else
+        {
+          res = _coreDescriptors;
+        }
       }
       catch (final IntrospectionException e)
       {
         _coreDescriptors = super.getPropertyDescriptors();
+        res = _coreDescriptors;
       }
-      return _coreDescriptors;
+
+      return res;
     }
 
     @Override
@@ -779,9 +802,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    */
   private TrackSegment _parentSegment;
 
-  // //////////////////////////////////////
-  // constructors
-  // //////////////////////////////////////
+  /**
+   * display the comment instead of the label
+   * 
+   */
+  private boolean _displayComment = false;
 
   /**
    * the track we are a part of (note, we're making it static so that when we serialise it we don't
@@ -1318,8 +1343,33 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     if (getLabelShowing())
     {
       _theLabel.setColor(theCol);
-      _theLabel.paint(dest);
+
+      // are we overriding the label with the comment marker
+      if (_displayComment && getComment() != null)
+      {
+        String oldLbl = _theLabel.getString();
+
+        _theLabel.setString(getComment());
+
+        _theLabel.paint(dest);
+
+        _theLabel.setString(oldLbl);
+      }
+      else
+      {
+        _theLabel.paint(dest);
+      }
     }
+  }
+
+  public boolean getDisplayComment()
+  {
+    return _displayComment;
+  }
+
+  public void setDisplayComment(boolean displayComment)
+  {
+    _displayComment = displayComment;
   }
 
   /**
