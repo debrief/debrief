@@ -1165,7 +1165,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 }
               }
             }
-          }         
+          }
 
           // ok, lastly indicate that the save worked (if it did!)
           _plotIsDirty = false;
