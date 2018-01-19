@@ -1320,8 +1320,8 @@ public class CoreScenario implements ScenarioType, ISimulation
 			// check time elapsed
 
 			// hack: suspect both of these test should allow zero error.
-			assertEquals("steps got performed", 105, stepCounter, 10);
-			assertEquals("scenario moved forwrad", 520, cs.getTime(), 50);
+			assertEquals("steps got performed", 149, stepCounter, 10);
+			assertEquals("scenario moved forward", 600, cs.getTime(), 100);
 
 			// stop
 			// - this has already been tested
