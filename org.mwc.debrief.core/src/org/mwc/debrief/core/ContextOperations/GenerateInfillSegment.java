@@ -507,25 +507,24 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       // check the len still valid
       assertEquals("Correct before len", beforeLen, legTwo.getData().size());
-      
+
       // ok, check that if we split the second, we don't lose the infill
-      
+
       // get a point in the second leg
       FixWrapper target = null;
       Collection<Editable> secondCuts = legTwo.getData();
       Iterator<Editable> iter = secondCuts.iterator();
-      for(int i=0;i<6;i++)
+      for (int i = 0; i < 6; i++)
       {
         target = (FixWrapper) iter.next();
       }
-      
+
       assertNotNull("found it", target);
-      
+
       track.splitTrack(target, false);
-      
+
       // check we now have 4 legs
       assertEquals("correct legs", 4, track.getSegments().size());
-      
 
     }
   }
@@ -607,6 +606,14 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         // get the juicy pair we're looking at
         final TrackSegment trackOne = (TrackSegment) _segments[i];
         final TrackSegment trackTwo = (TrackSegment) _segments[i + 1];
+
+        // check they're not infills
+        if (trackOne instanceof DynamicInfillSegment
+            || trackTwo instanceof DynamicInfillSegment)
+        {
+          // hold on - there's already an infill here. Move along
+          continue;
+        }
 
         // join them
         res = fillSegments(trackOne, trackTwo);
