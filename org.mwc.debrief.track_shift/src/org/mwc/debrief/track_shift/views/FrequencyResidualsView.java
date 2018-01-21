@@ -97,7 +97,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     calcBaseFreq
         .setToolTipText("Calculate the base frequency of the visible frequency cuts");
     calcBaseFreq.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/calculator.png"));
+        .getImageDescriptor("icons/24/f_nought.png"));
   }
 
   protected void calculateBaseFreq()
