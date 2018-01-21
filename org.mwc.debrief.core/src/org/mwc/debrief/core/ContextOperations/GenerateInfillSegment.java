@@ -206,7 +206,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       messages.clear();
       first = (ActionContributionItem) newItems[2];
       assertEquals("right name",
-          "Generate infill segment (Delete from 2nd track if necessary)", first
+          "Generate infill segment" + DELETE_SUFFIX, first
               .getAction().getText());
       first.getAction().run();
 
