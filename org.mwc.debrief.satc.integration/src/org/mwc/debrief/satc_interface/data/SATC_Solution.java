@@ -892,8 +892,8 @@ public class SATC_Solution extends BaseLayer implements
 				BaseContribution cont = (BaseContribution) iter.next();
 				if(cont.getStartDate() != null)
 				{
-					if((endD == null) || (cont.getStartDate().getTime() > endD.getDate().getTime()))
-						endD = new HiResDate(cont.getStartDate().getTime());
+					if((endD == null) || (cont.getFinishDate().getTime() > endD.getDate().getTime()))
+						endD = new HiResDate(cont.getFinishDate().getTime());
 				}
 			}
 			
