@@ -954,19 +954,16 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                   {
                     FixWrapper thisF = (FixWrapper) thisSecondary;
                     final TrackSegment thisSeg = thisF.getSegment();
-                    if (thisSeg != null)
+                    if (thisSeg != null && prevItem instanceof FixWrapper)
                     {
-                      if (prevItem instanceof FixWrapper)
+                      FixWrapper prevF = (FixWrapper) prevItem;
+                      final TrackSegment prevSeg = prevF.getSegment();
+                      // is it from a different segment?
+                      if (!thisSeg.equals(prevSeg)
+                          && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
                       {
-                        FixWrapper prevF = (FixWrapper) prevItem;
-                        final TrackSegment prevSeg = prevF.getSegment();
-                        // is it from a different segment?
-                        if (!thisSeg.equals(prevSeg)
-                            && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
-                        {
-                          // ok, use the previous color
-                          thisColor = prevItem.getColor();
-                        }
+                        // ok, use the previous color
+                        thisColor = prevItem.getColor();
                       }
                     }
                   }
@@ -1074,25 +1071,22 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
                 // ok, check the segments. if the last segment was dynamic, and we're not,
                 // use the last color. Do we know the previous fix?
-                if (prevFix != null)
+                if (prevFix != null && thisSecondary instanceof FixWrapper)
                 {
-                  if (thisSecondary instanceof FixWrapper)
+                  FixWrapper fix = (FixWrapper) thisSecondary;
+                  final TrackSegment thisSeg = fix.getSegment();
+                  if (thisSeg != null)
                   {
-                    FixWrapper fix = (FixWrapper) thisSecondary;
-                    final TrackSegment thisSeg = fix.getSegment();
-                    if (thisSeg != null)
+                    if (prevFix instanceof FixWrapper)
                     {
-                      if (prevFix instanceof FixWrapper)
+                      FixWrapper pFix = (FixWrapper) prevFix;
+                      final TrackSegment prevSeg = pFix.getSegment();
+                      // is it from a different segment?
+                      if (!thisSeg.equals(prevSeg)
+                          && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
                       {
-                        FixWrapper pFix = (FixWrapper) prevFix;
-                        final TrackSegment prevSeg = pFix.getSegment();
-                        // is it from a different segment?
-                        if (!thisSeg.equals(prevSeg)
-                            && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
-                        {
-                          // ok, use the previous color
-                          thisColor = prevFix.getColor();
-                        }
+                        // ok, use the previous color
+                        thisColor = prevFix.getColor();
                       }
                     }
                   }
