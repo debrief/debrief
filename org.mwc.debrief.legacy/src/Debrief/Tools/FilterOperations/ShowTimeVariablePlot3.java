@@ -834,23 +834,20 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
                 // ok, check the segments. if the last segment was dynamic, and we're not,
                 // use the last color. Do we know the previous fix?
-                if (prevItem != null)
+                if (prevItem != null && thisSecondary instanceof FixWrapper)
                 {
-                  if (thisSecondary instanceof FixWrapper)
+                  final FixWrapper thisF = (FixWrapper) thisSecondary;
+                  final TrackSegment thisSeg = thisF.getSegment();
+                  if (thisSeg != null && prevItem instanceof FixWrapper)
                   {
-                    final FixWrapper thisF = (FixWrapper) thisSecondary;
-                    final TrackSegment thisSeg = thisF.getSegment();
-                    if (thisSeg != null && prevItem instanceof FixWrapper)
+                    final FixWrapper prevF = (FixWrapper) prevItem;
+                    final TrackSegment prevSeg = prevF.getSegment();
+                    // is it from a different segment?
+                    if (!thisSeg.equals(prevSeg)
+                        && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
                     {
-                      final FixWrapper prevF = (FixWrapper) prevItem;
-                      final TrackSegment prevSeg = prevF.getSegment();
-                      // is it from a different segment?
-                      if (!thisSeg.equals(prevSeg)
-                          && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
-                      {
-                        // ok, use the previous color
-                        thisColor = prevItem.getColor();
-                      }
+                      // ok, use the previous color
+                      thisColor = prevItem.getColor();
                     }
                   }
                 }
