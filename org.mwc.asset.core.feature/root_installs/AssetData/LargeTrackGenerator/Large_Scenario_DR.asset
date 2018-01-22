@@ -6,13 +6,13 @@
 	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
 	</Environment>
 	<Participants>
-		<Surface Name="FisherOne">
+		<Surface Name="FisherOneB">
 			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE"></Category>
 			<SensorFit>
 				<TypedCookieSensor ProducesRange="false">
 					<TypedRangeDoublet>
 						<Type Name="BLUE" />
-						<DetectionRange Value="35" Units="nm" >ffafa;fafalfalsfalsefalse</DetectionRange>
+						<DetectionRange Value="35" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor></SensorFit>
 			<Status Course="30" Fuel="0.0">
@@ -27,78 +27,78 @@
 			</Status>
 			<Waterfall Name="Southern Trawl" IsActive="true">
 				<Move Name="leg one" Course="015">
-					<Vector Value="8" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="355">
-					<Vector Value="5" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="015">
-					<Vector Value="12" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="0">
-					<Vector Value="6" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="020">
-					<Vector Value="12" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="0">
-					<Vector Value="8" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="050">
-					<Vector Value="22" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="030">
-					<Vector Value="18" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="015">
-					<Vector Value="8" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="355">
-					<Vector Value="5" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="015">
-					<Vector Value="12" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="0">
-					<Vector Value="6" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
-				<Move Name="leg one" Course="280">
+				<Move Name="leg one" Course="240">
 					<Speed Value="32" Units="kts" />
 					<Vector Value="72" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="355">
-					<Speed Value="12" Units="kts" />
+					<Speed Value="21" Units="kts" />
 					<Vector Value="5" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="015">
-					<Vector Value="12" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="0">
-					<Vector Value="6" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="020">
-					<Vector Value="12" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="0">
-					<Vector Value="8" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="050">
-					<Vector Value="22" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="030">
-					<Vector Value="18" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="015">
-					<Vector Value="8" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="355">
-					<Vector Value="5" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="015">
-					<Vector Value="12" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>
 				<Move Name="leg one" Course="0">
-					<Vector Value="6" Units="km" />
+					<Vector Value="21" Units="km" />
 				</Move>			</Waterfall>
 			<SurfaceMovementCharacteristics Name="9m fisherman"
 				FuelUsageRate="0.0001">
@@ -109,30 +109,37 @@
 				<TurningCircle Value="400" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
-		<Surface Name="SearchOne" PaintDecisions="true">
+		<Surface Name="SearchOneB" PaintDecisions="true">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
 				<TypedCookieSensor DetectionIntervalMillis="10000"
 					ProducesRange="true">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
-						<DetectionRange Value="40" Units="nm" />
+						<DetectionRange Value="70" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 			</SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
 					<relativeLocation>
-						<North Value="31.0" Units="nm" />
+						<North Value="51.0" Units="nm" />
 						<East Value="-21" Units="nm" />
 					</relativeLocation>
 				</Location>
-				<Speed Value="16" Units="kts" />
+				<Speed Value="17" Units="kts" />
 			</Status>
 			<Waterfall Name="Blue behaviour">
-				<Trail Name="">
+				<BearingTrail TrailBearing="230.0" Name="stbd_quarter">
+					<TrailRange Value="20" Units="km" />
+					<AllowableError Value="5" Units="km" />
+					<TargetType>
+						<Type Name="RED" />
+					</TargetType>
+				</BearingTrail>
+								<Trail Name="">
 					<TrailRange Value="4000" Units="m" />
-					<AllowableError Value="1500" Units="m" />
+					<AllowableError Value="12500" Units="m" />
 					<TargetType>
 						<Type Name="RED" ></Type>
 					</TargetType>
@@ -146,14 +153,15 @@
 						</relativeLocation>
 						
 					</Location>
-					<Speed Value="4" Units="kts" />
+					<Speed Value="21" Units="kts" />
 					<Height Value="0.0" Units="ft" />
-				</Wander></Waterfall>
+				</Wander>
+</Waterfall>
 			
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="kts" />
-				<MaxSpeed Value="5" Units="kts" />
+				<MaxSpeed Value="21" Units="kts" />
 				<AccelerationRate Value="1.0" Units="kts/s" />
 				<DecelerationRate Value="1.0" Units="kts/s" />
 				<TurningCircle Value="400.0" Units="m" />
