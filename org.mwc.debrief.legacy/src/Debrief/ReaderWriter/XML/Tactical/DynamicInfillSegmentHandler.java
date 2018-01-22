@@ -27,6 +27,7 @@ import java.awt.Color;
 
 import org.w3c.dom.Element;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -86,8 +87,12 @@ abstract public class DynamicInfillSegmentHandler extends
     if (_fixes.size() <= 1)
     {
       // ok. We used to allow single point infills,
-      // now we don't.   Skip this infill
+      // now we don't. Skip this infill
       res = null;
+
+      // log this, we may forget we're consciously skipping such short ones
+      Application.logError2(Application.WARNING,
+          "We're deliberately skipping this one-point infill:" + _name, null);
     }
     else
     {
