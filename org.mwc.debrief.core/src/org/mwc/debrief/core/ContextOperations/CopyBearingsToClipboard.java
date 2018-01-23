@@ -430,7 +430,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     @SuppressWarnings("deprecation")
-    public void testPasteBearings()
+    private void doTestPasteBearings()
     {
       Layers layers = new Layers();
       TrackWrapper host = new TrackWrapper();
@@ -464,8 +464,14 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
     }
 
+    public void testCopyPaste() throws ExecutionException
+    {
+      doTestCopyBearings();
+      doTestPasteBearings();
+    }
+    
     @SuppressWarnings("deprecation")
-    public void testCopyBearings() throws ExecutionException
+    private void doTestCopyBearings() throws ExecutionException
     {
       Layers layers = new Layers();
       TrackWrapper host = new TrackWrapper();
