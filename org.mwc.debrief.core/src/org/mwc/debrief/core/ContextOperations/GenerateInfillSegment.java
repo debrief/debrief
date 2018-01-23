@@ -590,7 +590,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
     }
   }
 
-  private static class GenerateInfillOperation extends CMAPOperation
+  public static class GenerateInfillOperation extends CMAPOperation
   {
 
     public static final String INSUFFICIENT_TIME =
