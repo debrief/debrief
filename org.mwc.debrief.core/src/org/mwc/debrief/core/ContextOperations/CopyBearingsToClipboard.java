@@ -36,10 +36,17 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment.GenerateInfillOperation;
+import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -101,8 +108,6 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   private static class CopyBearingData extends CMAPOperation
   {
 
-    private static Clipboard _clip;
-
     private static BearingList calculateOffsets(final TrackWrapper subject,
         final TrackWrapper refTrack)
     {
@@ -133,21 +138,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       return res;
     }
 
-    private static void writeOffsets(final BearingList offsets)
-    {
-      // create the clipboard buffer
-      _clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      // store our data
-      final TransferableBearingList ourData =
-          new TransferableBearingList(offsets);
-
-      // and put it on the clipboard
-      _clip.setContents(ourData, CorePlugin.getDefault());
-    }
-
-    @SuppressWarnings("unused")
-    private final Layers _layers;
+    private Clipboard _clip;
 
     private final TrackWrapper _subject;
 
@@ -155,11 +146,10 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
     private BearingList _offsets;
 
-    public CopyBearingData(final String title, final Layers layers,
-        final TrackWrapper subject, final TrackWrapper referenceTrack)
+    public CopyBearingData(final String title, final TrackWrapper subject,
+        final TrackWrapper referenceTrack)
     {
       super(title);
-      _layers = layers;
       _subject = subject;
       _referenceTrack = referenceTrack;
     }
@@ -211,6 +201,19 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       return Status.OK_STATUS;
     }
 
+    private void writeOffsets(final BearingList offsets)
+    {
+      // create the clipboard buffer
+      _clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+
+      // store our data
+      final TransferableBearingList ourData =
+          new TransferableBearingList(offsets);
+
+      // and put it on the clipboard
+      _clip.setContents(ourData, CorePlugin.getDefault());
+    }
+
   }
 
   private static class PasteBearingData extends CMAPOperation
@@ -228,6 +231,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
         if (nearest != null && nearest.length > 0)
         {
+          // ok, we've got data
           final FixWrapper nearF = (FixWrapper) nearest[0];
 
           final WorldLocation nearLoc = nearF.getLocation();
@@ -249,10 +253,13 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     private final Layers _layers;
-
     private final TrackWrapper _referenceTrack;
     private final BearingList _offsets;
 
+    /**
+     * the new track we're creating
+     * 
+     */
     private TrackWrapper _newTrack;
 
     public PasteBearingData(final String title, final Layers layers,
@@ -398,8 +405,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       assertEquals("has infills", 5, subject.getSegments().size());
 
       // ok, now we can run the get bearings
-      final CopyBearingData oper =
-          new CopyBearingData("title", layers, subject, host);
+      final CopyBearingData oper = new CopyBearingData("title", subject, host);
 
       // check bearings are on clipboard.
       oper.execute(null, null);
@@ -451,23 +457,20 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         public void logError(final int status, final String text,
             final Exception e)
         {
-          // TODO Auto-generated method stub
-
+          CorePlugin.logError(status, text, e);
         }
 
         @Override
         public void logError(final int status, final String text,
             final Exception e, final boolean revealLog)
         {
-          // TODO Auto-generated method stub
-
+          logError(status, text, e);
         }
 
         @Override
         public void logStack(final int status, final String text)
         {
-          // TODO Auto-generated method stub
-
+          logError(status, text, null);
         }
       };
     }
@@ -485,10 +488,10 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     public static DataFlavor FLAVOR = new DataFlavor(BearingList.class,
         "BearingList");
 
-    static DataFlavor[] FLAVORS = new DataFlavor[]
+    private static DataFlavor[] FLAVORS = new DataFlavor[]
     {FLAVOR};
 
-    BearingList list; // This is the PolyLine we wrap.
+    private final BearingList list; // This is the PolyLine we wrap.
 
     public TransferableBearingList(final BearingList list)
     {
@@ -591,7 +594,27 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
     }
 
-    if (host != null)
+    if (host == null)
+    {
+      // ok, it's not a relative track.
+      // see if we have a primary track assigned
+      final IWorkbench wb = PlatformUI.getWorkbench();
+      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+      final IWorkbenchPage page = win.getActivePage();
+      final IEditorPart editor = page.getActiveEditor();
+
+      if (editor instanceof PlotEditor)
+      {
+        final TrackManager trackManager =
+            (TrackManager) editor.getAdapter(TrackManager.class);
+        if (trackManager != null)
+        {
+          host = (TrackWrapper) trackManager.getPrimaryTrack();
+        }
+      }
+    }
+
+    if (host != null && host != track)
     {
       // yes, create the action
       final String title =
@@ -606,7 +629,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
           // ok, go for it.
           // sort it out as an operation
           final IUndoableOperation copyBearings =
-              new CopyBearingData(title, theLayers, track, theHost);
+              new CopyBearingData(title, track, theHost);
 
           // ok, stick it on the buffer
           runIt(copyBearings);
@@ -624,7 +647,6 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   private void generatePasteAction(final IMenuManager parent,
       final Layers theLayers, final TrackWrapper track)
   {
-
     // ok, see if we have some bearing data on the clipboard
     final Clipboard clip =
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -655,7 +677,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
             {
               // ok, create the action
               final String title =
-                  "Create new track by adding bearings to " + track.getName();
+                  "Create new track by adding clipboard bearings to "
+                      + track.getName();
 
               final Action convertToTrack = new Action(title)
               {
@@ -671,13 +694,11 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
                   runIt(copyBearings);
                 }
               };
-
               // right,stick in a separator
               parent.add(new Separator());
 
               // ok - flash up the menu item
               parent.add(convertToTrack);
-
             }
           }
         }
@@ -688,7 +709,6 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
             "Problem creating new track from clipboard", e);
       }
     }
-
   }
 
   /**
