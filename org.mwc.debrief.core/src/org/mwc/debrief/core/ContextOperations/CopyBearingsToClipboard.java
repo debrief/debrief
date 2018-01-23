@@ -15,25 +15,51 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.Color;
-import java.util.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment.GenerateInfillOperation;
 
-import Debrief.Wrappers.*;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
-import MWC.GUI.*;
-import MWC.GUI.Shapes.*;
-import MWC.GenericData.*;
-import MWC.TacticalData.*;
+import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
@@ -61,67 +87,80 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       {
         final TrackWrapper track = (TrackWrapper) first;
 
-        // ok, it's a track. Is it made from relative TMA segments?
-        SegmentList segments = track.getSegments();
-        Enumeration<Editable> ele = segments.elements();
+        // ok, first see if it's a relative track - so we can
+        // offer to copy it to the clipboard
+        generateCopyAction(parent, theLayers, track);
 
-        TrackWrapper host = null;
+        // and now the paste action
+        generatePasteAction(parent, theLayers, track);
+      }
+    }
+  }
 
-        while (ele.hasMoreElements())
+  private void generateCopyAction(final IMenuManager parent,
+      final Layers theLayers, final TrackWrapper track)
+  {
+    // ok, it's a track. Is it made from relative TMA segments?
+    SegmentList segments = track.getSegments();
+    Enumeration<Editable> ele = segments.elements();
+
+    TrackWrapper host = null;
+
+    while (ele.hasMoreElements())
+    {
+      TrackSegment seg = (TrackSegment) ele.nextElement();
+
+      if (seg instanceof RelativeTMASegment)
+      {
+        RelativeTMASegment rel = (RelativeTMASegment) seg;
+        WatchableList refTrack = rel.getReferenceTrack();
+        if (refTrack == null)
         {
-          TrackSegment seg = (TrackSegment) ele.nextElement();
-
-          if (seg instanceof RelativeTMASegment)
-          {
-            RelativeTMASegment rel = (RelativeTMASegment) seg;
-            WatchableList refTrack = rel.getReferenceTrack();
-            if (refTrack == null)
-            {
-              // ok, show error
-              CorePlugin.logError(Status.ERROR,
-                  "Host track for TMA leg can't be determined", null);
-              break;
-            }
-            else if (refTrack instanceof TrackWrapper)
-            {
-              host = (TrackWrapper) refTrack;
-              break;
-            }
-            else
-            {
-              CorePlugin.logError(Status.ERROR,
-                  "Host track for TMA leg isn't a TrackWrapper", null);
-              break;
-            }
-          }
+          // ok, show error
+          CorePlugin.logError(Status.ERROR,
+              "Host track for TMA leg can't be determined", null);
+          break;
         }
-
-        if (host != null)
+        else if (refTrack instanceof TrackWrapper)
         {
-          // yes, create the action
-          final String title =
-              "Copy to clipboard as offsets from " + host.getName();
-          final Action convertToTrack = new Action(title)
-          {
-            public void run()
-            {
-              // ok, go for it.
-              // sort it out as an operation
-              final IUndoableOperation convertToTrack1 =
-                  new CopyBearingData(title, theLayers, track);
-
-              // ok, stick it on the buffer
-              runIt(convertToTrack1);
-            }
-          };
-
-          // right,stick in a separator
-          parent.add(new Separator());
-
-          // ok - flash up the menu item
-          parent.add(convertToTrack);
+          host = (TrackWrapper) refTrack;
+          break;
+        }
+        else
+        {
+          CorePlugin.logError(Status.ERROR,
+              "Host track for TMA leg isn't a TrackWrapper", null);
+          break;
         }
       }
+    }
+
+    if (host != null)
+    {
+      // yes, create the action
+      final String title =
+          "Copy to clipboard as offsets from " + host.getName();
+      final TrackWrapper theHost = host;
+
+      final Action convertToTrack = new Action(title)
+      {
+        public void run()
+        {
+          // ok, go for it.
+          // sort it out as an operation
+          final IUndoableOperation copyBearings =
+              new CopyBearingData(title, theLayers, track, theHost);
+
+          // ok, stick it on the buffer
+          runIt(copyBearings);
+        }
+      };
+
+      // right,stick in a separator
+      parent.add(new Separator());
+
+      // ok - flash up the menu item
+      parent.add(convertToTrack);
     }
   }
 
@@ -136,169 +175,228 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     CorePlugin.run(operation);
   }
 
+  private void generatePasteAction(final IMenuManager parent,
+      final Layers theLayers, final TrackWrapper track)
+  {
+
+    // ok, see if we have some bearing data on the clipboard
+    final Clipboard clip =
+        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+
+    // and put it on the clipboard
+    if (clip.isDataFlavorAvailable(TransferableBearingList.FLAVOR))
+    {
+      try
+      {
+        final Object contents = clip.getData(TransferableBearingList.FLAVOR);
+        if (contents != null)
+        {
+          // ok, process it
+          final BearingList bearingList = (BearingList) contents;
+
+          if (bearingList != null)
+          {
+            // ok, now check this track matches the bearings
+            Object[] dates = bearingList.keySet().toArray();
+            TimePeriod listP =
+                new TimePeriod.BaseTimePeriod((HiResDate) dates[0],
+                    (HiResDate) dates[dates.length - 1]);
+            TimePeriod trackP =
+                new TimePeriod.BaseTimePeriod(track.getStartDTG(), track
+                    .getEndDTG());
+
+            if (listP.overlaps(trackP))
+            {
+              // ok, create the action
+              final String title =
+                  "Create new track by adding bearings to " + track.getName();
+
+              final Action convertToTrack = new Action(title)
+              {
+                public void run()
+                {
+                  // ok, go for it.
+                  // sort it out as an operation
+                  final IUndoableOperation copyBearings =
+                      new PasteBearingData(title, theLayers, bearingList, track);
+
+                  // ok, stick it on the buffer
+                  runIt(copyBearings);
+                }
+              };
+
+              // right,stick in a separator
+              parent.add(new Separator());
+
+              // ok - flash up the menu item
+              parent.add(convertToTrack);
+
+            }
+          }
+        }
+      }
+      catch (UnsupportedFlavorException | IOException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+  }
+
   private static class CopyBearingData extends CMAPOperation
   {
 
-    private final Layers _layers;
     @SuppressWarnings("unused")
+    private final Layers _layers;
     private final TrackWrapper _subject;
 
-    private Vector<TrackWrapper> _newTracks;
+    private final TrackWrapper _referenceTrack;
+
+    private BearingList _offsets;
 
     public CopyBearingData(final String title, final Layers layers,
-        final TrackWrapper subject)
+        final TrackWrapper subject, final TrackWrapper referenceTrack)
     {
       super(title);
       _layers = layers;
       _subject = subject;
+      _referenceTrack = referenceTrack;
     }
 
     public IStatus
         execute(final IProgressMonitor monitor, final IAdaptable info)
             throws ExecutionException
     {
+      // ok, get ready
+      _offsets = calculateOffsets(_subject, _referenceTrack);
+
+      // did we find any?
+      if (_offsets.size() > 0)
+      {
+        writeOffsets(_offsets);
+      }
 
       return Status.OK_STATUS;
+    }
+
+    private static BearingList calculateOffsets(TrackWrapper subject,
+        TrackWrapper refTrack)
+    {
+      BearingList res = new BearingList(subject.getName(), subject.getColor());
+
+      Enumeration<Editable> posits = subject.getPositionIterator();
+
+      final boolean refWasInterpolated = refTrack.getInterpolatePoints();
+      refTrack.setInterpolatePoints(true);
+
+      while (posits.hasMoreElements())
+      {
+        FixWrapper nextF = (FixWrapper) posits.nextElement();
+        HiResDate tNow = nextF.getDateTimeGroup();
+        Watchable[] nearest = refTrack.getNearestTo(tNow, false);
+        if (nearest != null && nearest.length > 0)
+        {
+          FixWrapper near = (FixWrapper) nearest[0];
+          WorldVector offset = nextF.getLocation().subtract(near.getLocation());
+          res.put(tNow, offset);
+        }
+      }
+
+      refTrack.setInterpolatePoints(refWasInterpolated);
+
+      return res;
+    }
+
+    private static void writeOffsets(BearingList offsets)
+    {
+      // create the clipboard buffer
+      final Clipboard clip =
+          java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+
+      // store our data
+      TransferableBearingList ourData = new TransferableBearingList(offsets);
+
+      // and put it on the clipboard
+      clip.setContents(ourData, CorePlugin.getDefault());
     }
 
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
-      // forget about the new tracks
-      for (final Iterator<TrackWrapper> iter = _newTracks.iterator(); iter
-          .hasNext();)
-      {
-        final TrackWrapper trk = (TrackWrapper) iter.next();
-        _layers.removeThisLayer(trk);
-      }
-
-      // and clear the new tracks item
-      _newTracks.removeAllElements();
-      _newTracks = null;
+      // ok, just clear the clipboard
 
       return Status.OK_STATUS;
     }
 
   }
 
-  /**
-   * find out if this item is suitable for use as a track item
-   * 
-   * @param thisP
-   * @return
-   */
-  static boolean isSuitableAsTrackPoint(final Plottable thisP)
+  private static class BearingList extends HashMap<HiResDate, WorldVector>
   {
-    boolean res = false;
 
-    // ok - is it a label? Converting that to a track point is quite easy
-    if (thisP instanceof LabelWrapper)
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    private final String _name;
+
+    private final Color _color;
+
+    public BearingList(final String name, final Color color)
     {
-      res = true;
+      _name = name;
+      _color = color;
+    }
+    
+    public String getName()
+    {
+      return _name;
+    }
+    
+    public Color getColor()
+    {
+      return _color;
     }
 
-    // next, see if it's a line, because the pretend track could have been
-    // drawn up as a series of lines
-    if (thisP instanceof ShapeWrapper)
-    {
-      final ShapeWrapper sw = (ShapeWrapper) thisP;
-      final PlainShape shp = sw.getShape();
-      if (shp instanceof LineShape)
-        res = true;
-    }
-    return res;
   }
 
-  public static TrackWrapper generateTrackFor(final BaseLayer layer)
+  private static class TransferableBearingList implements Transferable
   {
-    TrackWrapper res = new TrackWrapper();
-    res.setName("T_" + layer.getName());
+    public static DataFlavor FLAVOR = new DataFlavor(BearingList.class,
+        "BearingList");
 
-    Color trackColor = null;
+    static DataFlavor[] FLAVORS = new DataFlavor[]
+    {FLAVOR};
 
-    // ok, step through the points
-    final Enumeration<Editable> numer = layer.elements();
+    BearingList list; // This is the PolyLine we wrap.
 
-    // remember the last line viewed, since we want to add both of it's points
-    ShapeWrapper lastLine = null;
-
-    while (numer.hasMoreElements())
+    public TransferableBearingList(BearingList list)
     {
-      final Plottable pl = (Plottable) numer.nextElement();
-      if (pl instanceof LabelWrapper)
-      {
-        final LabelWrapper label = (LabelWrapper) pl;
-
-        // just check we know the track color
-        if (trackColor == null)
-          trackColor = label.getColor();
-
-        HiResDate dtg = label.getStartDTG();
-        if (dtg == null)
-          dtg = new HiResDate(new Date());
-
-        final WorldLocation loc = label.getBounds().getCentre();
-        final Fix newFix = new Fix(dtg, loc, 0, 0);
-        final FixWrapper fw = new FixWrapper(newFix);
-
-        if (label.getColor() != trackColor)
-          fw.setColor(label.getColor());
-
-        res.add(fw);
-        fw.setTrackWrapper(res);
-
-        // forget the last-line, clearly we've moved on to other things
-        lastLine = null;
-
-      }
-      else if (pl instanceof ShapeWrapper)
-      {
-        final ShapeWrapper sw = (ShapeWrapper) pl;
-        final PlainShape shape = sw.getShape();
-        if (shape instanceof LineShape)
-        {
-          final LineShape line = (LineShape) shape;
-          // just check we know the track color
-          if (trackColor == null)
-            trackColor = line.getColor();
-
-          final HiResDate dtg = sw.getStartDTG();
-          final WorldLocation loc = line.getLine_Start();
-          final Fix newFix = new Fix(dtg, loc, 0, 0);
-          final FixWrapper fw = new FixWrapper(newFix);
-
-          if (line.getColor() != trackColor)
-            fw.setColor(line.getColor());
-          fw.setTrackWrapper(res);
-          res.add(fw);
-
-          // and remember this line
-          lastLine = sw;
-
-        }
-      }
+      this.list = list;
     }
 
-    // did we have a trailing line item?
-    if (lastLine != null)
+    /** Return the supported flavor */
+    public DataFlavor[] getTransferDataFlavors()
     {
-      final HiResDate dtg = lastLine.getEndDTG();
-      final LineShape line = (LineShape) lastLine.getShape();
-      final WorldLocation loc = line.getLineEnd();
-      final Fix newFix = new Fix(dtg, loc, 0, 0);
-      final FixWrapper fw = new FixWrapper(newFix);
-      fw.setTrackWrapper(res);
-      res.add(fw);
+      return FLAVORS;
     }
 
-    // update the track color
-    res.setColor(trackColor);
+    /** Check for the one flavor we support */
+    public boolean isDataFlavorSupported(DataFlavor f)
+    {
+      return f.equals(FLAVOR);
+    }
 
-    // did we find any?
-    if (res.numFixes() == 0)
-      res = null;
+    /** Return the wrapped PolyLine, if the flavor is right */
+    public Object getTransferData(DataFlavor f)
+        throws UnsupportedFlavorException
+    {
+      if (!f.equals(FLAVOR))
+        throw new UnsupportedFlavorException(f);
+      return list;
+    }
 
-    return res;
   }
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,7 +412,42 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     @SuppressWarnings("deprecation")
-    public void testBearings() throws ExecutionException
+    public void testPasteBearings()
+    {
+      Layers layers = new Layers();
+      TrackWrapper host = new TrackWrapper();
+      host.setName("Host");
+      SensorWrapper sensor = new SensorWrapper("Sensor");
+      host.add(sensor);
+      layers.addThisLayer(host);
+
+      for (int i = 0; i < 60; i++)
+      {
+        Date newDate = new Date(2018, 01, 01, 02, i * 2, 0);
+        WorldLocation loc = new WorldLocation(12, 12 + i / 60, 0d);
+        Fix newF = new Fix(new HiResDate(newDate.getTime()), loc, 0, 12);
+        FixWrapper fix = new FixWrapper(newF);
+        host.add(fix);
+      }
+
+      IMenuManager menu = new MenuManager();
+      new CopyBearingsToClipboard().generatePasteAction(menu, layers, host);
+
+      assertEquals("have items", 2, menu.getItems().length);
+      ActionContributionItem first =
+          (ActionContributionItem) menu.getItems()[1];
+      IAction action = first.getAction();
+
+      assertEquals("just one layer", 1, layers.size());
+
+      action.run();
+
+      assertEquals("now two layers", 2, layers.size());
+
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testCopyBearings() throws ExecutionException
     {
       Layers layers = new Layers();
       TrackWrapper host = new TrackWrapper();
@@ -396,11 +529,14 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       operation.execute(null, null);
 
       assertEquals("has infills", 5, subject.getSegments().size());
-      
+
       // ok, now we can run the get bearings
-      
-      // check bearings are on clipboard.   
-      
+      CopyBearingData oper =
+          new CopyBearingData("title", layers, subject, host);
+
+      // check bearings are on clipboard.
+      oper.execute(null, null);
+
       // also test the paste
     }
 
@@ -431,6 +567,83 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
         }
       };
+    }
+
+  }
+
+  private static class PasteBearingData extends CMAPOperation
+  {
+
+    private final Layers _layers;
+    private final TrackWrapper _referenceTrack;
+
+    private final BearingList _offsets;
+
+    public PasteBearingData(final String title, final Layers layers,
+        final BearingList offsets, final TrackWrapper referenceTrack)
+    {
+      super(title);
+      _layers = layers;
+      _referenceTrack = referenceTrack;
+      _offsets = offsets;
+    }
+
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      // ok, create the track
+      TrackWrapper track = new TrackWrapper();
+      track.setName(_offsets.getName());
+      track.setColor(_offsets.getColor());
+
+      // now write the points
+      createPointsFor(track, _offsets, _referenceTrack);
+
+      // and store the track
+      _layers.addThisLayer(track);
+
+      return Status.OK_STATUS;
+    }
+
+    private static void createPointsFor(TrackWrapper newTrack,
+        BearingList offsets, TrackWrapper refTrack)
+    {
+      for (HiResDate dtg : offsets.keySet())
+      {
+        final WorldVector vector = offsets.get(dtg);
+
+        // find nearest in the host
+        Watchable[] nearest = refTrack.getNearestTo(dtg);
+        
+        if(nearest != null && nearest.length > 0)
+        {
+          FixWrapper nearF = (FixWrapper) nearest[0];
+
+          WorldLocation nearLoc = nearF.getLocation();
+          
+          // add the location
+          WorldLocation newLoc = nearLoc.add(vector);
+
+          // generate the fix
+          Fix newFix = new Fix(dtg, newLoc, 0d, 0d);
+          FixWrapper newFW = new FixWrapper(newFix);
+
+          // store the fix
+          newTrack.add(newFW);
+        }
+      }
+      
+      // lastly, regenerate course and speed for the fixes in the new track
+      newTrack.calcCourseSpeed();
+    }
+
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      // ok, just delete the track
+
+      return Status.OK_STATUS;
     }
 
   }
