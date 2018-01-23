@@ -237,8 +237,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
       catch (UnsupportedFlavorException | IOException e)
       {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        CorePlugin.logError(Status.ERROR,
+            "Problem creating new track from clipboard", e);
       }
     }
 
@@ -247,6 +247,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   private static class CopyBearingData extends CMAPOperation
   {
 
+    private static Clipboard _clip;
     @SuppressWarnings("unused")
     private final Layers _layers;
     private final TrackWrapper _subject;
@@ -311,20 +312,37 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     private static void writeOffsets(BearingList offsets)
     {
       // create the clipboard buffer
-      final Clipboard clip =
-          java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+      _clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
 
       // store our data
       TransferableBearingList ourData = new TransferableBearingList(offsets);
 
       // and put it on the clipboard
-      clip.setContents(ourData, CorePlugin.getDefault());
+      _clip.setContents(ourData, CorePlugin.getDefault());
     }
 
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
       // ok, just clear the clipboard
+      _clip.setContents(new Transferable()
+      {
+        public DataFlavor[] getTransferDataFlavors()
+        {
+          return new DataFlavor[0];
+        }
+
+        public boolean isDataFlavorSupported(DataFlavor flavor)
+        {
+          return false;
+        }
+
+        public Object getTransferData(DataFlavor flavor)
+            throws UnsupportedFlavorException
+        {
+          throw new UnsupportedFlavorException(flavor);
+        }
+      }, CorePlugin.getDefault());
 
       return Status.OK_STATUS;
     }
@@ -348,12 +366,12 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       _name = name;
       _color = color;
     }
-    
+
     public String getName()
     {
       return _name;
     }
-    
+
     public Color getColor()
     {
       return _color;
@@ -578,6 +596,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     private final TrackWrapper _referenceTrack;
 
     private final BearingList _offsets;
+    private TrackWrapper _newTrack;
 
     public PasteBearingData(final String title, final Layers layers,
         final BearingList offsets, final TrackWrapper referenceTrack)
@@ -593,15 +612,15 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
             throws ExecutionException
     {
       // ok, create the track
-      TrackWrapper track = new TrackWrapper();
-      track.setName(_offsets.getName());
-      track.setColor(_offsets.getColor());
+      _newTrack = new TrackWrapper();
+      _newTrack.setName(_offsets.getName());
+      _newTrack.setColor(_offsets.getColor());
 
       // now write the points
-      createPointsFor(track, _offsets, _referenceTrack);
+      createPointsFor(_newTrack, _offsets, _referenceTrack);
 
       // and store the track
-      _layers.addThisLayer(track);
+      _layers.addThisLayer(_newTrack);
 
       return Status.OK_STATUS;
     }
@@ -615,13 +634,13 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
         // find nearest in the host
         Watchable[] nearest = refTrack.getNearestTo(dtg);
-        
-        if(nearest != null && nearest.length > 0)
+
+        if (nearest != null && nearest.length > 0)
         {
           FixWrapper nearF = (FixWrapper) nearest[0];
 
           WorldLocation nearLoc = nearF.getLocation();
-          
+
           // add the location
           WorldLocation newLoc = nearLoc.add(vector);
 
@@ -633,7 +652,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
           newTrack.add(newFW);
         }
       }
-      
+
       // lastly, regenerate course and speed for the fixes in the new track
       newTrack.calcCourseSpeed();
     }
@@ -642,6 +661,11 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         throws ExecutionException
     {
       // ok, just delete the track
+      if (_newTrack != null)
+      {
+        _layers.removeThisLayer(_newTrack);
+        _newTrack = null;
+      }
 
       return Status.OK_STATUS;
     }
