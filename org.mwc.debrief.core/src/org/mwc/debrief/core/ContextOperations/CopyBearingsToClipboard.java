@@ -68,12 +68,468 @@ import MWC.TacticalData.Fix;
 public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 {
 
+  private static class BearingList extends HashMap<HiResDate, WorldVector>
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    private final String _name;
+
+    private final Color _color;
+
+    public BearingList(final String name, final Color color)
+    {
+      _name = name;
+      _color = color;
+    }
+
+    public Color getColor()
+    {
+      return _color;
+    }
+
+    public String getName()
+    {
+      return _name;
+    }
+
+  }
+
+  private static class CopyBearingData extends CMAPOperation
+  {
+
+    private static Clipboard _clip;
+
+    private static BearingList calculateOffsets(final TrackWrapper subject,
+        final TrackWrapper refTrack)
+    {
+      final BearingList res =
+          new BearingList(subject.getName(), subject.getColor());
+
+      final Enumeration<Editable> posits = subject.getPositionIterator();
+
+      final boolean refWasInterpolated = refTrack.getInterpolatePoints();
+      refTrack.setInterpolatePoints(true);
+
+      while (posits.hasMoreElements())
+      {
+        final FixWrapper nextF = (FixWrapper) posits.nextElement();
+        final HiResDate tNow = nextF.getDateTimeGroup();
+        final Watchable[] nearest = refTrack.getNearestTo(tNow, false);
+        if (nearest != null && nearest.length > 0)
+        {
+          final FixWrapper near = (FixWrapper) nearest[0];
+          final WorldVector offset =
+              nextF.getLocation().subtract(near.getLocation());
+          res.put(tNow, offset);
+        }
+      }
+
+      refTrack.setInterpolatePoints(refWasInterpolated);
+
+      return res;
+    }
+
+    private static void writeOffsets(final BearingList offsets)
+    {
+      // create the clipboard buffer
+      _clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+
+      // store our data
+      final TransferableBearingList ourData =
+          new TransferableBearingList(offsets);
+
+      // and put it on the clipboard
+      _clip.setContents(ourData, CorePlugin.getDefault());
+    }
+
+    @SuppressWarnings("unused")
+    private final Layers _layers;
+
+    private final TrackWrapper _subject;
+
+    private final TrackWrapper _referenceTrack;
+
+    private BearingList _offsets;
+
+    public CopyBearingData(final String title, final Layers layers,
+        final TrackWrapper subject, final TrackWrapper referenceTrack)
+    {
+      super(title);
+      _layers = layers;
+      _subject = subject;
+      _referenceTrack = referenceTrack;
+    }
+
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      // ok, get ready
+      _offsets = calculateOffsets(_subject, _referenceTrack);
+
+      // did we find any?
+      if (_offsets.size() > 0)
+      {
+        writeOffsets(_offsets);
+      }
+
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      // ok, just clear the clipboard
+      _clip.setContents(new Transferable()
+      {
+        @Override
+        public Object getTransferData(final DataFlavor flavor)
+            throws UnsupportedFlavorException
+        {
+          throw new UnsupportedFlavorException(flavor);
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors()
+        {
+          return new DataFlavor[0];
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(final DataFlavor flavor)
+        {
+          return false;
+        }
+      }, CorePlugin.getDefault());
+
+      return Status.OK_STATUS;
+    }
+
+  }
+
+  private static class PasteBearingData extends CMAPOperation
+  {
+
+    private static void createPointsFor(final TrackWrapper newTrack,
+        final BearingList offsets, final TrackWrapper refTrack)
+    {
+      for (final HiResDate dtg : offsets.keySet())
+      {
+        final WorldVector vector = offsets.get(dtg);
+
+        // find nearest in the host
+        final Watchable[] nearest = refTrack.getNearestTo(dtg);
+
+        if (nearest != null && nearest.length > 0)
+        {
+          final FixWrapper nearF = (FixWrapper) nearest[0];
+
+          final WorldLocation nearLoc = nearF.getLocation();
+
+          // add the location
+          final WorldLocation newLoc = nearLoc.add(vector);
+
+          // generate the fix
+          final Fix newFix = new Fix(dtg, newLoc, 0d, 0d);
+          final FixWrapper newFW = new FixWrapper(newFix);
+
+          // store the fix
+          newTrack.add(newFW);
+        }
+      }
+
+      // lastly, regenerate course and speed for the fixes in the new track
+      newTrack.calcCourseSpeed();
+    }
+
+    private final Layers _layers;
+
+    private final TrackWrapper _referenceTrack;
+    private final BearingList _offsets;
+
+    private TrackWrapper _newTrack;
+
+    public PasteBearingData(final String title, final Layers layers,
+        final BearingList offsets, final TrackWrapper referenceTrack)
+    {
+      super(title);
+      _layers = layers;
+      _referenceTrack = referenceTrack;
+      _offsets = offsets;
+    }
+
+    @Override
+    public IStatus
+        execute(final IProgressMonitor monitor, final IAdaptable info)
+            throws ExecutionException
+    {
+      // ok, create the track
+      _newTrack = new TrackWrapper();
+      _newTrack.setName(_offsets.getName());
+      _newTrack.setColor(_offsets.getColor());
+
+      // now write the points
+      createPointsFor(_newTrack, _offsets, _referenceTrack);
+
+      // and store the track
+      _layers.addThisLayer(_newTrack);
+
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      // ok, just delete the track
+      if (_newTrack != null)
+      {
+        _layers.removeThisLayer(_newTrack);
+        _newTrack = null;
+      }
+
+      return Status.OK_STATUS;
+    }
+
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public testMe(final String val)
+    {
+      super(val);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void doTestCopyBearings() throws ExecutionException
+    {
+      final Layers layers = new Layers();
+      final TrackWrapper host = new TrackWrapper();
+      host.setName("Host");
+      final SensorWrapper sensor = new SensorWrapper("Sensor");
+      host.add(sensor);
+      layers.addThisLayer(host);
+
+      for (int i = 0; i < 60; i++)
+      {
+        final Date newDate = new Date(2018, 01, 01, 02, i * 2, 0);
+        final WorldLocation loc = new WorldLocation(12, 12 + i / 60, 0d);
+        final Fix newF = new Fix(new HiResDate(newDate.getTime()), loc, 0, 12);
+        final FixWrapper fix = new FixWrapper(newF);
+        host.add(fix);
+
+        final Date newDate2 = new Date(2018, 01, 01, 02, i * 2, 10);
+
+        // public SensorContactWrapper(final String trackName, final HiResDate dtg,
+        // final WorldDistance range, final Double bearingDegs,
+        // final WorldLocation origin, final java.awt.Color color,
+        // final String label, final int style, final String sensorName)
+        if (i % 9 != 0)
+        {
+          final SensorContactWrapper contact =
+              new SensorContactWrapper(host.getName(), new HiResDate(newDate2
+                  .getTime()), null, 12d, null, Color.red, "Some label", 1,
+                  "Sensor");
+          sensor.add(contact);
+        }
+      }
+
+      final TrackWrapper subject = new TrackWrapper();
+      subject.setName("subject");
+      layers.addThisLayer(subject);
+
+      final SensorContactWrapper[] obs =
+          new SensorContactWrapper[sensor.size()];
+      Enumeration<Editable> ele = sensor.elements();
+      int ctr = 0;
+      while (ele.hasMoreElements())
+      {
+        final SensorContactWrapper cut =
+            (SensorContactWrapper) ele.nextElement();
+        obs[ctr++] = cut;
+      }
+
+      final WorldVector offset = new WorldVector(12, 0.002, 0.0d);
+      final RelativeTMASegment seg =
+          new RelativeTMASegment(obs, offset,
+              new WorldSpeed(12, WorldSpeed.Kts), 12d, layers, Color.green);
+      subject.add(seg);
+
+      assertEquals("have valid segment", 53, seg.size());
+
+      final FixWrapper split1 = (FixWrapper) seg.getData().toArray()[12];
+      final FixWrapper split2 = (FixWrapper) seg.getData().toArray()[21];
+
+      subject.splitTrack(split1, true);
+
+      assertEquals("have legs", 2, subject.getSegments().size());
+
+      subject.splitTrack(split2, true);
+
+      assertEquals("have legs", 3, subject.getSegments().size());
+
+      final Editable[] subjects = new Editable[3];
+      int ctr2 = 0;
+      ele = subject.getSegments().elements();
+      while (ele.hasMoreElements())
+      {
+        subjects[ctr2++] = ele.nextElement();
+      }
+
+      final GenerateInfillOperation operation =
+          new GenerateInfillOperation("title", subjects, layers, subject,
+              getMyLogger(), true);
+
+      assertEquals("before infills", 3, subject.getSegments().size());
+
+      operation.execute(null, null);
+
+      assertEquals("has infills", 5, subject.getSegments().size());
+
+      // ok, now we can run the get bearings
+      final CopyBearingData oper =
+          new CopyBearingData("title", layers, subject, host);
+
+      // check bearings are on clipboard.
+      oper.execute(null, null);
+
+      // also test the paste
+    }
+
+    @SuppressWarnings("deprecation")
+    private void doTestPasteBearings()
+    {
+      final Layers layers = new Layers();
+      final TrackWrapper host = new TrackWrapper();
+      host.setName("Host");
+      final SensorWrapper sensor = new SensorWrapper("Sensor");
+      host.add(sensor);
+      layers.addThisLayer(host);
+
+      for (int i = 0; i < 60; i++)
+      {
+        final Date newDate = new Date(2018, 01, 01, 02, i * 2, 0);
+        final WorldLocation loc = new WorldLocation(12, 12 + i / 60, 0d);
+        final Fix newF = new Fix(new HiResDate(newDate.getTime()), loc, 0, 12);
+        final FixWrapper fix = new FixWrapper(newF);
+        host.add(fix);
+      }
+
+      final IMenuManager menu = new MenuManager();
+      new CopyBearingsToClipboard().generatePasteAction(menu, layers, host);
+
+      assertEquals("have items", 2, menu.getItems().length);
+      final ActionContributionItem first =
+          (ActionContributionItem) menu.getItems()[1];
+      final IAction action = first.getAction();
+
+      assertEquals("just one layer", 1, layers.size());
+
+      action.run();
+
+      assertEquals("now two layers", 2, layers.size());
+
+    }
+
+    private ErrorLogger getMyLogger()
+    {
+      return new ErrorLogger()
+      {
+
+        @Override
+        public void logError(final int status, final String text,
+            final Exception e)
+        {
+          // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void logError(final int status, final String text,
+            final Exception e, final boolean revealLog)
+        {
+          // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void logStack(final int status, final String text)
+        {
+          // TODO Auto-generated method stub
+
+        }
+      };
+    }
+
+    public void testCopyPaste() throws ExecutionException
+    {
+      doTestCopyBearings();
+      doTestPasteBearings();
+    }
+
+  }
+
+  private static class TransferableBearingList implements Transferable
+  {
+    public static DataFlavor FLAVOR = new DataFlavor(BearingList.class,
+        "BearingList");
+
+    static DataFlavor[] FLAVORS = new DataFlavor[]
+    {FLAVOR};
+
+    BearingList list; // This is the PolyLine we wrap.
+
+    public TransferableBearingList(final BearingList list)
+    {
+      this.list = list;
+    }
+
+    /** Return the wrapped PolyLine, if the flavor is right */
+    @Override
+    public Object getTransferData(final DataFlavor f)
+        throws UnsupportedFlavorException
+    {
+      if (!f.equals(FLAVOR))
+      {
+        throw new UnsupportedFlavorException(f);
+      }
+      return list;
+    }
+
+    /** Return the supported flavor */
+    @Override
+    public DataFlavor[] getTransferDataFlavors()
+    {
+      return FLAVORS;
+    }
+
+    /** Check for the one flavor we support */
+    @Override
+    public boolean isDataFlavorSupported(final DataFlavor f)
+    {
+      return f.equals(FLAVOR);
+    }
+
+  }
+
   /**
    * @param parent
    * @param theLayers
    * @param parentLayers
    * @param subjects
    */
+  @Override
   public void generate(final IMenuManager parent, final Layers theLayers,
       final Layer[] parentLayers, final Editable[] subjects)
   {
@@ -82,7 +538,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     {
       // ok, good start
 
-      Editable first = subjects[0];
+      final Editable first = subjects[0];
       if (first instanceof TrackWrapper)
       {
         final TrackWrapper track = (TrackWrapper) first;
@@ -101,23 +557,23 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       final Layers theLayers, final TrackWrapper track)
   {
     // ok, it's a track. Is it made from relative TMA segments?
-    SegmentList segments = track.getSegments();
-    Enumeration<Editable> ele = segments.elements();
+    final SegmentList segments = track.getSegments();
+    final Enumeration<Editable> ele = segments.elements();
 
     TrackWrapper host = null;
 
     while (ele.hasMoreElements())
     {
-      TrackSegment seg = (TrackSegment) ele.nextElement();
+      final TrackSegment seg = (TrackSegment) ele.nextElement();
 
       if (seg instanceof RelativeTMASegment)
       {
-        RelativeTMASegment rel = (RelativeTMASegment) seg;
-        WatchableList refTrack = rel.getReferenceTrack();
+        final RelativeTMASegment rel = (RelativeTMASegment) seg;
+        final WatchableList refTrack = rel.getReferenceTrack();
         if (refTrack == null)
         {
           // ok, show error
-          CorePlugin.logError(Status.ERROR,
+          CorePlugin.logError(IStatus.ERROR,
               "Host track for TMA leg can't be determined", null);
           break;
         }
@@ -128,7 +584,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         }
         else
         {
-          CorePlugin.logError(Status.ERROR,
+          CorePlugin.logError(IStatus.ERROR,
               "Host track for TMA leg isn't a TrackWrapper", null);
           break;
         }
@@ -144,6 +600,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       final Action convertToTrack = new Action(title)
       {
+        @Override
         public void run()
         {
           // ok, go for it.
@@ -162,17 +619,6 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       // ok - flash up the menu item
       parent.add(convertToTrack);
     }
-  }
-
-  /**
-   * put the operation firer onto the undo history. We've refactored this into a separate method so
-   * testing classes don't have to simulate the CorePlugin
-   * 
-   * @param operation
-   */
-  protected void runIt(final IUndoableOperation operation)
-  {
-    CorePlugin.run(operation);
   }
 
   private void generatePasteAction(final IMenuManager parent,
@@ -197,11 +643,11 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
           if (bearingList != null)
           {
             // ok, now check this track matches the bearings
-            Object[] dates = bearingList.keySet().toArray();
-            TimePeriod listP =
+            final Object[] dates = bearingList.keySet().toArray();
+            final TimePeriod listP =
                 new TimePeriod.BaseTimePeriod((HiResDate) dates[0],
                     (HiResDate) dates[dates.length - 1]);
-            TimePeriod trackP =
+            final TimePeriod trackP =
                 new TimePeriod.BaseTimePeriod(track.getStartDTG(), track
                     .getEndDTG());
 
@@ -213,6 +659,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
               final Action convertToTrack = new Action(title)
               {
+                @Override
                 public void run()
                 {
                   // ok, go for it.
@@ -237,444 +684,21 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
       catch (UnsupportedFlavorException | IOException e)
       {
-        CorePlugin.logError(Status.ERROR,
+        CorePlugin.logError(IStatus.ERROR,
             "Problem creating new track from clipboard", e);
       }
     }
 
   }
 
-  private static class CopyBearingData extends CMAPOperation
+  /**
+   * put the operation firer onto the undo history. We've refactored this into a separate method so
+   * testing classes don't have to simulate the CorePlugin
+   * 
+   * @param operation
+   */
+  protected void runIt(final IUndoableOperation operation)
   {
-
-    private static Clipboard _clip;
-    @SuppressWarnings("unused")
-    private final Layers _layers;
-    private final TrackWrapper _subject;
-
-    private final TrackWrapper _referenceTrack;
-
-    private BearingList _offsets;
-
-    public CopyBearingData(final String title, final Layers layers,
-        final TrackWrapper subject, final TrackWrapper referenceTrack)
-    {
-      super(title);
-      _layers = layers;
-      _subject = subject;
-      _referenceTrack = referenceTrack;
-    }
-
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      // ok, get ready
-      _offsets = calculateOffsets(_subject, _referenceTrack);
-
-      // did we find any?
-      if (_offsets.size() > 0)
-      {
-        writeOffsets(_offsets);
-      }
-
-      return Status.OK_STATUS;
-    }
-
-    private static BearingList calculateOffsets(TrackWrapper subject,
-        TrackWrapper refTrack)
-    {
-      BearingList res = new BearingList(subject.getName(), subject.getColor());
-
-      Enumeration<Editable> posits = subject.getPositionIterator();
-
-      final boolean refWasInterpolated = refTrack.getInterpolatePoints();
-      refTrack.setInterpolatePoints(true);
-
-      while (posits.hasMoreElements())
-      {
-        FixWrapper nextF = (FixWrapper) posits.nextElement();
-        HiResDate tNow = nextF.getDateTimeGroup();
-        Watchable[] nearest = refTrack.getNearestTo(tNow, false);
-        if (nearest != null && nearest.length > 0)
-        {
-          FixWrapper near = (FixWrapper) nearest[0];
-          WorldVector offset = nextF.getLocation().subtract(near.getLocation());
-          res.put(tNow, offset);
-        }
-      }
-
-      refTrack.setInterpolatePoints(refWasInterpolated);
-
-      return res;
-    }
-
-    private static void writeOffsets(BearingList offsets)
-    {
-      // create the clipboard buffer
-      _clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      // store our data
-      TransferableBearingList ourData = new TransferableBearingList(offsets);
-
-      // and put it on the clipboard
-      _clip.setContents(ourData, CorePlugin.getDefault());
-    }
-
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      // ok, just clear the clipboard
-      _clip.setContents(new Transferable()
-      {
-        public DataFlavor[] getTransferDataFlavors()
-        {
-          return new DataFlavor[0];
-        }
-
-        public boolean isDataFlavorSupported(DataFlavor flavor)
-        {
-          return false;
-        }
-
-        public Object getTransferData(DataFlavor flavor)
-            throws UnsupportedFlavorException
-        {
-          throw new UnsupportedFlavorException(flavor);
-        }
-      }, CorePlugin.getDefault());
-
-      return Status.OK_STATUS;
-    }
-
-  }
-
-  private static class BearingList extends HashMap<HiResDate, WorldVector>
-  {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    private final String _name;
-
-    private final Color _color;
-
-    public BearingList(final String name, final Color color)
-    {
-      _name = name;
-      _color = color;
-    }
-
-    public String getName()
-    {
-      return _name;
-    }
-
-    public Color getColor()
-    {
-      return _color;
-    }
-
-  }
-
-  private static class TransferableBearingList implements Transferable
-  {
-    public static DataFlavor FLAVOR = new DataFlavor(BearingList.class,
-        "BearingList");
-
-    static DataFlavor[] FLAVORS = new DataFlavor[]
-    {FLAVOR};
-
-    BearingList list; // This is the PolyLine we wrap.
-
-    public TransferableBearingList(BearingList list)
-    {
-      this.list = list;
-    }
-
-    /** Return the supported flavor */
-    public DataFlavor[] getTransferDataFlavors()
-    {
-      return FLAVORS;
-    }
-
-    /** Check for the one flavor we support */
-    public boolean isDataFlavorSupported(DataFlavor f)
-    {
-      return f.equals(FLAVOR);
-    }
-
-    /** Return the wrapped PolyLine, if the flavor is right */
-    public Object getTransferData(DataFlavor f)
-        throws UnsupportedFlavorException
-    {
-      if (!f.equals(FLAVOR))
-        throw new UnsupportedFlavorException(f);
-      return list;
-    }
-
-  }
-
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
-    @SuppressWarnings("deprecation")
-    private void doTestPasteBearings()
-    {
-      Layers layers = new Layers();
-      TrackWrapper host = new TrackWrapper();
-      host.setName("Host");
-      SensorWrapper sensor = new SensorWrapper("Sensor");
-      host.add(sensor);
-      layers.addThisLayer(host);
-
-      for (int i = 0; i < 60; i++)
-      {
-        Date newDate = new Date(2018, 01, 01, 02, i * 2, 0);
-        WorldLocation loc = new WorldLocation(12, 12 + i / 60, 0d);
-        Fix newF = new Fix(new HiResDate(newDate.getTime()), loc, 0, 12);
-        FixWrapper fix = new FixWrapper(newF);
-        host.add(fix);
-      }
-
-      IMenuManager menu = new MenuManager();
-      new CopyBearingsToClipboard().generatePasteAction(menu, layers, host);
-
-      assertEquals("have items", 2, menu.getItems().length);
-      ActionContributionItem first =
-          (ActionContributionItem) menu.getItems()[1];
-      IAction action = first.getAction();
-
-      assertEquals("just one layer", 1, layers.size());
-
-      action.run();
-
-      assertEquals("now two layers", 2, layers.size());
-
-    }
-
-    public void testCopyPaste() throws ExecutionException
-    {
-      doTestCopyBearings();
-      doTestPasteBearings();
-    }
-    
-    @SuppressWarnings("deprecation")
-    private void doTestCopyBearings() throws ExecutionException
-    {
-      Layers layers = new Layers();
-      TrackWrapper host = new TrackWrapper();
-      host.setName("Host");
-      SensorWrapper sensor = new SensorWrapper("Sensor");
-      host.add(sensor);
-      layers.addThisLayer(host);
-
-      for (int i = 0; i < 60; i++)
-      {
-        Date newDate = new Date(2018, 01, 01, 02, i * 2, 0);
-        WorldLocation loc = new WorldLocation(12, 12 + i / 60, 0d);
-        Fix newF = new Fix(new HiResDate(newDate.getTime()), loc, 0, 12);
-        FixWrapper fix = new FixWrapper(newF);
-        host.add(fix);
-
-        Date newDate2 = new Date(2018, 01, 01, 02, i * 2, 10);
-
-        // public SensorContactWrapper(final String trackName, final HiResDate dtg,
-        // final WorldDistance range, final Double bearingDegs,
-        // final WorldLocation origin, final java.awt.Color color,
-        // final String label, final int style, final String sensorName)
-        if (i % 9 != 0)
-        {
-          SensorContactWrapper contact =
-              new SensorContactWrapper(host.getName(), new HiResDate(newDate2
-                  .getTime()), null, 12d, null, Color.red, "Some label", 1,
-                  "Sensor");
-          sensor.add(contact);
-        }
-      }
-
-      TrackWrapper subject = new TrackWrapper();
-      subject.setName("subject");
-      layers.addThisLayer(subject);
-
-      SensorContactWrapper[] obs = new SensorContactWrapper[sensor.size()];
-      Enumeration<Editable> ele = sensor.elements();
-      int ctr = 0;
-      while (ele.hasMoreElements())
-      {
-        SensorContactWrapper cut = (SensorContactWrapper) ele.nextElement();
-        obs[ctr++] = cut;
-      }
-
-      WorldVector offset = new WorldVector(12, 0.002, 0.0d);
-      RelativeTMASegment seg =
-          new RelativeTMASegment(obs, offset,
-              new WorldSpeed(12, WorldSpeed.Kts), 12d, layers, Color.green);
-      subject.add(seg);
-
-      assertEquals("have valid segment", 53, seg.size());
-
-      FixWrapper split1 = (FixWrapper) seg.getData().toArray()[12];
-      FixWrapper split2 = (FixWrapper) seg.getData().toArray()[21];
-
-      subject.splitTrack(split1, true);
-
-      assertEquals("have legs", 2, subject.getSegments().size());
-
-      subject.splitTrack(split2, true);
-
-      assertEquals("have legs", 3, subject.getSegments().size());
-
-      Editable[] subjects = new Editable[3];
-      int ctr2 = 0;
-      ele = subject.getSegments().elements();
-      while (ele.hasMoreElements())
-      {
-        subjects[ctr2++] = ele.nextElement();
-      }
-
-      GenerateInfillOperation operation =
-          new GenerateInfillOperation("title", subjects, layers, subject,
-              getMyLogger(), true);
-
-      assertEquals("before infills", 3, subject.getSegments().size());
-
-      operation.execute(null, null);
-
-      assertEquals("has infills", 5, subject.getSegments().size());
-
-      // ok, now we can run the get bearings
-      CopyBearingData oper =
-          new CopyBearingData("title", layers, subject, host);
-
-      // check bearings are on clipboard.
-      oper.execute(null, null);
-
-      // also test the paste
-    }
-
-    private ErrorLogger getMyLogger()
-    {
-      return new ErrorLogger()
-      {
-
-        @Override
-        public void logStack(int status, String text)
-        {
-          // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void logError(int status, String text, Exception e,
-            boolean revealLog)
-        {
-          // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void logError(int status, String text, Exception e)
-        {
-          // TODO Auto-generated method stub
-
-        }
-      };
-    }
-
-  }
-
-  private static class PasteBearingData extends CMAPOperation
-  {
-
-    private final Layers _layers;
-    private final TrackWrapper _referenceTrack;
-
-    private final BearingList _offsets;
-    private TrackWrapper _newTrack;
-
-    public PasteBearingData(final String title, final Layers layers,
-        final BearingList offsets, final TrackWrapper referenceTrack)
-    {
-      super(title);
-      _layers = layers;
-      _referenceTrack = referenceTrack;
-      _offsets = offsets;
-    }
-
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      // ok, create the track
-      _newTrack = new TrackWrapper();
-      _newTrack.setName(_offsets.getName());
-      _newTrack.setColor(_offsets.getColor());
-
-      // now write the points
-      createPointsFor(_newTrack, _offsets, _referenceTrack);
-
-      // and store the track
-      _layers.addThisLayer(_newTrack);
-
-      return Status.OK_STATUS;
-    }
-
-    private static void createPointsFor(TrackWrapper newTrack,
-        BearingList offsets, TrackWrapper refTrack)
-    {
-      for (HiResDate dtg : offsets.keySet())
-      {
-        final WorldVector vector = offsets.get(dtg);
-
-        // find nearest in the host
-        Watchable[] nearest = refTrack.getNearestTo(dtg);
-
-        if (nearest != null && nearest.length > 0)
-        {
-          FixWrapper nearF = (FixWrapper) nearest[0];
-
-          WorldLocation nearLoc = nearF.getLocation();
-
-          // add the location
-          WorldLocation newLoc = nearLoc.add(vector);
-
-          // generate the fix
-          Fix newFix = new Fix(dtg, newLoc, 0d, 0d);
-          FixWrapper newFW = new FixWrapper(newFix);
-
-          // store the fix
-          newTrack.add(newFW);
-        }
-      }
-
-      // lastly, regenerate course and speed for the fixes in the new track
-      newTrack.calcCourseSpeed();
-    }
-
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      // ok, just delete the track
-      if (_newTrack != null)
-      {
-        _layers.removeThisLayer(_newTrack);
-        _newTrack = null;
-      }
-
-      return Status.OK_STATUS;
-    }
-
+    CorePlugin.run(operation);
   }
 }
