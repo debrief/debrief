@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -22,18 +24,25 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.data.time.DateRange;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.freq.DopplerCurveFinMath;
 import org.mwc.debrief.track_shift.freq.IDopplerCurve;
 
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.JFreeChart.ColouredDataItem;
+import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
@@ -116,6 +125,8 @@ public class FrequencyResidualsView extends BaseStackedDotsView
       // get the visible time range
       DateRange curRange = (DateRange) _linePlot.getDomainAxis().getRange();
 
+      SensorWrapper subjectSensor = null;
+
       // loop through the measured data
       Iterator<?> items = measured.getItems().iterator();
       while (items.hasNext())
@@ -125,6 +136,12 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         {
           times.add(next.getPeriod().getMiddleMillisecond());
           freqs.add(next.getValue().doubleValue());
+
+          if (subjectSensor == null)
+          {
+            SensorContactWrapper cut = (SensorContactWrapper) next.getPayload();
+            subjectSensor = cut.getSensor();
+          }
         }
       }
 
@@ -137,13 +154,61 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         TimeSeries calculatedData = calcSeries(curve, curRange);
         lineData.addSeries(calculatedData);
 
-        showMessage("Calculate f-nought", "F=Nought is:"
-            + curve.inflectionFreq());
+        // get the base freq
+        double baseFreq = curve.inflectionFreq();
 
-        // TODO: update the sensor
+        // and the marker at the new value
+        final Marker target = new ValueMarker(baseFreq);
+        target.setPaint(Color.DARK_GRAY);
+        target.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND,
+            BasicStroke.JOIN_ROUND, 1.0f, new float[]
+            {10.0f, 6.0f}, 0.0f));
+        target.setLabel("Target Price");
+        target.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+        target.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+        _linePlot.addRangeMarker(target);
 
-        // and remove the curve
+        // what's the current frequency?
+        final double oldFreq;
+
+        String freqTxt = GeneralFormat.formatTwoDecimalPlaces(baseFreq);
+        String message;
+        String fMessage = "F-Nought is:" + freqTxt;
+        if (subjectSensor != null)
+        {
+          oldFreq = subjectSensor.getBaseFrequency();
+          message =
+              fMessage + "\n" + "Updating base frequency for "
+                  + subjectSensor.getName();
+        }
+        else
+        {
+          oldFreq = Double.NaN;
+          message = fMessage;
+        }
+        showMessage("Calculate f-nought", message);
+
+        // update the sensor
+        final boolean freqChanged;
+        if (subjectSensor != null && baseFreq != oldFreq)
+        {
+          subjectSensor.setBaseFrequency(baseFreq);
+          freqChanged = true;
+        }
+        else
+        {
+          freqChanged = false;
+        }
+
+        // and remove the curves
         lineData.removeSeries(calculatedData);
+        _linePlot.removeRangeMarker(target);
+
+        // force recalculation, if we've changed the freq
+        if (freqChanged)
+        {
+          updateData(true);
+        }
       }
     }
   }
