@@ -81,23 +81,27 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
         final IWorkbenchPage page = win.getActivePage();
         final IEditorPart editor = page.getActiveEditor();
-
-        IContentOutlinePage outline =
-            (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
-        if (outline != null)
+        
+        if (editor != null)
         {
-          // now set the selection
-          IStructuredSelection str = new StructuredSelection(selection);
+          IContentOutlinePage outline =
+              (IContentOutlinePage) editor
+                  .getAdapter(IContentOutlinePage.class);
+          if (outline != null)
+          {
+            // now set the selection
+            IStructuredSelection str = new StructuredSelection(selection);
 
-          outline.setSelection(str);
+            outline.setSelection(str);
 
-          // see uf we can expand the selection
-          // if (outline instanceof PlotOutlinePage)
-          // {
-          // PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
-          // EditableWrapper ew = (EditableWrapper) str.getFirstElement();
-          // plotOutline.editableSelected(str, ew);
-          // }
+            // see uf we can expand the selection
+            // if (outline instanceof PlotOutlinePage)
+            // {
+            // PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
+            // EditableWrapper ew = (EditableWrapper) str.getFirstElement();
+            // plotOutline.editableSelected(str, ew);
+            // }
+          }
         }
       }
 
