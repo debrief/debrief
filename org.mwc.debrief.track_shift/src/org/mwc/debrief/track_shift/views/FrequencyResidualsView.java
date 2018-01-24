@@ -212,8 +212,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
   @Override
   protected String formatValue(final double value)
   {
-    return MWC.Utilities.TextFormatting.GeneralFormat
-        .formatTwoDecimalPlaces(value);
+    return GeneralFormat.formatTwoDecimalPlaces(value);
   }
 
   @Override
