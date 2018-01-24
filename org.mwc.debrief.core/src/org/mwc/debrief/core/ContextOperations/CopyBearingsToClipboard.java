@@ -319,7 +319,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     @SuppressWarnings("deprecation")
-    private void doTestCopyBearings() throws ExecutionException
+    private void doTestCopyBearings(int startIndex, int endIndex) throws ExecutionException
     {
       final Layers layers = new Layers();
       final TrackWrapper host = new TrackWrapper();
@@ -328,7 +328,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       host.add(sensor);
       layers.addThisLayer(host);
 
-      for (int i = 0; i < 60; i++)
+      for (int i = startIndex; i < endIndex; i++)
       {
         final Date newDate = new Date(2018, 01, 01, 02, i * 2, 0);
         final WorldLocation loc = new WorldLocation(12, 12 + i / 60, 0d);
@@ -409,12 +409,10 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       // check bearings are on clipboard.
       oper.execute(null, null);
-
-      // also test the paste
     }
 
     @SuppressWarnings("deprecation")
-    private void doTestPasteBearings()
+    private void doTestPasteBearings(final int startIndex, final int endIndex, final int numPoints, Object menuItems)
     {
       final Layers layers = new Layers();
       final TrackWrapper host = new TrackWrapper();
@@ -423,7 +421,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       host.add(sensor);
       layers.addThisLayer(host);
 
-      for (int i = 0; i < 60; i++)
+      for (int i = startIndex; i < endIndex; i++)
       {
         final Date newDate = new Date(2018, 01, 01, 02, i * 2, 0);
         final WorldLocation loc = new WorldLocation(12, 12 + i / 60, 0d);
@@ -435,7 +433,14 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       final IMenuManager menu = new MenuManager();
       new CopyBearingsToClipboard().generatePasteAction(menu, layers, host);
 
-      assertEquals("have items", 2, menu.getItems().length);
+      assertEquals("have items", menuItems, menu.getItems().length);
+      
+      if(menu.getItems().length == 0)
+      {
+        // ok, we didn't create menu items, just leave
+        return;
+      }
+      
       final ActionContributionItem first =
           (ActionContributionItem) menu.getItems()[1];
       final IAction action = first.getAction();
@@ -445,6 +450,18 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       action.run();
 
       assertEquals("now two layers", 2, layers.size());
+      
+      TrackWrapper dropped = (TrackWrapper) layers.findLayer("subject");
+      assertNotNull("found new layer", dropped);
+      
+      int ctr = 0;
+      Enumeration<Editable> iter = dropped.getPositionIterator();
+      while(iter.hasMoreElements())
+      {
+        ctr++;
+        iter.nextElement();
+      }
+      assertEquals("correct size", numPoints, ctr);
 
     }
 
@@ -477,8 +494,26 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
     public void testCopyPaste() throws ExecutionException
     {
-      doTestCopyBearings();
-      doTestPasteBearings();
+      doTestCopyBearings(0, 60);
+      doTestPasteBearings(0, 60, 56, 2);
+    }
+
+    public void testCopyTrackNoOverlap() throws ExecutionException
+    {
+      doTestCopyBearings(0, 60);
+      doTestPasteBearings(20, 70, 0, 0);
+    }
+
+    public void testCopyTrackLate() throws ExecutionException
+    {
+      doTestCopyBearings(0, 60);
+      doTestPasteBearings(5, 70, 52, 2);
+    }
+    
+    public void testCopyTrackEarly() throws ExecutionException
+    {
+      doTestCopyBearings(10, 69);
+      doTestPasteBearings(5, 55, 44, 2);
     }
 
   }
