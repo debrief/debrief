@@ -77,6 +77,8 @@ import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
+  public static final String MEASURED_DATASET = "Measured";
+
   private static class TargetDoublet
   {
 
@@ -1697,7 +1699,7 @@ public final class StackedDotHelper
     // produce a dataset for each track
     final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
 
-    final TimeSeries measuredValues = new TimeSeries("Measured");
+    final TimeSeries measuredValues = new TimeSeries(MEASURED_DATASET);
     // final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeries predictedValues = new TimeSeries("Predicted");
     final TimeSeries baseValues = new TimeSeries("Base");
@@ -1758,7 +1760,7 @@ public final class StackedDotHelper
           }
 
           final ColouredDataItem bFreq =
-              new ColouredDataItem(thisMilli, baseFreq, thisColor, !newSensor,
+              new ColouredDataItem(thisMilli, baseFreq, thisColor.darker(), !newSensor,
                   null, true, true);
           baseValues.addOrUpdate(bFreq);
 
