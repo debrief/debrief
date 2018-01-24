@@ -30,7 +30,8 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
-import org.mwc.debrief.track_shift.freq.DopplerCurve;
+import org.mwc.debrief.track_shift.freq.DopplerCurveFinMath;
+import org.mwc.debrief.track_shift.freq.IDopplerCurve;
 
 import MWC.GUI.JFreeChart.ColouredDataItem;
 
@@ -130,7 +131,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
       if (!times.isEmpty())
       {
         // generate the doppler curve object
-        final DopplerCurve curve = new DopplerCurve(times, freqs);
+        final IDopplerCurve curve = new DopplerCurveFinMath(times, freqs);
 
         // plot the curve
         TimeSeries calculatedData = calcSeries(curve, curRange);
@@ -159,7 +160,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     });
   }
 
-  private TimeSeries calcSeries(DopplerCurve curve, DateRange curRange)
+  private TimeSeries calcSeries(IDopplerCurve curve, DateRange curRange)
   {
     TimeSeries res = new TimeSeries("Fitted curve");
     long start = curRange.getLowerMillis();
