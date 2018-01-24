@@ -298,10 +298,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
       currentIter = null;
     }
 
-    /** special class, used when we don't contain any data
+    /**
+     * special class, used when we don't contain any data
      * 
      * @author Ian
-     *
+     * 
      */
     private static class EmptyIterator implements Enumeration<Editable>
     {
@@ -318,8 +319,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         return null;
       }
     }
-    
-    
+
     public WrappedIterators(final SegmentList segments)
     {
       final Enumeration<Editable> ele = segments.elements();
@@ -331,7 +331,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
       // if we have some data, return the first. Else, return an
       // empty iterator
-      currentIter = lists.isEmpty() ? new EmptyIterator() : this.lists.get(0); 
+      currentIter = lists.isEmpty() ? new EmptyIterator() : this.lists.get(0);
     }
 
     public void add(final Enumeration<MWC.GUI.Editable> item)
@@ -4212,9 +4212,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             final long hisDate = nextF.getDTG().getDate().getTime();
             if (hisDate >= nextMarker)
             {
+              // show this item
               setter.execute(nextF, true);
-              // ok, move on to the next one
-              nextMarker += freqMillis;
+
+              // hmm, if we've just passed a huge gap, we may need to add
+              // a few intervals
+              while (nextMarker <= hisDate)
+              {
+                // carry on moving the next marker right
+                nextMarker += freqMillis;
+              }
             }
           }
         }
