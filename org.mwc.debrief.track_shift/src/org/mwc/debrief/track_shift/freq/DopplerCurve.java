@@ -1,9 +1,6 @@
 package org.mwc.debrief.track_shift.freq;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
 import org.apache.commons.math3.analysis.solvers.BisectionSolver;
 import org.apache.commons.math3.fitting.AbstractCurveFitter;
@@ -13,7 +10,7 @@ import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
 import org.apache.commons.math3.linear.DiagonalMatrix;
 
-public class DopplerCurve
+public class DopplerCurve implements IDopplerCurve
 {
 
   /**
@@ -22,6 +19,7 @@ public class DopplerCurve
    * @author Ian
    * 
    */
+  @SuppressWarnings("unused")
   private static class DopplerCurveFitter extends AbstractCurveFitter
   {
 
@@ -34,22 +32,22 @@ public class DopplerCurve
       final double[] weights = new double[len];
 
       int i = 0;
-      for (final WeightedObservedPoint point : points)
+      for (WeightedObservedPoint point : points)
       {
         target[i] = point.getY();
         weights[i] = point.getWeight();
         i += 1;
       }
 
-      final AbstractCurveFitter.TheoreticalValuesFunction model =
+      AbstractCurveFitter.TheoreticalValuesFunction model =
           new AbstractCurveFitter.TheoreticalValuesFunction(
               new ScalableSigmoid(), points);
 
-      final LeastSquaresBuilder lsb = new LeastSquaresBuilder();
-      lsb.maxEvaluations(100000);
-      lsb.maxIterations(100000);
+      LeastSquaresBuilder lsb = new LeastSquaresBuilder();
+      lsb.maxEvaluations(1000000);
+      lsb.maxIterations(1000000);
       lsb.start(new double[]
-      {1.0, 1.0, 1.0, 1.0});
+      {1.0, -0.5, 1.0, 1.0});
       lsb.target(target);
       lsb.weight(new DiagonalMatrix(weights));
       lsb.model(model.getModelFunction(), model.getModelFunctionJacobian());
@@ -58,23 +56,40 @@ public class DopplerCurve
 
   }
 
-  /**
-   * times of samples
-   * 
-   */
-  private final ArrayList<Long> _times;
+  private static class FourPLCurveFitter extends AbstractCurveFitter
+  {
+    @Override
+    protected LeastSquaresProblem getProblem(
+        final Collection<WeightedObservedPoint> points)
+    {
+      final int len = points.size();
+      final double[] target = new double[len];
+      final double[] weights = new double[len];
 
-  /**
-   * measured frequencies
-   * 
-   */
-  private final ArrayList<Double> _freqs;
+      int i = 0;
+      for (WeightedObservedPoint point : points)
+      {
+        target[i] = point.getY();
+        weights[i] = point.getWeight();
+        i += 1;
+      }
 
-  /**
-   * use the first time value as an offset
-   * 
-   */
-  private final long _startTime;
+      AbstractCurveFitter.TheoreticalValuesFunction model =
+          new AbstractCurveFitter.TheoreticalValuesFunction(
+              new FourParameterLogistic(), points);
+
+      LeastSquaresBuilder lsb = new LeastSquaresBuilder();
+      lsb.maxEvaluations(1000000);
+      lsb.maxIterations(1000000);
+      lsb.start(new double[]
+      {1.0, -0.5, 1.0, 1.0});
+      lsb.target(target);
+      lsb.weight(new DiagonalMatrix(weights));
+      lsb.model(model.getModelFunction(), model.getModelFunctionJacobian());
+      return lsb.build();
+    }
+
+  }
 
   /**
    * time stamp at inflection point
@@ -91,14 +106,8 @@ public class DopplerCurve
    */
   private final double[] _modelParameters;
 
-  /**
-   * scaling constant to prevent
-   * "LevenbergMarquardtOptimizer unable to perform Q.R decomposition on the ...x... jacobian matrix"
-   * error due to very large numbers on time stamps.
-   * See:https://stackoverflow.com/questions/19116987
-   * /levenbergmarquardtoptimizer-unable-to-perform-q-r-decomposition-on-the-107x2-jac
-   */
-  private static final double scaler = 1e5;
+  private final Normaliser _timeNormaliser;
+  private final Normaliser _freqNormaliser;
 
   public DopplerCurve(final ArrayList<Long> times, final ArrayList<Double> freqs)
   {
@@ -113,71 +122,90 @@ public class DopplerCurve
       throw new IllegalArgumentException("The input datasets cannot be empty");
     }
 
-    _times = times;
-    _freqs = freqs;
-    final int sampleCount = times.size();
+    // convert the times to doubles
+    ArrayList<Double> dTimes = new ArrayList<Double>();
+    for (Long t : times)
+    {
+      dTimes.add((double) t);
+    }
+    _timeNormaliser = new Normaliser(dTimes, false);
+    _freqNormaliser = new Normaliser(freqs, true);
 
-    // change the times, so they start at zero (to keep time parameters small)
-    _startTime = _times.get(0);
+    final int sampleCount = times.size();
 
     // ok, collate the data
     final WeightedObservedPoints obs = new WeightedObservedPoints();
+
     for (int i = 0; i < sampleCount; i++)
     {
-      
-      obs.add((_times.get(i) - _startTime) / scaler, _freqs.get(i));
-      
-      long thisT = _times.get(i);
-      Date newD = new Date(thisT);
-      DateFormat df = new SimpleDateFormat("HH:mm:ss");
-      
-      
-      System.out.println(df.format(thisT) + ", " +  _freqs.get(i));
+      double time = _timeNormaliser.normalise(dTimes.get(i));
+      double freq = _freqNormaliser.normalise(freqs.get(i));
+      obs.add(time, freq);
+      System.out.println(time + ", " + freq);
     }
 
     // now Instantiate a parametric sigmoid fitter.
-    final AbstractCurveFitter fitter = new DopplerCurveFitter();
+    // final AbstractCurveFitter fitter = new DopplerCurveFitter(); // ***
+    final AbstractCurveFitter fitter = new FourPLCurveFitter(); // ***
 
     // Retrieve fitted parameters (a,b,c,d) for the sigmoid model: d + (c/(1+e^(a*x+b)))
     final double[] coeff = fitter.fit(obs.toList());
 
+    // --- checking for inflection point ---
     // construct the second order derivative of the sigmoid with this parameters
-    final SigmoidSecondDerivative derivativeFunc =
-        new SigmoidSecondDerivative();
-    derivativeFunc.coeff = coeff;
+    // SigmoidSecondDerivative derivativeFunc = new SigmoidSecondDerivative(); // ***
+    FourParameterLogisticSecondDrivative derivativeFunc =
+        new FourParameterLogisticSecondDrivative(coeff); // ***
 
     // use bisection solver to find the zero crossing point of derivative
-    final BisectionSolver bs = new BisectionSolver(1.0e-12, 1.0e-8);
-    final double root =
-        bs.solve(1000, derivativeFunc, 0, (_times.get(sampleCount - 1) - _startTime) / scaler,
-            (_times.get(sampleCount / 2)- _startTime) / scaler);
+    BisectionSolver bs = new BisectionSolver(1.0e-12, 1.0e-8);
+    double root = bs.solve(1000000, derivativeFunc, 0, 1, 0.5);
 
     // and store the equation parameters
     _modelParameters = coeff;
 
-    _inflectionTime = (long) (root * scaler) + _startTime;
+    _inflectionTime = (long) _timeNormaliser.deNormalise(root); // taking into account
+                                                                // that time is reversed
     _inflectionFreq = valueAt(_inflectionTime);
   }
 
+  /* (non-Javadoc)
+   * @see IDopplerCurve#inflectionFreq()
+   */
+  @Override
   public double inflectionFreq()
   {
     return _inflectionFreq;
   }
 
+  /* (non-Javadoc)
+   * @see IDopplerCurve#inflectionTime()
+   */
+  @Override
   public long inflectionTime()
   {
-    return _inflectionTime ;
+    return _inflectionTime;
   }
 
-  /**
-   * calculate the value on the curve at this time
-   * 
-   * @param t
-   *          time
-   * @return frequency at this time
+  /* (non-Javadoc)
+   * @see IDopplerCurve#valueAt(long)
    */
+  @Override
   public double valueAt(final long t)
   {
-    return new ScalableSigmoid().value( (t - _startTime) / scaler, _modelParameters);
+    double normalised = _timeNormaliser.normalise(t);
+    return new ScalableSigmoid().value(normalised, _modelParameters);
   }
+  
+  @Override
+  public void printCoords()
+  {
+    final double[] coords = _modelParameters;
+    for (int i = 0; i < coords.length; i++)
+    {
+      System.out.print(coords[i] + " , ");
+    }
+    System.out.println();
+  }
+
 }
