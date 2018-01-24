@@ -278,7 +278,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     {
       // ok, create the track
       _newTrack = new TrackWrapper();
-      _newTrack.setName(_offsets.getName());
+      _newTrack.setName(_layers.createUniqueLayerName(_offsets.getName()));
       _newTrack.setColor(_offsets.getColor());
 
       // now write the points
@@ -319,7 +319,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     @SuppressWarnings("deprecation")
-    private void doTestCopyBearings(int startIndex, int endIndex) throws ExecutionException
+    private void doTestCopyBearings(int startIndex, int endIndex)
+        throws ExecutionException
     {
       final Layers layers = new Layers();
       final TrackWrapper host = new TrackWrapper();
@@ -412,7 +413,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     @SuppressWarnings("deprecation")
-    private void doTestPasteBearings(final int startIndex, final int endIndex, final int numPoints, Object menuItems)
+    private void doTestPasteBearings(final int startIndex, final int endIndex,
+        final int numPoints, Object menuItems)
     {
       final Layers layers = new Layers();
       final TrackWrapper host = new TrackWrapper();
@@ -434,13 +436,13 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       new CopyBearingsToClipboard().generatePasteAction(menu, layers, host);
 
       assertEquals("have items", menuItems, menu.getItems().length);
-      
-      if(menu.getItems().length == 0)
+
+      if (menu.getItems().length == 0)
       {
         // ok, we didn't create menu items, just leave
         return;
       }
-      
+
       final ActionContributionItem first =
           (ActionContributionItem) menu.getItems()[1];
       final IAction action = first.getAction();
@@ -450,13 +452,13 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       action.run();
 
       assertEquals("now two layers", 2, layers.size());
-      
+
       TrackWrapper dropped = (TrackWrapper) layers.findLayer("subject");
       assertNotNull("found new layer", dropped);
-      
+
       int ctr = 0;
       Enumeration<Editable> iter = dropped.getPositionIterator();
-      while(iter.hasMoreElements())
+      while (iter.hasMoreElements())
       {
         ctr++;
         iter.nextElement();
@@ -509,7 +511,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       doTestCopyBearings(0, 60);
       doTestPasteBearings(5, 70, 52, 2);
     }
-    
+
     public void testCopyTrackEarly() throws ExecutionException
     {
       doTestCopyBearings(10, 69);
@@ -591,7 +593,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
   }
 
-  private void generateCopyAction(final IMenuManager parent, final TrackWrapper track)
+  private void generateCopyAction(final IMenuManager parent,
+      final TrackWrapper track)
   {
     // ok, it's a track. Is it made from relative TMA segments?
     final SegmentList segments = track.getSegments();
