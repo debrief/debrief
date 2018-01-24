@@ -6,7 +6,7 @@
 	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
 	</Environment>
 	<Participants>
-		<Surface Name="FisherOneB">
+		<Surface Name="NONSUCH_OTG">
 			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE"></Category>
 			<SensorFit>
 				<TypedCookieSensor ProducesRange="false">
@@ -109,7 +109,7 @@
 				<TurningCircle Value="400" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
-		<Surface Name="SearchOneB" PaintDecisions="true">
+		<Surface Name="SearchOne_OTG" PaintDecisions="true">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
 				<TypedCookieSensor DetectionIntervalMillis="10000"
