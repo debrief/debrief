@@ -4212,8 +4212,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
             final long hisDate = nextF.getDTG().getDate().getTime();
             if (hisDate >= nextMarker)
             {
-              // show this item
-              setter.execute(nextF, true);
+              // hmm, has there been a large jump?
+              if(hisDate - nextMarker <= freqMillis)
+              {
+                // no. Ok, show this item.  If there's a larger
+                // jump, we don't automatically show this item,
+                // it's better to find the next marker time.
+                setter.execute(nextF, true);
+              }
 
               // hmm, if we've just passed a huge gap, we may need to add
               // a few intervals
