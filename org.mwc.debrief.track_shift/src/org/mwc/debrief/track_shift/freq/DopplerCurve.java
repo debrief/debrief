@@ -107,7 +107,6 @@ public class DopplerCurve implements IDopplerCurve
   private final double[] _modelParameters;
 
   private final Normaliser _timeNormaliser;
-  private final Normaliser _freqNormaliser;
 
   public DopplerCurve(final ArrayList<Long> times, final ArrayList<Double> freqs)
   {
@@ -129,7 +128,7 @@ public class DopplerCurve implements IDopplerCurve
       dTimes.add((double) t);
     }
     _timeNormaliser = new Normaliser(dTimes, false);
-    _freqNormaliser = new Normaliser(freqs, true);
+    final Normaliser freqNormaliser = new Normaliser(freqs, true);
 
     final int sampleCount = times.size();
 
@@ -139,7 +138,7 @@ public class DopplerCurve implements IDopplerCurve
     for (int i = 0; i < sampleCount; i++)
     {
       double time = _timeNormaliser.normalise(dTimes.get(i));
-      double freq = _freqNormaliser.normalise(freqs.get(i));
+      double freq = freqNormaliser.normalise(freqs.get(i));
       obs.add(time, freq);
       System.out.println(time + ", " + freq);
     }

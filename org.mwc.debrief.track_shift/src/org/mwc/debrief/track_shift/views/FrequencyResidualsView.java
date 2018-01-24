@@ -54,31 +54,6 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     super(false, true);
   }
 
-  protected String getUnits()
-  {
-    return "Hz";
-  }
-
-  protected String getType()
-  {
-    return "Frequency";
-  }
-
-  protected void updateData(final boolean updateDoublets)
-  {
-    // note: we now ignore the parent doublets value.
-    // this is because we need to regenerate the target fix each time.
-    // For frequency data the target fix is interpolated - this means
-    // it doesn't update as we drag the solution. We need to
-    // regenerate the interpolated fix, to ensure we're using up-to-date
-    // values
-    boolean updateDoubletsVal = true;
-
-    // update the current datasets
-    _myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
-        _onlyVisible.isChecked(), _holder, this, updateDoubletsVal);
-  }
-
   @Override
   protected void addExtras(final IToolBarManager toolBarManager)
   {
@@ -87,63 +62,51 @@ public class FrequencyResidualsView extends BaseStackedDotsView
   }
 
   @Override
-  protected void makeActions()
+  protected boolean allowDisplayOfTargetOverview()
   {
-    super.makeActions();
+    return false;
+  }
 
-    // now frequency calculator
-    calcBaseFreq =
-        new Action("Calculate base frequency", IAction.AS_PUSH_BUTTON)
-        {
-          @Override
-          public void run()
-          {
-            super.run();
+  @Override
+  protected boolean allowDisplayOfZoneChart()
+  {
+    return false;
+  }
 
-            calculateBaseFreq();
-          }
-        };
-    calcBaseFreq.setChecked(true);
-    calcBaseFreq
-        .setToolTipText("Calculate the base frequency of the visible frequency cuts");
-    calcBaseFreq.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/f_nought.png"));
+  private TimeSeries calcSeries(final IDopplerCurve curve,
+      final DateRange curRange)
+  {
+    final TimeSeries res = new TimeSeries("Fitted curve");
+    final long start = curRange.getLowerMillis();
+    final long end = curRange.getUpperMillis();
+    final long step = (end - start) / NUM_DOPPLER_STEPS;
+    for (long t = start; t <= end; t += step)
+    {
+      res.add(new TimeSeriesDataItem(new FixedMillisecond(t), curve.valueAt(t)));
+    }
+    return res;
   }
 
   protected void calculateBaseFreq()
   {
     // get the currently visible data
-    TimeSeriesCollection lineData =
+    final TimeSeriesCollection lineData =
         (TimeSeriesCollection) _linePlot.getDataset();
-    TimeSeries measured = lineData.getSeries(StackedDotHelper.MEASURED_DATASET);
+    final TimeSeries measured =
+        lineData.getSeries(StackedDotHelper.MEASURED_DATASET);
 
     if (measured != null)
     {
-      ArrayList<Long> times = new ArrayList<Long>();
-      ArrayList<Double> freqs = new ArrayList<Double>();
+      final ArrayList<Long> times = new ArrayList<Long>();
+      final ArrayList<Double> freqs = new ArrayList<Double>();
 
       // get the visible time range
-      DateRange curRange = (DateRange) _linePlot.getDomainAxis().getRange();
+      final DateRange curRange =
+          (DateRange) _linePlot.getDomainAxis().getRange();
 
-      SensorWrapper subjectSensor = null;
-
-      // loop through the measured data
-      Iterator<?> items = measured.getItems().iterator();
-      while (items.hasNext())
-      {
-        ColouredDataItem next = (ColouredDataItem) items.next();
-        if (curRange.contains(next.getPeriod().getMiddleMillisecond()))
-        {
-          times.add(next.getPeriod().getMiddleMillisecond());
-          freqs.add(next.getValue().doubleValue());
-
-          if (subjectSensor == null)
-          {
-            SensorContactWrapper cut = (SensorContactWrapper) next.getPayload();
-            subjectSensor = cut.getSensor();
-          }
-        }
-      }
+      // put the data into the storage structures
+      final SensorWrapper subjectSensor =
+          collateData(measured, times, freqs, curRange);
 
       if (!times.isEmpty())
       {
@@ -151,29 +114,22 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         final IDopplerCurve curve = new DopplerCurveFinMath(times, freqs);
 
         // plot the curve
-        TimeSeries calculatedData = calcSeries(curve, curRange);
+        final TimeSeries calculatedData = calcSeries(curve, curRange);
         lineData.addSeries(calculatedData);
 
         // get the base freq
-        double baseFreq = curve.inflectionFreq();
+        final double baseFreq = curve.inflectionFreq();
 
         // and the marker at the new value
-        final Marker target = new ValueMarker(baseFreq);
-        target.setPaint(Color.DARK_GRAY);
-        target.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND,
-            BasicStroke.JOIN_ROUND, 1.0f, new float[]
-            {10.0f, 6.0f}, 0.0f));
-        target.setLabel("Target Price");
-        target.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-        target.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+        final Marker target = createFreqMarker(baseFreq);
         _linePlot.addRangeMarker(target);
 
         // what's the current frequency?
         final double oldFreq;
 
-        String freqTxt = GeneralFormat.formatTwoDecimalPlaces(baseFreq);
+        final String freqTxt = GeneralFormat.formatTwoDecimalPlaces(baseFreq);
         String message;
-        String fMessage = "F-Nought is:" + freqTxt;
+        final String fMessage = "F-Nought is:" + freqTxt;
         if (subjectSensor != null)
         {
           oldFreq = subjectSensor.getBaseFrequency();
@@ -213,6 +169,96 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     }
   }
 
+  private SensorWrapper collateData(final TimeSeries measured,
+      final ArrayList<Long> times, final ArrayList<Double> freqs,
+      final DateRange curRange)
+  {
+    SensorWrapper subjectSensor = null;
+
+    // loop through the measured data
+    final Iterator<?> items = measured.getItems().iterator();
+    while (items.hasNext())
+    {
+      final ColouredDataItem next = (ColouredDataItem) items.next();
+      if (curRange.contains(next.getPeriod().getMiddleMillisecond()))
+      {
+        times.add(next.getPeriod().getMiddleMillisecond());
+        freqs.add(next.getValue().doubleValue());
+
+        if (subjectSensor == null)
+        {
+          final SensorContactWrapper cut =
+              (SensorContactWrapper) next.getPayload();
+          subjectSensor = cut.getSensor();
+        }
+      }
+    }
+    return subjectSensor;
+  }
+
+  private Marker createFreqMarker(final double baseFreq)
+  {
+    final Marker target = new ValueMarker(baseFreq);
+    target.setPaint(Color.DARK_GRAY);
+    target.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND,
+        BasicStroke.JOIN_ROUND, 1.0f, new float[]
+        {10.0f, 6.0f}, 0.0f));
+    target.setLabel("Target Price");
+    target.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+    target.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+    return target;
+  }
+
+  @Override
+  protected String formatValue(final double value)
+  {
+    return MWC.Utilities.TextFormatting.GeneralFormat
+        .formatTwoDecimalPlaces(value);
+  }
+
+  @Override
+  protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
+  {
+    // don't bother, it's for bearing data
+    return null;
+  }
+
+  @Override
+  protected String getType()
+  {
+    return "Frequency";
+  }
+
+  @Override
+  protected String getUnits()
+  {
+    return "Hz";
+  }
+
+  @Override
+  protected void makeActions()
+  {
+    super.makeActions();
+
+    // now frequency calculator
+    calcBaseFreq =
+        new Action("Calculate base frequency", IAction.AS_PUSH_BUTTON)
+        {
+          @Override
+          public void run()
+          {
+            super.run();
+
+            calculateBaseFreq();
+          }
+        };
+    calcBaseFreq.setChecked(true);
+    calcBaseFreq
+        .setToolTipText("Calculate the base frequency of the visible frequency cuts");
+    calcBaseFreq.setImageDescriptor(CorePlugin
+        .getImageDescriptor("icons/24/f_nought.png"));
+  }
+
   public void showMessage(final String title, final String message)
   {
     Display.getDefault().syncExec(new Runnable()
@@ -225,43 +271,20 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     });
   }
 
-  private TimeSeries calcSeries(IDopplerCurve curve, DateRange curRange)
-  {
-    TimeSeries res = new TimeSeries("Fitted curve");
-    long start = curRange.getLowerMillis();
-    long end = curRange.getUpperMillis();
-    long step = (end - start) / NUM_DOPPLER_STEPS;
-    for (long t = start; t <= end; t += step)
-    {
-      res.add(new TimeSeriesDataItem(new FixedMillisecond(t), curve.valueAt(t)));
-    }
-    return res;
-  }
-
   @Override
-  protected ZoneSlicer getOwnshipZoneSlicer(ColorProvider blueProv)
+  protected void updateData(final boolean updateDoublets)
   {
-    // don't bother, it's for bearing data
-    return null;
-  }
+    // note: we now ignore the parent doublets value.
+    // this is because we need to regenerate the target fix each time.
+    // For frequency data the target fix is interpolated - this means
+    // it doesn't update as we drag the solution. We need to
+    // regenerate the interpolated fix, to ensure we're using up-to-date
+    // values
+    final boolean updateDoubletsVal = true;
 
-  @Override
-  protected String formatValue(double value)
-  {
-    return MWC.Utilities.TextFormatting.GeneralFormat
-        .formatTwoDecimalPlaces(value);
-  }
-
-  @Override
-  protected boolean allowDisplayOfTargetOverview()
-  {
-    return false;
-  }
-
-  @Override
-  protected boolean allowDisplayOfZoneChart()
-  {
-    return false;
+    // update the current datasets
+    _myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
+        _onlyVisible.isChecked(), _holder, this, updateDoubletsVal);
   }
 
 }

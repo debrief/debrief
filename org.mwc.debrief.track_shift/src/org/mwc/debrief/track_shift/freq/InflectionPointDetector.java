@@ -9,10 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
-public class inflictionPointDetector
+public class InflectionPointDetector
 {
 
-  public static void Assert(final Boolean cond, final String errMsg)
+  public static void doAssert(final Boolean cond, final String errMsg)
   {
     if (!cond)
     {
@@ -28,11 +28,11 @@ public class inflictionPointDetector
     final ArrayList<Double> values = new ArrayList<Double>();
     final ArrayList<Long> timeStamps = new ArrayList<Long>();
 
-    Assert(args.length == 1,
+    doAssert(args.length == 1,
         "Please provide a single parameter which is the name of the file to process");
 
     final File f = new File(args[0]);
-    Assert(f.exists(), String.format("File %s doesn't exist!", args[0]));
+    doAssert(f.exists(), String.format("File %s doesn't exist!", args[0]));
 
     System.out.format("Processing: %s\n", args[0]);
     
@@ -47,7 +47,7 @@ public class inflictionPointDetector
         continue;
       }
       final String[] cells = line.split(",");
-      Assert(cells.length == 2, "Problem with input file format");
+      doAssert(cells.length == 2, "Problem with input file format");
 
       final double dVal = Double.parseDouble(cells[1]);
       values.add(dVal);
