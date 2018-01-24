@@ -548,7 +548,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
         // ok, first see if it's a relative track - so we can
         // offer to copy it to the clipboard
-        generateCopyAction(parent, theLayers, track);
+        generateCopyAction(parent, track);
 
         // and now the paste action
         generatePasteAction(parent, theLayers, track);
@@ -556,8 +556,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
   }
 
-  private void generateCopyAction(final IMenuManager parent,
-      final Layers theLayers, final TrackWrapper track)
+  private void generateCopyAction(final IMenuManager parent, final TrackWrapper track)
   {
     // ok, it's a track. Is it made from relative TMA segments?
     final SegmentList segments = track.getSegments();
@@ -614,7 +613,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
     }
 
-    if (host != null && host != track)
+    if (host != null && !host.equals(track))
     {
       // yes, create the action
       final String title =
