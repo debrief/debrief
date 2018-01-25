@@ -369,6 +369,13 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="DetectionIntervalMillis" type="xs:integer">
+			<xs:annotation>
+				<xs:documentation>How long to pause between detection
+					opportunities.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="CoreLookupSensorType">
 		<xs:annotation>
@@ -608,13 +615,6 @@
 					<xs:annotation>
 						<xs:documentation>The level of detection delivered by this
 							sensor
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="DetectionIntervalMillis" type="xs:integer">
-					<xs:annotation>
-						<xs:documentation>How long to pause between detection
-							opportunities.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
