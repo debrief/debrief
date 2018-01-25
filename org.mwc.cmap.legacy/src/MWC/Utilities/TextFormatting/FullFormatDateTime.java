@@ -28,7 +28,7 @@ public class FullFormatDateTime
 
   
   public static final String FULL_FORMAT = "dd/MMM/yy HH:mm:ss";
-  public static final String ISO_FORMAT =  "dd/MM/yyyy hh:mm:ss";
+  public static final String ISO_FORMAT =  "dd/MM/yyyy HH:mm:ss";
 
 	static public String toString(final long theVal)
   {
