@@ -947,22 +947,6 @@ public class ZigDetector
     // prepare the data
     final List<Double> legBearings = prepareBearings(rawLegBearings);
 
-    // final int len = legTimes.size();
-    // for (int i = 0; i < len; i++)
-    // {
-    // System.out.print(legTimes.get(i) + "L, ");
-    // }
-    // System.out.println("");
-    // System.out.println("");
-    // for (int i = 0; i < len; i++)
-    // {
-    // System.out.print(legBearings.get(i) + ", ");
-    // }
-
-    // System.out.println("## ZigDetector.sliceThis Slicing from:" + new Date(legTimes.get(0)) +
-    // " to:"
-    // + new Date(legTimes.get(legTimes.size() - 1)));
-
     if (legBearings.size() == 0)
     {
       return;
@@ -970,10 +954,6 @@ public class ZigDetector
 
     final Set<ScoredTime> zigStarts = new TreeSet<ScoredTime>();
     final Set<ScoredTime> zigEnds = new TreeSet<ScoredTime>();
-
-    // include our start/end values
-    // zigEnds.add(legTimes.get(0));
-    // zigStarts.add(legTimes.get(legTimes.size() - 1));
 
     EventHappened fwdListener = new EventHappened()
     {
@@ -1111,19 +1091,11 @@ public class ZigDetector
      */
     SimpleRegression regression = new SimpleRegression();
 
-//    final long firstT = legTimes.get(0);
-
     int start = 0;
     for (int end = 0; end < len; end++)
     {
       final long thisTime = legTimes.get(end);
       
-//       Date legEnd = new Date(thisTime);       
-//       if(legEnd.toString().contains("13:24:10"))
-//       {
-//         float dd = 45 * 34;
-//         float ee = dd + 33;
-//       }
 
       // we need at least 4 cuts
       if (end >= start + 4)
@@ -1150,15 +1122,8 @@ public class ZigDetector
             optimiseThis(times, bearings, optimiseTolerance);
         double score = optimiser.getMinimum();
 
-        // double[] values = optimiser.getParamValues();
-        // System.out.println("scores: B:" + values[0] + " P:" + values[1] + " Q:" + values[2]);
-
-        // FlanaganArctan func = new FlanaganArctan(times, bearings);
-        // double[] permutation = new double[]{179.7654684, -0.000123539292961681,
-        // 0.000189892808700104};
-        // double[] permutation = new double[]{179.766017, -0.000123519863656172,
-        // 0.0001899251729596};
-        // double score = func.function(permutation);
+         double[] values = optimiser.getParamValues();
+         System.out.println("scores: B:" + values[0] + " P:" + values[1] + " Q:" + values[2]);
 
         @SuppressWarnings("unused")
         final double lastScore;
@@ -1202,13 +1167,6 @@ public class ZigDetector
         // final double thisProportion = scoreDelta / variance;
         final double thisProportion = scoreDelta / variance;
 
-//        final long elapsed = (thisTime - firstT) / 1000;
-//        NumberFormat nf = new DecimalFormat(" 0.000000;-0.000000");
-//        System.out.println(df.format(new Date(thisTime)) + " " + elapsed + " "
-//            + nf.format(avg) + " " + nf.format(score) + " "
-//            + nf.format(scoreDelta) + " " + nf.format(variance) + " "
-//            + nf.format(thisProportion) + " " + nf.format(forecast) + " " + nf.format (score / forecast));
-
         // do we have enough data?
         if (avgScore.isPopulated())
         {
@@ -1237,14 +1195,6 @@ public class ZigDetector
         }
         else
         {
-          // still building up our initial population
-          // mAverage.add(thisTime, score);
-
-          // System.out.println(df.format(new Date(thisTime)) + ", " + avg + ", "
-          // + score + ", " + scoreDelta + ", " + variance + ", " + scoreDelta
-          // / variance + ", " + legBearings.get(end) + ", "
-          // + (legBearings.get(end - 1) - legBearings.get(end)));
-
         }
       }
     }
