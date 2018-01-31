@@ -335,7 +335,8 @@ public class ZigDetector
               131320, 131410, 131500, 131550, 131640, 131730, 131820, 131910,
               132000, 132050, 132140, 132230, 132320, 132410, 132500};
 
-      Long[] times = new Long[timeStr.length];
+      Long[] normalTimes = new Long[timeStr.length];
+      Long[] rawTimes = new Long[timeStr.length];
       java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
       long startTime = 0;
       for (int i = 0; i < timeStr.length; i++)
@@ -344,18 +345,20 @@ public class ZigDetector
 
         long thisTime = sdf.parse(thisVal).getTime();
 
+        rawTimes[i] = thisTime;
+        
         if (i == 0)
         {
           startTime = thisTime;
         }
 
-        times[i] = (thisTime - startTime) / 1000;
-        ;
-
+        normalTimes[i] = (thisTime - startTime) / 1000;
       }
 
       // start to collate the adta
-      List<Long> tList1 = Arrays.asList(times);
+      List<Long> tList1 = Arrays.asList(normalTimes);
+      List<Long> rawList1 = Arrays.asList(rawTimes);
+      
       List<Double> tBearings1 = Arrays.asList(bearings);
 
       // System.out
@@ -403,8 +406,13 @@ public class ZigDetector
           // System.out.println("event at " + new Date(time) + " score:" + score);
         }
       };
+      
+      List<TPeriod> legs = new ArrayList<TPeriod>();
+      
       detector.runThrough2(optimiseTolerance, tList, tBearings, happened,
-          zigRatio, timeWindow);
+          zigRatio, timeWindow, legs);
+      
+      listSlices(legs, rawList1);
 
       // Long[] times =
       // new Long[]
@@ -780,7 +788,9 @@ public class ZigDetector
     // initial step sizes
     final double[] step =
     {0.2D, 0.3D, 0.3D};
-
+    
+//    min.setNmax(3400);
+    
     // convergence tolerance
     final double ftol = optimiserTolerance;
 
@@ -1433,10 +1443,9 @@ public class ZigDetector
 
   private void runThrough2(final double optimiseTolerance,
       final List<Long> legTimes1, final List<Double> legBearings1,
-      EventHappened listener, final double zigThreshold, final long timeWindow)
+      EventHappened listener, final double zigThreshold, final long timeWindow, final List<TPeriod> legs)
   {
     final List<TPeriod> sliceQueue = new ArrayList<TPeriod>();
-    final List<TPeriod> legs = new ArrayList<TPeriod>();
 
     // for (int j = 0; j < legTimes1.size(); j++)
     // {
@@ -1500,6 +1509,7 @@ public class ZigDetector
           // check it worked
           if (!optimiser.getConvStatus())
           {
+            System.out.println("can't converge. Max iterations:" + optimiser.getNiter());
             // failed to converge. skip to the next one - see if more data will help
             continue;
           }
@@ -1585,7 +1595,6 @@ public class ZigDetector
       }
     }
 
-    listSlices(legs, legTimes1);
   }
 
   private static void
@@ -1595,7 +1604,7 @@ public class ZigDetector
     {
       if (legTimes != null)
       {
-        System.out.println(legTimes.get(p.start) + "-" + legTimes.get(p.end));
+        System.out.println(new Date(legTimes.get(p.start)) + "-" + new Date(legTimes.get(p.end)));       
       }
       else
       {
