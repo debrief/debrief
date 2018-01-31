@@ -81,7 +81,6 @@ public class ZigDetector
     public double function(final double[] params)
     {
       double runningSum = 0;
-      final Long firstTime = _times.get(0);
 
       // ok, loop through the data
       for (int i = 0; i < _times.size(); i++)
@@ -134,6 +133,87 @@ public class ZigDetector
       assertTrue(walker2.hasNext());
       assertEquals((Integer) 0, walker2.next());
       assertFalse(walker2.hasNext());
+
+    }
+
+    public void testSlicing()
+    {
+      List<TPeriod> q = new ArrayList<TPeriod>();
+      List<TPeriod> legs = new ArrayList<TPeriod>();
+      TPeriod outer = new TPeriod(0, 100);
+      q.add(outer);
+      TPeriod leg = new TPeriod(20, 30);
+
+      assertEquals("one item", 1, q.size());
+      assertTrue("correct item", q.contains(outer));
+
+      handleNewSlices(q, legs, outer, leg, 5);
+
+      assertEquals("two items", 2, q.size());
+      assertEquals("first item", q.get(0), new TPeriod(0, 19));
+      assertEquals("second item", q.get(1), new TPeriod(31, 100));
+      assertEquals("correct legs", 1, legs.size());
+
+      leg = new TPeriod(30, 40);
+      handleNewSlices(q, legs, q.get(1), leg, 5);
+
+      assertEquals("three items", 3, q.size());
+
+      assertEquals("first item", new TPeriod(0, 19), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("third item", new TPeriod(72, 100), q.get(2));
+      assertEquals("correct legs", 2, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(2, 10);
+
+      handleNewSlices(q, legs, q.get(2), leg, 5);
+      assertEquals("three items", 3, q.size());
+
+      assertEquals("first item", new TPeriod(0, 19), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("third item", new TPeriod(83, 100), q.get(2));
+      assertEquals("correct legs", 3, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(13, 16);
+
+      handleNewSlices(q, legs, q.get(0), leg, 5);
+      assertEquals("three items", 3, q.size());
+
+      assertEquals("second item", new TPeriod(0, 12), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("third item", new TPeriod(83, 100), q.get(2));
+      assertEquals("correct legs", 4, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(4, 14);
+
+      handleNewSlices(q, legs, q.get(2), leg, 5);
+      assertEquals("two items", 2, q.size());
+
+      assertEquals("second item", new TPeriod(0, 12), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("correct legs", 5, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(2, 6);
+      handleNewSlices(q, legs, q.get(0), leg, 5);
+      assertEquals("two items", 2, q.size());
+
+      assertEquals("second item", new TPeriod(7, 12), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("correct legs", 6, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(2, 6);
+      handleNewSlices(q, legs, q.get(0), leg, 5);
+      assertEquals("two items", 1, q.size());
+
+      assertEquals("second item", new TPeriod(31, 60), q.get(0));
+      assertEquals("correct legs", 7, legs.size());
+
+      listSlices(legs, null);
 
     }
 
@@ -1254,10 +1334,30 @@ public class ZigDetector
     }
   }
 
-  private static class TPeriod
+  private static class TPeriod implements Comparable<TPeriod>
   {
     public int start;
     public int end;
+
+    @Override
+    public boolean equals(Object arg0)
+    {
+      if (arg0 instanceof TPeriod)
+      {
+        TPeriod other = (TPeriod) arg0;
+        return other.start == start && other.end == end;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    @Override
+    public int hashCode()
+    {
+      return start * 10000 + end;
+    }
 
     public TPeriod(int start, int end)
     {
@@ -1269,6 +1369,12 @@ public class ZigDetector
     public String toString()
     {
       return "Period:" + start + "-" + end;
+    }
+
+    @Override
+    public int compareTo(TPeriod other)
+    {
+      return Integer.compare(start, other.start);
     }
 
   }
@@ -1326,263 +1432,209 @@ public class ZigDetector
   }
 
   private void runThrough2(final double optimiseTolerance,
-      final List<Long> legTimes, final List<Double> legBearings,
+      final List<Long> legTimes1, final List<Double> legBearings1,
       EventHappened listener, final double zigThreshold, final long timeWindow)
   {
+    final List<TPeriod> sliceQueue = new ArrayList<TPeriod>();
+    final List<TPeriod> legs = new ArrayList<TPeriod>();
 
-    final int len = legTimes.size();
+    // for (int j = 0; j < legTimes1.size(); j++)
+    // {
+    // final long t = legTimes1.get(j);
+    //
+    // System.out.println(t + ", " + legBearings1.get(j));
+    // }
 
-    // ok, find the period with the lowest bearing rate
-    TPeriod period = findLowestRateIn(legTimes, legBearings);
+    // add the fill list
+    sliceQueue.add(new TPeriod(0, legTimes1.size() - 1));
 
-    // ok grow left
-    boolean growing = true;
-    while (growing)
+    while (!sliceQueue.isEmpty())
     {
-      if (period.start > 0)
+      TPeriod outerPeriod = sliceQueue.get(0);
+
+      // slice the data
+      List<Long> thisTimes =
+          legTimes1.subList(outerPeriod.start, outerPeriod.end);
+      List<Double> thisBearings =
+          legBearings1.subList(outerPeriod.start, outerPeriod.end);
+
+      final int outerLen = thisTimes.size();
+
+      // ok, find the period with the lowest bearing rate
+      TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
+
+      // ok grow left
+      boolean growing = true;
+      while (growing)
       {
-        // ok - work it, girl
-      }
-      else
-      {
-        // ok, enough
         growing = false;
-      }
-    }
-
-    // now grow right
-    growing = true;
-    while (growing)
-    {
-      if (period.end < 52) // len)
-      {
-        // ok - work it, girl
-        period.end = period.end + 1;
-
-        // fit the curve
-        final List<Long> times = legTimes.subList(period.start, period.end);
-        final List<Double> bearings =
-            legBearings.subList(period.start, period.end);
-
-        Minimisation optimiser =
-            optimiseThis(times, bearings, optimiseTolerance);
-        final double[] coeff = optimiser.getParamValues();
-
-        for (int j = 0; j < times.size(); j++)
+        if (thisLeg.start > 0)
         {
-          final long t = times.get(j);
-
-          System.out.println(t + ", " + bearings.get(j) + ", "
-              + FlanaganArctan.calcForecast(coeff, t));
+          // ok - work it, girl
         }
-
-        // ok, walk through the last few steps, and see if they're all on the same side
-        Boolean lastAbove = null;
-        double lastError = Double.POSITIVE_INFINITY;
-        int sameSideCount = 0;
-        int lastOpposite = -1;
-
-        ArrayWalker walker = new ArrayWalker(period.end - 5, period.end - 1);
-        System.out.println("====");
-        while (walker.hasNext())
+        else
         {
-          final int i = walker.next();
-          long thisT = times.get(i);
-          double measuredB = bearings.get(i);
-          double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
+          // ok, enough
+          growing = false;
+        }
+      }
 
-          double error = predictedB - measuredB;
+      // now grow right
+      growing = true;
+      while (growing)
+      {
+        if (thisLeg.end < outerLen)
+        {
+          // ok - work it, girl
+          thisLeg.end = thisLeg.end + 1;
 
-          System.out.println(thisT + ", " + measuredB + ", " + predictedB
-              + (error > 0 ? " above" : " below"));
+          // fit the curve
+          final List<Long> times =
+              thisTimes.subList(thisLeg.start, thisLeg.end);
+          final List<Double> bearings =
+              thisBearings.subList(thisLeg.start, thisLeg.end);
 
-          boolean thisAbove = error > 0;
+          Minimisation optimiser =
+              optimiseThis(times, bearings, optimiseTolerance);
 
-          if (lastAbove == null)
+          // check it worked
+          if (!optimiser.getConvStatus())
           {
-            // ok, nothing to test
-            lastOpposite = i;
+            // failed to converge. skip to the next one - see if more data will help
+            continue;
           }
-          else if (lastAbove != thisAbove)
+
+          final double[] coeff = optimiser.getParamValues();
+
+          // for (int j = 0; j < times.size(); j++)
+          // {
+          // final long t = times.get(j);
+          //
+          // System.out.println(t + ", " + bearings.get(j) + ", "
+          // + FlanaganArctan.calcForecast(coeff, t));
+          // }
+
+          // ok, walk through the last few steps, and see if they're all on the same side
+          Boolean lastAbove = null;
+          double lastError = Double.POSITIVE_INFINITY;
+          int sameSideCount = 0;
+          int lastOpposite = -1;
+
+          ArrayWalker walker =
+              new ArrayWalker(thisLeg.end - 5, thisLeg.end - 1);
+          // System.out.println("====");
+          while (walker.hasNext())
           {
-            // ok, we've switched side. nothing to worry about
-            sameSideCount = 0;
-            
-            lastOpposite = i - 1;
-          }
-          else
-          {
-            if (error < lastError)
+            final int i = walker.next();
+            long thisT = times.get(i);
+            double measuredB = bearings.get(i);
+            double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
+
+            double error = predictedB - measuredB;
+
+            // System.out.println(thisT + ", " + measuredB + ", " + predictedB
+            // + (error > 0 ? " above" : " below"));
+
+            boolean thisAbove = error > 0;
+
+            if (lastAbove == null)
             {
-              // ok, it's reducing. It's not diverting
+              // ok, nothing to test
+              lastOpposite = i;
+            }
+            else if (lastAbove != thisAbove)
+            {
+              // ok, we've switched side. nothing to worry about
               sameSideCount = 0;
+
+              lastOpposite = i - 1;
             }
             else
             {
-              sameSideCount++;
-
-              if (sameSideCount == 3)
+              if (error < lastError)
               {
-                growing = false;
+                // ok, it's reducing. It's not diverting
+                sameSideCount = 0;
+              }
+              else
+              {
+                sameSideCount++;
 
-                period.end = lastOpposite;
+                if (sameSideCount == 3)
+                {
+                  growing = false;
+                  thisLeg.end = lastOpposite;
 
-                // store this leg
-                System.out.println("Leg:" + period  + legTimes.get(lastOpposite));
-
-                // add the bits either side to the queue
-
+                  // handle the slices
+                  handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
+                }
               }
             }
+            lastAbove = thisAbove;
+            lastError = error;
           }
-
-          lastAbove = thisAbove;
-          lastError = error;
         }
+        else
+        {
+          // ok, enough
+          growing = false;
 
-        // for (int i = 0; i < times.size(); i++)
-        // {
-        // final long t = times.get(i);
-        //
-        // System.out.println(t + ", " + bearings.get(i)
-        // + ", " + FlanaganArctan.calcForecast(coeff, t));
-        // }
-      }
-      else
-      {
-        // ok, enough
-        growing = false;
+          // just store it
+          handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
+        }
       }
     }
 
-    // java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
-    //
-    // TimeRestrictedMovingAverage avgScore =
-    // new TimeRestrictedMovingAverage(timeWindow, 3);
-    //
-    // /**
-    // * experimental regression analysis of data, it will let us forecast the next value, rather
-    // than
-    // * using the average
-    // */
-    // SimpleRegression regression = new SimpleRegression();
-    //
-    // int start = 0;
-    // for (int end = 0; end < len; end++)
-    // {
-    // final long thisTime = legTimes.get(end);
-    //
-    // // we need at least 4 cuts
-    // if (end >= start + 4)
-    // {
-    // // ok, if we've got more than entries, just use the most recent onces
-    // // start = Math.max(start, end - 20);
-    //
-    // // aah, sub-list end point is exclusive, so we have to add one,
-    // // if we can
-    // final int increment;
-    // if (end < legTimes.size() - 2)
-    // {
-    // increment = 1;
-    // }
-    // else
-    // {
-    // increment = 0;
-    // }
-    //
-    // final List<Long> times = legTimes.subList(start, end + increment);
-    // final List<Double> bearings =
-    // legBearings.subList(start, end + increment);
-    //
-    // Minimisation optimiser =
-    // optimiseThis(times, bearings, optimiseTolerance);
-    // double score = optimiser.getMinimum();
-    // final double[] coeff = optimiser.getParamValues();
-    // for (int i = 0; i < times.size(); i++)
-    // {
-    // final long t = times.get(i);
-    //
-    // System.out.println(t + ", " + FlanaganArctan.calcForecast(coeff, t)
-    // + ", " + bearings.get(i));
-    // }
-    //
-    // double[] values = optimiser.getParamValues();
-    // System.out.println("scores: B:" + values[0] + " P:" + values[1] + " Q:"
-    // + values[2]);
-    //
-    // @SuppressWarnings("unused")
-    // final double lastScore;
-    // if (avgScore.isEmpty())
-    // {
-    // lastScore = score;
-    // }
-    // else
-    // {
-    // lastScore = avgScore.lastValue();
-    // }
-    //
-    // // ok, see how things are going
-    // final double avg = avgScore.getAverage();
-    //
-    // // ok, is it increasing by more than double the variance?
-    // final double variance = avgScore.getVariance();
-    //
-    // // how far have we travelled from the last score?
-    // final double scoreDelta;
-    // if (avgScore.isEmpty())
-    // {
-    // scoreDelta = Double.NaN;
-    // }
-    // else
-    // {
-    // // scoreDelta = score - lastScore;
-    // scoreDelta = score - avg;
-    // }
-    //
-    // // what's the forecast
-    // @SuppressWarnings("unused")
-    // double forecast = regression.predict(thisTime);
-    //
-    // // contribute this score
-    // avgScore.add(thisTime, score);
-    //
-    // // now add a value to the forecast
-    // regression.addData(thisTime, score);
-    //
-    // // final double thisProportion = scoreDelta / variance;
-    // final double thisProportion = scoreDelta / variance;
-    //
-    // // do we have enough data?
-    // if (avgScore.isPopulated())
-    // {
-    //
-    // // are we twice the variance?
-    // if (thisProportion > zigThreshold)
-    // {
-    // // System.out.println("this proportion:" + thisProportion);
-    //
-    // listener.eventAt(thisTime, thisProportion, zigThreshold);
-    //
-    // // System.out.println("diverging. delta:" + scoreDelta + ", variance:"
-    // // + variance + ", proportion:" + (scoreDelta / variance)
-    // // + " threshold:" + zigThreshold);
-    //
-    // // // ok, move the start past the turn
-    // start = calculateNewStart(legTimes, end, 120000);
-    //
-    // // and clear the moving average
-    // avgScore.clear();
-    //
-    // // and clear the regression
-    // regression.clear();
-    // }
-    //
-    // }
-    // else
-    // {
-    // }
-    // }
-    // }
+    listSlices(legs, legTimes1);
+  }
+
+  private static void
+      listSlices(List<TPeriod> sliceQueue, List<Long> legTimes)
+  {
+    for (TPeriod p : sliceQueue)
+    {
+      if (legTimes != null)
+      {
+        System.out.println(legTimes.get(p.start) + "-" + legTimes.get(p.end));
+      }
+      else
+      {
+        System.out.println(p);
+      }
+    }
+  }
+
+  private static void handleNewSlices(final List<TPeriod> sliceQueue,
+      List<TPeriod> legs, final TPeriod outerPeriod, final TPeriod thisLeg,
+      final int minLength)
+  {
+
+    // represent the new slice in overall values
+    TPeriod relative =
+        new TPeriod(outerPeriod.start + thisLeg.start, outerPeriod.start
+            + thisLeg.end);
+
+    // remove this period
+    sliceQueue.remove(outerPeriod);
+
+    // add the bits either side to the queue
+    if (relative.start - outerPeriod.start > minLength)
+    {
+      sliceQueue.add(new TPeriod(outerPeriod.start, relative.start - 1));
+    }
+    if (outerPeriod.end - relative.end > minLength)
+    {
+      sliceQueue.add(new TPeriod(relative.end + 1, outerPeriod.end));
+    }
+
+    // store the new period
+    legs.add(relative);
+
+    // and re-store the legs
+    Collections.sort(legs);
+
+    // ok, re-sort the queue
+    Collections.sort(sliceQueue);
   }
 
   private static TPeriod findLowestRateIn(List<Long> legTimes,
