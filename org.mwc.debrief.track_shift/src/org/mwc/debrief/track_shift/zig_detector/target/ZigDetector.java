@@ -346,7 +346,7 @@ public class ZigDetector
         long thisTime = sdf.parse(thisVal).getTime();
 
         rawTimes[i] = thisTime;
-        
+
         if (i == 0)
         {
           startTime = thisTime;
@@ -358,7 +358,7 @@ public class ZigDetector
       // start to collate the adta
       List<Long> tList1 = Arrays.asList(normalTimes);
       List<Long> rawList1 = Arrays.asList(rawTimes);
-      
+
       List<Double> tBearings1 = Arrays.asList(bearings);
 
       // System.out
@@ -406,12 +406,12 @@ public class ZigDetector
           // System.out.println("event at " + new Date(time) + " score:" + score);
         }
       };
-      
+
       List<TPeriod> legs = new ArrayList<TPeriod>();
-      
+
       detector.runThrough2(optimiseTolerance, tList, tBearings, happened,
           zigRatio, timeWindow, legs);
-      
+
       listSlices(legs, rawList1);
 
       // Long[] times =
@@ -788,9 +788,10 @@ public class ZigDetector
     // initial step sizes
     final double[] step =
     {0.2D, 0.3D, 0.3D};
-    
-//    min.setNmax(3400);
-    
+
+    // set the max number of iterations
+    min.setNmax(6400);
+
     // convergence tolerance
     final double ftol = optimiserTolerance;
 
@@ -1441,9 +1442,25 @@ public class ZigDetector
     }
   }
 
+  private static interface WalkHelper
+  {
+
+    boolean smallEnough(TPeriod thisLeg);
+
+    void grow(TPeriod thisLeg);
+
+    ArrayWalker getWalker(List<Long> times);
+
+    int trimmed(int i);
+
+    void storeEnd(TPeriod thisLeg, int lastOpposite);
+
+  }
+
   private void runThrough2(final double optimiseTolerance,
       final List<Long> legTimes1, final List<Double> legBearings1,
-      EventHappened listener, final double zigThreshold, final long timeWindow, final List<TPeriod> legs)
+      EventHappened listener, final double zigThreshold, final long timeWindow,
+      final List<TPeriod> legs)
   {
     final List<TPeriod> sliceQueue = new ArrayList<TPeriod>();
 
@@ -1472,139 +1489,169 @@ public class ZigDetector
       // ok, find the period with the lowest bearing rate
       TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
 
+      WalkHelper upHelper = new WalkHelper()
+      {
+
+        @Override
+        public boolean smallEnough(TPeriod thisLeg)
+        {
+          return thisLeg.end < outerLen;
+        }
+
+        @Override
+        public void grow(TPeriod thisLeg)
+        {
+          thisLeg.end = thisLeg.end + 1;
+        }
+
+        @Override
+        public ArrayWalker getWalker(List<Long> times)
+        {
+          return new ArrayWalker(times.size() - 5, times.size() - 1);
+        }
+
+        @Override
+        public int trimmed(int i)
+        {
+          return i - 1;
+        }
+
+        @Override
+        public void storeEnd(TPeriod thisLeg, int lastOpposite)
+        {
+          thisLeg.end = lastOpposite;
+        }
+      };
+
       // ok grow left
       boolean growing = true;
-      while (growing)
+
+      // now grow right      
+      growing =
+          growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
+              upHelper, growing);
+      
+      // have we finished growing?
+      if (!growing && thisLeg != null)
       {
-        growing = false;
-        if (thisLeg.start > 0)
-        {
-          // ok - work it, girl
-        }
-        else
-        {
-          // ok, enough
-          growing = false;
-        }
-      }
-
-      // now grow right
-      growing = true;
-      while (growing)
-      {
-        if (thisLeg.end < outerLen)
-        {
-          // ok - work it, girl
-          thisLeg.end = thisLeg.end + 1;
-
-          // fit the curve
-          final List<Long> times =
-              thisTimes.subList(thisLeg.start, thisLeg.end);
-          final List<Double> bearings =
-              thisBearings.subList(thisLeg.start, thisLeg.end);
-
-          Minimisation optimiser =
-              optimiseThis(times, bearings, optimiseTolerance);
-
-          // check it worked
-          if (!optimiser.getConvStatus())
-          {
-            System.out.println("can't converge. Max iterations:" + optimiser.getNiter());
-            // failed to converge. skip to the next one - see if more data will help
-            continue;
-          }
-
-          final double[] coeff = optimiser.getParamValues();
-
-          // for (int j = 0; j < times.size(); j++)
-          // {
-          // final long t = times.get(j);
-          //
-          // System.out.println(t + ", " + bearings.get(j) + ", "
-          // + FlanaganArctan.calcForecast(coeff, t));
-          // }
-
-          // ok, walk through the last few steps, and see if they're all on the same side
-          Boolean lastAbove = null;
-          double lastError = Double.POSITIVE_INFINITY;
-          int sameSideCount = 0;
-          int lastOpposite = -1;
-
-          ArrayWalker walker =
-              new ArrayWalker(thisLeg.end - 5, thisLeg.end - 1);
-          // System.out.println("====");
-          while (walker.hasNext())
-          {
-            final int i = walker.next();
-            long thisT = times.get(i);
-            double measuredB = bearings.get(i);
-            double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
-
-            double error = predictedB - measuredB;
-
-            // System.out.println(thisT + ", " + measuredB + ", " + predictedB
-            // + (error > 0 ? " above" : " below"));
-
-            boolean thisAbove = error > 0;
-
-            if (lastAbove == null)
-            {
-              // ok, nothing to test
-              lastOpposite = i;
-            }
-            else if (lastAbove != thisAbove)
-            {
-              // ok, we've switched side. nothing to worry about
-              sameSideCount = 0;
-
-              lastOpposite = i - 1;
-            }
-            else
-            {
-              if (error < lastError)
-              {
-                // ok, it's reducing. It's not diverting
-                sameSideCount = 0;
-              }
-              else
-              {
-                sameSideCount++;
-
-                if (sameSideCount == 3)
-                {
-                  growing = false;
-                  thisLeg.end = lastOpposite;
-
-                  // handle the slices
-                  handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
-                }
-              }
-            }
-            lastAbove = thisAbove;
-            lastError = error;
-          }
-        }
-        else
-        {
-          // ok, enough
-          growing = false;
-
-          // just store it
-          handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
-        }
+        handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
       }
     }
 
+    // for (int j = 0; j < times.size(); j++)
+    // {
+    // final long t = times.get(j);
+    //
+    // System.out.println(t + ", " + bearings.get(j) + ", "
+    // + FlanaganArctan.calcForecast(coeff, t));
+    // }
   }
 
-  private static void
-      listSlices(List<TPeriod> sliceQueue, List<Long> legTimes)
+  private boolean growLeg(final double optimiseTolerance, List<Long> thisTimes,
+      List<Double> thisBearings, TPeriod thisLeg, WalkHelper upHelper,
+      boolean growing)
+  {
+    while (growing)
+    {
+      if (upHelper.smallEnough(thisLeg))
+      {
+        // ok - work it, girl
+        upHelper.grow(thisLeg);
+
+        // fit the curve
+        final List<Long> times =
+            thisTimes.subList(thisLeg.start, thisLeg.end);
+        final List<Double> bearings =
+            thisBearings.subList(thisLeg.start, thisLeg.end);
+
+        Minimisation optimiser =
+            optimiseThis(times, bearings, optimiseTolerance);
+
+        // check it worked
+        if (!optimiser.getConvStatus())
+        {
+          System.out.println("can't converge. Max iterations:"
+              + optimiser.getNiter());
+          // failed to converge. skip to the next one - see if more data will help
+          continue;
+        }
+
+        final double[] coeff = optimiser.getParamValues();
+
+        // ok, walk through the last few steps, and see if they're all on the same side
+        Boolean lastAbove = null;
+        double lastError = Double.POSITIVE_INFINITY;
+        int sameSideCount = 0;
+        int lastOpposite = -1;
+
+        ArrayWalker walker = upHelper.getWalker(times);
+        // System.out.println("====");
+        while (growing && walker.hasNext())
+        {
+          final int i = walker.next();
+
+          long thisT = times.get(i);
+          double measuredB = bearings.get(i);
+          double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
+
+          double error = predictedB - measuredB;
+
+          // System.out.println(thisT + ", " + measuredB + ", " + predictedB
+          // + (error > 0 ? " above" : " below"));
+
+          boolean thisAbove = error > 0;
+
+          if (lastAbove == null)
+          {
+            // ok, nothing to test
+            lastOpposite = i;
+          }
+          else if (lastAbove != thisAbove)
+          {
+            // ok, we've switched side. nothing to worry about
+            sameSideCount = 0;
+
+            lastOpposite = upHelper.trimmed(i);
+          }
+          else
+          {
+            if (error < lastError)
+            {
+              // ok, it's reducing. It's not diverting
+              sameSideCount = 0;
+            }
+            else
+            {
+              sameSideCount++;
+
+              if (sameSideCount == 3)
+              {
+                growing = false;
+                upHelper.storeEnd(thisLeg, lastOpposite);
+              }
+            }
+          }
+          lastAbove = thisAbove;
+          lastError = error;
+        }
+      }
+      else
+      {
+        // ok, enough
+        growing = false;
+      }
+    }
+    return growing;
+  }
+
+  private static void listSlices(List<TPeriod> sliceQueue, List<Long> legTimes)
   {
     for (TPeriod p : sliceQueue)
     {
       if (legTimes != null)
       {
-        System.out.println(new Date(legTimes.get(p.start)) + "-" + new Date(legTimes.get(p.end)));       
+        System.out.println(new Date(legTimes.get(p.start)) + "-"
+            + new Date(legTimes.get(p.end)));
       }
       else
       {
