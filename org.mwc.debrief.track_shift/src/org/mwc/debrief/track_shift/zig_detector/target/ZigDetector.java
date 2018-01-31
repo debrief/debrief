@@ -1489,6 +1489,40 @@ public class ZigDetector
       // ok, find the period with the lowest bearing rate
       TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
 
+      WalkHelper downHelper = new WalkHelper()
+      {
+
+        @Override
+        public boolean smallEnough(TPeriod thisLeg)
+        {
+          return thisLeg.start > 0;
+        }
+
+        @Override
+        public void grow(TPeriod thisLeg)
+        {
+          thisLeg.start = thisLeg.start - 1;
+        }
+
+        @Override
+        public ArrayWalker getWalker(List<Long> times)
+        {
+          return new ArrayWalker(5, 0);
+        }
+
+        @Override
+        public int trimmed(int i)
+        {
+          return i + 1;
+        }
+
+        @Override
+        public void storeEnd(TPeriod thisLeg, int lastOpposite)
+        {
+          thisLeg.start = lastOpposite;
+        }
+      };
+
       WalkHelper upHelper = new WalkHelper()
       {
 
@@ -1523,16 +1557,28 @@ public class ZigDetector
         }
       };
 
-      // ok grow left
-      boolean growing = true;
+      // for (int j = 0; j < times.size(); j++)
+      // {
+      // final long t = times.get(j);
+      //
+      // System.out.println(t + ", " + bearings.get(j) + ", "
+      // + FlanaganArctan.calcForecast(coeff, t));
+      // }
 
-      // now grow right      
-      growing =
-          growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
-              upHelper, growing);
-      
+      System.out.println("start:" + thisLeg);
+
+      // ok grow left
+      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, downHelper);
+
+      System.out.println("after down:" + thisLeg);
+
+      // now grow right
+      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, upHelper);
+
+      System.out.println("after up:" + thisLeg);
+
       // have we finished growing?
-      if (!growing && thisLeg != null)
+      if (thisLeg != null)
       {
         handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
       }
@@ -1547,20 +1593,24 @@ public class ZigDetector
     // }
   }
 
-  private boolean growLeg(final double optimiseTolerance, List<Long> thisTimes,
-      List<Double> thisBearings, TPeriod thisLeg, WalkHelper upHelper,
-      boolean growing)
+  private void growLeg(final double optimiseTolerance, List<Long> thisTimes,
+      List<Double> thisBearings, TPeriod thisLeg, WalkHelper walker)
   {
+    boolean growing = true;
     while (growing)
     {
-      if (upHelper.smallEnough(thisLeg))
+      if (!walker.smallEnough(thisLeg))
+      {
+        // ok, we can't grow any more. Stop growing
+        growing = false;
+      }
+      else
       {
         // ok - work it, girl
-        upHelper.grow(thisLeg);
+        walker.grow(thisLeg);
 
         // fit the curve
-        final List<Long> times =
-            thisTimes.subList(thisLeg.start, thisLeg.end);
+        final List<Long> times = thisTimes.subList(thisLeg.start, thisLeg.end);
         final List<Double> bearings =
             thisBearings.subList(thisLeg.start, thisLeg.end);
 
@@ -1578,13 +1628,27 @@ public class ZigDetector
 
         final double[] coeff = optimiser.getParamValues();
 
+        if (thisLeg.toString().equals("Period:4-18"))
+        {
+          System.out.println("here");
+
+          for (int j = 0; j < times.size(); j++)
+          {
+            final long t = times.get(j);
+
+            System.out.println(t + ", " + bearings.get(j) + ", "
+                + FlanaganArctan.calcForecast(coeff, t));
+          }
+
+        }
+
         // ok, walk through the last few steps, and see if they're all on the same side
         Boolean lastAbove = null;
         double lastError = Double.POSITIVE_INFINITY;
         int sameSideCount = 0;
         int lastOpposite = -1;
 
-        ArrayWalker walker = upHelper.getWalker(times);
+        ArrayWalker walker = walker.getWalker(times);
         // System.out.println("====");
         while (growing && walker.hasNext())
         {
@@ -1596,8 +1660,8 @@ public class ZigDetector
 
           double error = predictedB - measuredB;
 
-          // System.out.println(thisT + ", " + measuredB + ", " + predictedB
-          // + (error > 0 ? " above" : " below"));
+          System.out.println(thisT + ", " + measuredB + ", " + predictedB
+              + (error > 0 ? " above" : " below"));
 
           boolean thisAbove = error > 0;
 
@@ -1611,7 +1675,7 @@ public class ZigDetector
             // ok, we've switched side. nothing to worry about
             sameSideCount = 0;
 
-            lastOpposite = upHelper.trimmed(i);
+            lastOpposite = walker.trimmed(i);
           }
           else
           {
@@ -1627,21 +1691,17 @@ public class ZigDetector
               if (sameSideCount == 3)
               {
                 growing = false;
-                upHelper.storeEnd(thisLeg, lastOpposite);
+                walker.storeEnd(thisLeg, lastOpposite);
               }
             }
           }
           lastAbove = thisAbove;
           lastError = error;
         }
-      }
-      else
-      {
-        // ok, enough
-        growing = false;
+
       }
     }
-    return growing;
+
   }
 
   private static void listSlices(List<TPeriod> sliceQueue, List<Long> legTimes)
