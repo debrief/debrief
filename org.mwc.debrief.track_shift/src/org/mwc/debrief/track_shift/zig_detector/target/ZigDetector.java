@@ -27,24 +27,61 @@ import flanagan.math.MinimisationFunction;
 
 public class ZigDetector
 {
-  protected static class ScoredTime implements Comparable<ScoredTime>
+  private static class ArrayWalker implements Iterator<Integer>
   {
-    private final long _time;
-    private final double _score;
+    private final int _start;
+    private final int _end;
+    private int _current;
+    private final int _step;
 
-    public ScoredTime(long time, double score)
+    public ArrayWalker(final int start, final int end)
     {
-      _time = time;
-      _score = score;
+      _start = start;
+      _end = end;
+
+      _current = start;
+      _step = _end > _start ? 1 : -1;
     }
 
     @Override
-    public int compareTo(ScoredTime o)
+    public void forEachRemaining(final Consumer<? super Integer> arg0)
     {
-      Long myTime = _time;
-      Long hisTime = o._time;
-      return myTime.compareTo(hisTime);
+      // TODO Auto-generated method stub
+
     }
+
+    @Override
+    public boolean hasNext()
+    {
+      return _current != _end + _step;
+    }
+
+    @Override
+    public Integer next()
+    {
+      // check we haven't passed the end
+      if (!hasNext())
+      {
+        throw new IllegalArgumentException(
+            "Can't call next() once we've passed the end");
+      }
+
+      final Integer res = _current;
+      _current += _step;
+      return res;
+    }
+
+    @Override
+    public void remove()
+    {
+      // TODO Auto-generated method stub
+
+    }
+  }
+
+  private static interface EventHappened
+  {
+    public void eventAt(long time, double score, double threshold);
   }
 
   static class FlanaganArctan implements MinimisationFunction
@@ -112,148 +149,166 @@ public class ZigDetector
 
   }
 
+  static class FlanaganArctan_Legacy implements MinimisationFunction
+  {
+    private static double calcForecast(final double B, final double P,
+        final double Q, final double elapsedSecs)
+    {
+      final double dX = Math.cos(Math.toRadians(B)) + Q * elapsedSecs;
+      final double dY = Math.sin(Math.toRadians(B)) + P * elapsedSecs;
+      return Math.toDegrees(Math.atan2(dY, dX));
+    }
+
+    final private Long[] _times;
+
+    final private Double[] _bearings;
+
+    public FlanaganArctan_Legacy(final List<Long> beforeTimes,
+        final List<Double> beforeBearings)
+    {
+      _times = beforeTimes.toArray(new Long[]
+      {});
+      _bearings = beforeBearings.toArray(new Double[]
+      {});
+    }
+
+    // evaluation function
+    @Override
+    public double function(final double[] point)
+    {
+      final double B = point[0];
+      final double P = point[1];
+      final double Q = point[2];
+
+      double runningSum = 0;
+      final Long firstTime = _times[0];
+
+      // ok, loop through the data
+      for (int i = 0; i < _times.length; i++)
+      {
+        final long elapsedMillis = _times[i] - firstTime;
+        final double elapsedSecs = elapsedMillis / 1000d;
+        final double thisForecast = calcForecast(B, P, Q, elapsedSecs);
+        final double thisMeasured = _bearings[i];
+        double thisError = thisForecast - thisMeasured;
+        if (thisError > 180)
+        {
+          thisError -= 360;
+        }
+        else if (thisError < -180)
+        {
+          thisError += 360;
+        }
+        final double sqError = Math.pow(thisError, 2);
+        runningSum += sqError;
+      }
+      final double mean = runningSum / _times.length;
+
+      final double rms = Math.sqrt(mean);
+      return rms;
+    }
+
+  }
+
+  protected static class ScoredTime implements Comparable<ScoredTime>
+  {
+    private final long _time;
+    private final double _score;
+
+    public ScoredTime(final long time, final double score)
+    {
+      _time = time;
+      _score = score;
+    }
+
+    @Override
+    public int compareTo(final ScoredTime o)
+    {
+      final Long myTime = _time;
+      final Long hisTime = o._time;
+      return myTime.compareTo(hisTime);
+    }
+  }
+
   public static class TestMe extends TestCase
   {
-    public void testWalker()
+    @SuppressWarnings("unused")
+    private ILegStorer getLegStorer()
     {
-      ArrayWalker walker1 = new ArrayWalker(0, 2);
-      assertTrue(walker1.hasNext());
-      assertEquals((Integer) 0, walker1.next());
-      assertTrue(walker1.hasNext());
-      assertEquals((Integer) 1, walker1.next());
-      assertTrue(walker1.hasNext());
-      assertEquals((Integer) 2, walker1.next());
-      assertFalse(walker1.hasNext());
+      final ILegStorer legStorer = new ILegStorer()
+      {
 
-      ArrayWalker walker2 = new ArrayWalker(2, 0);
-      assertTrue(walker2.hasNext());
-      assertEquals((Integer) 2, walker2.next());
-      assertTrue(walker2.hasNext());
-      assertEquals((Integer) 1, walker2.next());
-      assertTrue(walker2.hasNext());
-      assertEquals((Integer) 0, walker2.next());
-      assertFalse(walker2.hasNext());
-
+        @Override
+        public void storeLeg(final String scenarioName, final long tStart,
+            final long tEnd, final double rms)
+        {
+          // System.out.println("store it: " + new Date(tStart) + ", "
+          // + new Date(tEnd));
+        }
+      };
+      return legStorer;
     }
 
-    public void testSlicing()
+    @SuppressWarnings("unused")
+    private ILog getLogger()
     {
-      List<TPeriod> q = new ArrayList<TPeriod>();
-      List<TPeriod> legs = new ArrayList<TPeriod>();
-      TPeriod outer = new TPeriod(0, 100);
-      q.add(outer);
-      TPeriod leg = new TPeriod(20, 30);
+      final ILog logger = new ILog()
+      {
 
-      assertEquals("one item", 1, q.size());
-      assertTrue("correct item", q.contains(outer));
+        @Override
+        public void addLogListener(final ILogListener listener)
+        {
+          // not required, class just for testing
+        }
 
-      handleNewSlices(q, legs, outer, leg, 5);
+        @Override
+        public Bundle getBundle()
+        {
+          return null;
+        }
 
-      assertEquals("two items", 2, q.size());
-      assertEquals("first item", q.get(0), new TPeriod(0, 19));
-      assertEquals("second item", q.get(1), new TPeriod(31, 100));
-      assertEquals("correct legs", 1, legs.size());
+        @Override
+        public void log(final IStatus status)
+        {
+          // not required, class just for testing
+        }
 
-      leg = new TPeriod(30, 40);
-      handleNewSlices(q, legs, q.get(1), leg, 5);
-
-      assertEquals("three items", 3, q.size());
-
-      assertEquals("first item", new TPeriod(0, 19), q.get(0));
-      assertEquals("second item", new TPeriod(31, 60), q.get(1));
-      assertEquals("third item", new TPeriod(72, 100), q.get(2));
-      assertEquals("correct legs", 2, legs.size());
-
-      // ok, leave a short one
-      leg = new TPeriod(2, 10);
-
-      handleNewSlices(q, legs, q.get(2), leg, 5);
-      assertEquals("three items", 3, q.size());
-
-      assertEquals("first item", new TPeriod(0, 19), q.get(0));
-      assertEquals("second item", new TPeriod(31, 60), q.get(1));
-      assertEquals("third item", new TPeriod(83, 100), q.get(2));
-      assertEquals("correct legs", 3, legs.size());
-
-      // ok, leave a short one
-      leg = new TPeriod(13, 16);
-
-      handleNewSlices(q, legs, q.get(0), leg, 5);
-      assertEquals("three items", 3, q.size());
-
-      assertEquals("second item", new TPeriod(0, 12), q.get(0));
-      assertEquals("second item", new TPeriod(31, 60), q.get(1));
-      assertEquals("third item", new TPeriod(83, 100), q.get(2));
-      assertEquals("correct legs", 4, legs.size());
-
-      // ok, leave a short one
-      leg = new TPeriod(4, 14);
-
-      handleNewSlices(q, legs, q.get(2), leg, 5);
-      assertEquals("two items", 2, q.size());
-
-      assertEquals("second item", new TPeriod(0, 12), q.get(0));
-      assertEquals("second item", new TPeriod(31, 60), q.get(1));
-      assertEquals("correct legs", 5, legs.size());
-
-      // ok, leave a short one
-      leg = new TPeriod(2, 6);
-      handleNewSlices(q, legs, q.get(0), leg, 5);
-      assertEquals("two items", 2, q.size());
-
-      assertEquals("second item", new TPeriod(7, 12), q.get(0));
-      assertEquals("second item", new TPeriod(31, 60), q.get(1));
-      assertEquals("correct legs", 6, legs.size());
-
-      // ok, leave a short one
-      leg = new TPeriod(2, 6);
-      handleNewSlices(q, legs, q.get(0), leg, 5);
-      assertEquals("two items", 1, q.size());
-
-      assertEquals("second item", new TPeriod(31, 60), q.get(0));
-      assertEquals("correct legs", 7, legs.size());
-
-      listSlices(legs, null);
-
+        @Override
+        public void removeLogListener(final ILogListener listener)
+        {
+          // not required, class just for testing
+        }
+      };
+      return logger;
     }
 
-    public void testStartTimes()
+    @SuppressWarnings("unused")
+    private IZigStorer getZigStorer()
     {
-      assertEquals(2, 5 / 2);
+      final IZigStorer zigStorer = new IZigStorer()
+      {
 
-      List<Long> times =
-          new ArrayList<Long>(Arrays.asList(new Long[]
-          {1000L, 1200L, 1500L, 1800L, 2100L, 2400L, 2700L, 3000L, 3300L,
-              3600L, 3900L}));
+        @Override
+        public void finish()
+        {
+          // TODO Auto-generated method stub
 
-      assertEquals("correct", -1, getEnd(0, times, 200, 0));
-      assertEquals("correct", -1, getEnd(0, times, 200, 1));
-      assertEquals("correct", -1, getEnd(0, times, 200, 2));
-      assertEquals("correct", 2, getEnd(0, times, 200, 3));
-      assertEquals("correct", 3, getEnd(0, times, 200, 4));
-      assertEquals("correct", 4, getEnd(0, times, 200, 5));
-      assertEquals("correct", 5, getEnd(0, times, 200, 6));
-      assertEquals("correct", 6, getEnd(0, times, 200, 7));
-      assertEquals("correct", 7, getEnd(0, times, 200, 8));
-      assertEquals("correct", 8, getEnd(0, times, 200, 9));
-      assertEquals("correct", 9, getEnd(0, times, 200, 10));
+        }
 
-      assertEquals("correct", 2, getStart(0, times, 400, 0));
-      assertEquals("correct", 2, getStart(0, times, 400, 1));
-      assertEquals("correct", 3, getStart(0, times, 400, 2));
-      assertEquals("correct", 4, getStart(0, times, 400, 3));
-      assertEquals("correct", 5, getStart(0, times, 400, 4));
-      assertEquals("correct", 6, getStart(0, times, 400, 5));
-      assertEquals("correct", 7, getStart(0, times, 400, 6));
-      assertEquals("correct", 8, getStart(0, times, 400, 7));
-      assertEquals("correct", -1, getStart(0, times, 400, 8));
-      assertEquals("correct", -1, getStart(0, times, 400, 9));
-      assertEquals("correct", -1, getStart(0, times, 400, 10));
+        @Override
+        public void storeZig(final String scenarioName, final long tStart,
+            final long tEnd, final double rms)
+        {
+          // TODO Auto-generated method stub
+
+        }
+      };
+      return zigStorer;
     }
 
     public void testCalcStart()
     {
-      List<Long> list = new ArrayList<Long>(Arrays.asList(new Long[]
+      final List<Long> list = new ArrayList<Long>(Arrays.asList(new Long[]
       {0L, 40L, 100L, 140L, 180L, 220L, 260L, 280L}));
       assertEquals("correct time", 3, calculateNewStart(list, 1, 100));
       assertEquals("correct time", 5, calculateNewStart(list, 2, 100));
@@ -304,7 +359,7 @@ public class ZigDetector
     public void testMultiSlice() throws ParseException
     {
 
-      Double[] bearings =
+      final Double[] bearings =
           new Double[]
           {180d, 180.3, 180.7, 181d, 181.4, 181.7, 182.1, 182.5, 182.8, 183.2,
               183.6, 184.1, 184.5, 184.9, 185.3, 185.8, 186.3, 186.7, 187.2,
@@ -319,7 +374,7 @@ public class ZigDetector
               270.9, 272d, 273.1, 274.2, 275.2, 276.2, 277.1, 278d, 278.8,
               279.7, 280.4, 281.2};
 
-      int[] timeStr =
+      final int[] timeStr =
           new int[]
           {120000, 120050, 120140, 120230, 120320, 120410, 120500, 120550,
               120640, 120730, 120820, 120910, 121000, 121050, 121140, 121230,
@@ -335,15 +390,15 @@ public class ZigDetector
               131320, 131410, 131500, 131550, 131640, 131730, 131820, 131910,
               132000, 132050, 132140, 132230, 132320, 132410, 132500};
 
-      Long[] normalTimes = new Long[timeStr.length];
-      Long[] rawTimes = new Long[timeStr.length];
-      java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
+      final Long[] normalTimes = new Long[timeStr.length];
+      final Long[] rawTimes = new Long[timeStr.length];
+      final java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
       long startTime = 0;
       for (int i = 0; i < timeStr.length; i++)
       {
-        String thisVal = "" + timeStr[i];
+        final String thisVal = "" + timeStr[i];
 
-        long thisTime = sdf.parse(thisVal).getTime();
+        final long thisTime = sdf.parse(thisVal).getTime();
 
         rawTimes[i] = thisTime;
 
@@ -356,10 +411,10 @@ public class ZigDetector
       }
 
       // start to collate the adta
-      List<Long> tList1 = Arrays.asList(normalTimes);
-      List<Long> rawList1 = Arrays.asList(rawTimes);
+      final List<Long> tList1 = Arrays.asList(normalTimes);
+      final List<Long> rawList1 = Arrays.asList(rawTimes);
 
-      List<Double> tBearings1 = Arrays.asList(bearings);
+      final List<Double> tBearings1 = Arrays.asList(bearings);
 
       // System.out
       // .println("last time:" + new Date(tList1.get(tList1.size() - 1)));
@@ -371,10 +426,10 @@ public class ZigDetector
       // List<Long> tList = tList1.subList(start, end);
       // List<Double> tBearings = tBearings1.subList(start, end);
 
-      List<Long> tList = tList1;
-      List<Double> tBearings = tBearings1;
+      final List<Long> tList = tList1;
+      final List<Double> tBearings = tBearings1;
 
-      TPeriod flattest = findLowestRateIn(tList, tBearings);
+      final TPeriod flattest = findLowestRateIn(tList, tBearings);
       assertNotNull("found data", flattest);
       assertEquals(0, flattest.start);
       assertEquals(6, flattest.end);
@@ -384,7 +439,7 @@ public class ZigDetector
 
       final ZigDetector detector = new ZigDetector();
       double zigRatio = 1000d;
-      double optimiseTolerance = 0.0000000004;
+      final double optimiseTolerance = 0.0000000004;
 
       // ILog logger = getLogger();
       // ILegStorer legStorer = getLegStorer();
@@ -397,17 +452,19 @@ public class ZigDetector
       // Collections.reverse(tList);
       // Collections.reverse(tBearings);
       //
-      long timeWindow = 240000;
+      final long timeWindow = 240000;
       zigRatio = 15d;
-      EventHappened happened = new EventHappened()
+      final EventHappened happened = new EventHappened()
       {
-        public void eventAt(long time, double score, double threshold)
+        @Override
+        public void eventAt(final long time, final double score,
+            final double threshold)
         {
           // System.out.println("event at " + new Date(time) + " score:" + score);
         }
       };
 
-      List<TPeriod> legs = new ArrayList<TPeriod>();
+      final List<TPeriod> legs = new ArrayList<TPeriod>();
 
       detector.runThrough2(optimiseTolerance, tList, tBearings, happened,
           zigRatio, timeWindow, legs);
@@ -542,263 +599,202 @@ public class ZigDetector
 
     }
 
-    @SuppressWarnings("unused")
-    private ILegStorer getLegStorer()
+    public void testSlicing()
     {
-      ILegStorer legStorer = new ILegStorer()
-      {
+      final List<TPeriod> q = new ArrayList<TPeriod>();
+      final List<TPeriod> legs = new ArrayList<TPeriod>();
+      final TPeriod outer = new TPeriod(0, 100);
+      q.add(outer);
+      TPeriod leg = new TPeriod(20, 30);
 
-        @Override
-        public void storeLeg(String scenarioName, long tStart, long tEnd,
-            double rms)
-        {
-          // System.out.println("store it: " + new Date(tStart) + ", "
-          // + new Date(tEnd));
-        }
-      };
-      return legStorer;
+      assertEquals("one item", 1, q.size());
+      assertTrue("correct item", q.contains(outer));
+
+      handleNewSlices(q, legs, outer, leg, 5);
+
+      assertEquals("two items", 2, q.size());
+      assertEquals("first item", q.get(0), new TPeriod(0, 19));
+      assertEquals("second item", q.get(1), new TPeriod(31, 100));
+      assertEquals("correct legs", 1, legs.size());
+
+      leg = new TPeriod(30, 40);
+      handleNewSlices(q, legs, q.get(1), leg, 5);
+
+      assertEquals("three items", 3, q.size());
+
+      assertEquals("first item", new TPeriod(0, 19), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("third item", new TPeriod(72, 100), q.get(2));
+      assertEquals("correct legs", 2, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(2, 10);
+
+      handleNewSlices(q, legs, q.get(2), leg, 5);
+      assertEquals("three items", 3, q.size());
+
+      assertEquals("first item", new TPeriod(0, 19), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("third item", new TPeriod(83, 100), q.get(2));
+      assertEquals("correct legs", 3, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(13, 16);
+
+      handleNewSlices(q, legs, q.get(0), leg, 5);
+      assertEquals("three items", 3, q.size());
+
+      assertEquals("second item", new TPeriod(0, 12), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("third item", new TPeriod(83, 100), q.get(2));
+      assertEquals("correct legs", 4, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(4, 14);
+
+      handleNewSlices(q, legs, q.get(2), leg, 5);
+      assertEquals("two items", 2, q.size());
+
+      assertEquals("second item", new TPeriod(0, 12), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("correct legs", 5, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(2, 6);
+      handleNewSlices(q, legs, q.get(0), leg, 5);
+      assertEquals("two items", 2, q.size());
+
+      assertEquals("second item", new TPeriod(7, 12), q.get(0));
+      assertEquals("second item", new TPeriod(31, 60), q.get(1));
+      assertEquals("correct legs", 6, legs.size());
+
+      // ok, leave a short one
+      leg = new TPeriod(2, 6);
+      handleNewSlices(q, legs, q.get(0), leg, 5);
+      assertEquals("two items", 1, q.size());
+
+      assertEquals("second item", new TPeriod(31, 60), q.get(0));
+      assertEquals("correct legs", 7, legs.size());
+
+      listSlices(legs, null);
+
     }
 
-    @SuppressWarnings("unused")
-    private IZigStorer getZigStorer()
+    public void testStartTimes()
     {
-      IZigStorer zigStorer = new IZigStorer()
-      {
+      assertEquals(2, 5 / 2);
 
-        @Override
-        public void storeZig(String scenarioName, long tStart, long tEnd,
-            double rms)
-        {
-          // TODO Auto-generated method stub
+      final List<Long> times =
+          new ArrayList<Long>(Arrays.asList(new Long[]
+          {1000L, 1200L, 1500L, 1800L, 2100L, 2400L, 2700L, 3000L, 3300L,
+              3600L, 3900L}));
 
-        }
+      assertEquals("correct", -1, getEnd(0, times, 200, 0));
+      assertEquals("correct", -1, getEnd(0, times, 200, 1));
+      assertEquals("correct", -1, getEnd(0, times, 200, 2));
+      assertEquals("correct", 2, getEnd(0, times, 200, 3));
+      assertEquals("correct", 3, getEnd(0, times, 200, 4));
+      assertEquals("correct", 4, getEnd(0, times, 200, 5));
+      assertEquals("correct", 5, getEnd(0, times, 200, 6));
+      assertEquals("correct", 6, getEnd(0, times, 200, 7));
+      assertEquals("correct", 7, getEnd(0, times, 200, 8));
+      assertEquals("correct", 8, getEnd(0, times, 200, 9));
+      assertEquals("correct", 9, getEnd(0, times, 200, 10));
 
-        @Override
-        public void finish()
-        {
-          // TODO Auto-generated method stub
-
-        }
-      };
-      return zigStorer;
+      assertEquals("correct", 2, getStart(0, times, 400, 0));
+      assertEquals("correct", 2, getStart(0, times, 400, 1));
+      assertEquals("correct", 3, getStart(0, times, 400, 2));
+      assertEquals("correct", 4, getStart(0, times, 400, 3));
+      assertEquals("correct", 5, getStart(0, times, 400, 4));
+      assertEquals("correct", 6, getStart(0, times, 400, 5));
+      assertEquals("correct", 7, getStart(0, times, 400, 6));
+      assertEquals("correct", 8, getStart(0, times, 400, 7));
+      assertEquals("correct", -1, getStart(0, times, 400, 8));
+      assertEquals("correct", -1, getStart(0, times, 400, 9));
+      assertEquals("correct", -1, getStart(0, times, 400, 10));
     }
 
-    @SuppressWarnings("unused")
-    private ILog getLogger()
+    public void testWalker()
     {
-      ILog logger = new ILog()
-      {
+      final ArrayWalker walker1 = new ArrayWalker(0, 2);
+      assertTrue(walker1.hasNext());
+      assertEquals((Integer) 0, walker1.next());
+      assertTrue(walker1.hasNext());
+      assertEquals((Integer) 1, walker1.next());
+      assertTrue(walker1.hasNext());
+      assertEquals((Integer) 2, walker1.next());
+      assertFalse(walker1.hasNext());
 
-        @Override
-        public void addLogListener(ILogListener listener)
-        {
-          // not required, class just for testing
-        }
+      final ArrayWalker walker2 = new ArrayWalker(2, 0);
+      assertTrue(walker2.hasNext());
+      assertEquals((Integer) 2, walker2.next());
+      assertTrue(walker2.hasNext());
+      assertEquals((Integer) 1, walker2.next());
+      assertTrue(walker2.hasNext());
+      assertEquals((Integer) 0, walker2.next());
+      assertFalse(walker2.hasNext());
 
-        @Override
-        public Bundle getBundle()
-        {
-          return null;
-        }
-
-        @Override
-        public void log(IStatus status)
-        {
-          // not required, class just for testing
-        }
-
-        @Override
-        public void removeLogListener(ILogListener listener)
-        {
-          // not required, class just for testing
-        }
-      };
-      return logger;
     }
   }
 
-  static class FlanaganArctan_Legacy implements MinimisationFunction
+  private static class TPeriod implements Comparable<TPeriod>
   {
-    private static double calcForecast(final double B, final double P,
-        final double Q, final double elapsedSecs)
+    public int start;
+    public int end;
+
+    public TPeriod(final int start, final int end)
     {
-      final double dX = Math.cos(Math.toRadians(B)) + Q * elapsedSecs;
-      final double dY = Math.sin(Math.toRadians(B)) + P * elapsedSecs;
-      return Math.toDegrees(Math.atan2(dY, dX));
+      this.start = start;
+      this.end = end;
     }
 
-    final private Long[] _times;
-
-    final private Double[] _bearings;
-
-    public FlanaganArctan_Legacy(final List<Long> beforeTimes,
-        final List<Double> beforeBearings)
-    {
-      _times = beforeTimes.toArray(new Long[]
-      {});
-      _bearings = beforeBearings.toArray(new Double[]
-      {});
-    }
-
-    // evaluation function
     @Override
-    public double function(final double[] point)
+    public int compareTo(final TPeriod other)
     {
-      final double B = point[0];
-      final double P = point[1];
-      final double Q = point[2];
+      return Integer.compare(start, other.start);
+    }
 
-      double runningSum = 0;
-      final Long firstTime = _times[0];
-
-      // ok, loop through the data
-      for (int i = 0; i < _times.length; i++)
+    @Override
+    public boolean equals(final Object arg0)
+    {
+      if (arg0 instanceof TPeriod)
       {
-        final long elapsedMillis = _times[i] - firstTime;
-        final double elapsedSecs = elapsedMillis / 1000d;
-        final double thisForecast = calcForecast(B, P, Q, elapsedSecs);
-        final double thisMeasured = _bearings[i];
-        double thisError = thisForecast - thisMeasured;
-        if (thisError > 180)
-        {
-          thisError -= 360;
-        }
-        else if (thisError < -180)
-        {
-          thisError += 360;
-        }
-        final double sqError = Math.pow(thisError, 2);
-        runningSum += sqError;
+        final TPeriod other = (TPeriod) arg0;
+        return other.start == start && other.end == end;
       }
-      final double mean = runningSum / _times.length;
+      else
+      {
+        return false;
+      }
+    }
 
-      final double rms = Math.sqrt(mean);
-      return rms;
+    @Override
+    public int hashCode()
+    {
+      return start * 10000 + end;
+    }
+
+    @Override
+    public String toString()
+    {
+      return "Period:" + start + "-" + end;
     }
 
   }
 
-  final SimpleDateFormat dateF = new SimpleDateFormat("HH:mm:ss");
-
-  /**
-   * if we slice these times in two, with a buffer, what is the index of the last item in the first
-   * leg?
-   * 
-   * @param start
-   * @param thisLegTimes
-   * @param buffer
-   * @param index
-   * @return
-   */
-  private static int getEnd(final int start, final List<Long> thisLegTimes,
-      final long buffer, final int index)
+  private static interface WalkHelper
   {
-    int res = -1;
-    final int MIN_SIZE = 3;
-    final long halfWid = buffer / 2l;
 
-    // find the half-way mark
-    final long sliceAt = thisLegTimes.get(index);
+    ArrayWalker getWalker(List<Long> times);
 
-    // and the time of the last item in the first leg
-    final long endTime = sliceAt - halfWid;
+    void grow(TPeriod thisLeg);
 
-    // ok, loop through
-    for (int ctr = 0; ctr < thisLegTimes.size(); ctr++)
-    {
-      // what's this time?
-      long thisTime = thisLegTimes.get(ctr);
+    boolean smallEnough(TPeriod thisLeg);
 
-      // have we passed the end time?
-      if (thisTime > endTime)
-      {
-        // yes, it must have been the previous time
-        if (ctr >= MIN_SIZE)
-        {
-          res = ctr - 1;
-        }
-        break;
-      }
-    }
+    void storeEnd(TPeriod thisLeg, int lastOpposite);
 
-    return res;
-  }
+    int trimmed(int i);
 
-  /**
-   * if we slice these times in two, with a buffer, what is the index of the first item in the
-   * second leg?
-   * 
-   * @param start
-   * @param thisLegTimes
-   * @param buffer
-   * @param index
-   * @return
-   */
-  private static int getStart(final int start, final List<Long> thisLegTimes,
-      final long buffer, final int index)
-  {
-    int res = -1;
-    final int MIN_SIZE = 3;
-    final long halfWid = buffer / 2l;
-
-    // find the half-way mark
-    final long halfWay = thisLegTimes.get(index);
-
-    // and the time of the first item in the second leg
-    final long startTime = halfWay + halfWid;
-
-    // ok, loop through
-    for (int ctr = 0; ctr < thisLegTimes.size(); ctr++)
-    {
-      // what's this time?
-      long thisTime = thisLegTimes.get(ctr);
-
-      // have we passed the end time?
-      if (thisTime > startTime)
-      {
-        // have we passed the min size?
-        if (ctr <= thisLegTimes.size() - MIN_SIZE)
-        {
-          // ok, we still have the min number of points
-
-          // yes, it must have been the previous time
-          res = ctr;
-          break;
-        }
-      }
-    }
-
-    return res;
-  }
-
-  final private Minimisation optimiseThis(final List<Long> times,
-      final List<Double> bearings, final double optimiserTolerance)
-  {
-    // Create instance of Minimisation
-    final Minimisation min = new Minimisation();
-
-    // Create instace of class holding function to be minimised
-    final FlanaganArctan funct = new FlanaganArctan(times, bearings);
-
-    // initial estimates
-    final double firstBearing = bearings.get(0);
-    final double[] start =
-    {firstBearing, 0.0D, 0.0D};
-
-    // initial step sizes
-    final double[] step =
-    {0.2D, 0.3D, 0.3D};
-
-    // set the max number of iterations
-    min.setNmax(6400);
-
-    // convergence tolerance
-    final double ftol = optimiserTolerance;
-
-    // Nelder and Mead minimisation procedure
-    min.nelderMead(funct, start, step, ftol);
-
-    return min;
   }
 
   //
@@ -1036,196 +1032,390 @@ public class ZigDetector
   //
   // }
 
-  private static interface EventHappened
+  private static int calculateNewStart(final List<Long> legTimes,
+      final int startPoint, final long interval)
   {
-    public void eventAt(long time, double score, double threshold);
+    final long startValue = legTimes.get(startPoint);
+    for (int i = startPoint; i < legTimes.size(); i++)
+    {
+      final long thisValue = legTimes.get(i);
+      if (Math.abs(thisValue - startValue) >= interval)
+      {
+        return i;
+      }
+    }
+    return legTimes.size() - 1;
+  }
+
+  private static TPeriod findLowestRateIn(final List<Long> legTimes,
+      final List<Double> legBearings)
+  {
+    final int window = 6;
+
+    final TPeriod res;
+    if (legTimes.size() < window)
+    {
+      res = null;
+    }
+    else
+    {
+      int lowestStart = -1;
+      double lowestRate = Double.POSITIVE_INFINITY;
+
+      for (int i = 0; i < legTimes.size() - window; i++)
+      {
+        final double bDelta = legBearings.get(i + window) - legBearings.get(i);
+        final double tDelta = legTimes.get(i + window) - legTimes.get(i);
+        final double rate = bDelta / tDelta;
+
+        if (rate < lowestRate)
+        {
+          lowestStart = i;
+          lowestRate = rate;
+        }
+      }
+      res = new TPeriod(lowestStart, lowestStart + window);
+    }
+    return res;
   }
 
   /**
+   * if we slice these times in two, with a buffer, what is the index of the last item in the first
+   * leg?
    * 
-   * @param log
-   *          the logger
-   * @param PLUGIN_ID
-   *          the id of the plugin that is runnign this
-   * @param scenario
-   *          the name of this scenario
-   * @param wholeStart
-   *          overall start time
-   * @param wholeEnd
-   *          overall end time
-   * @param legStorer
-   *          someone interested in legs
-   * @param zigStorer
-   *          someone interested in zigs
-   * @param RMS_ZIG_RATIO
-   *          how much better the slice has to be
-   * @param optimiseTolerance
-   *          when the ARC_TAN fit is good enough
-   * @param legTimes
-   *          bearing times
-   * @param legBearings
-   *          bearing values
+   * @param start
+   * @param thisLegTimes
+   * @param buffer
+   * @param index
+   * @return
    */
-  public void sliceThis(final ILog log, final String PLUGIN_ID,
-      final String scenario, final long wholeStart, final long wholeEnd,
-      final ILegStorer legStorer, IZigStorer zigStorer,
-      final double RMS_ZIG_RATIO, final double optimiseTolerance,
-      final List<Long> legTimes, final List<Double> rawLegBearings)
+  private static int getEnd(final int start, final List<Long> thisLegTimes,
+      final long buffer, final int index)
   {
-    // check we have some
-    if (legTimes.isEmpty())
+    int res = -1;
+    final int MIN_SIZE = 3;
+    final long halfWid = buffer / 2l;
+
+    // find the half-way mark
+    final long sliceAt = thisLegTimes.get(index);
+
+    // and the time of the last item in the first leg
+    final long endTime = sliceAt - halfWid;
+
+    // ok, loop through
+    for (int ctr = 0; ctr < thisLegTimes.size(); ctr++)
     {
-      return;
-    }
+      // what's this time?
+      final long thisTime = thisLegTimes.get(ctr);
 
-    // ok, find the best slice
-    // prepare the data
-    final List<Double> legBearings = prepareBearings(rawLegBearings);
-
-    if (legBearings.size() == 0)
-    {
-      return;
-    }
-
-    final Set<ScoredTime> zigStarts = new TreeSet<ScoredTime>();
-    final Set<ScoredTime> zigEnds = new TreeSet<ScoredTime>();
-
-    EventHappened fwdListener = new EventHappened()
-    {
-      @Override
-      public void eventAt(long time, double score, double threshold)
+      // have we passed the end time?
+      if (thisTime > endTime)
       {
-        // System.out
-        // .println("zig start at:" + new Date(time) + " score:" + score);
-        zigStarts.add(new ScoredTime(time, score));
-      }
-    };
-
-    // double threshold = 0.002;
-    long timeWindow = 120000;
-
-    runThrough(optimiseTolerance, legTimes, legBearings, fwdListener,
-        RMS_ZIG_RATIO, timeWindow);
-
-    // ok, now reverse the steps
-    EventHappened backListener = new EventHappened()
-    {
-      @Override
-      public void eventAt(long time, double score, double threshold)
-      {
-        // System.out.println("zig end at:" + new Date(time) + " score:" + score);
-        zigEnds.add(new ScoredTime(time, score));
-      }
-    };
-
-    Collections.reverse(legTimes);
-    Collections.reverse(legBearings);
-
-    // ok, now run through it
-    final double reverseZigRation = RMS_ZIG_RATIO * 0.5;
-    runThrough(optimiseTolerance, legTimes, legBearings, backListener,
-        reverseZigRation, timeWindow);
-
-    // note: we should share the zigs, not the ends.
-    // the parent algorithm may be working through blocks
-    // of sensor data that equate to ownship legs. We
-    // don't wish to slice the data according to legs we've
-    // identified (presumably starting at the first cut),
-    // byt by legs of data
-    List<LegOfData> legs = new ArrayList<LegOfData>();
-    Long lastZig = null;
-    for (ScoredTime legStart : zigEnds)
-    {
-      if (lastZig == null || legStart._time > lastZig)
-      {
-        // ok, we have start time. find the next leg end time
-        for (ScoredTime legEnd : zigStarts)
+        // yes, it must have been the previous time
+        if (ctr >= MIN_SIZE)
         {
-          if (legEnd._time > legStart._time)
-          {
-            LegOfData newLeg =
-                new LegOfData("Leg:" + (legs.size() + 1), legStart._time,
-                    legEnd._time);
-            // System.out.println("adding leg:" + newLeg);
-            legs.add(newLeg);
-            lastZig = legEnd._time;
-            break;
-          }
+          res = ctr - 1;
+        }
+        break;
+      }
+    }
+
+    return res;
+  }
+
+  /**
+   * if we slice these times in two, with a buffer, what is the index of the first item in the
+   * second leg?
+   * 
+   * @param start
+   * @param thisLegTimes
+   * @param buffer
+   * @param index
+   * @return
+   */
+  private static int getStart(final int start, final List<Long> thisLegTimes,
+      final long buffer, final int index)
+  {
+    int res = -1;
+    final int MIN_SIZE = 3;
+    final long halfWid = buffer / 2l;
+
+    // find the half-way mark
+    final long halfWay = thisLegTimes.get(index);
+
+    // and the time of the first item in the second leg
+    final long startTime = halfWay + halfWid;
+
+    // ok, loop through
+    for (int ctr = 0; ctr < thisLegTimes.size(); ctr++)
+    {
+      // what's this time?
+      final long thisTime = thisLegTimes.get(ctr);
+
+      // have we passed the end time?
+      if (thisTime > startTime)
+      {
+        // have we passed the min size?
+        if (ctr <= thisLegTimes.size() - MIN_SIZE)
+        {
+          // ok, we still have the min number of points
+
+          // yes, it must have been the previous time
+          res = ctr;
+          break;
         }
       }
     }
 
-    // refactor out storing zigs, to simplify method
-    storeZigs(wholeEnd, zigStorer, zigStarts, zigEnds);
+    return res;
+  }
 
-    // ok, share the good news
-    for (LegOfData leg : legs)
+  private static void handleNewSlices(final List<TPeriod> sliceQueue,
+      final List<TPeriod> legs, final TPeriod outerPeriod,
+      final TPeriod thisLeg, final int minLength)
+  {
+
+    // represent the new slice in overall values
+    final TPeriod relative =
+        new TPeriod(outerPeriod.start + thisLeg.start, outerPeriod.start
+            + thisLeg.end);
+
+    // remove this period
+    sliceQueue.remove(outerPeriod);
+
+    // add the bits either side to the queue
+    if (relative.start - outerPeriod.start > minLength)
     {
-      if (legStorer != null)
+      sliceQueue.add(new TPeriod(outerPeriod.start, relative.start - 1));
+    }
+    if (outerPeriod.end - relative.end > minLength)
+    {
+      sliceQueue.add(new TPeriod(relative.end + 1, outerPeriod.end));
+    }
+
+    // store the new period
+    legs.add(relative);
+
+    // and re-store the legs
+    Collections.sort(legs);
+
+    // ok, re-sort the queue
+    Collections.sort(sliceQueue);
+  }
+
+  private static void listSlices(final List<TPeriod> sliceQueue,
+      final List<Long> legTimes)
+  {
+    for (final TPeriod p : sliceQueue)
+    {
+      if (legTimes != null)
       {
-        legStorer.storeLeg(leg.getName(), leg.getStart(), leg.getEnd(), 2d);
+        System.out.println(new Date(legTimes.get(p.start)) + "-"
+            + new Date(legTimes.get(p.end)));
+      }
+      else
+      {
+        System.out.println(p);
       }
     }
+  }
+
+  /**
+   * put the bearings in the same domain, so we don't jump across 360
+   * 
+   * @param raw
+   *          set of raw bearings
+   * @return processed bearings
+   */
+  private static List<Double> prepareBearings(final List<Double> raw)
+  {
+    final List<Double> res = new ArrayList<Double>();
+    for (int i = 0; i < raw.size(); i++)
+    {
+      final double thisCourse = raw.get(i);
+
+      final double cleanValue;
+
+      if (i == 0)
+      {
+        cleanValue = thisCourse;
+      }
+      else
+      {
+        final double lastCourse = res.get(i - 1);
+        final double thisDiff = thisCourse - lastCourse;
+        if (Math.abs(thisDiff) > 180d)
+        {
+          // ok, we've flippped
+          if (thisDiff > 180)
+          {
+            // ok, deduct 360
+            cleanValue = thisCourse - 360d;
+          }
+          else
+          {
+            // ok, add 360
+            cleanValue = thisCourse + 360d;
+          }
+        }
+        else
+        {
+          cleanValue = thisCourse;
+        }
+      }
+
+      res.add(cleanValue);
+    }
+
+    return res;
 
   }
 
-  private void storeZigs(final long wholeEnd, IZigStorer zigStorer,
-      final Set<ScoredTime> zigStarts, final Set<ScoredTime> zigEnds)
+  private void growLeg(final double optimiseTolerance,
+      final List<Long> thisTimes, final List<Double> thisBearings,
+      final TPeriod thisLeg, final WalkHelper helper)
   {
-    // ok, try to broadcast the zigs
-    if (zigStorer != null)
+    boolean growing = true;
+    while (growing)
     {
-      // LegOfData lastLeg = null;
-      for (ScoredTime legEnd : zigStarts)
+      if (!helper.smallEnough(thisLeg))
       {
-        boolean matched = false;
-        // ok, find the zig end that appears after thie
-        for (ScoredTime legStart : zigEnds)
+        // ok, we can't grow any more. Stop growing
+        growing = false;
+      }
+      else
+      {
+        // ok - work it, girl
+        helper.grow(thisLeg);
+
+        // fit the curve
+        final List<Long> times = thisTimes.subList(thisLeg.start, thisLeg.end);
+        final List<Double> bearings =
+            thisBearings.subList(thisLeg.start, thisLeg.end);
+
+        final Minimisation optimiser =
+            optimiseThis(times, bearings, optimiseTolerance);
+
+        // check it worked
+        if (!optimiser.getConvStatus())
         {
-          if (legStart._time > legEnd._time)
-          {
-            // ok, this will do
-            zigStorer.storeZig("Scenario", legEnd._time, legStart._time,
-                legEnd._score);
-            matched = true;
-            break;
-          }
+          System.out.println("can't converge. Max iterations:"
+              + optimiser.getNiter());
+          // failed to converge. skip to the next one - see if more data will help
+          continue;
         }
 
-        if (!matched)
+        final double[] coeff = optimiser.getParamValues();
+
+       
+        // ok, walk through the last few steps, and see if they're all on the same side
+        Boolean lastAbove = null;
+        double lastError = Double.POSITIVE_INFINITY;
+        int sameSideCount = 0;
+        int lastOpposite = -1;
+
+        final ArrayWalker walker = helper.getWalker(times);
+        // System.out.println("====");
+        while (growing && walker.hasNext())
         {
-          long newEnd = legEnd._time + 180000;
+          final int i = walker.next();
 
-          // check the finish point is still in the scenario period
-          // (put it 5 secs before the end, if necessary
-          newEnd = Math.min(newEnd, wholeEnd - 5000);
-          System.err.println("MANUALLY CLOSING ZIG time:"
-              + new Date(legEnd._time) + " new end:" + new Date(newEnd));
+          final long thisT = times.get(i);
+          final double measuredB = bearings.get(i);
+          final double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
 
-          // ok, we didn't find a zig end. make one up, with a 3 min period
-          zigStorer.storeZig("Scenario", legEnd._time, newEnd, legEnd._score);
+          final double error = predictedB - measuredB;
+
+//          System.out.println(thisT + ", " + measuredB + ", " + predictedB
+//              + (error > 0 ? " above" : " below"));
+
+          final boolean thisAbove = error > 0;
+
+          if (lastAbove == null)
+          {
+            // ok, nothing to test
+            lastOpposite = i;
+          }
+          else if (lastAbove != thisAbove)
+          {
+            // ok, we've switched side. nothing to worry about
+            sameSideCount = 0;
+
+            lastOpposite = helper.trimmed(i);
+          }
+          else
+          {
+            if (error < lastError)
+            {
+              // ok, it's reducing. It's not diverting
+              sameSideCount = 0;
+            }
+            else
+            {
+              sameSideCount++;
+
+              if (sameSideCount == 3)
+              {
+                growing = false;
+                helper.storeEnd(thisLeg, lastOpposite);
+              }
+            }
+          }
+          lastAbove = thisAbove;
+          lastError = error;
         }
       }
     }
+  }
+
+  final private Minimisation optimiseThis(final List<Long> times,
+      final List<Double> bearings, final double optimiserTolerance)
+  {
+    // Create instance of Minimisation
+    final Minimisation min = new Minimisation();
+
+    // Create instace of class holding function to be minimised
+    final FlanaganArctan funct = new FlanaganArctan(times, bearings);
+
+    // initial estimates
+    final double firstBearing = bearings.get(0);
+    final double[] start =
+    {firstBearing, 0.0D, 0.0D};
+
+    // initial step sizes
+    final double[] step =
+    {0.2D, 0.3D, 0.3D};
+
+    // set the max number of iterations
+    min.setNmax(6400);
+
+    // convergence tolerance
+    final double ftol = optimiserTolerance;
+
+    // Nelder and Mead minimisation procedure
+    min.nelderMead(funct, start, step, ftol);
+
+    return min;
   }
 
   private void runThrough(final double optimiseTolerance,
       final List<Long> legTimes, final List<Double> legBearings,
-      EventHappened listener, final double zigThreshold, final long timeWindow)
+      final EventHappened listener, final double zigThreshold,
+      final long timeWindow)
   {
 
     final int len = legTimes.size();
 
     // java.text.DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
-    TimeRestrictedMovingAverage avgScore =
+    final TimeRestrictedMovingAverage avgScore =
         new TimeRestrictedMovingAverage(timeWindow, 3);
 
     /**
      * experimental regression analysis of data, it will let us forecast the next value, rather than
      * using the average
      */
-    SimpleRegression regression = new SimpleRegression();
+    final SimpleRegression regression = new SimpleRegression();
 
     int start = 0;
     for (int end = 0; end < len; end++)
@@ -1254,9 +1444,9 @@ public class ZigDetector
         final List<Double> bearings =
             legBearings.subList(start, end + increment);
 
-        Minimisation optimiser =
+        final Minimisation optimiser =
             optimiseThis(times, bearings, optimiseTolerance);
-        double score = optimiser.getMinimum();
+        final double score = optimiser.getMinimum();
         final double[] coeff = optimiser.getParamValues();
         for (int i = 0; i < times.size(); i++)
         {
@@ -1266,7 +1456,7 @@ public class ZigDetector
               + ", " + bearings.get(i));
         }
 
-        double[] values = optimiser.getParamValues();
+        final double[] values = optimiser.getParamValues();
         System.out.println("scores: B:" + values[0] + " P:" + values[1] + " Q:"
             + values[2]);
 
@@ -1301,7 +1491,7 @@ public class ZigDetector
 
         // what's the forecast
         @SuppressWarnings("unused")
-        double forecast = regression.predict(thisTime);
+        final double forecast = regression.predict(thisTime);
 
         // contribute this score
         avgScore.add(thisTime, score);
@@ -1345,122 +1535,10 @@ public class ZigDetector
     }
   }
 
-  private static class TPeriod implements Comparable<TPeriod>
-  {
-    public int start;
-    public int end;
-
-    @Override
-    public boolean equals(Object arg0)
-    {
-      if (arg0 instanceof TPeriod)
-      {
-        TPeriod other = (TPeriod) arg0;
-        return other.start == start && other.end == end;
-      }
-      else
-      {
-        return false;
-      }
-    }
-
-    @Override
-    public int hashCode()
-    {
-      return start * 10000 + end;
-    }
-
-    public TPeriod(int start, int end)
-    {
-      this.start = start;
-      this.end = end;
-    }
-
-    @Override
-    public String toString()
-    {
-      return "Period:" + start + "-" + end;
-    }
-
-    @Override
-    public int compareTo(TPeriod other)
-    {
-      return Integer.compare(start, other.start);
-    }
-
-  }
-
-  private static class ArrayWalker implements Iterator<Integer>
-  {
-    private final int _start;
-    private final int _end;
-    private int _current;
-    private final int _step;
-
-    public ArrayWalker(int start, int end)
-    {
-      _start = start;
-      _end = end;
-
-      _current = start;
-      _step = _end > _start ? 1 : -1;
-    }
-
-    @Override
-    public void forEachRemaining(Consumer<? super Integer> arg0)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean hasNext()
-    {
-      return _current != _end + _step;
-    }
-
-    @Override
-    public Integer next()
-    {
-      // check we haven't passed the end
-      if (!hasNext())
-      {
-        throw new IllegalArgumentException(
-            "Can't call next() once we've passed the end");
-      }
-
-      final Integer res = _current;
-      _current += _step;
-      return res;
-    }
-
-    @Override
-    public void remove()
-    {
-      // TODO Auto-generated method stub
-
-    }
-  }
-
-  private static interface WalkHelper
-  {
-
-    boolean smallEnough(TPeriod thisLeg);
-
-    void grow(TPeriod thisLeg);
-
-    ArrayWalker getWalker(List<Long> times);
-
-    int trimmed(int i);
-
-    void storeEnd(TPeriod thisLeg, int lastOpposite);
-
-  }
-
   private void runThrough2(final double optimiseTolerance,
       final List<Long> legTimes1, final List<Double> legBearings1,
-      EventHappened listener, final double zigThreshold, final long timeWindow,
-      final List<TPeriod> legs)
+      final EventHappened listener, final double zigThreshold,
+      final long timeWindow, final List<TPeriod> legs)
   {
     final List<TPeriod> sliceQueue = new ArrayList<TPeriod>();
 
@@ -1476,84 +1554,84 @@ public class ZigDetector
 
     while (!sliceQueue.isEmpty())
     {
-      TPeriod outerPeriod = sliceQueue.get(0);
+      final TPeriod outerPeriod = sliceQueue.get(0);
 
       // slice the data
-      List<Long> thisTimes =
+      final List<Long> thisTimes =
           legTimes1.subList(outerPeriod.start, outerPeriod.end);
-      List<Double> thisBearings =
+      final List<Double> thisBearings =
           legBearings1.subList(outerPeriod.start, outerPeriod.end);
 
       final int outerLen = thisTimes.size();
 
       // ok, find the period with the lowest bearing rate
-      TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
+      final TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
 
-      WalkHelper downHelper = new WalkHelper()
+      final WalkHelper downHelper = new WalkHelper()
       {
 
         @Override
-        public boolean smallEnough(TPeriod thisLeg)
-        {
-          return thisLeg.start > 0;
-        }
-
-        @Override
-        public void grow(TPeriod thisLeg)
-        {
-          thisLeg.start = thisLeg.start - 1;
-        }
-
-        @Override
-        public ArrayWalker getWalker(List<Long> times)
+        public ArrayWalker getWalker(final List<Long> times)
         {
           return new ArrayWalker(5, 0);
         }
 
         @Override
-        public int trimmed(int i)
+        public void grow(final TPeriod thisLeg)
         {
-          return i + 1;
+          thisLeg.start = thisLeg.start - 1;
         }
 
         @Override
-        public void storeEnd(TPeriod thisLeg, int lastOpposite)
+        public boolean smallEnough(final TPeriod thisLeg)
+        {
+          return thisLeg.start > 0;
+        }
+
+        @Override
+        public void storeEnd(final TPeriod thisLeg, final int lastOpposite)
         {
           thisLeg.start = lastOpposite;
         }
+
+        @Override
+        public int trimmed(final int i)
+        {
+          return i + 1;
+        }
       };
 
-      WalkHelper upHelper = new WalkHelper()
+      final WalkHelper upHelper = new WalkHelper()
       {
 
         @Override
-        public boolean smallEnough(TPeriod thisLeg)
-        {
-          return thisLeg.end < outerLen;
-        }
-
-        @Override
-        public void grow(TPeriod thisLeg)
-        {
-          thisLeg.end = thisLeg.end + 1;
-        }
-
-        @Override
-        public ArrayWalker getWalker(List<Long> times)
+        public ArrayWalker getWalker(final List<Long> times)
         {
           return new ArrayWalker(times.size() - 5, times.size() - 1);
         }
 
         @Override
-        public int trimmed(int i)
+        public void grow(final TPeriod thisLeg)
         {
-          return i - 1;
+          thisLeg.end = thisLeg.end + 1;
         }
 
         @Override
-        public void storeEnd(TPeriod thisLeg, int lastOpposite)
+        public boolean smallEnough(final TPeriod thisLeg)
+        {
+          return thisLeg.end < outerLen;
+        }
+
+        @Override
+        public void storeEnd(final TPeriod thisLeg, final int lastOpposite)
         {
           thisLeg.end = lastOpposite;
+        }
+
+        @Override
+        public int trimmed(final int i)
+        {
+          return i - 1;
         }
       };
 
@@ -1565,17 +1643,17 @@ public class ZigDetector
       // + FlanaganArctan.calcForecast(coeff, t));
       // }
 
-      System.out.println("start:" + thisLeg);
+ //     System.out.println("start:" + thisLeg);
 
       // ok grow left
       growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, downHelper);
 
-      System.out.println("after down:" + thisLeg);
+ //     System.out.println("after down:" + thisLeg);
 
       // now grow right
       growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, upHelper);
 
-      System.out.println("after up:" + thisLeg);
+ //     System.out.println("after up:" + thisLeg);
 
       // have we finished growing?
       if (thisLeg != null)
@@ -1593,290 +1671,174 @@ public class ZigDetector
     // }
   }
 
-  private void growLeg(final double optimiseTolerance, List<Long> thisTimes,
-      List<Double> thisBearings, TPeriod thisLeg, WalkHelper walker)
-  {
-    boolean growing = true;
-    while (growing)
-    {
-      if (!walker.smallEnough(thisLeg))
-      {
-        // ok, we can't grow any more. Stop growing
-        growing = false;
-      }
-      else
-      {
-        // ok - work it, girl
-        walker.grow(thisLeg);
-
-        // fit the curve
-        final List<Long> times = thisTimes.subList(thisLeg.start, thisLeg.end);
-        final List<Double> bearings =
-            thisBearings.subList(thisLeg.start, thisLeg.end);
-
-        Minimisation optimiser =
-            optimiseThis(times, bearings, optimiseTolerance);
-
-        // check it worked
-        if (!optimiser.getConvStatus())
-        {
-          System.out.println("can't converge. Max iterations:"
-              + optimiser.getNiter());
-          // failed to converge. skip to the next one - see if more data will help
-          continue;
-        }
-
-        final double[] coeff = optimiser.getParamValues();
-
-        if (thisLeg.toString().equals("Period:4-18"))
-        {
-          System.out.println("here");
-
-          for (int j = 0; j < times.size(); j++)
-          {
-            final long t = times.get(j);
-
-            System.out.println(t + ", " + bearings.get(j) + ", "
-                + FlanaganArctan.calcForecast(coeff, t));
-          }
-
-        }
-
-        // ok, walk through the last few steps, and see if they're all on the same side
-        Boolean lastAbove = null;
-        double lastError = Double.POSITIVE_INFINITY;
-        int sameSideCount = 0;
-        int lastOpposite = -1;
-
-        ArrayWalker walker = walker.getWalker(times);
-        // System.out.println("====");
-        while (growing && walker.hasNext())
-        {
-          final int i = walker.next();
-
-          long thisT = times.get(i);
-          double measuredB = bearings.get(i);
-          double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
-
-          double error = predictedB - measuredB;
-
-          System.out.println(thisT + ", " + measuredB + ", " + predictedB
-              + (error > 0 ? " above" : " below"));
-
-          boolean thisAbove = error > 0;
-
-          if (lastAbove == null)
-          {
-            // ok, nothing to test
-            lastOpposite = i;
-          }
-          else if (lastAbove != thisAbove)
-          {
-            // ok, we've switched side. nothing to worry about
-            sameSideCount = 0;
-
-            lastOpposite = walker.trimmed(i);
-          }
-          else
-          {
-            if (error < lastError)
-            {
-              // ok, it's reducing. It's not diverting
-              sameSideCount = 0;
-            }
-            else
-            {
-              sameSideCount++;
-
-              if (sameSideCount == 3)
-              {
-                growing = false;
-                walker.storeEnd(thisLeg, lastOpposite);
-              }
-            }
-          }
-          lastAbove = thisAbove;
-          lastError = error;
-        }
-
-      }
-    }
-
-  }
-
-  private static void listSlices(List<TPeriod> sliceQueue, List<Long> legTimes)
-  {
-    for (TPeriod p : sliceQueue)
-    {
-      if (legTimes != null)
-      {
-        System.out.println(new Date(legTimes.get(p.start)) + "-"
-            + new Date(legTimes.get(p.end)));
-      }
-      else
-      {
-        System.out.println(p);
-      }
-    }
-  }
-
-  private static void handleNewSlices(final List<TPeriod> sliceQueue,
-      List<TPeriod> legs, final TPeriod outerPeriod, final TPeriod thisLeg,
-      final int minLength)
-  {
-
-    // represent the new slice in overall values
-    TPeriod relative =
-        new TPeriod(outerPeriod.start + thisLeg.start, outerPeriod.start
-            + thisLeg.end);
-
-    // remove this period
-    sliceQueue.remove(outerPeriod);
-
-    // add the bits either side to the queue
-    if (relative.start - outerPeriod.start > minLength)
-    {
-      sliceQueue.add(new TPeriod(outerPeriod.start, relative.start - 1));
-    }
-    if (outerPeriod.end - relative.end > minLength)
-    {
-      sliceQueue.add(new TPeriod(relative.end + 1, outerPeriod.end));
-    }
-
-    // store the new period
-    legs.add(relative);
-
-    // and re-store the legs
-    Collections.sort(legs);
-
-    // ok, re-sort the queue
-    Collections.sort(sliceQueue);
-  }
-
-  private static TPeriod findLowestRateIn(List<Long> legTimes,
-      List<Double> legBearings)
-  {
-    final int window = 6;
-
-    final TPeriod res;
-    if (legTimes.size() < window)
-    {
-      res = null;
-    }
-    else
-    {
-      int lowestStart = -1;
-      double lowestRate = Double.POSITIVE_INFINITY;
-
-      for (int i = 0; i < legTimes.size() - window; i++)
-      {
-        final double bDelta = legBearings.get(i + window) - legBearings.get(i);
-        final double tDelta = legTimes.get(i + window) - legTimes.get(i);
-        final double rate = bDelta / tDelta;
-
-        if (rate < lowestRate)
-        {
-          lowestStart = i;
-          lowestRate = rate;
-        }
-      }
-      res = new TPeriod(lowestStart, lowestStart + window);
-    }
-    return res;
-  }
-
-  private static int calculateNewStart(List<Long> legTimes, int startPoint,
-      long interval)
-  {
-    final long startValue = legTimes.get(startPoint);
-    for (int i = startPoint; i < legTimes.size(); i++)
-    {
-      long thisValue = legTimes.get(i);
-      if (Math.abs(thisValue - startValue) >= interval)
-      {
-        return i;
-      }
-    }
-    return legTimes.size() - 1;
-  }
-
   /**
-   * put the bearings in the same domain, so we don't jump across 360
    * 
-   * @param raw
-   *          set of raw bearings
-   * @return processed bearings
+   * @param log
+   *          the logger
+   * @param PLUGIN_ID
+   *          the id of the plugin that is runnign this
+   * @param scenario
+   *          the name of this scenario
+   * @param wholeStart
+   *          overall start time
+   * @param wholeEnd
+   *          overall end time
+   * @param legStorer
+   *          someone interested in legs
+   * @param zigStorer
+   *          someone interested in zigs
+   * @param RMS_ZIG_RATIO
+   *          how much better the slice has to be
+   * @param optimiseTolerance
+   *          when the ARC_TAN fit is good enough
+   * @param legTimes
+   *          bearing times
+   * @param legBearings
+   *          bearing values
    */
-  private static List<Double> prepareBearings(List<Double> raw)
+  public void sliceThis(final ILog log, final String PLUGIN_ID,
+      final String scenario, final long wholeStart, final long wholeEnd,
+      final ILegStorer legStorer, final IZigStorer zigStorer,
+      final double RMS_ZIG_RATIO, final double optimiseTolerance,
+      final List<Long> legTimes, final List<Double> rawLegBearings)
   {
-    final List<Double> res = new ArrayList<Double>();
-    for (int i = 0; i < raw.size(); i++)
+    // check we have some
+    if (legTimes.isEmpty())
     {
-      final double thisCourse = raw.get(i);
-
-      final double cleanValue;
-
-      if (i == 0)
-      {
-        cleanValue = thisCourse;
-      }
-      else
-      {
-        final double lastCourse = res.get(i - 1);
-        double thisDiff = thisCourse - lastCourse;
-        if (Math.abs(thisDiff) > 180d)
-        {
-          // ok, we've flippped
-          if (thisDiff > 180)
-          {
-            // ok, deduct 360
-            cleanValue = thisCourse - 360d;
-          }
-          else
-          {
-            // ok, add 360
-            cleanValue = thisCourse + 360d;
-          }
-        }
-        else
-        {
-          cleanValue = thisCourse;
-        }
-      }
-
-      res.add(cleanValue);
+      return;
     }
 
-    return res;
+    // ok, find the best slice
+    // prepare the data
+    final List<Double> legBearings = prepareBearings(rawLegBearings);
+
+    if (legBearings.size() == 0)
+    {
+      return;
+    }
+
+    final Set<ScoredTime> zigStarts = new TreeSet<ScoredTime>();
+    final Set<ScoredTime> zigEnds = new TreeSet<ScoredTime>();
+
+    final EventHappened fwdListener = new EventHappened()
+    {
+      @Override
+      public void eventAt(final long time, final double score,
+          final double threshold)
+      {
+        // System.out
+        // .println("zig start at:" + new Date(time) + " score:" + score);
+        zigStarts.add(new ScoredTime(time, score));
+      }
+    };
+
+    // double threshold = 0.002;
+    final long timeWindow = 120000;
+
+    runThrough(optimiseTolerance, legTimes, legBearings, fwdListener,
+        RMS_ZIG_RATIO, timeWindow);
+
+    // ok, now reverse the steps
+    final EventHappened backListener = new EventHappened()
+    {
+      @Override
+      public void eventAt(final long time, final double score,
+          final double threshold)
+      {
+        // System.out.println("zig end at:" + new Date(time) + " score:" + score);
+        zigEnds.add(new ScoredTime(time, score));
+      }
+    };
+
+    Collections.reverse(legTimes);
+    Collections.reverse(legBearings);
+
+    // ok, now run through it
+    final double reverseZigRation = RMS_ZIG_RATIO * 0.5;
+    runThrough(optimiseTolerance, legTimes, legBearings, backListener,
+        reverseZigRation, timeWindow);
+
+    // note: we should share the zigs, not the ends.
+    // the parent algorithm may be working through blocks
+    // of sensor data that equate to ownship legs. We
+    // don't wish to slice the data according to legs we've
+    // identified (presumably starting at the first cut),
+    // byt by legs of data
+    final List<LegOfData> legs = new ArrayList<LegOfData>();
+    Long lastZig = null;
+    for (final ScoredTime legStart : zigEnds)
+    {
+      if (lastZig == null || legStart._time > lastZig)
+      {
+        // ok, we have start time. find the next leg end time
+        for (final ScoredTime legEnd : zigStarts)
+        {
+          if (legEnd._time > legStart._time)
+          {
+            final LegOfData newLeg =
+                new LegOfData("Leg:" + (legs.size() + 1), legStart._time,
+                    legEnd._time);
+            // System.out.println("adding leg:" + newLeg);
+            legs.add(newLeg);
+            lastZig = legEnd._time;
+            break;
+          }
+        }
+      }
+    }
+
+    // refactor out storing zigs, to simplify method
+    storeZigs(wholeEnd, zigStorer, zigStarts, zigEnds);
+
+    // ok, share the good news
+    for (final LegOfData leg : legs)
+    {
+      if (legStorer != null)
+      {
+        legStorer.storeLeg(leg.getName(), leg.getStart(), leg.getEnd(), 2d);
+      }
+    }
 
   }
-  //
-  // final private Minimisation optimiseThis_Legacy(final List<Long> times,
-  // final List<Double> bearings, final double initialBearing,
-  // final double optimiserTolerance)
-  // {
-  // // Create instance of Minimisation
-  // final Minimisation min = new Minimisation();
-  //
-  // // Create instace of class holding function to be minimised
-  // final FlanaganArctan funct = new FlanaganArctan(times, bearings);
-  //
-  // // initial estimates
-  // final double firstBearing = bearings.get(0);
-  // final double[] start =
-  // {firstBearing, 0.0D, 0.0D};
-  //
-  // // initial step sizes
-  // final double[] step =
-  // {0.2D, 0.3D, 0.3D};
-  //
-  // // convergence tolerance
-  // final double ftol = optimiserTolerance;
-  //
-  // // Nelder and Mead minimisation procedure
-  // min.nelderMead(funct, start, step, ftol);
-  //
-  // return min;
-  // }
+
+  private void storeZigs(final long wholeEnd, final IZigStorer zigStorer,
+      final Set<ScoredTime> zigStarts, final Set<ScoredTime> zigEnds)
+  {
+    // ok, try to broadcast the zigs
+    if (zigStorer != null)
+    {
+      // LegOfData lastLeg = null;
+      for (final ScoredTime legEnd : zigStarts)
+      {
+        boolean matched = false;
+        // ok, find the zig end that appears after thie
+        for (final ScoredTime legStart : zigEnds)
+        {
+          if (legStart._time > legEnd._time)
+          {
+            // ok, this will do
+            zigStorer.storeZig("Scenario", legEnd._time, legStart._time,
+                legEnd._score);
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched)
+        {
+          long newEnd = legEnd._time + 180000;
+
+          // check the finish point is still in the scenario period
+          // (put it 5 secs before the end, if necessary
+          newEnd = Math.min(newEnd, wholeEnd - 5000);
+          System.err.println("MANUALLY CLOSING ZIG time:"
+              + new Date(legEnd._time) + " new end:" + new Date(newEnd));
+
+          // ok, we didn't find a zig end. make one up, with a 3 min period
+          zigStorer.storeZig("Scenario", legEnd._time, newEnd, legEnd._score);
+        }
+      }
+    }
+  }
 
 }
