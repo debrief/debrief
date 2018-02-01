@@ -1417,7 +1417,7 @@ public class ZigDetector
       return null;
     }
 
-    final boolean me = thisLeg.toString().equals("Period:57-63");
+    final boolean me = thisLeg.toString().equals("Period:27-33");
 
     // check that it's above minimum size
     if (thisLeg.end - thisLeg.start < 6)
@@ -1490,7 +1490,7 @@ public class ZigDetector
 
             // ok, let's ditch this period, and move on.
             final TPeriod outerPeriod = new TPeriod(0, thisTimes.size());
-            deleter.doIt(outerPeriod, thisLeg);
+            deleter.doIt(thisLeg);
             return null;
           }
           else
@@ -1848,10 +1848,9 @@ public class ZigDetector
   {
     /**
      * do something using this time period
-     * 
      * @param period
      */
-    void doIt(final TPeriod outerPeriod, final TPeriod innerPeriod);
+    void doIt(final TPeriod innerPeriod);
   }
 
   private void runThrough2(final double optimiseTolerance,
@@ -1870,16 +1869,6 @@ public class ZigDetector
     // initialise the list
     sliceQueue.add(new TPeriod(0, zeroTimes.size() - 1));
 
-    // create helper, to ditch data we can't use
-    PeriodHandler deleter = new PeriodHandler()
-    {
-      @Override
-      public void doIt(TPeriod outerPeriod, TPeriod innerPeriod)
-      {
-        // get rid of this period of data, create legs either side.
-        handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5, false);
-      }
-    };
 
     final WalkHelper downHelper = new DownHelper();
     final WalkHelper upHelper = new UpHelper();
@@ -1888,6 +1877,19 @@ public class ZigDetector
     {
       final TPeriod outerPeriod = sliceQueue.get(0);
 
+
+      // create helper, to ditch data we can't use
+      PeriodHandler deleter = new PeriodHandler()
+      {
+        @Override
+        public void doIt(TPeriod innerPeriod)
+        {
+          System.out.println("deleting:" + innerPeriod + " from " + outerPeriod);
+          // get rid of this period of data, create legs either side.
+          handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5, false);
+        }
+      };      
+      
       System.out.println("=======");
       System.out.println("Analysing:" + outerPeriod.toString(zeroTimes));
 
