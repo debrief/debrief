@@ -660,7 +660,7 @@ public class ZigDetector
       assertEquals("one item", 1, q.size());
       assertTrue("correct item", q.contains(outer));
 
-      handleNewSlices(q, legs, outer, leg, 5);
+      handleNewSlices(q, legs, outer, leg, 5, true);
 
       assertEquals("two items", 2, q.size());
       assertEquals("first item", q.get(0), new TPeriod(0, 19));
@@ -668,7 +668,7 @@ public class ZigDetector
       assertEquals("correct legs", 1, legs.size());
 
       leg = new TPeriod(30, 40);
-      handleNewSlices(q, legs, q.get(1), leg, 5);
+      handleNewSlices(q, legs, q.get(1), leg, 5, true);
 
       assertEquals("three items", 3, q.size());
 
@@ -680,7 +680,7 @@ public class ZigDetector
       // ok, leave a short one
       leg = new TPeriod(2, 10);
 
-      handleNewSlices(q, legs, q.get(2), leg, 5);
+      handleNewSlices(q, legs, q.get(2), leg, 5, true);
       assertEquals("three items", 3, q.size());
 
       assertEquals("first item", new TPeriod(0, 19), q.get(0));
@@ -691,7 +691,7 @@ public class ZigDetector
       // ok, leave a short one
       leg = new TPeriod(13, 16);
 
-      handleNewSlices(q, legs, q.get(0), leg, 5);
+      handleNewSlices(q, legs, q.get(0), leg, 5, true);
       assertEquals("three items", 3, q.size());
 
       assertEquals("second item", new TPeriod(0, 12), q.get(0));
@@ -702,7 +702,7 @@ public class ZigDetector
       // ok, leave a short one
       leg = new TPeriod(4, 14);
 
-      handleNewSlices(q, legs, q.get(2), leg, 5);
+      handleNewSlices(q, legs, q.get(2), leg, 5, true);
       assertEquals("two items", 2, q.size());
 
       assertEquals("second item", new TPeriod(0, 12), q.get(0));
@@ -711,7 +711,7 @@ public class ZigDetector
 
       // ok, leave a short one
       leg = new TPeriod(2, 6);
-      handleNewSlices(q, legs, q.get(0), leg, 5);
+      handleNewSlices(q, legs, q.get(0), leg, 5, true);
       assertEquals("two items", 2, q.size());
 
       assertEquals("second item", new TPeriod(7, 12), q.get(0));
@@ -720,7 +720,7 @@ public class ZigDetector
 
       // ok, leave a short one
       leg = new TPeriod(2, 6);
-      handleNewSlices(q, legs, q.get(0), leg, 5);
+      handleNewSlices(q, legs, q.get(0), leg, 5, true);
       assertEquals("two items", 1, q.size());
 
       assertEquals("second item", new TPeriod(31, 60), q.get(0));
@@ -854,7 +854,7 @@ public class ZigDetector
 
     void grow(TPeriod thisLeg);
 
-    boolean smallEnough(TPeriod thisLeg);
+    boolean smallEnough(TPeriod thisLeg, final int outerLen);
 
     void storeEnd(TPeriod thisLeg, int lastOpposite);
 
@@ -1129,15 +1129,19 @@ public class ZigDetector
 
       for (int i = 0; i < legTimes.size() - window; i++)
       {
-        final double bDelta =
-            Math.abs(legBearings.get(i + window) - legBearings.get(i));
-        final double tDelta = legTimes.get(i + window) - legTimes.get(i);
-        final double rate = bDelta / tDelta;
-
-        if (rate < lowestRate)
+        // find the sum of the bearing changes in this time period
+        double runningSum = 0;
+        for(int j=i+1;j<=i+window;j++)
+        {
+          double bDelta = runningSum += Math.abs(legBearings.get(j) - legBearings.get(j-1));
+          double tDelta = legTimes.get(j) - legTimes.get(j-1);
+          runningSum += bDelta / tDelta;
+        }
+        
+        if (runningSum < lowestRate)
         {
           lowestStart = i;
-          lowestRate = rate;
+          lowestRate = runningSum;
         }
       }
       res = new TPeriod(lowestStart, lowestStart + window);
@@ -1238,13 +1242,13 @@ public class ZigDetector
 
   private static void handleNewSlices(final List<TPeriod> sliceQueue,
       final List<TPeriod> legs, final TPeriod outerPeriod,
-      final TPeriod thisLeg, final int minLength)
+      final TPeriod newLeg, final int minLength, boolean storeNewLeg)
   {
 
     // represent the new slice in overall values
     final TPeriod relative =
-        new TPeriod(outerPeriod.start + thisLeg.start, outerPeriod.start
-            + thisLeg.end);
+        new TPeriod(outerPeriod.start + newLeg.start, outerPeriod.start
+            + newLeg.end);
 
     // remove this period
     sliceQueue.remove(outerPeriod);
@@ -1259,8 +1263,11 @@ public class ZigDetector
       sliceQueue.add(new TPeriod(relative.end + 1, outerPeriod.end));
     }
 
-    // store the new period
-    legs.add(relative);
+    // do we want to store the new leg?
+    if (storeNewLeg)
+    {
+      legs.add(relative);
+    }
 
     // and re-store the legs
     Collections.sort(legs);
@@ -1399,22 +1406,29 @@ public class ZigDetector
 
   int ctr = 0;
 
-  private void growLeg(final double optimiseTolerance,
+  private TPeriod growLeg(final double optimiseTolerance,
       final List<Long> thisTimes, final List<Double> thisBearings,
-      final TPeriod thisLeg, final WalkHelper helper, final double validFit)
+      final TPeriod thisLeg, final WalkHelper helper, final double validFit,
+      final PeriodHandler deleter)
   {
+    // handle receiving null leg, just return
+    if (thisLeg == null)
+    {
+      return null;
+    }
+
     final boolean me = thisLeg.toString().equals("Period:57-63");
-    
+
     // check that it's above minimum size
     if (thisLeg.end - thisLeg.start < 6)
     {
-      return;
+      return null;
     }
 
     boolean growing = true;
     while (growing)
     {
-      if (!helper.smallEnough(thisLeg))
+      if (!helper.smallEnough(thisLeg, thisTimes.size()))
       {
         // ok, we can't grow any more. Stop growing
         growing = false;
@@ -1446,64 +1460,63 @@ public class ZigDetector
 
         final double[] coeff = optimiser.getParamValues();
 
-        if(optimiser.getMinimum() > validFit)
+        if (optimiser.getMinimum() > validFit)
         {
           System.out.println("Error score:" + optimiser.getMinimum());
-          
+
           // ok. we;ve got a low quality fit. This probably
           // isn't an ArcTan period
-          
+
           // if it's more than a few minutes, let's ditch it.
-          long timeSecs = times.get(times.size()-1) - times.get(0);
-          
-          if(timeSecs > 180)
+          long timeSecs = times.get(times.size() - 1) - times.get(0);
+
+          if (timeSecs > 180)
           {
+            if (me)
+              for (int j = 0; j < times.size(); j++)
+              {
+                final long t = times.get(j);
+
+                double thisB = bearings.get(j);
+                if (thisB < 0)
+                {
+                  thisB += 360d;
+                }
+
+                // System.out.println(t + ", " + thisBearings.get(j));
+                System.out.println(t + ", " + thisB + ", "
+                    + FlanaganArctan.calcForecast(coeff, t));
+              }
+
             // ok, let's ditch this period, and move on.
+            final TPeriod outerPeriod = new TPeriod(0, thisTimes.size());
+            deleter.doIt(outerPeriod, thisLeg);
+            return null;
           }
           else
           {
             // still short. let it grow a little more
             continue;
           }
-          
+
           // solution not good enough
           // show the data
-          if(me)             
-          for (int j = 0; j < times.size(); j++)
-          {
-            final long t = times.get(j);
 
-            double thisB = bearings.get(j);
-            if(thisB < 0)
-            {
-              thisB += 360d;
-            }
-            
-            // System.out.println(t + ", " + thisBearings.get(j));
-            System.out.println(t + ", " + thisB + ", "
-                + FlanaganArctan.calcForecast(coeff, t));
-          }
-          
-          continue;
         }
-        
 
-        
-        System.out.print("B:" + bearings.get(0).intValue() + ", " + " func:" + optimiser.getMinimum() + ", ");
-        for (int i=0;i<coeff.length;i++)
-        {
-          System.out.print(coeff[i] + ", ");
-        }
-        System.out.println();
-        
+//        System.out.print("B:" + bearings.get(0).intValue() + ", " + " func:"
+//            + optimiser.getMinimum() + ", ");
+//        for (int i = 0; i < coeff.length; i++)
+//        {
+//          System.out.print(coeff[i] + ", ");
+//        }
+//        System.out.println();
 
         // ok, walk through the last few steps, and see if they're all on the same side
         Boolean lastAbove = null;
         int sameSideCount = 0;
         int lastOpposite = -1;
 
-
-        
         final ArrayWalker walker = helper.getWalker(times);
         // System.out.println("====");
         while (growing && walker.hasNext())
@@ -1521,9 +1534,9 @@ public class ZigDetector
 
           final double error = predictedB - measuredB;
 
-//           System.out.println(i + ", " + thisT + ", " + measuredB + ", " + predictedB
-//           + (error > 0 ? " above" : " below") + ", " + sameSideCount);
-          
+          // System.out.println(i + ", " + thisT + ", " + measuredB + ", " + predictedB
+          // + (error > 0 ? " above" : " below") + ", " + sameSideCount);
+
           final boolean thisAbove = error > 0;
 
           if (lastAbove == null)
@@ -1540,48 +1553,50 @@ public class ZigDetector
           }
           else
           {
-//            if (error < lastError)
-//            {
-//              // ok, it's reducing. It's not diverting
-//              sameSideCount = 0;
-//            }
-//            else
-//            {
-              sameSideCount++;
+            // if (error < lastError)
+            // {
+            // // ok, it's reducing. It's not diverting
+            // sameSideCount = 0;
+            // }
+            // else
+            // {
+            sameSideCount++;
 
-              if (sameSideCount == 4)
+            if (sameSideCount == 4)
+            {
+              // show the data
+              for (int j = 0; j < times.size(); j++)
               {
-                // show the data
-                for (int j = 0; j < times.size(); j++)
-                {
-                  @SuppressWarnings("unused")
-                  final long t = times.get(j);
+                @SuppressWarnings("unused")
+                final long t = times.get(j);
 
-                  double thisB = bearings.get(j);
-                  if(thisB < 0)
-                  {
-                    thisB += 360d;
-                  }
-                  
-                  // System.out.println(t + ", " + thisBearings.get(j));
-//                  System.out.println(t + ", " + thisB + ", "
-//                      + FlanaganArctan.calcForecast(coeff, t));
-                }
-                
-                if(me)
+                double thisB = bearings.get(j);
+                if (thisB < 0)
                 {
+                  thisB += 360d;
+                }
+
+                // System.out.println(t + ", " + thisBearings.get(j));
+                // System.out.println(t + ", " + thisB + ", "
+                // + FlanaganArctan.calcForecast(coeff, t));
+              }
+
+              if (me)
+              {
                 System.exit(0);
-                }
+              }
 
-                growing = false;
-                helper.storeEnd(thisLeg, lastOpposite);
-        //      }
+              growing = false;
+              helper.storeEnd(thisLeg, lastOpposite);
+              // }
             }
           }
           lastAbove = thisAbove;
         }
       }
     }
+
+    return thisLeg;
   }
 
   final private Minimisation optimiseThis(final List<Long> times,
@@ -1767,7 +1782,7 @@ public class ZigDetector
     }
 
     @Override
-    public boolean smallEnough(final TPeriod thisLeg)
+    public boolean smallEnough(final TPeriod thisLeg, final int outerLen)
     {
       return thisLeg.start > 0;
     }
@@ -1787,11 +1802,9 @@ public class ZigDetector
 
   final class UpHelper implements WalkHelper
   {
-    private int outerLen;
 
-    public UpHelper(final int outerLen)
+    public UpHelper()
     {
-      this.outerLen = outerLen;
     }
 
     @Override
@@ -1807,7 +1820,7 @@ public class ZigDetector
     }
 
     @Override
-    public boolean smallEnough(final TPeriod thisLeg)
+    public boolean smallEnough(final TPeriod thisLeg, final int outerLen)
     {
       return thisLeg.end < outerLen;
     }
@@ -1831,6 +1844,16 @@ public class ZigDetector
     }
   };
 
+  private static interface PeriodHandler
+  {
+    /**
+     * do something using this time period
+     * 
+     * @param period
+     */
+    void doIt(final TPeriod outerPeriod, final TPeriod innerPeriod);
+  }
+
   private void runThrough2(final double optimiseTolerance,
       final List<Long> legTimes, final List<Double> legBearings,
       final EventHappened listener, final double zigThreshold,
@@ -1847,6 +1870,20 @@ public class ZigDetector
     // initialise the list
     sliceQueue.add(new TPeriod(0, zeroTimes.size() - 1));
 
+    // create helper, to ditch data we can't use
+    PeriodHandler deleter = new PeriodHandler()
+    {
+      @Override
+      public void doIt(TPeriod outerPeriod, TPeriod innerPeriod)
+      {
+        // get rid of this period of data, create legs either side.
+        handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5, false);
+      }
+    };
+
+    final WalkHelper downHelper = new DownHelper();
+    final WalkHelper upHelper = new UpHelper();
+
     while (!sliceQueue.isEmpty())
     {
       final TPeriod outerPeriod = sliceQueue.get(0);
@@ -1860,15 +1897,10 @@ public class ZigDetector
       final List<Double> thisBearings =
           legBearings1.subList(outerPeriod.start, outerPeriod.end);
 
-      final int outerLen = thisTimes.size();
-
-      final WalkHelper downHelper = new DownHelper();
-      final WalkHelper upHelper = new UpHelper(outerLen);
-
       // ok, find the period with the lowest bearing rate
-      final TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
+      TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
 
-      // check we can find a turn
+      // check we can find a flat section
       if (thisLeg == null)
       {
         // ok, ditch this leg
@@ -1876,26 +1908,42 @@ public class ZigDetector
         continue;
       }
 
-      System.out.println("flattest:" + thisLeg.toString(thisTimes));
+      showLeg("flattest:", thisTimes, thisLeg);
 
       final double validFit = 2d;
-      
-      // ok grow left
-      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, downHelper, validFit);
 
-      System.out.println("after down:" + thisLeg.toString(thisTimes));
+      // ok grow left
+      thisLeg =
+          growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
+              downHelper, validFit, deleter);
+
+      showLeg("after down:", thisTimes, thisLeg);
 
       // now grow right
-      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, upHelper, validFit);
+      thisLeg =
+          growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
+              upHelper, validFit, deleter);
 
-      System.out.println("after up:" + thisLeg.toString(thisTimes));
+      showLeg("after up:", thisTimes, thisLeg);
 
       // have we finished growing?
       if (thisLeg != null)
       {
         System.out.println("STORING:" + thisLeg);
-        handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
+        handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
       }
+    }
+  }
+
+  private void showLeg(String msg, final List<Long> thisTimes, TPeriod thisLeg)
+  {
+    if (thisLeg != null)
+    {
+      System.out.println(msg + thisLeg.toString(thisTimes));
+    }
+    else
+    {
+      System.out.println(msg + "NULL");
     }
   }
 
