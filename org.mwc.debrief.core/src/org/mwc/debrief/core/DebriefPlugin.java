@@ -40,6 +40,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 import org.mwc.debrief.core.ContextOperations.ConvertAbsoluteTmaToRelative;
+import org.mwc.debrief.core.ContextOperations.CopyBearingsToClipboard;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateNewNarrativeEntry;
 import org.mwc.debrief.core.ContextOperations.GenerateNewSensor;
@@ -311,6 +312,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     RightClickSupport.addRightClickGenerator(new TrimTrack());
     RightClickSupport.addRightClickGenerator(new RainbowShadeSonarCuts());
     RightClickSupport.addRightClickGenerator(new InterpolateTrack());
+    RightClickSupport.addRightClickGenerator(new CopyBearingsToClipboard());
+    
 
     // and the Replay importer/exporter (used to export items from the
     // layer-manager)

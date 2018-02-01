@@ -1393,7 +1393,7 @@ public final class SensorContactWrapper extends
         }
 
         // do we have an ambiguous bearing?
-        if (this.getHasAmbiguousBearing())
+        if (hasAmbig && this.getHasAmbiguousBearing())
         {
           dest.setColor(bearingTwoColor);
 
@@ -1587,7 +1587,7 @@ public final class SensorContactWrapper extends
   public final void setHasAmbiguousBearing(final boolean val)
   {
     // just double-check that we have some ambiguous data
-    if (Double.isNaN(_bearingAmbig))
+    if (val && Double.isNaN(_bearingAmbig))
     {
       // ignore the call, we don't have an ambig
       // bearing anyway

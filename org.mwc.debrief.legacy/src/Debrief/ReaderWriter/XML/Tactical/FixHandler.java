@@ -69,6 +69,13 @@ abstract public class FixHandler extends MWCXMLReader
         _theFixWrapper.setComment(fromXML(value));
       }
     });
+    addAttributeHandler(new HandleBooleanAttribute("DisplayComment")
+    {
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setDisplayComment(value);
+      }
+    });
     addHandler(new FontHandler()
     {
       public void setFont(final java.awt.Font font)
@@ -233,6 +240,7 @@ abstract public class FixHandler extends MWCXMLReader
     if (fix.getComment() != null)
     {
       eFix.setAttribute("Comment", toXML(fix.getComment()));
+      eFix.setAttribute("DisplayComment", writeThis(fix.getDisplayComment()));
     }
     eFix.setAttribute("LabelShowing", writeThis(fix.getLabelShowing()));
     eFix.setAttribute("LineShowing", writeThis(fix.getLineShowing()));

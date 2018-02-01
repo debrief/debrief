@@ -66,7 +66,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 {
 
   private static final String DELETE_SUFFIX =
-      " (Delete from 2nd track if necessary)";
+      " (delete from 2nd track if necessary)";
 
   public static class TestGenInfill extends TestCase
   {
@@ -206,7 +206,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       messages.clear();
       first = (ActionContributionItem) newItems[2];
       assertEquals("right name",
-          "Generate infill segment (Delete from 2nd track if necessary)", first
+          "Generate infill segment" + DELETE_SUFFIX, first
               .getAction().getText());
       first.getAction().run();
 
@@ -368,7 +368,6 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 2, tmaTrack.getSegments().size());
     }
 
-
     @SuppressWarnings("deprecation")
     public void testRepeat() throws ExecutionException
     {
@@ -407,12 +406,12 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       assertEquals("got no error message", 0, messages.size());
       assertEquals("correct legs", 3, track.getSegments().size());
-      
+
       // ok, now try to do it again
       subjects = new Editable[3];
       int ctr = 0;
       Iterator<Editable> iter = track.getSegments().getData().iterator();
-      while(iter.hasNext())
+      while (iter.hasNext())
       {
         subjects[ctr++] = iter.next();
       }
@@ -430,7 +429,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 3, track.getSegments().size());
 
     }
-    
+
     @SuppressWarnings("deprecation")
     public void testUndo() throws ExecutionException
     {
@@ -591,7 +590,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
     }
   }
 
-  private static class GenerateInfillOperation extends CMAPOperation
+  public static class GenerateInfillOperation extends CMAPOperation
   {
 
     public static final String INSUFFICIENT_TIME =
@@ -930,6 +929,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                 CorePlugin.run(theAction);
               }
             };
+            doMerge.setImageDescriptor(CorePlugin
+                .getImageDescriptor("icons\\16\\generate_infill.png"));
             final String secondTitle = finalTitle + DELETE_SUFFIX;
             final Action doMergeAllowDelete = new Action(secondTitle)
             {
@@ -943,6 +944,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                 CorePlugin.run(theAction);
               }
             };
+            doMergeAllowDelete.setImageDescriptor(CorePlugin
+                .getImageDescriptor("icons\\16\\generate_infill_delete.png"));
             parent.add(new Separator());
             parent.add(doMerge);
             parent.add(doMergeAllowDelete);

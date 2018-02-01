@@ -15,8 +15,13 @@
 package Debrief.Wrappers.Track;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -27,6 +32,7 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -63,6 +69,9 @@ import flanagan.interpolation.CubicSpline;
  */
 public class TrackWrapper_Test extends TestCase
 {
+
+  private final static String ownship_track =
+      "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
   protected static class TestMockCanvas extends MockCanvasType
   {
@@ -202,6 +211,78 @@ public class TrackWrapper_Test extends TestCase
 
     // ok, check before freq
     assertEquals("with syms", 640, countDecorations(parent, false, false, true));
+
+  }
+
+  public void testSetLabelFrequencyWithGap() throws FileNotFoundException
+  {
+    final Layers tLayers = new Layers();
+
+    // start off with the ownship track
+    final File boatFile = new File(ownship_track);
+    assertTrue(boatFile.exists());
+    final InputStream bs = new FileInputStream(boatFile);
+
+    final ImportReplay trackImporter = new ImportReplay();
+    ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+        ImportReplay.IMPORT_AS_OTG, 0L));
+    trackImporter.importThis(ownship_track, bs, tLayers);
+
+    assertEquals("read in track", 1, tLayers.size());
+
+    // get the track
+    TrackWrapper track = (TrackWrapper) tLayers.findLayer("NELSON");
+
+    // ok, now delete some items
+    ArrayList<FixWrapper> toDelete = new ArrayList<FixWrapper>();
+
+    Enumeration<Editable> pIter = track.getPositionIterator();
+    int ctr = 0;
+    while (pIter.hasMoreElements())
+    {
+      ctr++;
+      FixWrapper nextF = (FixWrapper) pIter.nextElement();
+      if (ctr > 60 && ctr < 150)
+      {
+        toDelete.add(nextF);
+      }
+    }
+
+    // ok check before
+    assertEquals("no syms", 0, countDecorations(track, false, false, true));
+
+    // ok, now set freq
+    track.setLabelFrequency(new HiResDate(10 * 60000));
+
+    // ok, check before freq
+    assertEquals("with syms", 41, countDecorations(track, false, false, true));
+
+    // clear them again
+    track.setLabelFrequency(new HiResDate(0));
+
+    // ok, check before freq
+    assertEquals("with syms", 0, countDecorations(track, false, false, true));
+
+    for (FixWrapper fix : toDelete)
+    {
+      track.removeElement(fix);
+    }
+
+    // ok, now set freq
+    track.setLabelFrequency(new HiResDate(10 * 60000));
+
+    // ok, check before freq
+    assertEquals("with syms", 32, countDecorations(track, false, false, true));
+
+    pIter = track.getPositionIterator();
+    while (pIter.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) pIter.nextElement();
+      if (fix.getLabelShowing())
+      {
+        System.out.println(fix.getLabel());
+      }
+    }
 
   }
 
@@ -640,7 +721,7 @@ public class TrackWrapper_Test extends TestCase
     _tw.addFix(createFix(600000, 4, 6));
     _messages = new MessageProvider.TestableMessageProvider();
     MessageProvider.Base.setProvider(_messages);
-    
+
     // set the correct earth model
     WorldLocation.setModel(new MWC.Algorithms.EarthModels.FlatEarth());
   }
@@ -823,7 +904,7 @@ public class TrackWrapper_Test extends TestCase
     final SegmentList sl = (SegmentList) tw.getSegments();
 
     // check it's got the segs
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     assertEquals("has all fixes", 15, tw.numFixes());
 
     // what's the area before
@@ -851,7 +932,7 @@ public class TrackWrapper_Test extends TestCase
     Thread.sleep(550);
 
     // how was it?
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     // assertEquals("has all fixes", 7, tw.numFixes());
 
     // GO FOR ULTIMATE DECIMATION
@@ -860,7 +941,7 @@ public class TrackWrapper_Test extends TestCase
     Thread.sleep(550);
 
     // how was it?
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     // assertEquals("has all fixes", 49, tw.numFixes());
   }
 
@@ -1027,7 +1108,7 @@ public class TrackWrapper_Test extends TestCase
     }
 
     // check it's got the segs
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
     assertEquals("has all fixes", 15, tw.numFixes());
     // check we've got all the sensor data
     assertEquals("has all sensor cuts", 4,
@@ -1042,7 +1123,7 @@ public class TrackWrapper_Test extends TestCase
     Thread.sleep(550);
 
     // how was it?
-    assertEquals("has segments", "Track segments (3 items)", sl.toString());
+    assertEquals("has segments", "Positions (3 legs)", sl.toString());
 
     // insert delay, to overcome cacheing
     Thread.sleep(550);
