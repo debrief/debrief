@@ -894,13 +894,14 @@ public class SATC_Solution extends BaseLayer implements
   public HiResDate getEndDTG()
   {
     HiResDate endD = null;
-    Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
+    final Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
     while (iter.hasNext())
     {
-      BaseContribution cont = (BaseContribution) iter.next();
-      if (cont.getStartDate() != null && (endD == null)
-          || (cont.getFinishDate().getTime() > endD.getDate().getTime()))
-        endD = new HiResDate(cont.getFinishDate().getTime());
+      final BaseContribution cont = (BaseContribution) iter.next();
+      final Date thisFinish = cont.getFinishDate();
+      if (thisFinish != null && (endD == null)
+          || (thisFinish != null && thisFinish.getTime() > endD.getDate().getTime()))
+        endD = new HiResDate(thisFinish.getTime());
     }
 
     return endD;
