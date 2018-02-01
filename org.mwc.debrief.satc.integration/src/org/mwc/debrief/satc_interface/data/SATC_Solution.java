@@ -499,7 +499,7 @@ public class SATC_Solution extends BaseLayer implements
     {
 
       @Override
-      public void propertyChange(PropertyChangeEvent evt)
+      public void propertyChange(final PropertyChangeEvent evt)
       {
         fireModified();
       }
@@ -514,13 +514,8 @@ public class SATC_Solution extends BaseLayer implements
     listenToSolver(_mySolver);
   }
 
-  protected void fireModified()
-  {
-    if (_myLayers != null)
-      _myLayers.fireModified(this);
-  }
-
-  public void add(Editable editable)
+  @Override
+  public void add(final Editable editable)
   {
     if (!(editable instanceof ContributionWrapper))
     {
@@ -529,8 +524,8 @@ public class SATC_Solution extends BaseLayer implements
     }
     else
     {
-      ContributionWrapper cw = (ContributionWrapper) editable;
-      BaseContribution cont = cw.getContribution();
+      final ContributionWrapper cw = (ContributionWrapper) editable;
+      final BaseContribution cont = cw.getContribution();
       // do we need to pass this to the parent?
       if (!_mySolver.getContributions().contains(cont))
       {
@@ -671,7 +666,7 @@ public class SATC_Solution extends BaseLayer implements
               // right, "abs" doesn't yet have any positions
 
               // ok, stick in a dynamic infill
-              DynamicInfillSegment infill =
+              final DynamicInfillSegment infill =
                   new DynamicInfillSegment(pendingAlteration, abs);
               newT.add(infill);
               pendingAlteration = null;
@@ -808,41 +803,10 @@ public class SATC_Solution extends BaseLayer implements
     _myLayers = null;
   }
 
-  @Override
-  public WorldArea getBounds()
+  protected void fireModified()
   {
-    WorldArea res = null;
-
-    // check if we have any solutions
-    if ((_newRoutes != null) && (_newRoutes.length >= 0))
-    {
-      // ok, collate some data
-      final CompositeRoute route = _newRoutes[0];
-
-      Collection<CoreRoute> legs = route.getLegs();
-      for (Iterator<CoreRoute> iterator = legs.iterator(); iterator.hasNext();)
-      {
-        CoreRoute thisRoute = (CoreRoute) iterator.next();
-
-        // get the end points for this leg
-        final WorldLocation start =
-            conversions.toLocation(thisRoute.getStartPoint().getCoordinate());
-        final WorldLocation end =
-            conversions.toLocation(thisRoute.getEndPoint().getCoordinate());
-
-        // is this the first area?
-        if (res == null)
-        {
-          res = new WorldArea(start, end);
-        }
-        else
-        {
-          res.extend(new WorldArea(start, end));
-        }
-      }
-    }
-
-    return res;
+    if (_myLayers != null)
+      _myLayers.fireModified(this);
   }
 
   protected void fireRepaint()
@@ -885,6 +849,44 @@ public class SATC_Solution extends BaseLayer implements
   }
 
   @Override
+  public WorldArea getBounds()
+  {
+    WorldArea res = null;
+
+    // check if we have any solutions
+    if ((_newRoutes != null) && (_newRoutes.length >= 0))
+    {
+      // ok, collate some data
+      final CompositeRoute route = _newRoutes[0];
+
+      final Collection<CoreRoute> legs = route.getLegs();
+      for (final Iterator<CoreRoute> iterator = legs.iterator(); iterator
+          .hasNext();)
+      {
+        final CoreRoute thisRoute = iterator.next();
+
+        // get the end points for this leg
+        final WorldLocation start =
+            conversions.toLocation(thisRoute.getStartPoint().getCoordinate());
+        final WorldLocation end =
+            conversions.toLocation(thisRoute.getEndPoint().getCoordinate());
+
+        // is this the first area?
+        if (res == null)
+        {
+          res = new WorldArea(start, end);
+        }
+        else
+        {
+          res.extend(new WorldArea(start, end));
+        }
+      }
+    }
+
+    return res;
+  }
+
+  @Override
   public Color getColor()
   {
     return _myColor;
@@ -894,13 +896,16 @@ public class SATC_Solution extends BaseLayer implements
   public HiResDate getEndDTG()
   {
     HiResDate endD = null;
-    final Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
+    final Iterator<BaseContribution> iter =
+        _mySolver.getContributions().iterator();
     while (iter.hasNext())
     {
-      final BaseContribution cont = (BaseContribution) iter.next();
+      final BaseContribution cont = iter.next();
       final Date thisFinish = cont.getFinishDate();
-      if (thisFinish != null && (endD == null)
-          || (thisFinish != null && thisFinish.getTime() > endD.getDate().getTime()))
+      if (thisFinish != null
+          && (endD == null)
+          || (thisFinish != null && thisFinish.getTime() > endD.getDate()
+              .getTime()))
         endD = new HiResDate(thisFinish.getTime());
     }
 
@@ -914,6 +919,12 @@ public class SATC_Solution extends BaseLayer implements
       _myEditor = new SATC_Info(this);
 
     return _myEditor;
+  }
+
+  @Override
+  public final boolean getInterpolatePoints()
+  {
+    return _interpolatePoints;
   }
 
   @Override
@@ -1020,8 +1031,8 @@ public class SATC_Solution extends BaseLayer implements
                 if (before != null)
                 {
                   // yes, get interpolating
-                  WrappedState beforeWrapped = wrapThis(before);
-                  WrappedState thisWrapped = wrapThis(state);
+                  final WrappedState beforeWrapped = wrapThis(before);
+                  final WrappedState thisWrapped = wrapThis(state);
                   wrapped =
                       FixWrapper
                           .interpolateFix(beforeWrapped, thisWrapped, DTG);
@@ -1059,19 +1070,14 @@ public class SATC_Solution extends BaseLayer implements
     return _onlyPlotLegEnds;
   }
 
-  public boolean getShowLocationConstraints()
-  {
-    return _showLocationBounds;
-  }
-
   public boolean getShowAlterationStates()
   {
     return _showAlteringBounds;
   }
 
-  public void setShowAlterationStates(boolean showAlteringBounds)
+  public boolean getShowLocationConstraints()
   {
-    this._showAlteringBounds = showAlteringBounds;
+    return _showLocationBounds;
   }
 
   public boolean getShowSolutions()
@@ -1097,10 +1103,11 @@ public class SATC_Solution extends BaseLayer implements
   public HiResDate getStartDTG()
   {
     HiResDate startD = null;
-    Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
+    final Iterator<BaseContribution> iter =
+        _mySolver.getContributions().iterator();
     while (iter.hasNext())
     {
-      BaseContribution cont = (BaseContribution) iter.next();
+      final BaseContribution cont = iter.next();
       if (cont.getStartDate() != null)
       {
         if ((startD == null)
@@ -1193,6 +1200,12 @@ public class SATC_Solution extends BaseLayer implements
       }
 
       @Override
+      public void modified()
+      {
+        fireModified();
+      }
+
+      @Override
       public void removed(final BaseContribution contribution)
       {
 
@@ -1232,12 +1245,6 @@ public class SATC_Solution extends BaseLayer implements
         }
 
         fireExtended();
-      }
-
-      @Override
-      public void modified()
-      {
-        fireModified();
       }
     };
 
@@ -1596,6 +1603,12 @@ public class SATC_Solution extends BaseLayer implements
   }
 
   @Override
+  public final void setInterpolatePoints(final boolean val)
+  {
+    _interpolatePoints = val;
+  }
+
+  @Override
   public void setLayers(final Layers parent)
   {
     _myLayers = parent;
@@ -1619,6 +1632,11 @@ public class SATC_Solution extends BaseLayer implements
   public void setOnlyPlotLegEnds(final boolean onlyPlotLegEnds)
   {
     this._onlyPlotLegEnds = onlyPlotLegEnds;
+  }
+
+  public void setShowAlterationStates(final boolean showAlteringBounds)
+  {
+    this._showAlteringBounds = showAlteringBounds;
   }
 
   @FireReformatted
@@ -1666,17 +1684,5 @@ public class SATC_Solution extends BaseLayer implements
   private WrappedState wrapThis(final State state)
   {
     return new WrappedState(state);
-  }
-
-  @Override
-  public final void setInterpolatePoints(final boolean val)
-  {
-    _interpolatePoints = val;
-  }
-
-  @Override
-  public final boolean getInterpolatePoints()
-  {
-    return _interpolatePoints;
   }
 }
