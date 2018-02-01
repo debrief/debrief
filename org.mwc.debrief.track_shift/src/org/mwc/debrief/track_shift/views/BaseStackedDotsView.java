@@ -2009,6 +2009,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // somehow, put the message into the UI
           _myChart.setTitle(string);
         }
+        else if(string == null && _myChart.getTitle() != null)
+        {
+          _myChart.setTitle((String)null);
+        }
 
         // is it a fail status
         if (statusCode != IStatus.OK)
