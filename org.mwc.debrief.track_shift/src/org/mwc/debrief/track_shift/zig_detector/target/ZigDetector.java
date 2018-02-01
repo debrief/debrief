@@ -411,7 +411,6 @@ public class ZigDetector
               -105.6, -104.9, -104.3, -103.6, -102.3, -100.9, -99.9, -97.9,
               -96.6, -95.3, -92.9, -91.9};
 
-
       final Long[] normalTimes = new Long[times.length];
       final Long[] rawTimes = new Long[times.length];
       // final java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
@@ -431,7 +430,6 @@ public class ZigDetector
       }
 
       // start to collate the adta
-      final List<Long> tList1 = Arrays.asList(normalTimes);
       final List<Long> rawList1 = Arrays.asList(rawTimes);
 
       final List<Double> tBearings1 = Arrays.asList(bearings);
@@ -446,11 +444,10 @@ public class ZigDetector
       // List<Long> tList = tList1.subList(start, end);
       // List<Double> tBearings = tBearings1.subList(start, end);
 
-      final List<Long> tList = tList1;
       final List<Double> tBearings = tBearings1;
 
-      final TPeriod flattest = findLowestRateIn(tList, tBearings);
-      assertNotNull("found data", flattest);
+      // final TPeriod flattest = findLowestRateIn(tList, tBearings);
+      // assertNotNull("found data", flattest);
       // assertEquals(0, flattest.start);
       // assertEquals(6, flattest.end);
 
@@ -486,11 +483,13 @@ public class ZigDetector
 
       final List<TPeriod> legs = new ArrayList<TPeriod>();
 
-      detector.runThrough2(optimiseTolerance, tList, tBearings, happened,
+      detector.runThrough2(optimiseTolerance, rawList1, tBearings, happened,
           zigRatio, timeWindow, legs);
 
-      listSlices(legs, rawList1);
-      
+      // listSlices(legs, rawList1);
+
+      listSlicesForPlotting(legs, rawList1);
+
       // final Double[] bearings =
       // new Double[]
       // {180d, 180.3, 180.7, 181d, 181.4, 181.7, 182.1, 182.5, 182.8, 183.2,
@@ -833,13 +832,17 @@ public class ZigDetector
 
     public String toString(List<Long> thisTimes)
     {
-      
-      if(start >= thisTimes.size() || end >= thisTimes.size())
+
+      if (start >= thisTimes.size() || end >= thisTimes.size())
       {
         System.out.println("Trouble");
-        return "Period:"  + start + "-" + end + ", "  + thisTimes.size();//+ thisTimes.get(start) + "secs- " + thisTimes.get(end) + "secs";
+        return "Period:" + start + "-" + end + ", " + thisTimes.size();// + thisTimes.get(start) +
+                                                                       // "secs- " +
+                                                                       // thisTimes.get(end) +
+                                                                       // "secs";
       }
-      return "Period:"  + start + "-" + end + ", "  +  thisTimes.get(start) + "secs- " + thisTimes.get(end) + "secs";
+      return "Period:" + start + "-" + end + ", " + thisTimes.get(start)
+          + "secs- " + thisTimes.get(end) + "secs";
     }
 
   }
@@ -1126,7 +1129,8 @@ public class ZigDetector
 
       for (int i = 0; i < legTimes.size() - window; i++)
       {
-        final double bDelta = Math.abs(legBearings.get(i + window) - legBearings.get(i));
+        final double bDelta =
+            Math.abs(legBearings.get(i + window) - legBearings.get(i));
         final double tDelta = legTimes.get(i + window) - legTimes.get(i);
         final double rate = bDelta / tDelta;
 
@@ -1265,6 +1269,67 @@ public class ZigDetector
     Collections.sort(sliceQueue);
   }
 
+  private static void listSlicesForPlotting(final List<TPeriod> legs,
+      final List<Long> legTimes)
+  {
+    int headCtr = 0;
+    // output headers
+    for (@SuppressWarnings("unused")
+    TPeriod t : legs)
+    {
+      System.out.print("Leg " + ++headCtr + ", ");
+    }
+    System.out.println();
+
+    int colCtr = 0;
+    final int numLegs = legs.size();
+
+    for (int i = 0; i < legTimes.size(); i++)
+    {
+      boolean matched = false;
+      for (final TPeriod t : legs)
+      {
+
+        if (t.start <= i && t.end >= i)
+        {
+          matched = true;
+
+          // input blank rows
+          for (int j = 0; j < colCtr; j++)
+          {
+            System.out.print(" #N/A, ");
+          }
+          // now the value
+          System.out.print((1 + (colCtr % 2)) + ",");
+
+          // now the remaining markers
+          for (int j = 0; j < numLegs - colCtr - 1; j++)
+          {
+            System.out.print(" #N/A, ");
+          }
+
+          // is this the last one?
+          if (t.end == i)
+          {
+            // ok, inc ctr
+            colCtr++;
+          }
+        }
+      }
+
+      if (!matched)
+      {
+        // not covered by legs
+        for (int j = 0; j < numLegs; j++)
+        {
+          System.out.print(" #N/A, ");
+        }
+      }
+
+      System.out.println();
+    }
+  }
+
   private static void listSlices(final List<TPeriod> sliceQueue,
       final List<Long> legTimes)
   {
@@ -1272,8 +1337,7 @@ public class ZigDetector
     {
       if (legTimes != null)
       {
-        System.out.println(new Date(legTimes.get(p.start)) + "-"
-            + new Date(legTimes.get(p.end)));
+        System.out.println(legTimes.get(p.start) + "-" + legTimes.get(p.end));
       }
       else
       {
@@ -1332,19 +1396,21 @@ public class ZigDetector
     return res;
 
   }
-  
+
   int ctr = 0;
 
   private void growLeg(final double optimiseTolerance,
       final List<Long> thisTimes, final List<Double> thisBearings,
-      final TPeriod thisLeg, final WalkHelper helper)
+      final TPeriod thisLeg, final WalkHelper helper, final double validFit)
   {
+    final boolean me = thisLeg.toString().equals("Period:57-63");
+    
     // check that it's above minimum size
-    if(thisLeg.end - thisLeg.start < 6)
+    if (thisLeg.end - thisLeg.start < 6)
     {
       return;
     }
-    
+
     boolean growing = true;
     while (growing)
     {
@@ -1357,7 +1423,7 @@ public class ZigDetector
       {
         // ok - work it, girl
         helper.grow(thisLeg);
-        
+
         ctr++;
 
         // fit the curve
@@ -1380,12 +1446,64 @@ public class ZigDetector
 
         final double[] coeff = optimiser.getParamValues();
 
+        if(optimiser.getMinimum() > validFit)
+        {
+          System.out.println("Error score:" + optimiser.getMinimum());
+          
+          // ok. we;ve got a low quality fit. This probably
+          // isn't an ArcTan period
+          
+          // if it's more than a few minutes, let's ditch it.
+          long timeSecs = times.get(times.size()-1) - times.get(0);
+          
+          if(timeSecs > 180)
+          {
+            // ok, let's ditch this period, and move on.
+          }
+          else
+          {
+            // still short. let it grow a little more
+            continue;
+          }
+          
+          // solution not good enough
+          // show the data
+          if(me)             
+          for (int j = 0; j < times.size(); j++)
+          {
+            final long t = times.get(j);
+
+            double thisB = bearings.get(j);
+            if(thisB < 0)
+            {
+              thisB += 360d;
+            }
+            
+            // System.out.println(t + ", " + thisBearings.get(j));
+            System.out.println(t + ", " + thisB + ", "
+                + FlanaganArctan.calcForecast(coeff, t));
+          }
+          
+          continue;
+        }
+        
+
+        
+        System.out.print("B:" + bearings.get(0).intValue() + ", " + " func:" + optimiser.getMinimum() + ", ");
+        for (int i=0;i<coeff.length;i++)
+        {
+          System.out.print(coeff[i] + ", ");
+        }
+        System.out.println();
+        
+
         // ok, walk through the last few steps, and see if they're all on the same side
         Boolean lastAbove = null;
-        double lastError = Double.POSITIVE_INFINITY;
         int sameSideCount = 0;
         int lastOpposite = -1;
 
+
+        
         final ArrayWalker walker = helper.getWalker(times);
         // System.out.println("====");
         while (growing && walker.hasNext())
@@ -1396,7 +1514,7 @@ public class ZigDetector
           double measuredB = bearings.get(i);
           final double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
 
-          if (measuredB < 0)
+          if (measuredB < 0 && predictedB > 0)
           {
             measuredB += 360d;
           }
@@ -1404,8 +1522,8 @@ public class ZigDetector
           final double error = predictedB - measuredB;
 
 //           System.out.println(i + ", " + thisT + ", " + measuredB + ", " + predictedB
-//           + (error > 0 ? " above" : " below"));
-
+//           + (error > 0 ? " above" : " below") + ", " + sameSideCount);
+          
           final boolean thisAbove = error > 0;
 
           if (lastAbove == null)
@@ -1422,24 +1540,45 @@ public class ZigDetector
           }
           else
           {
-            if (error < lastError)
-            {
-              // ok, it's reducing. It's not diverting
-              sameSideCount = 0;
-            }
-            else
-            {
+//            if (error < lastError)
+//            {
+//              // ok, it's reducing. It's not diverting
+//              sameSideCount = 0;
+//            }
+//            else
+//            {
               sameSideCount++;
 
-              if (sameSideCount == 3)
+              if (sameSideCount == 4)
               {
+                // show the data
+                for (int j = 0; j < times.size(); j++)
+                {
+                  @SuppressWarnings("unused")
+                  final long t = times.get(j);
+
+                  double thisB = bearings.get(j);
+                  if(thisB < 0)
+                  {
+                    thisB += 360d;
+                  }
+                  
+                  // System.out.println(t + ", " + thisBearings.get(j));
+//                  System.out.println(t + ", " + thisB + ", "
+//                      + FlanaganArctan.calcForecast(coeff, t));
+                }
+                
+                if(me)
+                {
+                System.exit(0);
+                }
+
                 growing = false;
                 helper.storeEnd(thisLeg, lastOpposite);
-              }
+        //      }
             }
           }
           lastAbove = thisAbove;
-          lastError = error;
         }
       }
     }
@@ -1676,14 +1815,13 @@ public class ZigDetector
     @Override
     public void storeEnd(final TPeriod thisLeg, final int lastOpposite)
     {
-      if(thisLeg.start + lastOpposite == 52)
+      if (thisLeg.start + lastOpposite == 52)
       {
         System.out.println("Leg:" + thisLeg + " opp:" + lastOpposite);
       }
 
-      
       thisLeg.end = thisLeg.start + lastOpposite;
-      
+
     }
 
     @Override
@@ -1694,7 +1832,7 @@ public class ZigDetector
   };
 
   private void runThrough2(final double optimiseTolerance,
-      final List<Long> legTimes1, final List<Double> legBearings,
+      final List<Long> legTimes, final List<Double> legBearings,
       final EventHappened listener, final double zigThreshold,
       final long timeWindow, final List<TPeriod> legs)
   {
@@ -1703,25 +1841,22 @@ public class ZigDetector
     // sort out the beraings
     List<Double> legBearings1 = prepareBearings(legBearings);
 
-    // for (int j = 0; j < legTimes1.size(); j++)
-    // {
-    // final long t = legTimes1.get(j);
-    //
-    // System.out.println(t + ", " + legBearings1.get(j));
-    // }
+    // give the times a zero offset
+    List<Long> zeroTimes = prepareTimes(legTimes);
 
-    // add the fill list
-    sliceQueue.add(new TPeriod(0, legTimes1.size() - 1));
+    // initialise the list
+    sliceQueue.add(new TPeriod(0, zeroTimes.size() - 1));
 
     while (!sliceQueue.isEmpty())
     {
       final TPeriod outerPeriod = sliceQueue.get(0);
 
-      System.out.println("Analysing:" + outerPeriod.toString(legTimes1));
+      System.out.println("=======");
+      System.out.println("Analysing:" + outerPeriod.toString(zeroTimes));
 
       // slice the data
       final List<Long> thisTimes =
-          legTimes1.subList(outerPeriod.start, outerPeriod.end);
+          zeroTimes.subList(outerPeriod.start, outerPeriod.end);
       final List<Double> thisBearings =
           legBearings1.subList(outerPeriod.start, outerPeriod.end);
 
@@ -1734,53 +1869,53 @@ public class ZigDetector
       final TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings);
 
       // check we can find a turn
-      if(thisLeg  == null)
+      if (thisLeg == null)
       {
         // ok, ditch this leg
         sliceQueue.remove(outerPeriod);
         continue;
       }
-      
-//      for (int j = 0; j < thisTimes.size(); j++)
-//      {
-//        final long t = thisTimes.get(j);
-//
-//        System.out.println(t + ", " + thisBearings.get(j));
-//        // System.out.println(t + ", " + bearings.get(j) + ", "
-//        // + FlanaganArctan.calcForecast(coeff, t));
-//      }
 
       System.out.println("flattest:" + thisLeg.toString(thisTimes));
 
+      final double validFit = 2d;
+      
       // ok grow left
-      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, downHelper);
+      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, downHelper, validFit);
 
       System.out.println("after down:" + thisLeg.toString(thisTimes));
 
-      if(thisLeg.toString().equals("Period:35-45"))
-      {
-        System.out.println("HERE");
-      }
-      
       // now grow right
-      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, upHelper);
+      growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg, upHelper, validFit);
 
       System.out.println("after up:" + thisLeg.toString(thisTimes));
 
       // have we finished growing?
       if (thisLeg != null)
       {
+        System.out.println("STORING:" + thisLeg);
         handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5);
       }
     }
+  }
 
-    // for (int j = 0; j < times.size(); j++)
-    // {
-    // final long t = times.get(j);
-    //
-    // System.out.println(t + ", " + bearings.get(j) + ", "
-    // + FlanaganArctan.calcForecast(coeff, t));
-    // }
+  /**
+   * make this dataset zero-based
+   * 
+   * @param times
+   *          regular time values
+   * @return zero-based version of time dataset
+   */
+  private List<Long> prepareTimes(List<Long> times)
+  {
+    final long first = times.get(0);
+    final List<Long> res = new ArrayList<Long>();
+    for (Long t : times)
+    {
+      res.add(t - first);
+    }
+
+    return res;
   }
 
   /**
