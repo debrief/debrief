@@ -1115,7 +1115,7 @@ public class ZigDetector
   private static TPeriod findLowestRateIn(final List<Long> legTimes,
       final List<Double> legBearings)
   {
-    final int window = 6;
+    final int window = 12;
 
     final TPeriod res;
     if (legTimes.size() < window)
@@ -1409,7 +1409,7 @@ public class ZigDetector
   private TPeriod growLeg(final double optimiseTolerance,
       final List<Long> thisTimes, final List<Double> thisBearings,
       final TPeriod thisLeg, final WalkHelper helper, final double validFit,
-      final PeriodHandler deleter)
+      final PeriodHandler deleter, final boolean deleteIfCantFit)
   {
     // handle receiving null leg, just return
     if (thisLeg == null)
@@ -1417,7 +1417,10 @@ public class ZigDetector
       return null;
     }
 
-    final boolean me = thisLeg.toString().equals("Period:27-33");
+    // take safe copy of leg
+    final TPeriod originalLeg = new TPeriod(thisLeg.start, thisLeg.end);
+    
+    final boolean me = thisLeg.toString().equals("Period:144-150");
 
     // check that it's above minimum size
     if (thisLeg.end - thisLeg.start < 6)
@@ -1458,40 +1461,70 @@ public class ZigDetector
           continue;
         }
 
+        
+        
         final double[] coeff = optimiser.getParamValues();
+
+        if (false)
+        {
+          for (int j = 0; j < times.size(); j++)
+          {
+            final long t = times.get(j);
+
+            double thisB = bearings.get(j);
+            if (thisB < 0)
+            {
+              thisB += 360d;
+            }
+
+            // System.out.println(t + ", " + thisBearings.get(j));
+            System.out.println(t + ", " + thisB + ", "
+                + FlanaganArctan.calcForecast(coeff, t));
+          }
+        }
+
+        // if it's more than a few minutes, let's ditch it.
+        long timeSecs = times.get(times.size() - 1) - times.get(0);
+
+        System.out.println("Error score:" + optimiser.getMinimum() + " secs:" + timeSecs);
 
         if (optimiser.getMinimum() > validFit)
         {
-          System.out.println("Error score:" + optimiser.getMinimum());
 
           // ok. we;ve got a low quality fit. This probably
           // isn't an ArcTan period
 
-          // if it's more than a few minutes, let's ditch it.
-          long timeSecs = times.get(times.size() - 1) - times.get(0);
-
-          if (timeSecs > 180)
+          if (true)
           {
-            if (me)
-              for (int j = 0; j < times.size(); j++)
+            for (int j = 0; j < times.size(); j++)
+            {
+              final long t = times.get(j);
+
+              double thisB = bearings.get(j);
+              if (thisB < 0)
               {
-                final long t = times.get(j);
-
-                double thisB = bearings.get(j);
-                if (thisB < 0)
-                {
-                  thisB += 360d;
-                }
-
-                // System.out.println(t + ", " + thisBearings.get(j));
-                System.out.println(t + ", " + thisB + ", "
-                    + FlanaganArctan.calcForecast(coeff, t));
+                thisB += 360d;
               }
 
+              // System.out.println(t + ", " + thisBearings.get(j));
+              System.out.println(t + ", " + thisB + ", "
+                  + FlanaganArctan.calcForecast(coeff, t));
+            }
+          }
+
+          if (timeSecs < 180)
+          {
+
             // ok, let's ditch this period, and move on.
-            final TPeriod outerPeriod = new TPeriod(0, thisTimes.size());
-            deleter.doIt(thisLeg);
-            return null;
+            if(deleteIfCantFit)
+            {
+              deleter.doIt(thisLeg);
+              return null;
+            }
+            else
+            {
+              return originalLeg;
+            }
           }
           else
           {
@@ -1534,8 +1567,11 @@ public class ZigDetector
 
           final double error = predictedB - measuredB;
 
-          // System.out.println(i + ", " + thisT + ", " + measuredB + ", " + predictedB
-          // + (error > 0 ? " above" : " below") + ", " + sameSideCount);
+          if(me)
+          {
+            System.out.println(i + ", " + thisT + ", " + measuredB + ", "
+                + predictedB + (error > 0 ? " above" : " below") + ", " + sameSideCount);
+          }
 
           final boolean thisAbove = error > 0;
 
@@ -1581,10 +1617,10 @@ public class ZigDetector
                 // + FlanaganArctan.calcForecast(coeff, t));
               }
 
-              if (me)
-              {
-                System.exit(0);
-              }
+//              if (me)
+//              {
+//                System.exit(0);
+//              }
 
               growing = false;
               helper.storeEnd(thisLeg, lastOpposite);
@@ -1914,19 +1950,21 @@ public class ZigDetector
 
       final double validFit = 2d;
 
+      // grow right first, since turns normally start more sharply
+      // than they finish
+      thisLeg =
+          growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
+              upHelper, validFit, deleter, false);
+
+      showLeg("after up:", thisTimes, thisLeg);
+      
+      
       // ok grow left
       thisLeg =
           growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
-              downHelper, validFit, deleter);
+              downHelper, validFit, deleter, true);
 
       showLeg("after down:", thisTimes, thisLeg);
-
-      // now grow right
-      thisLeg =
-          growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
-              upHelper, validFit, deleter);
-
-      showLeg("after up:", thisTimes, thisLeg);
 
       // have we finished growing?
       if (thisLeg != null)
