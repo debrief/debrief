@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Consumer;
 
 import junit.framework.TestCase;
 
@@ -26,36 +24,81 @@ import flanagan.math.MinimisationFunction;
 
 public class ZigDetector
 {
-  private static class ArrayWalker implements Iterator<Integer>
+  private static class ArrayWalker 
   {
     private final int _start;
     private final int _end;
     private int _current;
     private final int _step;
 
-    public ArrayWalker(final int start, final int end)
+    private Boolean _lastAbove = null;
+    private int _lastOpposite;
+    private int _sameSideCount;
+    private String _name;
+    private double _lastError = 0d;
+
+    
+    public ArrayWalker(final int start, final int end, final String name)
     {
       _start = start;
       _end = end;
+      _name = name;
 
       _current = start;
       _step = _end > _start ? 1 : -1;
     }
-
+    
+    
+    
     @Override
-    public void forEachRemaining(final Consumer<? super Integer> arg0)
+    public String toString()
     {
-      // TODO Auto-generated method stub
-
+      return _name;
     }
 
-    @Override
+
+
+    final public boolean justStarted()
+    {
+      return _lastAbove == null;
+    }
+
+    final public void setLastOpposite(int i)
+    {
+      _lastOpposite = i;
+      _lastError = 0d;
+    }
+
+    final public int getLastOpposite()
+    {
+      return _lastOpposite;
+    }
+
+    final public void setSameSideCount(int i)
+    {
+      _sameSideCount = i;
+    }
+
+    final public int getSameSideCount()
+    {
+      return _sameSideCount;
+    }
+
+    final public void setLastAbove(boolean thisAbove)
+    {
+      _lastAbove = thisAbove;
+    }
+
+    final public boolean getLastAbove()
+    {
+      return _lastAbove;
+    }
+
     public boolean hasNext()
     {
       return _current != _end + _step;
     }
 
-    @Override
     public Integer next()
     {
       // check we haven't passed the end
@@ -70,11 +113,18 @@ public class ZigDetector
       return res;
     }
 
-    @Override
-    public void remove()
-    {
-      // TODO Auto-generated method stub
 
+
+    public double getLastError()
+    {
+      return _lastError;
+    }
+
+
+
+    public void setLastError(double error2)
+    {
+      _lastError  = error2;
     }
   }
 
@@ -486,7 +536,7 @@ public class ZigDetector
       detector.runThrough2(optimiseTolerance, rawList1, tBearings, happened,
           zigRatio, timeWindow, legs);
 
-      // listSlices(legs, rawList1);
+       listSlices(legs, rawList1);
 
       listSlicesForPlotting(legs, rawList1);
 
@@ -766,7 +816,7 @@ public class ZigDetector
 
     public void testWalker()
     {
-      final ArrayWalker walker1 = new ArrayWalker(0, 2);
+      final ArrayWalker walker1 = new ArrayWalker(0, 2, "up");
       assertTrue(walker1.hasNext());
       assertEquals((Integer) 0, walker1.next());
       assertTrue(walker1.hasNext());
@@ -775,7 +825,7 @@ public class ZigDetector
       assertEquals((Integer) 2, walker1.next());
       assertFalse(walker1.hasNext());
 
-      final ArrayWalker walker2 = new ArrayWalker(2, 0);
+      final ArrayWalker walker2 = new ArrayWalker(2, 0, "down");
       assertTrue(walker2.hasNext());
       assertEquals((Integer) 2, walker2.next());
       assertTrue(walker2.hasNext());
@@ -792,6 +842,8 @@ public class ZigDetector
     public int start;
     public int end;
 
+
+    
     public TPeriod(final int start, final int end)
     {
       this.start = start;
@@ -833,7 +885,7 @@ public class ZigDetector
     public String toString(List<Long> thisTimes)
     {
 
-      if (start >= thisTimes.size() || end >= thisTimes.size())
+      if (start >= thisTimes.size() || end >= thisTimes.size() || start == -1 || end == -1)
       {
         System.out.println("Trouble");
         return "Period:" + start + "-" + end + ", " + thisTimes.size();// + thisTimes.get(start) +
@@ -846,256 +898,6 @@ public class ZigDetector
     }
 
   }
-
-  private static interface WalkHelper
-  {
-
-    ArrayWalker getWalker(List<Long> times);
-
-    void grow(TPeriod thisLeg);
-
-    boolean smallEnough(TPeriod thisLeg, final int outerLen);
-
-    void storeEnd(TPeriod thisLeg, int lastOpposite);
-
-    int trimmed(int i);
-
-  }
-
-  //
-  // /**
-  // * @param trialIndex
-  // * @param bearings
-  // * @param times
-  // * @param legOneEnd
-  // * @param legTwoStart
-  // * @param optimiserTolerance
-  // * @param fittedQ
-  // * @param fittedP
-  // * @param overallScore
-  // * the overall score for this leg
-  // * @param BUFFER_REGION
-  // * @param straightBar
-  // * @param thisSeries
-  // * @return
-  // */
-  // private double sliceLeg(final int trialIndex, final List<Double> bearings,
-  // final List<Long> times, final int legOneEnd, final int legTwoStart,
-  // final double optimiserTolerance)
-  // {
-  //
-  // final List<Long> theseTimes = times;
-  // final List<Double> theseBearings = bearings;
-  //
-  // final Date thisD = new Date(times.get(trialIndex));
-  //
-  // // if((legOneEnd == -1) || (legTwoStart == -1))
-  // // return Double.MAX_VALUE;
-  //
-  // double beforeScore = Double.MAX_VALUE;
-  // double afterScore = Double.MAX_VALUE;
-  //
-  // @SuppressWarnings("unused")
-  // String msg = dateF.format(thisD);
-  //
-  // Minimisation beforeOptimiser = null;
-  // Minimisation afterOptimiser = null;
-  //
-  // if (legOneEnd != -1)
-  // {
-  // final List<Long> beforeTimes = theseTimes.subList(0, legOneEnd);
-  // final List<Double> beforeBearings = theseBearings.subList(0, legOneEnd);
-  // beforeOptimiser =
-  // optimiseThis_Legacy(beforeTimes, beforeBearings, beforeBearings
-  // .get(0), optimiserTolerance);
-  // beforeScore = beforeOptimiser.getMinimum();
-  // // System.out.println(" before:" + _outDates(beforeTimes));
-  //
-  // }
-  //
-  // if (legTwoStart != -1)
-  // {
-  // final List<Long> afterTimes =
-  // theseTimes.subList(legTwoStart, theseTimes.size() - 1);
-  // final List<Double> afterBearings =
-  // theseBearings.subList(legTwoStart, theseTimes.size() - 1);
-  // afterOptimiser =
-  // optimiseThis_Legacy(afterTimes, afterBearings, afterBearings.get(0),
-  // optimiserTolerance);
-  // afterScore = afterOptimiser.getMinimum();
-  // // System.out.println(" after:" + _outDates(afterTimes));
-  // }
-  //
-  // // find the total error sum
-  // double sum = Double.MAX_VALUE;
-  //
-  // // do we have both legs?
-  // if ((legOneEnd != -1) && (legTwoStart != -1))
-  // {
-  // final int beforeLen = theseTimes.subList(0, legOneEnd).size();
-  // final int afterLen =
-  // theseTimes.subList(legTwoStart, theseTimes.size() - 1).size();
-  //
-  // final int totalCuts = beforeLen + afterLen;
-  //
-  // final double beforeNormal = beforeScore * beforeLen / totalCuts;
-  // final double afterNormal = afterScore * afterLen / totalCuts;
-  // sum = beforeNormal + afterNormal;
-  //
-  // // double[] bValues = beforeOptimiser.getParamValues();
-  // // msg +=
-  // // " ,BEFORE," + dateF.format(times.get(0)) + ","
-  // // + dateF.format(times.get(legOneEnd)) + "," + beforeScore;
-  // // msg += ",B," + bValues[0] + ",P," + bValues[1] + ",Q," + bValues[2] + ",score," +
-  // // beforeNormal;
-  // // double[] aValues = afterOptimiser.getParamValues();
-  // // msg +=
-  // // " ,AFTER," + dateF.format(times.get(legTwoStart)) + ","
-  // // + dateF.format(times.get(times.size() - 1)) + "," + afterScore;
-  // // msg += ",B," + aValues[0] + ",P," + aValues[1] + ",Q," + aValues[2] + ",score," +
-  // // afterNormal;
-  // // System.out.println(msg + ",sum," + sum);
-  //
-  // }
-  //
-  // return sum;
-  // }
-  //
-  // /**
-  // *
-  // * @param log
-  // * the logger
-  // * @param PLUGIN_ID
-  // * the id of the plugin that is runnign this
-  // * @param scenario
-  // * the name of this scenario
-  // * @param wholeStart
-  // * overall start time
-  // * @param wholeEnd
-  // * overall end time
-  // * @param legStorer
-  // * someone interested in legs
-  // * @param zigStorer
-  // * someone interested in zigs
-  // * @param RMS_ZIG_RATIO
-  // * how much better the slice has to be
-  // * @param optimiseTolerance
-  // * when the ARC_TAN fit is good enough
-  // * @param thisLegTimes
-  // * bearing times
-  // * @param thisLegBearings
-  // * bearing values
-  // */
-  // public void sliceThis_Original(final ILog log, final String PLUGIN_ID,
-  // final String scenario, final long wholeStart, final long wholeEnd,
-  // final ILegStorer legStorer, IZigStorer zigStorer,
-  // final double RMS_ZIG_RATIO, final double optimiseTolerance,
-  // final List<Long> thisLegTimes, final List<Double> thisLegBearings)
-  // {
-  // // ok, find the best slice
-  // // prepare the data
-  //
-  // // final int len = thisLegTimes.size();
-  // // for (int i = 0; i < len; i++)
-  // // {
-  // // System.out.print(thisLegTimes.get(i) + "L, ");
-  // // }
-  // // System.out.println("===");
-  // // for (int i = 0; i < len; i++)
-  // // {
-  // // System.out.print(thisLegBearings.get(i) + ", ");
-  // // }
-  //
-  // if (thisLegBearings.size() == 0)
-  // {
-  // return;
-  // }
-  //
-  // final Minimisation wholeLeg =
-  // optimiseThis_Legacy(thisLegTimes, thisLegBearings, thisLegBearings
-  // .get(0), optimiseTolerance);
-  // final double wholeLegScore = wholeLeg.getMinimum();
-  //
-  // // ok, now have to slice it
-  // double bestScore = Double.MAX_VALUE;
-  // // int bestSlice = -1;
-  // long sliceTime = -1;
-  // long bestLegOneEnd = -1;
-  // long bestLegTwoStart = -1;
-  //
-  // /**
-  // * how long we allow for a turn (millis)
-  // *
-  // */
-  // final long BUFFER_SIZE = 300 * 1000;
-  //
-  // // TODO - drop this object, it's just for debugging
-  // // DateFormat ds = new SimpleDateFormat("hh:mm:ss");
-  //
-  // // find the optimal first slice
-  // for (int index = 0; index < thisLegTimes.size(); index++)
-  // {
-  // final int legOneEnd = getEnd(0, thisLegTimes, BUFFER_SIZE, index);
-  // final int legTwoStart = getStart(0, thisLegTimes, BUFFER_SIZE, index);
-  //
-  // // check we have two legitimate legs
-  // if (legOneEnd != -1 && legTwoStart != -1)
-  // {
-  // // what's the total score for slicing at this index?
-  // final double sum =
-  // sliceLeg(index, thisLegBearings, thisLegTimes, legOneEnd,
-  // legTwoStart, optimiseTolerance);
-  //
-  // // is this better?
-  // if ((sum != Double.MAX_VALUE) && (sum < bestScore))
-  // {
-  // // yes - store it.
-  // bestScore = sum;
-  // // bestSlice = index;
-  // sliceTime = thisLegTimes.get(index);
-  // bestLegOneEnd = thisLegTimes.get(legOneEnd);
-  // bestLegTwoStart = thisLegTimes.get(legTwoStart);
-  // }
-  // }
-  // }
-  //
-  // // right, how did we get on?
-  // if (sliceTime != -1)
-  // {
-  // // is this slice acceptable?
-  // if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
-  // {
-  // legStorer.storeLeg(scenario, wholeStart, bestLegOneEnd, bestScore
-  // / wholeLegScore * 100);
-  // legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd, bestScore
-  // / wholeLegScore * 100);
-  // if (zigStorer != null)
-  // {
-  // zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart,
-  // bestScore / wholeLegScore * 100);
-  // }
-  // }
-  // else
-  // {
-  // // right - we couldn't get a good slice. see what the whole score is
-  // // SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
-  // // + wholeLegScore + " best slice:" + bestScore, null);
-  //
-  // // just store the whole slice
-  // legStorer.storeLeg(scenario, wholeStart, wholeEnd, wholeLegScore
-  // / wholeLegScore * 100);
-  // }
-  // }
-  // else
-  // {
-  // log.log(new Status(Status.INFO, PLUGIN_ID,
-  // "slicing complete, can't slice", null));
-  // }
-  //
-  // // and tell the storer that we're done.
-  // zigStorer.finish();
-  //
-  // }
 
   private static int calculateNewStart(final List<Long> legTimes,
       final int startPoint, final long interval)
@@ -1115,10 +917,23 @@ public class ZigDetector
   private static TPeriod findLowestRateIn(final List<Long> legTimes,
       final List<Double> legBearings)
   {
-    final int window = 12;
+     int window;
+    final int len = legTimes.size();
+    if(len < 20)
+    {
+      window = 5;
+    }
+    else if(len < 40)
+    {
+      window = 7;
+    }
+    else
+    {
+      window = 7;
+    }
 
     final TPeriod res;
-    if (legTimes.size() < window)
+    if (legTimes.size() <= window)
     {
       res = null;
     }
@@ -1131,18 +946,31 @@ public class ZigDetector
       {
         // find the sum of the bearing changes in this time period
         double runningSum = 0;
+        Double lastB = null;
         for (int j = i + 1; j <= i + window; j++)
         {
           double bDelta = Math.abs(legBearings.get(j) - legBearings.get(j - 1));
-          
+
           // check for passing through 360
-          if(bDelta > 180)
+          if (bDelta > 180)
           {
             bDelta = Math.abs(bDelta - 360d);
           }
-          double tDelta = legTimes.get(j) - legTimes.get(j - 1);
-          runningSum += (bDelta / tDelta);
+
+          if (lastB != null)
+          {
+            double bDelta2 = Math.abs(lastB - bDelta);
+            double tDelta = legTimes.get(j) - legTimes.get(j - 1);
+            double bDelta2Rate = bDelta2 / tDelta;
+
+            runningSum += (bDelta2Rate);
+          }
+          lastB = bDelta;
+
         }
+        
+     //   System.out.println(legTimes.get(i) + ", " + runningSum);
+
 
         if (runningSum < lowestRate)
         {
@@ -1410,9 +1238,9 @@ public class ZigDetector
 
   }
 
-  int ctr = 0;
+  static int ctr = 0;
 
-  private TPeriod growLeg(final double optimiseTolerance,
+  private static TPeriod growLeg(final double optimiseTolerance,
       final List<Long> thisTimes, final List<Double> thisBearings,
       final TPeriod thisLeg, final double validFit,
       final PeriodHandler deleter, final boolean deleteIfCantFit)
@@ -1426,42 +1254,46 @@ public class ZigDetector
     // take safe copy of leg
     final TPeriod originalLeg = new TPeriod(thisLeg.start, thisLeg.end);
 
-    final boolean me = thisLeg.toString().equals("Period:144-150");
-
     // check that it's above minimum size
-    if (thisLeg.end - thisLeg.start < 6)
-    {
-      return null;
-    }
+//    if (thisLeg.end - thisLeg.start < 6)
+//    {
+//      return null;
+//    }
 
-    final WalkHelper downHelper = new DownHelper();
-    final WalkHelper upHelper = new UpHelper();
+    final Helpers.WalkHelper downHelper = new Helpers.DownHelper(thisLeg);
+    final Helpers.WalkHelper upHelper = new Helpers.UpHelper(thisLeg, thisTimes.size());
+    
+    // remember the value at hte other end
+    downHelper.rememberOtherStart();
+    upHelper.rememberOtherStart();
 
-    boolean growingDown = true;
-    boolean growingUp = true;
-    while (growingDown || growingUp)
+
+    while (upHelper.isGrowing() || downHelper.isGrowing())
     {
-      if (growingUp && upHelper.smallEnough(thisLeg, thisTimes.size()))
+      if (upHelper.isGrowing() && upHelper.smallEnough())
       {
         // ok - work it, girl
-        upHelper.grow(thisLeg);
+        upHelper.grow();
       }
       else
       {
         // ok, we can't grow any more. Stop growing
-        growingUp = false;
+        upHelper.stopGrowing();
       }
 
-      if (growingDown && downHelper.smallEnough(thisLeg, thisTimes.size()))
+      if (downHelper.isGrowing() && downHelper.smallEnough())
       {
         // ok - work it, girl
-        downHelper.grow(thisLeg);
+        downHelper.grow();
       }
       else
       {
         // ok, we can't grow any more. Stop growing
-        growingDown = false;
+        downHelper.stopGrowing();
       }
+      
+      final boolean me = thisLeg.toString().equals("Period:29-47");
+
 
       ctr++;
 
@@ -1485,7 +1317,13 @@ public class ZigDetector
 
       final double[] coeff = optimiser.getParamValues();
 
-      if (me)
+      // if it's more than a few minutes, let's ditch it.
+      long timeSecs = times.get(times.size() - 1) - times.get(0);
+
+//      System.out.println(thisLeg + " Error score:" + optimiser.getMinimum() + " secs:"
+//          + timeSecs);
+      
+      if (false)
       {
         for (int j = 0; j < times.size(); j++)
         {
@@ -1503,11 +1341,6 @@ public class ZigDetector
         }
       }
 
-      // if it's more than a few minutes, let's ditch it.
-      long timeSecs = times.get(times.size() - 1) - times.get(0);
-
-      System.out.println("Error score:" + optimiser.getMinimum() + " secs:"
-          + timeSecs);
 
       if (optimiser.getMinimum() > validFit)
       {
@@ -1515,7 +1348,7 @@ public class ZigDetector
         // ok. we;ve got a low quality fit. This probably
         // isn't an ArcTan period
 
-        if (me)
+        if (true)
         {
           for (int j = 0; j < times.size(); j++)
           {
@@ -1533,7 +1366,7 @@ public class ZigDetector
           }
         }
 
-        if (timeSecs < 180)
+        if (timeSecs > 180)
         {
           // ok, let's ditch this period, and move on.
           if (deleteIfCantFit)
@@ -1561,82 +1394,84 @@ public class ZigDetector
       // }
       // System.out.println();
 
-      // ok, walk through the last few steps, and see if they're all on the same side
-      Boolean lastAbove = null;
-      int sameSideCount = 0;
-      int lastOpposite = -1;
-
-      final ArrayWalker upWalker = upHelper.getWalker(times);
-      // System.out.println("====");
-      while (growingUp && upWalker.hasNext())
-      {
-        final int i = upWalker.next();
-
-        final long thisT = times.get(i);
-        double measuredB = bearings.get(i);
-        final double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
-
-        if (measuredB < 0 && predictedB > 0)
-        {
-          measuredB += 360d;
-        }
-
-        final double error = predictedB - measuredB;
-
-        if (me)
-        {
-          System.out.println(i + ", " + thisT + ", " + measuredB + ", "
-              + predictedB + (error > 0 ? " above" : " below") + ", "
-              + sameSideCount);
-        }
-
-        final boolean thisAbove = error > 0;
-
-        if (lastAbove == null)
-        {
-          // ok, nothing to test
-          lastOpposite = i;
-        }
-        else if (lastAbove != thisAbove)
-        {
-          // ok, we've switched side. nothing to worry about
-          sameSideCount = 0;
-
-          lastOpposite = upHelper.trimmed(i);
-        }
-        else
-        {
-          sameSideCount++;
-
-          if (sameSideCount == 4)
-          {
-            // show the data
-            for (int j = 0; j < times.size(); j++)
-            {
-              @SuppressWarnings("unused")
-              final long t = times.get(j);
-
-              double thisB = bearings.get(j);
-              if (thisB < 0)
-              {
-                thisB += 360d;
-              }
-            }
-
-            growingUp = false;
-            upHelper.storeEnd(thisLeg, lastOpposite);
-            // }
-          }
-        }
-        lastAbove = thisAbove;
-      }
-
+      walkThisEnd(upHelper, times, bearings, coeff, thisLeg, true);
+      walkThisEnd(downHelper, times, bearings, coeff, thisLeg, false);
     }
 
     return thisLeg;
   }
 
-  final private Minimisation optimiseThis(final List<Long> times,
+  private static void walkThisEnd(final Helpers.WalkHelper helper, final List<Long> times,
+      final List<Double> bearings, final double[] coeff, final TPeriod thisLeg, boolean allowRestoreOtherEnd)
+  {
+    
+    ArrayWalker walker = helper.getWalker(times);
+    while (helper.isGrowing() && walker.hasNext())
+    {
+      final int i = walker.next();
+      final long thisT = times.get(i);
+      double measuredB = bearings.get(i);
+      final double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
+
+      if (measuredB < 0 && predictedB > 0)
+      {
+        measuredB += 360d;
+      }
+      
+//      System.out.println(thisT + ", " + measuredB + ", " + predictedB);
+
+      final double error = predictedB - measuredB;
+
+      final boolean thisAbove = error > 0;
+      
+      final double absError = Math.abs(error);
+
+      if (walker.justStarted())
+      {
+        // ok, initialise the oppositve value
+        walker.setLastOpposite(i);
+      }
+      else if (thisAbove != walker.getLastAbove())
+      {
+        walker.setSameSideCount(0);
+        walker.setLastOpposite(helper.trimmed(i));
+      }
+      else
+      {
+        double lastScore = walker.getLastError();
+        
+        if(absError < lastScore)
+        {
+          walker.setSameSideCount(0);          
+        }
+        else
+        {
+          // error increasing
+          
+          int curSameSide = walker.getSameSideCount();
+          walker.setSameSideCount(curSameSide + 1);
+
+          if (walker.getSameSideCount() == 4)
+          {
+            helper.stopGrowing();
+            helper.storeEnd(walker.getLastOpposite());
+            System.out.println(walker + ": stopping growing at:" + i);   
+            
+            // and restore the other start end
+            if(allowRestoreOtherEnd)
+            {
+            helper.restoreOtherEnd();
+            }
+          }
+        }
+        
+      }
+      walker.setLastAbove(thisAbove);
+      walker.setLastError(absError);
+    }
+  }
+
+  final static private Minimisation optimiseThis(final List<Long> times,
       final List<Double> bearings, final double optimiserTolerance)
   {
     // Create instance of Minimisation
@@ -1802,84 +1637,189 @@ public class ZigDetector
       }
     }
   }
-
-  final class DownHelper implements WalkHelper
+  
+  final static class Helpers
   {
 
-    @Override
-    public ArrayWalker getWalker(final List<Long> times)
+    abstract static class BaseHelper implements WalkHelper
     {
-      return new ArrayWalker(5, 0);
-    }
-
-    @Override
-    public void grow(final TPeriod thisLeg)
-    {
-      thisLeg.start = thisLeg.start - 1;
-    }
-
-    @Override
-    public boolean smallEnough(final TPeriod thisLeg, final int outerLen)
-    {
-      return thisLeg.start > 0;
-    }
-
-    @Override
-    public void storeEnd(final TPeriod thisLeg, final int lastOpposite)
-    {
-      thisLeg.start = thisLeg.start + lastOpposite;
-    }
-
-    @Override
-    public int trimmed(final int i)
-    {
-      return i + 1;
-    }
-  };
-
-  final class UpHelper implements WalkHelper
-  {
-
-    public UpHelper()
-    {
-    }
-
-    @Override
-    public ArrayWalker getWalker(final List<Long> times)
-    {
-      return new ArrayWalker(times.size() - 5, times.size() - 1);
-    }
-
-    @Override
-    public void grow(final TPeriod thisLeg)
-    {
-      thisLeg.end = thisLeg.end + 1;
-    }
-
-    @Override
-    public boolean smallEnough(final TPeriod thisLeg, final int outerLen)
-    {
-      return thisLeg.end < outerLen;
-    }
-
-    @Override
-    public void storeEnd(final TPeriod thisLeg, final int lastOpposite)
-    {
-      if (thisLeg.start + lastOpposite == 52)
+      protected final TPeriod _thisLeg;
+    
+      private boolean _isGrowing = true;
+      
+      private BaseHelper(TPeriod thisLeg)
       {
-        System.out.println("Leg:" + thisLeg + " opp:" + lastOpposite);
+        _thisLeg = thisLeg;
+      }
+    
+      final public boolean isGrowing()
+      {
+        return _isGrowing;
+      }
+    
+      final public void stopGrowing()
+      {
+        _isGrowing = false;
+      }
+      
+      protected int getWalkerSize()
+      {
+        final int size = _thisLeg.end - _thisLeg.start;
+        final int res;
+        if(size < 10)
+        {
+          res = size / 2;
+        }
+        else if(size < 20)
+        {
+          res = 8;
+        }
+        else 
+        {
+          res = 10;
+        }
+        return res;
+      }
+    }
+
+    final static class UpHelper extends BaseHelper
+    {
+      private final int _outerLen;
+      private int otherEnd;
+    
+      public UpHelper(final TPeriod thisLeg, int outerLen)
+      {
+        super(thisLeg);
+        _outerLen = outerLen;
+      }
+    
+      @Override
+      public ArrayWalker getWalker(final List<Long> times)
+      {
+        return new ArrayWalker(times.size() - getWalkerSize(), times.size() - 1, "Up");
+      }
+    
+      @Override
+      public void grow()
+      {
+        _thisLeg.end = _thisLeg.end + 1;
+      }
+    
+      @Override
+      public boolean smallEnough()
+      {
+        return _thisLeg.end < _outerLen - 1;
+      }
+    
+      @Override
+      public void storeEnd(final int lastOpposite)
+      {
+        if (_thisLeg.start + lastOpposite == 52)
+        {
+          System.out.println("Leg:" + _thisLeg + " opp:" + lastOpposite);
+        }
+    
+        _thisLeg.end = _thisLeg.start + lastOpposite;
+    
+      }
+    
+      @Override
+      public int trimmed(final int i)
+      {
+        return i - 1;
+      }
+      
+
+      @Override
+      public void restoreOtherEnd()
+      {
+        _thisLeg.start = otherEnd;
       }
 
-      thisLeg.end = thisLeg.start + lastOpposite;
-
+      @Override
+      public void rememberOtherStart()
+      {
+        otherEnd = _thisLeg.start;
+      }
     }
 
-    @Override
-    public int trimmed(final int i)
+    private static interface WalkHelper
     {
-      return i - 1;
+    
+      ArrayWalker getWalker(List<Long> times);
+    
+      void restoreOtherEnd();
+
+      void rememberOtherStart();
+
+      boolean isGrowing();
+    
+      void grow();
+    
+      boolean smallEnough();
+    
+      void storeEnd(int lastOpposite);
+    
+      int trimmed(int i);
+    
+      void stopGrowing();
+    
+    
     }
-  };
+
+    final static class DownHelper extends BaseHelper
+    {
+      int otherEnd = -1;
+      
+      public DownHelper(TPeriod thisLeg)
+      {
+        super(thisLeg);
+      }
+    
+      @Override
+      public ArrayWalker getWalker(final List<Long> times)
+      {
+        return new ArrayWalker(getWalkerSize(), 0, "Down");
+      }
+    
+      @Override
+      public void grow()
+      {
+        _thisLeg.start = _thisLeg.start - 1;
+      }
+    
+      @Override
+      public boolean smallEnough()
+      {
+        return _thisLeg.start > 0;
+      }
+    
+      @Override
+      public void storeEnd(final int lastOpposite)
+      {
+        _thisLeg.start = _thisLeg.start + lastOpposite;
+      }
+    
+      @Override
+      public int trimmed(final int i)
+      {
+        return i + 1;
+      }
+
+      @Override
+      public void restoreOtherEnd()
+      {
+        _thisLeg.end = otherEnd;
+      }
+
+      @Override
+      public void rememberOtherStart()
+      {
+        otherEnd = _thisLeg.end;
+      }
+    }
+    
+  }
 
   private static interface PeriodHandler
   {
@@ -1946,7 +1886,7 @@ public class ZigDetector
 
       showLeg("flattest:", thisTimes, thisLeg);
 
-      final double validFit = 2d;
+      final double validFit = 4d;
 
       // grow right first, since turns normally start more sharply
       // than they finish
@@ -1954,20 +1894,14 @@ public class ZigDetector
           growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
               validFit, deleter, true);
 
-      // showLeg("after up:", thisTimes, thisLeg);
-      //
-      //
-      // // ok grow left
-      // thisLeg =
-      // growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
-      // downHelper, validFit, deleter, true);
-      //
-      // showLeg("after down:", thisTimes, thisLeg);
-
       // have we finished growing?
       if (thisLeg != null)
       {
-        System.out.println("STORING:" + thisLeg);
+        if(thisLeg.toString().equals("Period:30-35"))
+        {
+          System.out.println("bad");
+        }
+        showLeg("STORING:", thisTimes, thisLeg);
         handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
       }
     }
