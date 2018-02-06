@@ -459,7 +459,12 @@ public final class StackedDotHelper
                 // if there are any matching items
 
               } // if we find a match
-              else if (targetTrack == null && hostFix != null)
+              // this test used to be the following, but we changed it so we
+              // could see measured data even when we don't have track:              
+              // else if ((targetTrack == null && hostFix != null) || (doublet.targetFix == null &&
+              // hostFix != null))
+              else if (hostFix != null
+                  && (doublet.targetFix == null || targetTrack == null))
               {
                 // no target data, just use ownship sensor data
                 thisDub = new Doublet(scw, null, null, hostFix);
@@ -1356,11 +1361,11 @@ public final class StackedDotHelper
             segList = new SegmentList();
             // note: we can only set the wrapper
             // if we're looking at a real TMA solution
-            if(_secondaryTrack instanceof TrackWrapper)
+            if (_secondaryTrack instanceof TrackWrapper)
             {
               segList.setWrapper((TrackWrapper) _secondaryTrack);
             }
-            
+
             // ok, add this segment to the list
             segList.addSegment((TrackSegment) nextE);
           }
@@ -1760,8 +1765,8 @@ public final class StackedDotHelper
           }
 
           final ColouredDataItem bFreq =
-              new ColouredDataItem(thisMilli, baseFreq, thisColor.darker(), !newSensor,
-                  null, true, true);
+              new ColouredDataItem(thisMilli, baseFreq, thisColor.darker(),
+                  !newSensor, null, true, true);
           baseValues.addOrUpdate(bFreq);
 
           // do we have target data?
