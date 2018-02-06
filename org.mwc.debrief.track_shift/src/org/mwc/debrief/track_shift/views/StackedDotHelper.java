@@ -831,6 +831,7 @@ public final class StackedDotHelper
     if ((secs == null) || (secs.length == 0))
     {
       logger.logError(IStatus.INFO, "No secondary track assigned", null);
+      return;
     }
     else
     {
