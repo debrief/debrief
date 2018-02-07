@@ -140,6 +140,20 @@ public class AbsoluteTMASegment extends CoreTMASegment
    */
   public AbsoluteTMASegment(final double courseDegs, final WorldSpeed speed,
       final WorldLocation origin, final HiResDate startTime,
+      final HiResDate endTime)
+  {
+    this(courseDegs, speed, origin, startTime, endTime, null);
+  }
+
+  /**
+   * base constructor - sorts out the obvious
+   * 
+   * @param courseDegs
+   * @param speed
+   * @param origin
+   */
+  public AbsoluteTMASegment(final double courseDegs, final WorldSpeed speed,
+      final WorldLocation origin, final HiResDate startTime,
       final HiResDate endTime, final long[] timeStamps)
   {
     super(courseDegs, speed, TrackSegment.ABSOLUTE);
@@ -150,7 +164,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
     // do we have time limits?
     if (startTime != null)
     {
-      if(timeStamps != null)
+      if (timeStamps != null)
       {
         createDataFrom(startTime, endTime, timeStamps);
       }
@@ -166,46 +180,6 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
     // now sort out the name
     sortOutDateLabel(null);
-  }
-
-  /**
-   * base constructor - sorts out the obvious
-   * 
-   * @param courseDegs
-   * @param speed
-   * @param origin
-   */
-  public AbsoluteTMASegment(final double courseDegs, final WorldSpeed speed,
-      final WorldLocation origin, final HiResDate startTime,
-      final HiResDate endTime)
-  {
-    this(courseDegs, speed, origin, startTime, endTime, null);
-  }
-
-  /**
-   * create a track for the indicated time period
-   * 
-   * @param startTime
-   * @param endTime
-   */
-  private void createDataFrom(final HiResDate startTime,
-      final HiResDate endTime, final long[] timeStamps)
-  {
-    // ditch any existing data
-    this.removeAllElements();
-
-    // and stick some fresh ones in
-    final long tStart = startTime.getDate().getTime();
-    final long tEnd = endTime.getDate().getTime();
-    for (long tNow : timeStamps)
-    {
-      if (tNow >= tStart && tNow <= tEnd)
-      {
-        final FixWrapper newFix = createFixAt(tNow, tStart);
-        newFix.setSymbolShowing(true);
-        this.addFix(newFix);
-      }
-    }
   }
 
   /**
@@ -229,6 +203,32 @@ public class AbsoluteTMASegment extends CoreTMASegment
       final FixWrapper newFix = createFixAt(tNow, tStart);
       newFix.setSymbolShowing(true);
       this.addFix(newFix);
+    }
+  }
+
+  /**
+   * create a track for the indicated time period
+   * 
+   * @param startTime
+   * @param endTime
+   */
+  private void createDataFrom(final HiResDate startTime,
+      final HiResDate endTime, final long[] timeStamps)
+  {
+    // ditch any existing data
+    this.removeAllElements();
+
+    // and stick some fresh ones in
+    final long tStart = startTime.getDate().getTime();
+    final long tEnd = endTime.getDate().getTime();
+    for (final long tNow : timeStamps)
+    {
+      if (tNow >= tStart && tNow <= tEnd)
+      {
+        final FixWrapper newFix = createFixAt(tNow, tStart);
+        newFix.setSymbolShowing(true);
+        this.addFix(newFix);
+      }
     }
   }
 

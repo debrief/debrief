@@ -489,8 +489,8 @@ public class SATC_Solution extends BaseLayer implements
    */
   private boolean _interpolatePoints = false;
 
-  /** the timestamps of bearing data used to develop this
-   * solution
+  /**
+   * the timestamps of bearing data used to develop this solution
    */
   protected long[] _timeStamps;
 
@@ -1290,7 +1290,7 @@ public class SATC_Solution extends BaseLayer implements
                 (BearingMeasurementContribution) cont;
             final ArrayList<BMeasurement> brgs = bmc.getMeasurements();
             // ok, get the times of the cuts
-            for (BMeasurement b : brgs)
+            for (final BMeasurement b : brgs)
             {
               timeStamps.add(b.getDate().getTime());
             }
@@ -1301,7 +1301,7 @@ public class SATC_Solution extends BaseLayer implements
         Collections.sort(timeStamps, new Comparator<Long>()
         {
           @Override
-          public int compare(Long arg0, Long arg1)
+          public int compare(final Long arg0, final Long arg1)
           {
             return arg0.compareTo(arg1);
           }
@@ -1503,12 +1503,12 @@ public class SATC_Solution extends BaseLayer implements
       }
       else
       {
-        // aaah, we don't have any.  We'll use the last-states object
-        // we learned about, even though some cuts may have 
+        // aaah, we don't have any. We'll use the last-states object
+        // we learned about, even though some cuts may have
         // been skipped
         thisStamps = new long[_lastStates.size()];
         int ctr = 0;
-        for (BoundedState state : _lastStates)
+        for (final BoundedState state : _lastStates)
         {
           thisStamps[ctr++] = state.getTime().getTime();
         }
