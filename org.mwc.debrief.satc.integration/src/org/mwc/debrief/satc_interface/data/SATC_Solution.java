@@ -25,6 +25,8 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -80,6 +82,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
@@ -485,6 +488,11 @@ public class SATC_Solution extends BaseLayer implements
    * 
    */
   private boolean _interpolatePoints = false;
+
+  /**
+   * the timestamps of bearing data used to develop this solution
+   */
+  protected long[] _timeStamps;
 
   /**
    * wrap the provided solution
@@ -1269,6 +1277,43 @@ public class SATC_Solution extends BaseLayer implements
       {
         // ok, better to plot them then!
         _lastStates = _mySolver.getProblemSpace().states();
+
+        // see if there were bearing contributions
+        final List<Long> timeStamps = new ArrayList<Long>();
+        final IContributions conts = _mySolver.getContributions();
+        for (final BaseContribution cont : conts)
+        {
+          // is it a bearing contribution?
+          if (cont instanceof BearingMeasurementContribution)
+          {
+            final BearingMeasurementContribution bmc =
+                (BearingMeasurementContribution) cont;
+            final ArrayList<BMeasurement> brgs = bmc.getMeasurements();
+            // ok, get the times of the cuts
+            for (final BMeasurement b : brgs)
+            {
+              timeStamps.add(b.getDate().getTime());
+            }
+          }
+        }
+
+        // sort them into ascending order
+        Collections.sort(timeStamps, new Comparator<Long>()
+        {
+          @Override
+          public int compare(final Long arg0, final Long arg1)
+          {
+            return arg0.compareTo(arg1);
+          }
+        });
+
+        // move them to long array
+        _timeStamps = new long[timeStamps.size()];
+        for (int i = 0; i < timeStamps.size(); i++)
+        {
+          _timeStamps[i] = timeStamps.get(i);
+        }
+
         fireRepaint();
       }
 
@@ -1446,6 +1491,29 @@ public class SATC_Solution extends BaseLayer implements
     {
       final CompositeRoute thisR = _newRoutes[0];
 
+      // To enable the SATC solution to be viewed in the Residuals plots,
+      // we wish to create points (fixes) at the same time as the bearing cuts.
+      // So, when we generate a leg of data, we can provide a series of time-stamps
+      // to indicate when the positions should be created at.
+      final long[] thisStamps;
+      if (_timeStamps.length != 0)
+      {
+        // ok, we have some pre-prepared, use them.
+        thisStamps = _timeStamps;
+      }
+      else
+      {
+        // aaah, we don't have any. We'll use the last-states object
+        // we learned about, even though some cuts may have
+        // been skipped
+        thisStamps = new long[_lastStates.size()];
+        int ctr = 0;
+        for (final BoundedState state : _lastStates)
+        {
+          thisStamps[ctr++] = state.getTime().getTime();
+        }
+      }
+
       // loop through the legs
       final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
       while (legs.hasNext())
@@ -1471,7 +1539,7 @@ public class SATC_Solution extends BaseLayer implements
 
           final AbsoluteTMASegment abs =
               new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
-                  endTime);
+                  endTime, thisStamps);
 
           // // quick check to see if we have some frequency data
           // IContributions conts = _mySolver.getContributions();

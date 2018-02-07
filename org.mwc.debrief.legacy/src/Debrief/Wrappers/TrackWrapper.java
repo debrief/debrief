@@ -2550,29 +2550,29 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           final Enumeration<Editable> pIter;
           if (_lastPosIterator != null)
           {
-            final FixWrapper lastPos =
+            final FixWrapper thisPos =
                 (FixWrapper) _lastPosIterator.currentElement();
             final FixWrapper prevPos =
                 (FixWrapper) _lastPosIterator.previousElement();
 
-            if (lastPos.getDTG().equals(srchDTG))
+            if (thisPos.getDTG().equals(srchDTG))
             {
               // ok, we know this answer, use it
-              res = lastPos;
+              res = thisPos;
               pIter = null;
             }
-            else if (lastPos.getDTG().lessThan(srchDTG))
+            else if (thisPos.getDTG().lessThan(srchDTG))
             {
               // the current iterator is still valid, stick with it
               pIter = _lastPosIterator;
-              previous = lastPos;
+              previous = thisPos;
             }
-            else if (prevPos != null && lastPos.getDTG().greaterThan(srchDTG)
+            else if (prevPos != null && thisPos.getDTG().greaterThan(srchDTG)
                 && prevPos.getDTG().lessThan(srchDTG))
             {
               // we're currently either side of the required value
               // we don't need to restart the iterator
-              res = lastPos;
+              res = thisPos;
               previous = prevPos;
               pIter = _lastPosIterator;
             }
