@@ -206,13 +206,6 @@ public class RotateDragMode extends DragMode
         parentTrack, theLayers);
   }
 
-  /*
-   * Public Function RotatePoint(ByRef pPoint As POINT, ByRef pOrigin As POINT, _ ByVal Degrees As
-   * Single) As POINT RotatePoint.X = pOrigin.X + ( Cos(D2R(Degrees)) * (pPoint.X - pOrigin.X) - _
-   * Sin(D2R(Degrees)) * (pPoint.Y - pOrigin.Y) ) RotatePoint.Y = pOrigin.Y + ( Sin(D2R(Degrees)) *
-   * (pPoint.X - pOrigin.X) + _ Cos(D2R(Degrees)) * (pPoint.Y - pOrigin.Y) ) End Function
-   */
-
   /**
    * whether this type of track is suitable for our operation
    * 
