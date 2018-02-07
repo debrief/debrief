@@ -183,8 +183,8 @@ public class ZigDetector
 
       return mean;
 
-      // final double rms = Math.sqrt(mean);
-      // return rms;
+//       final double rms = Math.sqrt(mean);
+//       return rms;
     }
 
   }
@@ -1308,12 +1308,12 @@ public class ZigDetector
       // if it's more than a few minutes, let's ditch it.
       long timeSecs = times.get(times.size() - 1) - times.get(0);
 
-       System.out.println(thisLeg + " Error score:" + optimiser.getMinimum() + " secs:"
+       System.out.println(thisLeg.toString(thisTimes) + " Error score:" + optimiser.getMinimum() + " secs:"
        + timeSecs + " error/item:" + (optimiser.getMinimum() / times.size()));
-      System.out.println("Growing:" + thisLeg);
+  //    System.out.println("Growing:" + thisLeg);
       
 
-      if (false)
+      if (me)
       {
         for (int j = 0; j < times.size(); j++)
         {
@@ -1396,7 +1396,7 @@ public class ZigDetector
       final Helpers.WalkHelper otherHelper)
   {
 
-    System.out.println("Walking " + helper.toString() + " leg:" + thisLeg);
+ //   System.out.println("Walking " + helper.toString() + " leg:" + thisLeg);
     List<String> states = new ArrayList<String>();
     if (helper.isGrowing())
     {
@@ -1414,11 +1414,12 @@ public class ZigDetector
           measuredB += 360d;
         }
 
-        states.add(thisT + ", " + measuredB + ", " + predictedB);
 
         final double error = predictedB - measuredB;
 
         final boolean thisAbove = error > 0;
+
+        states.add(thisT + ", " + measuredB + ", " + predictedB + ", " + (thisAbove));
 
         final double absError = Math.abs(error);
 
