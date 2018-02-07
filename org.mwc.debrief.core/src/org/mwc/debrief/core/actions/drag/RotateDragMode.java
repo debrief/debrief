@@ -15,9 +15,7 @@
 package org.mwc.debrief.core.actions.drag;
 
 import java.awt.Point;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 
 import org.eclipse.swt.graphics.Cursor;
 import org.mwc.cmap.core.CursorRegistry;
@@ -41,129 +39,6 @@ import MWC.GenericData.WorldVector;
 public class RotateDragMode extends DragMode
 {
 
-  public RotateDragMode()
-  {
-    this("Rotate", "Vary course, maintain speed of TMA solution");
-  }
-
-  public RotateDragMode(final String title, final String toolTip)
-  {
-    super(title, toolTip);
-  }
-
-  @Override
-	public void findNearest(final Layer thisLayer, final WorldLocation cursorLoc,
-			final Point cursorPos, final LocationConstruct currentNearest,
-			final Layer parentLayer, final Layers theLayers)
-	{
-		/**
-		 * we need to get the following hit points, both ends (to support rotate),
-		 * and the middle (to support drag)
-		 */
-		if (thisLayer instanceof TrackWrapper)
-		{
-			final TrackWrapper track = (TrackWrapper) thisLayer;
-			
-			final SegmentList segments = track.getSegments();
-			final Enumeration<Editable> numer = segments.elements();
-			while(numer.hasMoreElements())
-			{
-			  final TrackSegment seg =(TrackSegment) numer.nextElement();
-			  
-			  if(seg.getVisible() && isAcceptable(seg))
-			  {
-				final FixWrapper first = (FixWrapper) seg.first();
-				final FixWrapper last = (FixWrapper) seg.last();
-				final WorldLocation firstLoc = first.getFixLocation();
-				final WorldLocation lastLoc = last.getFixLocation();
-				if ((firstLoc != null) && (lastLoc != null))
-				{
-					final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
-					final WorldLocation centreLoc = lineBounds.getCentre();
-
-					final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
-					final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
-					final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
-
-					final DraggableItem dragCentre = getCentreOperation(seg, track,
-							theLayers);
-					final DraggableItem dragStart = getEndOperation(cursorLoc, seg, last,
-							track, theLayers);
-					final DraggableItem dragEnd = getEndOperation(cursorLoc, seg, first,
-							track, theLayers);
-
-					currentNearest.checkMe(dragStart, firstDist, null, thisLayer);
-					currentNearest.checkMe(dragEnd, lastDist, null, thisLayer);
-					currentNearest.checkMe(dragCentre, centreDist, null, thisLayer);
-				}
-				}
-			}
-		}
-	}
-
-  /**
-   * whether this type of track is suitable for our operation
-   * 
-   * @param seg
-   * @return
-   */
-  protected boolean isAcceptable(final TrackSegment seg)
-  {
-    return true;
-  }
-
-  /**
-   * generate an operation for when the end of the line segment is dragged
-   * 
-   * @param cursorLoc
-   *          where the cursor is
-   * @param seg
-   *          the segment that's being dragged
-   * @param subject
-   *          which end we're manipulating
-   * @param parentTrack
-   * @return
-   */
-  protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
-      final TrackSegment seg, final FixWrapper subject,
-      final TrackWrapper parentTrack, final Layers theLayers)
-  {
-    return new RotateOperation(cursorLoc, subject.getFixLocation(), seg,
-        parentTrack, theLayers);
-  }
-
-  /**
-   * generate an operation for when the centre of the line segment is dragged
-   * 
-   * @param seg
-   *          the segment being dragged
-   * @param parent
-   *          the parent track for this segment
-   * @param theLayers
-   *          the set of layers data
-   * @return an operation we can use to do this
-   */
-  protected DraggableItem getCentreOperation(final TrackSegment seg,
-      final TrackWrapper parent, final Layers theLayers)
-  {
-    return new TranslateOperation(seg);
-  }
-
-  private WorldDistance calcDist(final WorldLocation myLoc,
-      final WorldLocation cursorLoc)
-  {
-    return new WorldDistance(myLoc.subtract(cursorLoc).getRange(),
-        WorldDistance.DEGS);
-
-  }
-
-  /*
-   * Public Function RotatePoint(ByRef pPoint As POINT, ByRef pOrigin As POINT, _ ByVal Degrees As
-   * Single) As POINT RotatePoint.X = pOrigin.X + ( Cos(D2R(Degrees)) * (pPoint.X - pOrigin.X) - _
-   * Sin(D2R(Degrees)) * (pPoint.Y - pOrigin.Y) ) RotatePoint.Y = pOrigin.Y + ( Sin(D2R(Degrees)) *
-   * (pPoint.X - pOrigin.X) + _ Cos(D2R(Degrees)) * (pPoint.Y - pOrigin.Y) ) End Function
-   */
-
   public static class RotateOperation extends CoreDragOperation implements
       DraggableItem, IconProvider
   {
@@ -186,6 +61,13 @@ public class RotateDragMode extends DragMode
       _layers = theLayers;
     }
 
+    @Override
+    public Cursor getHotspotCursor()
+    {
+      return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_ROTATE);
+    }
+
+    @Override
     public void shift(final WorldVector vector)
     {
       // find out where the cursor currently is
@@ -217,11 +99,129 @@ public class RotateDragMode extends DragMode
       // and tell the props view to update itself
       updatePropsView(_segment, _parent, _layers);
     }
+  }
 
-    public Cursor getHotspotCursor()
+  public RotateDragMode()
+  {
+    this("Rotate", "Vary course, maintain speed of TMA solution");
+  }
+
+  public RotateDragMode(final String title, final String toolTip)
+  {
+    super(title, toolTip);
+  }
+
+  private WorldDistance calcDist(final WorldLocation myLoc,
+      final WorldLocation cursorLoc)
+  {
+    return new WorldDistance(myLoc.subtract(cursorLoc).getRange(),
+        WorldDistance.DEGS);
+
+  }
+
+  @Override
+  public void findNearest(final Layer thisLayer, final WorldLocation cursorLoc,
+      final Point cursorPos, final LocationConstruct currentNearest,
+      final Layer parentLayer, final Layers theLayers)
+  {
+    /**
+     * we need to get the following hit points, both ends (to support rotate), and the middle (to
+     * support drag)
+     */
+    if (thisLayer instanceof TrackWrapper)
     {
-      return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_ROTATE);
+      final TrackWrapper track = (TrackWrapper) thisLayer;
+
+      final SegmentList segments = track.getSegments();
+      final Enumeration<Editable> numer = segments.elements();
+      while (numer.hasMoreElements())
+      {
+        final TrackSegment seg = (TrackSegment) numer.nextElement();
+
+        if (seg.getVisible() && isAcceptable(seg))
+        {
+          final FixWrapper first = (FixWrapper) seg.first();
+          final FixWrapper last = (FixWrapper) seg.last();
+          final WorldLocation firstLoc = first.getFixLocation();
+          final WorldLocation lastLoc = last.getFixLocation();
+          if ((firstLoc != null) && (lastLoc != null))
+          {
+            final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
+            final WorldLocation centreLoc = lineBounds.getCentre();
+
+            final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
+            final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
+            final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
+
+            final DraggableItem dragCentre =
+                getCentreOperation(seg, track, theLayers);
+            final DraggableItem dragStart =
+                getEndOperation(cursorLoc, seg, last, track, theLayers);
+            final DraggableItem dragEnd =
+                getEndOperation(cursorLoc, seg, first, track, theLayers);
+
+            currentNearest.checkMe(dragStart, firstDist, null, thisLayer);
+            currentNearest.checkMe(dragEnd, lastDist, null, thisLayer);
+            currentNearest.checkMe(dragCentre, centreDist, null, thisLayer);
+          }
+        }
+      }
     }
+  }
+
+  /**
+   * generate an operation for when the centre of the line segment is dragged
+   * 
+   * @param seg
+   *          the segment being dragged
+   * @param parent
+   *          the parent track for this segment
+   * @param theLayers
+   *          the set of layers data
+   * @return an operation we can use to do this
+   */
+  protected DraggableItem getCentreOperation(final TrackSegment seg,
+      final TrackWrapper parent, final Layers theLayers)
+  {
+    return new TranslateOperation(seg);
+  }
+
+  /**
+   * generate an operation for when the end of the line segment is dragged
+   * 
+   * @param cursorLoc
+   *          where the cursor is
+   * @param seg
+   *          the segment that's being dragged
+   * @param subject
+   *          which end we're manipulating
+   * @param parentTrack
+   * @return
+   */
+  protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
+      final TrackSegment seg, final FixWrapper subject,
+      final TrackWrapper parentTrack, final Layers theLayers)
+  {
+    return new RotateOperation(cursorLoc, subject.getFixLocation(), seg,
+        parentTrack, theLayers);
+  }
+
+  /*
+   * Public Function RotatePoint(ByRef pPoint As POINT, ByRef pOrigin As POINT, _ ByVal Degrees As
+   * Single) As POINT RotatePoint.X = pOrigin.X + ( Cos(D2R(Degrees)) * (pPoint.X - pOrigin.X) - _
+   * Sin(D2R(Degrees)) * (pPoint.Y - pOrigin.Y) ) RotatePoint.Y = pOrigin.Y + ( Sin(D2R(Degrees)) *
+   * (pPoint.X - pOrigin.X) + _ Cos(D2R(Degrees)) * (pPoint.Y - pOrigin.Y) ) End Function
+   */
+
+  /**
+   * whether this type of track is suitable for our operation
+   * 
+   * @param seg
+   * @return
+   */
+  protected boolean isAcceptable(final TrackSegment seg)
+  {
+    return true;
   }
 
 }
