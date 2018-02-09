@@ -33,6 +33,12 @@ public interface SensorImportHelper
     }
 
     @Override
+    public String getBaseFrequency()
+    {
+      return null;
+    }
+
+    @Override
     public Color getColor()
     {
       return Color.yellow;
@@ -46,6 +52,12 @@ public interface SensorImportHelper
 
     @Override
     public WorldDistance getRange()
+    {
+      return null;
+    }
+
+    @Override
+    public WorldDistance getSensorOffset()
     {
       return null;
     }
@@ -69,13 +81,15 @@ public interface SensorImportHelper
     private final EnterStringPage getName;
     private final SelectColorPage getColor;
     private final EnterBooleanPage getVis;
+    private final EnterRangePage getSensorOffset;
     private final EnterRangePage getRange;
     private final EnterBooleanPage applyRainbowInRainbowColors;
+    private final EnterStringPage getBaseFreq;
     private final WizardDialog dialog;
 
     public SensorImportHelperUI(final String sensorName,
         final Color sensorColor, final String introString,
-        final boolean needsRange)
+        final boolean needsRange, final boolean isTowedArray)
     {
       final String imagePath = "images/NameSensor.jpg";
       final String explain =
@@ -102,9 +116,18 @@ public interface SensorImportHelper
               "Import Sensor data",
               "Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
               "Default range", defRange, imagePath, null, null);
+      final WorldDistance defLen =
+          new WorldDistance(-1000, WorldDistance.METRES);
+      getSensorOffset =
+          new EnterRangePage(null, "Import Sensor data",
+              "Please provide the length of the array offset", "Sensor offset",
+              defLen, imagePath, null, null, "SENSOR_OFFSET");
+      getBaseFreq =
+          new EnterStringPage(null, " 220.00", "Import Sensor data",
+              "Please provide the base frequency for this sensor", "Hz",
+              imagePath, null, true, null, "BASE_FREQ");
       applyRainbowInRainbowColors =
-          new EnterBooleanPage(null, false,
-              "Apply Rainbow Shades in rainbow colors",
+          new EnterBooleanPage(null, false, "Import Sensor data",
               "Should Debrief apply Rainbow Shades to these sensor cuts?",
               "yes/no", "images/ShadeRainbow.png", null, null);
 
@@ -115,6 +138,11 @@ public interface SensorImportHelper
       if (needsRange)
       {
         wizard.addWizard(getRange);
+      }
+      if (isTowedArray)
+      {
+        wizard.addWizard(getBaseFreq);
+        wizard.addWizard(getSensorOffset);
       }
       wizard.addWizard(getVis);
       wizard.addWizard(applyRainbowInRainbowColors);
@@ -128,6 +156,12 @@ public interface SensorImportHelper
     public boolean applyRainbow()
     {
       return applyRainbowInRainbowColors.getBoolean();
+    }
+
+    @Override
+    public String getBaseFrequency()
+    {
+      return getBaseFreq.getString();
     }
 
     @Override
@@ -149,6 +183,12 @@ public interface SensorImportHelper
     }
 
     @Override
+    public WorldDistance getSensorOffset()
+    {
+      return getSensorOffset.getRange();
+    }
+
+    @Override
     public boolean getVisiblity()
     {
       return getVis.getBoolean();
@@ -163,11 +203,15 @@ public interface SensorImportHelper
 
   boolean applyRainbow();
 
+  String getBaseFrequency();
+
   Color getColor();
 
   String getName();
 
   WorldDistance getRange();
+
+  WorldDistance getSensorOffset();
 
   boolean getVisiblity();
 
