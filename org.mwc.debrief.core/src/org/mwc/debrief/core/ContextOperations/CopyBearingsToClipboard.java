@@ -248,6 +248,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
           // generate the fix
           final Fix newFix = new Fix(dtg, newLoc, 0d, 0d);
           final FixWrapper newFW = new FixWrapper(newFix);
+          
+          newFW.resetName();
 
           // store the fix
           newTrack.add(newFW);
