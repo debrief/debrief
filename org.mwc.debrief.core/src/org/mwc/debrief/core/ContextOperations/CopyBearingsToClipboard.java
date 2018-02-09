@@ -222,6 +222,12 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     private static void createPointsFor(final TrackWrapper newTrack,
         final BearingList offsets, final TrackWrapper refTrack)
     {
+      // remember if the reference track is interpolated
+      final boolean wasInterpolated = refTrack.getInterpolatePoints();
+
+      // switch on interpolation for the reference track
+      refTrack.setInterpolatePoints(true);
+
       for (final HiResDate dtg : offsets.keySet())
       {
         final WorldVector vector = offsets.get(dtg);
@@ -243,6 +249,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
           final Fix newFix = new Fix(dtg, newLoc, 0d, 0d);
           final FixWrapper newFW = new FixWrapper(newFix);
 
+          newFW.resetName();
+
           // store the fix
           newTrack.add(newFW);
         }
@@ -250,6 +258,9 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       // lastly, regenerate course and speed for the fixes in the new track
       newTrack.calcCourseSpeed();
+
+      // ok, restore its interpolated status
+      refTrack.setInterpolatePoints(wasInterpolated);
     }
 
     private final Layers _layers;
@@ -319,7 +330,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     @SuppressWarnings("deprecation")
-    private void doTestCopyBearings(int startIndex, int endIndex)
+    private void doTestCopyBearings(final int startIndex, final int endIndex)
         throws ExecutionException
     {
       final Layers layers = new Layers();
@@ -414,7 +425,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
     @SuppressWarnings("deprecation")
     private void doTestPasteBearings(final int startIndex, final int endIndex,
-        final int numPoints, Object menuItems)
+        final int numPoints, final Object menuItems)
     {
       final Layers layers = new Layers();
       final TrackWrapper host = new TrackWrapper();
@@ -453,15 +464,17 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       assertEquals("now two layers", 2, layers.size());
 
-      TrackWrapper dropped = (TrackWrapper) layers.findLayer("subject");
+      final TrackWrapper dropped = (TrackWrapper) layers.findLayer("subject");
       assertNotNull("found new layer", dropped);
 
       int ctr = 0;
-      Enumeration<Editable> iter = dropped.getPositionIterator();
+      final Enumeration<Editable> iter = dropped.getPositionIterator();
       while (iter.hasMoreElements())
       {
         ctr++;
-        iter.nextElement();
+        FixWrapper thisF = (FixWrapper) iter.nextElement();
+        assertNotNull("has a name", thisF.getName());
+        assertTrue("name is non-null", thisF.getName().length() > 0);
       }
       assertEquals("correct size", numPoints, ctr);
 
@@ -500,10 +513,10 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       doTestPasteBearings(0, 60, 56, 2);
     }
 
-    public void testCopyTrackNoOverlap() throws ExecutionException
+    public void testCopyTrackEarly() throws ExecutionException
     {
-      doTestCopyBearings(0, 60);
-      doTestPasteBearings(20, 70, 0, 0);
+      doTestCopyBearings(10, 69);
+      doTestPasteBearings(5, 55, 44, 2);
     }
 
     public void testCopyTrackLate() throws ExecutionException
@@ -512,10 +525,10 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       doTestPasteBearings(5, 70, 52, 2);
     }
 
-    public void testCopyTrackEarly() throws ExecutionException
+    public void testCopyTrackNoOverlap() throws ExecutionException
     {
-      doTestCopyBearings(10, 69);
-      doTestPasteBearings(5, 55, 44, 2);
+      doTestCopyBearings(0, 60);
+      doTestPasteBearings(20, 70, 0, 0);
     }
 
   }
