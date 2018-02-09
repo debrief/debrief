@@ -222,6 +222,12 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     private static void createPointsFor(final TrackWrapper newTrack,
         final BearingList offsets, final TrackWrapper refTrack)
     {
+      // remember if the reference track is interpolated
+      final boolean wasInterpolated = refTrack.getInterpolatePoints();
+      
+      // switch on interpolation for the reference track
+      refTrack.setInterpolatePoints(true);
+      
       for (final HiResDate dtg : offsets.keySet())
       {
         final WorldVector vector = offsets.get(dtg);
@@ -250,6 +256,9 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       // lastly, regenerate course and speed for the fixes in the new track
       newTrack.calcCourseSpeed();
+      
+      // ok, restore its interpolated status
+      refTrack.setInterpolatePoints(wasInterpolated);
     }
 
     private final Layers _layers;
