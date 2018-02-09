@@ -51,11 +51,81 @@ import org.eclipse.ui.views.properties.PropertySheet;
 public class Startup implements IStartup
 {
 
-  private IPartListener partListener = new IPartListener()
+  private static class ActionAccessSupport
+  {
+    Method actionAccess;
+    ActionBarAdvisor actionBarAdvisor = null;
+
+    public ActionAccessSupport()
+    {
+      final IWorkbenchWindow activeWorkbenchWindow =
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+
+      final Class<?> clazz = WorkbenchWindow.class;
+      Method method;
+      try
+      {
+        method = clazz.getDeclaredMethod("getActionBarAdvisor", new Class[]
+        {});
+        method.setAccessible(true);
+        actionBarAdvisor =
+            (ActionBarAdvisor) method.invoke(activeWorkbenchWindow);
+        assert actionBarAdvisor != null : "API CHANGE!";
+        actionAccess =
+            ActionBarAdvisor.class.getDeclaredMethod("getAction", new Class[]
+            {String.class});
+        actionAccess.setAccessible(true);
+        assert actionAccess != null : "API CHANGE!";
+
+      }
+      catch (final Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
+
+    IAction getAction(final String id)
+    {
+      try
+      {
+
+        return (IAction) actionAccess.invoke(actionBarAdvisor, id);
+
+      }
+      catch (final Exception e)
+      {
+        e.printStackTrace();
+      }
+      return null;
+    }
+
+  }
+
+  private final IPartListener partListener = new IPartListener()
   {
 
     @Override
-    public void partOpened(IWorkbenchPart part)
+    public void partActivated(final IWorkbenchPart part)
+    {
+    }
+
+    @Override
+    public void partBroughtToTop(final IWorkbenchPart part)
+    {
+    }
+
+    @Override
+    public void partClosed(final IWorkbenchPart part)
+    {
+    }
+
+    @Override
+    public void partDeactivated(final IWorkbenchPart part)
+    {
+    }
+
+    @Override
+    public void partOpened(final IWorkbenchPart part)
     {
       if (part instanceof ContentOutline || part instanceof PropertySheet
           || part instanceof ResourceNavigator)
@@ -63,28 +133,78 @@ public class Startup implements IStartup
         changeIcon(part);
       }
     }
-
-    @Override
-    public void partDeactivated(IWorkbenchPart part)
-    {
-    }
-
-    @Override
-    public void partClosed(IWorkbenchPart part)
-    {
-    }
-
-    @Override
-    public void partBroughtToTop(IWorkbenchPart part)
-    {
-    }
-
-    @Override
-    public void partActivated(IWorkbenchPart part)
-    {
-    }
   };
+
   private static Image outlineImage, propertiesImage, navigatorImage;
+
+  private void addDescriptor(final IPerspectiveRegistry registry,
+      final List<IPerspectiveDescriptor> descriptors, final String id)
+  {
+    final IPerspectiveDescriptor perspectiveDescriptor =
+        registry.findPerspectiveWithId(id);
+    if (perspectiveDescriptor != null)
+    {
+      descriptors.add(perspectiveDescriptor);
+    }
+  }
+
+  protected void changeIcon(final IWorkbenchPart part)
+  {
+    try
+    {
+      final Class<?> clazz = WorkbenchPart.class;
+      final Method method =
+          clazz.getDeclaredMethod("setTitleImage", new Class[]
+          {Image.class});
+      method.setAccessible(true);
+      Image image = null;
+      if (part instanceof ContentOutline)
+      {
+        if (outlineImage == null)
+        {
+          final ImageDescriptor descriptor =
+              DebriefPlugin.getImageDescriptor("icons/16/outline.png");
+          outlineImage =
+              JFaceResources.getResources().createImageWithDefault(descriptor);
+        }
+        image = outlineImage;
+      }
+      if (part instanceof PropertySheet)
+      {
+        if (propertiesImage == null)
+        {
+          final ImageDescriptor descriptor =
+              DebriefPlugin.getImageDescriptor("icons/16/properties.png");
+          propertiesImage =
+              JFaceResources.getResources().createImageWithDefault(descriptor);
+        }
+        image = propertiesImage;
+      }
+      if (part instanceof ResourceNavigator)
+      {
+        if (navigatorImage == null)
+        {
+          final ImageDescriptor descriptor =
+              DebriefPlugin.getImageDescriptor("icons/16/navigator.png");
+          navigatorImage =
+              JFaceResources.getResources().createImageWithDefault(descriptor);
+        }
+        image = navigatorImage;
+      }
+      if (image != null)
+      {
+        method.invoke(part, new Object[]
+        {image});
+      }
+    }
+    catch (final Exception e)
+    {
+      final IStatus status =
+          new Status(IStatus.INFO, DebriefPlugin.PLUGIN_NAME,
+              "Can't change the icon of the Outline view", e);
+      DebriefPlugin.getDefault().getLog().log(status);
+    }
+  }
 
   @Override
   public void earlyStartup()
@@ -107,142 +227,34 @@ public class Startup implements IStartup
         IPreferenceConstants.RECENT_FILES, 10);
   }
 
-  private void updateMenuIcons()
+  private void removePerspective()
   {
-
-    Display.getDefault().asyncExec(new Runnable()
+    final IPerspectiveRegistry registry =
+        PlatformUI.getWorkbench().getPerspectiveRegistry();
+    if (registry == null)
     {
-
-      @Override
-      public void run()
-      {
-
-        ActionAccessSupport accessSupport = new ActionAccessSupport();
-        IAction saveall = accessSupport.getAction("saveAll");
-        if (saveall != null)
-        {
-          saveall.setImageDescriptor(DebriefPlugin
-              .getImageDescriptor("icons/16/save_all.png"));
-        }
-        IAction saveas = accessSupport.getAction("saveAs");
-        if (saveas != null)
-        {
-          saveas.setImageDescriptor(DebriefPlugin
-              .getImageDescriptor("icons/16/save_as.png"));
-        }
-        IAction save = accessSupport.getAction("save");
-        if (save != null)
-        {
-          save.setImageDescriptor(DebriefPlugin
-              .getImageDescriptor("icons/16/save.png"));
-        }
-        IAction redo = accessSupport.getAction("redo");
-        if (redo != null)
-        {
-          redo.setImageDescriptor(DebriefPlugin
-              .getImageDescriptor("icons/16/redo.png"));
-        }
-        IAction undo = accessSupport.getAction("undo");
-        if (undo != null)
-        {
-          undo.setImageDescriptor(DebriefPlugin
-              .getImageDescriptor("icons/16/undo.png"));
-        }
-      }
-    });
-  }
-
-  private void updateViewIcons()
-  {
-    Display.getDefault().asyncExec(new Runnable()
-    {
-
-      @Override
-      public void run()
-      {
-        IWorkbenchPage page =
-            PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                .getActivePage();
-        page.addPartListener(partListener);
-        IViewPart view = page.findView(IPageLayout.ID_OUTLINE);
-        if (view instanceof ContentOutline)
-        {
-          changeIcon(view);
-        }
-        view = page.findView(IPageLayout.ID_PROP_SHEET);
-        if (view instanceof PropertySheet)
-        {
-          changeIcon(view);
-        }
-        view = page.findView(IPageLayout.ID_RES_NAV);
-        if (view instanceof ResourceNavigator)
-        {
-          changeIcon(view);
-        }
-      }
-    });
-  }
-
-  protected void changeIcon(IWorkbenchPart part)
-  {
-    try
-    {
-      Class<?> clazz = WorkbenchPart.class;
-      Method method = clazz.getDeclaredMethod("setTitleImage", new Class[]
-      {Image.class});
-      method.setAccessible(true);
-      Image image = null;
-      if (part instanceof ContentOutline)
-      {
-        if (outlineImage == null)
-        {
-          ImageDescriptor descriptor =
-              DebriefPlugin.getImageDescriptor("icons/16/outline.png");
-          outlineImage =
-              JFaceResources.getResources().createImageWithDefault(descriptor);
-        }
-        image = outlineImage;
-      }
-      if (part instanceof PropertySheet)
-      {
-        if (propertiesImage == null)
-        {
-          ImageDescriptor descriptor =
-              DebriefPlugin.getImageDescriptor("icons/16/properties.png");
-          propertiesImage =
-              JFaceResources.getResources().createImageWithDefault(descriptor);
-        }
-        image = propertiesImage;
-      }
-      if (part instanceof ResourceNavigator)
-      {
-        if (navigatorImage == null)
-        {
-          ImageDescriptor descriptor =
-              DebriefPlugin.getImageDescriptor("icons/16/navigator.png");
-          navigatorImage =
-              JFaceResources.getResources().createImageWithDefault(descriptor);
-        }
-        image = navigatorImage;
-      }
-      if (image != null)
-      {
-        method.invoke(part, new Object[]
-        {image});
-      }
+      return;
     }
-    catch (Exception e)
+    final List<IPerspectiveDescriptor> descriptors =
+        new ArrayList<IPerspectiveDescriptor>();
+
+    addDescriptor(registry, descriptors,
+        "org.eclipse.debug.ui.DebugPerspective");
+    addDescriptor(registry, descriptors,
+        "org.eclipse.team.ui.TeamSynchronizingPerspective");
+
+    // FIXME this method doesn't work on Eclipse E4 (Juno/Kepler)
+    if (registry instanceof IExtensionChangeHandler && !descriptors.isEmpty())
     {
-      IStatus status =
-          new Status(IStatus.INFO, DebriefPlugin.PLUGIN_NAME,
-              "Can't change the icon of the Outline view", e);
-      DebriefPlugin.getDefault().getLog().log(status);
+      final IExtensionChangeHandler handler =
+          (IExtensionChangeHandler) registry;
+      handler.removeExtension(null, descriptors.toArray());
     }
   }
 
   private void removePreferencePages()
   {
-    PreferenceManager preferenceManager =
+    final PreferenceManager preferenceManager =
         PlatformUI.getWorkbench().getPreferenceManager();
     if (preferenceManager == null)
     {
@@ -264,89 +276,80 @@ public class Startup implements IStartup
         .remove("org.eclipse.wst.xml.ui.propertyPage.project.validation");
   }
 
-  private void removePerspective()
+  private void updateMenuIcons()
   {
-    IPerspectiveRegistry registry =
-        PlatformUI.getWorkbench().getPerspectiveRegistry();
-    if (registry == null)
-    {
-      return;
-    }
-    List<IPerspectiveDescriptor> descriptors =
-        new ArrayList<IPerspectiveDescriptor>();
 
-    addDescriptor(registry, descriptors,
-        "org.eclipse.debug.ui.DebugPerspective");
-    addDescriptor(registry, descriptors,
-        "org.eclipse.team.ui.TeamSynchronizingPerspective");
-
-    // FIXME this method doesn't work on Eclipse E4 (Juno/Kepler)
-    if (registry instanceof IExtensionChangeHandler && !descriptors.isEmpty())
+    Display.getDefault().asyncExec(new Runnable()
     {
-      IExtensionChangeHandler handler = (IExtensionChangeHandler) registry;
-      handler.removeExtension(null, descriptors.toArray());
-    }
+
+      @Override
+      public void run()
+      {
+
+        final ActionAccessSupport accessSupport = new ActionAccessSupport();
+        final IAction saveall = accessSupport.getAction("saveAll");
+        if (saveall != null)
+        {
+          saveall.setImageDescriptor(DebriefPlugin
+              .getImageDescriptor("icons/16/save_all.png"));
+        }
+        final IAction saveas = accessSupport.getAction("saveAs");
+        if (saveas != null)
+        {
+          saveas.setImageDescriptor(DebriefPlugin
+              .getImageDescriptor("icons/16/save_as.png"));
+        }
+        final IAction save = accessSupport.getAction("save");
+        if (save != null)
+        {
+          save.setImageDescriptor(DebriefPlugin
+              .getImageDescriptor("icons/16/save.png"));
+        }
+        final IAction redo = accessSupport.getAction("redo");
+        if (redo != null)
+        {
+          redo.setImageDescriptor(DebriefPlugin
+              .getImageDescriptor("icons/16/redo.png"));
+        }
+        final IAction undo = accessSupport.getAction("undo");
+        if (undo != null)
+        {
+          undo.setImageDescriptor(DebriefPlugin
+              .getImageDescriptor("icons/16/undo.png"));
+        }
+      }
+    });
   }
 
-  private void addDescriptor(IPerspectiveRegistry registry,
-      List<IPerspectiveDescriptor> descriptors, String id)
+  private void updateViewIcons()
   {
-    IPerspectiveDescriptor perspectiveDescriptor =
-        registry.findPerspectiveWithId(id);
-    if (perspectiveDescriptor != null)
+    Display.getDefault().asyncExec(new Runnable()
     {
-      descriptors.add(perspectiveDescriptor);
-    }
-  }
 
-  private static class ActionAccessSupport
-  {
-    Method actionAccess;
-    ActionBarAdvisor actionBarAdvisor = null;
-
-    public ActionAccessSupport()
-    {
-      IWorkbenchWindow activeWorkbenchWindow =
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-
-      Class<?> clazz = WorkbenchWindow.class;
-      Method method;
-      try
+      @Override
+      public void run()
       {
-        method = clazz.getDeclaredMethod("getActionBarAdvisor", new Class[]
-        {});
-        method.setAccessible(true);
-        actionBarAdvisor =
-            (ActionBarAdvisor) method.invoke(activeWorkbenchWindow);
-        assert actionBarAdvisor != null : "API CHANGE!";
-        actionAccess =
-            ActionBarAdvisor.class.getDeclaredMethod("getAction", new Class[]
-            {String.class});
-        actionAccess.setAccessible(true);
-        assert actionAccess != null : "API CHANGE!";
-
+        final IWorkbenchPage page =
+            PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                .getActivePage();
+        page.addPartListener(partListener);
+        IViewPart view = page.findView(IPageLayout.ID_OUTLINE);
+        if (view instanceof ContentOutline)
+        {
+          changeIcon(view);
+        }
+        view = page.findView(IPageLayout.ID_PROP_SHEET);
+        if (view instanceof PropertySheet)
+        {
+          changeIcon(view);
+        }
+        view = page.findView(IPageLayout.ID_RES_NAV);
+        if (view instanceof ResourceNavigator)
+        {
+          changeIcon(view);
+        }
       }
-      catch (Exception e)
-      {
-        e.printStackTrace();
-      }
-    }
-
-    IAction getAction(String id)
-    {
-      try
-      {
-
-        return (IAction) actionAccess.invoke(actionBarAdvisor, id);
-
-      }
-      catch (Exception e)
-      {
-        e.printStackTrace();
-      }
-      return null;
-    }
-
+    });
   }
 
 }
