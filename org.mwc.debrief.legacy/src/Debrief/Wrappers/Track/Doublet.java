@@ -37,10 +37,8 @@ public final class Doublet implements Comparable<Doublet>
         final double bearingDegs, final double mySpeedKts,
         final double observedFreq)
     {
-      final double myCrseRads =
-          MWC.Algorithms.Conversions.Degs2Rads(myCrseDegs);
-      final double bearingRads =
-          MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
+      final double myCrseRads = Conversions.Degs2Rads(myCrseDegs);
+      final double bearingRads = Conversions.Degs2Rads(bearingDegs);
       return FrequencyCalcs.calcDopplerComponent(bearingRads, myCrseRads,
           mySpeedKts, observedFreq);
     }
@@ -251,8 +249,7 @@ public final class Doublet implements Comparable<Doublet>
     double correctedFreq = 0;
 
     final double theBearingDegs = getCalculatedBearing(null, null);
-    final double theBearingRads =
-        MWC.Algorithms.Conversions.Degs2Rads(theBearingDegs);
+    final double theBearingRads = Conversions.Degs2Rads(theBearingDegs);
     final double myCourseRads = _hostFix.getCourse();
 
     final double mySpeedKts = _hostFix.getSpeed();
