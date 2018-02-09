@@ -31,11 +31,13 @@ public class EnterRangePage extends CoreEditableWizardPage
   {
     WorldDistance _range = new WorldDistance(5, WorldDistance.NM);
 
+    @Override
     public EditorType getInfo()
     {
       return null;
     }
 
+    @Override
     public String getName()
     {
       return null;
@@ -46,6 +48,7 @@ public class EnterRangePage extends CoreEditableWizardPage
       return _range;
     }
 
+    @Override
     public boolean hasEditor()
     {
       return false;
@@ -70,6 +73,15 @@ public class EnterRangePage extends CoreEditableWizardPage
   public EnterRangePage(final ISelection selection, final String pageName,
       final String pageDescription, final String rangeTitle,
       final WorldDistance defaultRange, final String imagePath,
+      final String helpContext, final String trailingMessage)
+  {
+    this(selection, pageName, pageDescription, rangeTitle, defaultRange,
+        imagePath, helpContext, trailingMessage, DEFAULT_PREF_NAME);
+  }
+
+  public EnterRangePage(final ISelection selection, final String pageName,
+      final String pageDescription, final String rangeTitle,
+      final WorldDistance defaultRange, final String imagePath,
       final String helpContext, final String trailingMessage,
       final String prefName)
   {
@@ -77,42 +89,23 @@ public class EnterRangePage extends CoreEditableWizardPage
         false, trailingMessage);
     _rangeTitle = rangeTitle;
     _defaultRange = defaultRange;
-    
+
     _prefName = prefName;
 
     setDefaults();
 
   }
 
-  public EnterRangePage(final ISelection selection, final String pageName,
-      final String pageDescription, final String rangeTitle,
-      final WorldDistance defaultRange, final String imagePath,
-      final String helpContext, final String trailingMessage)
+  @Override
+  protected Editable createMe()
   {
-    this(selection, pageName, pageDescription, rangeTitle, defaultRange,
-        imagePath, helpContext, trailingMessage, DEFAULT_PREF_NAME);
-  }
+    if (_myWrapper == null)
 
-  private void setDefaults()
-  {
-    final Preferences prefs = getPrefs();
-
-    if (prefs != null)
     {
-      final String speedStr = prefs.get(_prefName, NULL_RANGE);
-      final String[] parts = speedStr.split(",");
-      try
-      {
-        final double val = MWCXMLReader.readThisDouble(parts[0]);
-        final int units = Integer.parseInt(parts[1]);
-        final WorldDistance range = new WorldDistance(val, units);
-        _defaultRange = range;
-      }
-      catch (final ParseException pe)
-      {
-        MWC.Utilities.Errors.Trace.trace(pe);
-      }
+      _myWrapper = new DataItem();
+      _myWrapper.setRange(_defaultRange);
     }
+    return _myWrapper;
   }
 
   @Override
@@ -141,17 +134,7 @@ public class EnterRangePage extends CoreEditableWizardPage
     super.dispose();
   }
 
-  public void setRange(final WorldDistance range)
-  {
-    createMe();
-    _myWrapper.setRange(range);
-  }
-
-  public WorldDistance getRange()
-  {
-    return _myWrapper.getRange();
-  }
-
+  @Override
   protected PropertyDescriptor[] getPropertyDescriptors()
   {
     final PropertyDescriptor[] descriptors =
@@ -159,15 +142,37 @@ public class EnterRangePage extends CoreEditableWizardPage
     return descriptors;
   }
 
-  protected Editable createMe()
+  public WorldDistance getRange()
   {
-    if (_myWrapper == null)
+    return _myWrapper.getRange();
+  }
 
+  private void setDefaults()
+  {
+    final Preferences prefs = getPrefs();
+
+    if (prefs != null)
     {
-      _myWrapper = new DataItem();
-      _myWrapper.setRange(_defaultRange);
+      final String speedStr = prefs.get(_prefName, NULL_RANGE);
+      final String[] parts = speedStr.split(",");
+      try
+      {
+        final double val = MWCXMLReader.readThisDouble(parts[0]);
+        final int units = Integer.parseInt(parts[1]);
+        final WorldDistance range = new WorldDistance(val, units);
+        _defaultRange = range;
+      }
+      catch (final ParseException pe)
+      {
+        MWC.Utilities.Errors.Trace.trace(pe);
+      }
     }
-    return _myWrapper;
+  }
+
+  public void setRange(final WorldDistance range)
+  {
+    createMe();
+    _myWrapper.setRange(range);
   }
 
 }

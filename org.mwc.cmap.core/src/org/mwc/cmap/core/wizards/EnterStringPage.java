@@ -29,16 +29,19 @@ public class EnterStringPage extends CoreEditableWizardPage
 
     String newName;
 
+    @Override
     public EditorType getInfo()
     {
       return null;
     }
 
+    @Override
     public String getName()
     {
       return newName;
     }
 
+    @Override
     public boolean hasEditor()
     {
       return false;
@@ -58,6 +61,17 @@ public class EnterStringPage extends CoreEditableWizardPage
   protected String _startName;
   private final String _fieldExplanation;
   private final String _prefName;
+
+  public EnterStringPage(final ISelection selection, final String startName,
+      final String pageTitle, final String pageExplanation,
+      final String fieldExplanation, final String imagePath,
+      final String helpContext, final boolean useDefaults,
+      final String trailingMessage)
+  {
+    this(selection, startName, pageTitle, pageExplanation, fieldExplanation,
+        imagePath, helpContext, useDefaults, trailingMessage,
+        DEFAULT_PREF_VALUE);
+  }
 
   /**
    * 
@@ -83,7 +97,7 @@ public class EnterStringPage extends CoreEditableWizardPage
       final String pageTitle, final String pageExplanation,
       final String fieldExplanation, final String imagePath,
       final String helpContext, final boolean useDefaults,
-      String trailingMessage, final String prefName)
+      final String trailingMessage, final String prefName)
   {
     super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
         false, trailingMessage);
@@ -94,32 +108,16 @@ public class EnterStringPage extends CoreEditableWizardPage
       setDefaults();
   }
 
-  public EnterStringPage(final ISelection selection, final String startName,
-      final String pageTitle, final String pageExplanation,
-      final String fieldExplanation, final String imagePath,
-      final String helpContext, final boolean useDefaults,
-      String trailingMessage)
-  {
-    this(selection, startName, pageTitle, pageExplanation, fieldExplanation,
-        imagePath, helpContext, useDefaults, trailingMessage,
-        DEFAULT_PREF_VALUE);
-  }
-
   @Override
-  protected String getIndex()
+  protected Editable createMe()
   {
-    return "" + this.getClass() + "," + _prefName + "_"
-        + _fieldExplanation.hashCode();
-  }
-
-  private void setDefaults()
-  {
-    final Preferences prefs = getPrefs();
-
-    if (prefs != null)
+    if (_myWrapper == null)
     {
-      _startName = prefs.get(_prefName, _startName);
+      _myWrapper = new DataItem();
+      _myWrapper.setName(_startName);
     }
+
+    return _myWrapper;
   }
 
   @Override
@@ -131,11 +129,14 @@ public class EnterStringPage extends CoreEditableWizardPage
     super.dispose();
   }
 
-  public String getString()
+  @Override
+  protected String getIndex()
   {
-    return _myWrapper.getName();
+    return "" + this.getClass() + "," + _prefName + "_"
+        + _fieldExplanation.hashCode();
   }
 
+  @Override
   protected PropertyDescriptor[] getPropertyDescriptors()
   {
     final PropertyDescriptor[] descriptors =
@@ -143,15 +144,19 @@ public class EnterStringPage extends CoreEditableWizardPage
     return descriptors;
   }
 
-  protected Editable createMe()
+  public String getString()
   {
-    if (_myWrapper == null)
-    {
-      _myWrapper = new DataItem();
-      _myWrapper.setName(_startName);
-    }
+    return _myWrapper.getName();
+  }
 
-    return _myWrapper;
+  private void setDefaults()
+  {
+    final Preferences prefs = getPrefs();
+
+    if (prefs != null)
+    {
+      _startName = prefs.get(_prefName, _startName);
+    }
   }
 
 }
