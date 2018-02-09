@@ -149,50 +149,43 @@ public final class Doublet implements Comparable<Doublet>
 		return measuredValue - calcValue;
 	}
 
-	@Override
-	public int compareTo(final Doublet o)
-	{
-		final int res;
-		
-		// hmm, do they have the same host DTG?
-		if(_hostFix != null)
+  @Override
+  public int compareTo(final Doublet o)
+  {
+    final int res;
+
+    // hmm, do they have the same host DTG?
+    if (_hostFix == null || o._hostFix == null
+        || _hostFix.getDTG().equals(o._hostFix.getDTG()))
     {
-      if (_hostFix.getDTG().equals(o._hostFix.getDTG()))
-      {
-        // yes, then lets compare the target fixes. This happens
-        // when the sensor cuts are more frequent than the
-        // sensor platform positions
-        
-        // do we have a target fix?
-        if(_targetFix != null)
-        {
-          res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
-        }
-        else
-        {
-          // nope, we'll have to compare the sensor fix
-          res = _sensor.getDTG().compareTo(o._sensor.getDTG());
-        }
-      }
-      else
-      {
-        res = _hostFix.getDTG().compareTo(o._hostFix.getDTG());
-      }
-    }
-    else
-    {
-      if(_targetFix != null)
+      // yes, then lets compare the target fixes. This happens
+      // when the sensor cuts are more frequent than the
+      // sensor platform positions
+
+      // do we have a target fix?
+      if (_targetFix != null && o._targetFix != null)
       {
         res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
       }
       else
       {
-        res = 0;
+        // nope, we'll have to compare the sensor fix
+        res = _sensor.getDTG().compareTo(o._sensor.getDTG());
       }
     }
-		
-		return res;
-	}
+    else if (_hostFix != null && o._hostFix != null)
+    {
+      // ok, we have both host fixes
+      res = _hostFix.getDTG().compareTo(o._hostFix.getDTG());
+    }
+    else
+    {
+      // nope, we'll have to compare the sensor fix
+      res = _sensor.getDTG().compareTo(o._sensor.getDTG());
+    }
+
+    return res;
+  }
 
 	public double getAmbiguousMeasuredBearing()
 	{
