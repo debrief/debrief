@@ -183,6 +183,7 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.TrackDataProvider;
@@ -1698,7 +1699,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private SensorImportHelper getSensorImportHelperFor(final String sensorName,
       final Color sensorColor, final String introString,
-      final boolean needsRange)
+      final boolean needsRange, boolean isTowedArray)
   {
     // ok, check the property
     final String showImportWizard =
@@ -1711,7 +1712,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       helper =
           new SensorImportHelper.SensorImportHelperUI(sensorName, sensorColor,
-              introString, needsRange);
+              introString, needsRange, isTowedArray);
     }
     else
     {
@@ -2086,6 +2087,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // because
     // if it doesn't we'll let the user set a default
     final boolean needsRange = areWeWaitingForRange(thisS);
+    
+    // see if the data is for a towed array
+    final boolean isTowedArray = isAmbiguousData(thisS);
 
     // next, just see if this track already contains sensor
     // data with this name
@@ -2118,7 +2122,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     final SensorImportHelper importHelper =
         getSensorImportHelperFor(theName, thisS.getColor(), introString,
-            needsRange);
+            needsRange, isTowedArray);
 
     // did it work?
     if (importHelper.success())
@@ -2145,6 +2149,28 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
         }
       }
+      
+      // is it towed array?
+      if(isTowedArray)
+      {
+        WorldDistance offset = importHelper.getSensorOffset();
+        ArrayLength arrayLength = new ArrayLength(offset);
+        thisS.setSensorOffset(arrayLength);
+        
+        // and the base frequency
+        String freqStr = importHelper.getBaseFrequency();
+        try
+        {
+          double freq = Double.parseDouble(freqStr);
+          thisS.setBaseFrequency(freq);
+        }
+        catch (NumberFormatException e)
+        {
+          CorePlugin.logError(Status.ERROR, "Couldn't parse base frequency:" + freqStr, e);
+          e.printStackTrace();
+        }
+      }
+      
       if (importHelper.applyRainbow())
       {
         applyRainbowShadingTo(thisS);
@@ -2152,6 +2178,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
 
     return importHelper.success();
+  }
+
+  private boolean isAmbiguousData(SensorWrapper thisS)
+  {
+    final boolean isTowed;
+    if(thisS.size() > 0)
+    {
+      SensorContactWrapper firstCut = (SensorContactWrapper) thisS.elements().nextElement();
+      isTowed = firstCut.getHasAmbiguousBearing();
+    }
+    else
+    {
+      isTowed = false;
+    }
+    return isTowed;
   }
 
   public void outlinePageClosed()
