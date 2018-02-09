@@ -47,6 +47,7 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
@@ -153,6 +154,27 @@ abstract public class CoreEditableWizardPage extends WizardPage
     final String index = getIndex();
     final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(index);
     return prefs;
+  }
+
+  
+  
+  @Override
+  public void dispose()
+  {
+    // some/most of our implementing classes remember the last value used.
+    // So, ensure the prefs are written to disk
+    try
+    {
+      getPrefs().flush();
+    }
+    catch (BackingStoreException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    // carry on with dispose
+    super.dispose();
   }
 
   protected String getIndex()
