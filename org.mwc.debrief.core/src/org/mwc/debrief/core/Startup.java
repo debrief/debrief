@@ -38,13 +38,16 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
+import org.eclipse.ui.internal.IPreferenceConstants;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.PropertySheet;
 
-@SuppressWarnings({"deprecation", "restriction"})
+@SuppressWarnings(
+{"deprecation", "restriction"})
 public class Startup implements IStartup
 {
 
@@ -90,11 +93,18 @@ public class Startup implements IStartup
     removePreferencePages();
     updateMenuIcons();
     updateViewIcons();
+    initialisePrefs();
     new ResetPerspective().resetPerspective();
     if (DebriefPlugin.getDefault().getCreateProject())
     {
       new CreateDebriefProject().createStartProject();
     }
+  }
+
+  private void initialisePrefs()
+  {
+    WorkbenchPlugin.getDefault().getPreferenceStore().setValue(
+        IPreferenceConstants.RECENT_FILES, 10);
   }
 
   private void updateMenuIcons()
@@ -172,7 +182,7 @@ public class Startup implements IStartup
       }
     });
   }
-  
+
   protected void changeIcon(IWorkbenchPart part)
   {
     try
