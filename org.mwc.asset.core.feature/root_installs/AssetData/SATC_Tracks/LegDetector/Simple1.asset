@@ -30,13 +30,17 @@
 		<Surface Name="SUBJECT">
 			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE" />
 			<SensorFit></SensorFit>
-			<Status Course="175" Fuel="100">
+			<Status Course="5" Fuel="100">
 				<Location>
-					<shortLocation Lat="60.4" Long="0"></shortLocation>
+					<shortLocation Lat="60.1" Long="0"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Waterfall Name="subject route">
+				<Move Name="leg one" Course="5">
+					<Vector Value="9" Units="nm" /></Move>
+				<Move Name="leg one" Course="285">
+					<Vector Value="10" Units="nm" /></Move>
 				<Move Name="leg one" Course="175">
 					<Vector Value="5" Units="nm" /></Move>
 			</Waterfall>
@@ -51,7 +55,7 @@
 				<MaxSpeed Value="20" Units="kts" />
 				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="1" Units="kt/s" />
-				<TurningCircle Value="800" Units="m"></TurningCircle>
+				<TurningCircle Value="1100" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<Surface Name="SENSOR">
@@ -62,17 +66,18 @@
 			</SensorFit>
 			<Status Course="200" Fuel="100">
 				<Location>
-					<shortLocation Lat="60.4" Long="-0.2"></shortLocation>
+					<shortLocation Lat="60.4" Long="-0.3"></shortLocation>
 				</Location>
 				<Speed Value="13" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
 				<Move Name="leg one" Course="200">
 					<Vector Value="4" Units="nm" /></Move>
-				<Move Name="leg one" Course="160">
+				<Move Name="leg one" Course="140">
 					<Vector Value="12" Units="nm" /></Move>
 				<Move Name="leg one" Course="230">
-					<Vector Value="5" Units="nm" /></Move>
+					<Vector Value="5" Units="nm" />
+					<Speed Value="9" Units="kts"/></Move>
 			</Waterfall>
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
@@ -80,7 +85,7 @@
 				<MaxSpeed Value="20" Units="kts" />
 				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="1" Units="kt/s" />
-				<TurningCircle Value="4500" Units="m"></TurningCircle>
+				<TurningCircle Value="1100" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
 	</Participants>
