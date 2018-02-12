@@ -273,12 +273,9 @@ abstract public class FixHandler extends MWCXMLReader
     if (theFont != null)
     {
       // ok, compare the font to the parent
-      if (theFont.equals(fix.getTrackWrapper().getTrackFont()))
+      if (!theFont.equals(FixWrapper.PLAIN_FONT))
       {
-        // don't bother outputting the font - it's the same as the parent anyway
-      }
-      else
-      {
+        // ok, it's non-standard export it.
         FontHandler.exportFont(theFont, eFix, doc);
       }
     }
