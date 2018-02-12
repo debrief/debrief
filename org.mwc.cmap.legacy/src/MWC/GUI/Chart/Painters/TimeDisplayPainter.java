@@ -23,15 +23,15 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.ExtendedEditable;
-import MWC.GUI.DynamicPlottable;
 import MWC.GUI.NotInBaseLayer;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
-import MWC.GUI.Properties.MyDateFormatPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
@@ -579,7 +579,7 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
 					tmp = new PropertyDescriptor[res.length+1];
 					System.arraycopy(res, 0, tmp, 0, res.length);
 					tmp[res.length] = displayLongProp("Format", "Time format", "the time format",
-							MyDateFormatPropertyEditor.class, TEMPORAL);
+							DateFormatPropertyEditor.class, TEMPORAL);
 				}
 				return tmp;
 			}
