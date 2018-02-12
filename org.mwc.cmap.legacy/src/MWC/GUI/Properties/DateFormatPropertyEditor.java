@@ -155,6 +155,10 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
       final String val = (String) p1;
       setAsText(val);
     }
+    else if (p1 instanceof Integer)
+    {
+      _myFormat = (Integer) p1;
+    }
   }
 
   public void setAsText(final String val)
