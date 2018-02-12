@@ -778,7 +778,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * the plain font we use as a basis
    * 
    */
-  static private final Font _plainFont = new Font("Sans Serif", Font.PLAIN, 9);
+  static public final Font PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, 9);
 
   /**
    * the current format we're using
@@ -1003,7 +1003,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // declare a duff track
     _trackWrapper = null;
     // start us off with a nice font
-    setFont(_plainFont);
+    setFont(PLAIN_FONT);
     // whether to show symbol
     _showSymbol = false;
 
