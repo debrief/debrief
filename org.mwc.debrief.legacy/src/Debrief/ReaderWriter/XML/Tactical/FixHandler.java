@@ -23,6 +23,10 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
+
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
@@ -34,195 +38,11 @@ import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
-
 abstract public class FixHandler extends MWCXMLReader
 {
 
-  private Fix _theFix;
-  private FixWrapper _theFixWrapper;
-
-  /**
-   * class which contains list of textual representations of label locations
-   */
-  private static final LocationPropertyEditor lp =
-      new LocationPropertyEditor();
-
-  public FixHandler()
-  {
-    // inform our parent what type of class we are
-    super("fix");
-
-    addAttributeHandler(new HandleAttribute("Label")
-    {
-      public void setValue(final String name, final String value)
-      {
-        _theFixWrapper.setLabel(fromXML(value));
-      }
-    });
-    addAttributeHandler(new HandleAttribute("Comment")
-    {
-      public void setValue(final String name, final String value)
-      {
-        _theFixWrapper.setComment(fromXML(value));
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute("DisplayComment")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setDisplayComment(value);
-      }
-    });
-    addHandler(new FontHandler()
-    {
-      public void setFont(final java.awt.Font font)
-      {
-        _theFixWrapper.setFont(font);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("Course")
-    {
-      public void setValue(final String name, final String value)
-      {
-        try
-        {
-          double courseVal = readThisDouble(value);
-          if (courseVal < 0)
-          {
-            // trim it back to positive domain
-            courseVal += 360;
-          }
-          _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(courseVal));
-        }
-        catch (final java.text.ParseException pe)
-        {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
-              + " value is:" + value);
-        }
-      }
-    });
-
-    addAttributeHandler(new HandleAttribute("Speed")
-    {
-      public void setValue(final String name, final String value)
-      {
-        try
-        {
-          _theFix.setSpeed(MWC.Algorithms.Conversions
-              .Kts2Yps(readThisDouble(value)));
-        }
-        catch (final java.text.ParseException pe)
-        {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
-              + " value is:" + value);
-        }
-
-      }
-    });
-
-    addAttributeHandler(new HandleAttribute("Dtg")
-    {
-      public void setValue(final String name, final String value)
-      {
-        final HiResDate hrf = DebriefFormatDateTime.parseThis(value);
-        _theFix.setTime(hrf);
-      }
-    });
-
-    addHandler(new LocationHandler("centre")
-    {
-      public void setLocation(final MWC.GenericData.WorldLocation res)
-      {
-        _theFixWrapper.setFixLocation(res);
-      }
-    });
-
-    addHandler(new ColourHandler()
-    {
-      public void setColour(final java.awt.Color theVal)
-      {
-
-        _theFixWrapper.setColor(theVal);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("LabelShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setLabelShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("SymbolShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setSymbolShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("ArrowShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setArrowShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("LineShowing")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setLineShowing(value);
-      }
-    });
-
-    addAttributeHandler(new HandleBooleanAttribute("Visible")
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        _theFixWrapper.setVisible(value);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("LabelLocation")
-    {
-      public void setValue(final String name, final String val)
-      {
-        lp.setAsText(val);
-        final Integer res = (Integer) lp.getValue();
-        if (res != null)
-          _theFixWrapper.setLabelLocation(res);
-      }
-    });
-  }
-
-  public final void handleOurselves(final String name, final Attributes atts)
-  {
-    // create the new items
-    _theFix = new Fix();
-    _theFixWrapper = new FixWrapper(_theFix);
-    lp.setValue(null);
-
-    super.handleOurselves(name, atts);
-  }
-
-  public final void elementClosed()
-  {
-    addPlottable(_theFixWrapper);
-
-    // reset our variables
-    _theFix = null;
-    _theFixWrapper = null;
-  }
-
-  abstract public void addPlottable(Plottable plottable);
-
-  public static void exportFix(final FixWrapper fix,
-      final Element parent, final Document doc)
+  public static void exportFix(final FixWrapper fix, final Element parent,
+      final Document doc)
   {
     /*
      * <!ELEMENT fix (colour?, centre)> <!ATTLIST fix course CDATA #REQUIRED speed CDATA #REQUIRED
@@ -262,33 +82,223 @@ abstract public class FixHandler extends MWCXMLReader
       }
       else
       {
-        ColourHandler.exportColour(fCol,
-            eFix, doc);
+        ColourHandler.exportColour(fCol, eFix, doc);
       }
 
     }
 
     // and the font
     final java.awt.Font theFont = fix.getFont();
-    if (theFont != null)
+    if (theFont != null && !theFont.equals(FixWrapper.PLAIN_FONT))
     {
-      // ok, compare the font to the parent
-      if (theFont.equals(fix.getTrackWrapper().getTrackFont()))
-      {
-        // don't bother outputting the font - it's the same as the parent anyway
-      }
-      else
-      {
-        FontHandler.exportFont(theFont, eFix, doc);
-      }
+      // ok, it's non-standard export it.
+      FontHandler.exportFont(theFont, eFix, doc);
     }
 
     // and now the centre item,
-    LocationHandler.exportLocation(fix
-        .getLocation(), "centre", eFix, doc);
+    LocationHandler.exportLocation(fix.getLocation(), "centre", eFix, doc);
 
     parent.appendChild(eFix);
 
+  }
+
+  private Fix _theFix;
+
+  private FixWrapper _theFixWrapper;
+
+  /**
+   * class which contains list of textual representations of label locations
+   */
+  private static final LocationPropertyEditor lp = new LocationPropertyEditor();
+
+  public FixHandler()
+  {
+    // inform our parent what type of class we are
+    super("fix");
+
+    addAttributeHandler(new HandleAttribute("Label")
+    {
+      @Override
+      public void setValue(final String name, final String value)
+      {
+        _theFixWrapper.setLabel(fromXML(value));
+      }
+    });
+    addAttributeHandler(new HandleAttribute("Comment")
+    {
+      @Override
+      public void setValue(final String name, final String value)
+      {
+        _theFixWrapper.setComment(fromXML(value));
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute("DisplayComment")
+    {
+      @Override
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setDisplayComment(value);
+      }
+    });
+    addHandler(new FontHandler()
+    {
+      @Override
+      public void setFont(final java.awt.Font font)
+      {
+        _theFixWrapper.setFont(font);
+      }
+    });
+    addAttributeHandler(new HandleAttribute("Course")
+    {
+      @Override
+      public void setValue(final String name, final String value)
+      {
+        try
+        {
+          double courseVal = readThisDouble(value);
+          if (courseVal < 0)
+          {
+            // trim it back to positive domain
+            courseVal += 360;
+          }
+          _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(courseVal));
+        }
+        catch (final java.text.ParseException pe)
+        {
+          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
+              + " value is:" + value);
+        }
+      }
+    });
+
+    addAttributeHandler(new HandleAttribute("Speed")
+    {
+      @Override
+      public void setValue(final String name, final String value)
+      {
+        try
+        {
+          _theFix.setSpeed(MWC.Algorithms.Conversions
+              .Kts2Yps(readThisDouble(value)));
+        }
+        catch (final java.text.ParseException pe)
+        {
+          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
+              + " value is:" + value);
+        }
+
+      }
+    });
+
+    addAttributeHandler(new HandleAttribute("Dtg")
+    {
+      @Override
+      public void setValue(final String name, final String value)
+      {
+        final HiResDate hrf = DebriefFormatDateTime.parseThis(value);
+        _theFix.setTime(hrf);
+      }
+    });
+
+    addHandler(new LocationHandler("centre")
+    {
+      @Override
+      public void setLocation(final MWC.GenericData.WorldLocation res)
+      {
+        _theFixWrapper.setFixLocation(res);
+      }
+    });
+
+    addHandler(new ColourHandler()
+    {
+      @Override
+      public void setColour(final java.awt.Color theVal)
+      {
+
+        _theFixWrapper.setColor(theVal);
+      }
+    });
+
+    addAttributeHandler(new HandleBooleanAttribute("LabelShowing")
+    {
+      @Override
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setLabelShowing(value);
+      }
+    });
+
+    addAttributeHandler(new HandleBooleanAttribute("SymbolShowing")
+    {
+      @Override
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setSymbolShowing(value);
+      }
+    });
+
+    addAttributeHandler(new HandleBooleanAttribute("ArrowShowing")
+    {
+      @Override
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setArrowShowing(value);
+      }
+    });
+
+    addAttributeHandler(new HandleBooleanAttribute("LineShowing")
+    {
+      @Override
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setLineShowing(value);
+      }
+    });
+
+    addAttributeHandler(new HandleBooleanAttribute("Visible")
+    {
+      @Override
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setVisible(value);
+      }
+    });
+    addAttributeHandler(new HandleAttribute("LabelLocation")
+    {
+      @Override
+      public void setValue(final String name, final String val)
+      {
+        lp.setAsText(val);
+        final Integer res = (Integer) lp.getValue();
+        if (res != null)
+        {
+          _theFixWrapper.setLabelLocation(res);
+        }
+      }
+    });
+  }
+
+  abstract public void addPlottable(Plottable plottable);
+
+  @Override
+  public final void elementClosed()
+  {
+    addPlottable(_theFixWrapper);
+
+    // reset our variables
+    _theFix = null;
+    _theFixWrapper = null;
+  }
+
+  @Override
+  public final void handleOurselves(final String name, final Attributes atts)
+  {
+    // create the new items
+    _theFix = new Fix();
+    _theFixWrapper = new FixWrapper(_theFix);
+    lp.setValue(null);
+
+    super.handleOurselves(name, atts);
   }
 
 }

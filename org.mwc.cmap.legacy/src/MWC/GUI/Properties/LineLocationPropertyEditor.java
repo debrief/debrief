@@ -85,7 +85,7 @@ public class LineLocationPropertyEditor extends PropertyEditorSupport
     {
       _myLineLocation = (Integer)p1;
     }
-    if(p1 instanceof String)
+    else if(p1 instanceof String)
     {
       final String val = (String) p1;
       setAsText(val);

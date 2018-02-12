@@ -77,7 +77,7 @@ public class GraphicSizePropertyEditor extends PropertyEditorSupport
     {
       _mySize = (Double) p1;
     }
-    if (p1 instanceof String)
+    else if (p1 instanceof String)
     {
       final String val = (String) p1;
       setAsText(val);
