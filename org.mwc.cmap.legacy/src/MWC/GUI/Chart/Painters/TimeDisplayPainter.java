@@ -119,7 +119,7 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
                 prop("Visible", "whether this time display is visible",
                     VISIBILITY),
                 longProp("Location", "the time display location",
-                    MWC.GUI.Properties.DiagonalLocationPropertyEditor.class,
+                    DiagonalLocationPropertyEditor.class,
                     FORMAT),};
 
         PropertyDescriptor[] tmp;

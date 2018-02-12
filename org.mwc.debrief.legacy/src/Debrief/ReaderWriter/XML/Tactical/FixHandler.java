@@ -89,14 +89,10 @@ abstract public class FixHandler extends MWCXMLReader
 
     // and the font
     final java.awt.Font theFont = fix.getFont();
-    if (theFont != null)
+    if (theFont != null && !theFont.equals(FixWrapper.PLAIN_FONT))
     {
-      // ok, compare the font to the parent
-      if (!theFont.equals(FixWrapper.PLAIN_FONT))
-      {
-        // ok, it's non-standard export it.
-        FontHandler.exportFont(theFont, eFix, doc);
-      }
+      // ok, it's non-standard export it.
+      FontHandler.exportFont(theFont, eFix, doc);
     }
 
     // and now the centre item,
