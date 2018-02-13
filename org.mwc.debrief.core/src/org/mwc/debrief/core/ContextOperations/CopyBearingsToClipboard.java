@@ -444,7 +444,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
 
       final IMenuManager menu = new MenuManager();
-      new CopyBearingsToClipboard().generatePasteAction(menu, layers, host);
+      new CopyBearingsToClipboard().generatePasteAction(menu, layers, host, false);
 
       assertEquals("have items", menuItems, menu.getItems().length);
 
@@ -598,20 +598,27 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
         // ok, first see if it's a relative track - so we can
         // offer to copy it to the clipboard
-        generateCopyAction(parent, track);
+        boolean copyAdded = generateCopyAction(parent, track);
 
         // and now the paste action
-        generatePasteAction(parent, theLayers, track);
+        boolean pasteAdded =
+            generatePasteAction(parent, theLayers, track, copyAdded);
+
+        if (copyAdded || pasteAdded)
+        {
+          parent.add(new Separator());
+        }
       }
     }
   }
 
-  private void generateCopyAction(final IMenuManager parent,
+  private boolean generateCopyAction(final IMenuManager parent,
       final TrackWrapper track)
   {
     // ok, it's a track. Is it made from relative TMA segments?
     final SegmentList segments = track.getSegments();
     final Enumeration<Editable> ele = segments.elements();
+    final boolean added;
 
     TrackWrapper host = null;
 
@@ -686,17 +693,29 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         }
       };
 
-      // right,stick in a separator
+      convertToTrack.setImageDescriptor(CorePlugin
+          .getImageDescriptor("icons\\16\\copy.png"));
+
+      // stick in the "before" separator
       parent.add(new Separator());
 
       // ok - flash up the menu item
       parent.add(convertToTrack);
+
+      added = true;
     }
+    else
+    {
+      added = false;
+    }
+    return added;
   }
 
-  private void generatePasteAction(final IMenuManager parent,
-      final Layers theLayers, final TrackWrapper track)
+  private boolean generatePasteAction(final IMenuManager parent,
+      final Layers theLayers, final TrackWrapper track, boolean copyAdded)
   {
+    final boolean added;
+
     // ok, see if we have some bearing data on the clipboard
     final Clipboard clip =
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -704,6 +723,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     // and put it on the clipboard
     if (clip.isDataFlavorAvailable(TransferableBearingList.FLAVOR))
     {
+      added = true;
+
       try
       {
         final Object contents = clip.getData(TransferableBearingList.FLAVOR);
@@ -730,7 +751,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
                   "Create new track by adding clipboard bearings to "
                       + track.getName();
 
-              final Action convertToTrack = new Action(title)
+              final Action createNewTrack = new Action(title)
               {
                 @Override
                 public void run()
@@ -744,11 +765,19 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
                   runIt(copyBearings);
                 }
               };
-              // right,stick in a separator
-              parent.add(new Separator());
+              
+              // have we already generated an item
+              if(!copyAdded)
+              {
+                // nope, insert a separator
+                parent.add(new Separator());
+              }
+
+              createNewTrack.setImageDescriptor(CorePlugin
+                  .getImageDescriptor("icons\\16\\paste.png"));
 
               // ok - flash up the menu item
-              parent.add(convertToTrack);
+              parent.add(createNewTrack);
             }
           }
         }
@@ -759,6 +788,12 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
             "Problem creating new track from clipboard", e);
       }
     }
+    else
+    {
+      added = false;
+    }
+
+    return added;
   }
 
   /**
