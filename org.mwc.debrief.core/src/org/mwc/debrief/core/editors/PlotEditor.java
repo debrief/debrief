@@ -1699,7 +1699,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private SensorImportHelper getSensorImportHelperFor(final String sensorName,
       final Color sensorColor, final String introString,
-      final boolean needsRange, boolean isTowedArray)
+      final boolean needsRange, final boolean isTowedArray,
+      final boolean hasFrequency)
   {
     // ok, check the property
     final String showImportWizard =
@@ -1712,7 +1713,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       helper =
           new SensorImportHelper.SensorImportHelperUI(sensorName, sensorColor,
-              introString, needsRange, isTowedArray);
+              introString, needsRange, isTowedArray, hasFrequency);
     }
     else
     {
@@ -2087,9 +2088,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // because
     // if it doesn't we'll let the user set a default
     final boolean needsRange = areWeWaitingForRange(thisS);
-    
+
     // see if the data is for a towed array
     final boolean isTowedArray = isAmbiguousData(thisS);
+
+    // see if we have freq data
+    final boolean hasFrequency = hasFrequencyData(thisS);
 
     // next, just see if this track already contains sensor
     // data with this name
@@ -2122,7 +2126,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     final SensorImportHelper importHelper =
         getSensorImportHelperFor(theName, thisS.getColor(), introString,
-            needsRange, isTowedArray);
+            needsRange, isTowedArray, hasFrequency);
 
     // did it work?
     if (importHelper.success())
@@ -2149,14 +2153,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
         }
       }
-      
+
       // is it towed array?
-      if(isTowedArray)
+      if (isTowedArray)
       {
         WorldDistance offset = importHelper.getSensorOffset();
         ArrayLength arrayLength = new ArrayLength(offset);
         thisS.setSensorOffset(arrayLength);
-        
+      }
+      
+      if(hasFrequency)
+      {
         // and the base frequency
         String freqStr = importHelper.getBaseFrequency();
         try
@@ -2166,11 +2173,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         }
         catch (NumberFormatException e)
         {
-          CorePlugin.logError(Status.ERROR, "Couldn't parse base frequency:" + freqStr, e);
+          CorePlugin.logError(Status.ERROR, "Couldn't parse base frequency:"
+              + freqStr, e);
           e.printStackTrace();
         }
       }
-      
+
       if (importHelper.applyRainbow())
       {
         applyRainbowShadingTo(thisS);
@@ -2180,12 +2188,31 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return importHelper.success();
   }
 
-  private boolean isAmbiguousData(SensorWrapper thisS)
+  private static boolean hasFrequencyData(SensorWrapper thisS)
+  {
+
+    final boolean hasFreq;
+    if (thisS.size() > 0)
+    {
+      SensorContactWrapper firstCut =
+          (SensorContactWrapper) thisS.elements().nextElement();
+      hasFreq = firstCut.getHasFrequency();
+    }
+    else
+    {
+      hasFreq = false;
+    }
+    return hasFreq;
+
+  }
+
+  private static boolean isAmbiguousData(SensorWrapper thisS)
   {
     final boolean isTowed;
-    if(thisS.size() > 0)
+    if (thisS.size() > 0)
     {
-      SensorContactWrapper firstCut = (SensorContactWrapper) thisS.elements().nextElement();
+      SensorContactWrapper firstCut =
+          (SensorContactWrapper) thisS.elements().nextElement();
       isTowed = firstCut.getHasAmbiguousBearing();
     }
     else
