@@ -37,6 +37,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -2436,5 +2438,71 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     final EditableWrapper fixW = new EditableWrapper(item, segmentW, layers);
     final ISelection selected = new StructuredSelection(fixW);
     return selected;
+  }
+  
+  public static class TestMe extends TestCase
+  {
+    
+    public void testAmbig()
+    {
+      SensorWrapper sensor = new SensorWrapper("Some name");
+      
+      assertFalse("Should not find ambig data", isAmbiguousData(sensor));
+      
+      // give it some none freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null,
+          100d, null , null, null, Color.RED, "label", 1, "Some name"));
+      
+      assertFalse("Should still not find ambig data", isAmbiguousData(sensor));
+
+      // and another cut
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1003000), null,
+          100d, null, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertFalse("Should still not find ambig data", isAmbiguousData(sensor));
+
+      // clear the cuts
+      sensor.removeElement(sensor.elements().nextElement());
+      sensor.removeElement(sensor.elements().nextElement());
+
+      assertEquals("now empty",0 , sensor.size());;
+
+      // give it some freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null,
+          122d, 222d, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertTrue("Should find ambig data", isAmbiguousData(sensor));
+    }
+    
+    public void testFreq()
+    {
+      SensorWrapper sensor = new SensorWrapper("Some name");
+      
+      assertFalse("Should not find freq data", hasFrequencyData(sensor));
+      
+      // give it some none freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null,
+          100d, 200d, null, null, Color.RED, "label", 1, "Some name"));
+      
+      assertFalse("Should still not find freq data", hasFrequencyData(sensor));
+
+      // and another cut
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1003000), null,
+          100d, 200d, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertFalse("Should still not find freq data", hasFrequencyData(sensor));
+
+      // clear the cuts
+      sensor.removeElement(sensor.elements().nextElement());
+      sensor.removeElement(sensor.elements().nextElement());
+
+      assertEquals("now empty",0 , sensor.size());;
+
+      // give it some freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null,
+          null, null, 22d, null, Color.RED, "label", 1, "Some name"));
+
+      assertTrue("Should find freq data", hasFrequencyData(sensor));
+    }
   }
 }
