@@ -89,7 +89,8 @@ public interface SensorImportHelper
 
     public SensorImportHelperUI(final String sensorName,
         final Color sensorColor, final String introString,
-        final boolean needsRange, final boolean isTowedArray)
+        final boolean needsRange, final boolean isTowedArray,
+        final boolean hasFrequency)
     {
       final String imagePath = "images/NameSensor.jpg";
       final String explain =
@@ -141,8 +142,11 @@ public interface SensorImportHelper
       }
       if (isTowedArray)
       {
-        wizard.addWizard(getBaseFreq);
         wizard.addWizard(getSensorOffset);
+      }
+      if (hasFrequency)
+      {
+        wizard.addWizard(getBaseFreq);
       }
       wizard.addWizard(getVis);
       wizard.addWizard(applyRainbowInRainbowColors);
