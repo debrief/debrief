@@ -20,9 +20,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -75,6 +77,10 @@ import MWC.TacticalData.Fix;
 public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 {
 
+  private static class BearingListList extends ArrayList<BearingList>
+  {
+  }
+
   private static class BearingList extends HashMap<HiResDate, WorldVector>
   {
 
@@ -108,64 +114,71 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   private static class CopyBearingData extends CMAPOperation
   {
 
-    private static BearingList calculateOffsets(final TrackWrapper subject,
+    private static BearingListList calculateOffsets(final List<TrackWrapper> tracks,
         final TrackWrapper refTrack)
     {
-      final BearingList res =
-          new BearingList(subject.getName(), subject.getColor());
 
-      final Enumeration<Editable> posits = subject.getPositionIterator();
-
-      final boolean refWasInterpolated = refTrack.getInterpolatePoints();
-      refTrack.setInterpolatePoints(true);
-
-      while (posits.hasMoreElements())
+      BearingListList res = new BearingListList();
+      
+      for(TrackWrapper track: tracks)
       {
-        final FixWrapper nextF = (FixWrapper) posits.nextElement();
-        final HiResDate tNow = nextF.getDateTimeGroup();
-        final Watchable[] nearest = refTrack.getNearestTo(tNow, false);
-        if (nearest != null && nearest.length > 0)
-        {
-          final FixWrapper near = (FixWrapper) nearest[0];
-          final WorldVector offset =
-              nextF.getLocation().subtract(near.getLocation());
-          res.put(tNow, offset);
-        }
-      }
+        final BearingList bearings = new BearingList(track.getName(), track
+            .getColor());
+        
+        final Enumeration<Editable> posits = track.getPositionIterator();
 
-      refTrack.setInterpolatePoints(refWasInterpolated);
+        final boolean refWasInterpolated = refTrack.getInterpolatePoints();
+        refTrack.setInterpolatePoints(true);
+
+        while (posits.hasMoreElements())
+        {
+          final FixWrapper nextF = (FixWrapper) posits.nextElement();
+          final HiResDate tNow = nextF.getDateTimeGroup();
+          final Watchable[] nearest = refTrack.getNearestTo(tNow, false);
+          if (nearest != null && nearest.length > 0)
+          {
+            final FixWrapper near = (FixWrapper) nearest[0];
+            final WorldVector offset = nextF.getLocation().subtract(near
+                .getLocation());
+            bearings.put(tNow, offset);
+          }
+        }
+
+        refTrack.setInterpolatePoints(refWasInterpolated);
+        
+        res.add(bearings);
+      }
 
       return res;
     }
 
     private Clipboard _clip;
 
-    private final TrackWrapper _subject;
+    private final List<TrackWrapper> _tracks;
 
     private final TrackWrapper _referenceTrack;
 
-    private BearingList _offsets;
+    private BearingListList _offsetList;
 
-    public CopyBearingData(final String title, final TrackWrapper subject,
+    public CopyBearingData(final String title, final List<TrackWrapper> tracks,
         final TrackWrapper referenceTrack)
     {
       super(title);
-      _subject = subject;
+      _tracks = tracks;
       _referenceTrack = referenceTrack;
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
       // ok, get ready
-      _offsets = calculateOffsets(_subject, _referenceTrack);
+      _offsetList = calculateOffsets(_tracks, _referenceTrack);
 
       // did we find any?
-      if (_offsets.size() > 0)
+      if (_offsetList.size() > 0)
       {
-        writeOffsets(_offsets);
+        writeOffsets(_offsetList);
       }
 
       return Status.OK_STATUS;
@@ -201,14 +214,14 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       return Status.OK_STATUS;
     }
 
-    private void writeOffsets(final BearingList offsets)
+    private void writeOffsets(final BearingListList offsets)
     {
       // create the clipboard buffer
       _clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
 
       // store our data
-      final TransferableBearingList ourData =
-          new TransferableBearingList(offsets);
+      final TransferableBearingList ourData = new TransferableBearingList(
+          offsets);
 
       // and put it on the clipboard
       _clip.setContents(ourData, CorePlugin.getDefault());
@@ -283,9 +296,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
       // ok, create the track
       _newTrack = new TrackWrapper();
@@ -356,33 +368,31 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         // final String label, final int style, final String sensorName)
         if (i % 9 != 0)
         {
-          final SensorContactWrapper contact =
-              new SensorContactWrapper(host.getName(), new HiResDate(newDate2
-                  .getTime()), null, 12d, null, Color.red, "Some label", 1,
-                  "Sensor");
+          final SensorContactWrapper contact = new SensorContactWrapper(host
+              .getName(), new HiResDate(newDate2.getTime()), null, 12d, null,
+              Color.red, "Some label", 1, "Sensor");
           sensor.add(contact);
         }
       }
-
+      
       final TrackWrapper subject = new TrackWrapper();
       subject.setName("subject");
       layers.addThisLayer(subject);
 
-      final SensorContactWrapper[] obs =
-          new SensorContactWrapper[sensor.size()];
+      final SensorContactWrapper[] obs = new SensorContactWrapper[sensor
+          .size()];
       Enumeration<Editable> ele = sensor.elements();
       int ctr = 0;
       while (ele.hasMoreElements())
       {
-        final SensorContactWrapper cut =
-            (SensorContactWrapper) ele.nextElement();
+        final SensorContactWrapper cut = (SensorContactWrapper) ele
+            .nextElement();
         obs[ctr++] = cut;
       }
 
       final WorldVector offset = new WorldVector(12, 0.002, 0.0d);
-      final RelativeTMASegment seg =
-          new RelativeTMASegment(obs, offset,
-              new WorldSpeed(12, WorldSpeed.Kts), 12d, layers, Color.green);
+      final RelativeTMASegment seg = new RelativeTMASegment(obs, offset,
+          new WorldSpeed(12, WorldSpeed.Kts), 12d, layers, Color.green);
       subject.add(seg);
 
       assertEquals("have valid segment", 53, seg.size());
@@ -406,18 +416,20 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         subjects[ctr2++] = ele.nextElement();
       }
 
-      final GenerateInfillOperation operation =
-          new GenerateInfillOperation("title", subjects, layers, subject,
-              getMyLogger(), true);
+      final GenerateInfillOperation operation = new GenerateInfillOperation(
+          "title", subjects, layers, subject, getMyLogger(), true);
 
       assertEquals("before infills", 3, subject.getSegments().size());
 
       operation.execute(null, null);
 
       assertEquals("has infills", 5, subject.getSegments().size());
+      
+      final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+      tracks.add(subject);
 
       // ok, now we can run the get bearings
-      final CopyBearingData oper = new CopyBearingData("title", subject, host);
+      final CopyBearingData oper = new CopyBearingData("title", tracks, host);
 
       // check bearings are on clipboard.
       oper.execute(null, null);
@@ -444,7 +456,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
 
       final IMenuManager menu = new MenuManager();
-      new CopyBearingsToClipboard().generatePasteAction(menu, layers, host, false);
+      new CopyBearingsToClipboard().generatePasteAction(menu, layers, host,
+          false);
 
       assertEquals("have items", menuItems, menu.getItems().length);
 
@@ -454,8 +467,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         return;
       }
 
-      final ActionContributionItem first =
-          (ActionContributionItem) menu.getItems()[1];
+      final ActionContributionItem first = (ActionContributionItem) menu
+          .getItems()[1];
       final IAction action = first.getAction();
 
       assertEquals("just one layer", 1, layers.size());
@@ -536,14 +549,14 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   private static class TransferableBearingList implements Transferable
   {
     public static DataFlavor FLAVOR = new DataFlavor(BearingList.class,
-        "BearingList");
+        "BearingListList");
 
     private static DataFlavor[] FLAVORS = new DataFlavor[]
     {FLAVOR};
 
-    private final BearingList list; // This is the PolyLine we wrap.
+    private final BearingListList list; // This is the structure we wrap.
 
-    public TransferableBearingList(final BearingList list)
+    public TransferableBearingList(final BearingListList list)
     {
       this.list = list;
     }
@@ -587,43 +600,55 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       final Layer[] parentLayers, final Editable[] subjects)
   {
     // ok, we only allow a single selection
-    if (subjects.length == 1)
+    if (subjects.length >= 1)
     {
       // ok, good start
 
-      final Editable first = subjects[0];
-      if (first instanceof TrackWrapper)
+      List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+
+      for (int i = 0; i < subjects.length; i++)
       {
-        final TrackWrapper track = (TrackWrapper) first;
-
-        // ok, first see if it's a relative track - so we can
-        // offer to copy it to the clipboard
-        boolean copyAdded = generateCopyAction(parent, track);
-
-        // and now the paste action
-        boolean pasteAdded =
-            generatePasteAction(parent, theLayers, track, copyAdded);
-
-        if (copyAdded || pasteAdded)
+        Editable item = subjects[i];
+        if (item instanceof TrackWrapper)
         {
-          parent.add(new Separator());
+          tracks.add((TrackWrapper) item);
         }
+        else
+        {
+          // forget about it
+          return;
+        }
+      }
+
+      // ok, first see if it's a relative track - so we can
+      // offer to copy it to the clipboard
+      boolean copyAdded = generateCopyAction(parent, tracks);
+
+      // and now the paste action (if we have a single track
+      boolean pasteAdded = false;
+      if (tracks.size() == 1)
+      {
+        pasteAdded = generatePasteAction(parent, theLayers, tracks.get(0),
+            copyAdded);
+
+      }
+      if (copyAdded || pasteAdded)
+      {
+        parent.add(new Separator());
       }
     }
   }
 
   private boolean generateCopyAction(final IMenuManager parent,
-      final TrackWrapper track)
+      final List<TrackWrapper> tracks)
   {
-    // ok, it's a track. Is it made from relative TMA segments?
-    final SegmentList segments = track.getSegments();
-    final Enumeration<Editable> ele = segments.elements();
     final boolean added;
-
     TrackWrapper host = null;
 
-    while (ele.hasMoreElements())
+    for (TrackWrapper track : tracks)
     {
+      final SegmentList segments = track.getSegments();
+      final Enumeration<Editable> ele = segments.elements();
       final TrackSegment seg = (TrackSegment) ele.nextElement();
 
       if (seg instanceof RelativeTMASegment)
@@ -639,7 +664,17 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         }
         else if (refTrack instanceof TrackWrapper)
         {
-          host = (TrackWrapper) refTrack;
+          final TrackWrapper thisHost = (TrackWrapper) refTrack;
+          if (host == null)
+          {
+            host = thisHost;
+          }
+          else if (host != thisHost)
+          {
+            CorePlugin.logError(IStatus.ERROR,
+                "Tracks don't have common Host Track", null);
+          }
+
           break;
         }
         else
@@ -662,8 +697,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       if (editor instanceof PlotEditor)
       {
-        final TrackManager trackManager =
-            (TrackManager) editor.getAdapter(TrackManager.class);
+        final TrackManager trackManager = (TrackManager) editor.getAdapter(
+            TrackManager.class);
         if (trackManager != null)
         {
           host = (TrackWrapper) trackManager.getPrimaryTrack();
@@ -671,11 +706,11 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
     }
 
-    if (host != null && !host.equals(track))
+    if (host != null && !host.equals(tracks))
     {
       // yes, create the action
-      final String title =
-          "Copy to clipboard as offsets from " + host.getName();
+      final String title = "Copy to clipboard as offsets from " + host
+          .getName();
       final TrackWrapper theHost = host;
 
       final Action convertToTrack = new Action(title)
@@ -685,16 +720,16 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         {
           // ok, go for it.
           // sort it out as an operation
-          final IUndoableOperation copyBearings =
-              new CopyBearingData(title, track, theHost);
+          final IUndoableOperation copyBearings = new CopyBearingData(title,
+              tracks, theHost);
 
           // ok, stick it on the buffer
           runIt(copyBearings);
         }
       };
 
-      convertToTrack.setImageDescriptor(CorePlugin
-          .getImageDescriptor("icons\\16\\copy.png"));
+      convertToTrack.setImageDescriptor(CorePlugin.getImageDescriptor(
+          "icons\\16\\copy.png"));
 
       // stick in the "before" separator
       parent.add(new Separator());
@@ -717,8 +752,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     final boolean added;
 
     // ok, see if we have some bearing data on the clipboard
-    final Clipboard clip =
-        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+    final Clipboard clip = java.awt.Toolkit.getDefaultToolkit()
+        .getSystemClipboard();
 
     // and put it on the clipboard
     if (clip.isDataFlavorAvailable(TransferableBearingList.FLAVOR))
@@ -737,19 +772,17 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
           {
             // ok, now check this track matches the bearings
             final Object[] dates = bearingList.keySet().toArray();
-            final TimePeriod listP =
-                new TimePeriod.BaseTimePeriod((HiResDate) dates[0],
-                    (HiResDate) dates[dates.length - 1]);
-            final TimePeriod trackP =
-                new TimePeriod.BaseTimePeriod(track.getStartDTG(), track
-                    .getEndDTG());
+            final TimePeriod listP = new TimePeriod.BaseTimePeriod(
+                (HiResDate) dates[0], (HiResDate) dates[dates.length - 1]);
+            final TimePeriod trackP = new TimePeriod.BaseTimePeriod(track
+                .getStartDTG(), track.getEndDTG());
 
             if (listP.overlaps(trackP))
             {
               // ok, create the action
               final String title =
-                  "Create new track by adding clipboard bearings to "
-                      + track.getName();
+                  "Create new track by adding clipboard bearings to " + track
+                      .getName();
 
               final Action createNewTrack = new Action(title)
               {
@@ -758,23 +791,23 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
                 {
                   // ok, go for it.
                   // sort it out as an operation
-                  final IUndoableOperation copyBearings =
-                      new PasteBearingData(title, theLayers, bearingList, track);
+                  final IUndoableOperation copyBearings = new PasteBearingData(
+                      title, theLayers, bearingList, track);
 
                   // ok, stick it on the buffer
                   runIt(copyBearings);
                 }
               };
-              
+
               // have we already generated an item
-              if(!copyAdded)
+              if (!copyAdded)
               {
                 // nope, insert a separator
                 parent.add(new Separator());
               }
 
-              createNewTrack.setImageDescriptor(CorePlugin
-                  .getImageDescriptor("icons\\16\\paste.png"));
+              createNewTrack.setImageDescriptor(CorePlugin.getImageDescriptor(
+                  "icons\\16\\paste.png"));
 
               // ok - flash up the menu item
               parent.add(createNewTrack);
