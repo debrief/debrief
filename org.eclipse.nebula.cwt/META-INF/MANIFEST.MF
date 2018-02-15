@@ -16,6 +16,5 @@ Export-Package: org.eclipse.nebula.cwt.animation,
 Import-Package: org.eclipse.swt,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
- org.eclipse.swt.internal.theme,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets
