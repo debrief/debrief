@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // / Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: SensorContactWrapper.java,v $
@@ -151,7 +151,6 @@ import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
-import junit.framework.Assert;
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
@@ -165,6 +164,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -187,7 +187,7 @@ public final class SensorContactWrapper extends
 
     /**
      * create an instance of this operation
-     * 
+     *
      * @param keepPort
      *          whether to keep the port removal
      * @param title
@@ -245,7 +245,7 @@ public final class SensorContactWrapper extends
 
     /**
      * constructor for editable details of a set of Layers
-     * 
+     *
      * @param data
      *          the Layers themselves
      */
@@ -260,15 +260,12 @@ public final class SensorContactWrapper extends
       try
       {
         final PropertyDescriptor[] res =
-            {
-                prop("Label", "the label for this data item", FORMAT),
-                prop("Visible", "whether this sensor contact data is visible",
-                    FORMAT),
-                prop("Frequency",
-                    "the frequency measurement for this data item", OPTIONAL),
-                prop("Bearing", "bearing to target", SPATIAL),
-                displayProp("AmbiguousBearing", "Ambiguous bearing",
-                    "ambiguous bearing to target", SPATIAL),};
+        {prop("Label", "the label for this data item", FORMAT), prop("Visible",
+            "whether this sensor contact data is visible", FORMAT), prop(
+                "Frequency", "the frequency measurement for this data item",
+                OPTIONAL), prop("Bearing", "bearing to target", SPATIAL),
+            displayProp("AmbiguousBearing", "Ambiguous bearing",
+                "ambiguous bearing to target", SPATIAL),};
 
         return res;
 
@@ -281,7 +278,7 @@ public final class SensorContactWrapper extends
 
     /**
      * getMethodDescriptors
-     * 
+     *
      * @return the returned MethodDescriptor[]
      */
     @Override
@@ -290,8 +287,8 @@ public final class SensorContactWrapper extends
       // just add the reset color field first
       final Class<SensorContactWrapper> c = SensorContactWrapper.class;
       final MethodDescriptor[] mds =
-          {method(c, "resetColor", null, "Reset Color"),
-              method(c, "clearOrigin", null, "Clear Origin")};
+      {method(c, "resetColor", null, "Reset Color"), method(c, "clearOrigin",
+          null, "Clear Origin")};
       return mds;
     }
 
@@ -305,7 +302,7 @@ public final class SensorContactWrapper extends
     /**
      * The things about these Layers which are editable. We don't really use this list, since we
      * have our own custom editor anyway
-     * 
+     *
      * @return property descriptions
      */
     @Override
@@ -314,41 +311,36 @@ public final class SensorContactWrapper extends
       try
       {
         final PropertyDescriptor[] res =
-            {
-                prop("Label", "the label for this data item", FORMAT),
-                prop("Visible", "whether this sensor contact data is visible",
-                    FORMAT),
-                displayProp("LabelVisible", "Label visible",
-                    "whether the label for this contact is visible", FORMAT),
-                prop("Color", "the color for this sensor contact", FORMAT),
-                displayProp("HasFrequency", "Has frequency",
-                    "whether this data item includes frequency data", OPTIONAL),
-                displayProp("HasBearing", "Has bearing",
-                    "whether this data item includes a bearing line", OPTIONAL),
-                displayProp(
-                    "HasAmbiguousBearing",
-                    "Has ambiguous bearing",
-                    "whether this data item includes an ambiguous bearing line",
-                    OPTIONAL),
-                prop("Frequency",
+        {prop("Label", "the label for this data item", FORMAT), prop("Visible",
+            "whether this sensor contact data is visible", FORMAT), displayProp(
+                "LabelVisible", "Label visible",
+                "whether the label for this contact is visible", FORMAT), prop(
+                    "Color", "the color for this sensor contact", FORMAT),
+            displayProp("HasFrequency", "Has frequency",
+                "whether this data item includes frequency data", OPTIONAL),
+            displayProp("HasBearing", "Has bearing",
+                "whether this data item includes a bearing line", OPTIONAL),
+            displayProp("HasAmbiguousBearing", "Has ambiguous bearing",
+                "whether this data item includes an ambiguous bearing line",
+                OPTIONAL), prop("Frequency",
                     "the frequency measurement for this data item", OPTIONAL),
-                displayProp("AmbiguousBearing", "Ambiguous bearing",
-                    "the Ambiguous Bearing line for this data item", OPTIONAL),
-                displayLongProp("LabelLocation", "Label location",
-                    "the label location",
-                    MWC.GUI.Properties.LocationPropertyEditor.class),
-                displayLongProp("PutLabelAt", "Put label at",
-                    "whereabouts on the line to position the label",
-                    MWC.GUI.Properties.LineLocationPropertyEditor.class),
-                displayLongProp("LineStyle", "Line style",
-                    "style to use to plot the line",
-                    MWC.GUI.Properties.LineStylePropertyEditor.class),
-                prop("Range", "range to centre of solution", SPATIAL),
-                displayProp("Comment", "Comment", "Comment for this entry",
-                    OPTIONAL),
-                prop("Bearing", "bearing to centre of solution", SPATIAL)
+            displayProp("AmbiguousBearing", "Ambiguous bearing",
+                "the Ambiguous Bearing line for this data item", OPTIONAL),
+            displayLongProp("LabelLocation", "Label location",
+                "the label location",
+                MWC.GUI.Properties.LocationPropertyEditor.class),
+            displayLongProp("PutLabelAt", "Put label at",
+                "whereabouts on the line to position the label",
+                MWC.GUI.Properties.LineLocationPropertyEditor.class),
+            displayLongProp("LineStyle", "Line style",
+                "style to use to plot the line",
+                MWC.GUI.Properties.LineStylePropertyEditor.class), prop("Range",
+                    "range to centre of solution", SPATIAL), displayProp(
+                        "Comment", "Comment", "Comment for this entry",
+                        OPTIONAL), prop("Bearing",
+                            "bearing to centre of solution", SPATIAL)
 
-            };
+        };
 
         // see if we need to add rng/brg or origin data
         final SensorContactWrapper tc = (SensorContactWrapper) getData();
@@ -366,8 +358,8 @@ public final class SensorContactWrapper extends
           res1 = res2;
         }
 
-        final PropertyDescriptor[] res3 =
-            new PropertyDescriptor[res.length + res1.length];
+        final PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
+            + res1.length];
         System.arraycopy(res, 0, res3, 0, res.length);
         System.arraycopy(res1, 0, res3, res.length, res1.length);
 
@@ -383,10 +375,9 @@ public final class SensorContactWrapper extends
     @Override
     public final SubjectAction[] getUndoableActions()
     {
-      final SubjectAction[] res =
-          new SubjectAction[]
-          {new DitchAmbiguousBearing(true, "Keep port bearing"),
-              new DitchAmbiguousBearing(false, "Keep starboard bearing")};
+      final SubjectAction[] res = new SubjectAction[]
+      {new DitchAmbiguousBearing(true, "Keep port bearing"),
+          new DitchAmbiguousBearing(false, "Keep starboard bearing")};
       return res;
     }
 
@@ -405,12 +396,10 @@ public final class SensorContactWrapper extends
     {
       // setup our object to be tested
       final WorldLocation origin = new WorldLocation(0, 0, 0);
-      final SensorContactWrapper ed =
-          new SensorContactWrapper("blank track", new HiResDate(
-              new java.util.Date().getTime()), new WorldDistance(1,
+      final SensorContactWrapper ed = new SensorContactWrapper("blank track",
+          new HiResDate(new java.util.Date().getTime()), new WorldDistance(1,
               WorldDistance.DEGS), 55d, origin,
-              MWC.GUI.Properties.DebriefColors.RED, "my label", 1,
-              "theSensorName");
+          MWC.GUI.Properties.DebriefColors.RED, "my label", 1, "theSensorName");
 
       // check the editable parameters
       editableTesterSupport.testParams(ed, this);
@@ -418,8 +407,8 @@ public final class SensorContactWrapper extends
       /**
        * test the distance calcs
        */
-      final WorldVector test_other_vector =
-          new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(55), 1, 0);
+      final WorldVector test_other_vector = new WorldVector(
+          MWC.Algorithms.Conversions.Degs2Rads(55), 1, 0);
       final WorldLocation test_other_end = origin.add(test_other_vector);
 
       final SensorWrapper sw = new SensorWrapper("dummy");
@@ -435,20 +424,20 @@ public final class SensorContactWrapper extends
 
     public final void testRelBearingCalc()
     {
-      Assert.assertEquals("test  1", 120d, relBearing(0, 120));
-      Assert.assertEquals("test  1", -120d, relBearing(0, -120));
-      Assert.assertEquals("test  1", 20d, relBearing(100, 120));
-      Assert.assertEquals("test  1", -120d, relBearing(100, -20));
-      Assert.assertEquals("test  1", 20d, relBearing(100, -240));
-      Assert.assertEquals("test  1", -120d, relBearing(-260, 340));
-      Assert.assertEquals("test  1", 20d, relBearing(-260, 120));
-      Assert.assertEquals("test  1", -120d, relBearing(100, 340));
-      Assert.assertEquals("test  1", -10d, relBearing(350, -20));
-      Assert.assertEquals("test  1", 5d, relBearing(350, -5));
-      Assert.assertEquals("test  1", 170d, relBearing(170, -20));
-      Assert.assertEquals("test  1", -175d, relBearing(170, -5));
-      Assert.assertEquals("test  1", -20d, relBearing(170, 150));
-      Assert.assertEquals("test  1", 20d, relBearing(170, 190));
+      assertEquals("test  1", 120d, relBearing(0, 120));
+      assertEquals("test  1", -120d, relBearing(0, -120));
+      assertEquals("test  1", 20d, relBearing(100, 120));
+      assertEquals("test  1", -120d, relBearing(100, -20));
+      assertEquals("test  1", 20d, relBearing(100, -240));
+      assertEquals("test  1", -120d, relBearing(-260, 340));
+      assertEquals("test  1", 20d, relBearing(-260, 120));
+      assertEquals("test  1", -120d, relBearing(100, 340));
+      assertEquals("test  1", -10d, relBearing(350, -20));
+      assertEquals("test  1", 5d, relBearing(350, -5));
+      assertEquals("test  1", 170d, relBearing(170, -20));
+      assertEquals("test  1", -175d, relBearing(170, -5));
+      assertEquals("test  1", -20d, relBearing(170, 150));
+      assertEquals("test  1", 20d, relBearing(170, 190));
     }
 
     public void testSensorOffset()
@@ -538,13 +527,13 @@ public final class SensorContactWrapper extends
   private static final int MAXIMUM_SENSOR_BEARING_RANGE = 5;
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   /**
    * calculate the relative bearing when on this course
-   * 
+   *
    * @param course
    *          current course (Degs)
    * @param bearing
@@ -618,7 +607,8 @@ public final class SensorContactWrapper extends
   /**
    * the parent object (which supplies our colour, should we need it)
    */
-  private transient SensorWrapper _mySensor;
+  private SensorWrapper _mySensor;
+
   /**
    * the label describing this contact
    */
@@ -635,13 +625,13 @@ public final class SensorContactWrapper extends
 
   /**
    * the (optional) ambiguous bearing (degs)
-   * 
+   *
    */
   private double _bearingAmbig;
 
   /**
    * the (optional) frequency
-   * 
+   *
    */
   private boolean _hasFreq = false;
 
@@ -733,7 +723,7 @@ public final class SensorContactWrapper extends
 
   /**
    * build a new sensor contact wrapper
-   * 
+   *
    * @param trackName
    * @param dtg
    * @param rangeYds
@@ -754,9 +744,26 @@ public final class SensorContactWrapper extends
         style, sensorName);
   }
 
+  /**
+   * we cache whether the bearing is to Port or Stbd Occasionally we need to clear this value
+   */
+  private void clearCachedPortBearing()
+  {
+    _cachedPortBearing = null;
+  }
+
   public final void clearCalculatedOrigin()
   {
     _calculatedOrigin = null;
+  }
+
+  /**
+   * method to reset the colour, so that we take that of our parent
+   */
+  @FireExtended
+  public final void clearOrigin()
+  {
+    setOrigin(null);
   }
 
   /**
@@ -830,7 +837,7 @@ public final class SensorContactWrapper extends
 
   /**
    * method to provide the actual colour value stored in this fix
-   * 
+   *
    * @return fix colour, including null if applicable
    */
   @Override
@@ -841,13 +848,17 @@ public final class SensorContactWrapper extends
 
   /**
    * get the ambiguous bearing
-   * 
+   *
    * @return the value
    */
   public final double getAmbiguousBearing()
   {
     return _bearingAmbig;
   }
+
+  // ///////////////////////////////////////////
+  // member methods to meet requirements of Plottable interface
+  // ///////////////////////////////////////////
 
   /**
    * return the coordinates of the end of hte line
@@ -864,10 +875,6 @@ public final class SensorContactWrapper extends
   {
     return _bearing;
   }
-
-  // ///////////////////////////////////////////
-  // member methods to meet requirements of Plottable interface
-  // ///////////////////////////////////////////
 
   /**
    * find the data area occupied by this item
@@ -888,8 +895,8 @@ public final class SensorContactWrapper extends
       }
       else
       {
-        res =
-            new WorldArea(getCalculatedOrigin(null), getCalculatedOrigin(null));
+        res = new WorldArea(getCalculatedOrigin(null), getCalculatedOrigin(
+            null));
       }
     }
 
@@ -925,9 +932,8 @@ public final class SensorContactWrapper extends
           final TrackWrapper parentTrack = (TrackWrapper) theParent;
 
           // retrieve the origin, according to the array centre mode
-          _calculatedOrigin =
-              ArrayOffsetHelper.getArrayCentre(this.getSensor(), _DTG, null,
-                  parentTrack);
+          _calculatedOrigin = ArrayOffsetHelper.getArrayCentre(this.getSensor(),
+              _DTG, null, parentTrack);
         }
       }
 
@@ -956,7 +962,7 @@ public final class SensorContactWrapper extends
 
   /**
    * get the current course of the watchable (rads)
-   * 
+   *
    * @return course in radians
    */
   @Override
@@ -967,7 +973,7 @@ public final class SensorContactWrapper extends
 
   /**
    * get the current depth of the watchable (m)
-   * 
+   *
    * @return depth in metres
    */
   @Override
@@ -978,7 +984,7 @@ public final class SensorContactWrapper extends
 
   /**
    * getDTG
-   * 
+   *
    * @return the returned long
    */
   @Override
@@ -1012,8 +1018,8 @@ public final class SensorContactWrapper extends
         totalArea.extend(_calculatedOrigin);
 
         // just use the maximum dimension of the plot
-        final double twiceRange =
-            2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
+        final double twiceRange = 2 * Math.max(totalArea.getWidth(), totalArea
+            .getHeight());
 
         // hey, trim it to something that's at least humanly possible
         rangeToUse = Math.min(twiceRange, MAXIMUM_SENSOR_BEARING_RANGE);
@@ -1024,9 +1030,8 @@ public final class SensorContactWrapper extends
       }
 
       // also do the far end
-      res =
-          _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions
-              .Degs2Rads(bearing), rangeToUse, 0d));
+      res = _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions
+          .Degs2Rads(bearing), rangeToUse, 0d));
 
       // just do an idiot check, to ensure it's possible to calculate us
       if (res.getLat() > 89d)
@@ -1041,7 +1046,7 @@ public final class SensorContactWrapper extends
 
   /**
    * return the coordinates of the end of hte line
-   * 
+   *
    * @param dest
    */
   final public WorldLocation getFarEnd(final WorldArea outerEnvelope)
@@ -1056,7 +1061,7 @@ public final class SensorContactWrapper extends
 
   /**
    * do we have ambiguous data?
-   * 
+   *
    * @return yes/no
    */
   public final boolean getHasAmbiguousBearing()
@@ -1066,7 +1071,7 @@ public final class SensorContactWrapper extends
 
   /**
    * do we have ambiguous data?
-   * 
+   *
    * @return yes/no
    */
   public final boolean getHasBearing()
@@ -1081,7 +1086,7 @@ public final class SensorContactWrapper extends
 
   /**
    * getInfo
-   * 
+   *
    * @return the returned MWC.GUI.Editable.EditorType
    */
   @Override
@@ -1132,7 +1137,7 @@ public final class SensorContactWrapper extends
   // ////////////////////////////////////////////////////////////
   /**
    * get the current location of the watchable
-   * 
+   *
    * @return the location
    */
   @Override
@@ -1143,7 +1148,7 @@ public final class SensorContactWrapper extends
 
   /**
    * get the data name in multi-line format (for tooltips)
-   * 
+   *
    * @return multi-line text label
    */
   @Override
@@ -1211,7 +1216,7 @@ public final class SensorContactWrapper extends
 
   /**
    * get the current speed of the watchable (kts)
-   * 
+   *
    * @return speed in knots
    */
   @Override
@@ -1231,7 +1236,7 @@ public final class SensorContactWrapper extends
 
   /**
    * getTrackName
-   * 
+   *
    * @return the returned String
    */
   public final String getTrackName()
@@ -1242,7 +1247,7 @@ public final class SensorContactWrapper extends
   /**
    * whether there is any edit information for this item this is a convenience function to save
    * creating the EditorType data first
-   * 
+   *
    * @return yes/no
    */
   @Override
@@ -1256,8 +1261,8 @@ public final class SensorContactWrapper extends
     if (_cachedPortBearing == null)
     {
       // get the origin
-      final MWC.GenericData.Watchable[] list =
-          _mySensor._myHost.getNearestTo(_DTG, false);
+      final MWC.GenericData.Watchable[] list = _mySensor._myHost.getNearestTo(
+          _DTG, false);
       MWC.GenericData.Watchable wa = null;
       if (list.length > 0)
       {
@@ -1268,8 +1273,8 @@ public final class SensorContactWrapper extends
       if (wa != null)
       {
         // find out current course
-        final double course =
-            MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
+        final double course = MWC.Algorithms.Conversions.Rads2Degs(wa
+            .getCourse());
 
         // cool, we have a course - we can go for it. remember the bearings
         final double bearing1 = getBearing();
@@ -1295,7 +1300,7 @@ public final class SensorContactWrapper extends
 
   /**
    * paint this object to the specified canvas
-   * 
+   *
    * @param track
    *          the parent list (from which we calculate origins if required)
    * @param dest
@@ -1348,8 +1353,8 @@ public final class SensorContactWrapper extends
         final boolean hasAmbig = !Double.isNaN(_bearingAmbig);
 
         // and convert to screen coords
-        final WorldLocation theFarEnd =
-            getFarEnd(dest.getProjection().getDataArea());
+        final WorldLocation theFarEnd = getFarEnd(dest.getProjection()
+            .getDataArea());
         final Point farEnd = dest.toScreen(theFarEnd);
 
         final Color baseColor = getColor();
@@ -1397,8 +1402,8 @@ public final class SensorContactWrapper extends
         {
           dest.setColor(bearingTwoColor);
 
-          final WorldLocation theOtherFarEnd =
-              getAmbiguousFarEnd(dest.getProjection().getDataArea());
+          final WorldLocation theOtherFarEnd = getAmbiguousFarEnd(dest
+              .getProjection().getDataArea());
 
           final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
           // draw the line
@@ -1519,8 +1524,8 @@ public final class SensorContactWrapper extends
         // lastly determine the range from the nearest point on the track
         if ((_calculatedOrigin != null) && (farEndAmbig != null))
         {
-          final WorldDistance dist =
-              other.rangeFrom(_calculatedOrigin, farEndAmbig);
+          final WorldDistance dist = other.rangeFrom(_calculatedOrigin,
+              farEndAmbig);
           res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
         }
       }
@@ -1536,15 +1541,6 @@ public final class SensorContactWrapper extends
   public final void resetColor()
   {
     setColor(null);
-  }
-
-  /**
-   * method to reset the colour, so that we take that of our parent
-   */
-  @FireExtended
-  public final void clearOrigin()
-  {
-    setOrigin(null);
   }
 
   public final void setAmbiguousBearing(final double valDegs)
@@ -1591,7 +1587,7 @@ public final class SensorContactWrapper extends
     {
       // ignore the call, we don't have an ambig
       // bearing anyway
-      Application.logError2(Application.WARNING,
+      Application.logError2(ToolParent.WARNING,
           "User tried to set un-ambig bearing as ambiguous, ignoring", null);
     }
     else
@@ -1679,20 +1675,12 @@ public final class SensorContactWrapper extends
 
   /**
    * toString
-   * 
+   *
    * @return the returned String
    */
   @Override
   public final String toString()
   {
     return getName();
-  }
-
-  /**
-   * we cache whether the bearing is to Port or Stbd Occasionally we need to clear this value
-   */
-  private void clearCachedPortBearing()
-  {
-    _cachedPortBearing = null;
   }
 }
